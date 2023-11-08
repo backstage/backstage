@@ -16,3 +16,4 @@
 
 export * from './service/router';
 export * from './service/sonarqubeInfoProvider';
+export { sonarqubePlugin as default } from './plugin';

@@ -33,6 +33,7 @@ import {
   createApiFactory,
   discoveryApiRef,
   errorApiRef,
+  fetchApiRef,
   githubAuthApiRef,
 } from '@backstage/core-plugin-api';
 import { AuthProxyDiscoveryApi } from './AuthProxyDiscoveryApi';
@@ -53,18 +54,24 @@ export const apis: AnyApiFactory[] = [
 
   createApiFactory({
     api: graphQlBrowseApiRef,
-    deps: { errorApi: errorApiRef, githubAuthApi: githubAuthApiRef },
-    factory: ({ errorApi, githubAuthApi }) =>
+    deps: {
+      errorApi: errorApiRef,
+      fetchApi: fetchApiRef,
+      githubAuthApi: githubAuthApiRef,
+    },
+    factory: ({ errorApi, fetchApi, githubAuthApi }) =>
       GraphQLEndpoints.from([
         GraphQLEndpoints.create({
           id: 'gitlab',
           title: 'GitLab',
           url: 'https://gitlab.com/api/graphql',
+          fetchApi,
         }),
         GraphQLEndpoints.github({
           id: 'github',
           title: 'GitHub',
           errorApi,
+          fetchApi,
           githubAuthApi,
         }),
       ]),

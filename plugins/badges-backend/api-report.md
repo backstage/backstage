@@ -83,7 +83,8 @@ export type BadgeSpec = {
 };
 
 // @public
-export const badgesPlugin: () => BackendFeature;
+const badgesPlugin: () => BackendFeature;
+export default badgesPlugin;
 
 // @public
 export interface BadgesStore {

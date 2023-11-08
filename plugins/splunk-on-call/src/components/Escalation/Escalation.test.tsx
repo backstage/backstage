@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { EscalationPolicy } from './EscalationPolicy';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { splunkOnCallApiRef } from '../../api';
 import { MOCKED_ON_CALL, MOCKED_USER } from '../../api/mocks';
 import { ApiProvider } from '@backstage/core-app-api';
@@ -32,21 +33,19 @@ describe('Escalation', () => {
       .fn()
       .mockImplementationOnce(async () => []);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy
-            users={{
-              [MOCKED_USER.username!]: MOCKED_USER,
-            }}
-            team="team_example"
-          />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy
+          users={{
+            [MOCKED_USER.username!]: MOCKED_USER,
+          }}
+          team="team_example"
+        />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
 
-    expect(getByText('Empty escalation policy')).toBeInTheDocument();
+    expect(screen.getByText('Empty escalation policy')).toBeInTheDocument();
     expect(mockSplunkOnCallApi.getOnCallUsers).toHaveBeenCalled();
   });
 
@@ -55,22 +54,20 @@ describe('Escalation', () => {
       .fn()
       .mockImplementationOnce(async () => MOCKED_ON_CALL);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy
-            users={{
-              [MOCKED_USER.username!]: MOCKED_USER,
-            }}
-            team="team_example"
-          />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy
+          users={{
+            [MOCKED_USER.username!]: MOCKED_USER,
+          }}
+          team="team_example"
+        />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
 
-    expect(getByText('FirstNameTest LastNameTest')).toBeInTheDocument();
-    expect(getByText('test@example.com')).toBeInTheDocument();
+    expect(screen.getByText('FirstNameTest LastNameTest')).toBeInTheDocument();
+    expect(screen.getByText('test@example.com')).toBeInTheDocument();
     expect(mockSplunkOnCallApi.getOnCallUsers).toHaveBeenCalled();
   });
 
@@ -79,22 +76,22 @@ describe('Escalation', () => {
       .fn()
       .mockRejectedValueOnce(new Error('Error message'));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EscalationPolicy
-            users={{
-              [MOCKED_USER.username!]: MOCKED_USER,
-            }}
-            team="team_example"
-          />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EscalationPolicy
+          users={{
+            [MOCKED_USER.username!]: MOCKED_USER,
+          }}
+          team="team_example"
+        />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
 
     expect(
-      getByText('Error encountered while fetching information. Error message'),
+      screen.getByText(
+        'Error encountered while fetching information. Error message',
+      ),
     ).toBeInTheDocument();
   });
 });

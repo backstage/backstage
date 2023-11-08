@@ -15,21 +15,20 @@
  */
 
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
 import child_process from 'child_process';
-import path, { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'path';
 import os from 'os';
 import {
   Task,
   buildAppTask,
   checkAppExistsTask,
   checkPathExistsTask,
-  createTemporaryAppFolderTask,
   moveAppTask,
   templatingTask,
   tryInitGitRepository,
   readGitConfig,
 } from './tasks';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 jest.spyOn(Task, 'log').mockReturnValue(undefined);
 jest.spyOn(Task, 'error').mockReturnValue(undefined);
@@ -54,18 +53,22 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-auth-backend': '1.0.0',
     '@backstage/plugin-auth-node': '1.0.0',
     '@backstage/plugin-catalog-backend': '1.0.0',
+    '@backstage/plugin-catalog-backend-module-scaffolder-entity-model': '1.0.0',
     '@backstage/plugin-permission-common': '1.0.0',
     '@backstage/plugin-permission-node': '1.0.0',
     '@backstage/plugin-proxy-backend': '1.0.0',
     '@backstage/plugin-scaffolder-backend': '1.0.0',
     '@backstage/plugin-search-backend': '1.0.0',
+    '@backstage/plugin-search-backend-module-catalog': '1.0.0',
     '@backstage/plugin-search-backend-module-pg': '1.0.0',
+    '@backstage/plugin-search-backend-module-techdocs': '1.0.0',
     '@backstage/plugin-search-backend-node': '1.0.0',
     '@backstage/plugin-techdocs-backend': '1.0.0',
     '@backstage/app-defaults': '1.0.0',
     '@backstage/core-app-api': '1.0.0',
     '@backstage/core-components': '1.0.0',
     '@backstage/core-plugin-api': '1.0.0',
+    '@backstage/e2e-test-utils': '1.0.0',
     '@backstage/integration-react': '1.0.0',
     '@backstage/plugin-api-docs': '1.0.0',
     '@backstage/plugin-catalog': '1.0.0',
@@ -101,21 +104,38 @@ describe('tasks', () => {
     ) => void
   >;
 
+  const mockDir = createMockDirectory();
+
+  const origCwd = process.cwd();
+  const realChdir = process.chdir;
+  // If anyone calls chdir then make it resolve within the tmpdir
+  const mockChdir = jest.spyOn(process, 'chdir');
+
   beforeEach(() => {
-    mockFs({
-      'projects/my-module.ts': '',
-      'projects/dir/my-file.txt': '',
-      'tmp/mockApp/.gitignore': '',
-      'tmp/mockApp/package.json': '',
-      'tmp/mockApp/packages/app/package.json': '',
-      // load templates into mock filesystem
-      'templates/': mockFs.load(path.resolve(__dirname, '../../templates/')),
+    mockDir.setContent({
+      projects: {
+        'my-module.ts': '',
+        'dir/my-file.txt': '',
+      },
+      'tmp/mockApp': {
+        '.gitignore': '',
+        'package.json': '',
+        'packages/app/package.json': '',
+      },
     });
+    realChdir(mockDir.path);
+    mockChdir.mockImplementation((dir: string) =>
+      realChdir(mockDir.resolve(dir)),
+    );
   });
 
   afterEach(() => {
     mockExec.mockRestore();
-    mockFs.restore();
+    mockChdir.mockReset();
+  });
+
+  afterAll(() => {
+    realChdir(origCwd);
   });
 
   describe('checkAppExistsTask', () => {
@@ -162,34 +182,8 @@ describe('tasks', () => {
     });
   });
 
-  describe('createTemporaryAppFolderTask', () => {
-    it('should create a directory at a given path', async () => {
-      const tempDir = 'projects/tmpFolder';
-      await expect(
-        createTemporaryAppFolderTask(tempDir),
-      ).resolves.not.toThrow();
-      expect(fs.existsSync(tempDir)).toBe(true);
-    });
-
-    it('should fail if a directory of the same name exists', async () => {
-      const tempDir = 'projects/dir';
-      await expect(createTemporaryAppFolderTask(tempDir)).rejects.toThrow(
-        'file already exists',
-      );
-    });
-
-    it('should fail if a file of the same name exists', async () => {
-      const tempDir = 'projects/dir/my-file.txt';
-      await expect(createTemporaryAppFolderTask(tempDir)).rejects.toThrow(
-        'file already exists',
-      );
-    });
-  });
-
   describe('buildAppTask', () => {
     it('should change to `appDir` and run `yarn install` and `yarn tsc`', async () => {
-      const mockChdir = jest.spyOn(process, 'chdir');
-
       // requires callback implementation to support `promisify` wrapper
       // https://stackoverflow.com/a/60579617/10044859
       mockExec.mockImplementation((_command, callback) => {
@@ -223,8 +217,6 @@ describe('tasks', () => {
     });
 
     it('should error out on incorrect yarn version', async () => {
-      const mockChdir = jest.spyOn(process, 'chdir');
-
       // requires callback implementation to support `promisify` wrapper
       // https://stackoverflow.com/a/60579617/10044859
       mockExec.mockImplementation((_command, callback) => {
@@ -289,7 +281,7 @@ describe('tasks', () => {
 
   describe('templatingTask', () => {
     it('should generate a project populating context parameters', async () => {
-      const templateDir = 'templates/default-app';
+      const templateDir = resolvePath(__dirname, '../../templates/default-app');
       const destinationDir = 'templatedApp';
       const context = {
         name: 'SuperCoolBackstageInstance',
@@ -304,13 +296,13 @@ describe('tasks', () => {
         },
       );
       // catalog was populated with `context.name`
-      expect(
-        fs.readFileSync('templatedApp/catalog-info.yaml', 'utf-8'),
-      ).toContain('name: SuperCoolBackstageInstance');
+      await expect(
+        fs.readFile('templatedApp/catalog-info.yaml', 'utf-8'),
+      ).resolves.toContain('name: SuperCoolBackstageInstance');
       // backend dependencies include `sqlite3` from `context.SQLite`
-      expect(
-        fs.readFileSync('templatedApp/packages/backend/package.json', 'utf-8'),
-      ).toContain('sqlite3"');
+      await expect(
+        fs.readFile('templatedApp/packages/backend/package.json', 'utf-8'),
+      ).resolves.toContain('sqlite3"');
     });
   });
 

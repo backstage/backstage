@@ -1,13 +1,13 @@
 ---
 id: org
-title: Microsoft Azure Active Directory Organizational Data
+title: Microsoft Entra Tenant Data
 sidebar_label: Org Data
 # prettier-ignore
-description: Importing users and groups from Microsoft Azure Active Directory into Backstage
+description: Importing users and groups from Microsoft Entra ID into Backstage
 ---
 
 The Backstage catalog can be set up to ingest organizational data - users and
-teams - directly from a tenant in Microsoft Azure Active Directory via the
+teams - directly from a tenant in Microsoft Entra ID via the
 Microsoft Graph API.
 
 ## Installation
@@ -205,7 +205,7 @@ export async function myGroupTransformer(
       annotations: {},
     },
     spec: {
-      type: 'aad',
+      type: 'Microsoft Entra ID',
       children: [],
     },
   };
@@ -219,7 +219,7 @@ export async function myUserTransformer(
   const backstageUser = await defaultUserTransformer(graphUser, userPhoto);
 
   if (backstageUser) {
-    backstageUser.metadata.description = 'Loaded from Azure Active Directory';
+    backstageUser.metadata.description = 'Loaded from Microsoft Entra ID';
   }
 
   return backstageUser;

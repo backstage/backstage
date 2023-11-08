@@ -447,6 +447,9 @@ want to have an isomorphic package that houses these types. Within the Backstage
 main repo the package naming pattern of `<plugin>-common` is used for isomorphic
 packages, and you may choose to adopt this pattern as well.
 
+You can generate an isomorphic plugin package by running:`yarn new --select plugin-common`
+or you can run `yarn new` and then select "plugin-common" from the list of options
+
 There's at this point no existing templates for generating isomorphic plugins
 using the `@backstage/cli`. Perhaps the simplest wat to get started right now is
 to copy the contents of one of the existing packages in the main repository,
@@ -467,7 +470,7 @@ The next step is to create a custom processor for your new entity kind. This
 will be used within the catalog to make sure that it's able to ingest and
 validate entities of our new kind. Just like with the definition package, you
 can find inspiration in for example the existing
-[ScaffolderEntitiesProcessor](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend/src/processor/ScaffolderEntitiesProcessor.ts).
+[ScaffolderEntitiesProcessor](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-scaffolder-entity-model/src/processor/ScaffolderEntitiesProcessor.ts).
 We also provide a high-level example of what a catalog process for a custom
 entity might look like:
 

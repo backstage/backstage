@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import {
-  Entity,
   DEFAULT_NAMESPACE,
+  Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -28,7 +28,6 @@ import {
   PreparerBase,
   PreparerBuilder,
   PublisherBase,
-  UrlPreparer,
 } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import os from 'os';
@@ -194,7 +193,7 @@ export class DocsBuilder {
     // Remove Prepared directory since it is no longer needed.
     // Caveat: Can not remove prepared directory in case of git preparer since the
     // local git repository is used to get etag on subsequent requests.
-    if (this.preparer instanceof UrlPreparer) {
+    if (this.preparer.shouldCleanPreparedDirectory()) {
       this.logger.debug(
         `Removing prepared directory ${preparedDir} since the site has been generated`,
       );

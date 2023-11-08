@@ -23,6 +23,7 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions } from './helpers';
+import { examples } from './githubActionsDispatch.examples';
 
 /**
  * Creates a new action that dispatches a GitHub Action workflow for a given branch or tag.
@@ -44,6 +45,7 @@ export function createGithubActionsDispatchAction(options: {
     id: 'github:actions:dispatch',
     description:
       'Dispatches a GitHub Action workflow for a given branch or tag',
+    examples,
     schema: {
       input: {
         type: 'object',

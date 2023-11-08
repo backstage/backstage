@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
+import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import { Config } from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
 import * as container from '@google-cloud/container';
 import { Duration } from 'luxon';
 import { runPeriodically } from '../service/runPeriodically';
-import {
-  ClusterDetails,
-  GKEClusterDetails,
-  KubernetesClustersSupplier,
-} from '../types/types';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 interface MatchResourceLabelEntry {
   key: string;
@@ -43,7 +40,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
   constructor(
     private readonly options: GkeClusterLocatorOptions,
     private readonly client: container.v1.ClusterManagerClient,
-    private clusterDetails: GKEClusterDetails[] | undefined = undefined,
+    private clusterDetails: ClusterDetails[] | undefined = undefined,
     private hasClusterDetails: boolean = false,
   ) {}
 
@@ -124,7 +121,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
           // TODO filter out clusters which don't have name or endpoint
           name: r.name ?? 'unknown',
           url: `https://${r.endpoint ?? ''}`,
-          authProvider: 'google',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
           skipTLSVerify,
           skipMetricsLookup,
           ...(exposeDashboard

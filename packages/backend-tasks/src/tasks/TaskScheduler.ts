@@ -80,12 +80,14 @@ export class TaskScheduler {
         await migrateBackendTasks(knex);
       }
 
-      const janitor = new PluginTaskSchedulerJanitor({
-        knex,
-        waitBetweenRuns: Duration.fromObject({ minutes: 1 }),
-        logger: opts.logger,
-      });
-      janitor.start();
+      if (process.env.NODE_ENV !== 'test') {
+        const janitor = new PluginTaskSchedulerJanitor({
+          knex,
+          waitBetweenRuns: Duration.fromObject({ minutes: 1 }),
+          logger: opts.logger,
+        });
+        janitor.start();
+      }
 
       return knex;
     });

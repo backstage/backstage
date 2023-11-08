@@ -23,27 +23,33 @@ import Visibility from '@material-ui/icons/Visibility';
 import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/lib/useAsync';
 import { VaultSecret, vaultApiRef } from '../../api';
-import { VAULT_SECRET_PATH_ANNOTATION } from '../../constants';
+import {
+  VAULT_SECRET_ENGINE_ANNOTATION,
+  VAULT_SECRET_PATH_ANNOTATION,
+} from '../../constants';
 
-export const vaultSecretPath = (entity: Entity) => {
+export const vaultSecretConfig = (entity: Entity) => {
   const secretPath =
     entity.metadata.annotations?.[VAULT_SECRET_PATH_ANNOTATION];
+  const secretEngine =
+    entity.metadata.annotations?.[VAULT_SECRET_ENGINE_ANNOTATION];
 
-  return { secretPath };
+  return { secretPath, secretEngine };
 };
 
 export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
   const vaultApi = useApi(vaultApiRef);
-  const { secretPath } = vaultSecretPath(entity);
+  const { secretPath, secretEngine } = vaultSecretConfig(entity);
   if (!secretPath) {
     throw Error(
       `The secret path is undefined. Please, define the annotation ${VAULT_SECRET_PATH_ANNOTATION}`,
     );
   }
+
   const { value, loading, error } = useAsync(async (): Promise<
     VaultSecret[]
   > => {
-    return vaultApi.listSecrets(secretPath);
+    return vaultApi.listSecrets(secretPath, { secretEngine });
   }, []);
 
   const columns: TableColumn[] = [

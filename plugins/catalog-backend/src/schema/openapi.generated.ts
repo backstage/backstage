@@ -111,6 +111,14 @@ export const spec = {
             type: 'string',
           },
         },
+        examples: {
+          'Get name and the entire relations collection': {
+            value: ['metadata.name', 'relations'],
+          },
+          'Get kind, name and namespace': {
+            value: ['kind', 'metadata.name', 'metadata.namespace'],
+          },
+        },
       },
       filter: {
         name: 'filter',
@@ -122,6 +130,16 @@ export const spec = {
           type: 'array',
           items: {
             type: 'string',
+          },
+        },
+        examples: {
+          'Get groups': {
+            value: ['kind=group'],
+          },
+          'Get orphaned components': {
+            value: [
+              'kind=component,metadata.annotations.backstage.io/orphan=true',
+            ],
           },
         },
       },
@@ -162,15 +180,80 @@ export const spec = {
         },
         explode: true,
         style: 'form',
+        examples: {
+          'Order ascending by name': {
+            value: ['metadata.name,asc'],
+          },
+          'Order descending by owner': {
+            value: ['spec.owner,desc'],
+          },
+        },
       },
     },
     requestBodies: {},
-    responses: {},
+    responses: {
+      ErrorResponse: {
+        description: 'An error response from the backend.',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/Error',
+            },
+          },
+        },
+      },
+    },
     schemas: {
+      Error: {
+        type: 'object',
+        properties: {
+          error: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+              message: {
+                type: 'string',
+              },
+              stack: {
+                type: 'string',
+              },
+              code: {
+                type: 'string',
+              },
+            },
+            required: ['name', 'message'],
+          },
+          request: {
+            type: 'object',
+            properties: {
+              method: {
+                type: 'string',
+              },
+              url: {
+                type: 'string',
+              },
+            },
+            required: ['method', 'url'],
+          },
+          response: {
+            type: 'object',
+            properties: {
+              statusCode: {
+                type: 'number',
+              },
+            },
+            required: ['statusCode'],
+          },
+        },
+        required: ['error', 'response'],
+      },
       JsonObject: {
         type: 'object',
         properties: {},
         description: 'A type representing all allowed JSON object values.',
+        additionalProperties: true,
       },
       MapStringString: {
         type: 'object',
@@ -672,38 +755,6 @@ export const spec = {
         required: ['type', 'target'],
         additionalProperties: false,
       },
-      SerializedError: {
-        allOf: [
-          {
-            $ref: '#/components/schemas/JsonObject',
-          },
-          {
-            type: 'object',
-            properties: {
-              code: {
-                type: 'string',
-                description:
-                  'A custom code (not necessarily the same as an HTTP response code); may not be present',
-              },
-              stack: {
-                type: 'string',
-                description: 'A stringified stack trace; may not be present',
-              },
-              message: {
-                type: 'string',
-                description: 'The message of the exception that was thrown',
-              },
-              name: {
-                type: 'string',
-                description: 'The name of the exception that was thrown',
-              },
-            },
-            required: ['message', 'name'],
-          },
-        ],
-        description: 'The serialized form of an Error.',
-        additionalProperties: false,
-      },
       EntitiesQueryResponse: {
         type: 'object',
         properties: {
@@ -750,6 +801,12 @@ export const spec = {
         responses: {
           '200': {
             description: 'Refreshed',
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
         security: [
@@ -803,6 +860,12 @@ export const spec = {
               },
             },
           },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
         },
         security: [
           {},
@@ -826,6 +889,18 @@ export const spec = {
           {
             $ref: '#/components/parameters/after',
           },
+          {
+            name: 'order',
+            in: 'query',
+            allowReserved: true,
+            required: false,
+            schema: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+          },
         ],
       },
     },
@@ -843,6 +918,12 @@ export const spec = {
                 },
               },
             },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
         security: [
@@ -863,6 +944,12 @@ export const spec = {
         responses: {
           '204': {
             description: 'Deleted successfully.',
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
         security: [
@@ -892,6 +979,12 @@ export const spec = {
                 },
               },
             },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
         security: [
@@ -927,6 +1020,12 @@ export const spec = {
                 },
               },
             },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
         security: [
@@ -964,6 +1063,12 @@ export const spec = {
               },
             },
           },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
         },
         security: [
           {},
@@ -977,7 +1082,7 @@ export const spec = {
           },
         ],
         requestBody: {
-          required: true,
+          required: false,
           content: {
             'application/json': {
               schema: {
@@ -995,6 +1100,22 @@ export const spec = {
                     items: {
                       type: 'string',
                     },
+                  },
+                },
+              },
+              examples: {
+                'Fetch Backstage entities': {
+                  value: {
+                    entityRefs: [
+                      'component:default/backstage',
+                      'api:default/backstage',
+                    ],
+                  },
+                },
+                'Fetch annotations for backstage entity': {
+                  value: {
+                    entityRefs: ['component:default/backstage'],
+                    fields: ['metadata.annotations'],
                   },
                 },
               },
@@ -1017,6 +1138,12 @@ export const spec = {
                 },
               },
             },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
         security: [
@@ -1085,6 +1212,12 @@ export const spec = {
               },
             },
           },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
         },
         security: [
           {},
@@ -1102,6 +1235,14 @@ export const spec = {
               type: 'array',
               items: {
                 type: 'string',
+              },
+            },
+            examples: {
+              'Entities by kind': {
+                value: ['kind'],
+              },
+              'Entities by spec type': {
+                value: ['spec.type'],
               },
             },
           },
@@ -1140,6 +1281,44 @@ export const spec = {
                 },
               },
             },
+          },
+          '201': {
+            description: '201 response',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    location: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'string',
+                        },
+                        type: {
+                          type: 'string',
+                        },
+                        target: {
+                          type: 'string',
+                        },
+                      },
+                      required: ['id', 'type', 'target'],
+                    },
+                    entities: {
+                      type: 'array',
+                      items: {},
+                    },
+                  },
+                  required: ['location', 'entities'],
+                },
+              },
+            },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
         security: [
@@ -1202,6 +1381,9 @@ export const spec = {
               },
             },
           },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
         },
         security: [
           {},
@@ -1226,6 +1408,9 @@ export const spec = {
                 },
               },
             },
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
         security: [
@@ -1252,6 +1437,12 @@ export const spec = {
         responses: {
           '204': {
             description: 'No content',
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
         security: [
@@ -1287,6 +1478,12 @@ export const spec = {
                 },
               },
             },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
         security: [
@@ -1325,32 +1522,31 @@ export const spec = {
         responses: {
           '200': {
             description: 'Ok',
+          },
+          '400': {
+            description: '400 response',
             content: {
-              'application/json': {
+              'application/json; charset=utf-8': {
                 schema: {
-                  anyOf: [
-                    {
-                      type: 'object',
-                      properties: {
-                        errors: {
-                          $ref: '#/components/schemas/SerializedError',
-                        },
-                      },
-                      required: ['errors'],
-                    },
-                    {
-                      type: 'object',
-                      properties: {
-                        errors: {
-                          type: 'array',
-                          items: {
-                            $ref: '#/components/schemas/SerializedError',
+                  type: 'object',
+                  properties: {
+                    errors: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          name: {
+                            type: 'string',
+                          },
+                          message: {
+                            type: 'string',
                           },
                         },
+                        required: ['name', 'message'],
                       },
-                      required: ['errors'],
                     },
-                  ],
+                  },
+                  required: ['errors'],
                 },
               },
             },

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { useVersionedContext } from '@backstage/version-bridge';
 import { AppContext as AppContextV1 } from './types';
 import { AppContextProvider } from './AppContext';
@@ -40,7 +40,7 @@ describe('v1 consumer', () => {
     };
 
     const renderedHook = renderHook(() => useMockAppV1(), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <AppContextProvider appContext={mockContext} children={children} />
       ),
     });

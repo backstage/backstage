@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, SingleHostDiscovery } from '@backstage/backend-common';
+import { getVoidLogger, HostDiscovery } from '@backstage/backend-common';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { Request, Response } from 'express';
@@ -56,7 +56,7 @@ describe('createRouter', () => {
         },
       },
     });
-    const discovery = SingleHostDiscovery.fromConfig(config);
+    const discovery = HostDiscovery.fromConfig(config);
 
     beforeEach(() => {
       mockCreateProxyMiddleware.mockClear();
@@ -150,14 +150,18 @@ describe('createRouter', () => {
           },
         },
       });
-      const discovery = SingleHostDiscovery.fromConfig(config);
+      const discovery = HostDiscovery.fromConfig(config);
       await expect(
         createRouter({
           config,
           logger,
           discovery,
         }),
-      ).rejects.toThrow(new Error('Proxy target must be a string'));
+      ).rejects.toThrow(
+        new Error(
+          'Proxy target for route "/test" must be a string, but is of type undefined',
+        ),
+      );
     });
 
     it('works if skip failures is set', async () => {
@@ -181,7 +185,7 @@ describe('createRouter', () => {
           },
         },
       });
-      const discovery = SingleHostDiscovery.fromConfig(config);
+      const discovery = HostDiscovery.fromConfig(config);
       const router = await createRouter({
         config,
         logger,
@@ -189,7 +193,7 @@ describe('createRouter', () => {
         skipInvalidProxies: true,
       });
       expect((logger.warn as jest.Mock).mock.calls[0][0]).toEqual(
-        'skipped configuring /test due to Proxy target must be a string',
+        'skipped configuring /test due to Proxy target for route "/test" must be a string, but is of type undefined',
       );
       expect(router).toBeDefined();
     });

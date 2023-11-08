@@ -16,38 +16,35 @@
 
 import React from 'react';
 import { EmptyState } from './EmptyState';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import Button from '@material-ui/core/Button';
+import { screen } from '@testing-library/react';
 
 describe('<EmptyState />', () => {
   it('render EmptyState component with type annotation is missing', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <EmptyState
-          missing="field"
-          title="Your plugin is missing an annotation"
-          action={<Button aria-label="button">DOCS</Button>}
-        />,
-      ),
+    await renderInTestApp(
+      <EmptyState
+        missing="field"
+        title="Your plugin is missing an annotation"
+        action={<Button aria-label="button">DOCS</Button>}
+      />,
     );
     expect(
-      rendered.getByText('Your plugin is missing an annotation'),
+      screen.getByText('Your plugin is missing an annotation'),
     ).toBeInTheDocument();
-    expect(rendered.getByLabelText('button')).toBeInTheDocument();
-    expect(rendered.getByAltText('annotation is missing')).toBeInTheDocument();
+    expect(screen.getByLabelText('button')).toBeInTheDocument();
+    expect(screen.getByAltText('annotation is missing')).toBeInTheDocument();
   });
 
   it('renders custom image if one is provided', async () => {
-    const { getByText } = await renderWithEffects(
-      wrapInTestApp(
-        <EmptyState
-          title="Some empty state text"
-          missing={{ customImage: <div>Custom Image</div> }}
-        />,
-      ),
+    await renderInTestApp(
+      <EmptyState
+        title="Some empty state text"
+        missing={{ customImage: <div>Custom Image</div> }}
+      />,
     );
 
-    expect(getByText('Some empty state text')).toBeInTheDocument();
-    expect(getByText('Custom Image')).toBeInTheDocument();
+    expect(screen.getByText('Some empty state text')).toBeInTheDocument();
+    expect(screen.getByText('Custom Image')).toBeInTheDocument();
   });
 });

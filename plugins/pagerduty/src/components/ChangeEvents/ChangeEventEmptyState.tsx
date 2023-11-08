@@ -20,7 +20,12 @@ import EmptyStateImage from '../../assets/emptystate.svg';
 
 export const ChangeEventEmptyState = () => {
   return (
-    <Grid container justify="center" direction="column" alignItems="center">
+    <Grid
+      container
+      justifyContent="center"
+      direction="column"
+      alignItems="center"
+    >
       <Grid item xs={12}>
         <Typography variant="h5">No change events to display yet.</Typography>
       </Grid>

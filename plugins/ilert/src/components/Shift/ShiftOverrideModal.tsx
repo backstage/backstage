@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -161,7 +162,7 @@ export const ShiftOverrideModal = ({
             value={start}
             className={classes.formControl}
             onChange={date => {
-              setStart(date ? date.toISO() : '');
+              setStart(date?.toISO() ?? '');
             }}
           />
           <DateTimePicker
@@ -173,7 +174,7 @@ export const ShiftOverrideModal = ({
             value={end}
             className={classes.formControl}
             onChange={date => {
-              setEnd(date ? date.toISO() : '');
+              setEnd(date?.toISO() ?? '');
             }}
           />
         </MuiPickersUtilsProvider>

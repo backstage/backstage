@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ApiProvider } from '@backstage/core-app-api';
 import { alertApiRef } from '@backstage/core-plugin-api';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
+import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { splunkOnCallApiRef } from '../../api';
 import { TriggerDialog } from './TriggerDialog';
@@ -34,25 +35,27 @@ describe('TriggerDialog', () => {
   );
 
   it('open the dialog and trigger an alarm', async () => {
-    const { getByText, getByRole, getByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <TriggerDialog
-            routingKey="Example"
-            showDialog
-            handleDialog={() => {}}
-            onIncidentCreated={() => {}}
-          />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <TriggerDialog
+          routingKey="Example"
+          showDialog
+          handleDialog={() => {}}
+          onIncidentCreated={() => {}}
+        />
+      </ApiProvider>,
     );
 
-    expect(getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(
-      getByText('This action will trigger an incident', {
+      screen.getByText('This action will trigger an incident', {
         exact: false,
       }),
     ).toBeInTheDocument();
-    await expectTriggeredIncident('Example', getByTestId, mockTriggerAlarmFn);
+    await expectTriggeredIncident(
+      'Example',
+      screen.getByTestId,
+      mockTriggerAlarmFn,
+    );
   });
 });

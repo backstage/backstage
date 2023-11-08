@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-fossa
+  title: '@backstage/plugin-fossa'
+  description: A Backstage plugin that integrates towards FOSSA
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: sda-se-reviewers

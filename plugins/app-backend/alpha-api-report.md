@@ -6,7 +6,8 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const appPlugin: () => BackendFeature;
+const appPlugin: () => BackendFeature;
+export default appPlugin;
 
 // (No @packageDocumentation comment for this package)
 ```

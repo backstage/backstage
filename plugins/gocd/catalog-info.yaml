@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-gocd
+  title: '@backstage/plugin-gocd'
+  description: A Backstage plugin that integrates towards GoCD
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

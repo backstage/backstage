@@ -23,10 +23,32 @@ import {
 } from './api';
 
 const rings = new Array<RadarRing>();
-rings.push({ id: 'adopt', name: 'ADOPT', color: '#5BA300' });
-rings.push({ id: 'trial', name: 'TRIAL', color: '#009EB0' });
-rings.push({ id: 'assess', name: 'ASSESS', color: '#C7BA00' });
-rings.push({ id: 'hold', name: 'HOLD', color: '#E09B96' });
+rings.push({
+  id: 'adopt',
+  name: 'ADOPT',
+  color: '#5BA300',
+  description:
+    'Commodi accusantium culpa sed itaque excepturi rem eum nulla possimus.',
+});
+rings.push({
+  id: 'trial',
+  name: 'TRIAL',
+  color: '#009EB0',
+  description: 'Recusandae possimus ipsum dolores.',
+});
+rings.push({
+  id: 'assess',
+  name: 'ASSESS',
+  color: '#C7BA00',
+  description:
+    'In asperiores repellat error recusandae et adipisci laborum porro.',
+});
+rings.push({
+  id: 'hold',
+  name: 'HOLD',
+  color: '#E09B96',
+  description: 'Esse mollitia in.',
+});
 
 const quadrants = new Array<RadarQuadrant>();
 quadrants.push({ id: 'infrastructure', name: 'Infrastructure' });

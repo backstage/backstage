@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React from 'react';
-import { MockPluginProvider } from '@backstage/test-utils/alpha';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   changeOf,
@@ -65,9 +64,7 @@ function renderInContext(children: JSX.Element) {
               <MockFilterProvider>
                 <MockBillingDateProvider>
                   <MockScrollProvider>
-                    <MockScrollProvider>
-                      <MockPluginProvider>{children}</MockPluginProvider>
-                    </MockScrollProvider>
+                    <MockScrollProvider>{children}</MockScrollProvider>
                   </MockScrollProvider>
                 </MockBillingDateProvider>
               </MockFilterProvider>

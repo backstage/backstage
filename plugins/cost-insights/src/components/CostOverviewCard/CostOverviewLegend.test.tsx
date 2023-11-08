@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { CostOverviewLegend } from './CostOverviewLegend';
 import {
   MockBillingDateProvider,
@@ -24,23 +25,21 @@ import {
   MockCurrencyProvider,
 } from '../../testUtils';
 
-function renderInTestApp(children: JSX.Element) {
-  return render(
-    wrapInTestApp(
-      <MockConfigProvider>
-        <MockCurrencyProvider>
-          <MockBillingDateProvider>
-            <MockFilterProvider>{children}</MockFilterProvider>
-          </MockBillingDateProvider>
-        </MockCurrencyProvider>
-      </MockConfigProvider>,
-    ),
+function render(children: JSX.Element) {
+  return renderInTestApp(
+    <MockConfigProvider>
+      <MockCurrencyProvider>
+        <MockBillingDateProvider>
+          <MockFilterProvider>{children}</MockFilterProvider>
+        </MockBillingDateProvider>
+      </MockCurrencyProvider>
+    </MockConfigProvider>,
   );
 }
 
 describe('<CostOverviewLegend />', () => {
   it('displays the legend without exploding', async () => {
-    const { findByText } = renderInTestApp(
+    await render(
       <CostOverviewLegend
         metric={{
           kind: 'msc',
@@ -66,12 +65,12 @@ describe('<CostOverviewLegend />', () => {
       />,
     );
 
-    expect(await findByText('Cost Trend')).toBeInTheDocument();
-    expect(await findByText('MSC Trend')).toBeInTheDocument();
+    expect(await screen.findByText('Cost Trend')).toBeInTheDocument();
+    expect(await screen.findByText('MSC Trend')).toBeInTheDocument();
   });
 
   it('does not display metric legend if metric data is not provided', async () => {
-    const { findByText, queryByText } = renderInTestApp(
+    await render(
       <CostOverviewLegend
         metric={{
           kind: 'msc',
@@ -89,8 +88,8 @@ describe('<CostOverviewLegend />', () => {
       />,
     );
 
-    expect(await findByText('Cost Trend')).toBeInTheDocument();
-    expect(queryByText('MSC Trend')).not.toBeInTheDocument();
+    expect(await screen.findByText('Cost Trend')).toBeInTheDocument();
+    expect(screen.queryByText('MSC Trend')).not.toBeInTheDocument();
   });
 });
 
@@ -100,7 +99,7 @@ describe.each`
   ${undefined} | ${-1_000} | ${'-∞'} | ${'Your Savings'}
 `('<CostOverviewLegend />', ({ ratio, amount, title, expected }) => {
   it('displays the correct legend if ratio cannot be calculated and costs are within time period', async () => {
-    const { findByText, findAllByText } = renderInTestApp(
+    await render(
       <CostOverviewLegend
         metric={{
           kind: 'msc',
@@ -145,9 +144,9 @@ describe.each`
       />,
     );
 
-    expect(await findByText('Cost Trend')).toBeInTheDocument();
-    expect(await findByText('MSC Trend')).toBeInTheDocument();
-    expect(await findAllByText(title).then(res => res.length)).toBe(2);
-    expect(await findByText(expected)).toBeInTheDocument();
+    expect(await screen.findByText('Cost Trend')).toBeInTheDocument();
+    expect(await screen.findByText('MSC Trend')).toBeInTheDocument();
+    expect(await screen.findAllByText(title).then(res => res.length)).toBe(2);
+    expect(await screen.findByText(expected)).toBeInTheDocument();
   });
 });

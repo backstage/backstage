@@ -110,6 +110,9 @@ export function CatalogSearchResultListItem(
           {result.lifecycle && (
             <Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />
           )}
+          {result.owner && (
+            <Chip label={`Owner: ${result.owner}`} size="small" />
+          )}
         </Box>
       </div>
     </div>

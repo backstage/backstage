@@ -31,7 +31,9 @@ type Props = {
   labels?: Label[];
 };
 
-const Card: FunctionComponent<Props> = (props: PropsWithChildren<Props>) => {
+const Card: FunctionComponent<PropsWithChildren<Props>> = (
+  props: React.PropsWithChildren<Props>,
+) => {
   const {
     title,
     createdAt,

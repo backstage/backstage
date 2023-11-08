@@ -15,7 +15,7 @@
  */
 
 export {
-  catalogModuleMicrosoftGraphOrgEntityProvider,
+  catalogModuleMicrosoftGraphOrgEntityProvider as default,
   microsoftGraphOrgEntityProviderTransformExtensionPoint,
   type MicrosoftGraphOrgEntityProviderTransformsExtensionPoint,
 } from './catalogModuleMicrosoftGraphOrgEntityProvider';

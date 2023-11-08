@@ -203,7 +203,7 @@ describe('SearchModal', () => {
       expect.objectContaining({ term: 'term' }),
     );
 
-    const input = screen.getByLabelText('Search');
+    const input = screen.getByLabelText<HTMLInputElement>('Search');
     await userEvent.clear(input);
     await userEvent.type(input, 'new term{enter}');
 

@@ -627,3 +627,98 @@ output things. You can grab that output using `steps.$stepId.output.$property`.
 You can read more about all the `inputs` and `outputs` defined in the actions in
 code part of the `JSONSchema`, or you can read more about our
 [built in actions](./builtin-actions.md).
+
+## Built in Filters
+
+Template filters are functions that help you transform data, extract specific information,
+and perform various operations in Scaffolder Templates.
+
+This section introduces the built-in filters provided by Backstage and offers examples of
+how to use them in the Scaffolder templates. It's important to mention that Backstage also leverages the
+native filters from the Nunjucks library. For a complete list of these native filters and their usage,
+refer to the [Nunjucks documentation](https://mozilla.github.io/nunjucks/templating.html#builtin-filters).
+
+### parseRepoUrl
+
+The `parseRepoUrl` filter parse a repository URL into
+its components, such as `owner`, repository `name`, and more.
+
+**Usage Example:**
+
+```yaml
+- id: log
+  name: Parse Repo URL
+  action: debug:log
+  input:
+    extra: ${{ parameters.repoUrl | parseRepoUrl }}
+```
+
+- **Input**: `github.com?repo=backstage&org=backstage`
+- **Output**: [RepoSpec](https://github.com/backstage/backstage/blob/v1.17.2/plugins/scaffolder-backend/src/scaffolder/actions/builtin/publish/util.ts#L39)
+
+### parseEntityRef
+
+The `parseEntityRef` filter allows you to extract different parts of
+an entity reference, such as the `kind`, `namespace`, and `name`.
+
+**Usage example**
+
+1. Without context
+
+```yaml
+- id: log
+  name: Parse Entity Reference
+  action: debug:log
+  input:
+    extra: ${{ parameters.owner | parseEntityRef }}
+```
+
+- **Input**: `group:techdocs`
+- **Output**: [CompoundEntityRef](https://github.com/backstage/backstage/blob/v1.17.2/packages/catalog-model/src/types.ts#L23)
+
+2. With context
+
+```yaml
+- id: log
+  name: Parse Entity Reference
+  action: debug:log
+  input:
+    extra: ${{ parameters.owner | parseEntityRef({ defaultKind:"group", defaultNamespace:"another-namespace" }) }}
+```
+
+- **Input**: `techdocs`
+- **Output**: [CompoundEntityRef](https://github.com/backstage/backstage/blob/v1.17.2/packages/catalog-model/src/types.ts#L23)
+
+### pick
+
+This `pick` filter allows you to select specific properties from an object.
+
+**Usage Example**
+
+```yaml
+- id: log
+  name: Pick
+  action: debug:log
+  input:
+    extra: ${{ parameters.owner | parseEntityRef | pick('name') }}
+```
+
+- **Input**: `{ kind: 'Group', namespace: 'default', name: 'techdocs' }`
+- **Output**: `techdocs`
+
+### projectSlug
+
+The `projectSlug` filter generates a project slug from a repository URL
+
+**Usage Example**
+
+```yaml
+- id: log
+  name: Project Slug
+  action: debug:log
+  input:
+    extra: ${{ parameters.repoUrl | projectSlug }}
+```
+
+- **Input**: `github.com?repo=backstage&org=backstage`
+- **Output**: `backstage/backstage`

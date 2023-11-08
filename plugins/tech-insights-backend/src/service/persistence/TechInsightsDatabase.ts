@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Knex } from 'knex';
 import {
   FactLifecycle,
@@ -105,12 +106,13 @@ export class TechInsightsDatabase implements TechInsightsStore {
     if (facts.length === 0) return;
     const currentSchema = await this.getLatestSchema(id);
     const factRows = facts.map(it => {
+      const ts = it.timestamp?.toISO();
       return {
         id,
         version: currentSchema.version,
         entity: stringifyEntityRef(it.entity),
         facts: JSON.stringify(it.facts),
-        ...(it.timestamp && { timestamp: it.timestamp.toISO() }),
+        ...(ts && { timestamp: ts }),
       };
     });
 

@@ -15,22 +15,14 @@
  */
 
 /**
- * TODO
+ * Core API used by Backstage frontend plugins.
  *
  * @packageDocumentation
  */
 
-export {
-  createExtension,
-  coreExtensionData,
-  createPlugin,
-  type ExtensionInstanceConfig,
-  type BackstagePlugin,
-  type Extension,
-  type AnyExtensionDataMap,
-  type BackstagePluginOptions,
-  type CreateExtensionOptions,
-  type ExtensionDataBind,
-  type ExtensionDataRef,
-  type ExtensionDataValue,
-} from './types';
+export * from './apis';
+export * from './components';
+export * from './extensions';
+export * from './routing';
+export * from './schema';
+export * from './wiring';

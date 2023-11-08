@@ -30,10 +30,10 @@ import {
   DbRefreshStateRow,
   DbSearchRow,
 } from '../database/tables';
-import { Stitcher } from '../stitching/Stitcher';
-import { buildEntitySearch } from '../stitching/buildEntitySearch';
+import { Stitcher } from '../stitching/types';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { EntitiesRequest } from '../catalog/types';
+import { buildEntitySearch } from '../database/operations/stitcher/buildEntitySearch';
 
 jest.setTimeout(60_000);
 
@@ -1684,9 +1684,9 @@ describe('DefaultEntitiesCatalog', () => {
           { entity_ref: 'k:default/unrelated1', result_hash: 'not-changed' },
           { entity_ref: 'k:default/unrelated2', result_hash: 'not-changed' },
         ]);
-        expect(stitch).toHaveBeenCalledWith(
-          new Set(['k:default/unrelated1', 'k:default/unrelated2']),
-        );
+        expect(stitch).toHaveBeenCalledWith({
+          entityRefs: new Set(['k:default/unrelated1', 'k:default/unrelated2']),
+        });
       },
     );
   });

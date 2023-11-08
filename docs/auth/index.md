@@ -10,6 +10,13 @@ configure Backstage to have any number of authentication providers, but only
 one of these will typically be used for sign-in, with the rest being used to provide
 access to external resources.
 
+> NOTE: Identity management and the Sign-In page in Backstage is NOT a method for blocking
+> access for unauthorized users. The identity system only serves to provide a personalized
+> experience and access to a Backstage Identity Token, which can be passed to backend plugins.
+> This also means that your Backstage backend APIs are by default unauthenticated.
+> Thus, if your Backstage instance is exposed to the Internet, anyone can access
+> information in the Backstage. You can learn more [here](../overview/threat-model.md#integrator-responsibilities).
+
 ## Built-in Authentication Providers
 
 Backstage comes with many common authentication providers in the core library:
@@ -59,13 +66,6 @@ local frontend against a deployed backend. The provider configuration matching
 the local `auth.environment` setting will be selected.
 
 ## Sign-In Configuration
-
-> NOTE: Identity management and the `SignInPage` in Backstage is NOT a method
-> for blocking access for unauthorized users, that either requires additional
-> backend implementation or a separate service like Google's Identity-Aware
-> Proxy. The identity system only serves to provide a personalized experience
-> and access to a Backstage Identity Token, which can be passed to backend
-> plugins.
 
 Using an authentication provider for sign-in is something you need to configure
 both in the frontend app, as well as the `auth` backend plugin. For information
@@ -139,6 +139,9 @@ const app = createApp({
   // ..
 });
 ```
+
+> NOTE: You can configure sign-in to use a redirect flow with no pop-up by adding
+> `enableExperimentalRedirectFlow: true` to the root of your `app-config.yaml`
 
 ## Sign-In with Proxy Providers
 
@@ -402,4 +405,51 @@ import { providers } from '@backstage/plugin-auth-backend';
 providerFactories: {
   ghe: providers.github.create(),
 },
+```
+
+## Configuring token issuers
+
+By default, the Backstage authentication backend generates and manages its own signing keys automatically for any issued
+Backstage tokens. However, these keys have a short lifetime and do not persist after instance restarts.
+
+Alternatively, users can provide their own public and private key files to sign issued tokens. This is beneficial in
+scenarios where the token verification implementation aggressively caches the list of keys, and doesn't attempt to fetch
+new ones even if they encounter an unknown key id. To enable this feature add the following configuration to your config
+file:
+
+```yaml
+auth:
+  keyStore:
+    provider: 'static'
+    static:
+      keys:
+        # Must be declared at least once and the first one will be used for signing
+        - keyId: 'primary'
+          publicKeyFile: /path/to/public.key
+          privateKeyFile: /path/to/private.key
+          algorithm: # Optional, algorithm used to generate the keys, defaults to ES256
+          # More keys can be added so with future key rotations caches already know about it
+        - keyId: ...
+```
+
+The private key should be stored in the PKCS#8 format. The public key should be stored in the SPKI format.
+You can generate the public/private key pair, using openssl and the ES256 algorithm by performing the following
+steps:
+
+Generate a private key using the ES256 algorithm
+
+```sh
+openssl ecparam -name prime256v1 -genkey -out private.ec.key
+```
+
+Convert it to PKCS#8 format
+
+```sh
+openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in private.ec.key -out private.key
+```
+
+Extract the public key
+
+```sh
+openssl ec -inform PEM -outform PEM -pubout -in private.key -out public.key
 ```

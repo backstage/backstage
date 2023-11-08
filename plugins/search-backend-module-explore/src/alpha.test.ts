@@ -16,7 +16,7 @@
 
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-import { searchModuleExploreCollator } from './alpha';
+import searchModuleExploreCollator from './alpha';
 
 describe('searchModuleExploreCollator', () => {
   const schedule = {

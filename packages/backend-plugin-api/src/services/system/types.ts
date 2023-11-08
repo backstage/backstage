@@ -172,7 +172,7 @@ export interface PluginServiceFactoryConfig<
 export function createServiceFactory<
   TService,
   TImpl extends TService,
-  TDeps extends { [name in string]: ServiceRef<unknown> },
+  TDeps extends { [name in string]: ServiceRef<unknown, 'root'> },
   TOpts extends object | undefined = undefined,
 >(
   config: RootServiceFactoryConfig<TService, TImpl, TDeps>,
@@ -186,7 +186,7 @@ export function createServiceFactory<
 export function createServiceFactory<
   TService,
   TImpl extends TService,
-  TDeps extends { [name in string]: ServiceRef<unknown> },
+  TDeps extends { [name in string]: ServiceRef<unknown, 'root'> },
   TOpts extends object | undefined = undefined,
 >(
   config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
@@ -241,7 +241,7 @@ export function createServiceFactory<
     | (() => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>),
 ): (options: TOpts) => ServiceFactory {
   const configCallback = typeof config === 'function' ? config : () => config;
-  return (
+  const factory = (
     options: TOpts,
   ): InternalServiceFactory<TService, 'plugin' | 'root'> => {
     const anyConf = configCallback(options);
@@ -275,4 +275,8 @@ export function createServiceFactory<
       factory: async (deps: TDeps, ctx: TContext) => c.factory(deps, ctx),
     };
   };
+
+  factory.$$type = '@backstage/BackendFeatureFactory';
+
+  return factory;
 }

@@ -297,7 +297,7 @@ describe('createOAuthRouteHandlers', () => {
         state: encodeOAuthState({
           env: 'development',
           nonce: '123',
-          scope: 'my-scope',
+          scope: 'my-scope my-other-scope',
         } as OAuthState),
       });
 
@@ -310,7 +310,7 @@ describe('createOAuthRouteHandlers', () => {
             accessToken: 'access-token',
             expiresInSeconds: 3,
             idToken: 'id-token',
-            scope: 'my-scope',
+            scope: 'my-scope my-other-scope',
           },
           backstageIdentity: {
             identity: {
@@ -324,7 +324,9 @@ describe('createOAuthRouteHandlers', () => {
       });
 
       expect(getRefreshTokenCookie(agent).value).toBe('refresh-token');
-      expect(getGrantedScopesCookie(agent).value).toBe('my-scope');
+      expect(getGrantedScopesCookie(agent).value).toBe(
+        'my-scope%20my-other-scope',
+      );
     });
 
     it('should redirect with persisted scope', async () => {
@@ -357,7 +359,7 @@ describe('createOAuthRouteHandlers', () => {
         state: encodeOAuthState({
           env: 'development',
           nonce: '123',
-          scope: 'my-scope',
+          scope: 'my-scope my-other-scope',
           flow: 'redirect',
           redirectUrl: 'https://127.0.0.1:3000/redirect',
         } as OAuthState),
@@ -367,7 +369,9 @@ describe('createOAuthRouteHandlers', () => {
       expect(res.get('Location')).toBe('https://127.0.0.1:3000/redirect');
 
       expect(getRefreshTokenCookie(agent).value).toBe('refresh-token');
-      expect(getGrantedScopesCookie(agent).value).toBe('my-scope');
+      expect(getGrantedScopesCookie(agent).value).toBe(
+        'my-scope%20my-other-scope',
+      );
     });
 
     it('should require a valid origin', async () => {

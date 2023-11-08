@@ -68,6 +68,18 @@ export type AlertDisplayProps = {
 };
 
 // @public
+export const AutoLogout: (props: AutoLogoutProps) => JSX.Element | null;
+
+// @public (undocumented)
+export type AutoLogoutProps = {
+  enabled?: boolean;
+  idleTimeoutMinutes?: number;
+  promptBeforeIdleSeconds?: number;
+  useWorkerTimers?: boolean;
+  logoutIfDisconnected?: boolean;
+};
+
+// @public
 export function Avatar(props: AvatarProps): React_2.JSX.Element;
 
 // @public (undocumented)
@@ -237,7 +249,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   acyclicer?: 'greedy';
   align?: DependencyGraphTypes.Alignment;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
-  defs?: SVGDefsElement | SVGDefsElement[];
+  defs?: JSX.Element | JSX.Element[];
   direction?: DependencyGraphTypes.Direction;
   edgeMargin?: number;
   edgeRanks?: number;
@@ -347,10 +359,10 @@ export type EmptyStateImageClassKey = 'generalImg';
 export const ErrorBoundary: ComponentClass<ErrorBoundaryProps, State>;
 
 // @public (undocumented)
-export type ErrorBoundaryProps = {
+export type ErrorBoundaryProps = React_2.PropsWithChildren<{
   slackChannel?: string | SlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
-};
+}>;
 
 // Warning: (ae-forgotten-export) The symbol "IErrorPageProps" needs to be exported by the entry point index.d.ts
 //
@@ -372,6 +384,7 @@ export type ErrorPanelClassKey = 'text' | 'divider';
 export type ErrorPanelProps = {
   error: Error;
   defaultExpanded?: boolean;
+  titleFormat?: string;
   title?: string;
 };
 
@@ -734,16 +747,13 @@ export type MetadataTableTitleCellClassKey = 'root';
 export type MicDropClassKey = 'micDrop';
 
 // Warning: (ae-forgotten-export) The symbol "Props_3" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "MissingAnnotationEmptyState" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function MissingAnnotationEmptyState(
   props: Props_3,
 ): React_2.JSX.Element;
 
-// Warning: (ae-missing-release-tag) "MissingAnnotationEmptyStateClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type MissingAnnotationEmptyStateClassKey = 'code';
 
 // @public

@@ -15,11 +15,7 @@
  */
 
 import { TaskRunner } from '@backstage/backend-tasks';
-import {
-  ANNOTATION_LOCATION,
-  ANNOTATION_ORIGIN_LOCATION,
-  Entity,
-} from '@backstage/catalog-model';
+import { Entity, isGroupEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -42,13 +38,8 @@ import {
   TeamEditedEvent,
   TeamEvent,
 } from '@octokit/webhooks-types';
-import { merge } from 'lodash';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
-import {
-  ANNOTATION_GITHUB_TEAM_SLUG,
-  ANNOTATION_GITHUB_USER_LOGIN,
-} from '../lib/annotation';
 import {
   TeamTransformer,
   UserTransformer,
@@ -67,7 +58,9 @@ import {
   getOrganizationUsers,
 } from '../lib/github';
 import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
-import { parseGithubOrgUrl, splitTeamSlug } from '../lib/util';
+import { parseGithubOrgUrl } from '../lib/util';
+import { withLocations } from '../lib/withLocations';
+import { areGroupEntities, areUserEntities } from '../lib/guards';
 
 /**
  * Options for {@link GithubOrgEntityProvider}.
@@ -223,20 +216,24 @@ export class GithubOrgEntityProvider
       tokenType,
       this.options.userTransformer,
     );
-    const { groups } = await getOrganizationTeams(
+    const { teams } = await getOrganizationTeams(
       client,
       org,
       this.options.teamTransformer,
     );
 
-    assignGroupsToUsers(users, groups);
-    buildOrgHierarchy(groups);
+    if (areGroupEntities(teams)) {
+      buildOrgHierarchy(teams);
+      if (areUserEntities(users)) {
+        assignGroupsToUsers(users, teams);
+      }
+    }
 
-    const { markCommitComplete } = markReadComplete({ users, groups });
+    const { markCommitComplete } = markReadComplete({ users, teams });
 
     await this.connection.applyMutation({
       type: 'full',
-      entities: [...users, ...groups].map(entity => ({
+      entities: [...users, ...teams].map(entity => ({
         locationKey: `github-org-provider:${this.options.id}`,
         entity: withLocations(
           `https://${this.options.gitHubConfig.host}`,
@@ -340,7 +337,7 @@ export class GithubOrgEntityProvider
     });
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
-    const { group } = await getOrganizationTeam(
+    const { team } = await getOrganizationTeam(
       client,
       org,
       teamSlug,
@@ -354,20 +351,28 @@ export class GithubOrgEntityProvider
       this.options.userTransformer,
     );
 
-    const usersFromChangedGroup = group.spec.members || [];
+    if (!isGroupEntity(team)) {
+      return;
+    }
+
+    const usersFromChangedGroup = team.spec.members || [];
     const usersToRebuild = users.filter(u =>
       usersFromChangedGroup.includes(u.metadata.name),
     );
 
-    const { groups } = await getOrganizationTeamsFromUsers(
+    const { teams } = await getOrganizationTeamsFromUsers(
       client,
       org,
       usersToRebuild.map(u => u.metadata.name),
       this.options.teamTransformer,
     );
 
-    assignGroupsToUsers(usersToRebuild, groups);
-    buildOrgHierarchy(groups);
+    if (areGroupEntities(teams)) {
+      buildOrgHierarchy(teams);
+      if (areUserEntities(usersToRebuild)) {
+        assignGroupsToUsers(usersToRebuild, teams);
+      }
+    }
 
     const oldName = event.changes.name?.from || event.team.name;
     const oldSlug = oldName.toLowerCase().replaceAll(/\s/gi, '-');
@@ -380,14 +385,14 @@ export class GithubOrgEntityProvider
 
     const { removed } = createDeltaOperation(org, [
       {
-        ...group,
+        ...team,
         metadata: {
           name: oldSlug,
           description: oldDescriptionSlug,
         },
       },
     ]);
-    const { added } = createDeltaOperation(org, [...usersToRebuild, ...groups]);
+    const { added } = createDeltaOperation(org, [...usersToRebuild, ...teams]);
     await this.connection.applyMutation({
       type: 'delta',
       removed,
@@ -423,7 +428,7 @@ export class GithubOrgEntityProvider
     });
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
-    const { group } = await getOrganizationTeam(
+    const { team } = await getOrganizationTeam(
       client,
       org,
       teamSlug,
@@ -439,7 +444,7 @@ export class GithubOrgEntityProvider
 
     const usersToRebuild = users.filter(u => u.metadata.name === userLogin);
 
-    const { groups } = await getOrganizationTeamsFromUsers(
+    const { teams } = await getOrganizationTeamsFromUsers(
       client,
       org,
       [userLogin],
@@ -447,16 +452,20 @@ export class GithubOrgEntityProvider
     );
 
     // we include group because the removed event need to update the old group too
-    if (!groups.some(g => g.metadata.name === group.metadata.name)) {
-      groups.push(group);
+    if (!teams.some(t => t.metadata.name === team.metadata.name)) {
+      teams.push(team);
     }
 
-    assignGroupsToUsers(usersToRebuild, groups);
-    buildOrgHierarchy(groups);
+    if (areGroupEntities(teams)) {
+      buildOrgHierarchy(teams);
+      if (areUserEntities(usersToRebuild)) {
+        assignGroupsToUsers(usersToRebuild, teams);
+      }
+    }
 
     const { added, removed } = createDeltaOperation(org, [
       ...usersToRebuild,
-      ...groups,
+      ...teams,
     ]);
     await this.connection.applyMutation({
       type: 'delta',
@@ -575,7 +584,10 @@ export class GithubOrgEntityProvider
           try {
             await this.read({ logger });
           } catch (error) {
-            logger.error(`${this.getProviderName()} refresh failed`, error);
+            logger.error(
+              `${this.getProviderName()} refresh failed, ${error}`,
+              error,
+            );
           }
         },
       });
@@ -588,10 +600,10 @@ function trackProgress(logger: Logger) {
   let timestamp = Date.now();
   let summary: string;
 
-  logger.info('Reading GitHub users and groups');
+  logger.info('Reading GitHub users and teams');
 
-  function markReadComplete(read: { users: unknown[]; groups: unknown[] }) {
-    summary = `${read.users.length} GitHub users and ${read.groups.length} GitHub groups`;
+  function markReadComplete(read: { users: unknown[]; teams: unknown[] }) {
+    summary = `${read.users.length} GitHub users and ${read.teams.length} GitHub teams`;
     const readDuration = ((Date.now() - timestamp) / 1000).toFixed(1);
     timestamp = Date.now();
     logger.info(`Read ${summary} in ${readDuration} seconds. Committing...`);
@@ -604,38 +616,4 @@ function trackProgress(logger: Logger) {
   }
 
   return { markReadComplete };
-}
-
-// Makes sure that emitted entities have a proper location
-export function withLocations(
-  baseUrl: string,
-  org: string,
-  entity: Entity,
-): Entity {
-  const login =
-    entity.metadata.annotations?.[ANNOTATION_GITHUB_USER_LOGIN] ||
-    entity.metadata.name;
-
-  let team = entity.metadata.name;
-  const slug = entity.metadata.annotations?.[ANNOTATION_GITHUB_TEAM_SLUG];
-  if (slug) {
-    const [_, slugTeam] = splitTeamSlug(slug);
-    team = slugTeam;
-  }
-
-  const location =
-    entity.kind === 'Group'
-      ? `url:${baseUrl}/orgs/${org}/teams/${team}`
-      : `url:${baseUrl}/${login}`;
-  return merge(
-    {
-      metadata: {
-        annotations: {
-          [ANNOTATION_LOCATION]: location,
-          [ANNOTATION_ORIGIN_LOCATION]: location,
-        },
-      },
-    },
-    entity,
-  ) as Entity;
 }

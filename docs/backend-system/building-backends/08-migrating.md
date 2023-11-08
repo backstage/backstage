@@ -6,7 +6,7 @@ sidebar_label: Migration Guide
 description: How to migrate existing backends to the new backend system
 ---
 
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. As such, it is not considered stable, and it is not recommended to migrate production backends to the new backend system until it has a stable release.**
+> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
 
 ## Overview
 
@@ -145,7 +145,7 @@ import { coreServices } from '@backstage/backend-plugin-api';
 const legacyPlugin = makeLegacyPlugin(
   {
     cache: coreServices.cache,
-    config: coreServices.config,
+    config: coreServices.rootConfig,
     database: coreServices.database,
     discovery: coreServices.discovery,
     logger: coreServices.logger,
@@ -177,11 +177,10 @@ custom API, so we use a helper function to transform that particular one.
 To make additions as mentioned above to the environment, you will start to get
 into the weeds of how the backend system wiring works. You'll need to have a
 service reference and a service factory that performs the actual creation of
-your service. Please see [the services
-article](../architecture/03-services.md#defining-a-service) to learn how to
-create a service ref and its default factory. You can place that code directly
-in the index file for now if you want, or near the actual implementation class
-in question.
+your service. Please see [the services article](../architecture/03-services.md)
+to learn how to create a service ref and its default factory. You can place that
+code directly in the index file for now if you want, or near the actual implementation
+class in question.
 
 In this example, we'll assume that your added environment field is named
 `example`, and the created ref is named `exampleServiceRef`.
@@ -212,8 +211,7 @@ place it in the legacy plugin environment.
 
 ## Cleaning Up the Plugins Folder
 
-For plugins that are private and your own, you can follow a [dedicated migration
-guide](../building-plugins-and-modules/08-migrating.md) as you see fit, at a
+For plugins that are private and your own, you can follow a [dedicated migration guide](../building-plugins-and-modules/08-migrating.md) as you see fit, at a
 later time.
 
 For third party backend plugins, in particular the larger core plugins that are
@@ -232,18 +230,13 @@ The app backend plugin that serves the frontend from the backend can trivially
 be used in its new form.
 
 ```ts title="packages/backend/src/index.ts"
-/* highlight-add-next-line */
-import { appPlugin } from '@backstage/plugin-app-backend';
-
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(appPlugin({ appPackageName: 'app' }));
+backend.add(import('@backstage/plugin-app-backend/alpha'));
 ```
 
-This is an example of how options can be passed into some backend plugins. The
-app plugin specifically needs to know the name of the package that holds the
-frontend code. This is the `"name"` field in that package's `package.json`,
-typically found in your `packages/app` folder. By default it's just plain "app".
+If you need to override the app package name, which otherwise defaults to `"app"`,
+you can do so via the `app.packageName` configuration key.
 
 You should be able to delete the `plugins/app.ts` file at this point.
 
@@ -252,21 +245,18 @@ You should be able to delete the `plugins/app.ts` file at this point.
 A basic installation of the catalog plugin looks as follows.
 
 ```ts title="packages/backend/src/index.ts"
-/* highlight-add-start */
-import { catalogPlugin } from '@backstage/plugin-catalog-backend';
-import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend';
-/* highlight-add-end */
-
 const backend = createBackend();
 /* highlight-add-start */
-backend.add(catalogPlugin());
-backend.add(catalogModuleTemplateKind());
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
+);
 /* highlight-add-end */
 ```
 
-Note that this also installs a module from the scaffolder, namely the one which
-enables the use of the `Template` kind. In the unlikely event that you do not
-use templates at all, you can remove those lines.
+Note that this also installs the scaffolder module for the catalog, which
+enables the use of the `Template` kind. In the event that you do not
+use templates at all, you can remove that line.
 
 If you have other customizations made to `plugins/catalog.ts`, such as adding
 custom processors or entity providers, read on. Otherwise, you should be able to
@@ -305,8 +295,10 @@ const catalogModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(catalogPlugin());
-backend.add(catalogModuleTemplateKind());
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
+);
 /* highlight-add-next-line */
 backend.add(catalogModuleCustomExtensions());
 ```
@@ -330,12 +322,9 @@ implementations that they represent, and being exported from there.
 A basic installation of the events plugin looks as follows.
 
 ```ts title="packages/backend/src/index.ts"
-/* highlight-add-next-line */
-import { eventsPlugin } from '@backstage/plugin-events-backend';
-
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(eventsPlugin());
+backend.add(import('@backstage/plugin-events-backend'));
 ```
 
 If you have other customizations made to `plugins/events.ts`, such as adding
@@ -374,7 +363,7 @@ const eventsModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(eventsPlugin());
+backend.add(import('@backstage/plugin-events-backend'));
 /* highlight-add-next-line */
 backend.add(eventsModuleCustomExtensions());
 ```
@@ -398,12 +387,9 @@ implementations that they represent, and being exported from there.
 A basic installation of the scaffolder plugin looks as follows.
 
 ```ts title="packages/backend/src/index.ts"
-/* highlight-add-next-line */
-import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend';
-
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(scaffolderPlugin());
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 ```
 
 If you have other customizations made to `plugins/scaffolder.ts`, such as adding
@@ -442,7 +428,7 @@ const scaffolderModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(scaffolderPlugin());
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 /* highlight-add-next-line */
 backend.add(scaffolderModuleCustomExtensions());
 ```

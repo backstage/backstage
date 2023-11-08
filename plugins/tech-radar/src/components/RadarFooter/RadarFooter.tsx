@@ -20,7 +20,11 @@ import { makeStyles } from '@material-ui/core';
 export type Props = {
   x: number;
   y: number;
+  spaces?: number;
+  labels?: Array<string>;
 };
+
+const onespace = '\u00a0';
 
 const useStyles = makeStyles(theme => ({
   text: {
@@ -32,8 +36,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const RadarFooter = (props: Props): JSX.Element => {
-  const { x, y } = props;
+  const { x, y, spaces = 5, labels } = props;
   const classes = useStyles(props);
+  const space = onespace.repeat(spaces);
 
   return (
     <text
@@ -41,7 +46,9 @@ const RadarFooter = (props: Props): JSX.Element => {
       transform={`translate(${x}, ${y})`}
       className={classes.text}
     >
-      {'▲ moved up\u00a0\u00a0\u00a0\u00a0\u00a0▼ moved down'}
+      {`▲ moved up${space}▼ moved down`}
+      {labels && space}
+      {labels?.join(space)}
     </text>
   );
 };

@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-analytics-module-ga4
+  title: '@backstage/plugin-analytics-module-ga4'
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin-module
+  owner: maintainers

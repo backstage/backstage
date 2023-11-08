@@ -15,66 +15,57 @@
  */
 
 import React from 'react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { MarkdownContent } from './MarkdownContent';
+import { screen } from '@testing-library/react';
 
 describe('<MarkdownContent />', () => {
   it('render MarkdownContent component', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent content={'# H1\n' + '## H2\n' + '### H3'} />,
-      ),
+    await renderInTestApp(
+      <MarkdownContent content={'# H1\n' + '## H2\n' + '### H3'} />,
     );
-    expect(rendered.getByText('H1', { selector: 'h1' })).toBeInTheDocument();
-    expect(rendered.getByText('H2', { selector: 'h2' })).toBeInTheDocument();
-    expect(rendered.getByText('H3', { selector: 'h3' })).toBeInTheDocument();
+    expect(screen.getByText('H1', { selector: 'h1' })).toBeInTheDocument();
+    expect(screen.getByText('H2', { selector: 'h2' })).toBeInTheDocument();
+    expect(screen.getByText('H3', { selector: 'h3' })).toBeInTheDocument();
   });
 
   it('render MarkdownContent component with GitHub flavored Markdown dialect', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(<MarkdownContent content="https://example.com" />),
-    );
+    await renderInTestApp(<MarkdownContent content="https://example.com" />);
     expect(
-      rendered.getByText('https://example.com', { selector: 'a' }),
+      screen.getByText('https://example.com', { selector: 'a' }),
     ).toBeInTheDocument();
   });
 
   it('Render MarkdownContent component with common mark dialect', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent content="https://example.com" dialect="common-mark" />,
-      ),
+    await renderInTestApp(
+      <MarkdownContent content="https://example.com" dialect="common-mark" />,
     );
     expect(
-      rendered.getByText('https://example.com', { selector: 'p' }),
+      screen.getByText('https://example.com', { selector: 'p' }),
     ).toBeInTheDocument();
   });
 
   it('render MarkdownContent component with CodeSnippet for code blocks', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent content={'```typescript\njest(test: string);\n```'} />,
-      ),
+    await renderInTestApp(
+      <MarkdownContent content={'```typescript\njest(test: string);\n```'} />,
     );
-    const fp1 = await rendered.findByText('jest(test:', { selector: 'span' });
+    const fp1 = await screen.findByText('jest(test:', { selector: 'span' });
     expect(fp1).toBeInTheDocument();
-    const fp2 = rendered.getByText('string', { selector: 'span' });
+    const fp2 = screen.getByText('string', { selector: 'span' });
     expect(fp2).toBeInTheDocument();
-    expect(rendered.getByText(');', { selector: 'span' })).toBeInTheDocument();
+    expect(screen.getByText(');', { selector: 'span' })).toBeInTheDocument();
   });
 
   it('render MarkdownContent component with transformed link', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent
-          content="[Title](https://backstage.io/link)"
-          transformLinkUri={href => {
-            return `${href}-modified`;
-          }}
-        />,
-      ),
+    await renderInTestApp(
+      <MarkdownContent
+        content="[Title](https://backstage.io/link)"
+        transformLinkUri={href => {
+          return `${href}-modified`;
+        }}
+      />,
     );
-    const fp1 = rendered.getByText('Title', {
+    const fp1 = screen.getByText('Title', {
       selector: 'a',
     });
     expect(fp1).toBeInTheDocument();
@@ -84,17 +75,15 @@ describe('<MarkdownContent />', () => {
   });
 
   it('render MarkdownContent component with transformed image', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent
-          content="![Image](https://backstage.io/blog/assets/6/header.png)"
-          transformImageUri={() => {
-            return `https://example.com/blog/assets/6/header.png`;
-          }}
-        />,
-      ),
+    await renderInTestApp(
+      <MarkdownContent
+        content="![Image](https://backstage.io/blog/assets/6/header.png)"
+        transformImageUri={() => {
+          return `https://example.com/blog/assets/6/header.png`;
+        }}
+      />,
     );
-    const fp1 = rendered.getByAltText('Image');
+    const fp1 = screen.getByAltText('Image');
     expect(fp1).toBeInTheDocument();
     expect(fp1.getAttribute('src')).toEqual(
       'https://example.com/blog/assets/6/header.png',
@@ -102,26 +91,24 @@ describe('<MarkdownContent />', () => {
   });
 
   it('render MarkdownContent component with headings given proper ids', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <MarkdownContent
-          content={
-            '# Lorem ipsum\n' +
-            '## bing bong\n' +
-            '### The FitnessGram Pacer Test is a multistage aerobic capacity test'
-          }
-        />,
-      ),
+    await renderInTestApp(
+      <MarkdownContent
+        content={
+          '# Lorem ipsum\n' +
+          '## bing bong\n' +
+          '### The FitnessGram Pacer Test is a multistage aerobic capacity test'
+        }
+      />,
     );
 
-    expect(rendered.getByText('Lorem ipsum').getAttribute('id')).toEqual(
+    expect(screen.getByText('Lorem ipsum').getAttribute('id')).toEqual(
       'lorem-ipsum',
     );
-    expect(rendered.getByText('bing bong').getAttribute('id')).toEqual(
+    expect(screen.getByText('bing bong').getAttribute('id')).toEqual(
       'bing-bong',
     );
     expect(
-      rendered
+      screen
         .getByText(
           'The FitnessGram Pacer Test is a multistage aerobic capacity test',
         )

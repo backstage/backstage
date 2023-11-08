@@ -1,5 +1,273 @@
 # @backstage/plugin-auth-backend
 
+## 0.20.0-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.1-next.2
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.4-next.2
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.4-next.2
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.4-next.2
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.4-next.2
+  - @backstage/plugin-auth-node@0.4.1-next.2
+  - @backstage/plugin-catalog-node@1.5.0-next.2
+
+## 0.20.0-next.1
+
+### Patch Changes
+
+- 243c655a68: JSDoc and Error message updates to handle `Azure Active Directory` re-brand to `Entra ID`
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0-next.1
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.4-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.4-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.4-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.4-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.1-next.1
+  - @backstage/plugin-auth-node@0.4.1-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.20.0-next.0
+
+### Minor Changes
+
+- bdf08ad04a: Adds the StaticTokenIssuer and StaticKeyStore, an alternative token issuer that can be used to sign the Authorization header using a predefined public/private key pair.
+
+### Patch Changes
+
+- 96c4f54bf6: Reverted the Microsoft auth provider to the previous implementation.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.1-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.4-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.4-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.4-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.4-next.0
+  - @backstage/plugin-auth-node@0.4.1-next.0
+  - @backstage/plugin-catalog-node@1.4.8-next.0
+
+## 0.19.3
+
+### Patch Changes
+
+- 9ff7935152: Fixed bug in oidc refresh handler, if token endpoints response on refresh request does not contain a scope, the requested scope is used.
+- 2d8f7e82c1: Migrated the Microsoft auth provider to new `@backstage/plugin-auth-backend-module-microsoft-provider` module package.
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.3
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.0
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.0
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.3
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.3
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.3
+
+## 0.19.3-next.2
+
+### Patch Changes
+
+- 2d8f7e82c1: Migrated the Microsoft auth provider to new `@backstage/plugin-auth-backend-module-microsoft-provider` module package.
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/plugin-auth-node@0.4.0-next.2
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.0-next.2
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.0-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.3-next.2
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.3-next.2
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.3-next.2
+  - @backstage/plugin-catalog-node@1.4.7-next.2
+  - @backstage/backend-plugin-api@0.6.6-next.2
+  - @backstage/catalog-client@1.4.5-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.3-next.2
+
+## 0.19.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.4.6-next.1
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.2-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.2-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.2-next.1
+  - @backstage/plugin-auth-node@0.3.2-next.1
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.2-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.2-next.1
+
+## 0.19.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.2-next.0
+  - @backstage/plugin-auth-node@0.3.2-next.0
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.2-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.2-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.2-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.2-next.0
+  - @backstage/plugin-catalog-node@1.4.6-next.0
+
+## 0.19.0
+
+### Minor Changes
+
+- 71114ac50e02: **BREAKING**: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+### Patch Changes
+
+- 080cc7794700: Migrated the GitLab auth provider to be implemented using the new `@backstage/plugin-auth-backend-module-gitlab-provider` module.
+- 7944d43f4790: Added `authPlugin` export for the new backend system. The plugin does not include any built-in auth providers, they must instead be added by installing additional modules, for example `authModuleGoogleProvider` from `@backstage/plugin-auth-backend-module-google-provider`.
+- 8513cd7d00e3: Deprecated several exports that are now available from `@backstage/plugin-auth-node` instead.
+- 7944d43f4790: Added the ability to disable the built-in auth providers by passing `disableDefaultProviderFactories` to `createRouter`.
+- 7944d43f4790: The algorithm used when generating Backstage tokens can be configured via `auth.identityTokenAlgorithm`.
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.0
+  - @backstage/backend-common@0.19.5
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/catalog-client@1.4.4
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/plugin-catalog-node@1.4.4
+
+## 0.19.0-next.3
+
+### Minor Changes
+
+- 71114ac50e02: **BREAKING**: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.0-next.3
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.0-next.3
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.0-next.2
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.0-next.3
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.0-next.0
+  - @backstage/catalog-client@1.4.4-next.2
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/types@1.1.1-next.0
+  - @backstage/backend-plugin-api@0.6.3-next.3
+  - @backstage/backend-common@0.19.5-next.3
+  - @backstage/plugin-auth-node@0.3.0-next.3
+  - @backstage/plugin-catalog-node@1.4.4-next.3
+
+## 0.18.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.0-next.2
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.0-next.2
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.0-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.0-next.2
+  - @backstage/plugin-auth-node@0.3.0-next.2
+  - @backstage/plugin-catalog-node@1.4.4-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/catalog-client@1.4.4-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.18.9-next.1
+
+### Patch Changes
+
+- 080cc7794700: Migrated the GitLab auth provider to be implemented using the new `@backstage/plugin-auth-backend-module-gitlab-provider` module.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.0-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.0-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/plugin-auth-node@0.3.0-next.1
+  - @backstage/plugin-catalog-node@1.4.4-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.1.0-next.1
+  - @backstage/catalog-client@1.4.4-next.0
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.18.8-next.0
 
 ### Patch Changes
@@ -222,7 +490,7 @@
 ### Patch Changes
 
 - d8f774c30df: Enforce the secret visibility of certificates and client secrets in the auth backend. Also, document all known options for each auth plugin.
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 - 475abd1dc3f: The `microsoft` (i.e. Azure) auth provider now supports negotiating tokens for
   Azure resources besides Microsoft Graph (e.g. AKS, Virtual Machines, Machine
   Learning Services, etc.). When the `/frame/handler` endpoint is called with an
@@ -308,7 +576,7 @@
 ### Patch Changes
 
 - d8f774c30df: Enforce the secret visibility of certificates and client secrets in the auth backend. Also, document all known options for each auth plugin.
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 - Updated dependencies
   - @backstage/backend-common@0.18.4-next.0
   - @backstage/config@1.0.7

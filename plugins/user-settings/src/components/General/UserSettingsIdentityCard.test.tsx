@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  renderWithEffects,
-  wrapInTestApp,
-  TestApiRegistry,
-} from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
@@ -40,18 +36,16 @@ const apiRegistry = TestApiRegistry.from([
 
 describe('<UserSettingsIdentityCard />', () => {
   it('displays an identity card', async () => {
-    await renderWithEffects(
-      wrapInTestApp(
-        <ApiProvider apis={apiRegistry}>
-          <UserSettingsIdentityCard />
-        </ApiProvider>,
-        {
-          mountedRoutes: { '/catalog/:namespace/:kind/:name': entityRouteRef },
-        },
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <UserSettingsIdentityCard />
+      </ApiProvider>,
+      {
+        mountedRoutes: { '/catalog/:namespace/:kind/:name': entityRouteRef },
+      },
     );
 
-    expect(screen.getByText('user:default/test-ownership')).toBeInTheDocument();
-    expect(screen.getByText('foo:bar/foobar')).toBeInTheDocument();
+    expect(screen.getByText('test-ownership')).toBeInTheDocument();
+    expect(screen.getByText('bar/foobar')).toBeInTheDocument();
   });
 });

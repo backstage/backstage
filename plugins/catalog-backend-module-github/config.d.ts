@@ -183,6 +183,69 @@ export interface Config {
               schedule?: TaskScheduleDefinitionConfig;
             };
           };
+
+      /**
+       * Configuration for catalogModuleGithubOrgEntityProvider
+       */
+      githubOrg?:
+        | {
+            /**
+             * A stable id for this provider. Entities from this provider will
+             * be associated with this ID, so you should take care not to change
+             * it over time since that may lead to orphaned entities and/or
+             * conflicts.
+             *
+             * @example "ghe"
+             */
+            id: string;
+
+            /**
+             * The target that this provider should consume.
+             *
+             * @example "https://mycompany.github.com"
+             */
+            githubUrl: string;
+
+            /**
+             * The list of the GitHub orgs to consume. By default will consume all accessible
+             * orgs on the given GitHub instance (support for GitHub App integration only).
+             */
+            orgs?: string[];
+
+            /**
+             * The refresh schedule to use.
+             */
+            schedule: TaskScheduleDefinitionConfig;
+          }
+        | Array<{
+            /**
+             * A stable id for this provider. Entities from this provider will
+             * be associated with this ID, so you should take care not to change
+             * it over time since that may lead to orphaned entities and/or
+             * conflicts.
+             *
+             * @example "ghe"
+             */
+            id: string;
+
+            /**
+             * The target that this provider should consume.
+             *
+             * @example "https://mycompany.github.com"
+             */
+            githubUrl: string;
+
+            /**
+             * The list of the GitHub orgs to consume. By default will consume all accessible
+             * orgs on the given GitHub instance (support for GitHub App integration only).
+             */
+            orgs?: string[];
+
+            /**
+             * The refresh schedule to use.
+             */
+            schedule: TaskScheduleDefinitionConfig;
+          }>;
     };
   };
 }

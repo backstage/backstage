@@ -34,7 +34,7 @@ import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
  *
  * @alpha
  */
-export const searchModuleExploreCollator = createBackendModule({
+export default createBackendModule({
   moduleId: 'exploreCollator',
   pluginId: 'search',
   register(env) {

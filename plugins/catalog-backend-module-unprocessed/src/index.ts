@@ -20,5 +20,5 @@
  * @packageDocumentation
  */
 
-export * from './module';
+export { catalogModuleUnprocessedEntities as default } from './module';
 export * from './UnprocessedEntitiesModule';

@@ -15,4 +15,4 @@
  */
 
 export * from './service/router';
-export { exampleTodoListPlugin } from './plugin';
+export { exampleTodoListPlugin as default } from './plugin';

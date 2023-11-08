@@ -35,16 +35,34 @@ import {
   createRoutableExtension,
   analyticsApiRef,
   useApi,
+  errorApiRef,
 } from '@backstage/core-plugin-api';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
 import { FeatureFlagged } from '../routing/FeatureFlagged';
+import {
+  createTranslationRef,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
 
 describe('Integration Test', () => {
   const noOpAnalyticsApi = createApiFactory(
     analyticsApiRef,
     new NoOpAnalyticsApi(),
   );
+  const noopErrorApi = createApiFactory(errorApiRef, {
+    error$() {
+      return {
+        subscribe() {
+          return { unsubscribe() {}, closed: true };
+        },
+        [Symbol.observable]() {
+          return this;
+        },
+      };
+    },
+    post() {},
+  });
   const plugin1RouteRef = createRouteRef({ id: 'ref-1' });
   const plugin1RouteRef2 = createRouteRef({ id: 'ref-1-2' });
   const plugin2RouteRef = createRouteRef({ id: 'ref-2', params: ['x'] });
@@ -175,6 +193,10 @@ describe('Integration Test', () => {
     },
   ];
 
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it('runs happy paths', async () => {
     const app = new AppManager({
       apis: [noOpAnalyticsApi],
@@ -258,6 +280,60 @@ describe('Integration Test', () => {
     expect(screen.getByText('extLink2: /foo')).toBeInTheDocument();
     expect(screen.getByText('extLink3: <none>')).toBeInTheDocument();
     expect(screen.getByText('extLink4: <none>')).toBeInTheDocument();
+  });
+
+  it('runs success with __experimentalTranslations', async () => {
+    const app = new AppManager({
+      apis: [noOpAnalyticsApi, noopErrorApi],
+      defaultApis: [],
+      themes,
+      icons,
+      plugins: [],
+      components,
+      configLoader: async () => [],
+      bindRoutes: ({ bind }) => {
+        bind(plugin1.externalRoutes, {
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
+        });
+      },
+      __experimentalTranslations: {
+        availableLanguages: ['en', 'de'],
+        defaultLanguage: 'de',
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    const translationRef = createTranslationRef({
+      id: 'test',
+      messages: {
+        foo: 'Foo',
+      },
+      translations: {
+        de: () => Promise.resolve({ default: { foo: 'Bar' } }),
+      },
+    });
+
+    const TranslatedComponent = () => {
+      const { t } = useTranslationRef(translationRef);
+      return <div>translation: {t('foo')}</div>;
+    };
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<TranslatedComponent />} />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    await expect(
+      screen.findByText('translation: Bar'),
+    ).resolves.toBeInTheDocument();
   });
 
   it('should wait for the config to load before calling feature flags', async () => {
@@ -563,26 +639,24 @@ describe('Integration Test', () => {
     const Provider = app.getProvider();
     const Router = app.getRouter();
     const { error: errorLogs } = withLogCollector(() => {
-      expect(() =>
-        render(
-          <Provider>
-            <Router>
-              <Routes>
-                <Route path="/test/:thing" element={<ExposedComponent />}>
-                  <Route path="/some/:thing" element={<HiddenComponent />} />
-                </Route>
-              </Routes>
-            </Router>
-          </Provider>,
-        ),
-      ).toThrow(
-        'Parameter :thing is duplicated in path test/:thing/some/:thing',
+      render(
+        <Provider>
+          <Router>
+            <Routes>
+              <Route path="/test/:thing" element={<ExposedComponent />}>
+                <Route path="/some/:thing" element={<HiddenComponent />} />
+              </Route>
+            </Routes>
+          </Router>
+        </Provider>,
       );
     });
     expect(errorLogs).toEqual([
-      expect.stringContaining(
-        'The above error occurred in the <Provider> component',
-      ),
+      expect.objectContaining({
+        message: expect.stringContaining(
+          'Parameter :thing is duplicated in path test/:thing/some/:thing',
+        ),
+      }),
     ]);
   });
 
@@ -600,24 +674,22 @@ describe('Integration Test', () => {
     const Provider = app.getProvider();
     const Router = app.getRouter();
     const { error: errorLogs } = withLogCollector(() => {
-      expect(() =>
-        render(
-          <Provider>
-            <Router>
-              <Routes>
-                <Route path="/test/:thing" element={<ExposedComponent />} />
-              </Routes>
-            </Router>
-          </Provider>,
-        ),
-      ).toThrow(
-        /^External route 'extRouteRef1' of the 'blob' plugin must be bound to a target route/,
+      render(
+        <Provider>
+          <Router>
+            <Routes>
+              <Route path="/test/:thing" element={<ExposedComponent />} />
+            </Routes>
+          </Router>
+        </Provider>,
       );
     });
     expect(errorLogs).toEqual([
-      expect.stringContaining(
-        'The above error occurred in the <Provider> component',
-      ),
+      expect.objectContaining({
+        message: expect.stringMatching(
+          /^External route 'extRouteRef1' of the 'blob' plugin must be bound to a target route/,
+        ),
+      }),
     ]);
   });
 

@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-backend-dev-utils
+  title: '@backstage/backend-dev-utils'
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

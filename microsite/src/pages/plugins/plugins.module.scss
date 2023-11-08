@@ -1,10 +1,10 @@
 .pluginsPage {
-  :global(.marketplaceBanner) {
+  :global(.directoryBanner) {
     display: flex;
     align-items: center;
   }
 
-  :global(.marketplaceContent) {
+  :global(.directoryContent) {
     flex: 1;
   }
 

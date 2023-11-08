@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.22.12-next.0",
+  "version": "0.24.0-next.1",
   "publishConfig": {
     "access": "public"
   },
@@ -40,7 +40,6 @@
     "@backstage/integration": "workspace:^",
     "@backstage/release-manifests": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@esbuild-kit/cjs-loader": "^2.4.1",
     "@manypkg/get-packages": "^1.1.3",
     "@octokit/graphql": "^5.0.0",
     "@octokit/graphql-schema": "^13.7.0",
@@ -65,8 +64,8 @@
     "@swc/jest": "^0.2.22",
     "@types/jest": "^29.0.0",
     "@types/webpack-env": "^1.15.2",
-    "@typescript-eslint/eslint-plugin": "^5.9.0",
-    "@typescript-eslint/parser": "^5.9.0",
+    "@typescript-eslint/eslint-plugin": "6.7.5",
+    "@typescript-eslint/parser": "^6.7.2",
     "@yarnpkg/lockfile": "^1.1.0",
     "@yarnpkg/parsers": "^3.0.0-rc.4",
     "bfj": "^7.0.2",
@@ -77,6 +76,7 @@
     "cross-fetch": "^3.1.5",
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
+    "ctrlc-windows": "^2.1.0",
     "diff": "^5.0.0",
     "esbuild": "^0.19.0",
     "esbuild-loader": "^2.18.0",
@@ -122,13 +122,14 @@
     "rollup-plugin-esbuild": "^4.7.2",
     "rollup-plugin-postcss": "^4.0.0",
     "rollup-pluginutils": "^2.8.2",
-    "run-script-webpack-plugin": "^0.1.0",
+    "run-script-webpack-plugin": "^0.2.0",
     "semver": "^7.5.3",
     "style-loader": "^3.3.1",
     "sucrase": "^3.20.2",
     "swc-loader": "^0.2.3",
     "tar": "^6.1.12",
     "terser-webpack-plugin": "^5.1.3",
+    "tsx": "^3.14.0",
     "util": "^0.12.3",
     "webpack": "^5.70.0",
     "webpack-dev-server": "^4.7.3",
@@ -151,13 +152,13 @@
     "@backstage/theme": "workspace:^",
     "@types/cross-spawn": "^6.0.2",
     "@types/diff": "^5.0.0",
+    "@types/ejs": "^3.1.3",
     "@types/express": "^4.17.6",
     "@types/fs-extra": "^9.0.1",
     "@types/http-proxy": "^1.17.4",
     "@types/inquirer": "^8.1.3",
     "@types/minimatch": "^5.0.0",
-    "@types/mock-fs": "^4.13.0",
-    "@types/node": "^16.11.26",
+    "@types/node": "^18.17.8",
     "@types/npm-packlist": "^3.0.0",
     "@types/recursive-readdir": "^2.2.0",
     "@types/rollup-plugin-peer-deps-external": "^2.2.0",
@@ -167,17 +168,28 @@
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "del": "^7.0.0",
-    "mock-fs": "^5.1.0",
     "msw": "^1.0.0",
     "nodemon": "^3.0.1",
     "ts-node": "^10.0.0",
     "type-fest": "^2.19.0"
   },
   "peerDependencies": {
-    "@microsoft/api-extractor": "^7.21.2"
+    "@vitejs/plugin-react": "^4.0.4",
+    "vite": "^4.4.9",
+    "vite-plugin-html": "^3.2.0",
+    "vite-plugin-node-polyfills": "^0.14.1"
   },
   "peerDependenciesMeta": {
-    "@microsoft/api-extractor": {
+    "@vitejs/plugin-react": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    },
+    "vite-plugin-html": {
+      "optional": true
+    },
+    "vite-plugin-node-polyfills": {
       "optional": true
     }
   },

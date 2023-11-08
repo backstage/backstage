@@ -85,7 +85,7 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
     });
 
     expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
-      'HumanDuration needs at least one of',
+      "Failed to read duration from config at 'frequency', Error: Needs one or more of 'years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'",
     );
   });
 
@@ -98,7 +98,7 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
     });
 
     expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
-      "Unable to convert config value for key 'frequency.minutes' in 'mock-config' to a number",
+      "Failed to read duration from config, Error: Unable to convert config value for key 'frequency.minutes' in 'mock-config' to a number",
     );
   });
 
@@ -112,7 +112,7 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
     });
 
     expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
-      'HumanDuration does not contain properties: invalid',
+      "Failed to read duration from config at 'frequency', Error: Unknown property 'invalid'; expected one or more of 'years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'",
     );
   });
 

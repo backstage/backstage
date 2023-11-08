@@ -16,7 +16,8 @@ export type CatalogCollatorExtensionPoint = {
 export const catalogCollatorExtensionPoint: ExtensionPoint<CatalogCollatorExtensionPoint>;
 
 // @alpha
-export const searchModuleCatalogCollator: () => BackendFeature;
+const _default: () => BackendFeature;
+export default _default;
 
 // (No @packageDocumentation comment for this package)
 ```

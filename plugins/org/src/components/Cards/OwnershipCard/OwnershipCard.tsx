@@ -25,7 +25,7 @@ import {
   Switch,
   Tooltip,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ComponentsGrid } from './ComponentsGrid';
 import { EntityRelationAggregation } from './types';
 
@@ -71,9 +71,17 @@ export const OwnershipCard = (props: {
     hideRelationsToggle === undefined ? false : hideRelationsToggle;
   const classes = useStyles();
   const { entity } = useEntity();
+
+  const defaultRelationsType = entity.kind === 'User' ? 'aggregated' : 'direct';
   const [getRelationsType, setRelationsType] = useState(
-    relationsType || 'direct',
+    relationsType ?? defaultRelationsType,
   );
+
+  useEffect(() => {
+    if (!relationsType) {
+      setRelationsType(defaultRelationsType);
+    }
+  }, [setRelationsType, defaultRelationsType, relationsType]);
 
   return (
     <InfoCard title="Ownership" variant={variant}>
@@ -95,11 +103,11 @@ export const OwnershipCard = (props: {
                 <Switch
                   color="primary"
                   checked={getRelationsType !== 'direct'}
-                  onChange={() =>
-                    getRelationsType === 'direct'
-                      ? setRelationsType('aggregated')
-                      : setRelationsType('direct')
-                  }
+                  onChange={() => {
+                    const updatedRelationsType =
+                      getRelationsType === 'direct' ? 'aggregated' : 'direct';
+                    setRelationsType(updatedRelationsType);
+                  }}
                   name="pin"
                   inputProps={{ 'aria-label': 'Ownership Type Switch' }}
                 />

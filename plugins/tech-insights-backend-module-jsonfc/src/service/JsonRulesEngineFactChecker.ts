@@ -222,6 +222,12 @@ export class JsonRulesEngineFactChecker
           this.retrieveIndividualFactReferences(con),
         ),
       );
+    } else if ('not' in condition) {
+      results = results.concat(
+        this.retrieveIndividualFactReferences(condition.not),
+      );
+    } else if ('condition' in condition) {
+      // ignore the ConditionReference type
     } else {
       results.push(condition.fact);
     }

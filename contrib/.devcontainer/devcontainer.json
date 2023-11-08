@@ -6,7 +6,7 @@
   "features": {
     "ghcr.io/devcontainers/features/common-utils:1": {},
     "ghcr.io/devcontainers/features/docker-from-docker:1": {},
-    "ghcr.io/devcontainers-contrib/features/mkdocs:1": {}
+    "ghcr.io/devcontainers-contrib/features/mkdocs:2": {}
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.

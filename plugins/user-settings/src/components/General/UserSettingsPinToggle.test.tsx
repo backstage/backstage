@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
-import { fireEvent } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { SidebarPinStateProvider } from '@backstage/core-components';
@@ -23,22 +23,20 @@ import { SidebarPinStateProvider } from '@backstage/core-components';
 describe('<UserSettingsPinToggle />', () => {
   it('toggles the pin sidebar button', async () => {
     const mockToggleFn = jest.fn();
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <SidebarPinStateProvider
-          value={{
-            isPinned: false,
-            isMobile: false,
-            toggleSidebarPinState: mockToggleFn,
-          }}
-        >
-          <UserSettingsPinToggle />
-        </SidebarPinStateProvider>,
-      ),
+    await renderInTestApp(
+      <SidebarPinStateProvider
+        value={{
+          isPinned: false,
+          isMobile: false,
+          toggleSidebarPinState: mockToggleFn,
+        }}
+      >
+        <UserSettingsPinToggle />
+      </SidebarPinStateProvider>,
     );
-    expect(rendered.getByText('Pin Sidebar')).toBeInTheDocument();
+    expect(screen.getByText('Pin Sidebar')).toBeInTheDocument();
 
-    const pinButton = rendered.getByLabelText('Pin Sidebar Switch');
+    const pinButton = screen.getByLabelText('Pin Sidebar Switch');
     fireEvent.click(pinButton);
     expect(mockToggleFn).toHaveBeenCalled();
   });

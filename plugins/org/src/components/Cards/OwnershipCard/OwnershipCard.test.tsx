@@ -152,6 +152,27 @@ describe('OwnershipCard', () => {
     ],
   };
 
+  const userEntity: UserEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: {
+      name: 'the-user',
+    },
+    spec: {
+      memberOf: ['my-team'],
+    },
+    relations: [
+      {
+        type: 'memberOf',
+        targetRef: 'group:default/my-team',
+      },
+      {
+        type: 'memberOf',
+        targetRef: 'group:custom/some-team',
+      },
+    ],
+  };
+
   it('displays entity counts', async () => {
     const catalogApi: jest.Mocked<CatalogApi> = {
       getEntities: jest.fn(),
@@ -271,26 +292,6 @@ describe('OwnershipCard', () => {
   });
 
   it('links to the catalog with the user and groups filters from an user profile', async () => {
-    const userEntity: UserEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'User',
-      metadata: {
-        name: 'the-user',
-      },
-      spec: {
-        memberOf: ['my-team'],
-      },
-      relations: [
-        {
-          type: 'memberOf',
-          targetRef: 'group:default/my-team',
-        },
-        {
-          type: 'memberOf',
-          targetRef: 'group:custom/some-team',
-        },
-      ],
-    };
     const catalogApi: jest.Mocked<CatalogApi> = {
       getEntities: jest.fn(),
     } as any;
@@ -385,6 +386,75 @@ describe('OwnershipCard', () => {
       );
 
       expect(getByTitle('Aggregated Relations')).toBeInTheDocument();
+    });
+
+    it('defaults to aggregated for User entity kind', async () => {
+      const catalogApi: jest.Mocked<CatalogApi> = {
+        getEntities: jest.fn(),
+      } as any;
+
+      catalogApi.getEntities.mockImplementation(getEntitiesMock);
+
+      const { getByLabelText } = await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={userEntity}>
+            <OwnershipCard />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': catalogIndexRouteRef,
+          },
+        },
+      );
+
+      expect(getByLabelText('Ownership Type Switch')).toBeChecked();
+    });
+
+    it('defaults to direct for all entity kinds except User', async () => {
+      const catalogApi: jest.Mocked<CatalogApi> = {
+        getEntities: jest.fn(),
+      } as any;
+
+      catalogApi.getEntities.mockImplementation(getEntitiesMock);
+
+      const { getByLabelText } = await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={groupEntity}>
+            <OwnershipCard />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': catalogIndexRouteRef,
+          },
+        },
+      );
+
+      expect(getByLabelText('Ownership Type Switch')).not.toBeChecked();
+    });
+
+    it('defaults to provided relationsType', async () => {
+      const catalogApi: jest.Mocked<CatalogApi> = {
+        getEntities: jest.fn(),
+      } as any;
+
+      catalogApi.getEntities.mockImplementation(getEntitiesMock);
+
+      const { getByLabelText } = await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={userEntity}>
+            <OwnershipCard relationsType="direct" />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': catalogIndexRouteRef,
+          },
+        },
+      );
+
+      expect(getByLabelText('Ownership Type Switch')).not.toBeChecked();
     });
   });
 });

@@ -15,5 +15,5 @@
  */
 
 export { googleAuthenticator } from './authenticator';
-export { authModuleGoogleProvider } from './module';
+export { authModuleGoogleProvider as default } from './module';
 export { googleSignInResolvers } from './resolvers';

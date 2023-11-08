@@ -90,8 +90,8 @@ export const createTemplateAction = <
     ...action,
     schema: {
       ...action.schema,
-      input: inputSchema,
-      output: outputSchema,
+      input: inputSchema as TInputSchema,
+      output: outputSchema as TOutputSchema,
     },
   };
 };

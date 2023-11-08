@@ -9,7 +9,8 @@ import { ProxyAuthenticator } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
-export const authModuleGcpIapProvider: () => BackendFeature;
+const authModuleGcpIapProvider: () => BackendFeature;
+export default authModuleGcpIapProvider;
 
 // @public (undocumented)
 export const gcpIapAuthenticator: ProxyAuthenticator<

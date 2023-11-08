@@ -37,9 +37,11 @@ export const UserSettingsProfileCard = () => {
               <Typography variant="subtitle1" gutterBottom>
                 {displayName}
               </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {profile.email}
-              </Typography>
+              {profile.email && (
+                <Typography variant="body2" color="textSecondary">
+                  {profile.email}
+                </Typography>
+              )}
             </Grid>
           </Grid>
           <Grid item>

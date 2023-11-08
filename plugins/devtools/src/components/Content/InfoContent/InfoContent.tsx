@@ -33,6 +33,7 @@ import React from 'react';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
 import DescriptionIcon from '@material-ui/icons/Description';
+import MemoryIcon from '@material-ui/icons/Memory';
 import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
@@ -57,7 +58,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
   if (about) {
-    let formatted = `OS: ${about.operatingSystem}\nnode: ${about.nodeJsVersion}\nbackstage: ${about.backstageVersion}\nDependencies:\n`;
+    let formatted = `OS: ${about.operatingSystem}\nResources: ${about.resourceUtilization}\nnode: ${about.nodeJsVersion}\nbackstage: ${about.backstageVersion}\nDependencies:\n`;
     const deps = about.dependencies;
     for (const key in deps) {
       if (Object.prototype.hasOwnProperty.call(deps, key)) {
@@ -91,6 +92,17 @@ export const InfoContent = () => {
             <ListItemText
               primary="Operating System"
               secondary={about?.operatingSystem}
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemAvatar>
+              <Avatar>
+                <MemoryIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary="Resource utilization"
+              secondary={about?.resourceUtilization}
             />
           </ListItem>
           <ListItem>

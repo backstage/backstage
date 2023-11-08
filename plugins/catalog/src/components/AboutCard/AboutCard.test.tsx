@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { ConfigReader } from '@backstage/core-app-api';
+import {
+  CatalogApi,
+  EntityProvider,
+  catalogApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import {
-  catalogApiRef,
-  EntityProvider,
-  CatalogApi,
-  entityRouteRef,
-} from '@backstage/plugin-catalog-react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import userEvent from '@testing-library/user-event';
-import { screen } from '@testing-library/react';
-import React from 'react';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
+
 import { AboutCard } from './AboutCard';
+import { ConfigReader } from '@backstage/core-app-api';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import React from 'react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 describe('<AboutCard />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
@@ -345,6 +346,62 @@ describe('<AboutCard />', () => {
     expect(
       screen.queryByTitle('Schedule entity refresh'),
     ).not.toBeInTheDocument();
+  });
+
+  it('renders techdocs lin when 3rdparty', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/techdocs-entity': 'system:default/example',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name': viewTechDocRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByText('View TechDocs').closest('a')).toHaveAttribute(
+      'href',
+      '/docs/default/system/example',
+    );
   });
 
   it('renders techdocs link', async () => {

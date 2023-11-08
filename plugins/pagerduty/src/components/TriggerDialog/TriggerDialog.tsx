@@ -131,7 +131,7 @@ export const TriggerDialog = ({
           id="description"
           multiline
           fullWidth
-          rows="4"
+          minRows={4}
           margin="normal"
           label="Problem description"
           variant="outlined"

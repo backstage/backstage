@@ -56,13 +56,14 @@ export type DatabaseManagerOptions = {
 /**
  * Manages database connections for Backstage backend plugins.
  *
+ * @public
+ * @remarks
+ *
  * The database manager allows the user to set connection and client settings on
  * a per pluginId basis by defining a database config block under
  * `plugin.<pluginId>` in addition to top level defaults. Optionally, a user may
  * set `prefix` which is used to prefix generated database names if config is
  * not provided.
- *
- * @public
  */
 export class DatabaseManager {
   /**
@@ -105,17 +106,9 @@ export class DatabaseManager {
       pluginMetadata: PluginMetadataService;
     },
   ): PluginDatabaseManager {
-    const _this = this;
-
-    return {
-      getClient(): Promise<Knex> {
-        return _this.getDatabase(pluginId, deps);
-      },
-      migrations: {
-        skip: false,
-        ..._this.options?.migrations,
-      },
-    };
+    const getClient = () => this.getDatabase(pluginId, deps);
+    const migrations = { skip: false, ...this.options?.migrations };
+    return { getClient, migrations };
   }
 
   /**
@@ -234,9 +227,7 @@ export class DatabaseManager {
    * all supported databases excluding SQLite unless `pluginDivisionMode` is set
    * to `schema`.
    */
-  private getConnectionConfig(
-    pluginId: string,
-  ): Partial<Knex.StaticConnectionConfig> {
+  private getConnectionConfig(pluginId: string): Knex.StaticConnectionConfig {
     const { client, overridden } = this.getClientType(pluginId);
 
     let baseConnection = normalizeConnection(
@@ -278,7 +269,7 @@ export class DatabaseManager {
       // include base connection if client type has not been overridden
       ...(overridden ? {} : baseConnection),
       ...connection,
-    } as Partial<Knex.StaticConnectionConfig>;
+    } as Knex.StaticConnectionConfig;
   }
 
   /**
@@ -384,7 +375,9 @@ export class DatabaseManager {
         databaseClientOverrides,
         deps,
       );
-      this.startKeepaliveLoop(pluginId, client);
+      if (process.env.NODE_ENV !== 'test') {
+        this.startKeepaliveLoop(pluginId, client);
+      }
       return client;
     });
 

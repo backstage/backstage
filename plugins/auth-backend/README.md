@@ -158,6 +158,10 @@ To try out SAML, you can use the mock identity provider:
 
 [How to add an auth provider](https://github.com/backstage/backstage/blob/master/docs/auth/add-auth-provider.md)
 
+## Token issuers
+
+[Configuring token issuers](https://github.com/backstage/backstage/blob/master/docs/auth/index.md)
+
 ## Links
 
 - [The Backstage homepage](https://backstage.io)

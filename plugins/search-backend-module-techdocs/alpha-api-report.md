@@ -4,9 +4,21 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { TechDocsCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-techdocs';
 
 // @alpha
-export const searchModuleTechDocsCollator: () => BackendFeature;
+const _default: () => BackendFeature;
+export default _default;
+
+// @alpha (undocumented)
+export interface TechDocsCollatorEntityTransformerExtensionPoint {
+  // (undocumented)
+  setTransformer(transformer: TechDocsCollatorEntityTransformer): void;
+}
+
+// @alpha
+export const techdocsCollatorEntityTransformerExtensionPoint: ExtensionPoint<TechDocsCollatorEntityTransformerExtensionPoint>;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -18,14 +18,17 @@ import React, { PropsWithChildren } from 'react';
 import { Route, Routes, useRoutes } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
-
 import { EntityPageDocs } from './EntityPageDocs';
 import { TechDocsIndexPage } from './home/components/TechDocsIndexPage';
 import { TechDocsReaderPage } from './reader/components/TechDocsReaderPage';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
+
+const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
 
 /**
  * Helper that takes in entity and returns true/false if TechDocs is available for the entity
@@ -33,7 +36,8 @@ const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
  * @public
  */
 export const isTechDocsAvailable = (entity: Entity) =>
-  Boolean(entity?.metadata?.annotations?.[TECHDOCS_ANNOTATION]);
+  Boolean(entity?.metadata?.annotations?.[TECHDOCS_ANNOTATION]) ||
+  Boolean(entity?.metadata?.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]);
 
 /**
  * Responsible for registering routes for TechDocs, TechDocs Homepage and separate TechDocs page
@@ -75,10 +79,12 @@ export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
     },
   ]);
 
-  const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
+  const projectId =
+    entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
+    entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION];
 
   if (!projectId) {
-    return <MissingAnnotationEmptyState annotation={TECHDOCS_ANNOTATION} />;
+    return <MissingAnnotationEmptyState annotation={[TECHDOCS_ANNOTATION]} />;
   }
 
   return element;

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { catalogModuleGcpGkeEntityProvider } from './catalogModuleGcpGkeEntityProvider';
+export { catalogModuleGcpGkeEntityProvider as default } from './catalogModuleGcpGkeEntityProvider';

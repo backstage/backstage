@@ -1,5 +1,120 @@
 # @backstage/config-loader
 
+## 1.5.2-next.0
+
+### Patch Changes
+
+- 22ca64f117: Correctly resolve config targets into absolute paths
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.5.1
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- 30c553c1d2: Updated dependency `typescript-json-schema` to `^0.61.0`.
+- 773ea341d2: The `FileConfigSource` will now retry file reading after a short delay if it reads an empty file. This is to avoid flakiness during watch mode where change events can trigger before the file content has been written.
+- a4617c422a: Added `watch` option to configuration loaders that can be used to disable file watching by setting it to `false`.
+- Updated dependencies
+  - @backstage/errors@1.2.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.5.1-next.1
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- 30c553c1d2: Updated dependency `typescript-json-schema` to `^0.61.0`.
+- a4617c422a: Added `watch` option to configuration loaders that can be used to disable file watching by setting it to `false`.
+- Updated dependencies
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+
+## 1.5.1-next.0
+
+### Patch Changes
+
+- 773ea341d2: The `FileConfigSource` will now retry file reading after a short delay if it reads an empty file. This is to avoid flakiness during watch mode where change events can trigger before the file content has been written.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
+## 1.5.0
+
+### Minor Changes
+
+- 9606ba0939e6: Deep visibility now also applies to values that are not covered by the configuration schema.
+
+  For example, given the following configuration schema:
+
+  ```ts
+  // plugins/a/config.schema.ts
+  export interface Config {
+    /** @deepVisibility frontend */
+    a?: unknown;
+  }
+
+  // plugins/a/config.schema.ts
+  export interface Config {
+    a?: {
+      b?: string;
+    };
+  }
+  ```
+
+  All values under `a` are now visible to the frontend, while previously only `a` and `a/b` would've been visible.
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- f9657b891b00: Do not unnecessarily notify subscribers when no-op updates to config happen
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+  - @backstage/cli-common@0.1.12
+
+## 1.5.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/types@1.1.1-next.0
+  - @backstage/cli-common@0.1.12
+
+## 1.5.0-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.5.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 1.5.0-next.0
 
 ### Minor Changes

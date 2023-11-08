@@ -86,7 +86,7 @@ building it up with your help!
 ### Core Backstage User Experience
 
 This is the universal user experience that is shared amongst all Backstage
-users. From more concrete aspects like the plugins marketplace to more abstract
+users. From more concrete aspects like the plugins directory to more abstract
 ones like end-to-end workflows on Backstage, we’ll be working with the community
 to create a core user experience that best serves you and your organization.
 

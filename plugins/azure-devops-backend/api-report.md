@@ -96,7 +96,8 @@ export class AzureDevOpsApi {
 }
 
 // @public
-export const azureDevOpsPlugin: () => BackendFeature;
+const azureDevOpsPlugin: () => BackendFeature;
+export default azureDevOpsPlugin;
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;

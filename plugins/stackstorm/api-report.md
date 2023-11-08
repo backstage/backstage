@@ -25,7 +25,6 @@ export const stackstormPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 ```

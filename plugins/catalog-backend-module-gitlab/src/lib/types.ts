@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+
+export type PagedResponse<T> = {
+  items: T[];
+  nextPage?: number;
+};
 
 export type GitlabGroupDescription = {
   id: number;
@@ -39,12 +43,17 @@ export type GitLabProject = {
 export type GitLabUser = {
   id: number;
   username: string;
-  email: string;
+  email?: string;
   name: string;
   state: string;
   web_url: string;
   avatar_url: string;
   groups?: GitLabGroup[];
+  group_saml_identity?: GitLabGroupSamlIdentity;
+};
+
+export type GitLabGroupSamlIdentity = {
+  extern_uid: string;
 };
 
 export type GitLabGroup = {
@@ -60,10 +69,45 @@ export type GitLabGroupMembersResponse = {
   data: {
     group: {
       groupMembers: {
-        nodes: { user: { id: string } }[];
+        nodes: {
+          user: {
+            id: string;
+            username: string;
+            publicEmail: string;
+            name: string;
+            state: string;
+            webUrl: string;
+            avatarUrl: string;
+          };
+        }[];
         pageInfo: {
           endCursor: string;
           hasNextPage: boolean;
+        };
+      };
+    };
+  };
+};
+
+export type GitLabDescendantGroupsResponse = {
+  errors: { message: string }[];
+  data: {
+    group: {
+      descendantGroups: {
+        nodes: [
+          {
+            id: string;
+            name: string;
+            description: string;
+            fullPath: string;
+            parent: {
+              id: string;
+            };
+          },
+        ];
+        pageInfo: {
+          endCursor: string;
+          hasNextPage: false;
         };
       };
     };

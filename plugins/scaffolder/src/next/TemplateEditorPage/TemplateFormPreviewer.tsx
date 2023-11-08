@@ -32,10 +32,12 @@ import CloseIcon from '@material-ui/icons/Close';
 import React, { useCallback, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import yaml from 'yaml';
-import { type LayoutOptions } from '@backstage/plugin-scaffolder-react';
-import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  LayoutOptions,
+  FieldExtensionOptions,
+} from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorForm } from './TemplateEditorForm';
-import { TemplateEditorTextArea } from '../../components/TemplateEditorPage/TemplateEditorTextArea';
+import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 
 const EXAMPLE_TEMPLATE_PARAMS_YAML = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
@@ -114,7 +116,7 @@ export const TemplateFormPreviewer = ({
   layouts = [],
 }: {
   defaultPreviewTemplate?: string;
-  customFieldExtensions?: NextFieldExtensionOptions<any, any>[];
+  customFieldExtensions?: FieldExtensionOptions<any, any>[];
   onClose?: () => void;
   layouts?: LayoutOptions[];
 }) => {
@@ -161,7 +163,8 @@ export const TemplateFormPreviewer = ({
   );
 
   const handleSelectChange = useCallback(
-    selected => {
+    // TODO(Rugvip): Afaik this should be Entity, but didn't want to make runtime changes while fixing types
+    (selected: any) => {
       setSelectedTemplate(selected);
       setTemplateYaml(yaml.stringify(selected.spec));
     },

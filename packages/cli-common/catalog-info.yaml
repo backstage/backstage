@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-common
+  title: '@backstage/cli-common'
+  description: Common functionality used by cli, backend, and create-app
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

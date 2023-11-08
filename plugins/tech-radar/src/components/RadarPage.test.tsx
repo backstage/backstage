@@ -16,11 +16,10 @@
 
 import {
   MockErrorApi,
-  renderInTestApp,
   TestApiProvider,
-  wrapInTestApp,
+  renderInTestApp,
 } from '@backstage/test-utils';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
 import { RadarPage } from './RadarPage';
@@ -49,7 +48,16 @@ describe('RadarPage', () => {
   const mockClient = new MockClient();
 
   it('should render a progress bar', async () => {
-    jest.useFakeTimers();
+    class SlowClient implements TechRadarApi {
+      async load(): Promise<TechRadarLoaderResponse> {
+        await new Promise<void>(resolve => setTimeout(resolve, 1000));
+        return {
+          entries: [],
+          quadrants: [],
+          rings: [],
+        };
+      }
+    }
 
     const techRadarProps = {
       width: 1200,
@@ -57,21 +65,19 @@ describe('RadarPage', () => {
       svgProps: { 'data-testid': 'tech-radar-svg' },
     };
 
-    const { getByTestId, findByTestId } = render(
-      wrapInTestApp(
-        <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
-          <RadarPage {...techRadarProps} />
-        </TestApiProvider>,
-      ),
+    await renderInTestApp(
+      <TestApiProvider apis={[[techRadarApiRef, new SlowClient()]]}>
+        <RadarPage {...techRadarProps} />
+      </TestApiProvider>,
     );
 
-    act(() => {
-      jest.advanceTimersByTime(250);
+    await act(async () => {
+      await new Promise<void>(resolve => setTimeout(resolve, 300));
     });
-    expect(getByTestId('progress')).toBeInTheDocument();
 
-    await findByTestId('tech-radar-svg');
-    jest.useRealTimers();
+    expect(screen.getByTestId('progress')).toBeInTheDocument();
+
+    await screen.findByTestId('tech-radar-svg');
   });
 
   it('should render a header with a svg', async () => {
@@ -82,15 +88,17 @@ describe('RadarPage', () => {
     };
     jest.spyOn(mockClient, 'load');
 
-    const { getByText, findByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
         <RadarPage {...techRadarProps} />
       </TestApiProvider>,
     );
 
-    await expect(findByTestId('tech-radar-svg')).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByTestId('tech-radar-svg'),
+    ).resolves.toBeInTheDocument();
     expect(
-      getByText('Pick the recommended technologies for your projects'),
+      screen.getByText('Pick the recommended technologies for your projects'),
     ).toBeInTheDocument();
     expect(mockClient.load).toHaveBeenCalledWith(undefined);
   });
@@ -104,13 +112,15 @@ describe('RadarPage', () => {
     };
     jest.spyOn(mockClient, 'load');
 
-    const { findByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
         <RadarPage {...techRadarProps} />
       </TestApiProvider>,
     );
 
-    await expect(findByTestId('tech-radar-svg')).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByTestId('tech-radar-svg'),
+    ).resolves.toBeInTheDocument();
     expect(mockClient.load).toHaveBeenCalledWith('myId');
   });
 

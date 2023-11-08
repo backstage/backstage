@@ -1,5 +1,101 @@
 # @backstage/repo-tools
 
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 4e36abef14: Remove support for the deprecated `--experimental-type-build` option for `package build`.
+- 6694b369a3: Adds a new command `schema openapi test` that performs runtime validation of your OpenAPI specs using your test data. Under the hood, we're using Optic to perform this check, really cool work by them!
+
+  To use this new command, you will have to run `yarn add @useoptic/optic` in the root of your repo.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.2.0-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+
+## 0.3.5
+
+### Patch Changes
+
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.1.5
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/cli-node@0.1.5-next.1
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/cli-node@0.1.5-next.0
+  - @backstage/errors@1.2.2
+
+## 0.3.4
+
+### Patch Changes
+
+- 0109d3f11159: The `generate-catalog-info` command now uses the first listed `CODEOWNER` as Component owner when initially
+  creating the `catalog-info.yaml` file. It continues to allow any one listed `CODEOWNER` when updating
+  entity metadata.
+- 6f874cdb04eb: Fixed a bug with the `generate-catalog-info` command that could cause `metadata.description` values to be overwritten by `package.json` description values only because unrelated attributes were being changed.
+- ec13d3e86028: Fixed a bug with the `generate-catalog-info` command that could cause the `--dry-run` flag to indicate changes to files when no changes would actually be made if the command were run without the flag.
+- db60a16e0a54: Added a `--ci` flag to the `generate-catalog-info` command. This flag behaves similarly to the same flag on `api-reports`: if `catalog-info.yaml` files would have been added or modified, then the process exits with status code `1`, and instructions are printed.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.4
+
+## 0.3.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.4-next.0
+
+## 0.3.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.3
+  - @backstage/errors@1.2.1
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- 6f874cdb04eb: Fixed a bug with the `generate-catalog-info` command that could cause `metadata.description` values to be overwritten by `package.json` description values only because unrelated attributes were being changed.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.3
+  - @backstage/errors@1.2.1
+
 ## 0.3.4-next.0
 
 ### Patch Changes

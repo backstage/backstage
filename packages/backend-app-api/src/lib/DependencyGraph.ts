@@ -37,6 +37,37 @@ class Node<T> {
   ) {}
 }
 
+/** @internal */
+class CycleKeySet<T> {
+  static from<T>(nodes: Array<Node<T>>) {
+    return new CycleKeySet<T>(nodes);
+  }
+
+  #nodeIds: Map<T, number>;
+  #cycleKeys: Set<string>;
+
+  private constructor(nodes: Array<Node<T>>) {
+    this.#nodeIds = new Map(nodes.map((n, i) => [n.value, i]));
+    this.#cycleKeys = new Set<string>();
+  }
+
+  tryAdd(path: T[]): boolean {
+    const cycleKey = this.#getCycleKey(path);
+    if (this.#cycleKeys.has(cycleKey)) {
+      return false;
+    }
+    this.#cycleKeys.add(cycleKey);
+    return true;
+  }
+
+  #getCycleKey(path: T[]): string {
+    return path
+      .map(n => this.#nodeIds.get(n)!)
+      .sort()
+      .join(',');
+  }
+}
+
 /**
  * Internal helper to help validate and traverse a dependency graph.
  * @internal
@@ -78,7 +109,9 @@ export class DependencyGraph<T> {
     }
   }
 
-  // Find all nodes that consume dependencies that are not provided by any other node
+  /**
+   * Find all nodes that consume dependencies that are not provided by any other node.
+   */
   findUnsatisfiedDeps(): Array<{ value: T; unsatisfied: string[] }> {
     const unsatisfiedDependencies = [];
     for (const node of this.#nodes.values()) {
@@ -92,9 +125,21 @@ export class DependencyGraph<T> {
     return unsatisfiedDependencies;
   }
 
-  // Detect circular dependencies within the graph, returning the path of nodes that
-  // form a cycle, with the same node as the first and last element of the array.
+  /**
+   * Detect the first circular dependency within the graph, returning the path of nodes that
+   * form a cycle, with the same node as the first and last element of the array.
+   */
   detectCircularDependency(): T[] | undefined {
+    return this.detectCircularDependencies().next().value;
+  }
+
+  /**
+   * Detect circular dependencies within the graph, returning the path of nodes that
+   * form a cycle, with the same node as the first and last element of the array.
+   */
+  *detectCircularDependencies(): Generator<T[], undefined> {
+    const cycleKeys = CycleKeySet.from(this.#nodes);
+
     for (const startNode of this.#nodes) {
       const visited = new Set<Node<T>>();
       const stack = new Array<[node: Node<T>, path: T[]]>([
@@ -108,16 +153,20 @@ export class DependencyGraph<T> {
           continue;
         }
         visited.add(node);
-        for (const produced of node.provides) {
-          const consumerNodes = this.#nodes.filter(other =>
-            other.consumes.has(produced),
+        for (const consumed of node.consumes) {
+          const providerNodes = this.#nodes.filter(other =>
+            other.provides.has(consumed),
           );
-          for (const consumer of consumerNodes) {
-            if (consumer === startNode) {
-              return [...path, startNode.value];
+          for (const provider of providerNodes) {
+            if (provider === startNode) {
+              if (cycleKeys.tryAdd(path)) {
+                yield [...path, startNode.value];
+              }
+
+              break;
             }
-            if (!visited.has(consumer)) {
-              stack.push([consumer, [...path, consumer.value]]);
+            if (!visited.has(provider)) {
+              stack.push([provider, [...path, provider.value]]);
             }
           }
         }

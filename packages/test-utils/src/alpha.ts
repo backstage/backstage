@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from './testUtils/MockPluginProvider';
+export * from './testUtils/apis/TranslationApi';

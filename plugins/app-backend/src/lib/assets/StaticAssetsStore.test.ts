@@ -73,7 +73,7 @@ describe('StaticAssetsStore', () => {
       expect(bar!.path).toBe('dir/bar.txt');
       expect(
         Math.abs(bar!.lastModifiedAt.getTime() - foo!.lastModifiedAt.getTime()),
-      ).toBeLessThan(1000);
+      ).toBeLessThan(1001); // 1s resolution on the timestamps
       expect(bar!.content).toEqual(Buffer.from('bar'));
 
       await expect(

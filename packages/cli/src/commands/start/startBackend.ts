@@ -36,7 +36,7 @@ export async function startBackend(options: StartBackendOptions) {
     });
 
     await waitForExit();
-  } else if (process.env.EXPERIMENTAL_BACKEND_START) {
+  } else if (!process.env.LEGACY_BACKEND_START) {
     const waitForExit = await startBackendExperimental({
       entry: 'src/index',
       checksEnabled: false, // not supported

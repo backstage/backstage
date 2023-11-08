@@ -24,6 +24,7 @@ import {
   fetchContents as fetchContentsNode,
 } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
+import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessorModule } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 
 /**
  * @public
@@ -75,3 +76,11 @@ export const executeShellCommand = executeShellCommandNode;
  * @deprecated Use `fetchContents` from `@backstage/plugin-scaffolder-node` instead
  */
 export const fetchContents = fetchContentsNode;
+
+/**
+ * Adds support for scaffolder specific entity kinds to the catalog.
+ *
+ * @public
+ * @deprecated Import from `@backstage/plugin-catalog-backend-module-scaffolder-entity-model` instead
+ */
+export const ScaffolderEntitiesProcessor = ScaffolderEntitiesProcessorModule;

@@ -238,14 +238,6 @@ describe('GitlabDiscoveryProcessor', () => {
                   path_with_namespace: '3',
                 },
                 {
-                  id: 4,
-                  archived: true, // ARCHIVED
-                  default_branch: 'master',
-                  last_activity_at: '2021-08-05T11:03:05.774Z',
-                  web_url: 'https://gitlab.fake/4',
-                  path_with_namespace: '4',
-                },
-                {
                   id: 5,
                   archived: false,
                   default_branch: undefined, // MISSING DEFAULT BRANCH

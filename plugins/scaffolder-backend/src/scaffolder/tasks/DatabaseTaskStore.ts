@@ -69,7 +69,7 @@ export type DatabaseTaskStoreOptions = {
 };
 
 /**
- * Typeguard to help DatabaseTaskStore understand when database is PluginDatabaseManager vs. when database is a Knex instance.
+ * Type guard to help DatabaseTaskStore understand when database is PluginDatabaseManager vs. when database is a Knex instance.
  *
  * * @public
  */
@@ -81,7 +81,13 @@ function isPluginDatabaseManager(
 
 const parseSqlDateToIsoString = <T>(input: T): T | string => {
   if (typeof input === 'string') {
-    return DateTime.fromSQL(input, { zone: 'UTC' }).toISO();
+    const parsed = DateTime.fromSQL(input, { zone: 'UTC' });
+    if (!parsed.isValid) {
+      throw new Error(
+        `Failed to parse database timestamp '${input}', ${parsed.invalidReason}: ${parsed.invalidExplanation}`,
+      );
+    }
+    return parsed.toISO()!;
   }
 
   return input;

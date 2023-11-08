@@ -45,6 +45,30 @@ export const techInsightsPlugin = createPlugin({
 /**
  * @public
  */
+export const ScorecardInfo = techInsightsPlugin.provide(
+  createRoutableExtension({
+    name: 'ScorecardInfo',
+    component: () =>
+      import('./components/ScorecardsInfo').then(m => m.ScorecardInfo),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+/**
+ * @public
+ */
+export const ScorecardsList = techInsightsPlugin.provide(
+  createRoutableExtension({
+    name: 'ScorecardsList',
+    component: () =>
+      import('./components/ScorecardsList').then(m => m.ScorecardsList),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+/**
+ * @public
+ */
 export const EntityTechInsightsScorecardContent = techInsightsPlugin.provide(
   createRoutableExtension({
     name: 'EntityTechInsightsScorecardContent',

@@ -39,7 +39,7 @@ export interface Config {
        *
        * If no credential is specified anonymous access is used.
        *
-       * @visibility secret
+       * @deepVisibility secret
        * @deprecated Use `credentials` instead.
        */
       credential?: {
@@ -54,7 +54,7 @@ export interface Config {
        * If not organization matches the first credential without an organization is used.
        *
        * If no credentials are specified at all, either a default credential (for Azure DevOps) or anonymous access (for Azure DevOps Server) is used.
-       * @visibility secret
+       * @deepVisibility secret
        */
       credentials?: {
         clientId?: string;

@@ -63,7 +63,7 @@ export const circleCIApiRef: ApiRef<CircleCIApi>;
 export const circleCIBuildRouteRef: SubRouteRef<PathParams<'/:buildId'>>;
 
 // @public (undocumented)
-const circleCIPlugin: BackstagePlugin<{}, {}, {}>;
+const circleCIPlugin: BackstagePlugin<{}, {}>;
 export { circleCIPlugin };
 export { circleCIPlugin as plugin };
 

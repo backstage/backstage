@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-api-docs
+  title: '@backstage/plugin-api-docs'
+  description: A Backstage plugin that helps represent API entities in the frontend
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: sda-se-reviewers

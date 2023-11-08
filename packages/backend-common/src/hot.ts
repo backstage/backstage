@@ -47,6 +47,7 @@ function findAllAncestors(_module: NodeModule): NodeModule[] {
  * Useful for cleaning intervals, timers, requests etc
  *
  * @public
+ * @deprecated Hot module reloading is no longer supported for backends.
  * @example
  * ```ts
  * const intervalId = setInterval(doStuff, 1000);
@@ -80,6 +81,7 @@ const CURRENT_HOT_MEMOIZE_INDEX_KEY = 'backstage.io/hmr-memoize-key';
  * stateful parts of the backend, e.g. to retain a database.
  *
  * @public
+ * @deprecated Hot module reloading is no longer supported for backends.
  * @example
  * ```ts
  * const db = useHotMemoize(module, () => createDB(dbParams));

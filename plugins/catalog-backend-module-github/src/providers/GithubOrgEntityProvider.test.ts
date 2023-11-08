@@ -23,10 +23,8 @@ import {
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import { EventParams } from '@backstage/plugin-events-node';
-import {
-  GithubOrgEntityProvider,
-  withLocations,
-} from './GithubOrgEntityProvider';
+import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
+import { withLocations } from '../lib/withLocations';
 
 jest.mock('@octokit/graphql');
 

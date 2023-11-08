@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { render, fireEvent, act } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { screen, fireEvent, act } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { LinkButton } from './LinkButton';
 import { Route, Routes } from 'react-router-dom';
 
@@ -24,21 +24,19 @@ describe('<LinkButton />', () => {
   it('navigates using react-router', async () => {
     const testString = 'This is test string';
     const linkButtonLabel = 'Navigate!';
-    const { getByText } = render(
-      wrapInTestApp(
-        <>
-          <LinkButton to="/test">{linkButtonLabel}</LinkButton>
-          <Routes>
-            <Route path="/test" element={<p>{testString}</p>} />
-          </Routes>
-        </>,
-      ),
+    await renderInTestApp(
+      <>
+        <LinkButton to="/test">{linkButtonLabel}</LinkButton>
+        <Routes>
+          <Route path="/test" element={<p>{testString}</p>} />
+        </Routes>
+      </>,
     );
 
-    expect(() => getByText(testString)).toThrow();
+    expect(() => screen.getByText(testString)).toThrow();
     await act(async () => {
-      fireEvent.click(getByText(linkButtonLabel));
+      fireEvent.click(screen.getByText(linkButtonLabel));
     });
-    expect(getByText(testString)).toBeInTheDocument();
+    expect(screen.getByText(testString)).toBeInTheDocument();
   });
 });

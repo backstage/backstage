@@ -399,6 +399,7 @@ export type OAuthState = {
   scope?: string;
   redirectUrl?: string;
   flow?: string;
+  audience?: string;
 };
 
 // @public (undocumented)
@@ -550,7 +551,7 @@ export interface ProxyAuthenticator<TContext, TResult> {
   // (undocumented)
   defaultProfileTransform: ProfileTransform<TResult>;
   // (undocumented)
-  initialize(ctx: { config: Config }): Promise<TContext>;
+  initialize(ctx: { config: Config }): TContext;
 }
 
 // @public (undocumented)

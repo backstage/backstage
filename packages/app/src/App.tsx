@@ -27,7 +27,13 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FeatureFlagged, FlatRoutes } from '@backstage/core-app-api';
+import {
+  AppRouter,
+  ConfigReader,
+  defaultConfigLoader,
+  FeatureFlagged,
+  FlatRoutes,
+} from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -40,7 +46,7 @@ import {
   CatalogEntityPage,
   CatalogIndexPage,
   catalogPlugin,
-} from '@internal/plugin-catalog-customized';
+} from '@backstage/plugin-catalog';
 
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import {
@@ -55,11 +61,10 @@ import {
 import { orgPlugin } from '@backstage/plugin-org';
 import { ExplorePage } from '@backstage/plugin-explore';
 import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
-import { GraphiQLPage } from '@backstage/plugin-graphiql';
-import { HomepageCompositionRoot } from '@backstage/plugin-home';
+import { HomepageCompositionRoot, VisitListener } from '@backstage/plugin-home';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
-import { NextScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
+import { LegacyScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import {
   ScaffolderFieldExtensions,
@@ -112,6 +117,10 @@ import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
+import {
+  createExtensionTree,
+  ExtensionTree,
+} from '@backstage/frontend-app-api';
 
 const app = createApp({
   apis,
@@ -157,6 +166,14 @@ const app = createApp({
     });
   },
 });
+
+/* HIGHLY EXPERIMENTAL. DO NOT USE THIS IN YOUR APP */
+let extensionTree: ExtensionTree | undefined;
+if (process.env.NODE_ENV !== 'test') {
+  extensionTree = createExtensionTree({
+    config: ConfigReader.fromConfigs(await defaultConfigLoader()),
+  });
+}
 
 const routes = (
   <FlatRoutes>
@@ -219,35 +236,11 @@ const routes = (
         <LightBox />
       </TechDocsAddons>
     </Route>
-    <FeatureFlagged with="scaffolder-next-preview">
+    <FeatureFlagged with="scaffolder-legacy">
       <Route
         path="/create"
         element={
-          <NextScaffolderPage
-            groups={[
-              {
-                title: 'Recommended',
-                filter: entity =>
-                  entity?.metadata?.tags?.includes('recommended') ?? false,
-              },
-            ]}
-          />
-        }
-      >
-        <ScaffolderFieldExtensions>
-          <DelayingComponentFieldExtension />
-        </ScaffolderFieldExtensions>
-        <ScaffolderLayouts>
-          <TwoColumnLayout />
-        </ScaffolderLayouts>
-      </Route>
-    </FeatureFlagged>
-    <FeatureFlagged without="scaffolder-next-preview">
-      <Route
-        path="/create"
-        element={
-          <ScaffolderPage
-            defaultPreviewTemplate={defaultPreviewTemplate}
+          <LegacyScaffolderPage
             groups={[
               {
                 title: 'Recommended',
@@ -266,12 +259,39 @@ const routes = (
         </ScaffolderLayouts>
       </Route>
     </FeatureFlagged>
+    <FeatureFlagged without="scaffolder-legacy">
+      <Route
+        path="/create"
+        element={
+          <ScaffolderPage
+            defaultPreviewTemplate={defaultPreviewTemplate}
+            groups={[
+              {
+                title: 'Recommended',
+                filter: entity =>
+                  entity?.metadata?.tags?.includes('recommended') ?? false,
+              },
+            ]}
+          />
+        }
+      >
+        <ScaffolderFieldExtensions>
+          <DelayingComponentFieldExtension />
+        </ScaffolderFieldExtensions>
+        <ScaffolderLayouts>
+          <TwoColumnLayout />
+        </ScaffolderLayouts>
+      </Route>
+    </FeatureFlagged>
     <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"
       element={<TechRadarPage width={1500} height={800} />}
     />
-    <Route path="/graphiql" element={<GraphiQLPage />} />
+    {
+      /* HIGHLY EXPERIMENTAL. DO NOT USE THIS IN YOUR APP */ extensionTree?.getRootRoutes() ??
+        null
+    }
     <Route path="/lighthouse" element={<LighthousePage />} />
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route path="/gcp-projects" element={<GcpProjectsPage />} />
@@ -310,7 +330,8 @@ export default app.createRoot(
     <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />
     <AppRouter>
-      <Root>{routes}</Root>
+      <VisitListener />
+      <Root extensionTree={extensionTree}>{routes}</Root>
     </AppRouter>
   </>,
 );

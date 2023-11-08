@@ -26,9 +26,9 @@ jest.mock('react-router-dom', () => {
 import {
   setupRequestMockHandlers,
   TestApiRegistry,
-  wrapInTestApp,
+  renderInTestApp,
 } from '@backstage/test-utils';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import React from 'react';
@@ -59,55 +59,49 @@ describe('CreateAudit', () => {
     );
   });
 
-  it('renders the form', () => {
-    const rendered = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <CreateAudit />
-        </ApiProvider>,
-      ),
+  it('renders the form', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <CreateAudit />
+      </ApiProvider>,
     );
-    expect(rendered.getByLabelText(/URL/)).toBeEnabled();
-    expect(rendered.getByLabelText(/URL/)).toHaveAttribute('value', '');
-    expect(rendered.getByText(/Create Audit/)).toBeEnabled();
+    expect(screen.getByLabelText(/URL/)).toBeEnabled();
+    expect(screen.getByLabelText(/URL/)).toHaveAttribute('value', '');
+    expect(screen.getByText(/Create Audit/)).toBeEnabled();
   });
 
   describe('when the location contains a url', () => {
-    it('prefills the url into the form', () => {
+    it('prefills the url into the form', async () => {
       const url = 'https://spotify.com';
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <CreateAudit />
-          </ApiProvider>,
-          {
-            routeEntries: [`/create-audit?url=${encodeURIComponent(url)}`],
-          },
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <CreateAudit />
+        </ApiProvider>,
+        {
+          routeEntries: [`/create-audit?url=${encodeURIComponent(url)}`],
+        },
       );
-      expect(rendered.getByLabelText(/URL/)).toHaveAttribute('value', url);
+      expect(screen.getByLabelText(/URL/)).toHaveAttribute('value', url);
     });
   });
 
   describe('when waiting on the request', () => {
-    it('disables the form fields', () => {
+    it('disables the form fields', async () => {
       server.use(rest.get('*', (_req, res, ctx) => res(ctx.delay(20000))));
 
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <CreateAudit />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <CreateAudit />
+        </ApiProvider>,
       );
 
-      fireEvent.change(rendered.getByLabelText(/URL/), {
+      fireEvent.change(screen.getByLabelText(/URL/), {
         target: { value: 'https://spotify.com' },
       });
-      fireEvent.click(rendered.getByText(/Create Audit/));
+      fireEvent.click(screen.getByText(/Create Audit/));
 
-      expect(rendered.getByLabelText(/URL/)).toBeDisabled();
-      expect(rendered.getByText(/Create Audit/).parentElement).toBeDisabled();
+      expect(screen.getByLabelText(/URL/)).toBeDisabled();
+      expect(screen.getByText(/Create Audit/).parentElement).toBeDisabled();
     });
   });
 
@@ -121,18 +115,16 @@ describe('CreateAudit', () => {
         }),
       );
 
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <CreateAudit />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <CreateAudit />
+        </ApiProvider>,
       );
 
-      fireEvent.change(rendered.getByLabelText(/URL/), {
+      fireEvent.change(screen.getByLabelText(/URL/), {
         target: { value: 'https://spotify.com' },
       });
-      fireEvent.click(rendered.getByText(/Create Audit/));
+      fireEvent.click(screen.getByText(/Create Audit/));
 
       await waitFor(() =>
         expect(triggerAuditPayload).toMatchObject({
@@ -155,20 +147,18 @@ describe('CreateAudit', () => {
         }),
       );
 
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <CreateAudit />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <CreateAudit />
+        </ApiProvider>,
       );
 
-      fireEvent.change(rendered.getByLabelText(/URL/), {
+      fireEvent.change(screen.getByLabelText(/URL/), {
         target: { value: 'https://spotify.com' },
       });
-      fireEvent.mouseDown(rendered.getByText(/Mobile/));
-      fireEvent.click(rendered.getByText(/Desktop/));
-      fireEvent.click(rendered.getByText(/Create Audit/));
+      fireEvent.mouseDown(screen.getByText(/Mobile/));
+      fireEvent.click(screen.getByText(/Desktop/));
+      fireEvent.click(screen.getByText(/Create Audit/));
 
       await waitFor(() =>
         expect(triggerAuditPayload).toMatchObject({
@@ -202,20 +192,18 @@ describe('CreateAudit', () => {
         ),
       );
 
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <CreateAudit />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <CreateAudit />
+        </ApiProvider>,
       );
 
-      fireEvent.change(rendered.getByLabelText(/URL/), {
+      fireEvent.change(screen.getByLabelText(/URL/), {
         target: { value: 'https://spotify.com' },
       });
-      fireEvent.click(rendered.getByText(/Create Audit/));
+      fireEvent.click(screen.getByText(/Create Audit/));
 
-      await waitFor(() => expect(rendered.getByLabelText(/URL/)).toBeEnabled());
+      await waitFor(() => expect(screen.getByLabelText(/URL/)).toBeEnabled());
 
       expect(useNavigate()).toHaveBeenCalledWith('..');
     });
@@ -228,20 +216,18 @@ describe('CreateAudit', () => {
           res(ctx.status(500, 'failed to post')),
         ),
       );
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <CreateAudit />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <CreateAudit />
+        </ApiProvider>,
       );
 
-      fireEvent.change(rendered.getByLabelText(/URL/), {
+      fireEvent.change(screen.getByLabelText(/URL/), {
         target: { value: 'https://spotify.com' },
       });
-      fireEvent.click(rendered.getByText(/Create Audit/));
+      fireEvent.click(screen.getByText(/Create Audit/));
 
-      await waitFor(() => expect(rendered.getByLabelText(/URL/)).toBeEnabled());
+      await waitFor(() => expect(screen.getByLabelText(/URL/)).toBeEnabled());
 
       expect(errorApi.post).toHaveBeenCalledWith(expect.any(Error));
     });

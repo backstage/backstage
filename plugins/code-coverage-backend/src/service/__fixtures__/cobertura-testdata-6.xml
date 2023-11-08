@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<coverage line-rate="0.8125" branch-rate="0.8" version="1.9" timestamp="1692517802" lines-covered="13" lines-valid="16" branches-covered="8" branches-valid="10">
+  <sources>
+    <source>/Some/Path/src/Calc/</source>
+  </sources>
+  <packages>
+    <package name="Calc" line-rate="0.8125" branch-rate="0.8" complexity="12">
+      <classes>
+        <class name="Calc.Main" filename="Main.cs" line-rate="0.8571" branch-rate="0.8332999999999999" complexity="6">
+          <methods>
+            <method name="Calc" signature="(System.Int32,System.Int32,System.String)" line-rate="0.8571" branch-rate="0.8332999999999999" complexity="6">
+              <lines>
+                <line number="5" hits="4" branch="True" condition-coverage="83.33% (5/6)">
+                  <conditions>
+                    <condition number="15" type="jump" coverage="100%" />
+                    <condition number="28" type="jump" coverage="50%" />
+                    <condition number="41" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="6" hits="4" branch="False" />
+                <line number="7" hits="1" branch="False" />
+                <line number="8" hits="0" branch="False" />
+                <line number="9" hits="2" branch="False" />
+                <line number="10" hits="1" branch="False" />
+                <line number="11" hits="4" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="5" hits="4" branch="True" condition-coverage="83.33% (5/6)">
+              <conditions>
+                <condition number="15" type="jump" coverage="100%" />
+                <condition number="28" type="jump" coverage="50%" />
+                <condition number="41" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="6" hits="4" branch="False" />
+            <line number="7" hits="1" branch="False" />
+            <line number="8" hits="0" branch="False" />
+            <line number="9" hits="2" branch="False" />
+            <line number="10" hits="1" branch="False" />
+            <line number="11" hits="4" branch="False" />
+          </lines>
+        </class>
+        <class name="Calc.Math" filename="Math.cs" line-rate="0.7777" branch-rate="0.75" complexity="6">
+          <methods>
+            <method name="Addition" signature="(System.Int32,System.Int32)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="5" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="Subtraction" signature="(System.Int32,System.Int32)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="6" hits="0" branch="False" />
+              </lines>
+            </method>
+            <method name="Division" signature="(System.Int32,System.Int32)" line-rate="0.8571" branch-rate="0.75" complexity="4">
+              <lines>
+                <line number="7" hits="2" branch="False" />
+                <line number="8" hits="2" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="7" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="9" hits="0" branch="False" />
+                <line number="11" hits="3" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="22" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="12" hits="1" branch="False" />
+                <line number="14" hits="1" branch="False" />
+                <line number="15" hits="1" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="5" hits="1" branch="False" />
+            <line number="6" hits="0" branch="False" />
+            <line number="7" hits="2" branch="False" />
+            <line number="8" hits="2" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="7" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="9" hits="0" branch="False" />
+            <line number="11" hits="3" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="22" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="12" hits="1" branch="False" />
+            <line number="14" hits="1" branch="False" />
+            <line number="15" hits="1" branch="False" />
+          </lines>
+        </class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

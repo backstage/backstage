@@ -95,8 +95,11 @@ export type AnyExternalRoutes = {
   [name: string]: ExternalRouteRef;
 };
 
+// @public @deprecated (undocumented)
+export type AnyParams = AnyRouteRefParams;
+
 // @public
-export type AnyParams =
+export type AnyRouteRefParams =
   | {
       [param in string]: string;
     }
@@ -222,7 +225,7 @@ export type BackstageIdentityResponse = {
 export type BackstagePlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
-  PluginInputOptions extends {} = {},
+  _Ignored extends {} = {},
 > = {
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
@@ -230,7 +233,6 @@ export type BackstagePlugin<
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
-  __experimentalReconfigure(options: PluginInputOptions): void;
 };
 
 // @public
@@ -318,10 +320,9 @@ export function createExternalRouteRef<
 export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
-  PluginInputOptions extends {} = {},
 >(
-  config: PluginConfig<Routes, ExternalRoutes, PluginInputOptions>,
-): BackstagePlugin<Routes, ExternalRoutes, PluginInputOptions>;
+  config: PluginConfig<Routes, ExternalRoutes>,
+): BackstagePlugin<Routes, ExternalRoutes>;
 
 // @public
 export function createReactExtension<
@@ -505,10 +506,10 @@ export const googleAuthApiRef: ApiRef<
 // @public
 export type IconComponent = ComponentType<
   | {
-      fontSize?: 'large' | 'small' | 'default';
+      fontSize?: 'large' | 'small' | 'default' | 'inherit';
     }
   | {
-      fontSize?: 'medium' | 'large' | 'small';
+      fontSize?: 'medium' | 'large' | 'small' | 'inherit';
     }
 >;
 
@@ -525,7 +526,7 @@ export type IdentityApi = {
 // @public
 export const identityApiRef: ApiRef<IdentityApi>;
 
-// @public
+// @public @deprecated
 export type MakeSubRouteRef<
   Params extends {
     [param in string]: string;
@@ -535,7 +536,7 @@ export type MakeSubRouteRef<
   ? SubRouteRef<OptionalParams<MergeParams<Params, ParentParams>>>
   : never;
 
-// @public
+// @public @deprecated
 export type MergeParams<
   P1 extends {
     [param in string]: string;
@@ -608,30 +609,30 @@ export type OpenIdConnectApi = {
   getIdToken(options?: AuthRequestOptions): Promise<string>;
 };
 
-// @public
+// @public @deprecated
 export type OptionalParams<
   Params extends {
     [param in string]: string;
   },
 > = Params[keyof Params] extends never ? undefined : Params;
 
-// @public
+// @public @deprecated
 export type ParamKeys<Params extends AnyParams> = keyof Params extends never
   ? []
   : (keyof Params)[];
 
-// @public
+// @public @deprecated
 export type ParamNames<S extends string> =
   S extends `${infer Part}/${infer Rest}`
     ? ParamPart<Part> | ParamNames<Rest>
     : ParamPart<S>;
 
-// @public
+// @public @deprecated
 export type ParamPart<S extends string> = S extends `:${infer Param}`
   ? Param
   : never;
 
-// @public
+// @public @deprecated
 export type PathParams<S extends string> = {
   [name in ParamNames<S>]: string;
 };
@@ -647,14 +648,12 @@ export type PendingOAuthRequest = {
 export type PluginConfig<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
-  PluginInputOptions extends {},
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
-  __experimentalConfigure?(options?: PluginInputOptions): {};
 };
 
 // @public

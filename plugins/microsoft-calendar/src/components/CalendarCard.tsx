@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { sortBy } from 'lodash';
 import { DateTime } from 'luxon';
 import React, { useState } from 'react';
@@ -56,9 +57,9 @@ export const CalendarCard = () => {
   const { data: events, isLoading: isEventLoading } = useEventsQuery({
     calendarId: selectedCalendarId || defaultCalendarId || '',
     enabled: isSignedIn && calendars.length > 0,
-    timeMin: date.startOf('day').toISO(),
-    timeMax: date.endOf('day').toISO(),
-    timeZone: date.zoneName,
+    timeMin: date.startOf('day').toISO()!,
+    timeMax: date.endOf('day').toISO()!,
+    timeZone: date.zoneName ?? undefined,
   });
 
   const showLoader =

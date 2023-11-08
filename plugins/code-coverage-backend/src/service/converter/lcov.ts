@@ -75,9 +75,9 @@ export class Lcov implements Converter {
 
     this.logger.debug(`matched ${file} to ${filename}`);
 
-    if (filename) {
+    if (scmFiles.length === 0 || filename) {
       return {
-        filename,
+        filename: filename || file,
         lineHits: {},
         branchHits: {},
       };

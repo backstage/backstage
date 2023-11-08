@@ -48,7 +48,6 @@ const gcpProjectsPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { gcpProjectsPlugin };

@@ -1,5 +1,270 @@
 # @backstage/cli
 
+## 0.24.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/config-loader@1.5.3-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.0-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/release-manifests@0.0.10
+  - @backstage/types@1.1.1
+
+## 0.24.0-next.0
+
+### Minor Changes
+
+- 8db5c3cd7a: Removed support for the `publishConfig.alphaTypes` and `.betaTypes` fields that were used together with `--experimental-type-build` to generate `/alpha` and `/beta` entry points. Use the `exports` field to achieve this instead.
+- 4e36abef14: Remove support for the deprecated `--experimental-type-build` option for `package build`.
+
+### Patch Changes
+
+- 4ba4ac351f: Switch from using deprecated `@esbuild-kit/*` packages to using `tsx`. This also switches to using the new module loader `register` API when available, avoiding the experimental warning when starting backends.
+- 6bf7561d3c: The experimental package detection will now ignore packages that don't make `package.json` available.
+- e14cbf563d: Added `EXPERIMENTAL_VITE` flag for using [vite](https://vitejs.dev) as dev server instead of Webpack
+- 7cd34392f5: Ignore `stdin` when spawning backend child process for the `start` command. Fixing an issue where backend startup would hang.
+- Updated dependencies
+  - @backstage/config-loader@1.5.2-next.0
+  - @backstage/cli-node@0.2.0-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/release-manifests@0.0.10
+  - @backstage/types@1.1.1
+
+## 0.23.0
+
+### Minor Changes
+
+- 8defbd5434: Update typescript-eslint to 6.7.x, adding compatibility with TypeScript 5.2.
+
+  This includes a major update on typescript-eslint, you can see the details in the [release notes](https://typescript-eslint.io/blog/announcing-typescript-eslint-v6/).
+
+- 7077dbf131: **BREAKING** The new backend start command that used to be enabled by setting `EXPERIMENTAL_BACKEND_START` is now the default. To revert to the old behavior set `LEGACY_BACKEND_START`, which is recommended if you haven't migrated to the new backend system.
+
+  This new command is no longer based on Webpack, but instead uses Node.js loaders to transpile on the fly. Rather than hot reloading modules the entire backend is now restarted on change, but the SQLite database state is still maintained across restarts via a parent process.
+
+### Patch Changes
+
+- 9468a67b92: In frontend builds and tests `process.env.HAS_REACT_DOM_CLIENT` will now be defined if `react-dom/client` is present, i.e. if using React 18. This allows for conditional imports of `react-dom/client`.
+- 68158034e8: Fix for the new backend `start` command to make it work on Windows.
+- 4f16e60e6d: Request slightly smaller pages of data from GitHub
+- 21cd3b1b24: Added a template for creating `node-library` packages with `yarn new`.
+- d0f26cfa4f: Fixed an issue where the new backend start command would not gracefully shut down the backend process on Windows.
+- 1ea20b0be5: Updated dependency `@typescript-eslint/eslint-plugin` to `6.7.5`.
+- 2ef6522552: Support for the `.icon.svg` extension has been deprecated and will be removed in the future. The implementation of this extension is too tied to a particular version of MUI and the SVGO, and it makes it harder to evolve the build system. We may introduce the ability to reintroduce this kind of functionality in the future through configuration for use in internal plugins, but for now we're forced to remove it.
+
+  To migrate existing code, rename the `.icon.svg` file to `.tsx` and replace the `<svg>` element with `<SvgIcon>` from MUI and add necessary imports. For example:
+
+  ```tsx
+  import React from 'react';
+  import SvgIcon from '@material-ui/core/SvgIcon';
+  import { IconComponent } from '@backstage/core-plugin-api';
+
+  export const CodeSceneIcon = (props: SvgIconProps) => (
+    <SvgIcon {...props}>
+      <g>
+        <path d="..." />
+      </g>
+    </SvgIcon>
+  );
+  ```
+
+- b9ec93430e: The scaffolder-module template now recommends usage of `createMockDirectory` instead of `mock-fs`.
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- 425203f898: Fixed recursive reloading issues of the backend, caused by unwanted watched files.
+- 3ef18f8c06: Explicitly set `exports: 'named'` for CJS builds, ensuring that they have e.g. `exports["default"] = catalogPlugin;`
+- 7187f2953e: The experimental package discovery will now always use the package name for include and exclude filtering, rather than the full module id. Entries pointing to a subpath export will now instead have an `export` field specifying the subpath that the import is from.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config-loader@1.5.1
+  - @backstage/errors@1.2.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.1.5
+  - @backstage/config@1.1.1
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/release-manifests@0.0.10
+  - @backstage/types@1.1.1
+
+## 0.23.0-next.2
+
+### Minor Changes
+
+- 8defbd5434: Update typescript-eslint to 6.7.x, adding compatibility with TypeScript 5.2.
+
+  This includes a major update on typescript-eslint, you can see the details in the [release notes](https://typescript-eslint.io/blog/announcing-typescript-eslint-v6/).
+
+### Patch Changes
+
+- 2ef6522552: Support for the `.icon.svg` extension has been deprecated and will be removed in the future. The implementation of this extension is too tied to a particular version of MUI and the SVGO, and it makes it harder to evolve the build system. We may introduce the ability to reintroduce this kind of functionality in the future through configuration for use in internal plugins, but for now we're forced to remove it.
+
+  To migrate existing code, rename the `.icon.svg` file to `.tsx` and replace the `<svg>` element with `<SvgIcon>` from MUI and add necessary imports. For example:
+
+  ```tsx
+  import React from 'react';
+  import SvgIcon from '@material-ui/core/SvgIcon';
+  import { IconComponent } from '@backstage/core-plugin-api';
+
+  export const CodeSceneIcon = (props: SvgIconProps) => (
+    <SvgIcon {...props}>
+      <g>
+        <path d="..." />
+      </g>
+    </SvgIcon>
+  );
+  ```
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/config-loader@1.5.1-next.1
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/cli-node@0.1.5-next.1
+  - @backstage/config@1.1.1-next.0
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/release-manifests@0.0.10
+  - @backstage/types@1.1.1
+
+## 0.23.0-next.1
+
+### Patch Changes
+
+- d0f26cfa4f: Fixed an issue where the new backend start command would not gracefully shut down the backend process on Windows.
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/release-manifests@0.0.10
+  - @backstage/catalog-model@1.4.2
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/cli-node@0.1.5-next.0
+  - @backstage/config-loader@1.5.1-next.0
+  - @backstage/errors@1.2.2
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/types@1.1.1
+
+## 0.23.0-next.0
+
+### Minor Changes
+
+- 7077dbf131: **BREAKING** The new backend start command that used to be enabled by setting `EXPERIMENTAL_BACKEND_START` is now the default. To revert to the old behavior set `LEGACY_BACKEND_START`, which is recommended if you haven't migrated to the new backend system.
+
+  This new command is no longer based on Webpack, but instead uses Node.js loaders to transpile on the fly. Rather than hot reloading modules the entire backend is now restarted on change, but the SQLite database state is still maintained across restarts via a parent process.
+
+### Patch Changes
+
+- 68158034e8: Fix for the new backend `start` command to make it work on Windows.
+- 21cd3b1b24: Added a template for creating `node-library` packages with `yarn new`.
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- 3ef18f8c06: Explicitly set `exports: 'named'` for CJS builds, ensuring that they have e.g. `exports["default"] = catalogPlugin;`
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/config-loader@1.5.1-next.0
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config@1.1.0
+  - @backstage/release-manifests@0.0.10
+  - @backstage/catalog-model@1.4.2
+  - @backstage/cli-node@0.1.5-next.0
+  - @backstage/errors@1.2.2
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/types@1.1.1
+
+## 0.22.13
+
+### Patch Changes
+
+- 04eabd21bee4: Added the ability to specify the listen address for the `--inspect` and `--inspect-brk` command. You can now set the `ip` and port of the `inspect` and `inspectBrk` by adding for example `--inspect=0.0.0.0:9229`
+- 278d9326eb40: Added the ability to create a plain backend module with the `new` command.
+- 4d5eeec52d80: Add ESM loader for the experimental backend start command.
+- 3494c502aba7: Added a new `repo fix` command that fixes auto-fixable problems in all packages. Initially the command fixes package export declarations, as well as marks all non-bundled frontend packages as side-effect free. Marking packages as free of side-effects can drastically reduce the Webpack bundle size.
+- f36113ca2305: Add experimental support for frontend package discovery.
+- a23fce763c6a: Fixed a bug where package exports entry points could not be `.tsx` files.
+- 8cec7664e146: Removed `@types/node` dependency
+- ea779492ad88: Updated dependency `run-script-webpack-plugin` to `^0.2.0`.
+- 4af4defcc114: When running `version:bump` it will now log duplicates instead of throwing an error
+- 71d4368ae5cc: Added support for the `dev/index` entry point for backend plugins and modules.
+- 956d226eeeee: Add `"sideEffects": false` to `package.json` in frontend package templates. This can be added to existing packages using the new `yarn fix` command.
+- cd7331587eb3: Removed the experimental `package fix` command that was used to automatically add dependencies to `package.json`, but has since been replaced by the `no-undeclared-imports` rule from `@backstage/eslint-plugin`.
+- 219b46ae1a50: Include default alpha export during package detection
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/release-manifests@0.0.10
+  - @backstage/types@1.1.1
+  - @backstage/config-loader@1.5.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.4
+  - @backstage/eslint-plugin@0.1.3
+
+## 0.22.13-next.3
+
+### Patch Changes
+
+- 4d5eeec52d80: Add ESM loader for the experimental backend start command.
+- 3494c502aba7: Added a new `repo fix` command that fixes auto-fixable problems in all packages. Initially the command fixes package export declarations, as well as marks all non-bundled frontend packages as side-effect free. Marking packages as free of side-effects can drastically reduce the Webpack bundle size.
+- f36113ca2305: Add experimental support for frontend package discovery.
+- a23fce763c6a: Fixed a bug where package exports entry points could not be `.tsx` files.
+- 4af4defcc114: When running `version:bump` it will now log duplicates instead of throwing an error
+- 956d226eeeee: Add `"sideEffects": false` to `package.json` in frontend package templates. This can be added to existing packages using the new `yarn fix` command.
+- cd7331587eb3: Removed the experimental `package fix` command that was used to automatically add dependencies to `package.json`, but has since been replaced by the `no-undeclared-imports` rule from `@backstage/eslint-plugin`.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/integration@1.7.0-next.3
+  - @backstage/release-manifests@0.0.10-next.1
+  - @backstage/types@1.1.1-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.4-next.0
+  - @backstage/config-loader@1.5.0-next.3
+  - @backstage/eslint-plugin@0.1.3
+
+## 0.22.13-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- ea779492ad88: Updated dependency `run-script-webpack-plugin` to `^0.2.0`.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.10-next.0
+  - @backstage/config-loader@1.5.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.3
+  - @backstage/errors@1.2.1
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/types@1.1.0
+
+## 0.22.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/config-loader@1.5.0-next.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/cli-node@0.1.3
+  - @backstage/errors@1.2.1
+  - @backstage/eslint-plugin@0.1.3
+  - @backstage/release-manifests@0.0.9
+  - @backstage/types@1.1.0
+
 ## 0.22.12-next.0
 
 ### Patch Changes

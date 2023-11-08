@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getRootLogger } from '@backstage/backend-common';
+import { createRootLogger, getRootLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
@@ -24,17 +24,16 @@ import {
   ActionContext,
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
-import mockFs from 'mock-fs';
-import os from 'os';
-import { resolve as resolvePath } from 'path';
+import fs from 'fs-extra';
 import { Writable } from 'stream';
 import {
   createPublishGithubPullRequestAction,
   OctokitWithPullRequestPluginClient,
 } from './githubPullRequest';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
-const root = os.platform() === 'win32' ? 'C:\\root' : '/root';
-const workspacePath = resolvePath(root, 'my-workspace');
+// Make sure root logger is initialized ahead of FS mock
+createRootLogger();
 
 type GithubPullRequestActionInput = ReturnType<
   typeof createPublishGithubPullRequestAction
@@ -51,7 +50,12 @@ describe('createPublishGithubPullRequestAction', () => {
     };
   };
 
+  const mockDir = createMockDirectory();
+  const workspacePath = mockDir.resolve('workspace');
+
   beforeEach(() => {
+    mockDir.clear();
+
     const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
     fakeClient = {
       createPullRequest: jest.fn(async (_: any) => {
@@ -89,7 +93,6 @@ describe('createPublishGithubPullRequestAction', () => {
   });
 
   afterEach(() => {
-    mockFs.restore();
     jest.resetAllMocks();
   });
 
@@ -129,7 +132,7 @@ describe('createPublishGithubPullRequestAction', () => {
         draft: true,
       };
 
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: { 'file.txt': 'Hello there!' },
       });
 
@@ -194,7 +197,7 @@ describe('createPublishGithubPullRequestAction', () => {
         draft: true,
       };
 
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: { 'file.txt': 'Hello there!' },
       });
 
@@ -258,7 +261,7 @@ describe('createPublishGithubPullRequestAction', () => {
         sourcePath: 'source',
       };
 
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
@@ -320,7 +323,7 @@ describe('createPublishGithubPullRequestAction', () => {
         description: 'This PR is really good',
       };
 
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: { 'file.txt': 'Hello there!' },
       });
 
@@ -382,7 +385,7 @@ describe('createPublishGithubPullRequestAction', () => {
         teamReviewers: ['team-foo'],
       };
 
-      mockFs({ [workspacePath]: {} });
+      mockDir.setContent({ [workspacePath]: {} });
 
       ctx = {
         createTemporaryDirectory: jest.fn(),
@@ -434,7 +437,7 @@ describe('createPublishGithubPullRequestAction', () => {
         description: 'This PR is really good',
       };
 
-      mockFs({ [workspacePath]: {} });
+      mockDir.setContent({ [workspacePath]: {} });
 
       ctx = {
         createTemporaryDirectory: jest.fn(),
@@ -466,11 +469,9 @@ describe('createPublishGithubPullRequestAction', () => {
         description: 'This PR is really good',
       };
 
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
-          Makefile: mockFs.symlink({
-            path: '../../nothing/yet',
-          }),
+          Makefile: c => c.symlink('../../nothing/yet'),
         },
       });
 
@@ -520,12 +521,13 @@ describe('createPublishGithubPullRequestAction', () => {
         description: 'This PR is really good',
       };
 
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
-          'hello.sh': mockFs.file({
-            content: 'echo Hello there!',
-            mode: 0o100755,
-          }),
+          'hello.sh': c =>
+            fs.writeFileSync(c.path, 'echo Hello there!', {
+              encoding: 'utf8',
+              mode: 0o100755,
+            }),
         },
       });
 
@@ -585,12 +587,13 @@ describe('createPublishGithubPullRequestAction', () => {
         description: 'This PR is really good',
       };
 
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: {
-          'hello.sh': mockFs.file({
-            content: 'echo Hello there!',
-            mode: 0o100775,
-          }),
+          'hello.sh': c =>
+            fs.writeFileSync(c.path, 'echo Hello there!', {
+              encoding: 'utf8',
+              mode: 0o100775,
+            }),
         },
       });
 
@@ -651,7 +654,7 @@ describe('createPublishGithubPullRequestAction', () => {
         commitMessage: 'Create my new app, but in the commit message',
       };
 
-      mockFs({
+      mockDir.setContent({
         [workspacePath]: { 'file.txt': 'Hello there!' },
       });
 

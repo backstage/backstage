@@ -64,8 +64,8 @@ export interface CatalogProcessingOrchestrator {
 }
 
 /**
- * Represents the engine that drives the processing loops. Some backend
- * instances may choose to not call start, if they focus only on API
+ * Represents the engine that drives the processing and stitching loops. Some
+ * backend instances may choose to not call start, if they focus only on API
  * interactions.
  *
  * @public

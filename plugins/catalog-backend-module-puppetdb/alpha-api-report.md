@@ -6,7 +6,8 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const catalogModulePuppetDbEntityProvider: () => BackendFeature;
+const catalogModulePuppetDbEntityProvider: () => BackendFeature;
+export default catalogModulePuppetDbEntityProvider;
 
 // (No @packageDocumentation comment for this package)
 ```

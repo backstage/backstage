@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-cost-insights-common
+  title: '@backstage/plugin-cost-insights-common'
+  description: Common functionalities for the cost-insights plugin
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: silver-lining

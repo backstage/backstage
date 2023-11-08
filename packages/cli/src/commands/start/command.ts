@@ -15,9 +15,9 @@
  */
 
 import { OptionValues } from 'commander';
+import { findRoleFromCommand } from '../../lib/role';
 import { startBackend } from './startBackend';
 import { startFrontend } from './startFrontend';
-import { findRoleFromCommand } from '../../lib/role';
 
 export async function command(opts: OptionValues): Promise<void> {
   const role = await findRoleFromCommand(opts);
@@ -25,8 +25,8 @@ export async function command(opts: OptionValues): Promise<void> {
   const options = {
     configPaths: opts.config as string[],
     checksEnabled: Boolean(opts.check),
-    inspectEnabled: Boolean(opts.inspect),
-    inspectBrkEnabled: Boolean(opts.inspectBrk),
+    inspectEnabled: opts.inspect,
+    inspectBrkEnabled: opts.inspectBrk,
   };
 
   switch (role) {

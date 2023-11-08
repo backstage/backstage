@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-integration-aws-node
+  title: '@backstage/integration-aws-node'
+  description: Helpers for fetching AWS account credentials
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

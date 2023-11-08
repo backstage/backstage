@@ -1,5 +1,106 @@
 # @backstage/plugin-graphql-backend
 
+## 0.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.2
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-graphql@0.4.1-next.0
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-graphql@0.4.1-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/config@1.1.1
+
+## 0.2.0
+
+### Minor Changes
+
+- 9def1e95ab: This package has been deprecated, consider using [@frontside/backstage-plugin-graphql-backend](https://www.npmjs.com/package/@frontside/backstage-plugin-graphql-backend) instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-catalog-graphql@0.4.0
+  - @backstage/config@1.1.1
+
+## 0.1.44-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/config@1.1.1-next.0
+  - @backstage/plugin-catalog-graphql@0.3.24-next.0
+
+## 0.1.43-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/config@1.1.0
+  - @backstage/plugin-catalog-graphql@0.3.23
+
+## 0.1.43-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/plugin-catalog-graphql@0.3.23
+
+## 0.1.41
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/plugin-catalog-graphql@0.3.23
+
+## 0.1.41-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/backend-common@0.19.5-next.3
+  - @backstage/plugin-catalog-graphql@0.3.23-next.2
+
+## 0.1.41-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/plugin-catalog-graphql@0.3.23-next.1
+
+## 0.1.41-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/plugin-catalog-graphql@0.3.23-next.0
+
 ## 0.1.40-next.0
 
 ### Patch Changes

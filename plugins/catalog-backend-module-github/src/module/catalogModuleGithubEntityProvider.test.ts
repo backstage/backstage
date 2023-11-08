@@ -16,14 +16,14 @@
 
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Duration } from 'luxon';
 import { catalogModuleGithubEntityProvider } from './catalogModuleGithubEntityProvider';
-import { GithubEntityProvider } from '../providers/GithubEntityProvider';
 
 describe('catalogModuleGithubEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
-    let addedProviders: Array<GithubEntityProvider> | undefined;
+    let addedProviders: Array<EntityProvider> | undefined;
     let usedSchedule: TaskScheduleDefinition | undefined;
 
     const extensionPoint = {

@@ -85,7 +85,13 @@ const Contents = ({
         setBusy(true);
         try {
           await state.deleteEntity();
+          const entityName = entity.metadata.title ?? entity.metadata.name;
           onConfirm();
+          alertApi.post({
+            message: `Removed entity ${entityName}`,
+            severity: 'success',
+            display: 'transient',
+          });
         } catch (err) {
           assertError(err);
           alertApi.post({ message: err.message });
@@ -94,7 +100,7 @@ const Contents = ({
         }
       }
     },
-    [alertApi, onConfirm, state],
+    [alertApi, onConfirm, state, entity],
   );
 
   const DialogActionsPanel = () => (

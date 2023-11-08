@@ -17,18 +17,9 @@
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
-  createBackendModule,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
-import {
-  AuthorizeResult,
-  PolicyDecision,
-} from '@backstage/plugin-permission-common';
-import {
-  PermissionPolicy,
-  PolicyQuery,
-} from '@backstage/plugin-permission-node';
+import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import {
   policyExtensionPoint,
   PolicyExtensionPoint,
@@ -45,35 +36,6 @@ class PolicyExtensionPointImpl implements PolicyExtensionPoint {
     this.policy = policy;
   }
 }
-
-/**
- * A permission policy module that allows all requests.
- *
- * @alpha
- */
-export const permissionModuleAllowAllPolicy = createBackendModule({
-  moduleId: 'allowAllPolicy',
-  pluginId: 'permission',
-  register(reg) {
-    class AllowAllPermissionPolicy implements PermissionPolicy {
-      async handle(
-        _request: PolicyQuery,
-        _user?: BackstageIdentityResponse,
-      ): Promise<PolicyDecision> {
-        return {
-          result: AuthorizeResult.ALLOW,
-        };
-      }
-    }
-
-    reg.registerInit({
-      deps: { policy: policyExtensionPoint },
-      async init({ policy }) {
-        policy.setPolicy(new AllowAllPermissionPolicy());
-      },
-    });
-  },
-});
 
 /**
  * Permission plugin
@@ -99,7 +61,7 @@ export const permissionPlugin = createBackendPlugin({
         const winstonLogger = loggerToWinstonLogger(logger);
         if (!policies.policy) {
           throw new Error(
-            'No policy module installed! Please install a policy module. If you want to allow all requests, use permissionModuleAllowAllPolicy',
+            'No policy module installed! Please install a policy module. If you want to allow all requests, use @backstage/plugin-permission-backend-module-allow-all-policy permissionModuleAllowAllPolicy',
           );
         }
 

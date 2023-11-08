@@ -15,6 +15,6 @@
  */
 
 export { gcpIapAuthenticator } from './authenticator';
-export { authModuleGcpIapProvider } from './module';
+export { authModuleGcpIapProvider as default } from './module';
 export { gcpIapSignInResolvers } from './resolvers';
 export { type GcpIapResult, type GcpIapTokenInfo } from './types';

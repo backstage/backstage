@@ -16,7 +16,9 @@
 
 import { Knex } from 'knex';
 import uniq from 'lodash/uniq';
-import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
+import { StitchingStrategy } from '../../../stitching/types';
+import { DbRefreshStateRow } from '../../tables';
+import { markForStitching } from '../stitcher/markForStitching';
 
 /**
  * Finds and deletes all orphaned entities, i.e. entities that do not have any
@@ -24,15 +26,16 @@ import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
  * that would otherwise become orphaned.
  */
 export async function deleteOrphanedEntities(options: {
-  tx: Knex.Transaction | Knex;
+  knex: Knex.Transaction | Knex;
+  strategy: StitchingStrategy;
 }): Promise<number> {
-  const { tx } = options;
+  const { knex, strategy } = options;
 
   let total = 0;
 
   // Limit iterations for sanity
   for (let i = 0; i < 100; ++i) {
-    const candidates = await tx
+    const candidates = await knex
       .with('orphans', ['entity_id', 'entity_ref'], orphans =>
         orphans
           .from('refresh_state')
@@ -72,26 +75,17 @@ export async function deleteOrphanedEntities(options: {
     total += orphanIds.length;
 
     // Delete the orphans themselves
-    await tx
+    await knex
       .table<DbRefreshStateRow>('refresh_state')
       .delete()
       .whereIn('entity_id', orphanIds);
 
-    // Mark all of things that the orphans had relations to for processing and
-    // stitching
-    await tx
-      .table<DbFinalEntitiesRow>('final_entities')
-      .update({
-        hash: 'orphan-relation-deleted',
-      })
-      .whereIn('entity_id', orphanRelationIds);
-    await tx
-      .table<DbRefreshStateRow>('refresh_state')
-      .update({
-        result_hash: 'orphan-relation-deleted',
-        next_update_at: tx.fn.now(),
-      })
-      .whereIn('entity_id', orphanRelationIds);
+    // Mark all of the things that the orphans had relations to for stitching
+    await markForStitching({
+      knex,
+      strategy,
+      entityIds: orphanRelationIds,
+    });
   }
 
   return total;

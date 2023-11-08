@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-explore-react
+  title: '@backstage/plugin-explore-react'
+  description: >-
+    A frontend library for Backstage plugins that want to interact with the
+    explore plugin
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: sda-se-reviewers

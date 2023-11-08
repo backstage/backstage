@@ -14,18 +14,33 @@
  * limitations under the License.
  */
 
+import {
+  Entity,
+  getCompoundEntityRef,
+  parseEntityRef,
+} from '@backstage/catalog-model';
+
 import React from 'react';
-
-import { Entity, getCompoundEntityRef } from '@backstage/catalog-model';
-
 import { TechDocsReaderPage } from './plugin';
-import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
 import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
+import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
+
+const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
 
 type EntityPageDocsProps = { entity: Entity };
 
 export const EntityPageDocs = ({ entity }: EntityPageDocsProps) => {
-  const entityRef = getCompoundEntityRef(entity);
+  let entityRef = getCompoundEntityRef(entity);
+
+  if (entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
+    try {
+      entityRef = parseEntityRef(
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION],
+      );
+    } catch {
+      // not a fan of this but we don't care if the parseEntityRef fails
+    }
+  }
 
   return (
     <TechDocsReaderPage entityRef={entityRef}>

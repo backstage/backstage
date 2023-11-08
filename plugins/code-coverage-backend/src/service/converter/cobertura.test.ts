@@ -24,7 +24,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 
 describe('convert cobertura', () => {
   const converter = new Cobertura(getVoidLogger());
-  [1, 2, 3, 4, 5].forEach(idx => {
+  [1, 2, 3, 4, 5, 6].forEach(idx => {
     let fixture: CoberturaXML;
     parseString(
       fs.readFileSync(

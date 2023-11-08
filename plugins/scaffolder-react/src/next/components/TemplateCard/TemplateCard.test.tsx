@@ -89,7 +89,7 @@ describe('TemplateCard', () => {
     expect(description.querySelector('strong')).toBeInTheDocument();
   });
 
-  it('should render no descroption if none is provided through the template', async () => {
+  it('should render no description if none is provided through the template', async () => {
     const mockTemplate: TemplateEntityV1beta3 = {
       apiVersion: 'scaffolder.backstage.io/v1beta3',
       kind: 'Template',
@@ -186,11 +186,12 @@ describe('TemplateCard', () => {
       },
     );
 
-    expect(getByRole('link', { name: 'my-test-user' })).toBeInTheDocument();
-    expect(getByRole('link', { name: 'my-test-user' })).toHaveAttribute(
-      'href',
-      '/catalog/group/default/my-test-user',
-    );
+    expect(
+      getByRole('link', { name: 'group:default/my-test-user' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('link', { name: 'group:default/my-test-user' }),
+    ).toHaveAttribute('href', '/catalog/group/default/my-test-user');
   });
 
   it('should call the onSelected handler when clicking the choose button', async () => {

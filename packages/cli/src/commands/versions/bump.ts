@@ -314,10 +314,6 @@ export default async (opts: OptionValues) => {
     ),
   });
 
-  if (result.newVersions.length > 0) {
-    throw new Error('Duplicate versions present after package bump');
-  }
-
   const forbiddenNewRanges = result.newRanges.filter(({ name }) =>
     forbiddenDuplicatesFilter(name),
   );
@@ -327,6 +323,19 @@ export default async (opts: OptionValues) => {
         .map(i => i.name)
         .join(', ')}`,
     );
+  }
+
+  const allowedDuplicates = result.newRanges.filter(
+    ({ name }) => !forbiddenDuplicatesFilter(name),
+  );
+
+  if (allowedDuplicates.length > 0) {
+    console.log(
+      chalk.yellow(
+        'The following packages have duplicates but have been allowed:',
+      ),
+    );
+    console.log(chalk.yellow(allowedDuplicates.map(i => i.name).join(', ')));
   }
 };
 

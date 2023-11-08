@@ -9,7 +9,8 @@ import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-mod
 import { IncrementalEntityProviderOptions } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 
 // @alpha
-export const catalogModuleIncrementalIngestionEntityProvider: () => BackendFeature;
+const catalogModuleIncrementalIngestionEntityProvider: () => BackendFeature;
+export default catalogModuleIncrementalIngestionEntityProvider;
 
 // @alpha
 export interface IncrementalIngestionProviderExtensionPoint {

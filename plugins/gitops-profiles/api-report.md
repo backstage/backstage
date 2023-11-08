@@ -124,7 +124,6 @@ const gitopsProfilesPlugin: BackstagePlugin<
     }>;
     createPage: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { gitopsProfilesPlugin };

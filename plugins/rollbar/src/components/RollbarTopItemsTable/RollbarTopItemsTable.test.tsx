@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import * as React from 'react';
 import { RollbarTopActiveItem } from '../../api/types';
 import { RollbarTopItemsTable } from './RollbarTopItemsTable';
@@ -40,32 +40,28 @@ const items: RollbarTopActiveItem[] = [
 
 describe('RollbarTopItemsTable component', () => {
   it('should render empty data message when loaded and no data', async () => {
-    const rendered = render(
-      wrapInTestApp(
-        <RollbarTopItemsTable
-          items={[]}
-          organization="foo"
-          project="bar"
-          loading={false}
-        />,
-      ),
+    await renderInTestApp(
+      <RollbarTopItemsTable
+        items={[]}
+        organization="foo"
+        project="bar"
+        loading={false}
+      />,
     );
-    expect(rendered.getByText(/No records to display/)).toBeInTheDocument();
+    expect(screen.getByText(/No records to display/)).toBeInTheDocument();
   });
 
   it('should display item attributes when loading has finished', async () => {
-    const rendered = render(
-      wrapInTestApp(
-        <RollbarTopItemsTable
-          items={items}
-          organization="foo"
-          project="bar"
-          loading={false}
-        />,
-      ),
+    await renderInTestApp(
+      <RollbarTopItemsTable
+        items={items}
+        organization="foo"
+        project="bar"
+        loading={false}
+      />,
     );
-    expect(rendered.getByText(/1234/)).toBeInTheDocument();
-    expect(rendered.getByText(/Error in foo/)).toBeInTheDocument();
-    expect(rendered.getByText(/critical/)).toBeInTheDocument();
+    expect(screen.getByText(/1234/)).toBeInTheDocument();
+    expect(screen.getByText(/Error in foo/)).toBeInTheDocument();
+    expect(screen.getByText(/critical/)).toBeInTheDocument();
   });
 });

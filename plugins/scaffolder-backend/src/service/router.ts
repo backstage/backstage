@@ -363,8 +363,12 @@ export async function createRouter(
         const template = await authorizeTemplate(req.params, token);
 
         const parameters = [template.spec.parameters ?? []].flat();
+
+        const presentation = template.spec.presentation;
+
         res.json({
           title: template.metadata.title ?? template.metadata.name,
+          ...(presentation ? { presentation } : {}),
           description: template.metadata.description,
           'ui:options': template.metadata['ui:options'],
           steps: parameters.map(schema => ({

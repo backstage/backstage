@@ -1,5 +1,140 @@
 # @backstage/backend-tasks
 
+## 0.5.12-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.2
+
+## 0.5.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.5.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.5.11
+
+### Patch Changes
+
+- 5db102bfdf: Instrument `backend-tasks` with some counters and histograms for duration.
+
+  `backend_tasks.task.runs.count`: Counter with the total number of times a task has been run.
+  `backend_tasks.task.runs.duration`: Histogram with the run durations for each task.
+
+  Both these metrics have come with `result` `taskId` and `scope` labels for finer grained grouping.
+
+- ddd76ac98d: Fix bug where backend tasks that are defined with HumanDuration are immediately triggered on application startup
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/errors@1.2.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.5.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+
+## 0.5.10-next.1
+
+### Patch Changes
+
+- 5db102bfdf: Instrument `backend-tasks` with some counters and histograms for duration.
+
+  `backend_tasks.task.runs.count`: Counter with the total number of times a task has been run.
+  `backend_tasks.task.runs.duration`: Histogram with the run durations for each task.
+
+  Both these metrics have come with `result` `taskId` and `scope` labels for finer grained grouping.
+
+- ddd76ac98d: Fix bug where backend tasks that are defined with HumanDuration are immediately triggered on application startup
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
+## 0.5.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
+## 0.5.8
+
+### Patch Changes
+
+- 8fd91547cd0b: When starting a task that existed before, with a faster schedule than it
+  previously had, the task will now correctly obey the faster schedule
+  immediately. Before this fix, the new schedule was only obeyed after the next
+  pending (according to the old schedule) run had completed.
+- 62f448edb0b5: Use `readDurationFromConfig` from the config package
+- 74604806aae8: Avoid starting task janitor in tests.
+- cfc3ca6ce060: Changes needed to support MySQL
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
+## 0.5.8-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/types@1.1.1-next.0
+  - @backstage/backend-common@0.19.5-next.3
+
+## 0.5.8-next.2
+
+### Patch Changes
+
+- 814feeed7343: Update to handle invalid luxon values
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- 62f448edb0b5: Use `readDurationFromConfig` from the config package
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 0.5.7-next.0
 
 ### Patch Changes

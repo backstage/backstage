@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { serializeDirectoryContents } from './serializeDirectoryContents';
-import mockFs from 'mock-fs';
 
 describe('serializeDirectoryContents', () => {
-  afterEach(() => {
-    mockFs.restore();
-  });
+  const mockDir = createMockDirectory();
 
   it('should list files in this directory', async () => {
     await expect(serializeDirectoryContents(__dirname)).resolves.toEqual(
@@ -54,25 +52,23 @@ describe('serializeDirectoryContents', () => {
   });
 
   it('should list files in a mock directory', async () => {
-    mockFs({
-      root: {
-        'a.txt': 'a',
-        b: {
-          'b1.txt': 'b1',
-          'b2.txt': 'b2',
-        },
-        c: {
-          c1: {
-            'c11.txt': 'c11',
-            c11: {
-              'c111.txt': 'c111',
-            },
+    mockDir.setContent({
+      'a.txt': 'a',
+      b: {
+        'b1.txt': 'b1',
+        'b2.txt': 'b2',
+      },
+      c: {
+        c1: {
+          'c11.txt': 'c11',
+          c11: {
+            'c111.txt': 'c111',
           },
         },
       },
     });
 
-    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+    await expect(serializeDirectoryContents(mockDir.path)).resolves.toEqual([
       {
         path: 'a.txt',
         executable: false,
@@ -107,16 +103,12 @@ describe('serializeDirectoryContents', () => {
   });
 
   it('should ignore symlinked files', async () => {
-    mockFs({
-      root: {
-        'a.txt': 'some text',
-        sym: mockFs.symlink({
-          path: './a.txt',
-        }),
-      },
+    mockDir.setContent({
+      'a.txt': 'some text',
+      sym: ctx => ctx.symlink('./a.txt'),
     });
 
-    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+    await expect(serializeDirectoryContents(mockDir.path)).resolves.toEqual([
       {
         path: 'a.txt',
         executable: false,
@@ -127,18 +119,14 @@ describe('serializeDirectoryContents', () => {
   });
 
   it('should pick up broken symlinks', async () => {
-    mockFs({
-      root: {
-        'b.txt': mockFs.symlink({
-          path: './a.txt',
-        }),
-      },
+    mockDir.setContent({
+      'b.txt': ctx => ctx.symlink('./a.txt'),
     });
 
-    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+    await expect(serializeDirectoryContents(mockDir.path)).resolves.toEqual([
       {
         path: 'b.txt',
-        executable: false,
+        executable: true,
         symlink: true,
         content: Buffer.from('./a.txt', 'utf8'),
       },
@@ -146,19 +134,15 @@ describe('serializeDirectoryContents', () => {
   });
 
   it('should ignore symlinked folder files', async () => {
-    mockFs({
-      root: {
-        'a.txt': 'some text',
-        linkme: {
-          'b.txt': 'lols',
-        },
-        sym: mockFs.symlink({
-          path: './linkme',
-        }),
+    mockDir.setContent({
+      'a.txt': 'some text',
+      linkme: {
+        'b.txt': 'lols',
       },
+      sym: ctx => ctx.symlink('./linkme'),
     });
 
-    await expect(serializeDirectoryContents('root')).resolves.toEqual([
+    await expect(serializeDirectoryContents(mockDir.path)).resolves.toEqual([
       {
         path: 'a.txt',
         executable: false,
@@ -175,16 +159,14 @@ describe('serializeDirectoryContents', () => {
   });
 
   it('should ignore gitignored files', async () => {
-    mockFs({
-      root: {
-        '.gitignore': '*.txt',
-        'a.txt': 'a',
-        'a.log': 'a',
-      },
+    mockDir.setContent({
+      '.gitignore': '*.txt',
+      'a.txt': 'a',
+      'a.log': 'a',
     });
 
     await expect(
-      serializeDirectoryContents('root', {
+      serializeDirectoryContents(mockDir.path, {
         gitignore: true,
       }),
     ).resolves.toEqual([
@@ -204,26 +186,24 @@ describe('serializeDirectoryContents', () => {
   });
 
   it('should use custom glob patterns', async () => {
-    mockFs({
-      root: {
-        '.a': 'a',
-        'a.log': 'a',
-        'a.txt': 'a',
-        b: {
-          '.b': 'b',
-          'b.log': 'b',
-          'b.txt': 'b',
-        },
-        c: {
-          '.c': 'c',
-          'c.log': 'c',
-          'c.txt': 'c',
-        },
+    mockDir.setContent({
+      '.a': 'a',
+      'a.log': 'a',
+      'a.txt': 'a',
+      b: {
+        '.b': 'b',
+        'b.log': 'b',
+        'b.txt': 'b',
+      },
+      c: {
+        '.c': 'c',
+        'c.log': 'c',
+        'c.txt': 'c',
       },
     });
 
     await expect(
-      serializeDirectoryContents('root', {
+      serializeDirectoryContents(mockDir.path, {
         gitignore: true,
         globPatterns: ['**/*.txt', '*/.?', '*/*.log', '!c/**/.*', '!b/*.log'],
       }).then(files => files.sort((a, b) => a.path.localeCompare(b.path))),

@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, ReactElement } from 'react';
-import { MemoryRouter } from 'react-router-dom';
-import { Route } from 'react-router-dom';
-import { UnifiedThemeProvider, themes } from '@backstage/theme';
+import React, {
+  ComponentType,
+  PropsWithChildren,
+  ReactElement,
+  ReactNode,
+} from 'react';
+import { MemoryRouter, Route } from 'react-router-dom';
+import { themes, UnifiedThemeProvider } from '@backstage/theme';
 import MockIcon from '@material-ui/icons/AcUnit';
 import { createSpecializedApp } from '@backstage/core-app-api';
 import {
-  BootErrorPageProps,
-  RouteRef,
-  ExternalRouteRef,
   attachComponentData,
+  BootErrorPageProps,
   createRouteRef,
+  ExternalRouteRef,
+  RouteRef,
 } from '@backstage/core-plugin-api';
 import { MatcherFunction, RenderResult } from '@testing-library/react';
-import { renderWithEffects } from './testingLibrary';
+import { LegacyRootOption, renderWithEffects } from './testingLibrary';
 import { defaultApis } from './defaultApis';
 import { mockApis } from './mockApis';
 
@@ -40,6 +44,8 @@ const mockIcons = {
   'kind:location': MockIcon,
   'kind:system': MockIcon,
   'kind:user': MockIcon,
+  'kind:resource': MockIcon,
+  'kind:template': MockIcon,
 
   brokenImage: MockIcon,
   catalog: MockIcon,
@@ -226,8 +232,8 @@ export function wrapInTestApp(
  * @public
  */
 export async function renderInTestApp(
-  Component: ComponentType | ReactNode,
-  options: TestAppOptions = {},
+  Component: ComponentType<PropsWithChildren<{}>> | ReactNode,
+  options: TestAppOptions & LegacyRootOption = {},
 ): Promise<RenderResult> {
   let wrappedElement: React.ReactElement;
   if (Component instanceof Function) {
@@ -235,9 +241,11 @@ export async function renderInTestApp(
   } else {
     wrappedElement = Component as React.ReactElement;
   }
+  const { legacyRoot } = options;
 
   return renderWithEffects(wrappedElement, {
     wrapper: createTestAppWrapper(options),
+    legacyRoot,
   });
 }
 
@@ -255,7 +263,8 @@ export const textContentMatcher =
       return false;
     }
 
-    const hasText = (textNode: Element) => textNode?.textContent === text;
+    const hasText = (textNode: Element) =>
+      textNode?.textContent?.includes(text) ?? false;
     const childrenDontHaveText = (containerNode: Element) =>
       Array.from(containerNode?.children).every(child => !hasText(child));
 

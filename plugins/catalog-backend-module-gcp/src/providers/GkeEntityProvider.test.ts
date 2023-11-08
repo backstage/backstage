@@ -16,11 +16,6 @@
 
 import { GkeEntityProvider } from './GkeEntityProvider';
 import { TaskRunner } from '@backstage/backend-tasks';
-import {
-  ANNOTATION_KUBERNETES_API_SERVER,
-  ANNOTATION_KUBERNETES_API_SERVER_CA,
-  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-} from '@backstage/plugin-kubernetes-common';
 import * as container from '@google-cloud/container';
 import { ConfigReader } from '@backstage/config';
 
@@ -55,7 +50,10 @@ describe('GkeEntityProvider', () => {
           providers: {
             gcp: {
               gke: {
-                parents: ['parent1', 'parent2'],
+                parents: [
+                  'projects/parent1/locations/-',
+                  'projects/parent2/locations/some-other-location',
+                ],
                 schedule: {
                   frequency: {
                     minutes: 3,
@@ -77,15 +75,15 @@ describe('GkeEntityProvider', () => {
 
   it('should return clusters as Resources', async () => {
     clusterManagerClientMock.listClusters.mockImplementation(req => {
-      if (req.parent === 'parent1') {
+      if (req.parent === 'projects/parent1/locations/-') {
         return [
           {
             clusters: [
               {
                 name: 'some-cluster',
-                endpoint: 'http://127.0.0.1:1234',
+                endpoint: '127.0.0.1',
                 location: 'some-location',
-                selfLink: 'http://127.0.0.1/some-link',
+                selfLink: 'https://127.0.0.1/some-link',
                 masterAuth: {
                   clusterCaCertificate: 'abcdefg',
                 },
@@ -93,15 +91,17 @@ describe('GkeEntityProvider', () => {
             ],
           },
         ];
-      } else if (req.parent === 'parent2') {
+      } else if (
+        req.parent === 'projects/parent2/locations/some-other-location'
+      ) {
         return [
           {
             clusters: [
               {
                 name: 'some-other-cluster',
-                endpoint: 'http://127.0.0.1:5678',
+                endpoint: '127.0.0.1',
                 location: 'some-other-location',
-                selfLink: 'http://127.0.0.1/some-other-link',
+                selfLink: 'https://127.0.0.1/some-other-link',
                 masterAuth: {
                   // no CA cert is ok
                 },
@@ -114,58 +114,7 @@ describe('GkeEntityProvider', () => {
       throw new Error(`unexpected parent ${req.parent}`);
     });
     await gkeEntityProvider.refresh();
-    expect(connectionMock.applyMutation).toHaveBeenCalledWith({
-      type: 'full',
-      entities: [
-        {
-          locationKey: 'gcp-gke:some-location',
-          entity: {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Resource',
-            metadata: {
-              annotations: {
-                [ANNOTATION_KUBERNETES_API_SERVER]: 'http://127.0.0.1:1234',
-                [ANNOTATION_KUBERNETES_API_SERVER_CA]: 'abcdefg',
-                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
-                'backstage.io/managed-by-location': 'gcp-gke:some-location',
-                'backstage.io/managed-by-origin-location':
-                  'gcp-gke:some-location',
-              },
-              name: 'some-cluster',
-              namespace: 'default',
-            },
-            spec: {
-              type: 'kubernetes-cluster',
-              owner: 'unknown',
-            },
-          },
-        },
-        {
-          locationKey: 'gcp-gke:some-other-location',
-          entity: {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Resource',
-            metadata: {
-              annotations: {
-                [ANNOTATION_KUBERNETES_API_SERVER]: 'http://127.0.0.1:5678',
-                [ANNOTATION_KUBERNETES_API_SERVER_CA]: '',
-                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
-                'backstage.io/managed-by-location':
-                  'gcp-gke:some-other-location',
-                'backstage.io/managed-by-origin-location':
-                  'gcp-gke:some-other-location',
-              },
-              name: 'some-other-cluster',
-              namespace: 'default',
-            },
-            spec: {
-              type: 'kubernetes-cluster',
-              owner: 'unknown',
-            },
-          },
-        },
-      ],
-    });
+    expect(connectionMock.applyMutation).toMatchSnapshot();
   });
 
   const ignoredPartialClustersTests: [
@@ -175,7 +124,7 @@ describe('GkeEntityProvider', () => {
     [
       'no-cluster-name',
       {
-        endpoint: 'http://127.0.0.1:1234',
+        endpoint: '127.0.0.1',
         location: 'some-location',
         selfLink: 'http://127.0.0.1/some-link',
         masterAuth: {
@@ -188,7 +137,7 @@ describe('GkeEntityProvider', () => {
       {
         // no selfLink
         name: 'some-name',
-        endpoint: 'http://127.0.0.1:1234',
+        endpoint: '127.0.0.1',
         location: 'some-location',
         masterAuth: {
           clusterCaCertificate: 'abcdefg',
@@ -210,7 +159,7 @@ describe('GkeEntityProvider', () => {
       'no-location',
       {
         name: 'some-name',
-        endpoint: 'http://127.0.0.1:1234',
+        endpoint: '127.0.0.1',
         selfLink: 'http://127.0.0.1/some-link',
         masterAuth: {
           clusterCaCertificate: 'abcdefg',
@@ -223,7 +172,7 @@ describe('GkeEntityProvider', () => {
     'ignore cluster - %s',
     async (_name, ignoredCluster) => {
       clusterManagerClientMock.listClusters.mockImplementation(req => {
-        if (req.parent === 'parent1') {
+        if (req.parent === 'projects/parent1/locations/-') {
           return [ignoredCluster];
         }
         return [

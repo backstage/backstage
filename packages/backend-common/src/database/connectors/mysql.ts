@@ -151,13 +151,33 @@ export async function ensureMysqlDatabaseExists(
     connection: {
       database: null as unknown as string,
     },
+    pool: {
+      min: 0,
+      acquireTimeoutMillis: 10000,
+    },
   });
 
   try {
     const ensureDatabase = async (database: string) => {
       await admin.raw(`CREATE DATABASE IF NOT EXISTS ??`, [database]);
     };
-    await Promise.all(databases.map(ensureDatabase));
+    await Promise.all(
+      databases.map(async database => {
+        // For initial setup we use a smaller timeout but several retries. Given that this
+        // is a separate connection pool we should never really run into issues with connection
+        // acquisition timeouts, but we do anyway. This might be a bug in knex or some other dependency.
+        let lastErr: Error | undefined = undefined;
+        for (let i = 0; i < 3; i++) {
+          try {
+            return await ensureDatabase(database);
+          } catch (err) {
+            lastErr = err;
+          }
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        throw lastErr;
+      }),
+    );
   } finally {
     await admin.destroy();
   }

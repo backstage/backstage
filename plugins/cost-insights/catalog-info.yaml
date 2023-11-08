@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-cost-insights
+  title: '@backstage/plugin-cost-insights'
+  description: A Backstage plugin that helps you keep track of your cloud spend
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: silver-lining

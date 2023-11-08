@@ -46,8 +46,7 @@ export type CatalogCollatorExtensionPoint = {
 
 /**
  * Extension point for customizing how catalog entities are shaped into
- * documents for the search backend, when using
- * {@link searchModuleCatalogCollator}.
+ * documents for the search backend.
  *
  * @alpha
  */
@@ -61,7 +60,7 @@ export const catalogCollatorExtensionPoint =
  *
  * @alpha
  */
-export const searchModuleCatalogCollator = createBackendModule({
+export default createBackendModule({
   moduleId: 'catalogCollator',
   pluginId: 'search',
   register(env) {

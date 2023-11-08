@@ -14,40 +14,38 @@
  * limitations under the License.
  */
 
-import { defaultConfigLoader } from './defaultConfigLoader';
+import { defaultConfigLoaderSync } from './defaultConfigLoader';
 
 (process as any).env = { NODE_ENV: 'test' };
 const anyEnv = process.env as any;
 const anyWindow = window as any;
 
-describe('defaultConfigLoader', () => {
+describe('defaultConfigLoaderSync', () => {
   afterEach(() => {
     delete anyEnv.APP_CONFIG;
     delete anyWindow.__APP_CONFIG__;
   });
 
-  it('loads static config', async () => {
+  it('loads static config', () => {
     anyEnv.APP_CONFIG = [
       { data: { my: 'config' }, context: 'a' },
       { data: { my: 'override-config' }, context: 'b' },
     ];
 
-    const configs = await defaultConfigLoader();
+    const configs = defaultConfigLoaderSync();
     expect(configs).toEqual([
       { data: { my: 'config' }, context: 'a' },
       { data: { my: 'override-config' }, context: 'b' },
     ]);
   });
 
-  it('loads runtime config', async () => {
+  it('loads runtime config', () => {
     anyEnv.APP_CONFIG = [
       { data: { my: 'override-config' }, context: 'a' },
       { data: { my: 'config' }, context: 'b' },
     ];
 
-    const configs = await (defaultConfigLoader as any)(
-      '{"my":"runtime-config"}',
-    );
+    const configs = (defaultConfigLoaderSync as any)('{"my":"runtime-config"}');
     expect(configs).toEqual([
       { data: { my: 'override-config' }, context: 'a' },
       { data: { my: 'config' }, context: 'b' },
@@ -55,28 +53,28 @@ describe('defaultConfigLoader', () => {
     ]);
   });
 
-  it('fails to load invalid missing config', async () => {
-    await expect(defaultConfigLoader()).rejects.toThrow(
+  it('fails to load invalid missing config', () => {
+    expect(() => defaultConfigLoaderSync()).toThrow(
       'No static configuration provided',
     );
   });
 
-  it('fails to load invalid static config', async () => {
+  it('fails to load invalid static config', () => {
     anyEnv.APP_CONFIG = { my: 'invalid-config' };
-    await expect(defaultConfigLoader()).rejects.toThrow(
+    expect(() => defaultConfigLoaderSync()).toThrow(
       'Static configuration has invalid format',
     );
   });
 
-  it('fails to load bad runtime config', async () => {
+  it('fails to load bad runtime config', () => {
     anyEnv.APP_CONFIG = [{ data: { my: 'config' }, context: 'a' }];
 
-    await expect((defaultConfigLoader as any)('}')).rejects.toThrow(
-      'Failed to load runtime configuration, SyntaxError: Unexpected token } in JSON at position 0',
+    expect(() => defaultConfigLoaderSync('}')).toThrow(
+      'Failed to load runtime configuration, SyntaxError: Unexpected token',
     );
   });
 
-  it('loads config from window.__APP_CONFIG__', async () => {
+  it('loads config from window.__APP_CONFIG__', () => {
     anyEnv.APP_CONFIG = [
       { data: { my: 'config' }, context: 'a' },
       { data: { my: 'override-config' }, context: 'b' },
@@ -84,7 +82,7 @@ describe('defaultConfigLoader', () => {
     const windowConfig = { app: { configKey: 'config-value' } };
     anyWindow.__APP_CONFIG__ = windowConfig;
 
-    const configs = await defaultConfigLoader();
+    const configs = defaultConfigLoaderSync();
 
     expect(configs).toEqual([
       ...anyEnv.APP_CONFIG,

@@ -13,6 +13,56 @@ npm.
 Releases are handled by changesets and trigger whenever the "Version Packages"
 PR is merged. This is typically done every Tuesday around noon CET.
 
+## Next Line Release Process
+
+- PR Checks: Notify the teams & ensure there are no outstanding PRs pending to be merged for this version. This should be done in time to ensure a smooth release day. If there are any, reach out to maintainers and relevant owners of the affected code reminding them of the deadline for the release.
+- Lock main branch
+  - Lock the main branch to prevent any new merges by other maintainers. Do not unlock the main branch until the release was published successfully
+  - Core maintainers can still merge last PRs using their admin override including the Version Packages PR
+  - Note: Admin rights are required to lock the branch. If you lack the necessary permissions, contact a core maintainer to perform this action on your behalf.
+- Check [`Version Packages (next)` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages+%28next%29%22)
+  - Verify the version we are shipping is correct, by looking at the version packages PR title. It should be "Version Packages (next)"
+  - Check `pre.json` in [the `.changeset` folder](https://github.com/backstage/backstage/blob/master/.changeset) - it should have `"mode": "pre"` near the top. If you encounter `"mode": "exit"` or if the file doesn't exist, it indicates a mainline release.
+- Verify that there are no active/unfinished `sync_version-packages` actions running (https://github.com/backstage/backstage/actions/workflows/sync_version-packages.yml)
+  - Locking the main branch will prevent new ones to be created, but be sure to check for running actions again after unlocking, since it may cause pending auto-merge PRs to be merged.
+- Check [`Version Packages (next)` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages+%28next%29%22) for sufficient approval to be merged
+  - Check generated `changelog` in the changed files of the pull request under `docs/releases` to see if there are any unexpected major bumps e.g. by searching the file
+  - Review & approve changes
+  - Reach out to core maintainer to merge the pull request
+  - Heads-up: The microsite building step can be skipped as long as the `prettier` task passes & everything else looks green
+
+Merging the `Version Packages (next)` Pull Request will trigger the deployment workflows. Follow along the [deployment workflow](https://github.com/backstage/backstage/actions/workflows/deploy_packages.yml). If you notice flakiness (e.g. if the build is flaky or if the release step runs into an error with releasing to npm) just restart the workflow.
+
+Congratulations on the release! There should be now a post in the [`#announcements` channel](https://discord.com/channels/687207715902193673/705123584468582400) in Discord linking to the release tag - check if links & tag look as expected. Once the notification has gone out on Discord you can unlock the main branch & the release is complete.
+
+## Main Line Release Process
+
+Additional steps for the main line release
+
+- [Switch Release Mode](#switching-release-modes) to exit pre-release mode. This can be done at any time after the last Next Line Release.
+  - Check `.changeset/pre.json` <!-- do not link to pre.json, it breaks the build when it doesn't exist --> if the `mode` is set to `exit`. If you encounter `mode: "pre"` it indicates a next line release.
+- Check [`Version Packages` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages)
+  - Check for mentions of "major" & "breaking" and if they are expected in the current release
+  - Verify the version we are shipping is correct
+- Create Release Notes
+  - There exists a [release notes template](./release-notes-template.md) for creating the release notes. It can already be created after the last main line release to keep track of major changes during the month
+  - The content is picked by relevancy showcasing the work of the community during the month of the release
+  - Mention newly added packages or features
+  - Mention any security fixes
+- Create Release Notes PR
+  - Add the release note file as [`/docs/releases/vx.y.0.md`](./releases)
+  - Add an entry to [`/microsite/sidebar.json`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.json) for the release note
+  - Update the navigation bar item in [`/microsite/docusaurus.config.js`](https://github.com/backstage/backstage/blob/master/microsite/docusaurus.config.js) to point to the new release note
+
+Once the release has been published edit the newly created release in the [GitHub repository](https://github.com/backstage/backstage/releases) and replace the text content with the release notes.
+
+## Switching Release Modes
+
+- To enter pre-release mode: `yarn changeset pre enter next` & create PR + merge changes
+- To exit pre-release mode: `yarn changeset pre exit` & create PR + merge changes
+  - Has to be done before the mainline release
+- It's not time critical; Affects the next release happening
+
 ## Emergency Release Process
 
 **This emergency release process is intended only for the Backstage

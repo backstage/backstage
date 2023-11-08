@@ -23,7 +23,7 @@ import { DateTime } from 'luxon';
 describe('<CreatedAtColumn />', () => {
   it('should render the column with the time', async () => {
     const props = {
-      createdAt: DateTime.now().toISO(),
+      createdAt: DateTime.now().toISO()!,
     };
 
     const { getByText } = await renderInTestApp(<CreatedAtColumn {...props} />);

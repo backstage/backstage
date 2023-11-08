@@ -42,7 +42,7 @@ To get started, first you need a running instance of Vault. You can follow [this
    vault:
      baseUrl: http://your-vault-url
      token: <VAULT_TOKEN>
-     secretEngine: 'customSecretEngine' # Optional. By default it uses 'secrets'
+     secretEngine: 'customSecretEngine' # Optional. By default it uses 'secrets'. Can be overwritten by the annotation of the entity
      kvVersion: <kv-version> # Optional. The K/V version that your instance is using. The available options are '1' or '2'
    ```
 
@@ -67,6 +67,7 @@ metadata:
   # ...
   annotations:
     vault.io/secrets-path: path/to/secrets
+    vault.io/secrets-engine: customSecretEngine # Optional. By default it uses the 'secretEngine' value from your app-config.
 ```
 
 The path is relative to your secrets engine folder. So if you want to get the secrets for backstage and you have the following directory structure:
@@ -86,9 +87,24 @@ If the annotation is missing for a certain component, then the card will show so
 
 ![Screenshot of the vault plugin with missing annotation](images/annotation-missing.png)
 
+In case you need to support different secret engines for entities of the catalog you can provide optional annotation to the entity in `catalog-info.yaml`:
+
+```diff
+ apiVersion: backstage.io/v1alpha1
+ kind: Component
+ metadata:
+   # ...
+   annotations:
+     vault.io/secrets-path: path/to/secrets
++    vault.io/secrets-engine: customSecretEngine # Optional. By default it uses 'secertEngine' value from configuration.
+```
+
+That will overwrite the default secret engine from the configuration.
+
 ## Features
 
 - List the secrets present in a certain path
+- Use different secret engines for different components
 - Open a link to view the secret
 - Open a link to edit the secret
 - Renew the token automatically with a defined periodicity

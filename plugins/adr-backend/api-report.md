@@ -45,7 +45,8 @@ export type AdrParserContext = {
 };
 
 // @public
-export const adrPlugin: () => BackendFeature;
+const adrPlugin: () => BackendFeature;
+export default adrPlugin;
 
 // @public (undocumented)
 export type AdrRouterOptions = {

@@ -242,6 +242,7 @@ export type ConfigContextProps = {
   icons: Icon[];
   engineerCost: number;
   engineerThreshold: number;
+  hideTrendLine: boolean;
   currencies: Currency[];
 };
 
@@ -326,8 +327,7 @@ const costInsightsPlugin: BackstagePlugin<
     growthAlerts: RouteRef<undefined>;
     unlabeledDataflowAlerts: RouteRef<undefined>;
   },
-  {},
-  CostInsightsInputPluginOptions
+  {}
 >;
 export { costInsightsPlugin };
 export { costInsightsPlugin as plugin };

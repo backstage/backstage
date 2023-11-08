@@ -25,21 +25,12 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
 import { orderBy } from 'lodash';
-import React, { createContext, useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { SidebarGroup } from './SidebarGroup';
 import { SidebarConfigContext, SidebarConfig } from './config';
-
-/**
- * Type of `MobileSidebarContext`
- *
- * @internal
- */
-export type MobileSidebarContextType = {
-  selectedMenuItemIndex: number;
-  setSelectedMenuItemIndex: React.Dispatch<React.SetStateAction<number>>;
-};
+import { MobileSidebarContext } from './MobileSidebarContext';
 
 /**
  * Props of MobileSidebar
@@ -88,14 +79,14 @@ const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
 
     overlayHeader: {
       display: 'flex',
-      color: theme.palette.text.primary,
+      color: theme.palette.navigation.color,
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: theme.spacing(2, 3),
     },
 
     overlayHeaderClose: {
-      color: theme.palette.text.primary,
+      color: theme.palette.navigation.color,
     },
 
     marginMobileSidebar: props => ({
@@ -148,16 +139,6 @@ const OverlayMenu = ({
     </Drawer>
   );
 };
-
-/**
- * Context on which `SidebarGroup` is currently selected
- *
- * @internal
- */
-export const MobileSidebarContext = createContext<MobileSidebarContextType>({
-  selectedMenuItemIndex: -1,
-  setSelectedMenuItemIndex: () => {},
-});
 
 /**
  * A navigation component for mobile screens, which sticks to the bottom.
@@ -225,8 +206,7 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
           onClose={() => setSelectedMenuItemIndex(-1)}
         >
           {sidebarGroups[selectedMenuItemIndex] &&
-            (sidebarGroups[selectedMenuItemIndex].props
-              .children as React.ReactChildren)}
+            (sidebarGroups[selectedMenuItemIndex].props.children as ReactNode)}
         </OverlayMenu>
         <BottomNavigation
           className={classes.root}

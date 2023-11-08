@@ -21,7 +21,7 @@ import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { SidebarItem } from './Items';
-import { MobileSidebarContext } from './MobileSidebar';
+import { MobileSidebarContext } from './MobileSidebarContext';
 import { SidebarPage } from './Page';
 import { SidebarGroup } from './SidebarGroup';
 

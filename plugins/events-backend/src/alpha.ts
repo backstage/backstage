@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { eventsPlugin } from './service/EventsPlugin';
+export { eventsPlugin as default } from './service/EventsPlugin';

@@ -9,7 +9,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 
 // @public (undocumented)
-export const badgesPlugin: BackstagePlugin<{}, {}, {}>;
+export const badgesPlugin: BackstagePlugin<{}, {}>;
 
 // @public (undocumented)
 export const EntityBadgesDialog: (props: {

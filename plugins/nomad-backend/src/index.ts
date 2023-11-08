@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export * from './service/router';
+export { nomadPlugin as default } from './plugin';

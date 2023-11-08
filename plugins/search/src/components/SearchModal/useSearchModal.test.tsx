@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import { useSearchModal } from './useSearchModal';
 import { BrowserRouter, Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
@@ -85,7 +85,7 @@ describe('useSearchModal', () => {
     const history = createMemoryHistory({ initialEntries: ['/'] });
 
     const rendered = renderHook(() => useSearchModal(true), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <Router location={history.location} navigator={history}>
           {children}
         </Router>

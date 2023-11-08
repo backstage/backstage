@@ -539,7 +539,6 @@ const ilertPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { ilertPlugin };
@@ -811,6 +810,4 @@ export type UserRole =
   | 'STAKEHOLDER'
   | 'ACCOUNT_OWNER'
   | 'RESPONDER';
-
-// (No @packageDocumentation comment for this package)
 ```

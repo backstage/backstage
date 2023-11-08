@@ -31,6 +31,7 @@ import { promisify } from 'util';
 import os from 'os';
 
 const TASK_NAME_MAX_LENGTH = 14;
+const TEN_MINUTES_MS = 1000 * 60 * 10;
 const exec = promisify(execCb);
 
 export type GitConfig = {
@@ -178,22 +179,6 @@ export async function checkPathExistsTask(path: string) {
 }
 
 /**
- * Create a folder to store templated files
- *
- * @param tempDir - target temporary directory
- * @throws if `fs.mkdir` fails
- */
-export async function createTemporaryAppFolderTask(tempDir: string) {
-  await Task.forItem('creating', 'temporary directory', async () => {
-    try {
-      await fs.mkdir(tempDir);
-    } catch (error) {
-      throw new Error(`Failed to create temporary app directory, ${error}`);
-    }
-  });
-}
-
-/**
  * Run `yarn install` and `run tsc` in application directory
  *
  * @param appDir - location of application to build
@@ -222,7 +207,13 @@ export async function buildAppTask(appDir: string) {
     });
   };
 
-  await runCmd('yarn install');
+  const installTimeout = setTimeout(() => {
+    Task.error(
+      "\n⏱️  It's taking a long time to install dependencies, you may want to exit (Ctrl-C) and run 'yarn install' and 'yarn tsc' manually",
+    );
+  }, TEN_MINUTES_MS);
+
+  await runCmd('yarn install').finally(() => clearTimeout(installTimeout));
   await runCmd('yarn tsc');
 }
 

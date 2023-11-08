@@ -66,6 +66,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
   }
 
   static fromConfig(config: Config, logger: Logger): PublisherBase {
+    let storageClient: BlobServiceClient;
     let containerName = '';
     try {
       containerName = config.getString(
@@ -78,40 +79,52 @@ export class AzureBlobStoragePublish implements PublisherBase {
       );
     }
 
-    let accountName = '';
-    try {
-      accountName = config.getString(
-        'techdocs.publisher.azureBlobStorage.credentials.accountName',
-      );
-    } catch (error) {
-      throw new Error(
-        "Since techdocs.publisher.type is set to 'azureBlobStorage' in your app config, " +
-          'techdocs.publisher.azureBlobStorage.credentials.accountName is required.',
-      );
-    }
-
-    // Credentials is an optional config. If missing, default Azure Blob Storage environment variables will be used.
-    // https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app
-    const accountKey = config.getOptionalString(
-      'techdocs.publisher.azureBlobStorage.credentials.accountKey',
-    );
-
-    let credential;
-    if (accountKey) {
-      credential = new StorageSharedKeyCredential(accountName, accountKey);
-    } else {
-      credential = new DefaultAzureCredential();
-    }
-
-    const storageClient = new BlobServiceClient(
-      `https://${accountName}.blob.core.windows.net`,
-      credential,
-    );
-
     const legacyPathCasing =
       config.getOptionalBoolean(
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
+
+    // Give more priority for connectionString, if configured, return the AzureBlobStoragePublish object here itself
+    const connectionStringKey =
+      'techdocs.publisher.azureBlobStorage.connectionString';
+    const connectionString = config.getOptionalString(connectionStringKey);
+
+    if (connectionString) {
+      logger.info(
+        `Using '${connectionStringKey}' configuration to create storage client`,
+      );
+      storageClient = BlobServiceClient.fromConnectionString(connectionString);
+    } else {
+      let accountName = '';
+      try {
+        accountName = config.getString(
+          'techdocs.publisher.azureBlobStorage.credentials.accountName',
+        );
+      } catch (error) {
+        throw new Error(
+          "Since techdocs.publisher.type is set to 'azureBlobStorage' in your app config, " +
+            'techdocs.publisher.azureBlobStorage.credentials.accountName is required.',
+        );
+      }
+
+      // Credentials is an optional config. If missing, default Azure Blob Storage environment variables will be used.
+      // https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app
+      const accountKey = config.getOptionalString(
+        'techdocs.publisher.azureBlobStorage.credentials.accountKey',
+      );
+
+      let credential;
+      if (accountKey) {
+        credential = new StorageSharedKeyCredential(accountName, accountKey);
+      } else {
+        credential = new DefaultAzureCredential();
+      }
+
+      storageClient = new BlobServiceClient(
+        `https://${accountName}.blob.core.windows.net`,
+        credential,
+      );
+    }
 
     return new AzureBlobStoragePublish({
       storageClient: storageClient,

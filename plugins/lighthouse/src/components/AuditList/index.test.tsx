@@ -26,9 +26,9 @@ jest.mock('react-router-dom', () => {
 import {
   setupRequestMockHandlers,
   TestApiRegistry,
-  wrapInTestApp,
+  renderInTestApp,
 } from '@backstage/test-utils';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import React from 'react';
@@ -59,40 +59,34 @@ describe('AuditList', () => {
 
   it('should render the table', async () => {
     server.use(rest.get('*', (_req, res, ctx) => res(ctx.json(data))));
-    const rendered = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <AuditList />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <AuditList />
+      </ApiProvider>,
     );
-    const element = await rendered.findByText('https://anchor.fm');
+    const element = await screen.findByText('https://anchor.fm');
     expect(element).toBeInTheDocument();
   });
 
   it('renders a button to create a new audit', async () => {
-    const rendered = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <AuditList />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <AuditList />
+      </ApiProvider>,
     );
-    const button = await rendered.findByText('Create Audit');
+    const button = await screen.findByText('Create Audit');
     expect(button).toBeInTheDocument();
   });
 
   describe('pagination', () => {
     describe('when only one page is needed', () => {
-      it('hides pagination elements', () => {
-        const rendered = render(
-          wrapInTestApp(
-            <ApiProvider apis={apis}>
-              <AuditList />
-            </ApiProvider>,
-          ),
+      it('hides pagination elements', async () => {
+        await renderInTestApp(
+          <ApiProvider apis={apis}>
+            <AuditList />
+          </ApiProvider>,
         );
-        expect(rendered.queryByLabelText(/Go to page/)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(/Go to page/)).not.toBeInTheDocument();
       });
     });
 
@@ -107,28 +101,22 @@ describe('AuditList', () => {
       });
 
       it('shows pagination elements', async () => {
-        const rendered = render(
-          wrapInTestApp(
-            <ApiProvider apis={apis}>
-              <AuditList />
-            </ApiProvider>,
-          ),
+        await renderInTestApp(
+          <ApiProvider apis={apis}>
+            <AuditList />
+          </ApiProvider>,
         );
-        expect(
-          await rendered.findByLabelText(/Go to page/),
-        ).toBeInTheDocument();
+        expect(await screen.findByLabelText(/Go to page/)).toBeInTheDocument();
       });
 
       it('changes the page on click', async () => {
-        const rendered = render(
-          wrapInTestApp(
-            <ApiProvider apis={apis}>
-              <AuditList />
-            </ApiProvider>,
-            { routeEntries: ['?page=2'] },
-          ),
+        await renderInTestApp(
+          <ApiProvider apis={apis}>
+            <AuditList />
+          </ApiProvider>,
+          { routeEntries: ['?page=2'] },
         );
-        const element = await rendered.findByLabelText(/Go to page 1/);
+        const element = await screen.findByLabelText(/Go to page 1/);
         fireEvent.click(element);
 
         expect(useNavigate()).toHaveBeenCalledWith(`?page=1`);
@@ -139,14 +127,12 @@ describe('AuditList', () => {
   describe('when waiting on the request', () => {
     it('should render the loader', async () => {
       server.use(rest.get('*', (_req, res, ctx) => res(ctx.delay(20000))));
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <AuditList />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <AuditList />
+        </ApiProvider>,
       );
-      const element = await rendered.findByTestId('progress');
+      const element = await screen.findByTestId('progress');
       expect(element).toBeInTheDocument();
     });
   });
@@ -158,14 +144,12 @@ describe('AuditList', () => {
           res(ctx.status(500, 'something broke')),
         ),
       );
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <AuditList />
-          </ApiProvider>,
-        ),
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <AuditList />
+        </ApiProvider>,
       );
-      const element = await rendered.findByText(/Could not load audit list./);
+      const element = await screen.findByText(/Could not load audit list./);
       expect(element).toBeInTheDocument();
     });
   });

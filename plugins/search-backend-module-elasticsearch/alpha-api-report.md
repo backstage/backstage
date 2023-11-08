@@ -7,6 +7,10 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ElasticSearchQueryTranslator } from '@backstage/plugin-search-backend-module-elasticsearch';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 
+// @alpha
+const _default: () => BackendFeature;
+export default _default;
+
 // @alpha (undocumented)
 export interface ElasticSearchQueryTranslatorExtensionPoint {
   // (undocumented)
@@ -15,9 +19,6 @@ export interface ElasticSearchQueryTranslatorExtensionPoint {
 
 // @alpha
 export const elasticsearchTranslatorExtensionPoint: ExtensionPoint<ElasticSearchQueryTranslatorExtensionPoint>;
-
-// @alpha
-export const searchModuleElasticsearchEngine: () => BackendFeature;
 
 // (No @packageDocumentation comment for this package)
 ```

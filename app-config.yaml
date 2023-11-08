@@ -1,6 +1,9 @@
 app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
+  experimental:
+    packages: all # ✨
+
   #datadogRum:
   #  clientToken: '123456789'
   #  applicationId: qwerty
@@ -232,6 +235,12 @@ catalog:
         - System
         - Domain
         - Location
+  providers:
+    openapi:
+      plugins:
+        - catalog
+        - search
+        - todo
 
   processors:
     ldapOrg:
@@ -288,9 +297,6 @@ catalog:
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
       rules:
         - allow: [Template]
-    # Backstage end-to-end tests of TechDocs
-    - type: file
-      target: ../../cypress/e2e-fixture.catalog.info.yaml
 scaffolder:
   # Use to customize default commit author info used when new components are created
   # defaultAuthor:

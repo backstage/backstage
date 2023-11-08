@@ -22,4 +22,4 @@
 
 export * from './lib';
 export * from './service';
-export * from './plugin';
+export { todoPlugin as default } from './plugin';

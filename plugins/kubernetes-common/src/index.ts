@@ -26,3 +26,5 @@ export {
   kubernetesProxyPermission,
   kubernetesPermissions,
 } from './permissions';
+export * from './error-detection';
+export * from './util';

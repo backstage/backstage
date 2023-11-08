@@ -113,6 +113,8 @@ describe('buildApiReports', () => {
     jest.clearAllMocks();
   });
 
+  jest.spyOn(console, 'log').mockImplementation(() => {});
+
   it('should run without any options', async () => {
     const opts = {};
     const paths: string[] = [];

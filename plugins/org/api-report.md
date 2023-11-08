@@ -69,8 +69,7 @@ const orgPlugin: BackstagePlugin<
   {},
   {
     catalogIndex: ExternalRouteRef<undefined, false>;
-  },
-  {}
+  }
 >;
 export { orgPlugin };
 export { orgPlugin as plugin };

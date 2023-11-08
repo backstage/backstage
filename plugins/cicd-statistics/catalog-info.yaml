@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-cicd-statistics
+  title: '@backstage/plugin-cicd-statistics'
+  description: A frontend plugin visualizing CI/CD pipeline statistics (build time)
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: sharks

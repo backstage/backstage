@@ -21,5 +21,5 @@
  */
 
 export { githubAuthenticator } from './authenticator';
-export { authModuleGithubProvider } from './module';
+export { authModuleGithubProvider as default } from './module';
 export { githubSignInResolvers } from './resolvers';

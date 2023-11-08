@@ -68,6 +68,18 @@ export interface InsightFacts {
 // @public
 export const jsonRulesEngineCheckResultRenderer: CheckResultRenderer;
 
+// @public (undocumented)
+export const ScorecardInfo: (props: {
+  checkResults: CheckResult[];
+  title: string;
+  description?: string | undefined;
+}) => JSX_2.Element;
+
+// @public (undocumented)
+export const ScorecardsList: (props: {
+  checkResults: CheckResult[];
+}) => JSX_2.Element;
+
 // @public
 export interface TechInsightsApi {
   // (undocumented)
@@ -125,7 +137,6 @@ export const techInsightsPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 

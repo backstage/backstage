@@ -67,6 +67,16 @@ diff --git a/packages/backend/src/index.ts b/packages/backend/src/index.ts
    apiRouter.use(notFoundHandler());
 ```
 
+## New Backend System
+
+The code coverage backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
++ backend.add(import('@backstage/plugin-explore-backend'));
+```
+
 ## Configuring your entity
 
 In order to use this plugin, you must set the `backstage.io/code-coverage` annotation.
@@ -234,4 +244,13 @@ Example
     }
   ]
 }
+```
+
+### Configuration
+
+Configure the plugin in your `app-config.yaml`:
+
+```yaml
+codeCoverage:
+  bodySizeLimit: 100kb # Defaults to 100kb, see https://www.npmjs.com/package/body-parser#limit
 ```

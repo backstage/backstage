@@ -1,0 +1,47 @@
+[
+  {
+    "filename": "src/Calc/Main.cs",
+    "lineHits": {
+      "5": 4,
+      "6": 4,
+      "7": 1,
+      "8": 0,
+      "9": 2,
+      "10": 1,
+      "11": 4
+    },
+    "branchHits": {
+      "5": {
+        "covered": 5,
+        "missed": 1,
+        "available": 6
+      }
+    }
+  },
+  {
+    "filename": "src/Calc/Math.cs",
+    "lineHits": {
+      "5": 1,
+      "6": 0,
+      "7": 2,
+      "8": 2,
+      "9": 0,
+      "11": 3,
+      "12": 1,
+      "14": 1,
+      "15": 1
+    },
+    "branchHits": {
+      "8": {
+        "covered": 1,
+        "missed": 1,
+        "available": 2
+      },
+      "11": {
+        "covered": 2,
+        "missed": 0,
+        "available": 2
+      }
+    }
+  }
+]

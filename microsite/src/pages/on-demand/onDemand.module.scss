@@ -1,10 +1,10 @@
 .onDemandPage {
-  :global(.marketplaceBanner) {
+  :global(.communityBanner) {
     display: flex;
     align-items: center;
   }
 
-  :global(.marketplaceContent) {
+  :global(.communityContent) {
     flex: 1;
   }
 

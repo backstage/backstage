@@ -48,14 +48,19 @@ describe('CacheManager', () => {
   describe('CacheManager.fromConfig', () => {
     it('accesses the backend.cache key', () => {
       const getOptionalString = jest.fn();
+      const getOptionalBoolean = jest.fn();
       const config = defaultConfig();
       config.getOptionalString = getOptionalString;
+      config.getOptionalBoolean = getOptionalBoolean;
 
       CacheManager.fromConfig(config);
 
       expect(getOptionalString.mock.calls[0][0]).toEqual('backend.cache.store');
       expect(getOptionalString.mock.calls[1][0]).toEqual(
         'backend.cache.connection',
+      );
+      expect(getOptionalBoolean.mock.calls[0][0]).toEqual(
+        'backend.cache.useRedisSets',
       );
     });
 
@@ -195,32 +200,61 @@ describe('CacheManager', () => {
       const mockMemcacheCalls = memcache.mock.calls.splice(-1);
       expect(mockMemcacheCalls[0][0]).toEqual(expectedHost);
     });
-  });
 
-  it('returns a Redis client when configured', () => {
-    const redisConnection = 'redis://127.0.0.1:6379';
-    const manager = CacheManager.fromConfig(
-      new ConfigReader({
-        backend: {
-          cache: {
-            store: 'redis',
-            connection: redisConnection,
+    it('returns a Redis client when configured', () => {
+      const redisConnection = 'redis://127.0.0.1:6379';
+      const manager = CacheManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: redisConnection,
+            },
           },
-        },
-      }),
-    );
-    const expectedTtl = 3600;
-    manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
+        }),
+      );
+      const expectedTtl = 3600;
+      manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
 
-    const cache = Keyv as unknown as jest.Mock;
-    const mockCacheCalls = cache.mock.calls.splice(-1);
-    expect(mockCacheCalls[0][0]).toMatchObject({
-      ttl: expectedTtl,
+      const cache = Keyv as unknown as jest.Mock;
+      const mockCacheCalls = cache.mock.calls.splice(-1);
+      expect(mockCacheCalls[0][0]).toMatchObject({
+        ttl: expectedTtl,
+      });
+      expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvRedis);
+      const redis = KeyvRedis as unknown as jest.Mock;
+      const mockRedisCalls = redis.mock.calls.splice(-1);
+      expect(mockRedisCalls[0][0]).toEqual(redisConnection);
     });
-    expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvRedis);
-    const redis = KeyvRedis as unknown as jest.Mock;
-    const mockRedisCalls = redis.mock.calls.splice(-1);
-    expect(mockRedisCalls[0][0]).toEqual(redisConnection);
+
+    it('returns a Redis client when configured with useRedisSets flag', () => {
+      const redisConnection = 'redis://127.0.0.1:6379';
+      const useRedisSets = false;
+      const manager = CacheManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: redisConnection,
+              useRedisSets: useRedisSets,
+            },
+          },
+        }),
+      );
+      const expectedTtl = 3600;
+      manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
+
+      const cache = Keyv as unknown as jest.Mock;
+      const mockCacheCalls = cache.mock.calls.splice(-1);
+      expect(mockCacheCalls[0][0]).toMatchObject({
+        ttl: expectedTtl,
+        useRedisSets: useRedisSets,
+      });
+      expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvRedis);
+      const redis = KeyvRedis as unknown as jest.Mock;
+      const mockRedisCalls = redis.mock.calls.splice(-1);
+      expect(mockRedisCalls[0][0]).toEqual(redisConnection);
+    });
   });
 
   describe('connection errors', () => {

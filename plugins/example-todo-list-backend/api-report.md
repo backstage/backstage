@@ -11,8 +11,9 @@ import { Logger } from 'winston';
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @alpha
-export const exampleTodoListPlugin: () => BackendFeature;
+// @public
+const exampleTodoListPlugin: () => BackendFeature;
+export default exampleTodoListPlugin;
 
 // @public
 export interface RouterOptions {

@@ -24,10 +24,8 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
 import { IncrementalEntityProvider } from '.';
-import {
-  catalogModuleIncrementalIngestionEntityProvider,
+import catalogModuleIncrementalIngestionEntityProvider, {
   incrementalIngestionProvidersExtensionPoint,
 } from './alpha';
 
@@ -64,7 +62,7 @@ async function main() {
       factory: () => new ConfigReader(config),
     }),
   );
-  backend.add(catalogPlugin());
+  backend.add(import('@backstage/plugin-catalog-backend/alpha'));
   backend.add(catalogModuleIncrementalIngestionEntityProvider());
   backend.add(
     createBackendModule({

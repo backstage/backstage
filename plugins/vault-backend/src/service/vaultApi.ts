@@ -33,6 +33,7 @@ export type VaultSecretList = {
 /**
  * Object containing the secret name and some links
  * @public
+ * @deprecated Use the interface from `@backstage/plugin-vault-node`
  */
 export type VaultSecret = {
   name: string;
@@ -53,17 +54,26 @@ type RenewTokenResponse = {
 /**
  * Interface for the Vault API
  * @public
+ * @deprecated Use the interface from `@backstage/plugin-vault-node`
  */
 export interface VaultApi {
   /**
    * Returns the URL to access the Vault UI with the defined config.
    */
   getFrontendSecretsUrl(): string;
+
   /**
    * Returns a list of secrets used to show in a table.
    * @param secretPath - The path where the secrets are stored in Vault
+   * @param options - Additional options to be passed to the Vault API, allows to override vault default settings in app config file
    */
-  listSecrets(secretPath: string): Promise<VaultSecret[]>;
+  listSecrets(
+    secretPath: string,
+    options?: {
+      secretEngine?: string;
+    },
+  ): Promise<VaultSecret[]>;
+
   /**
    * Optional, to renew the token used to list the secrets. Throws an
    * error if the token renewal went wrong.
@@ -115,11 +125,18 @@ export class VaultClient implements VaultApi {
     return `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}`;
   }
 
-  async listSecrets(secretPath: string): Promise<VaultSecret[]> {
+  async listSecrets(
+    secretPath: string,
+    options?: {
+      secretEngine?: string;
+    },
+  ): Promise<VaultSecret[]> {
+    const mount = options?.secretEngine || this.vaultConfig.secretEngine;
+
     const listUrl =
       this.vaultConfig.kvVersion === 2
-        ? `v1/${this.vaultConfig.secretEngine}/metadata/${secretPath}`
-        : `v1/${this.vaultConfig.secretEngine}/${secretPath}`;
+        ? `v1/${encodeURIComponent(mount)}/metadata/${secretPath}`
+        : `v1/${encodeURIComponent(mount)}/${secretPath}`;
     const result = await this.limit(() =>
       this.callApi<VaultSecretList>(listUrl, { list: true }),
     );
@@ -131,7 +148,9 @@ export class VaultClient implements VaultApi {
         if (secret.endsWith('/')) {
           secrets.push(
             ...(await this.limit(() =>
-              this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`),
+              this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`, {
+                secretEngine: mount,
+              }),
             )),
           );
         } else {
@@ -140,8 +159,12 @@ export class VaultClient implements VaultApi {
           secrets.push({
             name: secret,
             path: secretPath,
-            editUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
-            showUrl: `${vaultUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
+            editUrl: `${vaultUrl}/ui/vault/secrets/${encodeURIComponent(
+              mount,
+            )}/edit/${secretPath}/${secret}`,
+            showUrl: `${vaultUrl}/ui/vault/secrets/${encodeURIComponent(
+              mount,
+            )}/show/${secretPath}/${secret}`,
           });
         }
       }),

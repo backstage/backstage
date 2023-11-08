@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-core-plugin-api
+  title: '@backstage/core-plugin-api'
+  description: Core API used by Backstage plugins
+spec:
+  lifecycle: production
+  type: backstage-web-library
+  owner: maintainers

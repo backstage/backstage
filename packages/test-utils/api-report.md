@@ -26,6 +26,7 @@ import { JsonValue } from '@backstage/types';
 import { MatcherFunction } from '@testing-library/react';
 import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -52,6 +53,11 @@ export function createTestAppWrapper(
 export type ErrorWithContext = {
   error: ErrorApiError;
   context?: ErrorApiErrorContext;
+};
+
+// @public
+export type LegacyRootOption = {
+  legacyRoot?: boolean;
 };
 
 // @public
@@ -192,14 +198,14 @@ export type MockStorageBucket = {
 
 // @public
 export function renderInTestApp(
-  Component: ComponentType | ReactNode,
-  options?: TestAppOptions,
+  Component: ComponentType<PropsWithChildren<{}>> | ReactNode,
+  options?: TestAppOptions & LegacyRootOption,
 ): Promise<RenderResult>;
 
 // @public
 export function renderWithEffects(
   nodes: ReactElement,
-  options?: Pick<RenderOptions, 'wrapper'>,
+  options?: Pick<RenderOptions, 'wrapper'> & LegacyRootOption,
 ): Promise<RenderResult>;
 
 // @public

@@ -21,6 +21,8 @@ import { ConfigReader } from '@backstage/config';
 import { IncrementalEntityProvider } from '../types';
 import { WrapperProviders } from './WrapperProviders';
 
+jest.setTimeout(60_000);
+
 describe('WrapperProviders', () => {
   const applyDatabaseMigrations = jest.fn();
   const databases = TestDatabases.create({

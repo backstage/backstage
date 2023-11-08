@@ -36,7 +36,10 @@ const Radar = ({
   entries,
   ...props
 }: Props): JSX.Element => {
-  const radius = Math.min(width, height) / 2;
+  // Radius with optional buffer for the footer if rings have descriptions
+  const radius =
+    Math.min(width, height) / 2 -
+    (rings.some(ring => ring.description) ? 16 : 0);
 
   // State
   const [activeEntry, setActiveEntry] = useState<Entry>();

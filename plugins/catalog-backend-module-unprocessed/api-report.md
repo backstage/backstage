@@ -8,7 +8,8 @@ import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 
 // @public
-export const catalogModuleUnprocessedEntities: () => BackendFeature;
+const catalogModuleUnprocessedEntities: () => BackendFeature;
+export default catalogModuleUnprocessedEntities;
 
 // @public
 export class UnprocessedEntitiesModule {
