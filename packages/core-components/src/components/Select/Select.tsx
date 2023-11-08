@@ -218,15 +218,21 @@ export function SelectComponent(props: SelectProps) {
           renderValue={s =>
             multiple && (value as any[]).length !== 0 ? (
               <Box className={classes.chips}>
-                {(s as string[]).map(selectedValue => (
-                  <Chip
-                    key={items.find(el => el.value === selectedValue)?.value}
-                    label={items.find(el => el.value === selectedValue)?.label}
-                    clickable
-                    onDelete={handleDelete(selectedValue)}
-                    className={classes.chip}
-                  />
-                ))}
+                {(s as string[]).map(selectedValue =>
+                  items.find(el => el.value === selectedValue) ? (
+                    <Chip
+                      key={items.find(el => el.value === selectedValue)?.value}
+                      label={
+                        items.find(el => el.value === selectedValue)?.label
+                      }
+                      clickable
+                      onDelete={handleDelete(selectedValue)}
+                      className={classes.chip}
+                    />
+                  ) : (
+                    false
+                  ),
+                )}
               </Box>
             ) : (
               <Typography>
