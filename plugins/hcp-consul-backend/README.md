@@ -1,6 +1,6 @@
 # @backstage/plugin-hcp-consul-backend
 
-A backend for HCP Consul, this plugin exposes a services with routes that are used by the `@backstage/plugin-hcp-consul` plugin to query HCP Consul overview and service instances using using HCP Consul Central public APIs.
+A backend for HCP Consul, this plugin exposes a services with routes that are used by the `@backstage/plugin-hcp-consul` plugin to query HCP Consul overview and service instances using HCP Consul Central public APIs.
 
 ## Set Up
 
