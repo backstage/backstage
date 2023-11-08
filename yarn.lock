@@ -19593,11 +19593,11 @@ __metadata:
   linkType: hard
 
 "@types/recursive-readdir@npm:^2.2.0":
-  version: 2.2.3
-  resolution: "@types/recursive-readdir@npm:2.2.3"
+  version: 2.2.4
+  resolution: "@types/recursive-readdir@npm:2.2.4"
   dependencies:
     "@types/node": "*"
-  checksum: 9a9136b93a133de006bf6d9b2f8bbae6e308a0b5a9c9acf490848de3ec3621804a09bc166999e81beace3151cacc2085f5617d90eaa329a99f73c1bb6806531d
+  checksum: df74312b83870829b81208b6a745d9de75127ac73187808eb60581906e70f606786dd0d3c2e6c69daf6f31833ea052e6d7a3033fd0de9a7dc1eb43f10ae3df0c
   languageName: node
   linkType: hard
 
