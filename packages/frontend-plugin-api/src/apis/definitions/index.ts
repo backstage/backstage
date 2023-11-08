@@ -42,3 +42,4 @@ export * from './FetchApi';
 export * from './IdentityApi';
 export * from './OAuthRequestApi';
 export * from './StorageApi';
+export * from './AnalyticsApi';
