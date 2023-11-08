@@ -18960,11 +18960,11 @@ __metadata:
   linkType: hard
 
 "@types/json-schema-merge-allof@npm:^0.6.0":
-  version: 0.6.3
-  resolution: "@types/json-schema-merge-allof@npm:0.6.3"
+  version: 0.6.4
+  resolution: "@types/json-schema-merge-allof@npm:0.6.4"
   dependencies:
     "@types/json-schema": "*"
-  checksum: c59ddbe5ffb97bbd90dd1654f3745e60ff8854db3b99ba2059c54b71f8d303936577a8262cd875e738200c0e4d59657d8195b415f88bf9fc93dc61aeecde68d1
+  checksum: 7ac71a8b6cda3e1e48153c0c00939daab2ae56353fd2e41f59a3b69a2a26eafddb9e389b8096068eea5ac60e6619927a2d854f317c67940a35488ce52507b472
   languageName: node
   linkType: hard
 
