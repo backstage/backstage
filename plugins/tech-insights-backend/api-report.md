@@ -50,6 +50,17 @@ export const entityOwnershipFactRetriever: FactRetriever;
 // @public
 export interface FactRetrieverEngine {
   getJobRegistration(ref: string): Promise<FactRetrieverRegistration>;
+  recalculateFactsForComponent({
+    kind,
+    name,
+    namespace,
+    factRetrieverIds,
+  }: {
+    kind: string;
+    namespace: string;
+    name: string;
+    factRetrieverIds: string[] | undefined;
+  }): Promise<void>;
   schedule(): Promise<void>;
   triggerJob(ref: string): Promise<void>;
 }
@@ -100,6 +111,7 @@ export interface RouterOptions<
 > {
   config: Config;
   factChecker?: FactChecker<CheckType, CheckResultType>;
+  factRetrieverEngine: FactRetrieverEngine;
   logger: Logger;
   persistenceContext: PersistenceContext;
 }
