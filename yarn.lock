@@ -19340,11 +19340,11 @@ __metadata:
   linkType: hard
 
 "@types/passport-microsoft@npm:^1.0.0":
-  version: 1.0.2
-  resolution: "@types/passport-microsoft@npm:1.0.2"
+  version: 1.0.3
+  resolution: "@types/passport-microsoft@npm:1.0.3"
   dependencies:
     "@types/passport-oauth2": "*"
-  checksum: c8173898aba22d443cacf764da991be8461a034328bdff00ff048e76fa930d3a72e7d28f049e79c12bd35d46acdbf08f2e0f7796c7915b2018c0647d7e6ac589
+  checksum: 68e9204e90b4a195a1476cfc966d5165febcbb60948a9e98e5dab66f9080a69a2d5f76473a09aed26e00e776038ae63852e44889adb6e45a1851365ca10e5060
   languageName: node
   linkType: hard
 
