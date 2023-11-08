@@ -174,7 +174,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-          --sql-mode="TRADITIONAL"
         ports:
           - 3306/tcp
 
