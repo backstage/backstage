@@ -19210,11 +19210,11 @@ __metadata:
   linkType: hard
 
 "@types/node-forge@npm:^1.3.0":
-  version: 1.3.8
-  resolution: "@types/node-forge@npm:1.3.8"
+  version: 1.3.9
+  resolution: "@types/node-forge@npm:1.3.9"
   dependencies:
     "@types/node": "*"
-  checksum: fa75d22ef65671732f31965ea28618c52a1b4ef0fa44fa35110ba0fa375e35563e056c21545cf1b23a4b0b6546333e8885db003957b0cd8a45fecef16000ff63
+  checksum: 4ffab54136960b0944af942a44206470e98766b89b867b6126ebc65c6f21463fd9ea20b26714216e153fbbee7ca5ce689db9067ea286a92b34368a5e2f77601f
   languageName: node
   linkType: hard
 
