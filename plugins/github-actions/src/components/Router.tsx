@@ -26,14 +26,13 @@ import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowRunsCard } from './WorkflowRunsCard';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { GITHUB_ACTIONS_ANNOTATION } from './getProjectNameFromEntity';
+import { RouterProps, ViewEnum } from '../api/types';
 
 /** @public */
 export const isGithubActionsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]);
 
-/** @public */
-// Optional cardview prop
-export const Router = ({ cardView = false }: { cardView?: boolean }) => {
+export const Router = ({ view = ViewEnum.Table }: RouterProps) => {
   const { entity } = useEntity();
 
   if (!isGithubActionsAvailable(entity)) {
@@ -41,18 +40,17 @@ export const Router = ({ cardView = false }: { cardView?: boolean }) => {
       <MissingAnnotationEmptyState annotation={GITHUB_ACTIONS_ANNOTATION} />
     );
   }
+
+  const workflowRunsComponent =
+    view === ViewEnum.Card ? (
+      <WorkflowRunsCard entity={entity} />
+    ) : (
+      <WorkflowRunsTable entity={entity} />
+    );
+
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          cardView ? (
-            <WorkflowRunsCard entity={entity} />
-          ) : (
-            <WorkflowRunsTable entity={entity} />
-          )
-        }
-      />
+      <Route path="/" element={workflowRunsComponent} />
       <Route
         path={`${buildRouteRef.path}`}
         element={<WorkflowRunDetails entity={entity} />}

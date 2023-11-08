@@ -60,3 +60,14 @@ export type Branches = {
   default_branch: string;
   branches: Branch[];
 };
+
+/** @public */
+export enum ViewEnum {
+  Table = 'table',
+  Card = 'cards',
+}
+
+/** @public */
+export interface RouterProps {
+  view?: ViewEnum;
+}
