@@ -19469,11 +19469,11 @@ __metadata:
   linkType: hard
 
 "@types/react-grid-layout@npm:^1.3.2":
-  version: 1.3.4
-  resolution: "@types/react-grid-layout@npm:1.3.4"
+  version: 1.3.5
+  resolution: "@types/react-grid-layout@npm:1.3.5"
   dependencies:
     "@types/react": "*"
-  checksum: e960b250f22b799a52c740a68a73bf1c97ba97148abfe4c270c4d227a821c98b93487510a6270a57e394ff467eaaa7a3c1378e71ef4d78659fd65eb87873c923
+  checksum: 59e92cac78712bf527e8c9147f70c121a9a7f6faaf1ee5c979c38a9e9445148f5003d6a37a769b6695fdca65e71567033858fc0e1371937c79dcb35f4b36ae5e
   languageName: node
   linkType: hard
 
