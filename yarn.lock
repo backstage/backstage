@@ -19445,11 +19445,11 @@ __metadata:
   linkType: hard
 
 "@types/jest-when@npm:^3.5.0":
-  version: 3.5.4
-  resolution: "@types/jest-when@npm:3.5.4"
+  version: 3.5.5
+  resolution: "@types/jest-when@npm:3.5.5"
   dependencies:
     "@types/jest": "*"
-  checksum: 58a9a7b2dd81cb2c87c3d3539d03dc82c72a66282b3930237ad30641d0c27d7c2b9de2cb9da05b0d287bb6d890f82601935ca4e616a1828e5e05ebb4fc444270
+  checksum: 816c1ed5554182c43261d23c2902506c316bc0368f2ea1e632a0a93d05d8f6f2918afa6a406c2f5fdd4d277e042b8d2ba797993dc3c2fd2d5f53cda946696772
   languageName: node
   linkType: hard
 
