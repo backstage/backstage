@@ -119,6 +119,7 @@ function EntityLabels(props: { entity: Entity }) {
       {ownedByRelations.length > 0 && (
         <HeaderLabel
           label="Owner"
+          contentTypograpyRootComponent="p"
           value={
             <EntityRefLinks
               entityRefs={ownedByRelations}

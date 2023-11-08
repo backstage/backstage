@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.13.8-next.2
+
+### Patch Changes
+
+- [#20777](https://github.com/backstage/backstage/pull/20777) [`eb817ee6d4`](https://github.com/backstage/backstage/commit/eb817ee6d4720322773389dbe6ed20d6fc80a541) Thanks [@is343](https://github.com/is343)! - Fix spacing inconsistency with links and labels in headers
+
+- [#20357](https://github.com/backstage/backstage/pull/20357) [`f28c11743a`](https://github.com/backstage/backstage/commit/f28c11743a97c972c0c14b58f24696448810dcc5) Thanks [@acierto](https://github.com/acierto)! - Add a possibility to use a formatter on a warning panel. Applied it for a scaffolder template
+
+- [#20842](https://github.com/backstage/backstage/pull/20842) [`0c5b78650c`](https://github.com/backstage/backstage/commit/0c5b78650c97b574b89b323d33728ed1e827bcb3) Thanks [@benjdlambert](https://github.com/benjdlambert)! - Reverting the `MissingAnnotationEmptyState` component due to cyclical dependency. This component is now deprecated, please use the import from `@backstage/plugin-catalog-react` instead to use the new functionality
+
 ## 0.13.8-next.1
 
 ### Patch Changes

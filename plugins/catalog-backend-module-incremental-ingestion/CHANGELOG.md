@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.4.11-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-catalog-backend@1.15.0-next.2
+  - @backstage/backend-tasks@0.5.12-next.2
+  - @backstage/plugin-catalog-node@1.5.0-next.2
+  - @backstage/plugin-events-node@0.2.16-next.2
+
 ## 0.4.11-next.1
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/frontend-app-api
 
+## 0.3.0-next.2
+
+### Patch Changes
+
+- [#20999](https://github.com/backstage/backstage/pull/20999) [`fdc348d5d3`](https://github.com/backstage/backstage/commit/fdc348d5d30a98b52d8a756daba29d616418da93) Thanks [@Rugvip](https://github.com/Rugvip)! - The options parameter of `createApp` is now optional.
+
+- [#20888](https://github.com/backstage/backstage/pull/20888) [`733bd95746`](https://github.com/backstage/backstage/commit/733bd95746b99ad8cdb4a7b87e8dc3e16d3b764a) Thanks [@Rugvip](https://github.com/Rugvip)! - Implement new `AppTreeApi`
+
+- [#20999](https://github.com/backstage/backstage/pull/20999) [`fa28d4e6df`](https://github.com/backstage/backstage/commit/fa28d4e6dfcbee2bc8695b7b24289a401df96acd) Thanks [@Rugvip](https://github.com/Rugvip)! - No longer throw error on invalid input if the child is disabled.
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/frontend-plugin-api@0.3.0-next.2
+  - @backstage/plugin-graphiql@0.3.0-next.2
+
 ## 0.3.0-next.1
 
 ### Patch Changes

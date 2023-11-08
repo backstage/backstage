@@ -103,8 +103,6 @@ This example touches on the fact that services can have different scopes, being 
 
 ## Split Into Multiple Backends
 
-> NOTE: Splitting into multiple backends is an advanced deployment pattern that requires significant effort and there are not yet many built-in tools in the framework to help you out. Only use this if necessary.
-
 A more advanced way to deploy Backstage is to split the backend plugins into multiple different backend deployments. Both the [deployment documentation](../../deployment/scaling.md) and [Threat Model](../../overview/threat-model.md#trust-model) explain the benefits of this, so here we'll focus on how to do it.
 
 To create a separate backend we need to create an additional backend package. This package will be built and deployed separately from your existing backend. There is currently no template to create a backend via `yarn new`, so the quickest way is to copy the new package and modify. The naming is up to you and it depends on how you are splitting things and up. For this example we'll just use a simple suffix. You might end up with a directory structure like this:
