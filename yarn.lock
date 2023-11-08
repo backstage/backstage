@@ -5983,7 +5983,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-circleci@workspace:^, @backstage/plugin-circleci@workspace:plugins/circleci":
+"@backstage/plugin-circleci@workspace:plugins/circleci":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-circleci@workspace:plugins/circleci"
   dependencies:
@@ -10318,6 +10318,32 @@ __metadata:
     human-id: ^1.0.2
     prettier: ^2.7.1
   checksum: 40ad8069f9adc565b78a5f25992e31b41a12e551d94c29e1b4def49ce98871a1e358feda6536be8b363a6dba18b1226a22ecfc60fdd7bc1e74bfcf46b07f91be
+  languageName: node
+  linkType: hard
+
+"@circleci/backstage-plugin@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@circleci/backstage-plugin@npm:0.1.1"
+  dependencies:
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": 4.0.0-alpha.61
+    "@types/react": ^16.13.1 || ^17.0.0
+    circleci-api: ^4.0.0
+    humanize-duration: ^3.27.0
+    lodash: ^4.17.21
+    luxon: ^3.0.0
+    react-use: ^17.2.4
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: ded80e2eef1cec3f83f76e62b1362499c1662ae6307bdc829b78aed02101af6fd85134d94716fbbb60e8a0d5b3d2a4653df81fbdfcab576a47f7b59a332e580f
   languageName: node
   linkType: hard
 
@@ -26334,7 +26360,6 @@ __metadata:
     "@backstage/plugin-catalog-import": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^"
-    "@backstage/plugin-circleci": "workspace:^"
     "@backstage/plugin-cloudbuild": "workspace:^"
     "@backstage/plugin-code-coverage": "workspace:^"
     "@backstage/plugin-cost-insights": "workspace:^"
@@ -26381,6 +26406,7 @@ __metadata:
     "@backstage/plugin-user-settings": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
+    "@circleci/backstage-plugin": ^0.1.1
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -26443,7 +26469,6 @@ __metadata:
     "@backstage/plugin-catalog-import": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^"
-    "@backstage/plugin-circleci": "workspace:^"
     "@backstage/plugin-cloudbuild": "workspace:^"
     "@backstage/plugin-code-coverage": "workspace:^"
     "@backstage/plugin-cost-insights": "workspace:^"
@@ -26493,6 +26518,7 @@ __metadata:
     "@backstage/plugin-user-settings": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
+    "@circleci/backstage-plugin": ^0.1.1
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
