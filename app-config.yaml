@@ -131,13 +131,13 @@ proxy:
 
     '/puppetdb':
       target: https://your.puppetdb.instance.com
-    
-    '/hcp': 
+
+    '/hcp':
       target: 'https://api.cloud.hashicorp.com'
       allowedMethods: ['GET', 'POST']
       allowedHeaders: ['Authorization']
-    
-    '/hcpAuth': 
+
+    '/hcpAuth':
       target: 'https://auth.hashicorp.com'
       allowedMethods: ['GET', 'POST']
       allowedHeaders: ['Content-Type']
@@ -481,7 +481,7 @@ permission:
   enabled: true
 
 consul:
-  clientID: 
-  clientSecret: 
-  organizationID: 
+  clientID:
+  clientSecret:
+  organizationID:
   projectID:
