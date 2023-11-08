@@ -5,7 +5,7 @@
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { Config } from '@backstage/config';
-import { ConfigApi } from '@backstage/frontend-plugin-api';
+import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionOverrides } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
