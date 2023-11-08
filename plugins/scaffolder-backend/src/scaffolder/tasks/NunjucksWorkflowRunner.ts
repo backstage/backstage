@@ -276,74 +276,71 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           return;
         }
       }
+      const iterations = (
+        step.each
+          ? Object.entries(this.render(step.each, context, renderTemplate)).map(
+              ([key, value]) => ({
+                each: { key, value },
+              }),
+            )
+          : [{}]
+      ).map(i => ({
+        ...i,
+        // Secrets are only passed when templating the input to actions for security reasons
+        input: step.input
+          ? this.render(
+              step.input,
+              { ...context, ...i, ...task },
+              renderTemplate,
+            )
+          : {},
+      }));
+      for (const iteration of iterations) {
+        const actionId =
+          action.id + (iteration.each ? `[${iteration.each.key}]` : '');
 
-      // Secrets are only passed when templating the input to actions for security reasons
-      const input =
-        (step.input &&
-          this.render(
-            step.input,
-            { ...context, secrets: task.secrets ?? {} },
-            renderTemplate,
-          )) ??
-        {};
-
-      if (action.schema?.input) {
-        const validateResult = validateJsonSchema(input, action.schema.input);
-        if (!validateResult.valid) {
-          const errors = validateResult.errors.join(', ');
-          throw new InputError(
-            `Invalid input passed to action ${action.id}, ${errors}`,
+        if (action.schema?.input) {
+          const validateResult = validateJsonSchema(
+            iteration.input,
+            action.schema.input,
+          );
+          if (!validateResult.valid) {
+            const errors = validateResult.errors.join(', ');
+            throw new InputError(
+              `Invalid input passed to action ${actionId}, ${errors}`,
+            );
+          }
+        }
+        if (
+          !isActionAuthorized(decision, {
+            action: action.id,
+            input: iteration.input,
+          })
+        ) {
+          throw new NotAllowedError(
+            `Unauthorized action: ${actionId}. The action is not allowed. Input: ${JSON.stringify(
+              iteration.input,
+              null,
+              2,
+            )}`,
           );
         }
       }
-
-      if (!isActionAuthorized(decision, { action: action.id, input })) {
-        throw new NotAllowedError(
-          `Unauthorized action: ${
-            action.id
-          }. The action is not allowed. Input: ${JSON.stringify(
-            input,
-            null,
-            2,
-          )}`,
-        );
-      }
-
       const tmpDirs = new Array<string>();
       const stepOutput: { [outputName: string]: JsonValue } = {};
 
-      const iterations = new Array<JsonValue>();
-      if (step.each) {
-        const each = await this.render(step.each, context, renderTemplate);
-        iterations.push(
-          ...Object.keys(each).map((key: any) => {
-            return { key: key, value: each[key] };
-          }),
-        );
-      } else {
-        iterations.push({});
-      }
-
-      let actionInput = input;
       for (const iteration of iterations) {
-        if (step.each) {
-          taskLogger.info(`Running step each: ${iteration}`);
-          const iterationContext = {
-            ...context,
-            each: iteration,
-          };
-          // re-render input with the modified context that includes each
-          actionInput =
-            (step.input &&
-              this.render(
-                step.input,
-                { ...iterationContext, secrets: task.secrets ?? {} },
-                renderTemplate,
-              )) ??
-            {};
+        if (iteration.each) {
+          taskLogger.info(
+            `Running step each: ${JSON.stringify(
+              iteration.each,
+              (k, v) => (k ? v.toString() : v),
+              0,
+            )}`,
+          );
         }
         await action.handler({
-          input: actionInput,
+          input: iteration.input,
           secrets: task.secrets ?? {},
           logger: taskLogger,
           logStream: streamLogger,
