@@ -98,6 +98,14 @@ export type CustomHomepageGridProps = {
    * @defaultValue false
    */
   preventCollision?: boolean;
+
+  /**
+   * Hook that overwrite default useHomeStorage hook. For example, use database to storage homepage layout data
+   * @defaultValue undefined
+   */
+  useHomeStorage?: (
+    config: GridWidget[],
+  ) => [GridWidget[], (value: GridWidget[]) => void];
 };
 
 export const LayoutConfigurationSchema = z.object({

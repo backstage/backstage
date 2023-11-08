@@ -210,7 +210,9 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   const defaultLayout = props.config
     ? convertConfigToDefaultWidgets(props.config, availableWidgets)
     : [];
-  const [widgets, setWidgets] = useHomeStorage(defaultLayout);
+  const [widgets, setWidgets] = (props.useHomeStorage || useHomeStorage)(
+    defaultLayout,
+  );
   const [addWidgetDialogOpen, setAddWidgetDialogOpen] = React.useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
   const [editMode, setEditMode] = React.useState(editModeOn);
