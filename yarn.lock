@@ -19370,12 +19370,12 @@ __metadata:
   linkType: hard
 
 "@types/passport-strategy@npm:^0.2.35":
-  version: 0.2.37
-  resolution: "@types/passport-strategy@npm:0.2.37"
+  version: 0.2.38
+  resolution: "@types/passport-strategy@npm:0.2.38"
   dependencies:
     "@types/express": "*"
     "@types/passport": "*"
-  checksum: ca85308b0bba74e299dde4c31a26fb11559d62c87daa9a2321edc0f99930efdf45913acf0bf54162623a98ad0559a277b2ad95c4b26b518db1e93a02ede89e28
+  checksum: b580e165182b137a6e57b6b7511904e6c875a5e372f08679ec54f456dc5c2a72d86f23d9373a52d8286b207fe8240946686f9e3d50b0bc1b4f7316f336a06fa2
   languageName: node
   linkType: hard
 
