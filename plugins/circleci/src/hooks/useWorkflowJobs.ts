@@ -31,7 +31,7 @@ export function useWorkflowJobs(workflowId: string) {
       const data = await api.getWorkflowJobs(workflowId);
       return data.items;
     } catch (e) {
-      if (!(e instanceof AuthenticationError)) {
+      if (e.name !== 'AuthenticationError') {
         errorApi.post(e);
       }
       return Promise.reject(e);

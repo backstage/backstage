@@ -41,7 +41,7 @@ export function usePipelines() {
         const response = await api.getWorkflowsForPipeline(pipelineId);
         return response.items;
       } catch (e) {
-        if (!(e instanceof AuthenticationError)) {
+        if (e.name !== 'AuthenticationError') {
           errorApi.post(e);
         }
         return Promise.reject(e);
@@ -88,7 +88,7 @@ export function usePipelines() {
 
       return allPipelines;
     } catch (e) {
-      if (!(e instanceof AuthenticationError)) {
+        if (e.name !== 'AuthenticationError') {
         errorApi.post(e);
       }
       return Promise.reject(e);

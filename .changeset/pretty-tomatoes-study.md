@@ -10,7 +10,7 @@ Using CircleCI API v2 for displaying pipelines and workflows, and v1.1 for the b
 
 **BREAKING**: API version has to be removed from the target url in the proxy configuration allowing the plugin to communicate with both APIs.
 
-This change is **required** to `app-config.yaml`
+This change is **required** to `app-config.yaml` if you use the CircleCI plugin:
 
 ```diff
   proxy:

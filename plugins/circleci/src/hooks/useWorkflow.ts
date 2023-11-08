@@ -31,7 +31,7 @@ export function useWorkflow(workflowId: string) {
       const data = await api.getWorkflow(workflowId);
       return data;
     } catch (e) {
-      if (!(e instanceof AuthenticationError)) {
+      f (e.name !== 'AuthenticationError') {
         errorApi.post(e);
       }
       return Promise.reject(e);

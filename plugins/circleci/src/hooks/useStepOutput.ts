@@ -30,7 +30,7 @@ export function useStepOutput(
 
   const { loading, value: output } = useAsync(async () => {
     try {
-      if (typeof step === 'undefined' || typeof index === 'undefined') {
+      if (step === undefined || index === undefined) {
         return '';
       }
 
@@ -42,7 +42,7 @@ export function useStepOutput(
       );
       return data;
     } catch (e) {
-      if (!(e instanceof AuthenticationError)) {
+      f (e.name !== 'AuthenticationError') {
         errorApi.post(e);
       }
       return Promise.reject(e);
