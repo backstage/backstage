@@ -77,7 +77,7 @@ import {
 import {
   EntityCircleCIContent,
   isCircleCIAvailable,
-} from '@backstage/plugin-circleci';
+} from '@circleci/backstage-plugin';
 import {
   EntityCloudbuildContent,
   isCloudbuildAvailable,
