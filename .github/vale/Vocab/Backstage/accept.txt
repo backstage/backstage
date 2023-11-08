@@ -145,9 +145,11 @@ Grafana
 graphql
 GraphQL
 graphviz
+Hashicorp
 Hackathons
 haproxy
 hardcoded
+hcp
 Helidon
 Henneke
 Heroku
