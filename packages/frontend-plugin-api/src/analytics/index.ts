@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * Core API used by Backstage frontend plugins.
- *
- * @packageDocumentation
- */
-
-export * from './analytics';
-export * from './apis';
-export * from './components';
-export * from './extensions';
-export * from './icons';
-export * from './routing';
-export * from './schema';
-export * from './apis/system';
-export * from './wiring';
+export { AnalyticsContext } from './AnalyticsContext';
+export type { AnalyticsContextValue, CommonAnalyticsContext } from './types';
+export { useAnalytics } from './useAnalytics';
