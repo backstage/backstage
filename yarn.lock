@@ -19856,11 +19856,11 @@ __metadata:
   linkType: hard
 
 "@types/swagger-ui-react@npm:^4.18.0":
-  version: 4.18.2
-  resolution: "@types/swagger-ui-react@npm:4.18.2"
+  version: 4.18.3
+  resolution: "@types/swagger-ui-react@npm:4.18.3"
   dependencies:
     "@types/react": "*"
-  checksum: 71c5659f6d4bd75da20923aea551ecf013f4bc5af25cb03824ae6a8d324704ca413a0031c0488107c748000ff919b2179a36f34ab8d47e3519617217a95de039
+  checksum: 4927314f1b0d68edf200ef15bca7555f12ec1bb8cc699fa397ef2f4e1e1873d17880b663bbc6d70e30149e50c3e7055178c1e0aad110520dfb31d781ab326dcb
   languageName: node
   linkType: hard
 
