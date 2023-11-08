@@ -18,3 +18,4 @@ export {
   HcpConsulPluginPage,
   EntityServiceInstancesTable,
 } from './plugin';
+export { isHcpConsulServiceAvailable } from './annotations';
