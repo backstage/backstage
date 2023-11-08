@@ -19754,12 +19754,12 @@ __metadata:
   linkType: hard
 
 "@types/ndjson@npm:^2.0.1":
-  version: 2.0.3
-  resolution: "@types/ndjson@npm:2.0.3"
+  version: 2.0.4
+  resolution: "@types/ndjson@npm:2.0.4"
   dependencies:
     "@types/node": "*"
     "@types/through": "*"
-  checksum: 837e295a192a054dcb7f0b2c109b87c42e3317dbe1f91a38f4194c6c46aac2284cef5a28c35d1e0063cecc411f0e89a7de6d9753406e3861c8434780b32090ea
+  checksum: ecade4d0e1208f657fbe8e8fe63571576a9bf6865f142258033408abea240120dd1f9bd90109e4f64f9c8423fcfce1fe57090d05ec7248f6d9eaaaebbffac298
   languageName: node
   linkType: hard
 
