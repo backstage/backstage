@@ -261,7 +261,6 @@ export const PersonalListPicker = () => {
                 <MenuItem
                   role="none presentation"
                   key={item.id}
-                  button
                   divider
                   onClick={() => setSelectedPersonalFilter(item.id)}
                   selected={item.id === selectedPersonalFilter}
