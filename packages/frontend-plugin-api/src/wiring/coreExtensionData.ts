@@ -15,13 +15,10 @@
  */
 
 import { JSX } from 'react';
-import {
-  AnyApiFactory,
-  AppTheme,
-  IconComponent,
-} from '@backstage/core-plugin-api';
+import { AppTheme, IconComponent } from '@backstage/core-plugin-api';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { RouteRef } from '../routing';
+import { AnyApiFactory } from '../extensions';
 
 /** @public */
 export type NavTarget = {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AnyApiFactory, AnyApiRef } from '@backstage/core-plugin-api';
+import { AnyApiFactory, AnyApiRef } from './types';
 import { PortableSchema } from '../schema';
 import {
   ExtensionInputValues,

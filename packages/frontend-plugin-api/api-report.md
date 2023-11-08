@@ -5,9 +5,7 @@
 ```ts
 /// <reference types="react" />
 
-import { AnyApiFactory } from '@backstage/core-plugin-api';
-import { AnyApiRef } from '@backstage/core-plugin-api';
-import { ApiRef } from '@backstage/core-plugin-api';
+import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -17,6 +15,18 @@ import { ReactNode } from 'react';
 import { z } from 'zod';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
+
+// @public
+export type AnyApiFactory = ApiFactory<
+  unknown,
+  unknown,
+  {
+    [key in string]: unknown;
+  }
+>;
+
+// @public
+export type AnyApiRef = ApiRef<unknown>;
 
 // @public (undocumented)
 export type AnyExtensionDataMap = {
@@ -54,6 +64,25 @@ export type AnyRouteRefParams =
 // @public (undocumented)
 export type AnyRoutes = {
   [name in string]: RouteRef;
+};
+
+// @public
+export type ApiFactory<
+  Api,
+  Impl extends Api,
+  Deps extends {
+    [name in string]: unknown;
+  },
+> = {
+  api: ApiRef<Api>;
+  deps: TypesToApiRefs<Deps>;
+  factory(deps: Deps): Impl;
+};
+
+// @public
+export type ApiRef<T> = {
+  id: string;
+  T: T;
 };
 
 // @public
@@ -114,7 +143,7 @@ export interface AppTreeApi {
 }
 
 // @public
-export const appTreeApiRef: ApiRef<AppTreeApi>;
+export const appTreeApiRef: ApiRef_2<AppTreeApi>;
 
 // @public (undocumented)
 export interface BackstagePlugin<
@@ -544,6 +573,11 @@ export interface SubRouteRef<
   // (undocumented)
   readonly T: TParams;
 }
+
+// @public
+export type TypesToApiRefs<T> = {
+  [key in keyof T]: ApiRef<T[key]>;
+};
 
 // @public
 export function useRouteRef<
