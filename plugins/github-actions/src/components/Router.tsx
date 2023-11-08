@@ -32,6 +32,7 @@ import { RouterProps, ViewEnum } from '../api/types';
 export const isGithubActionsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]);
 
+/** @public */
 export const Router = ({ view = ViewEnum.Table }: RouterProps) => {
   const { entity } = useEntity();
 

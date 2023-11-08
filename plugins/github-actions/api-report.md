@@ -41,10 +41,8 @@ export enum BuildStatus {
 
 // @public (undocumented)
 export const EntityGithubActionsContent: ({
-  cardView,
-}: {
-  cardView?: boolean | undefined;
-}) => JSX_2.Element;
+  view,
+}: RouterProps) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityLatestGithubActionRunCard: (props: {
@@ -273,11 +271,13 @@ export const RecentWorkflowRunsCard: (props: {
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const Router: ({
-  cardView,
-}: {
-  cardView?: boolean | undefined;
-}) => React_2.JSX.Element;
+export const Router: ({ view }: RouterProps) => React_2.JSX.Element;
+
+// @public (undocumented)
+export interface RouterProps {
+  // (undocumented)
+  view?: ViewEnum;
+}
 
 // @public (undocumented)
 export type Step = {
@@ -288,4 +288,12 @@ export type Step = {
   started_at?: string;
   completed_at?: string;
 };
+
+// @public (undocumented)
+export enum ViewEnum {
+  // (undocumented)
+  Card = 'cards',
+  // (undocumented)
+  Table = 'table',
+}
 ```
