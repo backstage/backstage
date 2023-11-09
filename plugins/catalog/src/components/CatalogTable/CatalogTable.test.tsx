@@ -381,8 +381,8 @@ describe('CatalogTable component', () => {
   });
 
   it('should render the label column with customised title and value as specified using function', async () => {
-    const columns: ColumnsFunc = (kind, entities1) => {
-      return kind === 'api' && entities1.length
+    const columns: ColumnsFunc = ({ filters, entities: entities1 }) => {
+      return filters.kind?.value === 'api' && entities1.length
         ? [
             CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
             CatalogTable.columns.createLabelColumn('category', {

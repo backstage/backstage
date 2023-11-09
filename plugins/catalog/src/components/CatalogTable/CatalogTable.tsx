@@ -29,6 +29,7 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import {
+  EntityListContextProps,
   getEntityRelations,
   humanizeEntityRef,
   useEntityList,
@@ -47,13 +48,12 @@ import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
 
 /**
- * Typed columns function to dynamically render columns based on entities and chosen kind.
+ * Typed columns function to dynamically render columns based on entity list context.
  *
  * @public
  */
 export type ColumnsFunc = (
-  kind: string | undefined,
-  entities: Entity[],
+  entityListContext: EntityListContextProps,
 ) => TableColumn<CatalogTableRow>[];
 
 /**
@@ -89,7 +89,8 @@ const refCompare = (a: Entity, b: Entity) => {
 export const CatalogTable = (props: CatalogTableProps) => {
   const { columns, actions, tableOptions, subtitle, emptyContent } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
-  const { loading, error, entities, filters } = useEntityList();
+  const entityListContext = useEntityList();
+  const { loading, error, entities, filters } = entityListContext;
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [
@@ -132,10 +133,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
   }, [filters.kind?.value, entities]);
 
   const overrideColumns = useMemo(() => {
-    return isFunction(columns)
-      ? columns(filters.kind?.value, entities)
-      : columns;
-  }, [columns, filters.kind?.value, entities]);
+    return isFunction(columns) ? columns(entityListContext) : columns;
+  }, [columns, entityListContext]);
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
