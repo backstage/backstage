@@ -105,9 +105,7 @@ export const compactEvents = (
       });
 
       return {
-        events: [...recoveredEvents, ...events.slice(recoverPoint)].filter(
-          event => event.type === 'log',
-        ),
+        events: [...recoveredEvents, ...events.slice(recoverPoint)],
       };
     }
   }
