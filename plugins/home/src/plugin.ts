@@ -217,12 +217,14 @@ export const HomePageRecentlyVisited = homePlugin.provide(
  *
  * @public
  */
-export const FeaturedDocs = homePlugin.provide(
+export const FeaturedDocsCard = homePlugin.provide(
   createReactExtension({
     name: 'FeaturedDocs',
     component: {
       lazy: () =>
-        import('./homePageComponents/FeaturedDocs').then(m => m.FeaturedDocs),
+        import('./homePageComponents/FeaturedDocsCard').then(
+          m => m.FeaturedDocsCard,
+        ),
     },
   }),
 );

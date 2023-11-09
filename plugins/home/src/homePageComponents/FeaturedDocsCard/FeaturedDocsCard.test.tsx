@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FeaturedDocs } from './FeaturedDocs';
+import { FeaturedDocsCard } from './FeaturedDocsCard';
 import React from 'react';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -33,7 +33,7 @@ const docsEntities = [
   },
 ];
 
-describe('<FeaturedDocs />', () => {
+describe('<FeaturedDocsCard />', () => {
   const mockCatalogApi = {
     getEntities: jest
       .fn()
@@ -51,8 +51,7 @@ describe('<FeaturedDocs />', () => {
   it('should show expected featured doc and title', async () => {
     const { getByTestId, getByText } = await renderInTestApp(
       <Wrapper>
-        <FeaturedDocs
-          data-testid="docs-card-content"
+        <FeaturedDocsCard
           filter={{
             'spec.type': 'documentation',
             'metadata.name': 'getting-started-with-idp',

@@ -34,7 +34,7 @@ export {
   HeaderWorldClock,
   HomePageTopVisited,
   HomePageRecentlyVisited,
-  FeaturedDocs,
+  FeaturedDocsCard,
 } from './plugin';
 export * from './components';
 export * from './assets';

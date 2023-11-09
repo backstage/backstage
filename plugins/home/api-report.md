@@ -11,7 +11,6 @@ import { CardConfig as CardConfig_2 } from '@backstage/plugin-home-react';
 import { CardExtensionProps as CardExtensionProps_2 } from '@backstage/plugin-home-react';
 import { CardLayout as CardLayout_2 } from '@backstage/plugin-home-react';
 import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
-import { ClassNameMap } from '@material-ui/styles';
 import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
@@ -104,18 +103,16 @@ export type CustomHomepageGridProps = {
 };
 
 // @public
-export const FeaturedDocs: (props: FeaturedDocsProps) => JSX_2.Element;
+export const FeaturedDocsCard: (props: FeaturedDocsCardProps) => JSX_2.Element;
 
 // @public
-export type FeaturedDocsProps = {
+export type FeaturedDocsCardProps = {
   filter: EntityFilterQuery;
-  color?: 'inherit' | 'primary' | 'secondary';
-  customStyles?: ClassNameMap<string>;
   emptyState?: React_2.ReactNode;
-  path?: string;
+  linkDestination?: string;
   responseLimit?: number;
   subLinkText?: string;
-  title?: React_2.ReactNode | string;
+  title?: React_2.ReactNode;
 };
 
 // @public

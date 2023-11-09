@@ -27,32 +27,27 @@ import {
 import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
 import { useApi } from '@backstage/core-plugin-api';
 import { EntityFilterQuery } from '@backstage/catalog-client';
-import { ClassNameMap } from '@material-ui/styles';
 
 import { makeStyles, Theme, Typography } from '@material-ui/core';
 
 /**
- * Props customizing the <FeaturedDocs/> component.
+ * Props customizing the <FeaturedDocsCard/> component.
  *
  * @public
  */
-export type FeaturedDocsProps = {
+export type FeaturedDocsCardProps = {
   /** The entity filter used to display only the intended item/s */
   filter: EntityFilterQuery;
-  /** An optional color which can be customized through themes */
-  color?: 'inherit' | 'primary' | 'secondary';
-  /** An optional ClassNameMap created with makeStyles */
-  customStyles?: ClassNameMap<string>;
   /** An optional ReactNode for empty states */
   emptyState?: React.ReactNode;
-  /** An optional path to set for entity entry  */
-  path?: string;
+  /** An optional linkDestination to set for the Featured Doc  */
+  linkDestination?: string;
   /** An optional limit to set for link destination  */
   responseLimit?: number;
   /** An optional string to customize sublink text */
   subLinkText?: string;
   /** An optional string or ReactNode to customize the card title */
-  title?: React.ReactNode | string;
+  title?: React.ReactNode;
 };
 
 const useStyles = makeStyles<Theme>(
@@ -74,7 +69,7 @@ const useStyles = makeStyles<Theme>(
       lineHeight: theme.typography.h6.lineHeight,
     },
   }),
-  { name: 'BackstageFeaturedDocs' },
+  { name: 'HomeFeaturedDocsCard' },
 );
 
 /**
@@ -82,20 +77,17 @@ const useStyles = makeStyles<Theme>(
  *
  * @public
  */
-export const FeaturedDocs = (props: FeaturedDocsProps) => {
+export const FeaturedDocsCard = (props: FeaturedDocsCardProps) => {
   const {
-    color,
-    customStyles,
     emptyState,
     filter,
-    path,
+    linkDestination,
     responseLimit,
     subLinkText,
     title,
   } = props;
   const linkText = subLinkText || 'LEARN MORE';
-  const defaultStyles = useStyles();
-  const styles = customStyles || defaultStyles;
+  const styles = useStyles();
   const catalogApi: CatalogApi = useApi(catalogApiRef);
   const {
     value: entities,
@@ -124,9 +116,8 @@ export const FeaturedDocs = (props: FeaturedDocsProps) => {
               <Link
                 className={styles.docsTitleLink}
                 data-testid="docs-card-title"
-                color={color}
                 to={
-                  path ||
+                  linkDestination ||
                   `/docs/${d.metadata.namespace || 'default'}/${d.kind}/${
                     d.metadata.name
                   }/`
@@ -134,15 +125,16 @@ export const FeaturedDocs = (props: FeaturedDocsProps) => {
               >
                 {d.metadata.title}
               </Link>
-              <Typography className={styles.docDescription}>
-                {d.metadata.description}
-              </Typography>
+              {d.metadata.description && (
+                <Typography className={styles.docDescription}>
+                  {d.metadata.description}
+                </Typography>
+              )}
               <Link
                 className={styles.docSubLink}
                 data-testid="docs-card-sub-link"
-                color={color}
                 to={
-                  path ||
+                  linkDestination ||
                   `/docs/${d.metadata.namespace || 'default'}/${d.kind}/${
                     d.metadata.name
                   }/`
@@ -159,7 +151,6 @@ export const FeaturedDocs = (props: FeaturedDocsProps) => {
               description="Create your own document. Check out our Getting Started Information"
               action={
                 <LinkButton
-                  color={color || 'primary'}
                   to="https://backstage.io/docs/features/techdocs/getting-started"
                   variant="contained"
                 >
