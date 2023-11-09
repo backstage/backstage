@@ -102,7 +102,7 @@
     "react-use": "^17.2.4",
     "vite": "^4.4.9",
     "vite-plugin-html": "^3.2.0",
-    "vite-plugin-node-polyfills": "^0.14.1",
+    "vite-plugin-node-polyfills": "^0.16.0",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
