@@ -23,12 +23,12 @@ yarn --cwd packages/app add @backstage/plugin-playlist
 
 ### Add the plugin to your `packages/app`
 
-Add the root page that the playlist plugin provides to your app. You can
-choose any path for the route, but we recommend the following:
+Add the pages that the playlist plugin provides to your app. You can
+choose any base path for the route, but we recommend the following:
 
 ```diff
 // packages/app/src/App.tsx
-+import { PlaylistIndexPage } from '@backstage/plugin-playlist';
++import { PlaylistIndexPage, PlaylistPage } from '@backstage/plugin-playlist';
 
 
 <FlatRoutes>
@@ -37,6 +37,7 @@ choose any path for the route, but we recommend the following:
     {entityPage}
   </Route>
 +  <Route path="/playlist" element={<PlaylistIndexPage />} />
++  <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
   ...
 </FlatRoutes>
 ```
@@ -138,6 +139,18 @@ You can define a custom title to be shown in all the components of this plugin t
 ```yaml
 playlist:
   title: Collection
+```
+
+## Custom Index Page
+
+You can customize your playlist index page by composing your own implementation. See the [`DefaultPlaylistIndexPage`](./src/components/PlaylistIndexPage/DefaultPlaylistIndexPage.tsx) for a reference of what components are available from the default setup.
+
+```ts
+-  <Route path="/playlist" element={<PlaylistIndexPage />} />
++  <Route path="/playlist" element={<PlaylistIndexPage />}>
++    <CustomPlaylistIndexPage />
++  </Route>
+   <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
 ```
 
 ## Features

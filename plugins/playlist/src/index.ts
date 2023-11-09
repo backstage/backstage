@@ -19,10 +19,28 @@
  *
  * @packageDocumentation
  */
+export * from './api';
+export {
+  CreatePlaylistButton,
+  DefaultPlaylistIndexPage,
+  PersonalListFilter,
+  PersonalListFilterValue,
+  PersonalListPicker,
+  PlaylistList,
+  PlaylistOwnerFilter,
+  PlaylistOwnerPicker,
+  PlaylistSearchBar,
+  PlaylistSortPicker,
+  PlaylistTextFilter,
+} from './components';
 export type { EntityPlaylistDialogProps } from './components';
+export { NoopFilter } from './hooks';
+export type { DefaultPlaylistFilters } from './hooks';
+export { PlaylistListProvider } from './hooks/PlaylistListProvider';
 export {
   EntityPlaylistDialog,
+  PlaylistPage,
   playlistPlugin,
   PlaylistIndexPage,
 } from './plugin';
-export * from './api';
+export type { PlaylistFilter } from './types';

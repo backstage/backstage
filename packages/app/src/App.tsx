@@ -109,7 +109,7 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
-import { PlaylistIndexPage } from '@backstage/plugin-playlist';
+import { PlaylistIndexPage, PlaylistPage } from '@backstage/plugin-playlist';
 import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import { StackstormPage } from '@backstage/plugin-stackstorm';
@@ -316,6 +316,7 @@ const routes = (
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
     <Route path="/playlist" element={<PlaylistIndexPage />} />
+    <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
     <Route path="/score-board" element={<ScoreBoardPage />} />
     <Route path="/stackstorm" element={<StackstormPage />} />
     <Route path="/puppetdb" element={<PuppetDbPage />} />
