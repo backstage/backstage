@@ -3924,7 +3924,7 @@ __metadata:
     "@vitejs/plugin-react": ^4.0.4
     vite: ^4.4.9
     vite-plugin-html: ^3.2.0
-    vite-plugin-node-polyfills: ^0.14.1
+    vite-plugin-node-polyfills: ^0.16.0
   peerDependenciesMeta:
     "@vitejs/plugin-react":
       optional: true
@@ -13195,7 +13195,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jridgewell/sourcemap-codec@npm:^1.4.10, @jridgewell/sourcemap-codec@npm:^1.4.13, @jridgewell/sourcemap-codec@npm:^1.4.14":
+"@jridgewell/sourcemap-codec@npm:^1.4.10, @jridgewell/sourcemap-codec@npm:^1.4.13, @jridgewell/sourcemap-codec@npm:^1.4.14, @jridgewell/sourcemap-codec@npm:^1.4.15":
   version: 1.4.15
   resolution: "@jridgewell/sourcemap-codec@npm:1.4.15"
   checksum: b881c7e503db3fc7f3c1f35a1dd2655a188cc51a3612d76efc8a6eb74728bef5606e6758ee77423e564092b4a518aba569bbb21c9bac5ab7a35b0c6ae7e344c8
@@ -15957,19 +15957,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-inject@npm:^5.0.3":
-  version: 5.0.3
-  resolution: "@rollup/plugin-inject@npm:5.0.3"
+"@rollup/plugin-inject@npm:^5.0.5":
+  version: 5.0.5
+  resolution: "@rollup/plugin-inject@npm:5.0.5"
   dependencies:
     "@rollup/pluginutils": ^5.0.1
     estree-walker: ^2.0.2
-    magic-string: ^0.27.0
+    magic-string: ^0.30.3
   peerDependencies:
-    rollup: ^1.20.0||^2.0.0||^3.0.0
+    rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: d8458b11af3447710ce200fe2886faff07bb054e1269a4f06f5f3c1a1b83019b6ce7761badfa116ca96fbb9c49f16b94ad02d1a72c2fb64dc68cb7dd81331cb7
+  checksum: 22cb772fd6f7178308b2ece95cdde5f8615f6257197832166294552a7e4c0d3976dc996cbfa6470af3151d8b86c00091aa93da5f4db6ec563f11b6db29fd1b63
   languageName: node
   linkType: hard
 
@@ -27592,7 +27592,7 @@ __metadata:
     react-use: ^17.2.4
     vite: ^4.4.9
     vite-plugin-html: ^3.2.0
-    vite-plugin-node-polyfills: ^0.14.1
+    vite-plugin-node-polyfills: ^0.16.0
     zen-observable: ^0.10.0
   languageName: unknown
   linkType: soft
@@ -34389,6 +34389,15 @@ __metadata:
   dependencies:
     "@jridgewell/sourcemap-codec": ^1.4.13
   checksum: 273faaa50baadb7a2df6e442eac34ad611304fc08fe16e24fe2e472fd944bfcb73ffb50d2dc972dc04e92784222002af46868cb9698b1be181c81830fd95a13e
+  languageName: node
+  linkType: hard
+
+"magic-string@npm:^0.30.3":
+  version: 0.30.5
+  resolution: "magic-string@npm:0.30.5"
+  dependencies:
+    "@jridgewell/sourcemap-codec": ^1.4.15
+  checksum: da10fecff0c0a7d3faf756913ce62bd6d5e7b0402be48c3b27bfd651b90e29677e279069a63b764bcdc1b8ecdcdb898f29a5c5ec510f2323e8d62ee057a6eb18
   languageName: node
   linkType: hard
 
@@ -45470,17 +45479,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-node-polyfills@npm:^0.14.1":
-  version: 0.14.1
-  resolution: "vite-plugin-node-polyfills@npm:0.14.1"
+"vite-plugin-node-polyfills@npm:^0.16.0":
+  version: 0.16.0
+  resolution: "vite-plugin-node-polyfills@npm:0.16.0"
   dependencies:
-    "@rollup/plugin-inject": ^5.0.3
+    "@rollup/plugin-inject": ^5.0.5
     buffer-polyfill: "npm:buffer@^6.0.3"
     node-stdlib-browser: ^1.2.0
     process: ^0.11.10
   peerDependencies:
     vite: ^2.0.0 || ^3.0.0 || ^4.0.0
-  checksum: 1dd6e4ff500a69ff78c8d7d967e74790b704e3ccb117fc4f8841f2e5d0e339422a15d9c6c0607d1fed4df5a7a77c56d245769b22572d4e905771b37ff8801915
+  checksum: c4b3767e29a7c95efccde7d8adeac7963fb9b30677d88e348eda1c1d407c0d821d58c9ea651cb5db0aa010c93fd1971d8b671fea2417edd15a707861be772861
   languageName: node
   linkType: hard
 
