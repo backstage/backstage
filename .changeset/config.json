@@ -4,7 +4,14 @@
     "./backstage-changelog.js",
     {
       "repo": "backstage/backstage",
-      "ignoreUserThanks": ["benjdlambert", "freben", "jhaals", "Rugvip"]
+      "ignoreUserThanks": [
+        "benjdlambert",
+        "freben",
+        "jhaals",
+        "Rugvip",
+        "renovate",
+        "dependabot"
+      ]
     }
   ],
   "commit": false,
