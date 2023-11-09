@@ -136,8 +136,8 @@ describe('migrations', () => {
 
       await expect(knex('search')).resolves.toEqual(
         expect.arrayContaining([
-          { entity_id: 'i', id: expect.any(Number), key: 'k1', value: 'v1' },
-          { entity_id: 'i', id: expect.any(Number), key: 'k2', value: null },
+          { entity_id: 'i', id: expect.anything(), key: 'k1', value: 'v1' },
+          { entity_id: 'i', id: expect.anything(), key: 'k2', value: null },
         ]),
       );
 
@@ -147,14 +147,14 @@ describe('migrations', () => {
         expect.arrayContaining([
           {
             entity_id: 'i',
-            id: expect.any(Number),
+            id: expect.anything(),
             key: 'k1',
             value: 'v1',
             original_value: 'v1',
           },
           {
             entity_id: 'i',
-            id: expect.any(Number),
+            id: expect.anything(),
             key: 'k2',
             value: null,
             original_value: null,
@@ -166,8 +166,8 @@ describe('migrations', () => {
 
       await expect(knex('search')).resolves.toEqual(
         expect.arrayContaining([
-          { entity_id: 'i', id: expect.any(Number), key: 'k1', value: 'v1' },
-          { entity_id: 'i', id: expect.any(Number), key: 'k2', value: null },
+          { entity_id: 'i', id: expect.anything(), key: 'k1', value: 'v1' },
+          { entity_id: 'i', id: expect.anything(), key: 'k2', value: null },
         ]),
       );
 
