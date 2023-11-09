@@ -112,7 +112,10 @@ export const FeaturedDocsCard = (props: FeaturedDocsCardProps) => {
     <InfoCard variant="gridItem" title={title || 'Featured Docs'}>
       {entities?.length
         ? entities.map(d => (
-            <div key={d.metadata.name} data-testid="docs-card-content">
+            <div
+              key={`${d.metadata.name}-${d.kind}-${d.metadata.namespace}`}
+              data-testid="docs-card-content"
+            >
               <Link
                 className={styles.docsTitleLink}
                 data-testid="docs-card-title"
