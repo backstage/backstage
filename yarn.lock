@@ -19519,11 +19519,11 @@ __metadata:
   linkType: hard
 
 "@types/react-text-truncate@npm:^0.14.0":
-  version: 0.14.2
-  resolution: "@types/react-text-truncate@npm:0.14.2"
+  version: 0.14.4
+  resolution: "@types/react-text-truncate@npm:0.14.4"
   dependencies:
     "@types/react": "*"
-  checksum: 714b8dade2cd149b3a353c6914065f8aaf2e8d01c21fc1e92afe9e9cf19b037c6a9c34c9100a8009848a6d8747fbd0f4c3b2fe4676b0afa35e347b2fecc92811
+  checksum: bbefba6aebb607fd0c5121b587f9604cd7c8a0b676666f85cbd8e6c64d17e72f633288601386b82cc97227d39e0a4e8b37de437e524295520641a4873fa1bff5
   languageName: node
   linkType: hard
 
