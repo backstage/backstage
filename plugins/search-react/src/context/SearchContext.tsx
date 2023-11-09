@@ -34,6 +34,7 @@ import {
   AnalyticsContext,
   useApi,
   configApiRef,
+  useAnalytics,
 } from '@backstage/core-plugin-api';
 import { SearchResultSet } from '@backstage/plugin-search-common';
 
@@ -114,6 +115,7 @@ const useSearchContextValue = (
   initialValue: SearchContextState = defaultInitialSearchState,
 ) => {
   const searchApi = useApi(searchApiRef);
+  const analytics = useAnalytics();
 
   const [term, setTerm] = useState<string>(initialValue.term);
   const [types, setTypes] = useState<string[]>(initialValue.types);
@@ -128,17 +130,21 @@ const useSearchContextValue = (
   const prevTerm = usePrevious(term);
   const prevFilters = usePrevious(filters);
 
-  const result = useAsync(
-    () =>
-      searchApi.query({
-        term,
-        types,
-        filters,
-        pageLimit,
-        pageCursor,
-      }),
-    [term, types, filters, pageLimit, pageCursor],
-  );
+  const result = useAsync(async () => {
+    const resultSet = await searchApi.query({
+      term,
+      types,
+      filters,
+      pageLimit,
+      pageCursor,
+    });
+    if (term && resultSet.numberOfResults !== undefined) {
+      analytics.captureEvent('search', term, {
+        value: resultSet.numberOfResults,
+      });
+    }
+    return resultSet;
+  }, [term, types, filters, pageLimit, pageCursor]);
 
   const hasNextPage =
     !result.loading && !result.error && result.value?.nextPageCursor;
