@@ -149,6 +149,11 @@ function reducer(draft: TaskStream, action: ReducerAction) {
       return;
     }
 
+    case 'RECOVERED': {
+      draft.stepLogs = {};
+      return;
+    }
+
     default:
       return;
   }
