@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  hcpConsulPlugin,
-  HcpConsulPluginPage,
-  EntityServiceInstancesTable,
-} from './plugin';
+
+export * from './plugin';
 export { isHcpConsulServiceAvailable } from './annotations';

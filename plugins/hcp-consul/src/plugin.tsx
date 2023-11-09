@@ -25,6 +25,7 @@ import React from 'react';
 import { rootRouteRef } from './routes';
 import { HcpConsulHttpApi, hcpConsulApiRef } from './api/api';
 
+/** @public */
 export const hcpConsulPlugin = createPlugin({
   id: 'hcp-consul',
   routes: {
@@ -40,10 +41,12 @@ export const hcpConsulPlugin = createPlugin({
   ],
 });
 
-type HcpConsulPluginPageProps = {
+/** @public */
+export interface HcpConsulPluginPageProps {
   projectID?: string;
-};
+}
 
+/** @public */
 export const HcpConsulPluginPage: (
   props: HcpConsulPluginPageProps,
 ) => React.JSX.Element = hcpConsulPlugin.provide(
@@ -59,6 +62,7 @@ export const HcpConsulPluginPage: (
   }),
 );
 
+/** @public */
 export const EntityServiceInstancesTable = hcpConsulPlugin.provide(
   createComponentExtension({
     name: 'EntityServiceInstancesTable',

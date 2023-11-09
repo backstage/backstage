@@ -19,11 +19,13 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 
+/** @public */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
 }
 
+/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
