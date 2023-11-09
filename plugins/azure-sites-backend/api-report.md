@@ -6,6 +6,7 @@
 import { AzureSiteListRequest } from '@backstage/plugin-azure-sites-common';
 import { AzureSiteListResponse } from '@backstage/plugin-azure-sites-common';
 import { AzureSiteStartStopRequest } from '@backstage/plugin-azure-sites-common';
+import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger } from 'winston';
@@ -56,6 +57,8 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 export interface RouterOptions {
   // (undocumented)
   azureSitesApi: AzureSitesApi;
+  // (undocumented)
+  catalogApi: CatalogApi;
   // (undocumented)
   logger: Logger;
   // (undocumented)

@@ -39,7 +39,7 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
       request.subscription
     }/${request.resourceGroup}/${request.name}/stop`;
     const { token: accessToken } = await this.identityApi.getCredentials();
-    const entity = request.entity;
+    const entityRef = request.entityRef;
     await fetch(url, {
       method: 'POST',
       headers: {
@@ -47,7 +47,7 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
         ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       },
       body: JSON.stringify({
-        entity,
+        entityRef,
       }),
     });
   }
@@ -56,7 +56,7 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
       request.subscription
     }/${request.resourceGroup}/${request.name}/start`;
     const { token: accessToken } = await this.identityApi.getCredentials();
-    const entity = request.entity;
+    const entityRef = request.entityRef;
     await fetch(url, {
       method: 'POST',
       headers: {
@@ -64,7 +64,7 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
         ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       },
       body: JSON.stringify({
-        entity,
+        entityRef,
       }),
     });
   }

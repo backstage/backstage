@@ -30,6 +30,7 @@ import {
   azureSitesActionPermission,
   AZURE_WEB_SITE_NAME_ANNOTATION,
 } from '@backstage/plugin-azure-sites-common';
+import { CatalogApi } from '@backstage/catalog-client';
 
 import { AzureSitesApi } from '../api';
 
@@ -37,6 +38,7 @@ import { AzureSitesApi } from '../api';
 export interface RouterOptions {
   logger: Logger;
   azureSitesApi: AzureSitesApi;
+  catalogApi: CatalogApi;
   permissions: PermissionEvaluator;
 }
 
@@ -44,7 +46,7 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, azureSitesApi, permissions } = options;
+  const { logger, azureSitesApi, permissions, catalogApi } = options;
 
   const router = Router();
   router.use(express.json());
@@ -68,37 +70,45 @@ export async function createRouter(
       const token = getBearerTokenFromAuthorizationHeader(
         request.header('authorization'),
       );
-      const entity = request.body.entity;
-      const resourceRef = stringifyEntityRef(entity);
+      const entityRef = request.body.entityRef;
+      const entity = await catalogApi.getEntityByRef(entityRef);
 
-      const annotationName =
-        entity.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
-      if (await azureSitesApi.validateSite(annotationName, name)) {
+      if (entity) {
+        const annotationName =
+          entity.metadata?.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
+        const resourceRef = stringifyEntityRef(entity);
+        if (
+          annotationName &&
+          (await azureSitesApi.validateSite(annotationName, name))
+        ) {
+          throw new NotAllowedError();
+        }
+
+        const decision = (
+          await permissions.authorize(
+            [{ permission: azureSitesActionPermission, resourceRef }],
+            {
+              token,
+            },
+          )
+        )[0];
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError('Unauthorized');
+        }
+
+        logger.info(
+          `entity ${entity.metadata.name} - azure site "${name}" is starting...`,
+        );
+        response.json(
+          await azureSitesApi.start({
+            subscription,
+            resourceGroup,
+            name,
+          }),
+        );
+      } else {
         throw new NotAllowedError();
       }
-
-      const decision = (
-        await permissions.authorize(
-          [{ permission: azureSitesActionPermission, resourceRef }],
-          {
-            token,
-          },
-        )
-      )[0];
-      if (decision.result === AuthorizeResult.DENY) {
-        throw new NotAllowedError('Unauthorized');
-      }
-
-      logger.info(
-        `entity ${entity.metadata.name} - azure site "${name}" is starting...`,
-      );
-      response.json(
-        await azureSitesApi.start({
-          subscription,
-          resourceGroup,
-          name,
-        }),
-      );
     },
   );
   router.post(
@@ -108,37 +118,46 @@ export async function createRouter(
       const token = getBearerTokenFromAuthorizationHeader(
         request.header('authorization'),
       );
-      const entity = request.body.entity;
-      const resourceRef = stringifyEntityRef(entity);
 
-      const annotationName =
-        entity.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
-      if (await azureSitesApi.validateSite(annotationName, name)) {
+      const entityRef = request.body.entityRef;
+      const entity = await catalogApi.getEntityByRef(entityRef);
+
+      if (entity) {
+        const annotationName =
+          entity.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
+        const resourceRef = stringifyEntityRef(entity);
+        if (
+          annotationName &&
+          (await azureSitesApi.validateSite(annotationName, name))
+        ) {
+          throw new NotAllowedError();
+        }
+
+        const decision = (
+          await permissions.authorize(
+            [{ permission: azureSitesActionPermission, resourceRef }],
+            {
+              token,
+            },
+          )
+        )[0];
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError('Unauthorized');
+        }
+
+        logger.info(
+          `entity ${entity.metadata.name} - azure site "${name}" is stopping...`,
+        );
+        response.json(
+          await azureSitesApi.stop({
+            subscription,
+            resourceGroup,
+            name,
+          }),
+        );
+      } else {
         throw new NotAllowedError();
       }
-
-      const decision = (
-        await permissions.authorize(
-          [{ permission: azureSitesActionPermission, resourceRef }],
-          {
-            token,
-          },
-        )
-      )[0];
-      if (decision.result === AuthorizeResult.DENY) {
-        throw new NotAllowedError('Unauthorized');
-      }
-
-      logger.info(
-        `entity ${entity.metadata.name} - azure site "${name}" is stopping...`,
-      );
-      response.json(
-        await azureSitesApi.stop({
-          subscription,
-          resourceGroup,
-          name,
-        }),
-      );
     },
   );
   router.use(errorHandler());
