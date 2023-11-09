@@ -7448,7 +7448,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@rjsf/utils": 5.13.0
+    "@rjsf/utils": 5.13.6
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -7484,10 +7484,10 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@rjsf/core": 5.13.0
-    "@rjsf/material-ui": 5.13.0
-    "@rjsf/utils": 5.13.0
-    "@rjsf/validator-ajv8": 5.13.0
+    "@rjsf/core": 5.13.6
+    "@rjsf/material-ui": 5.13.6
+    "@rjsf/utils": 5.13.6
+    "@rjsf/validator-ajv8": 5.13.6
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -8941,10 +8941,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
-    "@rjsf/core": 5.13.0
-    "@rjsf/material-ui": 5.13.0
-    "@rjsf/utils": 5.13.0
-    "@rjsf/validator-ajv8": 5.13.0
+    "@rjsf/core": 5.13.6
+    "@rjsf/material-ui": 5.13.6
+    "@rjsf/utils": 5.13.6
+    "@rjsf/validator-ajv8": 5.13.6
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -9004,10 +9004,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^20.0.0
-    "@rjsf/core": 5.13.0
-    "@rjsf/material-ui": 5.13.0
-    "@rjsf/utils": 5.13.0
-    "@rjsf/validator-ajv8": 5.13.0
+    "@rjsf/core": 5.13.6
+    "@rjsf/material-ui": 5.13.6
+    "@rjsf/utils": 5.13.6
+    "@rjsf/validator-ajv8": 5.13.6
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -15752,9 +15752,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/core@npm:5.13.0":
-  version: 5.13.0
-  resolution: "@rjsf/core@npm:5.13.0"
+"@rjsf/core@npm:5.13.6":
+  version: 5.13.6
+  resolution: "@rjsf/core@npm:5.13.6"
   dependencies:
     lodash: ^4.17.21
     lodash-es: ^4.17.21
@@ -15764,20 +15764,20 @@ __metadata:
   peerDependencies:
     "@rjsf/utils": ^5.12.x
     react: ^16.14.0 || >=17
-  checksum: d7d66d20fcdf310f4b152c22e1ac1ca8abe5f40b502711c9cabc4241b3252ec0e58345aa194529d2bdfb7a51b9f1179c9ddefc0cdc7fd9f94ad10c5e5b1032b8
+  checksum: 7c8782030ac661fccd36226d84bca701af8e42717cb0560fb606784d358b1724288275f7ec2f9905b2a006ab65aa51525176d180908c6817b432afff4e989bdb
   languageName: node
   linkType: hard
 
-"@rjsf/material-ui@npm:5.13.0":
-  version: 5.13.0
-  resolution: "@rjsf/material-ui@npm:5.13.0"
+"@rjsf/material-ui@npm:5.13.6":
+  version: 5.13.6
+  resolution: "@rjsf/material-ui@npm:5.13.6"
   peerDependencies:
     "@material-ui/core": ^4.12.3
     "@material-ui/icons": ^4.11.2
     "@rjsf/core": ^5.12.x
     "@rjsf/utils": ^5.12.x
     react: ^16.14.0 || >=17
-  checksum: 4157a2f112aace66a284c4e40b3220676e884ef37ffdbda616406dfb1a30d58aef6e241c2093a589bbd2f73964db797d7378666e534acec952578075c62cbf6a
+  checksum: 4c7646c96f57576700dd4f62c2c58c7f93c5dcee1db0ca77a3594efc39084ad94e24241d93b3e8fb0d9136c226f9c56c9ab9af78a1972fc088de3f109fa84050
   languageName: node
   linkType: hard
 
@@ -15796,9 +15796,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/validator-ajv8@npm:5.13.0":
-  version: 5.13.0
-  resolution: "@rjsf/validator-ajv8@npm:5.13.0"
+"@rjsf/utils@npm:5.13.6":
+  version: 5.13.6
+  resolution: "@rjsf/utils@npm:5.13.6"
+  dependencies:
+    json-schema-merge-allof: ^0.8.1
+    jsonpointer: ^5.0.1
+    lodash: ^4.17.21
+    lodash-es: ^4.17.21
+    react-is: ^18.2.0
+  peerDependencies:
+    react: ^16.14.0 || >=17
+  checksum: 1e6cdca9f547db4b96561752150c0aa4255426fa32ae84ea017b221e5816e7eb9ed985e9dbb73f1d83baaae36f892f1d10e2bf81d8a53f7e42b2bfc7df52d8e4
+  languageName: node
+  linkType: hard
+
+"@rjsf/validator-ajv8@npm:5.13.6":
+  version: 5.13.6
+  resolution: "@rjsf/validator-ajv8@npm:5.13.6"
   dependencies:
     ajv: ^8.12.0
     ajv-formats: ^2.1.1
@@ -15806,7 +15821,7 @@ __metadata:
     lodash-es: ^4.17.21
   peerDependencies:
     "@rjsf/utils": ^5.12.x
-  checksum: dd36b12e26f213208b899087768b72f8e0763d9a9ac0ba478034270d4d5ac1cebb9ca3ec1a9150c95293b36620c41d5180efda677d23c644a4d4475d8fb49e75
+  checksum: 1909cb6b23344dd32b6bc825cc49c5a0efef2aecda2df5a903c3e70449b0ee546d9d915c450bdebd89384490689e43584933b74c3d4439c624b4cd9e481c7c1d
   languageName: node
   linkType: hard
 
