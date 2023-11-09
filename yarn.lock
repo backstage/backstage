@@ -19074,9 +19074,9 @@ __metadata:
   linkType: hard
 
 "@types/lunr@npm:^2.3.3":
-  version: 2.3.5
-  resolution: "@types/lunr@npm:2.3.5"
-  checksum: c68c2bdb0af765e05ebb67ac773e98423080bbe5f7c7456ade9259dbb6bd808bd50d2c91e61ca216c4f36dc799d3058e97d514b76cdeb221b3fb20799fe266fa
+  version: 2.3.7
+  resolution: "@types/lunr@npm:2.3.7"
+  checksum: 188a18f035e042f4c23e807ae752bfdb0076a0446ff8285b3c10572008fb00282dfeebdbbd566bfcf65dbb073daf552477a0ccbf426ebaa5ce88c0088a860924
   languageName: node
   linkType: hard
 
