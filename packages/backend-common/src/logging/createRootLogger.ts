@@ -108,7 +108,7 @@ export function createRootLogger(
           level: env.LOG_LEVEL || 'info',
           format: winston.format.combine(
             getRedacter().format,
-            env.NODE_ENV === 'production'
+            env.LOG_FORMAT === 'json' || env.NODE_ENV === 'production'
               ? winston.format.json()
               : WinstonLogger.colorFormat(),
           ),

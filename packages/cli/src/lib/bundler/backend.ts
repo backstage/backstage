@@ -28,7 +28,19 @@ export async function serveBackend(options: BackendServeOptions) {
 
   // Webpack only replaces occurrences of this in code it touches, which does
   // not include dependencies in node_modules. So we set it here at runtime as well.
-  (process.env as { NODE_ENV: string }).NODE_ENV = 'development';
+  const env = process.env as Record<string, string>;
+  if (env.NODE_ENV === 'production') {
+    console.warn(
+      'Producton mode (your environment variable NODE_ENV=production) is ignored and changed to `development` to support code reloading via Webpack.',
+    );
+    if (!env.LOG_FORMAT) {
+      console.log(
+        'The log format will be JSON similar to the requested production mode. To disable this you can change your NODE_ENV environment variable or set LOG_FORMAT=text|json.',
+      );
+      env.LOG_FORMAT = 'json';
+    }
+  }
+  env.NODE_ENV = 'development';
 
   const compiler = webpack(config, (err: Error | undefined) => {
     if (err) {

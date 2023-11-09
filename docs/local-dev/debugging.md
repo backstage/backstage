@@ -47,3 +47,31 @@ The resulting log should now have more information available for debugging:
 [1] 2023-04-12T00:51:44.118Z search info Collating documents for tools succeeded type=plugin documentType=tools
 [1] 2023-04-12T00:51:44.119Z backstage debug task: search_index_tools will next occur around 2023-04-11T21:01:44.118-04:00 type=taskManager task=search_index_tools
 ```
+
+Starting with Backstage 0.24+ it is possible to enable the JSON log output,
+also while development mode by setting the `LOG_FORMAT` environment variable to `json`.
+
+The JSON output is automatically enabled in production when the environment variable
+`NODE_ENV` is `production`.
+
+But while running a development server (via `yarn dev` or `backstage-cli package start`) this variable was required to be `development` for WebPack.
+
+<!-- See packages/cli/src/lib/bundler/backend.ts for additional informations -->
+
+```
+LOG_FORMAT=json yarn dev
+```
+
+```json
+{"level":"info","message":"Found 3 new secrets in config that will be redacted","service":"backstage"}
+{"level":"info","message":"Created UrlReader predicateMux{readers=azure{host=dev.azure.com,authed=false},bitbucketCloud{host=bitbucket.org,authed=false},github{host=github.com,authed=false},gitlab{host=gitlab.com,authed=false},awsS3{host=amazonaws.com,authed=false},fetch{}","service":"backstage"}
+{"level":"info","message":"Performing database migration","plugin":"catalog","service":"backstage","type":"plugin"}
+{"level":"info","message":"Configuring \"database\" as KeyStore provider","plugin":"auth","service":"backstage","type":"plugin"}
+{"level":"info","message":"Creating Local publisher for TechDocs","plugin":"techdocs","service":"backstage","type":"plugin"}
+{"level":"info","message":"[HPM] Proxy created: /test  -> https://example.com","plugin":"proxy","service":"backstage","type":"plugin"}
+{"level":"info","message":"[HPM] Proxy rewrite rule created: \"^/api/proxy/test/?\" ~> \"/\"","plugin":"proxy","service":"backstage","type":"plugin"}
+{"level":"info","message":"Added DefaultCatalogCollatorFactory collator factory for type software-catalog","plugin":"search","service":"backstage","type":"plugin"}
+{"level":"info","message":"Added DefaultTechDocsCollatorFactory collator factory for type techdocs","plugin":"search","service":"backstage","type":"plugin"}
+{"level":"info","message":"Starting all scheduled search tasks.","plugin":"search","service":"backstage","type":"plugin"}
+{"level":"info","message":"Listening on :7007","service":"backstage"}
+```
