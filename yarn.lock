@@ -4802,7 +4802,7 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/swagger-ui-react": ^4.18.0
     cross-fetch: ^3.1.5
-    graphiql: 3.0.6
+    graphiql: 3.0.9
     graphql: ^16.0.0
     graphql-ws: ^5.4.1
     isomorphic-form-data: ^2.0.0
@@ -29369,23 +29369,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphiql@npm:3.0.6":
-  version: 3.0.6
-  resolution: "graphiql@npm:3.0.6"
-  dependencies:
-    "@graphiql/react": ^0.19.4
-    "@graphiql/toolkit": ^0.9.1
-    graphql-language-service: ^5.2.0
-    markdown-it: ^12.2.0
-  peerDependencies:
-    graphql: ^15.5.0 || ^16.0.0
-    react: ^16.8.0 || ^17 || ^18
-    react-dom: ^16.8.0 || ^17 || ^18
-  checksum: 34d35ca4b46ce1e0cef0362f15d091481d2275e4a5b537b5715cfbaee15b1e114c31f35a63558a6f74a754687fbf4bc977411818af34e2e471a96902370c40f2
-  languageName: node
-  linkType: hard
-
-"graphiql@npm:^3.0.6":
+"graphiql@npm:3.0.9, graphiql@npm:^3.0.6":
   version: 3.0.9
   resolution: "graphiql@npm:3.0.9"
   dependencies:
