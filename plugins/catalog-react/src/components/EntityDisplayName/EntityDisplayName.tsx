@@ -34,7 +34,7 @@ const useStyles = makeStyles(
       alignItems: 'center',
     },
     icon: {
-      marginLeft: theme.spacing(0.5),
+      marginRight: theme.spacing(0.5),
       color: theme.palette.text.secondary,
       lineHeight: 0,
     },
@@ -77,12 +77,12 @@ export const EntityDisplayName = (
   // Optionally an icon, and wrapper around them both
   content = (
     <Box component="span" className={classes.root}>
-      {content}
       {Icon && !noIcon ? (
         <Box component="span" className={classes.icon}>
           <Icon fontSize="inherit" />
         </Box>
       ) : null}
+      {content}
     </Box>
   );
 

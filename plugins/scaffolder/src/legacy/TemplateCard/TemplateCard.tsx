@@ -243,7 +243,11 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
           <Typography variant="body2" className={classes.label}>
             Owner
           </Typography>
-          <EntityRefLinks entityRefs={ownedByRelations} defaultKind="Group" />
+          <EntityRefLinks
+            entityRefs={ownedByRelations}
+            defaultKind="Group"
+            noIcons
+          />
         </Box>
         <Box>
           <Typography

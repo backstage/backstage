@@ -174,6 +174,7 @@ export const TemplateCard = (props: TemplateCardProps) => {
                   style={{ marginLeft: '8px' }}
                   entityRefs={ownedByRelations}
                   defaultKind="Group"
+                  noIcons
                 />
               </>
             )}
