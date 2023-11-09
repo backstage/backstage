@@ -19311,12 +19311,12 @@ __metadata:
   linkType: hard
 
 "@types/passport-auth0@npm:^1.0.5":
-  version: 1.0.8
-  resolution: "@types/passport-auth0@npm:1.0.8"
+  version: 1.0.9
+  resolution: "@types/passport-auth0@npm:1.0.9"
   dependencies:
     "@types/express": "*"
     "@types/passport": "*"
-  checksum: fd4534596ec4daf61a8acf66c13a2434b54b5da269c86ed67d2d0cdf654be7cd5da808426150db91ce25ddf37a83c75424e17ad7feeea697b6eb9c4b85678833
+  checksum: 5ce21dff0ec2662e5b18a96fe337a680d09d1bd935ab1a263d3d4b6a332ed321ef8d774f3e23b460ebf1361344f0e9bd8354389e4983e3c4dce5457d1c20d60f
   languageName: node
   linkType: hard
 
@@ -21821,14 +21821,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.4.0":
-  version: 1.5.1
-  resolution: "axios@npm:1.5.1"
+"axios@npm:^1.4.0, axios@npm:^1.6.0":
+  version: 1.6.1
+  resolution: "axios@npm:1.6.1"
   dependencies:
     follow-redirects: ^1.15.0
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: 4444f06601f4ede154183767863d2b8e472b4a6bfc5253597ed6d21899887e1fd0ee2b3de792ac4f8459fe2e359d2aa07c216e45fd8b9e4e0688a6ebf48a5a8d
+  checksum: 573f03f59b7487d54551b16f5e155d1d130ad4864ed32d1da93d522b78a57123b34e3bde37f822a65ee297e79f1db840f9ad6514addff50d3cbf5caeed39e8dc
   languageName: node
   linkType: hard
 
@@ -37402,13 +37402,13 @@ __metadata:
   linkType: hard
 
 "passport-auth0@npm:^1.4.3":
-  version: 1.4.3
-  resolution: "passport-auth0@npm:1.4.3"
+  version: 1.4.4
+  resolution: "passport-auth0@npm:1.4.4"
   dependencies:
-    axios: ^0.27.2
+    axios: ^1.6.0
     passport-oauth: ^1.0.0
     passport-oauth2: ^1.6.0
-  checksum: 7658f58fd24831c67c783a9b0df3946bae9e6e42f8572747f17e77a2129d58ba21917a7531a4a328119b99a2a979ee857a1107c8e22e63e55739cdc1a8d1ccbc
+  checksum: 537c2a9d60fd3e8663cc5686bb34808412bccefaed8fa99c782f5e24fc2e103ddb14db1a8fdea38a89bd2eaa797d6f6a9c2d0309d83617dde9466ab1de4cf36b
   languageName: node
   linkType: hard
 
