@@ -36,6 +36,7 @@ import {
   ListSubheader,
 } from './common';
 import { EntityKindIcon } from './EntityKindIcon';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const useStyles = makeStyles({
   root: {
@@ -90,6 +91,12 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
                 <ListItemText primary="etag" secondary={metadata.etag} />
               </ListItem>
             )}
+            <ListItem>
+              <ListItemText
+                primary="entityRef"
+                secondary={stringifyEntityRef(props.entity)}
+              />
+            </ListItem>
           </List>
         </Container>
 
