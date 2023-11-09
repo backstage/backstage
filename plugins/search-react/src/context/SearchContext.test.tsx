@@ -35,9 +35,6 @@ describe('SearchContext', () => {
   const searchApiMock = {
     query: jest.fn().mockResolvedValue({}),
   } satisfies typeof searchApiRef.T;
-  const analyticsApiMock = {
-    captureEvent: jest.fn(),
-  } satisfies typeof analyticsApiRef.T;
 
   const wrapper = ({ children, initialState, config = {} }: any) => {
     const configApiMock = new MockConfigApi(config);
@@ -46,7 +43,6 @@ describe('SearchContext', () => {
         apis={[
           [configApiRef, configApiMock],
           [searchApiRef, searchApiMock],
-          [analyticsApiRef, analyticsApiMock],
         ]}
       >
         <SearchContextProvider initialState={initialState}>
@@ -425,14 +421,33 @@ describe('SearchContext', () => {
   });
 
   describe('analytics', () => {
-    it('Captures analytics events if enabled in app', async () => {
+    it('captures analytics events if enabled in app', async () => {
+      const analyticsApiMock = {
+        captureEvent: jest.fn(),
+      } satisfies typeof analyticsApiRef.T;
+
       searchApiMock.query.mockResolvedValue({
         results: [],
         numberOfResults: 3,
       });
 
       const { result } = renderHook(() => useSearch(), {
-        wrapper: ({ children }) => wrapper({ children, initialState }),
+        wrapper: ({ children }) => {
+          const configApiMock = new MockConfigApi({});
+          return (
+            <TestApiProvider
+              apis={[
+                [configApiRef, configApiMock],
+                [searchApiRef, searchApiMock],
+                [analyticsApiRef, analyticsApiMock],
+              ]}
+            >
+              <SearchContextProvider initialState={initialState}>
+                {children}
+              </SearchContextProvider>
+            </TestApiProvider>
+          );
+        },
       });
 
       await waitFor(() => {
@@ -446,6 +461,11 @@ describe('SearchContext', () => {
       });
 
       await waitFor(() => {
+        expect(searchApiMock.query).toHaveBeenLastCalledWith({
+          term: 'term',
+          types: ['*'],
+          filters: {},
+        });
         expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
           action: 'search',
           subject: 'term',
