@@ -19,7 +19,7 @@ import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import knexFactory, { Knex } from 'knex';
 import limiterFactory from 'p-limit';
-import { mergeDatabaseConfig } from './config';
+import { mergeDatabaseConfig } from './config/mergeDatabaseConfig';
 import { DatabaseConnector } from './types';
 
 import { mysqlConnector, pgConnector, sqlite3Connector } from './connectors';

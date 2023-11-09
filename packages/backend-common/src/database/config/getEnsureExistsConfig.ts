@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-export {
-  type DatabaseManagerOptions,
-  DatabaseManager,
-} from './DatabaseManager';
+import { Config } from '@backstage/config';
 
-/*
- * Undocumented API surface from connection is being reduced for future deprecation.
- * Avoid exporting additional symbols.
- */
-export { createDatabaseClient, ensureDatabaseExists } from './connection';
-
-export type { PluginDatabaseManager } from './types';
-export { isDatabaseConflictError } from './util';
+export function getEnsureExistsConfig(
+  config: Config,
+  pluginId: string,
+): boolean {
+  const baseConfig = config.getOptionalBoolean('ensureExists') ?? true;
+  return (
+    config.getOptionalBoolean(`plugin.${pluginId}.ensureExists`) ?? baseConfig
+  );
+}

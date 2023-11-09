@@ -19,7 +19,7 @@ import yn from 'yn';
 
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import { mergeDatabaseConfig } from '../config';
+import { mergeDatabaseConfig } from '../config/mergeDatabaseConfig';
 import { DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 

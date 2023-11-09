@@ -18,7 +18,7 @@ import knexFactory, { Knex } from 'knex';
 
 import { Config } from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
-import { mergeDatabaseConfig } from '../config';
+import { mergeDatabaseConfig } from '../config/mergeDatabaseConfig';
 import { DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';

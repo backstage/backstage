@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ConfigReader } from '@backstage/config';
 import { omit } from 'lodash';
 import path from 'path';

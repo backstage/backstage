@@ -19,7 +19,7 @@ import { ensureDirSync } from 'fs-extra';
 import knexFactory, { Knex } from 'knex';
 import path from 'path';
 import { DevDataStore } from '@backstage/backend-dev-utils';
-import { mergeDatabaseConfig } from '../config';
+import { mergeDatabaseConfig } from '../config/mergeDatabaseConfig';
 import { DatabaseConnector } from '../types';
 import {
   LifecycleService,
