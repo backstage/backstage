@@ -2,4 +2,4 @@
 '@backstage/cli': patch
 ---
 
-Update dependencies in `defaul-plugin` template
+Updated dependencies in frontend plugin templates
