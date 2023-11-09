@@ -20,13 +20,13 @@ import {
 } from '@backstage/catalog-model';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import { CustomLabel } from './CustomLabel';
+import { DefaultRenderLabel } from './DefaultRenderLabel';
 
 describe('<CustomLabel />', () => {
   test('renders label', () => {
     render(
       <svg xmlns="http://www.w3.org/2000/svg">
-        <CustomLabel
+        <DefaultRenderLabel
           edge={{
             label: 'visible',
             relations: [RELATION_PARENT_OF],
@@ -43,7 +43,7 @@ describe('<CustomLabel />', () => {
   test('renders label with multiple relations', () => {
     render(
       <svg xmlns="http://www.w3.org/2000/svg">
-        <CustomLabel
+        <DefaultRenderLabel
           edge={{
             label: 'visible',
             relations: [RELATION_PARENT_OF, RELATION_CHILD_OF],

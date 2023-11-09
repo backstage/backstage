@@ -261,3 +261,5 @@ createApiFactory({
     },
   })
 ```
+
+In the same way as the `requestInterceptor` you can override any property of Swagger UI

@@ -16,7 +16,7 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import SwaggerUI from 'swagger-ui-react';
+import SwaggerUI, { SwaggerUIProps } from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 
 const useStyles = makeStyles(theme => ({
@@ -136,12 +136,11 @@ const useStyles = makeStyles(theme => ({
 
 export type OpenApiDefinitionProps = {
   definition: string;
-  requestInterceptor?: (req: any) => any | Promise<any>;
-};
+} & Omit<SwaggerUIProps, 'spec'>;
 
 export const OpenApiDefinition = ({
   definition,
-  requestInterceptor,
+  ...swaggerUiProps
 }: OpenApiDefinitionProps) => {
   const classes = useStyles();
 
@@ -159,8 +158,9 @@ export const OpenApiDefinition = ({
       <SwaggerUI
         spec={def}
         url=""
-        requestInterceptor={requestInterceptor}
         deepLinking
+        oauth2RedirectUrl={`${window.location.protocol}//${window.location.host}/oauth2-redirect.html`}
+        {...swaggerUiProps}
       />
     </div>
   );

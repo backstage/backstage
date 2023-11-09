@@ -32,7 +32,34 @@ async function getDependencyReleaseLine(changesets, dependenciesUpdated) {
   return ['- Updated dependencies', ...updatedDependenciesList].join('\n');
 }
 
+async function getReleaseLine(changeset, type, options) {
+  const { ignoreUserThanks = [], ...rest } = options ?? {};
+  const releaseLine = await defaultChangelogFunctions.getReleaseLine(
+    changeset,
+    type,
+    rest,
+  );
+
+  const ignoredUsers = new Set(ignoreUserThanks);
+  return releaseLine.replace(/Thanks\s(.*)!\s/g, (_, text) => {
+    // extracts user name and profile url from the markdown link
+    const regex = /\[@(\w+)\]\((https:\/\/github\.com\/[^\)]+)\)/g;
+
+    let matches;
+    const links = [];
+
+    while ((matches = regex.exec(text)) !== null) {
+      const [, user, url] = matches;
+      if (!ignoredUsers.has(user)) {
+        links.push(`[@${user}](${url})`);
+      }
+    }
+
+    return links.length ? `Thanks ${links.join(', ')}! ` : '';
+  });
+}
+
 module.exports = {
-  getReleaseLine: defaultChangelogFunctions.getReleaseLine,
+  getReleaseLine,
   getDependencyReleaseLine,
 };
