@@ -145,7 +145,10 @@ describe('taskRecoveryHelper', () => {
       const events = [...logEvents, toRecoveredEvent('idempotent')];
 
       expect(compactEvents(taskSpec, events)).toEqual({
-        events: ['fetch', 'mock-step-1'].map(toLogEvent),
+        events: [
+          ...['fetch', 'mock-step-1'].map(toLogEvent),
+          toRecoveredEvent('idempotent'),
+        ],
       });
     });
 
@@ -170,7 +173,10 @@ describe('taskRecoveryHelper', () => {
       const events = [...logEvents, toRecoveredEvent('idempotent')];
 
       expect(compactEvents(taskSpec, events)).toEqual({
-        events: ['fetch', 'mock-step-1', 'mock-step-2'].map(toLogEvent),
+        events: [
+          ...['fetch', 'mock-step-1', 'mock-step-2'].map(toLogEvent),
+          toRecoveredEvent('idempotent'),
+        ],
       });
     });
   });
