@@ -20013,11 +20013,11 @@ __metadata:
   linkType: hard
 
 "@types/xml2js@npm:*, @types/xml2js@npm:^0.4.7":
-  version: 0.4.13
-  resolution: "@types/xml2js@npm:0.4.13"
+  version: 0.4.14
+  resolution: "@types/xml2js@npm:0.4.14"
   dependencies:
     "@types/node": "*"
-  checksum: 757355c1867b4bd70a85cacac91ed771d172f269469b92b3bace2c7e91f9848ea3efa2be2901f831e2a632efbf6d128208a4495ec8a5fed9f7c12f2c9ec4d929
+  checksum: df9f106b9953dcdec7ba3304ebc56d6c2f61d49bf556d600bed439f94a1733f73ca0bf2d0f64330b402191622862d9d6058bab9d7e3dcb5b0fe51ebdc4372aac
   languageName: node
   linkType: hard
 
