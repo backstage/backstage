@@ -51,7 +51,7 @@ kubernetes:
 
 This configures how to determine which clusters a component is running in.
 
-Valid value are:
+Valid values are:
 
 - `multiTenant` - This configuration assumes that all components run on all the
   provided clusters.
