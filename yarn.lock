@@ -32390,9 +32390,9 @@ __metadata:
   linkType: hard
 
 "jose@npm:^4.14.6, jose@npm:^4.15.1, jose@npm:^4.6.0":
-  version: 4.15.3
-  resolution: "jose@npm:4.15.3"
-  checksum: b76eeccc1d40d0eaf26dfaadc0f88fc15802c9105ab66a24ee223bd84369f7cb217f4a2cb852f5080ff6996170b3a73db2b2d26878b8905d99c36ca432628134
+  version: 4.15.4
+  resolution: "jose@npm:4.15.4"
+  checksum: dccad91cb3357f36423774a0b89ad830dd84b31090de65cd139b85488439f16a00f8c59c0773825e8a1adb0dd9d13ad725ad66e6ea33880ecb3959bb99e1ea5b
   languageName: node
   linkType: hard
 
