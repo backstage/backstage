@@ -31,7 +31,7 @@ const useStyles = makeStyles(
   { name: 'PluginCatalogGraphCustomLabel' },
 );
 
-export function CustomLabel({
+export function DefaultRenderLabel({
   edge: { relations },
 }: DependencyGraphTypes.RenderLabelProps<EntityEdgeData>) {
   const classes = useStyles();

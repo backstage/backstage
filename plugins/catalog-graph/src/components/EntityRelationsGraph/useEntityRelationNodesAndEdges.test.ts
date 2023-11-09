@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  DEFAULT_NAMESPACE,
   Entity,
   RELATION_HAS_PART,
   RELATION_OWNED_BY,
@@ -25,6 +26,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { filter, keyBy } from 'lodash';
 import { useEntityRelationGraph as useEntityRelationGraphMocked } from './useEntityRelationGraph';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
+import { EntityNode } from './types';
 
 jest.mock('./useEntityRelationGraph');
 
@@ -32,83 +34,92 @@ const useEntityRelationGraph = useEntityRelationGraphMocked as jest.Mock<
   ReturnType<typeof useEntityRelationGraphMocked>
 >;
 
+const entities: { [ref: string]: Entity } = {
+  'b:d/c': {
+    apiVersion: 'a',
+    kind: 'b',
+    metadata: {
+      name: 'c',
+      namespace: 'd',
+    },
+    relations: [
+      {
+        targetRef: 'k:d/a1',
+        type: RELATION_OWNER_OF,
+      },
+      {
+        targetRef: 'b:d/c1',
+        type: RELATION_HAS_PART,
+      },
+    ],
+  },
+  'k:d/a1': {
+    apiVersion: 'a',
+    kind: 'k',
+    metadata: {
+      name: 'a1',
+      namespace: 'd',
+    },
+    relations: [
+      {
+        targetRef: 'b:d/c',
+        type: RELATION_OWNED_BY,
+      },
+      {
+        targetRef: 'b:d/c1',
+        type: RELATION_OWNED_BY,
+      },
+    ],
+  },
+  'b:d/c1': {
+    apiVersion: 'a',
+    kind: 'b',
+    metadata: {
+      name: 'c1',
+      namespace: 'd',
+    },
+    relations: [
+      {
+        targetRef: 'b:d/c',
+        type: RELATION_PART_OF,
+      },
+      {
+        targetRef: 'k:d/a1',
+        type: RELATION_OWNER_OF,
+      },
+      {
+        targetRef: 'b:d/c2',
+        type: RELATION_HAS_PART,
+      },
+    ],
+  },
+  'b:d/c2': {
+    apiVersion: 'a',
+    kind: 'b',
+    metadata: {
+      name: 'c2',
+      namespace: 'd',
+    },
+    relations: [
+      {
+        targetRef: 'b:d/c1',
+        type: RELATION_PART_OF,
+      },
+    ],
+  },
+};
+
+function deprecatedProperties(entity: Entity): Partial<EntityNode> {
+  return {
+    kind: entity.kind,
+    name: entity.metadata.name,
+    namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+    title: entity.metadata.title,
+  };
+}
+
 describe('useEntityRelationNodesAndEdges', () => {
   beforeEach(() => {
-    const entities: { [ref: string]: Entity } = {
-      'b:d/c': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            targetRef: 'k:d/a1',
-            type: RELATION_OWNER_OF,
-          },
-          {
-            targetRef: 'b:d/c1',
-            type: RELATION_HAS_PART,
-          },
-        ],
-      },
-      'k:d/a1': {
-        apiVersion: 'a',
-        kind: 'k',
-        metadata: {
-          name: 'a1',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            targetRef: 'b:d/c',
-            type: RELATION_OWNED_BY,
-          },
-          {
-            targetRef: 'b:d/c1',
-            type: RELATION_OWNED_BY,
-          },
-        ],
-      },
-      'b:d/c1': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c1',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            targetRef: 'b:d/c',
-            type: RELATION_PART_OF,
-          },
-          {
-            targetRef: 'k:d/a1',
-            type: RELATION_OWNER_OF,
-          },
-          {
-            targetRef: 'b:d/c2',
-            type: RELATION_HAS_PART,
-          },
-        ],
-      },
-      'b:d/c2': {
-        apiVersion: 'a',
-        kind: 'b',
-        metadata: {
-          name: 'c2',
-          namespace: 'd',
-        },
-        relations: [
-          {
-            targetRef: 'b:d/c1',
-            type: RELATION_PART_OF,
-          },
-        ],
-      },
-    };
-
     useEntityRelationGraph.mockImplementation(({ filter: { kinds } }) => ({
       loading: false,
       entities: keyBy(
@@ -184,33 +195,29 @@ describe('useEntityRelationNodesAndEdges', () => {
         color: 'secondary',
         focused: true,
         id: 'b:d/c',
-        kind: 'b',
-        name: 'c',
-        namespace: 'd',
+        entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
-        kind: 'k',
-        name: 'a1',
-        namespace: 'd',
+        entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
-        kind: 'b',
-        name: 'c1',
-        namespace: 'd',
+        entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
-        kind: 'b',
-        name: 'c2',
-        namespace: 'd',
+        entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -257,33 +264,29 @@ describe('useEntityRelationNodesAndEdges', () => {
         color: 'secondary',
         focused: true,
         id: 'b:d/c',
-        kind: 'b',
-        name: 'c',
-        namespace: 'd',
+        entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
-        kind: 'k',
-        name: 'a1',
-        namespace: 'd',
+        entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
-        kind: 'b',
-        name: 'c1',
-        namespace: 'd',
+        entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
-        kind: 'b',
-        name: 'c2',
-        namespace: 'd',
+        entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -330,33 +333,29 @@ describe('useEntityRelationNodesAndEdges', () => {
         color: 'secondary',
         focused: true,
         id: 'b:d/c',
-        kind: 'b',
-        name: 'c',
-        namespace: 'd',
+        entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
-        kind: 'k',
-        name: 'a1',
-        namespace: 'd',
+        entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
-        kind: 'b',
-        name: 'c1',
-        namespace: 'd',
+        entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
-        kind: 'b',
-        name: 'c2',
-        namespace: 'd',
+        entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -433,33 +432,29 @@ describe('useEntityRelationNodesAndEdges', () => {
         color: 'secondary',
         focused: true,
         id: 'b:d/c',
-        kind: 'b',
-        name: 'c',
-        namespace: 'd',
+        entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
-        kind: 'k',
-        name: 'a1',
-        namespace: 'd',
+        entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
-        kind: 'b',
-        name: 'c1',
-        namespace: 'd',
+        entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
-        kind: 'b',
-        name: 'c2',
-        namespace: 'd',
+        entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -534,33 +529,29 @@ describe('useEntityRelationNodesAndEdges', () => {
         color: 'secondary',
         focused: true,
         id: 'b:d/c',
-        kind: 'b',
-        name: 'c',
-        namespace: 'd',
+        entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
-        kind: 'k',
-        name: 'a1',
-        namespace: 'd',
+        entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
-        kind: 'b',
-        name: 'c1',
-        namespace: 'd',
+        entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'secondary',
         focused: true,
         id: 'b:d/c2',
-        kind: 'b',
-        name: 'c2',
-        namespace: 'd',
+        entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -606,33 +597,29 @@ describe('useEntityRelationNodesAndEdges', () => {
         color: 'secondary',
         focused: true,
         id: 'b:d/c',
-        kind: 'b',
-        name: 'c',
-        namespace: 'd',
+        entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'k:d/a1',
-        kind: 'k',
-        name: 'a1',
-        namespace: 'd',
+        entity: entities['k:d/a1'],
+        ...deprecatedProperties(entities['k:d/a1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
-        kind: 'b',
-        name: 'c1',
-        namespace: 'd',
+        entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
-        kind: 'b',
-        name: 'c2',
-        namespace: 'd',
+        entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
@@ -658,6 +645,7 @@ describe('useEntityRelationNodesAndEdges', () => {
     });
 
     const { nodes, edges, loading, error } = result.current;
+    // nodes?.sort((a, b) => a.id.localeCompare(b.id));
 
     expect(loading).toBe(false);
     expect(error).toBeUndefined();
@@ -666,25 +654,22 @@ describe('useEntityRelationNodesAndEdges', () => {
         color: 'secondary',
         focused: true,
         id: 'b:d/c',
-        kind: 'b',
-        name: 'c',
-        namespace: 'd',
+        entity: entities['b:d/c'],
+        ...deprecatedProperties(entities['b:d/c']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c1',
-        kind: 'b',
-        name: 'c1',
-        namespace: 'd',
+        entity: entities['b:d/c1'],
+        ...deprecatedProperties(entities['b:d/c1']),
       },
       {
         color: 'primary',
         focused: false,
         id: 'b:d/c2',
-        kind: 'b',
-        name: 'c2',
-        namespace: 'd',
+        entity: entities['b:d/c2'],
+        ...deprecatedProperties(entities['b:d/c2']),
       },
     ]);
     expect(edges).toEqual([
