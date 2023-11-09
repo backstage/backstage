@@ -27,7 +27,7 @@ import { CustomDialogTitle } from '../CustomDialogTitle';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
 import { bazaarApiRef } from '../../api';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 
 import { BazaarProject } from '../../types';
 
@@ -54,9 +54,12 @@ export const LinkProjectDialog = ({
 }: Props) => {
   const classes = useStyles();
   const bazaarApi = useApi(bazaarApiRef);
+  const alertApi = useApi(alertApiRef);
   const [selectedEntity, setSelectedEntity] = useState(initEntity);
+  const [selectedEntityName, setSelectedEntityName] = useState('');
   const handleEntityClick = (entity: Entity) => {
     setSelectedEntity(entity);
+    setSelectedEntityName(entity.metadata.name);
   };
 
   const handleSubmit = async () => {
@@ -66,7 +69,14 @@ export const LinkProjectDialog = ({
       ...bazaarProject,
       entityRef: stringifyEntityRef(selectedEntity!),
     });
-    if (updateResponse.status === 'ok') fetchBazaarProject();
+    if (updateResponse.status === 'ok') {
+      fetchBazaarProject();
+      alertApi.post({
+        message: `linked entity '${selectedEntityName}' to the project ${bazaarProject.title}`,
+        severity: 'success',
+        display: 'transient',
+      });
+    }
   };
 
   return (
