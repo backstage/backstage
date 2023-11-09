@@ -58,6 +58,12 @@ jest.mock('@backstage/plugin-catalog-react/alpha', () => ({
   },
 }));
 
+jest.mock('@backstage/catalog-model', () => ({
+  stringifyEntityRef: () => {
+    return {};
+  },
+}));
+
 const config = {
   getString: (_: string) => 'https://test-url',
 };
