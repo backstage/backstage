@@ -34467,16 +34467,16 @@ __metadata:
   linkType: hard
 
 "material-ui-search-bar@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "material-ui-search-bar@npm:1.0.0"
+  version: 1.0.1
+  resolution: "material-ui-search-bar@npm:1.0.1"
   dependencies:
     classnames: ^2.2.5
     prop-types: ^15.5.8
   peerDependencies:
     "@material-ui/core": ^4.0.0
     "@material-ui/icons": ^4.0.0
-    react: ^16.8.0
-  checksum: 05f29e456a93860d233cdc8343bea7fe2983dffc8b276fd75780156e58f00152fe712febf99f887167bd6e53d6d2f4988fa52ccb8b35b2e1c7e3cd2af6705822
+    react: ">=16.8.0"
+  checksum: f2bbc90471bdf3734d704b164857eb2b5c7f30dbe5ee362b448d8362fbfe152f1d1d5280fe4bf44624dc6135782ef58f63cf488ecb82f3392e0090757a767175
   languageName: node
   linkType: hard
 
