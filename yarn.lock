@@ -11792,6 +11792,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@graphiql/react@npm:^0.20.2":
+  version: 0.20.2
+  resolution: "@graphiql/react@npm:0.20.2"
+  dependencies:
+    "@graphiql/toolkit": ^0.9.1
+    "@headlessui/react": ^1.7.15
+    "@radix-ui/react-dialog": ^1.0.4
+    "@radix-ui/react-dropdown-menu": ^2.0.5
+    "@radix-ui/react-tooltip": ^1.0.6
+    "@radix-ui/react-visually-hidden": ^1.0.3
+    "@types/codemirror": ^5.60.8
+    clsx: ^1.2.1
+    codemirror: ^5.65.3
+    codemirror-graphql: ^2.0.10
+    copy-to-clipboard: ^3.2.0
+    framer-motion: ^6.5.1
+    graphql-language-service: ^5.2.0
+    markdown-it: ^12.2.0
+    set-value: ^4.1.0
+  peerDependencies:
+    graphql: ^15.5.0 || ^16.0.0
+    react: ^16.8.0 || ^17 || ^18
+    react-dom: ^16.8.0 || ^17 || ^18
+  checksum: 76bd00fd144b1e3044e3239d80fbda49795e5eb41d222da373af11819d06f657a430eff6853e93724134538f3c5e619e0ecf9111b0818fe14569edb290106c84
+  languageName: node
+  linkType: hard
+
 "@graphiql/toolkit@npm:^0.9.1":
   version: 0.9.1
   resolution: "@graphiql/toolkit@npm:0.9.1"
@@ -29367,7 +29394,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphiql@npm:3.0.6, graphiql@npm:^3.0.6":
+"graphiql@npm:3.0.6":
   version: 3.0.6
   resolution: "graphiql@npm:3.0.6"
   dependencies:
@@ -29380,6 +29407,22 @@ __metadata:
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
   checksum: 34d35ca4b46ce1e0cef0362f15d091481d2275e4a5b537b5715cfbaee15b1e114c31f35a63558a6f74a754687fbf4bc977411818af34e2e471a96902370c40f2
+  languageName: node
+  linkType: hard
+
+"graphiql@npm:^3.0.6":
+  version: 3.0.9
+  resolution: "graphiql@npm:3.0.9"
+  dependencies:
+    "@graphiql/react": ^0.20.2
+    "@graphiql/toolkit": ^0.9.1
+    graphql-language-service: ^5.2.0
+    markdown-it: ^12.2.0
+  peerDependencies:
+    graphql: ^15.5.0 || ^16.0.0
+    react: ^16.8.0 || ^17 || ^18
+    react-dom: ^16.8.0 || ^17 || ^18
+  checksum: 4431842ddcee548bb0aacbe6c8d2eaf3a8cd34fcdb584d98e0983dec21bdeeeaee4550c80a34debd290aebbd8535dae488d2d0beb85e1cb59b89ba4ed08ef32c
   languageName: node
   linkType: hard
 
