@@ -142,15 +142,21 @@ function reducer(draft: TaskStream, action: ReducerAction) {
       return;
     }
 
+    case 'RECOVERED': {
+      for (const stepId in draft.steps) {
+        if (draft.steps.hasOwnProperty(stepId)) {
+          draft.steps[stepId].startedAt = undefined;
+          draft.steps[stepId].endedAt = undefined;
+          draft.steps[stepId].status = 'open';
+        }
+      }
+      return;
+    }
+
     case 'ERROR': {
       draft.error = action.data;
       draft.loading = false;
       draft.completed = true;
-      return;
-    }
-
-    case 'RECOVERED': {
-      draft.stepLogs = {};
       return;
     }
 
