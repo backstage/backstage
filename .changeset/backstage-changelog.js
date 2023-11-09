@@ -34,17 +34,16 @@ async function getDependencyReleaseLine(changesets, dependenciesUpdated) {
 
 async function getReleaseLine(changeset, type, options) {
   const { ignoreUserThanks: users = [] } = options ?? {};
+  const ignoredLinks = new Set(
+    users.map(user => `[@${user}](https://github.com/${user})`),
+  );
   const releaseLine = await defaultChangelogFunctions.getReleaseLine(
     changeset,
     type,
     options,
   );
   return releaseLine.replace(/Thanks\s(.*)!\s/g, (_, group) => {
-    const links = group
-      .split(', ')
-      .filter(link =>
-        users.every(user => `[@${user}](https://github.com/${user})` !== link),
-      );
+    const links = group.split(', ').filter(link => !ignoredLinks.has(link));
     return links.length ? `Thanks ${links.join(', ')}! ` : '';
   });
 }
