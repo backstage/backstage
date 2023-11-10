@@ -20073,13 +20073,13 @@ __metadata:
   linkType: hard
 
 "@types/webpack@npm:^5.28.0":
-  version: 5.28.3
-  resolution: "@types/webpack@npm:5.28.3"
+  version: 5.28.5
+  resolution: "@types/webpack@npm:5.28.5"
   dependencies:
     "@types/node": "*"
     tapable: ^2.2.0
     webpack: ^5
-  checksum: 8452528f7ff61eb5e53d9d1dc08c05c648af2d850e14debf49141859b72798ea2d91f2892f849d7fa97e208fef7ae82960eea24b1019cb072b4713b515e74bfc
+  checksum: 14359d9ccecef7ef1ea271c00baec5337213c7fda63a34c61b9e519505b3928d0807cdbb5b1172d1994e1179920b89c57eaf2cbf64599958b67cd70720ac2a9b
   languageName: node
   linkType: hard
 
@@ -45826,8 +45826,8 @@ __metadata:
   linkType: hard
 
 "webpack@npm:^5, webpack@npm:^5.70.0":
-  version: 5.88.2
-  resolution: "webpack@npm:5.88.2"
+  version: 5.89.0
+  resolution: "webpack@npm:5.89.0"
   dependencies:
     "@types/eslint-scope": ^3.7.3
     "@types/estree": ^1.0.0
@@ -45858,7 +45858,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 79476a782da31a21f6dd38fbbd06b68da93baf6a62f0d08ca99222367f3b8668f5a1f2086b7bb78e23172e31fa6df6fa7ab09b25e827866c4fc4dc2b30443ce2
+  checksum: 43fe0dbc30e168a685ef5a86759d5016a705f6563b39a240aa00826a80637d4a3deeb8062e709d6a4b05c63e796278244c84b04174704dc4a37bedb0f565c5ed
   languageName: node
   linkType: hard
 
