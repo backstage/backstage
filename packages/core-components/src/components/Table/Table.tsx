@@ -53,6 +53,7 @@ import React, {
 
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
+import { TableLoadingBody } from './TableLoadingBody';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 const tableIcons: Icons = {
@@ -315,8 +316,6 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   } = props;
   const tableClasses = tableStyles();
 
-  const theme = useTheme<BackstageTheme>();
-
   const calculatedInitialState = { ...defaultInitialState, ...initialState };
 
   const [filtersOpen, setFiltersOpen] = useState(
@@ -331,8 +330,6 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const [selectedFilters, setSelectedFilters] = useState(
     calculatedInitialState.filters,
   );
-
-  const MTColumns = convertColumns(columns, theme);
 
   const [search, setSearch] = useState(calculatedInitialState.search);
 
@@ -350,12 +347,6 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       onStateChange(state);
     }
   }, [search, filtersOpen, selectedFilters, onStateChange]);
-
-  const defaultOptions: Options<T> = {
-    headerStyle: {
-      textTransform: 'uppercase',
-    },
-  };
 
   const getFieldByTitle = useCallback(
     (titleValue: string | keyof T) =>
@@ -468,11 +459,59 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     [toggleFilters, hasFilters, selectedFiltersLength, setSearch],
   );
 
+  return (
+    <Box className={tableClasses.root}>
+      {filtersOpen && data && typeof data !== 'function' && filters?.length && (
+        <Filters
+          filters={constructFilters(filters, data as any[])}
+          selectedFilters={selectedFilters}
+          onChangeFilters={setSelectedFilters}
+        />
+      )}
+      <BaseTable<T>
+        components={{
+          Toolbar,
+          ...components,
+        }}
+        options={options}
+        columns={columns}
+        title={title}
+        subtitle={subtitle}
+        data={typeof data === 'function' ? data : tableData}
+        {...restProps}
+      />
+    </Box>
+  );
+}
+
+Table.icons = Object.freeze(tableIcons);
+
+export function BaseTable<T extends object = {}>(
+  props: TableProps<T> & {
+    loading?: boolean;
+    emptyContent?: ReactNode;
+    subtitle?: string;
+  },
+) {
+  const {
+    columns,
+    components,
+    data,
+    emptyContent,
+    loading,
+    options,
+    title,
+    subtitle,
+    localization,
+    ...restProps
+  } = props;
+
   const hasNoRows = typeof data !== 'function' && data.length === 0;
+
   const columnCount = columns.length;
   const Body = useCallback(
     (bodyProps: any /* no type for this in material-table */) => {
-      if (isLoading) {
+      if (loading) {
         return <TableLoadingBody colSpan={columnCount} />;
       }
 
@@ -488,49 +527,39 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
       return <MTableBody {...bodyProps} />;
     },
-    [hasNoRows, emptyContent, columnCount, isLoading],
+    [hasNoRows, emptyContent, columnCount, loading],
   );
+  const theme = useTheme();
 
   return (
-    <Box className={tableClasses.root}>
-      {filtersOpen && data && typeof data !== 'function' && filters?.length && (
-        <Filters
-          filters={constructFilters(filters, data as any[])}
-          selectedFilters={selectedFilters}
-          onChangeFilters={setSelectedFilters}
-        />
-      )}
-      <MTable<T>
-        components={{
-          Header: StyledMTableHeader,
-          Toolbar,
-          Body,
-          ...components,
-        }}
-        options={{ ...defaultOptions, ...options }}
-        columns={MTColumns}
-        icons={tableIcons}
-        title={
-          <>
-            <Typography variant="h5" component="h2">
-              {title}
+    <MTable<T>
+      components={{
+        Header: StyledMTableHeader,
+        Body,
+        ...components,
+      }}
+      options={{ headerStyle: { textTransform: 'uppercase' }, ...options }}
+      columns={convertColumns(columns, theme)}
+      icons={tableIcons}
+      title={
+        <>
+          <Typography variant="h5" component="h2">
+            {title}
+          </Typography>
+          {subtitle && (
+            <Typography color="textSecondary" variant="body1">
+              {subtitle}
             </Typography>
-            {subtitle && (
-              <Typography color="textSecondary" variant="body1">
-                {subtitle}
-              </Typography>
-            )}
-          </>
-        }
-        data={typeof data === 'function' ? data : tableData}
-        style={{ width: '100%' }}
-        localization={{
-          toolbar: { searchPlaceholder: 'Filter', searchTooltip: 'Filter' },
-        }}
-        {...restProps}
-      />
-    </Box>
+          )}
+        </>
+      }
+      data={data}
+      style={{ width: '100%' }}
+      localization={{
+        ...localization,
+        toolbar: { searchPlaceholder: 'Filter', searchTooltip: 'Filter' },
+      }}
+      {...restProps}
+    />
   );
 }
-
-Table.icons = Object.freeze(tableIcons);

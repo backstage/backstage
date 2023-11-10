@@ -17,7 +17,7 @@
 export type { TableFiltersClassKey } from './Filters';
 export { SubvalueCell } from './SubvalueCell';
 export type { SubvalueCellClassKey } from './SubvalueCell';
-export { Table, tableStyles } from './Table';
+export { Table, BaseTable, tableStyles } from './Table';
 export type {
   TableColumn,
   TableFilter,
