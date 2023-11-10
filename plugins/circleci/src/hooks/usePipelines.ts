@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pipeline, PipelineInfo, Workflow } from '../types';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { AuthenticationError } from '@backstage/errors';
+import limiterFactory from 'p-limit';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import { Pipeline, PipelineInfo, Workflow } from '../types';
 import { useProjectSlugFromEntity } from './useProjectSlugFromEntity';
 import { circleCIApiRef } from '../api';
 
@@ -44,31 +44,35 @@ export function usePipelines() {
         if (e.name !== 'AuthenticationError') {
           errorApi.post(e);
         }
-        return Promise.reject(e);
+        throw e;
       }
     },
     [api, errorApi],
   );
 
-  const transform = async (
+  const transform = (
     pipelinesData: Pipeline[],
     getWorkflowsCall: { (pipelineId: string): Promise<Workflow[]> },
   ): Promise<PipelineInfo[]> => {
-    const pipelinePromises = pipelinesData.map(async pipelineData => {
-      const workflows = await getWorkflowsCall(pipelineData.id);
-      const tableBuildInfo: PipelineInfo = {
-        ...pipelineData,
-        workflows,
-      };
-      return tableBuildInfo;
-    });
+    const limiter = limiterFactory(10);
+
+    const pipelinePromises = pipelinesData.map(pipelineData =>
+      limiter(async () => {
+        const workflows = await getWorkflowsCall(pipelineData.id);
+        const tableBuildInfo: PipelineInfo = {
+          ...pipelineData,
+          workflows,
+        };
+        return tableBuildInfo;
+      }),
+    );
 
     return Promise.all(pipelinePromises);
   };
 
   const getPipelines = useCallback(async (): Promise<PipelineInfo[]> => {
     if (!projectSlug) {
-      return Promise.reject(new Error('Missing project slug'));
+      throw new Error('Missing project slug');
     }
 
     const { items = [] } = pipelinesPage.current;
@@ -88,43 +92,48 @@ export function usePipelines() {
 
       return allPipelines;
     } catch (e) {
-        if (e.name !== 'AuthenticationError') {
+      if (e.name !== 'AuthenticationError') {
         errorApi.post(e);
       }
-      return Promise.reject(e);
+      throw e;
     }
   }, [projectSlug, pageToken, getWorkflows, api, errorApi]);
 
-  const { value, loading, retry } = useAsyncRetry(() => {
-    return getPipelines();
-  }, [getPipelines]);
+  const { value, loading, retry } = useAsyncRetry(
+    () => getPipelines(),
+    [getPipelines],
+  );
 
   useEffect(() => setPipelines(value || []), [value]);
 
-  const rerunWorkflow = async (workflowId: string) => {
-    try {
-      await api.rerunWorkflow(workflowId);
-    } catch (e) {
-      errorApi.post(e);
-    }
-  };
+  const rerunWorkflow = useCallback(
+    async (workflowId: string) => {
+      try {
+        await api.rerunWorkflow(workflowId);
+      } catch (e) {
+        errorApi.post(e);
+        throw e;
+      }
+    },
+    [api, errorApi],
+  );
 
-  const fetchMore = () => {
+  const fetchMore = useCallback(() => {
     setPageToken(pipelinesPage.current.nextPageToken);
-  };
+  }, []);
 
-  const reload = () => {
+  const reload = useCallback(() => {
     pipelinesPage.current = {};
     setPipelines([]);
     retry();
-  };
+  }, [retry]);
 
   const projectName = `${owner}/${repo}`;
 
   return [
     {
       loading,
-      pipelines: pipelines || [],
+      pipelines: pipelines,
       projectName,
       hasMore: !!pipelinesPage.current.nextPageToken,
     },

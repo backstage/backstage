@@ -125,12 +125,13 @@ export class CircleCIClient implements CircleCIApi {
     return this.callApi<Build>(`v1.1/project/${projectSlug}/${buildNumber}`);
   }
 
-  async getStepOutput(
-    projectSlug: string,
-    buildNumber: number,
-    index: number,
-    step: number,
-  ): Promise<string> {
+  async getStepOutput(options: {
+    projectSlug: string;
+    buildNumber: number;
+    index: number;
+    step: number;
+  }): Promise<string> {
+    const { projectSlug, buildNumber, index, step } = options;
     return this.callApi<string>(
       `private/output/raw/${projectSlug}/${buildNumber}/output/${index}/${step}`,
       { format: 'text' },

@@ -191,7 +191,12 @@ describe('CircleCIClient', () => {
         ),
       );
 
-      const step = await client.getStepOutput('slug-1', 1234, 0, 99);
+      const step = await client.getStepOutput({
+        projectSlug: 'slug-1',
+        buildNumber: 1234,
+        index: 0,
+        step: 99,
+      });
 
       expect(step).toBeDefined();
       expect(step).toEqual('This is the step output');

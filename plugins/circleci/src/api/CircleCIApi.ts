@@ -39,12 +39,12 @@ export interface CircleCIApi {
     pageToken?: string,
   ): Promise<WorkflowJobListResponse>;
   getBuild(projectSlug: string, buildNumber: number): Promise<Build>;
-  getStepOutput(
-    projectSlug: string,
-    buildNumber: number,
-    index: number,
-    step: number,
-  ): Promise<string>;
+  getStepOutput(options: {
+    projectSlug: string;
+    buildNumber: number;
+    index: number;
+    step: number;
+  }): Promise<string>;
   rerunWorkflow(workflowId: string): Promise<RerunWorkflowResponse>;
 }
 

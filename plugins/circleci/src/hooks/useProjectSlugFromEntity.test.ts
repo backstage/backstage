@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
+import { renderHook } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import { CIRCLECI_ANNOTATION } from '../constants';
 import { useProjectSlugFromEntity } from './useProjectSlugFromEntity';
-import { useEntity } from '@backstage/plugin-catalog-react';
-
-jest.mock('@backstage/plugin-catalog-react', () => ({
-  useEntity: jest.fn(),
-}));
-
-const mockedUseEntity = useEntity as jest.Mock;
+import { makeWrapper } from '../__testUtils__/testUtils';
 
 const createDummyEntity = (annotations = {}): Entity => {
   return {
@@ -40,13 +35,16 @@ describe('useProjectSlugFromEntity', () => {
   const DUMMY_PROJECT_SLUG = 'github/my-org/dummy';
 
   it('should parse CircleCI annotation', () => {
-    mockedUseEntity.mockReturnValue({
-      entity: createDummyEntity({
-        [CIRCLECI_ANNOTATION]: DUMMY_PROJECT_SLUG,
+    const { result } = renderHook(() => useProjectSlugFromEntity(), {
+      wrapper: makeWrapper({
+        entity: createDummyEntity({
+          [CIRCLECI_ANNOTATION]: DUMMY_PROJECT_SLUG,
+        }),
+        apis: [],
       }),
     });
 
-    expect(useProjectSlugFromEntity()).toEqual({
+    expect(result.current).toEqual({
       owner: 'my-org',
       projectSlug: 'github/my-org/dummy',
       repo: 'dummy',
@@ -55,13 +53,16 @@ describe('useProjectSlugFromEntity', () => {
   });
 
   it('should handle empty CircleCI annotation', () => {
-    mockedUseEntity.mockReturnValue({
-      entity: createDummyEntity({
-        [CIRCLECI_ANNOTATION]: '',
+    const { result } = renderHook(() => useProjectSlugFromEntity(), {
+      wrapper: makeWrapper({
+        entity: createDummyEntity({
+          [CIRCLECI_ANNOTATION]: '',
+        }),
+        apis: [],
       }),
     });
 
-    expect(useProjectSlugFromEntity()).toEqual({
+    expect(result.current).toEqual({
       owner: undefined,
       projectSlug: '',
       repo: undefined,
@@ -70,11 +71,14 @@ describe('useProjectSlugFromEntity', () => {
   });
 
   it('should handle non-existent CircleCI annotation', () => {
-    mockedUseEntity.mockReturnValue({
-      entity: createDummyEntity(),
+    const { result } = renderHook(() => useProjectSlugFromEntity(), {
+      wrapper: makeWrapper({
+        entity: createDummyEntity(),
+        apis: [],
+      }),
     });
 
-    expect(useProjectSlugFromEntity()).toEqual({
+    expect(result.current).toEqual({
       owner: undefined,
       projectSlug: '',
       repo: undefined,

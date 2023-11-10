@@ -17,18 +17,27 @@
 import React from 'react';
 import { Pipelines } from './Pipelines';
 import { renderInTestApp } from '@backstage/test-utils';
+import { circleCIApiRef } from '../../../../api/CircleCIApi';
+import { makeWrapper } from '../../../../__testUtils__/testUtils';
 
 jest.mock('../CITable', () => ({
   CITable: () => '<CITable />',
 }));
 
-jest.mock('../../../../hooks/usePipelines', () => ({
-  usePipelines: jest.fn().mockReturnValue([{ loading: false, value: [] }, {}]),
-}));
-
 describe('Pipelines', () => {
+  const mockedCircleCIApi = {
+    getPipelinesForProject: jest.fn(),
+  };
+
   it('should display pipelines', async () => {
-    const rendered = await renderInTestApp(<Pipelines />);
+    const Wrapper = makeWrapper({
+      apis: [[circleCIApiRef, mockedCircleCIApi]],
+    });
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <Pipelines />
+      </Wrapper>,
+    );
 
     expect(rendered.getByText('<CITable />')).toBeInTheDocument();
   });

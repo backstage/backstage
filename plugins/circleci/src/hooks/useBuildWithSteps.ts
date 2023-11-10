@@ -30,7 +30,7 @@ export function useBuildWithSteps(jobNumber: number) {
       return Promise.resolve(build);
     } catch (e) {
       errorApi.post(e);
-      return Promise.reject(e);
+      throw e;
     }
   }, [projectSlug, jobNumber, api, errorApi]);
 

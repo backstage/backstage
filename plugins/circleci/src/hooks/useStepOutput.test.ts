@@ -15,45 +15,43 @@
  */
 
 import { renderHook, waitFor } from '@testing-library/react';
-import { useApi } from '@backstage/core-plugin-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
 import { useStepOutput } from './useStepOutput';
-
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: jest.fn(),
-}));
-
-jest.mock('./useProjectSlugFromEntity', () => ({
-  useProjectSlugFromEntity: () => ({ projectSlug: 'github/my-org/dummy' }),
-}));
-
-const mockedUseApi = useApi as jest.Mocked<any>;
+import { MockErrorApi } from '@backstage/test-utils';
+import { circleCIApiRef } from '../api';
+import { makeWrapper } from '../__testUtils__/testUtils';
 
 describe('useStepOutput', () => {
-  const circleCIApi = {
+  const mockedCircleCIApi = {
     getStepOutput: jest.fn(),
   };
 
-  beforeEach(() => {
-    mockedUseApi.mockReturnValue(circleCIApi);
-  });
+  const wrapper = ({ children }: { children: React.ReactElement }) =>
+    makeWrapper({
+      apis: [
+        [circleCIApiRef, mockedCircleCIApi],
+        [errorApiRef, new MockErrorApi()],
+      ],
+    })({ children });
 
   afterEach(() => jest.resetAllMocks());
 
   it('should fetch pipelines from api', () => {
-    renderHook(() => useStepOutput(1234, 1, 99));
+    renderHook(() => useStepOutput(1234, 1, 99), { wrapper });
 
-    expect(circleCIApi.getStepOutput).toHaveBeenCalledWith(
-      'github/my-org/dummy',
-      1234,
-      99,
-      1,
-    );
+    expect(mockedCircleCIApi.getStepOutput).toHaveBeenCalledWith({
+      projectSlug: 'github/my-org/dummy',
+      buildNumber: 1234,
+      index: 99,
+      step: 1,
+    });
   });
 
   it('should return step output', async () => {
-    circleCIApi.getStepOutput.mockReturnValue('This is the output!');
-    const { result } = renderHook(() => useStepOutput(1234, 1, 99));
+    mockedCircleCIApi.getStepOutput.mockReturnValue('This is the output!');
+    const { result } = renderHook(() => useStepOutput(1234, 1, 99), {
+      wrapper,
+    });
 
     await waitFor(() => !result.current.loading);
     expect(result.current.output).toEqual('This is the output!');

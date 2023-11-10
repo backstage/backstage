@@ -15,8 +15,11 @@
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { useApi } from '@backstage/core-plugin-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
 import { usePipelines } from './usePipelines';
+import { MockErrorApi } from '@backstage/test-utils';
+import { circleCIApiRef } from '../api/CircleCIApi';
+import { makeWrapper } from '../__testUtils__/testUtils';
 
 const mockPipelineResponse = {
   items: [
@@ -53,50 +56,40 @@ const mockWorkflowResponse = [
   },
 ];
 
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: jest.fn(),
-}));
-
-jest.mock('./useProjectSlugFromEntity', () => ({
-  useProjectSlugFromEntity: () => ({
-    owner: 'my-org',
-    repo: 'dummy',
-    projectSlug: 'github/my-org/dummy',
-    vcs: 'github',
-  }),
-}));
-
-const mockedUseApi = useApi as jest.Mocked<any>;
-
 describe('usePipelines', () => {
-  const circleCIApi = {
+  const mockedCircleCIApi = {
     getPipelinesForProject: jest.fn().mockResolvedValue({ items: [] }),
     getWorkflowsForPipeline: jest.fn().mockResolvedValue({ items: [] }),
     rerunWorkflow: jest.fn(),
   };
 
-  beforeEach(() => {
-    mockedUseApi.mockReturnValue(circleCIApi);
-  });
+  const wrapper = ({ children }: { children: React.ReactElement }) =>
+    makeWrapper({
+      apis: [
+        [circleCIApiRef, mockedCircleCIApi],
+        [errorApiRef, new MockErrorApi()],
+      ],
+    })({ children });
 
   afterEach(() => jest.resetAllMocks());
 
   it('should fetch pipelines from api', () => {
-    renderHook(() => usePipelines());
+    renderHook(() => usePipelines(), { wrapper });
 
-    expect(circleCIApi.getPipelinesForProject).toHaveBeenCalledWith(
+    expect(mockedCircleCIApi.getPipelinesForProject).toHaveBeenCalledWith(
       'github/my-org/dummy',
       undefined,
     );
   });
 
   it('should return pipelines', async () => {
-    circleCIApi.getPipelinesForProject.mockReturnValue(mockPipelineResponse);
-    circleCIApi.getWorkflowsForPipeline
+    mockedCircleCIApi.getPipelinesForProject.mockReturnValue(
+      mockPipelineResponse,
+    );
+    mockedCircleCIApi.getWorkflowsForPipeline
       .mockResolvedValueOnce(mockWorkflowResponse[0])
       .mockResolvedValue(mockWorkflowResponse[1]);
-    const { result } = renderHook(() => usePipelines());
+    const { result } = renderHook(() => usePipelines(), { wrapper });
     await waitFor(() => !result.current[0].loading);
 
     expect(result.current[0].pipelines).toEqual([
@@ -125,15 +118,17 @@ describe('usePipelines', () => {
 
   describe('when fetching more records', () => {
     it('should send next page token', async () => {
-      circleCIApi.getPipelinesForProject.mockReturnValue(mockPipelineResponse);
-      circleCIApi.getWorkflowsForPipeline.mockReturnValue({ items: [] });
-      const { result } = renderHook(() => usePipelines());
+      mockedCircleCIApi.getPipelinesForProject.mockReturnValue(
+        mockPipelineResponse,
+      );
+      mockedCircleCIApi.getWorkflowsForPipeline.mockReturnValue({ items: [] });
+      const { result } = renderHook(() => usePipelines(), { wrapper });
       const { fetchMore } = result.current[1];
       await waitFor(() => !result.current[0].loading);
       act(() => fetchMore());
       await waitFor(() => !result.current[0].hasMore);
 
-      expect(circleCIApi.getPipelinesForProject).toHaveBeenCalledWith(
+      expect(mockedCircleCIApi.getPipelinesForProject).toHaveBeenCalledWith(
         'github/my-org/dummy',
         'page-2',
       );
@@ -142,31 +137,34 @@ describe('usePipelines', () => {
 
   describe('when re-running a workflow', () => {
     it('should invoke api', async () => {
-      const { result } = renderHook(() => usePipelines());
+      const { result } = renderHook(() => usePipelines(), { wrapper });
       const { rerunWorkflow } = result.current[1];
       await waitFor(() => !result.current[0].loading);
       await rerunWorkflow('workflow-id');
 
-      expect(circleCIApi.rerunWorkflow).toHaveBeenCalledWith('workflow-id');
+      expect(mockedCircleCIApi.rerunWorkflow).toHaveBeenCalledWith(
+        'workflow-id',
+      );
     });
   });
 
   describe('when reloading a list of workflows', () => {
     it('should reset the page token', async () => {
-      circleCIApi.getPipelinesForProject.mockReturnValueOnce(
+      mockedCircleCIApi.getPipelinesForProject.mockReturnValueOnce(
         mockPipelineResponse,
       );
-      circleCIApi.getWorkflowsForPipeline.mockReturnValue({ items: [] });
-      const { result } = renderHook(() => usePipelines());
+      mockedCircleCIApi.getWorkflowsForPipeline.mockReturnValue({ items: [] });
+      const { result } = renderHook(() => usePipelines(), { wrapper });
       await waitFor(() => !result.current[0].loading);
       act(() => result.current[1].reload());
 
       await waitFor(() => {
-        expect(circleCIApi.getPipelinesForProject).toHaveBeenCalledTimes(2);
-        expect(circleCIApi.getPipelinesForProject).toHaveBeenLastCalledWith(
-          'github/my-org/dummy',
-          undefined,
+        expect(mockedCircleCIApi.getPipelinesForProject).toHaveBeenCalledTimes(
+          2,
         );
+        expect(
+          mockedCircleCIApi.getPipelinesForProject,
+        ).toHaveBeenLastCalledWith('github/my-org/dummy', undefined);
       });
     });
   });

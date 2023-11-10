@@ -15,38 +15,40 @@
  */
 
 import { renderHook, waitFor } from '@testing-library/react';
-import { useApi } from '@backstage/core-plugin-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
+import { MockErrorApi } from '@backstage/test-utils';
 import { useWorkflow } from './useWorkflow';
+import { circleCIApiRef } from '../api';
+import { makeWrapper } from '../__testUtils__/testUtils';
 
 const mockResponse = { name: 'Test workflow' };
 
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: jest.fn(),
-}));
-
-const mockedUseApi = useApi as jest.Mocked<any>;
-
 describe('useWorkflow', () => {
-  const circleCIApi = {
+  const mockedCircleCIApi = {
     getWorkflow: jest.fn(),
   };
 
-  beforeEach(() => {
-    mockedUseApi.mockReturnValue(circleCIApi);
-  });
+  const wrapper = ({ children }: { children: React.ReactElement }) =>
+    makeWrapper({
+      apis: [
+        [circleCIApiRef, mockedCircleCIApi],
+        [errorApiRef, new MockErrorApi()],
+      ],
+    })({ children });
 
   afterEach(() => jest.resetAllMocks());
 
   it('should fetch pipelines from api', () => {
-    renderHook(() => useWorkflow('workflow-id'));
+    renderHook(() => useWorkflow('workflow-id'), { wrapper });
 
-    expect(circleCIApi.getWorkflow).toHaveBeenCalledWith('workflow-id');
+    expect(mockedCircleCIApi.getWorkflow).toHaveBeenCalledWith('workflow-id');
   });
 
   it('should return a workflow object', async () => {
-    circleCIApi.getWorkflow.mockResolvedValue(mockResponse);
-    const { result } = renderHook(() => useWorkflow('workflow-id'));
+    mockedCircleCIApi.getWorkflow.mockResolvedValue(mockResponse);
+    const { result } = renderHook(() => useWorkflow('workflow-id'), {
+      wrapper,
+    });
 
     await waitFor(() => !result.current.loading);
     expect(result.current.workflow).toEqual(mockResponse);

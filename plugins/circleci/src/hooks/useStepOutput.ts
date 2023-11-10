@@ -16,7 +16,6 @@
 import useAsync from 'react-use/lib/useAsync';
 import { circleCIApiRef } from '../api';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { AuthenticationError } from '@backstage/errors';
 import { useProjectSlugFromEntity } from '.';
 
 export function useStepOutput(
@@ -34,20 +33,20 @@ export function useStepOutput(
         return '';
       }
 
-      const data = await api.getStepOutput(
+      const data = await api.getStepOutput({
         projectSlug,
         buildNumber,
         index,
         step,
-      );
+      });
       return data;
     } catch (e) {
-      f (e.name !== 'AuthenticationError') {
+      if (e.name !== 'AuthenticationError') {
         errorApi.post(e);
       }
-      return Promise.reject(e);
+      return e;
     }
-  });
+  }, [api, errorApi, projectSlug, buildNumber, step, index]);
 
   return { loading, output };
 }

@@ -16,7 +16,6 @@
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { circleCIApiRef } from '../api';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { AuthenticationError } from '@backstage/errors';
 
 export function useWorkflow(workflowId: string) {
   const api = useApi(circleCIApiRef);
@@ -31,12 +30,12 @@ export function useWorkflow(workflowId: string) {
       const data = await api.getWorkflow(workflowId);
       return data;
     } catch (e) {
-      f (e.name !== 'AuthenticationError') {
+      if (e.name !== 'AuthenticationError') {
         errorApi.post(e);
       }
-      return Promise.reject(e);
+      return e;
     }
-  });
+  }, [api, errorApi, workflowId]);
 
   return { loading, workflow, retry };
 }

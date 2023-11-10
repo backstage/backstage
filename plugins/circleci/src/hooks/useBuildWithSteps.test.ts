@@ -15,48 +15,50 @@
  */
 
 import { renderHook, waitFor } from '@testing-library/react';
-import { useApi } from '@backstage/core-plugin-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
 import { useBuildWithSteps } from './useBuildWithSteps';
+import { makeWrapper } from '../__testUtils__/testUtils';
+import { circleCIApiRef } from '../api';
+import { MockErrorApi } from '@backstage/test-utils';
 
 const mockResponse = {
   build_num: 1234,
   job_name: 'test',
 };
 
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: jest.fn(),
-}));
-
-jest.mock('./useProjectSlugFromEntity', () => ({
-  useProjectSlugFromEntity: () => ({ projectSlug: 'github/my-org/dummy' }),
-}));
-
-const mockedUseApi = useApi as jest.Mocked<any>;
-
 describe('useBuildWithSteps', () => {
-  const circleCIApi = {
+  const mockedCircleCIApi = {
     getBuild: jest.fn(),
   };
-
-  beforeEach(() => {
-    mockedUseApi.mockReturnValue(circleCIApi);
-  });
 
   afterEach(() => jest.resetAllMocks());
 
   it('should fetch pipelines from api', () => {
-    renderHook(() => useBuildWithSteps(1234));
+    renderHook(() => useBuildWithSteps(1234), {
+      wrapper: makeWrapper({
+        apis: [
+          [circleCIApiRef, mockedCircleCIApi],
+          [errorApiRef, new MockErrorApi()],
+        ],
+      }),
+    });
 
-    expect(circleCIApi.getBuild).toHaveBeenCalledWith(
+    expect(mockedCircleCIApi.getBuild).toHaveBeenCalledWith(
       'github/my-org/dummy',
       1234,
     );
   });
 
   it('should return a build object', async () => {
-    circleCIApi.getBuild.mockResolvedValue(mockResponse);
-    const { result } = renderHook(() => useBuildWithSteps(1234));
+    mockedCircleCIApi.getBuild.mockResolvedValue(mockResponse);
+    const { result } = renderHook(() => useBuildWithSteps(1234), {
+      wrapper: makeWrapper({
+        apis: [
+          [circleCIApiRef, mockedCircleCIApi],
+          [errorApiRef, new MockErrorApi()],
+        ],
+      }),
+    });
 
     await waitFor(() => !result.current.loading);
     expect(result.current.build).toEqual(mockResponse);

@@ -16,22 +16,27 @@
 
 import React from 'react';
 import { ActionOutput } from './ActionOutput';
-
 import * as action from './__fixtures__/action.json';
 import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
-
-jest.mock('../../../../hooks/useStepOutput', () => ({
-  useStepOutput: jest
-    .fn()
-    .mockReturnValue({ loading: false, output: 'Step output' }),
-}));
+import { circleCIApiRef } from '../../../../api';
+import { makeWrapper } from '../../../../__testUtils__/testUtils';
 
 describe('ActionOutput', () => {
-  const renderComponent = () =>
-    renderInTestApp(
-      <ActionOutput action={action as any} buildNumber={29165} />,
+  const mockedCircleCIApi = {
+    getStepOutput: jest.fn().mockResolvedValue('Step output'),
+  };
+
+  const renderComponent = () => {
+    const Wrapper = makeWrapper({
+      apis: [[circleCIApiRef, mockedCircleCIApi]],
+    });
+    return renderInTestApp(
+      <Wrapper>
+        <ActionOutput action={action as any} buildNumber={29165} />
+      </Wrapper>,
     );
+  };
 
   it('should render build steps', async () => {
     const rendered = await renderComponent();
