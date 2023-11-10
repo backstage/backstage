@@ -44,7 +44,11 @@ import {
   EntityUserFilter,
 } from '../filters';
 import { EntityFilter } from '../types';
-import { reduceBackendCatalogFilters, reduceEntityFilters } from '../utils';
+import {
+  reduceBackendCatalogFilters,
+  reduceCatalogFilters,
+  reduceEntityFilters,
+} from '../utils';
 import { useApi } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -110,16 +114,21 @@ export const EntityListContext = createContext<
 
 type OutputState<EntityFilters extends DefaultEntityFilters> = {
   appliedFilters: EntityFilters;
+  appliedCursor?: string;
   entities: Entity[];
   backendEntities: Entity[];
 };
+
+type EntityListProviderProps = PropsWithChildren<{
+  enablePagination?: boolean;
+}>;
 
 /**
  * Provides entities and filters for a catalog listing.
  * @public
  */
 export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
-  props: PropsWithChildren<{}>,
+  props: EntityListProviderProps,
 ) => {
   const isMounted = useMountedState();
   const catalogApi = useApi(catalogApiRef);
@@ -132,13 +141,19 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // trigger a useLocation change; this would instead come from an external source, such as a manual
   // update of the URL or two catalog sidebar links with different catalog filters.
   const location = useLocation();
-  const queryParameters = useMemo(
-    () =>
-      (qs.parse(location.search, {
-        ignoreQueryPrefix: true,
-      }).filters ?? {}) as Record<string, string | string[]>,
-    [location],
-  );
+  const { queryParameters, cursor: initialCursor } = useMemo(() => {
+    const parsed = qs.parse(location.search, {
+      ignoreQueryPrefix: true,
+    });
+
+    return {
+      queryParameters:
+        parsed.filters ?? ({} as Record<string, string | string[]>),
+      cursor: typeof parsed.cursor === 'string' ? parsed.cursor : undefined,
+    };
+  }, [location]);
+
+  const [cursor] = useState(initialCursor);
 
   const [outputState, setOutputState] = useState<OutputState<EntityFilters>>(
     () => {
@@ -156,11 +171,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   const [{ loading, error }, refresh] = useAsyncFn(
     async () => {
       const compacted = compact(Object.values(requestedFilters));
-      const entityFilter = reduceEntityFilters(compacted);
-      const backendFilter = reduceBackendCatalogFilters(compacted);
-      const previousBackendFilter = reduceBackendCatalogFilters(
-        compact(Object.values(outputState.appliedFilters)),
-      );
 
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {
@@ -175,26 +185,70 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         {} as Record<string, string | string[]>,
       );
 
-      // TODO(mtlewis): currently entities will never be requested unless
-      // there's at least one filter, we should allow an initial request
-      // to happen with no filters.
-      if (!isEqual(previousBackendFilter, backendFilter)) {
-        // TODO(timbonicus): should limit fields here, but would need filter
-        // fields + table columns
-        const response = await catalogApi.getEntities({
-          filter: backendFilter,
-        });
-        setOutputState({
-          appliedFilters: requestedFilters,
-          backendEntities: response.items,
-          entities: response.items.filter(entityFilter),
-        });
+      if (props.enablePagination) {
+        const limit = 2;
+        if (cursor) {
+          if (cursor !== outputState.appliedCursor) {
+            const entityFilter = reduceEntityFilters(compacted);
+            const response = await catalogApi.queryEntities({
+              cursor,
+              limit,
+            });
+            setOutputState({
+              appliedFilters: requestedFilters,
+              appliedCursor: cursor,
+              backendEntities: response.items,
+              entities: response.items.filter(entityFilter),
+            });
+          }
+        } else {
+          const entityFilter = reduceEntityFilters(compacted);
+          const backendFilter = reduceCatalogFilters(compacted);
+          const previousBackendFilter = reduceCatalogFilters(
+            compact(Object.values(outputState.appliedFilters)),
+          );
+
+          if (!isEqual(previousBackendFilter, backendFilter)) {
+            const response = await catalogApi.queryEntities({
+              filter: backendFilter,
+              limit,
+              orderFields: [{ field: 'metadata.name', order: 'asc' }],
+            });
+            setOutputState({
+              appliedFilters: requestedFilters,
+              backendEntities: response.items,
+              entities: response.items.filter(entityFilter),
+            });
+          }
+        }
       } else {
-        setOutputState({
-          appliedFilters: requestedFilters,
-          backendEntities: outputState.backendEntities,
-          entities: outputState.backendEntities.filter(entityFilter),
-        });
+        const entityFilter = reduceEntityFilters(compacted);
+        const backendFilter = reduceBackendCatalogFilters(compacted);
+        const previousBackendFilter = reduceBackendCatalogFilters(
+          compact(Object.values(outputState.appliedFilters)),
+        );
+
+        // TODO(mtlewis): currently entities will never be requested unless
+        // there's at least one filter, we should allow an initial request
+        // to happen with no filters.
+        if (!isEqual(previousBackendFilter, backendFilter)) {
+          // TODO(timbonicus): should limit fields here, but would need filter
+          // fields + table columns
+          const response = await catalogApi.getEntities({
+            filter: backendFilter,
+          });
+          setOutputState({
+            appliedFilters: requestedFilters,
+            backendEntities: response.items,
+            entities: response.items.filter(entityFilter),
+          });
+        } else {
+          setOutputState({
+            appliedFilters: requestedFilters,
+            backendEntities: outputState.backendEntities,
+            entities: outputState.backendEntities.filter(entityFilter),
+          });
+        }
       }
 
       if (isMounted()) {
@@ -202,7 +256,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           ignoreQueryPrefix: true,
         });
         const newParams = qs.stringify(
-          { ...oldParams, filters: queryParams },
+          { ...oldParams, filters: queryParams, cursor },
           { addQueryPrefix: true, arrayFormat: 'repeat' },
         );
         const newUrl = `${window.location.pathname}${newParams}`;
@@ -214,7 +268,14 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         window.history?.replaceState(null, document.title, newUrl);
       }
     },
-    [catalogApi, queryParameters, requestedFilters, outputState],
+    [
+      catalogApi,
+      queryParameters,
+      requestedFilters,
+      outputState,
+      cursor,
+      props.enablePagination,
+    ],
     { loading: true },
   );
 
