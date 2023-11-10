@@ -311,9 +311,10 @@ export class ScaffolderClient implements ScaffolderApi {
               subscriber.complete();
               return;
             }
-            if (event.type === 'recovered' && originalAfter) {
-              after = undefined;
-            }
+          }
+
+          if (originalAfter && logs.find(e => e.type === 'recovered')) {
+            after = undefined;
           }
         }
       });
