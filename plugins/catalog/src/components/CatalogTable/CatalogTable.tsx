@@ -58,6 +58,7 @@ export interface CatalogTableProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   subtitle?: string;
+  enablePagination?: boolean;
 }
 
 const YellowStar = withStyles({
