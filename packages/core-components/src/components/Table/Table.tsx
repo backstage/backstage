@@ -53,7 +53,6 @@ import React, {
 
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 const tableIcons: Icons = {
@@ -474,25 +473,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const Body = useCallback(
     (bodyProps: any /* no type for this in material-table */) => {
       if (isLoading) {
-        return (
-          <tbody data-testid="loading-indicator">
-            <tr>
-              <td colSpan={columnCount}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%',
-                    minHeight: '15rem',
-                  }}
-                >
-                  <CircularProgress size="5rem" />
-                </Box>
-              </td>
-            </tr>
-          </tbody>
-        );
+        return <TableLoadingBody colSpan={columnCount} />;
       }
 
       if (emptyContent && hasNoRows) {
