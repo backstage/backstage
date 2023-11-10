@@ -78,6 +78,8 @@ const refCompare = (a: Entity, b: Entity) => {
 };
 
 const defaultColumnsFunc: CatalogTableColumnsFunc = ({ filters, entities }) => {
+  const showTypeColumn = filters.type === undefined;
+
   return [
     columnFactories.createTitleColumn({ hidden: true }),
     columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
@@ -90,7 +92,7 @@ const defaultColumnsFunc: CatalogTableColumnsFunc = ({ filters, entities }) => {
     const baseColumns = [
       columnFactories.createSystemColumn(),
       columnFactories.createOwnerColumn(),
-      columnFactories.createSpecTypeColumn(),
+      columnFactories.createSpecTypeColumn({ hidden: !showTypeColumn }),
       columnFactories.createSpecLifecycleColumn(),
     ];
     switch (filters.kind?.value) {
@@ -101,10 +103,12 @@ const defaultColumnsFunc: CatalogTableColumnsFunc = ({ filters, entities }) => {
         return [columnFactories.createOwnerColumn()];
       case 'group':
       case 'template':
-        return [columnFactories.createSpecTypeColumn()];
+        return [
+          columnFactories.createSpecTypeColumn({ hidden: !showTypeColumn }),
+        ];
       case 'location':
         return [
-          columnFactories.createSpecTypeColumn(),
+          columnFactories.createSpecTypeColumn({ hidden: !showTypeColumn }),
           columnFactories.createSpecTargetsColumn(),
         ];
       default:
@@ -134,7 +138,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
     [columns, entityListContext],
   );
 
-  const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
 
@@ -240,10 +243,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
     };
   });
 
-  const typeColumn = tableColumns.find(c => c.title === 'Type');
-  if (typeColumn) {
-    typeColumn.hidden = !showTypeColumn;
-  }
   const showPagination = rows.length > 20;
   const currentKind = filters.kind?.value || '';
   const currentType = filters.type?.value || '';
@@ -273,5 +272,3 @@ export const CatalogTable = (props: CatalogTableProps) => {
     />
   );
 };
-
-CatalogTable.columns = columnFactories;
