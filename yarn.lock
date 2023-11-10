@@ -4791,7 +4791,7 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@graphiql/react": ^0.19.4
+    "@graphiql/react": ^0.20.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -11739,34 +11739,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphiql/react@npm:^0.19.4":
-  version: 0.19.4
-  resolution: "@graphiql/react@npm:0.19.4"
-  dependencies:
-    "@graphiql/toolkit": ^0.9.1
-    "@headlessui/react": ^1.7.15
-    "@radix-ui/react-dialog": ^1.0.4
-    "@radix-ui/react-dropdown-menu": ^2.0.5
-    "@radix-ui/react-tooltip": ^1.0.6
-    "@radix-ui/react-visually-hidden": ^1.0.3
-    "@types/codemirror": ^5.60.8
-    clsx: ^1.2.1
-    codemirror: ^5.65.3
-    codemirror-graphql: ^2.0.10
-    copy-to-clipboard: ^3.2.0
-    framer-motion: ^6.5.1
-    graphql-language-service: ^5.2.0
-    markdown-it: ^12.2.0
-    set-value: ^4.1.0
-  peerDependencies:
-    graphql: ^15.5.0 || ^16.0.0
-    react: ^16.8.0 || ^17 || ^18
-    react-dom: ^16.8.0 || ^17 || ^18
-  checksum: 08eb53fc0449d5814ba92faff8e03ba77e97ecd4d3d473d115d1219e52b59d9a1cc1b0f34c41315b3a0185fb862646c1affd2094e1f5f524328a95c8e4e8b591
-  languageName: node
-  linkType: hard
-
-"@graphiql/react@npm:^0.20.2":
+"@graphiql/react@npm:^0.20.0, @graphiql/react@npm:^0.20.2":
   version: 0.20.2
   resolution: "@graphiql/react@npm:0.20.2"
   dependencies:
