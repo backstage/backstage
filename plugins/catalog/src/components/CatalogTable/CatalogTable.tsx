@@ -211,37 +211,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
-  const rows = entities.sort(refCompare).map(entity => {
-    const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
-      kind: 'system',
-    });
-    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
-
-    return {
-      entity,
-      resolved: {
-        // This name is here for backwards compatibility mostly; the
-        // presentation of refs in the table should in general be handled with
-        // EntityRefLink / EntityName components
-        name: humanizeEntityRef(entity, {
-          defaultKind: 'Component',
-        }),
-        entityRef: stringifyEntityRef(entity),
-        ownedByRelationsTitle: ownedByRelations
-          .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
-          .join(', '),
-        ownedByRelations,
-        partOfSystemRelationTitle: partOfSystemRelations
-          .map(r =>
-            humanizeEntityRef(r, {
-              defaultKind: 'system',
-            }),
-          )
-          .join(', '),
-        partOfSystemRelations,
-      },
-    };
-  });
+  const rows = entities.sort(refCompare).map(toEntityRow);
 
   const showPagination = rows.length > 20;
   const currentKind = filters.kind?.value || '';
@@ -272,3 +242,37 @@ export const CatalogTable = (props: CatalogTableProps) => {
     />
   );
 };
+
+CatalogTable.columns = columnFactories;
+
+function toEntityRow(entity: Entity) {
+  const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
+    kind: 'system',
+  });
+  const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
+  return {
+    entity,
+    resolved: {
+      // This name is here for backwards compatibility mostly; the
+      // presentation of refs in the table should in general be handled with
+      // EntityRefLink / EntityName components
+      name: humanizeEntityRef(entity, {
+        defaultKind: 'Component',
+      }),
+      entityRef: stringifyEntityRef(entity),
+      ownedByRelationsTitle: ownedByRelations
+        .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
+        .join(', '),
+      ownedByRelations,
+      partOfSystemRelationTitle: partOfSystemRelations
+        .map(r =>
+          humanizeEntityRef(r, {
+            defaultKind: 'system',
+          }),
+        )
+        .join(', '),
+      partOfSystemRelations,
+    },
+  };
+}
