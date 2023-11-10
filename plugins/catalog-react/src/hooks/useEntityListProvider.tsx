@@ -50,6 +50,7 @@ import {
   reduceEntityFilters,
 } from '../utils';
 import { useApi } from '@backstage/core-plugin-api';
+import { QueryEntitiesResponse } from '@backstage/catalog-client';
 
 /** @public */
 export type DefaultEntityFilters = {
@@ -95,6 +96,8 @@ export type EntityListContextProps<
       | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
   ) => void;
 
+  next?: () => void;
+  prev?: () => void;
   /**
    * Filter values from query parameters.
    */
@@ -117,6 +120,7 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   appliedCursor?: string;
   entities: Entity[];
   backendEntities: Entity[];
+  pageInfo?: QueryEntitiesResponse['pageInfo'];
 };
 
 type EntityListProviderProps = PropsWithChildren<{
@@ -141,6 +145,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // trigger a useLocation change; this would instead come from an external source, such as a manual
   // update of the URL or two catalog sidebar links with different catalog filters.
   const location = useLocation();
+
   const { queryParameters, cursor: initialCursor } = useMemo(() => {
     const parsed = qs.parse(location.search, {
       ignoreQueryPrefix: true,
@@ -153,7 +158,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     };
   }, [location]);
 
-  const [cursor] = useState(initialCursor);
+  const [cursor, setCursor] = useState(initialCursor);
 
   const [outputState, setOutputState] = useState<OutputState<EntityFilters>>(
     () => {
@@ -199,6 +204,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               appliedCursor: cursor,
               backendEntities: response.items,
               entities: response.items.filter(entityFilter),
+              pageInfo: response.pageInfo,
             });
           }
         } else {
@@ -218,6 +224,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               appliedFilters: requestedFilters,
               backendEntities: response.items,
               entities: response.items.filter(entityFilter),
+              pageInfo: response.pageInfo,
             });
           }
         }
@@ -281,7 +288,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
 
   // Slight debounce on the refresh, since (especially on page load) several
   // filters will be calling this in rapid succession.
-  useDebounce(refresh, 10, [requestedFilters]);
+  useDebounce(refresh, 10, [requestedFilters, cursor]);
 
   const updateFilters = useCallback(
     (
@@ -298,6 +305,24 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     [],
   );
 
+  const next = useMemo(() => {
+    const newCursor = outputState.pageInfo?.nextCursor;
+    if (!newCursor || !props.enablePagination) {
+      return undefined;
+    }
+
+    return () => setCursor(newCursor);
+  }, [outputState.pageInfo?.nextCursor, props.enablePagination]);
+
+  const prev = useMemo(() => {
+    const newCursor = outputState.pageInfo?.prevCursor;
+    if (!newCursor || !props.enablePagination) {
+      return undefined;
+    }
+
+    return () => setCursor(newCursor);
+  }, [outputState.pageInfo?.prevCursor, props.enablePagination]);
+
   const value = useMemo(
     () => ({
       filters: outputState.appliedFilters,
@@ -307,8 +332,10 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       queryParameters,
       loading,
       error,
+      next,
+      prev,
     }),
-    [outputState, updateFilters, queryParameters, loading, error],
+    [outputState, updateFilters, queryParameters, loading, error, next, prev],
   );
 
   return (
