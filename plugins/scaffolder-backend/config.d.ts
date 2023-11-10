@@ -37,5 +37,13 @@ export interface Config {
      * Set to 0 to disable task workers altogether.
      */
     concurrentTasksLimit?: number;
+
+    /**
+     * Whether to use experimental safe mode for creating GitHub pull requests.
+     * This should eliminate rate limit errors, but may make creating pull requests
+     * slower. Do not enable if you use .gitattributes to mark files as binary.
+     * @see {@link https://github.com/backstage/backstage/issues/17188|Issue #17188}
+     */
+    githubPullRequestExperimentalSafeMode?: boolean;
   };
 }

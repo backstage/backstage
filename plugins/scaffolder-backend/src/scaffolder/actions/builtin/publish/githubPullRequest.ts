@@ -23,6 +23,7 @@ import {
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { InputError, CustomErrorBase } from '@backstage/errors';
+import { Config } from '@backstage/config';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from '../github/helpers';
@@ -110,6 +111,10 @@ export interface CreateGithubPullRequestActionOptions {
   clientFactory?: (
     input: CreateGithubPullRequestClientFactoryInput,
   ) => Promise<OctokitWithPullRequestPluginClient>;
+  /**
+   * An instance of {@link @backstage/config#Config} that will be used to configure the action.
+   */
+  config: Config;
 }
 
 type GithubPullRequest = {
@@ -129,7 +134,13 @@ export const createPublishGithubPullRequestAction = (
     integrations,
     githubCredentialsProvider,
     clientFactory = defaultClientFactory,
+    config,
   } = options;
+
+  const experimentalSafeMode =
+    config.getOptionalBoolean(
+      'scaffolder.githubPullRequestExperimentalSafeMode',
+    ) ?? false;
 
   return createTemplateAction<{
     title: string;
@@ -144,7 +155,6 @@ export const createPublishGithubPullRequestAction = (
     reviewers?: string[];
     teamReviewers?: string[];
     commitMessage?: string;
-    experimentalSafeMode?: boolean;
   }>({
     id: 'publish:github:pull-request',
     schema: {
@@ -221,12 +231,6 @@ export const createPublishGithubPullRequestAction = (
             title: 'Commit Message',
             description: 'The commit message for the pull request commit',
           },
-          experimentalSafeMode: {
-            type: 'boolean',
-            title: 'Experimental Safe Mode',
-            description:
-              'Whether to use experimental safe mode. This should reduce rate limit errors when creating pull requests. Do not enable if you use .gitattributes to mark files as binary. See: https://github.com/backstage/backstage/issues/17188',
-          },
         },
       },
       output: {
@@ -264,7 +268,6 @@ export const createPublishGithubPullRequestAction = (
         reviewers,
         teamReviewers,
         commitMessage,
-        experimentalSafeMode = false,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -329,16 +332,20 @@ export const createPublishGithubPullRequestAction = (
 
       const files = Object.fromEntries(
         await Promise.all(
-          directoryContents.map(async file => [
-            targetPath ? path.posix.join(targetPath, file.path) : file.path,
-            {
-              // See the properties of tree items
-              // in https://docs.github.com/en/rest/reference/git#trees
-              mode: determineFileMode(file),
-              encoding: await determineFileEncoding(file),
-              content: file.content.toString(await determineFileEncoding(file)),
-            },
-          ]),
+          directoryContents.map(async file => {
+            const encoding = await determineFileEncoding(file);
+
+            return [
+              targetPath ? path.posix.join(targetPath, file.path) : file.path,
+              {
+                // See the properties of tree items
+                // in https://docs.github.com/en/rest/reference/git#trees
+                mode: determineFileMode(file),
+                encoding: encoding,
+                content: file.content.toString(encoding),
+              },
+            ];
+          }),
         ),
       );
 

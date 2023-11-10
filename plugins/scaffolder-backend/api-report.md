@@ -282,6 +282,7 @@ export interface CreateGithubPullRequestActionOptions {
   clientFactory?: (
     input: CreateGithubPullRequestClientFactoryInput,
   ) => Promise<OctokitWithPullRequestPluginClient>;
+  config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
   integrations: ScmIntegrationRegistry;
 }
@@ -294,6 +295,7 @@ export type CreateGithubPullRequestClientFactoryInput = {
   owner: string;
   repo: string;
   token?: string;
+  throttleEnabled?: boolean;
 };
 
 // @public

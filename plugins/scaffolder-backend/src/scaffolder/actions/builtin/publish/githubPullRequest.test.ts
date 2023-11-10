@@ -43,6 +43,12 @@ type GithubPullRequestActionInput = ReturnType<
   : never;
 
 describe('createPublishGithubPullRequestAction', () => {
+  const config = new ConfigReader({});
+  const integrations = ScmIntegrations.fromConfig(config);
+  const githubCredentialsProvider: GithubCredentialsProvider = {
+    getCredentials: jest.fn(),
+  };
+
   let instance: TemplateAction<GithubPullRequestActionInput>;
   let clientFactory: jest.Mock;
   let fakeClient: {
@@ -53,7 +59,6 @@ describe('createPublishGithubPullRequestAction', () => {
   };
 
   beforeEach(() => {
-    const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
     fakeClient = {
       createPullRequest: jest.fn(async (_: any) => {
         return {
@@ -78,14 +83,12 @@ describe('createPublishGithubPullRequestAction', () => {
     clientFactory = jest.fn(
       async () => fakeClient as unknown as OctokitWithPullRequestPluginClient,
     );
-    const githubCredentialsProvider: GithubCredentialsProvider = {
-      getCredentials: jest.fn(),
-    };
 
     instance = createPublishGithubPullRequestAction({
       integrations,
       githubCredentialsProvider,
       clientFactory,
+      config,
     });
   });
 
@@ -775,12 +778,22 @@ describe('createPublishGithubPullRequestAction', () => {
     const base64Content = 'R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=';
 
     beforeEach(() => {
+      instance = createPublishGithubPullRequestAction({
+        integrations: integrations,
+        githubCredentialsProvider: githubCredentialsProvider,
+        clientFactory,
+        config: new ConfigReader({
+          scaffolder: {
+            githubPullRequestExperimentalSafeMode: true,
+          },
+        }),
+      });
+
       input = {
         repoUrl: 'github.com?owner=myorg&repo=myrepo',
         title: 'Create my new app',
         branchName: 'new-app',
         description: 'This PR is really good',
-        experimentalSafeMode: true,
       };
 
       mockFs({
