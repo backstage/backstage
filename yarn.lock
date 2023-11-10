@@ -15802,14 +15802,14 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-buildkite@npm:^2.0.8":
-  version: 2.1.15
-  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.1.15"
+  version: 2.1.16
+  resolution: "@roadiehq/backstage-plugin-buildkite@npm:2.1.16"
   dependencies:
-    "@backstage/catalog-model": ^1.4.2
-    "@backstage/core-components": ^0.13.5
-    "@backstage/core-plugin-api": ^1.6.0
-    "@backstage/plugin-catalog-react": ^1.8.4
-    "@backstage/theme": ^0.4.2
+    "@backstage/catalog-model": ^1.4.3
+    "@backstage/core-components": ^0.13.7
+    "@backstage/core-plugin-api": ^1.7.0
+    "@backstage/plugin-catalog-react": ^1.8.5
+    "@backstage/theme": ^0.4.3
     "@material-ui/core": ^4.12.1
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": 4.0.0-alpha.57
@@ -15821,7 +15821,7 @@ __metadata:
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 421a3e444b6c5945748d0842bc777efc9fe0e968dad3c59cdc0cbbcd841752bcf47d757f2fc307fa1245da884adfeb3e478cd23b2bb318f621e05ffa7c6ec21b
+  checksum: 716755abfc85c452382ca1535d819a7ebb9a52d024557c51d240df7193a15b98567dad5fe0dcbbf72df0b27f773f1be0f25a5e876024f3a1f03c0eff99fc7a2c
   languageName: node
   linkType: hard
 
