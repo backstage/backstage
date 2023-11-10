@@ -46033,13 +46033,13 @@ __metadata:
   linkType: hard
 
 "winston-transport@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "winston-transport@npm:4.5.0"
+  version: 4.6.0
+  resolution: "winston-transport@npm:4.6.0"
   dependencies:
     logform: ^2.3.2
     readable-stream: ^3.6.0
     triple-beam: ^1.3.0
-  checksum: a56e5678a80b88a73e77ed998fc6e19d0db19c989a356b137ec236782f2bf58ae4511b11c29163f99391fa4dc12102c7bc5738dcb6543f28877fa2819adc3ee9
+  checksum: 19f06ebdbb57cb14cdd48a23145d418d3bbe538851053303f84f04a8a849bb530b78b1495a175059c1299f92945dc61d5421c4914fee32d9a41bc397d84f26d7
   languageName: node
   linkType: hard
 
