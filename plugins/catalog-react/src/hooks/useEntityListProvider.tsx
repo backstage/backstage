@@ -296,6 +296,12 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         | Partial<EntityFilter>
         | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
     ) => {
+      // changing filters will affect pagination, so we need to reset
+      // the cursor and start from the first page.
+      // TODO(vinzscam): this is currently causing issues at page reload
+      // where the state is not kept. Unfortunately we need to rething
+      // the way filters work in order to fix this.
+      setCursor(undefined);
       setRequestedFilters(prevFilters => {
         const newFilters =
           typeof update === 'function' ? update(prevFilters) : update;
