@@ -158,7 +158,7 @@ const useFilterStyles = makeStyles(
 
 export type TableClassKey = 'root';
 
-const useTableStyles = makeStyles(
+export const tableStyles = makeStyles<BackstageTheme>(
   () => ({
     root: {
       display: 'flex',
@@ -318,7 +318,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     isLoading: isLoading,
     ...restProps
   } = props;
-  const tableClasses = useTableStyles();
+  const tableClasses = tableStyles();
 
   const theme = useTheme();
 
