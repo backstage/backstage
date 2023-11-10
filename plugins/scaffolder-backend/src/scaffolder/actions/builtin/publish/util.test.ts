@@ -18,6 +18,8 @@ import path from 'path';
 import { getRepoSourceDirectory, isExecutable, parseRepoUrl } from './util';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
+import { parseJSON, JsonSpec } from './util';
+import { InputError } from '@backstage/errors';
 
 describe('getRepoSourceDirectory', () => {
   it('should return workspace root if no sub folder is given', () => {
@@ -177,5 +179,31 @@ describe('parseRepoUrl', () => {
     ).toThrow(
       'Invalid repo URL passed to publisher: https://www.bitbucket.org/?project=project&repo=repo, missing workspace',
     );
+  });
+});
+
+describe('parseJSON', () => {
+  it('should parse a valid JSON string and return a JsonSpec object', () => {
+    const jsonString = '{"key1": "value1", "key2": "value2"}';
+    const expected: JsonSpec = { key1: 'value1', key2: 'value2' };
+
+    const result = parseJSON(jsonString);
+
+    expect(result).toEqual(expected);
+  });
+
+  it('should throw an InputError for an invalid JSON string', () => {
+    const invalidJsonString = 'invalid_json_string';
+
+    expect(() => parseJSON(invalidJsonString)).toThrowError(InputError);
+  });
+
+  it('should handle an empty JSON string and return an empty JsonSpec object', () => {
+    const emptyJsonString = '{}';
+    const expected: JsonSpec = {};
+
+    const result = parseJSON(emptyJsonString);
+
+    expect(result).toEqual(expected);
   });
 });

@@ -127,3 +127,47 @@ function checkRequiredParams(repoUrl: URL, ...params: string[]) {
     }
   }
 }
+
+/**
+ *  This function receives an object transformed into a string and returns it parsed, 
+     unstructured, so it can easily be used to obtain values in the template.
+ *
+ * @param objString - the object transformed into a string
+ *
+ * @throws
+ * An InputError exception is thrown..
+ *
+ * @public
+ */
+
+     export type Props = {
+      [key:string]: string
+  }
+  
+  export type JsonSpec = Props;
+  
+  export const parseJSON = (
+    objString: string,
+  ): JsonSpec => {
+    let parsed;
+    try {
+      parsed = JSON.parse(objString);
+    } catch (error) {
+      throw new InputError(
+        `Invalid object passed to publisher, ${error}`,
+      );
+    }
+  
+    let results: JsonSpec = {};
+  
+    if (parsed) {
+      for (const key in parsed) {
+        if (parsed.hasOwnProperty(key)) {
+          results[key] = parsed[key];
+        }
+      }
+    }
+  
+    return {...results};
+  };
+  
