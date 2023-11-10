@@ -32809,15 +32809,15 @@ __metadata:
   linkType: hard
 
 "json-rules-engine@npm:^6.1.2":
-  version: 6.4.2
-  resolution: "json-rules-engine@npm:6.4.2"
+  version: 6.5.0
+  resolution: "json-rules-engine@npm:6.5.0"
   dependencies:
     clone: ^2.1.2
     eventemitter2: ^6.4.4
     hash-it: ^6.0.0
     jsonpath-plus: ^7.2.0
     lodash.isobjectlike: ^4.0.0
-  checksum: c3dcddc71db42e2e29ced8883adc7e38a99a3fa7111fd1539cd38e375a422225956e61c53346e341a8b0432507225cb1d634acc2d02faccb24b73b559a574e44
+  checksum: c1a6fa2bb65743397c838c4e4a9157f184e0c24423031fa4bab6b83b5edbb64341f9197ccad9fdd44fcd6c58ac329c0c77882a64acf0d90ee1d856768a4154e3
   languageName: node
   linkType: hard
 
