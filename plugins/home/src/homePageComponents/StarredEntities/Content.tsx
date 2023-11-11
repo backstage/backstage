@@ -135,25 +135,26 @@ export const Content = ({
         </Tabs>
       )}
 
-      {groupByKindEntries.map(([kind, entitiesByKind], index) => (
-        <div key={kind} hidden={groupByKind && activeTab !== index}>
-          <List>
-            {entitiesByKind
-              ?.sort((a, b) =>
-                (a.metadata.title ?? a.metadata.name).localeCompare(
-                  b.metadata.title ?? b.metadata.name,
-                ),
-              )
-              .map(entity => (
-                <StarredEntityListItem
-                  key={stringifyEntityRef(entity)}
-                  entity={entity}
-                  onToggleStarredEntity={toggleStarredEntity}
-                />
-              ))}
-          </List>
-        </div>
-      ))}
+      {groupByKind &&
+        groupByKindEntries.map(([kind, entitiesByKind], index) => (
+          <div key={kind} hidden={groupByKind && activeTab !== index}>
+            <List>
+              {entitiesByKind
+                ?.sort((a, b) =>
+                  (a.metadata.title ?? a.metadata.name).localeCompare(
+                    b.metadata.title ?? b.metadata.name,
+                  ),
+                )
+                .map(entity => (
+                  <StarredEntityListItem
+                    key={stringifyEntityRef(entity)}
+                    entity={entity}
+                    onToggleStarredEntity={toggleStarredEntity}
+                  />
+                ))}
+            </List>
+          </div>
+        ))}
     </div>
   );
 };
