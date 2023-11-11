@@ -24,8 +24,7 @@ import { LogFunc, waitForSignal } from '../../lib/run';
 import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
-import { promisify } from 'util';
-import { execFile } from 'child_process';
+import { checkIfDockerIsOperational } from './utils';
 
 function findPreviewBundlePath(): string {
   try {
@@ -77,17 +76,8 @@ export default async function serve(opts: OptionValues) {
 
   // Validate that Docker is up and running
   if (opts.docker) {
-    logger.info('Checking Docker status...');
-    try {
-      const runCheck = promisify(execFile);
-      await runCheck('docker', ['info'], { shell: true });
-      logger.info(
-        'Docker is up and running. Proceed to starting up mkdocs server',
-      );
-    } catch {
-      logger.error(
-        'Docker is not running. Exiting. Please check status of Docker daemon with `docker info` before re-running',
-      );
+    const isDockerOperational = await checkIfDockerIsOperational(logger);
+    if (!isDockerOperational) {
       return;
     }
   }
