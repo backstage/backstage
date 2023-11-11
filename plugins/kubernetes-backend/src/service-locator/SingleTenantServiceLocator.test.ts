@@ -80,20 +80,22 @@ describe('SingleTenantConfigClusterLocator', () => {
   });
 
   it('no annotation return all cluster', async () => {
+    const definedClusters = [
+      {
+        name: 'cluster1',
+        url: 'http://localhost:8080',
+        authMetadata: {},
+      },
+      {
+        name: 'cluster2',
+        url: 'http://localhost:8081',
+        authMetadata: {},
+      },
+    ];
+
     const sut = new SingleTenantServiceLocator({
       getClusters: async () => {
-        return [
-          {
-            name: 'cluster1',
-            url: 'http://localhost:8080',
-            authMetadata: {},
-          },
-          {
-            name: 'cluster2',
-            url: 'http://localhost:8081',
-            authMetadata: {},
-          },
-        ];
+        return definedClusters;
       },
     });
 
@@ -103,18 +105,7 @@ describe('SingleTenantConfigClusterLocator', () => {
     );
 
     expect(result).toStrictEqual({
-      clusters: [
-        {
-          name: 'cluster1',
-          url: 'http://localhost:8080',
-          authMetadata: {},
-        },
-        {
-          name: 'cluster2',
-          url: 'http://localhost:8081',
-          authMetadata: {},
-        },
-      ],
+      clusters: definedClusters,
     });
   });
 
