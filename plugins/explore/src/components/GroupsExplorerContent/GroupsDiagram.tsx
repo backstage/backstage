@@ -34,7 +34,6 @@ import {
   humanizeEntityRef,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
-import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, Typography, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import classNames from 'classnames';
@@ -42,7 +41,7 @@ import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+  theme => ({
     graph: {
       minHeight: '100%',
       flex: 1,

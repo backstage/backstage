@@ -73,6 +73,8 @@ Commands:
   verify [paths...]
   generate [paths...]
   lint [options] [paths...]
+  test [options] [paths...]
+  init <paths...>
   help [command]
 ```
 
@@ -85,6 +87,15 @@ Options:
   -h, --help
 ```
 
+### `backstage-repo-tools schema openapi init`
+
+```
+Usage: backstage-repo-tools schema openapi init [options] <paths...>
+
+Options:
+  -h, --help
+```
+
 ### `backstage-repo-tools schema openapi lint`
 
 ```
@@ -92,6 +103,16 @@ Usage: backstage-repo-tools schema openapi lint [options] [paths...]
 
 Options:
   --strict
+  -h, --help
+```
+
+### `backstage-repo-tools schema openapi test`
+
+```
+Usage: backstage-repo-tools schema openapi test [options] [paths...]
+
+Options:
+  --update
   -h, --help
 ```
 

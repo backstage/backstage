@@ -1,5 +1,66 @@
 # @backstage/plugin-azure-sites-backend
 
+## 0.1.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.2
+
+## 0.1.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/config@1.1.1-next.0
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/config@1.1.0
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/plugin-azure-sites-common@0.1.1
+
 ## 0.1.13
 
 ### Patch Changes

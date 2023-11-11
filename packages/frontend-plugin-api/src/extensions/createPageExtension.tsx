@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteRef } from '@backstage/core-plugin-api';
-import React from 'react';
+import React, { lazy } from 'react';
 import { ExtensionBoundary } from '../components';
 import { createSchemaFromZod, PortableSchema } from '../schema';
 import {
@@ -23,8 +22,10 @@ import {
   createExtension,
   Extension,
   ExtensionInputValues,
+  AnyExtensionInputMap,
 } from '../wiring';
-import { AnyExtensionInputMap, Expand } from '../wiring/createExtension';
+import { RouteRef } from '../routing';
+import { Expand } from '../types';
 
 /**
  * Helper for creating extensions for a routable React page component.
@@ -44,7 +45,7 @@ export function createPageExtension<
       }
   ) & {
     id: string;
-    at?: string;
+    attachTo?: { id: string; input: string };
     disabled?: boolean;
     inputs?: TInputs;
     routeRef?: RouteRef;
@@ -54,6 +55,8 @@ export function createPageExtension<
     }) => Promise<JSX.Element>;
   },
 ): Extension<TConfig> {
+  const { id } = options;
+
   const configSchema =
     'configSchema' in options
       ? options.configSchema
@@ -62,34 +65,32 @@ export function createPageExtension<
         ) as PortableSchema<TConfig>);
 
   return createExtension({
-    id: options.id,
-    at: options.at ?? 'core.routes/routes',
+    id,
+    attachTo: options.attachTo ?? { id: 'core.routes', input: 'routes' },
+    configSchema,
+    inputs: options.inputs,
     disabled: options.disabled,
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
     },
-    inputs: options.inputs,
-    configSchema,
-    factory({ bind, config, inputs, source }) {
-      const LazyComponent = React.lazy(() =>
+    factory({ config, inputs, source }) {
+      const ExtensionComponent = lazy(() =>
         options
           .loader({ config, inputs })
           .then(element => ({ default: () => element })),
       );
 
-      bind({
+      return {
         path: config.path,
+        routeRef: options.routeRef,
         element: (
-          <ExtensionBoundary source={source}>
-            <React.Suspense fallback="...">
-              <LazyComponent />
-            </React.Suspense>
+          <ExtensionBoundary id={id} source={source} routable>
+            <ExtensionComponent />
           </ExtensionBoundary>
         ),
-        routeRef: options.routeRef,
-      });
+      };
     },
   });
 }

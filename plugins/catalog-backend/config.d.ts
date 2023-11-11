@@ -146,6 +146,19 @@ export interface Config {
     orphanStrategy?: 'keep' | 'delete';
 
     /**
+     * The strategy to use when stitching together the final entities.
+     */
+    stitchingStrategy?:
+      | {
+          /** Perform stitching in-band immediately when needed */
+          mode: 'immediate';
+        }
+      | {
+          /** Defer stitching to be performed asynchronously */
+          mode: 'deferred';
+        };
+
+    /**
      * The interval at which the catalog should process its entities.
      *
      * @remarks

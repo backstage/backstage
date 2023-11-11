@@ -9,6 +9,9 @@ on:
       - '.github/workflows/verify_e2e-kubernetes.yml'
       - 'packages/backend-common/src/**'
 
+permissions:
+  contents: read
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -19,4 +22,9 @@ jobs:
 
     name: Kubernetes ${{ matrix.node-version }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@1b05615854632b887b69ae1be8cbefe72d3ae423 # v2.6.0
+        with:
+          egress-policy: audit
+
       - run: echo NOOP

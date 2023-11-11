@@ -55,7 +55,7 @@ export type OctopusDeployment = {
 };
 
 // @public (undocumented)
-export const octopusDeployPlugin: BackstagePlugin<{}, {}, {}>;
+export const octopusDeployPlugin: BackstagePlugin<{}, {}>;
 
 // @public (undocumented)
 export type OctopusEnvironment = {

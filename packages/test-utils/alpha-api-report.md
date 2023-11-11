@@ -4,16 +4,9 @@
 
 ```ts
 import { Observable } from '@backstage/types';
-import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 import { TranslationApi } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 import { TranslationSnapshot } from '@backstage/core-plugin-api/alpha';
-
-// @alpha
-export const MockPluginProvider: ({
-  children,
-}: PropsWithChildren<{}>) => React_2.JSX.Element;
 
 // @alpha (undocumented)
 export class MockTranslationApi implements TranslationApi {

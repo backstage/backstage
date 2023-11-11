@@ -16,11 +16,6 @@
 
 import { GkeEntityProvider } from './GkeEntityProvider';
 import { TaskRunner } from '@backstage/backend-tasks';
-import {
-  ANNOTATION_KUBERNETES_API_SERVER,
-  ANNOTATION_KUBERNETES_API_SERVER_CA,
-  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-} from '@backstage/plugin-kubernetes-common';
 import * as container from '@google-cloud/container';
 import { ConfigReader } from '@backstage/config';
 
@@ -55,7 +50,10 @@ describe('GkeEntityProvider', () => {
           providers: {
             gcp: {
               gke: {
-                parents: ['parent1', 'parent2'],
+                parents: [
+                  'projects/parent1/locations/-',
+                  'projects/parent2/locations/some-other-location',
+                ],
                 schedule: {
                   frequency: {
                     minutes: 3,
@@ -77,7 +75,7 @@ describe('GkeEntityProvider', () => {
 
   it('should return clusters as Resources', async () => {
     clusterManagerClientMock.listClusters.mockImplementation(req => {
-      if (req.parent === 'parent1') {
+      if (req.parent === 'projects/parent1/locations/-') {
         return [
           {
             clusters: [
@@ -93,7 +91,9 @@ describe('GkeEntityProvider', () => {
             ],
           },
         ];
-      } else if (req.parent === 'parent2') {
+      } else if (
+        req.parent === 'projects/parent2/locations/some-other-location'
+      ) {
         return [
           {
             clusters: [
@@ -114,58 +114,7 @@ describe('GkeEntityProvider', () => {
       throw new Error(`unexpected parent ${req.parent}`);
     });
     await gkeEntityProvider.refresh();
-    expect(connectionMock.applyMutation).toHaveBeenCalledWith({
-      type: 'full',
-      entities: [
-        {
-          locationKey: 'gcp-gke:some-location',
-          entity: {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Resource',
-            metadata: {
-              annotations: {
-                [ANNOTATION_KUBERNETES_API_SERVER]: 'https://127.0.0.1',
-                [ANNOTATION_KUBERNETES_API_SERVER_CA]: 'abcdefg',
-                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
-                'backstage.io/managed-by-location': 'gcp-gke:some-location',
-                'backstage.io/managed-by-origin-location':
-                  'gcp-gke:some-location',
-              },
-              name: 'some-cluster',
-              namespace: 'default',
-            },
-            spec: {
-              type: 'kubernetes-cluster',
-              owner: 'unknown',
-            },
-          },
-        },
-        {
-          locationKey: 'gcp-gke:some-other-location',
-          entity: {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Resource',
-            metadata: {
-              annotations: {
-                [ANNOTATION_KUBERNETES_API_SERVER]: 'https://127.0.0.1',
-                [ANNOTATION_KUBERNETES_API_SERVER_CA]: '',
-                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google',
-                'backstage.io/managed-by-location':
-                  'gcp-gke:some-other-location',
-                'backstage.io/managed-by-origin-location':
-                  'gcp-gke:some-other-location',
-              },
-              name: 'some-other-cluster',
-              namespace: 'default',
-            },
-            spec: {
-              type: 'kubernetes-cluster',
-              owner: 'unknown',
-            },
-          },
-        },
-      ],
-    });
+    expect(connectionMock.applyMutation).toMatchSnapshot();
   });
 
   const ignoredPartialClustersTests: [
@@ -223,7 +172,7 @@ describe('GkeEntityProvider', () => {
     'ignore cluster - %s',
     async (_name, ignoredCluster) => {
       clusterManagerClientMock.listClusters.mockImplementation(req => {
-        if (req.parent === 'parent1') {
+        if (req.parent === 'projects/parent1/locations/-') {
           return [ignoredCluster];
         }
         return [

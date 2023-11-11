@@ -58,6 +58,9 @@ type OutputState<PlaylistFilters extends DefaultPlaylistFilters> = {
   backendPlaylists: Playlist[];
 };
 
+/**
+ * @public
+ */
 export const PlaylistListProvider = <
   PlaylistFilters extends DefaultPlaylistFilters,
 >({

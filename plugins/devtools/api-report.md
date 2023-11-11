@@ -36,7 +36,6 @@ export const devToolsPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 

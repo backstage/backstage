@@ -179,22 +179,6 @@ export async function checkPathExistsTask(path: string) {
 }
 
 /**
- * Create a folder to store templated files
- *
- * @param tempDir - target temporary directory
- * @throws if `fs.mkdir` fails
- */
-export async function createTemporaryAppFolderTask(tempDir: string) {
-  await Task.forItem('creating', 'temporary directory', async () => {
-    try {
-      await fs.mkdir(tempDir);
-    } catch (error) {
-      throw new Error(`Failed to create temporary app directory, ${error}`);
-    }
-  });
-}
-
-/**
  * Run `yarn install` and `run tsc` in application directory
  *
  * @param appDir - location of application to build

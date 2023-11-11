@@ -42,8 +42,58 @@ export const spec = {
     headers: {},
     parameters: {},
     requestBodies: {},
-    responses: {},
+    responses: {
+      ErrorResponse: {
+        description: 'An error response from the backend.',
+        content: {
+          'application/json; charset=utf-8': {
+            schema: {
+              $ref: '#/components/schemas/Error',
+            },
+          },
+        },
+      },
+    },
     schemas: {
+      Error: {
+        type: 'object',
+        properties: {
+          error: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+              message: {
+                type: 'string',
+              },
+            },
+            required: ['name', 'message'],
+          },
+          request: {
+            type: 'object',
+            properties: {
+              method: {
+                type: 'string',
+              },
+              url: {
+                type: 'string',
+              },
+            },
+            required: ['method', 'url'],
+          },
+          response: {
+            type: 'object',
+            properties: {
+              statusCode: {
+                type: 'number',
+              },
+            },
+            required: ['statusCode'],
+          },
+        },
+        required: ['error', 'request', 'response'],
+      },
       JsonObject: {
         type: 'object',
         properties: {},
@@ -132,25 +182,8 @@ export const spec = {
               },
             },
           },
-          '400': {
-            description: 'Bad request',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    error: {
-                      type: 'object',
-                      properties: {
-                        message: {
-                          type: 'string',
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
         security: [

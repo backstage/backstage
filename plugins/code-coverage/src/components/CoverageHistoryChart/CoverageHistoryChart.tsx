@@ -113,8 +113,8 @@ export const CoverageHistoryChart = () => {
     );
   }
 
-  const oldestCoverage = valueHistory.history[0];
-  const [latestCoverage] = valueHistory.history.slice(-1);
+  const [oldestCoverage] = valueHistory.history.slice(-1);
+  const latestCoverage = valueHistory.history[0];
 
   const getTrendForCoverage = (type: Coverage) => {
     if (!oldestCoverage[type].percentage) {

@@ -141,8 +141,8 @@ export const UserSettingsThemeToggle = () => {
           onChange={handleSetTheme}
         >
           {themeIds.map(theme => {
-            const themeIcon = themeIds.find(it => it.id === theme.id)?.icon;
             const themeId = theme.id;
+            const themeIcon = theme.icon;
             const themeTitle =
               theme.title ||
               (themeId === 'light' || themeId === 'dark'
@@ -156,7 +156,11 @@ export const UserSettingsThemeToggle = () => {
               >
                 <>
                   {themeTitle}&nbsp;
-                  <ThemeIcon id={themeId} icon={themeIcon} activeId={themeId} />
+                  <ThemeIcon
+                    id={themeId}
+                    icon={themeIcon}
+                    activeId={activeThemeId}
+                  />
                 </>
               </TooltipToggleButton>
             );

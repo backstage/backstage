@@ -26,8 +26,6 @@ import type {
   DocOperation,
   DocPath,
   DocPathMethod,
-  DocPathTemplate,
-  PathTemplate,
   ToTypeSafe,
 } from './common';
 import {
@@ -61,14 +59,10 @@ export type RequestBody<
  */
 export type RequestBodySchema<
   Doc extends RequiredDoc,
-  Path extends DocPathTemplate<Doc>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = RequestBody<
-  Doc,
-  DocPath<Doc, Path>,
-  Method
-> extends ImmutableRequestBodyObject
-  ? ObjectWithContentSchema<Doc, RequestBody<Doc, DocPath<Doc, Path>, Method>>
+> = RequestBody<Doc, Path, Method> extends ImmutableRequestBodyObject
+  ? ObjectWithContentSchema<Doc, RequestBody<Doc, Path, Method>>
   : never;
 
 /**
@@ -77,6 +71,6 @@ export type RequestBodySchema<
  */
 export type RequestBodyToJsonSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
 > = ToTypeSafe<RequestBodySchema<Doc, Path, Method>>;

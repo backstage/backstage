@@ -71,5 +71,5 @@ export type SonarQubeContentPageProps = {
 };
 
 // @public (undocumented)
-export const sonarQubePlugin: BackstagePlugin<{}, {}, {}>;
+export const sonarQubePlugin: BackstagePlugin<{}, {}>;
 ```

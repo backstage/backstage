@@ -29,7 +29,7 @@ cd repo
 
 # Install @techdocs/cli, mkdocs and mkdocs plugins
 npm install -g @techdocs/cli
-pip install mkdocs-techdocs-core==1.*
+pip install "mkdocs-techdocs-core==1.*"
 
 # Generate
 techdocs-cli generate --no-docker

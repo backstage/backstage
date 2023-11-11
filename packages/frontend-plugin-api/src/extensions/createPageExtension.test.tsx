@@ -15,9 +15,21 @@
  */
 
 import React from 'react';
+import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { useAnalytics } from '@backstage/core-plugin-api';
+import { waitFor } from '@testing-library/react';
 import { PortableSchema } from '../schema';
-import { coreExtensionData, createExtensionInput } from '../wiring';
+import {
+  coreExtensionData,
+  createExtensionInput,
+  createPlugin,
+} from '../wiring';
 import { createPageExtension } from './createPageExtension';
+
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useAnalytics: jest.fn(),
+}));
 
 describe('createPageExtension', () => {
   it('creates the extension properly', () => {
@@ -35,7 +47,7 @@ describe('createPageExtension', () => {
     ).toEqual({
       $$type: '@backstage/Extension',
       id: 'test',
-      at: 'core.routes/routes',
+      attachTo: { id: 'core.routes', input: 'routes' },
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},
@@ -50,7 +62,7 @@ describe('createPageExtension', () => {
     expect(
       createPageExtension({
         id: 'test',
-        at: 'other/place',
+        attachTo: { id: 'other', input: 'place' },
         disabled: true,
         configSchema,
         inputs: {
@@ -63,7 +75,7 @@ describe('createPageExtension', () => {
     ).toEqual({
       $$type: '@backstage/Extension',
       id: 'test',
-      at: 'other/place',
+      attachTo: { id: 'other', input: 'place' },
       configSchema: expect.anything(),
       disabled: true,
       inputs: {
@@ -88,7 +100,7 @@ describe('createPageExtension', () => {
     ).toEqual({
       $$type: '@backstage/Extension',
       id: 'test',
-      at: 'core.routes/routes',
+      attachTo: { id: 'core.routes', input: 'routes' },
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},
@@ -99,5 +111,34 @@ describe('createPageExtension', () => {
       },
       factory: expect.any(Function),
     });
+  });
+
+  it('capture page view event in analytics', async () => {
+    const captureEvent = jest.fn();
+
+    (useAnalytics as jest.Mock).mockReturnValue({
+      captureEvent,
+    });
+
+    const extension = createPageExtension({
+      id: 'plugin.page',
+      defaultPath: '/',
+      loader: async () => <div>Component</div>,
+    });
+
+    const output = extension.factory({
+      source: createPlugin({ id: 'plugin ' }),
+      config: { path: '/' },
+      inputs: {},
+    });
+
+    renderWithEffects(wrapInTestApp(output.element as unknown as JSX.Element));
+
+    await waitFor(() =>
+      expect(captureEvent).toHaveBeenCalledWith(
+        '_ROUTABLE-EXTENSION-RENDERED',
+        '',
+      ),
+    );
   });
 });

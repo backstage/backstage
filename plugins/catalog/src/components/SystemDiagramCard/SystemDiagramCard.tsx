@@ -33,7 +33,6 @@ import { Box, makeStyles, Typography, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { BackstageTheme } from '@backstage/theme';
 
 import {
   DependencyGraph,
@@ -55,7 +54,7 @@ export type SystemDiagramCardClassKey =
   | 'resourceNode';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+  theme => ({
     domainNode: {
       fill: theme.palette.primary.main,
       stroke: theme.palette.border,

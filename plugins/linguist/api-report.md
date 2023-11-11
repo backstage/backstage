@@ -16,7 +16,7 @@ export const EntityLinguistCard: () => JSX_2.Element;
 export const isLinguistAvailable: (entity: Entity) => boolean;
 
 // @public (undocumented)
-export const linguistPlugin: BackstagePlugin<{}, {}, {}>;
+export const linguistPlugin: BackstagePlugin<{}, {}>;
 
 // (No @packageDocumentation comment for this package)
 ```

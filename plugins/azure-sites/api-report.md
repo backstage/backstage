@@ -49,7 +49,6 @@ export const azureSitesPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 

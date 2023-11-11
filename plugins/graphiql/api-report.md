@@ -44,7 +44,7 @@ export const GraphiQLIcon: IconComponent;
 export const GraphiQLPage: () => JSX_2.Element;
 
 // @public (undocumented)
-const graphiqlPlugin: BackstagePlugin<{}, {}, {}>;
+const graphiqlPlugin: BackstagePlugin<{}, {}>;
 export { graphiqlPlugin };
 export { graphiqlPlugin as plugin };
 
@@ -79,6 +79,4 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
 
 // @public (undocumented)
 export const Router: () => React_2.JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

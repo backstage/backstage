@@ -15,7 +15,6 @@
  */
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
-import { MockPluginProvider } from '@backstage/test-utils/alpha';
 import { renderInTestApp } from '@backstage/test-utils';
 import { CostOverviewCard } from './CostOverviewCard';
 import { Cost } from '@backstage/plugin-cost-insights-common';
@@ -45,9 +44,7 @@ function renderInContext(children: JSX.Element) {
       <MockConfigProvider>
         <MockFilterProvider>
           <MockBillingDateProvider>
-            <MockScrollProvider>
-              <MockPluginProvider>{children}</MockPluginProvider>
-            </MockScrollProvider>
+            <MockScrollProvider>{children}</MockScrollProvider>
           </MockBillingDateProvider>
         </MockFilterProvider>
       </MockConfigProvider>

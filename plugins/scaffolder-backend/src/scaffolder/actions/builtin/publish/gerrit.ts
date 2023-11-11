@@ -26,6 +26,7 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import fetch, { Response, RequestInit } from 'node-fetch';
 import { initRepoAndPush } from '../helpers';
+import { examples } from './gerrit.examples';
 
 const createGerritProject = async (
   config: GerritIntegrationConfig,
@@ -98,6 +99,7 @@ export function createPublishGerritAction(options: {
     id: 'publish:gerrit',
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to Gerrit.',
+    examples,
     schema: {
       input: {
         type: 'object',

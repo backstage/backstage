@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
-import { waitFor } from '@testing-library/react';
-
+import { renderHook, act } from '@testing-library/react';
 import {
   mockCalverProject,
   mockReleaseCandidateCalver,
@@ -50,10 +48,9 @@ describe('usePromoteRc', () => {
     );
 
     await act(async () => {
-      await waitFor(() => result.current.run());
+      await result.current.run();
     });
 
-    expect(result.error).toEqual(undefined);
     expect(result.current.responseSteps).toHaveLength(4);
   });
 
@@ -67,7 +64,7 @@ describe('usePromoteRc', () => {
     );
 
     await act(async () => {
-      await waitFor(() => result.current.run());
+      await result.current.run();
     });
 
     expect(result.current.responseSteps).toHaveLength(5);

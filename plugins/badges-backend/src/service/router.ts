@@ -32,6 +32,7 @@ import { Logger } from 'winston';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { BadgesStore, DatabaseBadgesStore } from '../database/badgesStore';
+import { createDefaultBadgeFactories } from '../badges';
 
 /** @public */
 export interface RouterOptions {
@@ -54,7 +55,9 @@ export async function createRouter(
     options.catalog || new CatalogClient({ discoveryApi: options.discovery });
   const badgeBuilder =
     options.badgeBuilder ||
-    new DefaultBadgeBuilder(options.badgeFactories || {});
+    new DefaultBadgeBuilder(
+      options.badgeFactories || createDefaultBadgeFactories(),
+    );
   const router = Router();
 
   const { config, logger, tokenManager, discovery, identity } = options;

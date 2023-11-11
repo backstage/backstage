@@ -160,8 +160,12 @@ export class Git {
   }
 
   /** https://isomorphic-git.org/docs/en/fetch */
-  async fetch(options: { dir: string; remote?: string }): Promise<void> {
-    const { dir, remote = 'origin' } = options;
+  async fetch(options: {
+    dir: string;
+    remote?: string;
+    tags?: boolean;
+  }): Promise<void> {
+    const { dir, remote = 'origin', tags = false } = options;
     this.config.logger?.info(
       `Fetching remote=${remote} for repository {dir=${dir}}`,
     );
@@ -172,6 +176,7 @@ export class Git {
         http,
         dir,
         remote,
+        tags,
         onProgress: this.onProgressHandler(),
         headers: this.headers,
         onAuth: this.onAuth,

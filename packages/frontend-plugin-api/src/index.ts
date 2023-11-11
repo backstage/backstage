@@ -20,8 +20,9 @@
  * @packageDocumentation
  */
 
+export * from './apis';
 export * from './components';
 export * from './extensions';
+export * from './routing';
 export * from './schema';
 export * from './wiring';
-export * from './routing';

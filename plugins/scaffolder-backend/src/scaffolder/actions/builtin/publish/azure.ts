@@ -29,6 +29,7 @@ import {
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
+import { examples } from './azure.examples';
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
@@ -52,6 +53,7 @@ export function createPublishAzureAction(options: {
     gitAuthorEmail?: string;
   }>({
     id: 'publish:azure',
+    examples,
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to Azure.',
     schema: {

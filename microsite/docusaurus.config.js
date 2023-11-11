@@ -73,6 +73,7 @@ module.exports = {
       // Replace all HTML comments with emtpy strings as these are not supported by MDXv2.
       return fileContent.replace(/<!--.*?-->/gs, '');
     },
+    format: 'md',
   },
   webpack: {
     jsLoader: isServer => ({
@@ -177,7 +178,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.18.0',
+            to: 'docs/releases/v1.19.0',
             label: 'Releases',
             position: 'left',
           },
@@ -276,7 +277,7 @@ module.exports = {
           },
         ],
         copyright:
-          '<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © 2022 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>',
+          '<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © 2023 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>',
       },
       algolia: {
         apiKey: '1f0ba86672ccfc3576faa94583e5b318',

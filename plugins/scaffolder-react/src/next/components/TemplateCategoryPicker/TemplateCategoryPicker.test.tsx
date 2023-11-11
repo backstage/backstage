@@ -20,6 +20,7 @@ import { TemplateCategoryPicker } from './TemplateCategoryPicker';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntityTypeFilter: jest.fn(),
@@ -91,7 +92,7 @@ describe('TemplateCategoryPicker', () => {
     );
 
     const openButton = getByRole('button', { name: 'Open' });
-    openButton.click();
+    await userEvent.click(openButton);
 
     expect(getByRole('checkbox', { name: 'Foo' })).toBeInTheDocument();
     expect(getByRole('checkbox', { name: 'Bar' })).toBeInTheDocument();

@@ -20,12 +20,12 @@ import useAsync from 'react-use/lib/useAsync';
 import { sentryApiRef } from '../../api';
 import SentryIssuesTable from '../SentryIssuesTable/SentryIssuesTable';
 import { SENTRY_PROJECT_SLUG_ANNOTATION, useProjectSlug } from '../hooks';
+import { MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
 
 import {
   EmptyState,
   InfoCard,
   InfoCardVariants,
-  MissingAnnotationEmptyState,
   Progress,
 } from '@backstage/core-components';
 

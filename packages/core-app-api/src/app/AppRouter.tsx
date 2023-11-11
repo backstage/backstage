@@ -16,6 +16,7 @@
 
 import React, { useContext, ReactNode, ComponentType, useState } from 'react';
 import {
+  attachComponentData,
   ConfigApi,
   configApiRef,
   IdentityApi,
@@ -70,7 +71,7 @@ function SignInPageWrapper({
 }) {
   const [identityApi, setIdentityApi] = useState<IdentityApi>();
   const configApi = useApi(configApiRef);
-  const basePath = getBasePath(configApi);
+  const basePath = readBasePath(configApi);
 
   if (!identityApi) {
     return <Component onSignInSuccess={setIdentityApi} />;
@@ -186,3 +187,5 @@ export function AppRouter(props: AppRouterProps) {
     </RouterComponent>
   );
 }
+
+attachComponentData(AppRouter, 'core.type', 'AppRouter');

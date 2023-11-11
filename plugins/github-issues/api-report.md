@@ -52,7 +52,6 @@ export const githubIssuesPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 

@@ -19,13 +19,11 @@ import useAsync from 'react-use/lib/useAsync';
 import { codeClimateApiRef } from '../../api';
 import { CodeClimateTable } from '../CodeClimateTable';
 import { CODECLIMATE_REPO_ID_ANNOTATION } from '../../plugin';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import {
-  EmptyState,
-  ErrorPanel,
+  useEntity,
   MissingAnnotationEmptyState,
-  Progress,
-} from '@backstage/core-components';
+} from '@backstage/plugin-catalog-react';
+import { EmptyState, ErrorPanel, Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 export const CodeClimateCardContents = () => {

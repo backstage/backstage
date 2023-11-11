@@ -46,7 +46,7 @@ import {
   CatalogEntityPage,
   CatalogIndexPage,
   catalogPlugin,
-} from '@internal/plugin-catalog-customized';
+} from '@backstage/plugin-catalog';
 
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import {
@@ -61,10 +61,10 @@ import {
 import { orgPlugin } from '@backstage/plugin-org';
 import { ExplorePage } from '@backstage/plugin-explore';
 import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
-import { HomepageCompositionRoot } from '@backstage/plugin-home';
+import { HomepageCompositionRoot, VisitListener } from '@backstage/plugin-home';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
-import { NextScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
+import { LegacyScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import {
   ScaffolderFieldExtensions,
@@ -109,7 +109,7 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
-import { PlaylistIndexPage } from '@backstage/plugin-playlist';
+import { PlaylistIndexPage, PlaylistPage } from '@backstage/plugin-playlist';
 import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import { StackstormPage } from '@backstage/plugin-stackstorm';
@@ -236,11 +236,11 @@ const routes = (
         <LightBox />
       </TechDocsAddons>
     </Route>
-    <FeatureFlagged with="scaffolder-next-preview">
+    <FeatureFlagged with="scaffolder-legacy">
       <Route
         path="/create"
         element={
-          <NextScaffolderPage
+          <LegacyScaffolderPage
             groups={[
               {
                 title: 'Recommended',
@@ -252,14 +252,14 @@ const routes = (
         }
       >
         <ScaffolderFieldExtensions>
-          <DelayingComponentFieldExtension />
+          <LowerCaseValuePickerFieldExtension />
         </ScaffolderFieldExtensions>
         <ScaffolderLayouts>
           <TwoColumnLayout />
         </ScaffolderLayouts>
       </Route>
     </FeatureFlagged>
-    <FeatureFlagged without="scaffolder-next-preview">
+    <FeatureFlagged without="scaffolder-legacy">
       <Route
         path="/create"
         element={
@@ -276,7 +276,7 @@ const routes = (
         }
       >
         <ScaffolderFieldExtensions>
-          <LowerCaseValuePickerFieldExtension />
+          <DelayingComponentFieldExtension />
         </ScaffolderFieldExtensions>
         <ScaffolderLayouts>
           <TwoColumnLayout />
@@ -316,6 +316,7 @@ const routes = (
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
     <Route path="/playlist" element={<PlaylistIndexPage />} />
+    <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
     <Route path="/score-board" element={<ScoreBoardPage />} />
     <Route path="/stackstorm" element={<StackstormPage />} />
     <Route path="/puppetdb" element={<PuppetDbPage />} />
@@ -330,6 +331,7 @@ export default app.createRoot(
     <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />
     <AppRouter>
+      <VisitListener />
       <Root extensionTree={extensionTree}>{routes}</Root>
     </AppRouter>
   </>,

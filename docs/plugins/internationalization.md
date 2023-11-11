@@ -30,7 +30,7 @@ And the using this messages in your components like:
 ```tsx
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-const { t } = useTranslationRef(userSettingsTranslationRef);
+const { t } = useTranslationRef(myPluginTranslationRef);
 
 return (
   <PageHeader title={t('index_page_title')}>

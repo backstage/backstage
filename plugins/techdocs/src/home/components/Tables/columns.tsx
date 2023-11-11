@@ -57,6 +57,12 @@ export const columnFactories = {
       ),
     };
   },
+  createKindColumn(): TableColumn<DocsTableRow> {
+    return {
+      title: 'Kind',
+      field: 'entity.kind',
+    };
+  },
   createTypeColumn(): TableColumn<DocsTableRow> {
     return {
       title: 'Type',

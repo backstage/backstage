@@ -240,7 +240,6 @@ const splunkOnCallPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { splunkOnCallPlugin as plugin };

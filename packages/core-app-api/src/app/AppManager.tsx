@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 import React, {
   ComponentType,
   PropsWithChildren,
+  Suspense,
   useMemo,
   useRef,
 } from 'react';
@@ -341,7 +342,7 @@ export class AppManager implements BackstageApp {
         }
       }
 
-      const { ThemeProvider = AppThemeProvider } = this.components;
+      const { ThemeProvider = AppThemeProvider, Progress } = this.components;
 
       return (
         <ApiProvider apis={this.getApiHolder()}>
@@ -360,7 +361,7 @@ export class AppManager implements BackstageApp {
                     appIdentityProxy: this.appIdentityProxy,
                   }}
                 >
-                  {children}
+                  <Suspense fallback={<Progress />}>{children}</Suspense>
                 </InternalAppContext.Provider>
               </RoutingProvider>
             </ThemeProvider>

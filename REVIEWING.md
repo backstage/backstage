@@ -172,13 +172,7 @@ We generate API Reports using the [API Extractor](https://api-extractor.com/) to
 
 Each API report contains a list of all the exported types of each package. As long as the API report does not have any warnings it will contain the full publicly facing API of the package, meaning you do not need to consider any other changes to the package from the point of view of TypeScript API stability.
 
-Exported types can be marked with either `@public`, `@alpha` or `@beta` release tags. It is only the `@public` exports that we consider to be part of the stable API. The `@alpha` and `@beta` exports are considered unstable and can be changed at any time without needing a breaking package versions bump. However, this **ONLY** applies if the package has been configured to use experimental type builds, which looks like this in `package.json`:
-
-```json
-  "build": "backstage-cli package build --experimental-type-build"
-```
-
-If a package does not have this configuration, then all exported types are considered stable, even if they are marked as `@alpha` or `@beta`.
+Exported types can be marked with either `@public`, `@alpha` or `@beta` release tags. It is only the `@public` exports that we consider to be part of the stable API. The `@alpha` and `@beta` exports are considered unstable and can be changed at any time without needing a breaking package versions bump.
 
 #### Changes that are Not Considered Breaking
 

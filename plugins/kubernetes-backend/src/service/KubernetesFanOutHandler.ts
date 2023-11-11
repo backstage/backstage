@@ -25,8 +25,6 @@ import {
   FetchResponseWrapper,
   ObjectToFetch,
   CustomResource,
-  CustomResourcesByEntity,
-  KubernetesObjectsByEntity,
 } from '../types/types';
 import { AuthenticationStrategy, KubernetesCredential } from '../auth/types';
 import {
@@ -46,6 +44,10 @@ import {
   CurrentResourceUsage,
   PodStatus,
 } from '@kubernetes/client-node';
+import {
+  CustomResourcesByEntity,
+  KubernetesObjectsByEntity,
+} from '@backstage/plugin-kubernetes-node';
 
 /**
  *
@@ -75,6 +77,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     apiVersion: 'v1',
     plural: 'limitranges',
     objectType: 'limitranges',
+  },
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'resourcequotas',
+    objectType: 'resourcequotas',
   },
   {
     group: 'apps',

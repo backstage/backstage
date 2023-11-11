@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.19.0",
       "releases/v1.18.0",
       "releases/v1.17.0",
       "releases/v1.16.0",
@@ -243,7 +244,6 @@
       "plugins/integrating-plugin-into-software-catalog",
       "plugins/integrating-search-into-plugins",
       "plugins/composability",
-      "plugins/customization",
       "plugins/internationalization",
       "plugins/analytics",
       "plugins/feature-flags",

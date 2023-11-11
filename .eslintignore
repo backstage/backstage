@@ -9,3 +9,4 @@
 **/microsite/**
 **/templates/**
 **/sample-templates/**
+playwright.config.ts

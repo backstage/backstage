@@ -151,8 +151,6 @@ export interface ProcessingDatabase {
     txOpaque: Transaction,
     options: ListParentsOptions,
   ): Promise<ListParentsResult>;
-
-  deleteOrphanedEntities(txOpaque: Transaction): Promise<number>;
 }
 
 /**

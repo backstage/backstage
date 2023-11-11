@@ -20,7 +20,6 @@ export const entityValidationPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 

@@ -22,7 +22,6 @@ import {
   ChildProcess,
 } from 'child_process';
 import { promisify } from 'util';
-import puppeteer from 'puppeteer';
 
 const execFile = promisify(execFileCb);
 
@@ -123,50 +122,6 @@ export async function waitForExit(child: ChildProcess) {
       }
     }),
   );
-}
-
-export async function waitForPageWithText(
-  page: puppeteer.Page,
-  path: string,
-  text: string,
-  { intervalMs = 1000, maxFindAttempts = 50 } = {},
-) {
-  let findAttempts = 0;
-  for (;;) {
-    try {
-      const waitTimeMs = intervalMs * (findAttempts + 1);
-      console.log(`Attempting to load page at ${path}, waiting ${waitTimeMs}`);
-      await new Promise(resolve => setTimeout(resolve, waitTimeMs));
-
-      await page.goto(`http://localhost:3000${path}`, {
-        waitUntil: 'networkidle0',
-      });
-
-      const match = await page.evaluate(
-        textContent =>
-          Array.from(document.querySelectorAll('*')).some(
-            el => el.textContent === textContent,
-          ),
-        text,
-      );
-
-      if (!match) {
-        throw new Error(`Expected to find text ${text}`);
-      }
-
-      break;
-    } catch (error) {
-      console.log(error);
-      assertError(error);
-
-      findAttempts++;
-      if (findAttempts >= maxFindAttempts) {
-        throw new Error(
-          `Failed to load page '${path}', max number of attempts reached`,
-        );
-      }
-    }
-  }
 }
 
 export function print(msg: string) {

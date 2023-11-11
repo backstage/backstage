@@ -48,6 +48,10 @@ type Props = {
   readMoreUrl?: string;
 };
 
+/**
+ * @public
+ * @deprecated This component is deprecated, please use {@link @backstage/plugin-catalog-react#MissingAnnotationEmptyStateClassKey} instead
+ */
 export type MissingAnnotationEmptyStateClassKey = 'code';
 
 const useStyles = makeStyles<BackstageTheme>(
@@ -70,7 +74,6 @@ function generateComponentYaml(annotations: string[]) {
   const annotationYaml = annotations
     .map(ann => ANNOTATION_YAML.replace('ANNOTATION', ann))
     .join('\n');
-
   return COMPONENT_YAML_TEMPLATE.replace(ANNOTATION_YAML, annotationYaml);
 }
 
@@ -93,6 +96,10 @@ function generateDescription(annotations: string[]) {
   );
 }
 
+/**
+ * @public
+ * @deprecated This component is deprecated, please use {@link @backstage/plugin-catalog-react#MissingAnnotationEmptyState} instead
+ */
 export function MissingAnnotationEmptyState(props: Props) {
   const { annotation, readMoreUrl } = props;
   const annotations = Array.isArray(annotation) ? annotation : [annotation];

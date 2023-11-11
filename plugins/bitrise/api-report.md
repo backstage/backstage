@@ -13,7 +13,7 @@ import { JSX as JSX_2 } from 'react';
 export const BITRISE_APP_ANNOTATION = 'bitrise.io/app';
 
 // @public (undocumented)
-export const bitrisePlugin: BackstagePlugin<{}, {}, {}>;
+export const bitrisePlugin: BackstagePlugin<{}, {}>;
 
 // @public (undocumented)
 export const EntityBitriseContent: () => JSX_2.Element;

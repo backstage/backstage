@@ -217,6 +217,8 @@ export class PluginScanner {
           .watch(this._rootDirectory, {
             ignoreInitial: true,
             followSymlinks: true,
+            depth: 1,
+            disableGlobbing: true,
           })
           .on(
             'all',
