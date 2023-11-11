@@ -3731,7 +3731,7 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
   languageName: unknown
   linkType: soft
@@ -3850,7 +3850,7 @@ __metadata:
     chalk: ^4.0.0
     chokidar: ^3.3.1
     commander: ^9.1.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     cross-spawn: ^7.0.3
     css-loader: ^6.5.1
     ctrlc-windows: ^2.1.0
@@ -4195,7 +4195,7 @@ __metadata:
     "@types/zen-observable": ^0.8.0
     ansi-regex: ^6.0.1
     classnames: ^2.2.6
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     d3-selection: ^3.0.0
     d3-shape: ^3.0.0
     d3-zoom: ^3.0.0
@@ -4506,7 +4506,7 @@ __metadata:
     "@octokit/auth-app": ^4.0.0
     "@octokit/rest": ^19.0.3
     "@types/luxon": ^3.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     git-url-parse: ^13.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -4583,7 +4583,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/git-url-parse": ^9.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     lodash: ^4.17.21
     msw: ^1.0.0
     react-markdown: ^8.0.0
@@ -4775,7 +4775,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
     qs: ^6.10.1
     react-use: ^17.2.4
@@ -4826,7 +4826,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/swagger-ui-react": ^4.18.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     graphiql: 3.0.9
     graphql: ^16.0.0
     graphql-ws: ^5.4.1
@@ -5292,7 +5292,7 @@ __metadata:
     "@types/express": ^4.17.6
     badge-maker: ^3.3.0
     cors: ^2.8.5
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^3.0.0
@@ -5390,7 +5390,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@openapitools/openapi-generator-cli": ^2.4.26
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
     ts-morph: ^17.0.0
   languageName: unknown
@@ -5510,7 +5510,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@types/express": "*"
     "@types/supertest": ^2.0.8
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
@@ -6274,7 +6274,7 @@ __metadata:
     "@types/humanize-duration": ^3.25.1
     "@types/react": ^16.13.1 || ^17.0.0
     circleci-api: ^4.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     humanize-duration: ^3.27.0
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -6308,7 +6308,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
     qs: ^6.9.4
@@ -6523,7 +6523,7 @@ __metadata:
     "@types/yup": ^0.29.13
     canvas: ^2.10.2
     classnames: ^2.2.6
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     history: ^5.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -6609,7 +6609,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
     react-json-view: ^1.21.3
     react-use: ^17.2.4
@@ -6935,7 +6935,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -6973,7 +6973,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
     pluralize: ^8.0.0
     react-use: ^17.2.4
@@ -7037,7 +7037,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
     p-limit: ^3.0.2
@@ -7074,7 +7074,7 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/sanitize-html": ^2.6.2
     classnames: ^2.3.1
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     dompurify: ^2.3.6
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -7108,7 +7108,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7175,7 +7175,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     git-url-parse: ^13.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -7309,7 +7309,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -7376,7 +7376,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/codemirror": ^5.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     graphiql: ^3.0.6
     graphql: ^16.0.0
     graphql-ws: ^5.4.1
@@ -7480,7 +7480,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/react-grid-layout": ^1.3.2
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7632,7 +7632,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/testing-library__jest-dom": ^5.9.1
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
@@ -8125,7 +8125,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/parse-link-header": ^2.0.1
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.2.3
     parse-link-header: ^2.0.0
     react-use: ^17.2.4
@@ -8178,7 +8178,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     luxon: ^3.3.0
     msw: ^1.0.0
     react-use: ^17.2.4
@@ -8241,7 +8241,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     axios: ^1.4.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     date-fns: ^2.30.0
     lodash: ^4.17.21
     msw: ^1.0.0
@@ -8459,7 +8459,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
     uuid: ^8.0.0
     zod: ^3.21.4
@@ -8520,7 +8520,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     react-use: ^17.2.4
     swr: ^2.0.0
   peerDependencies:
@@ -8717,7 +8717,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     lodash: ^4.17.21
     msw: ^1.0.0
     react-sparklines: ^1.7.0
@@ -9351,7 +9351,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
     react-sparklines: ^1.7.0
@@ -9456,7 +9456,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
     rc-progress: 3.5.1
@@ -9542,7 +9542,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     lodash: ^4.17.21
     msw: ^1.0.0
     qs: ^6.9.4
@@ -9717,7 +9717,7 @@ __metadata:
     "@types/d3-force": ^3.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     color: ^4.0.1
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     d3-force: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
@@ -9939,7 +9939,7 @@ __metadata:
     "@types/event-source-polyfill": ^1.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     canvas: ^2.10.2
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     dompurify: ^2.2.9
     event-source-polyfill: 1.0.25
     git-url-parse: ^13.0.0
@@ -10060,7 +10060,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
     zen-observable: ^0.10.0
@@ -10179,7 +10179,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
   languageName: unknown
   linkType: soft
@@ -10255,7 +10255,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     i18next: ^22.4.15
     msw: ^1.0.0
     zen-observable: ^0.10.0
@@ -12750,7 +12750,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
   languageName: unknown
   linkType: soft
@@ -21292,7 +21292,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@material-ui/icons": ^4.9.1
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -24563,6 +24563,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cross-fetch@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "cross-fetch@npm:4.0.0"
+  dependencies:
+    node-fetch: ^2.6.12
+  checksum: ecca4f37ffa0e8283e7a8a590926b66713a7ef7892757aa36c2d20ffa27b0ac5c60dcf453119c809abe5923fc0bae3702a4d896bfb406ef1077b0d0018213e24
+  languageName: node
+  linkType: hard
+
 "cross-spawn@npm:^5.1.0":
   version: 5.1.0
   resolution: "cross-spawn@npm:5.1.0"
@@ -26065,7 +26074,7 @@ __metadata:
     "@types/puppeteer": ^5.4.4
     chalk: ^4.0.0
     commander: ^9.1.0
-    cross-fetch: ^3.1.5
+    cross-fetch: ^4.0.0
     fs-extra: 10.1.0
     handlebars: ^4.7.3
     mysql2: ^2.2.5
