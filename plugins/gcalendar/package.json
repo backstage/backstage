@@ -63,7 +63,7 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/dompurify": "^2.3.3",
     "@types/sanitize-html": "^2.6.2",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   },
   "files": [
     "dist"

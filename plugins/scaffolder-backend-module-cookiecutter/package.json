@@ -45,7 +45,7 @@
     "@backstage/cli": "workspace:^",
     "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.1",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   },
   "files": [
     "dist"

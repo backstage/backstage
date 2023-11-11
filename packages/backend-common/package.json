@@ -132,7 +132,7 @@
     "aws-sdk-client-mock": "^2.0.0",
     "better-sqlite3": "^9.0.0",
     "http-errors": "^2.0.0",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "mysql2": "^2.2.5",
     "supertest": "^6.1.3"
   },

@@ -76,7 +76,7 @@
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
     "jest-websocket-mock": "^2.4.1",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   },
   "files": [
     "dist"

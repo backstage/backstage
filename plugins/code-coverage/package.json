@@ -63,7 +63,7 @@
     "@types/highlightjs": "^10.1.0",
     "@types/react": "^16.13.1 || ^17.0.0",
     "@types/recharts": "^1.8.15",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   },
   "files": [
     "dist"

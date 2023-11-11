@@ -61,7 +61,7 @@
     "@types/lodash": "^4.14.173",
     "@types/luxon": "^3.0.0",
     "@types/react": "^16.13.1 || ^17.0.0",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   },
   "files": [
     "dist",
