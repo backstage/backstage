@@ -26,6 +26,9 @@ import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { getAnnotationValuesFromEntity } from '../utils';
 
+/**
+ * @deprecated Use `useBuildRuns` instead
+ */
 export function useRepoBuilds(
   entity: Entity,
   defaultLimit?: number,
@@ -40,11 +43,11 @@ export function useRepoBuilds(
   };
 
   const api = useApi(azureDevOpsApiRef);
-  const { project, repo } = getAnnotationValuesFromEntity(entity);
 
-  const { value, loading, error } = useAsync(async () => {
-    return await api.getRepoBuilds(project, repo as string, options);
-  }, [api, project, repo, entity]);
+  const { value, loading, error } = useAsync(() => {
+    const { project, repo } = getAnnotationValuesFromEntity(entity);
+    return api.getRepoBuilds(project, repo as string, options);
+  }, [api, entity]);
 
   return {
     items: value?.items,
