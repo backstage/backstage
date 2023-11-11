@@ -41,9 +41,10 @@ export const Secret = (props: ScaffolderRJSFFieldProps) => {
       <InputLabel htmlFor={title}>{title}</InputLabel>
       <Input
         id={title}
-        aria-describedby={`${title}-description`}
+        aria-describedby={title}
         onChange={e => setSecrets({ [name]: e.target?.value })}
         type="password"
+        autoComplete="off"
       />
     </ScaffolderField>
   );
