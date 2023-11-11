@@ -26,6 +26,7 @@ import { createCardExtension } from '@backstage/plugin-home-react';
 import { ToolkitContentProps, VisitedByTypeProps } from './homePageComponents';
 import { rootRouteRef } from './routes';
 import { VisitsStorageApi, visitsApiRef } from './api';
+import { StarredEntitiesProps } from './homePageComponents/StarredEntities/Content';
 
 /** @public */
 export const homePlugin = createPlugin({
@@ -164,7 +165,7 @@ export const HomePageToolkit = homePlugin.provide(
  * @public
  */
 export const HomePageStarredEntities = homePlugin.provide(
-  createCardExtension({
+  createCardExtension<Partial<StarredEntitiesProps>>({
     name: 'HomePageStarredEntities',
     title: 'Your Starred Entities',
     components: () => import('./homePageComponents/StarredEntities'),
