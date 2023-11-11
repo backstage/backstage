@@ -399,6 +399,7 @@ export type EntityRefLinkProps = {
   defaultNamespace?: string;
   title?: string;
   children?: React_2.ReactNode;
+  noIcon?: boolean;
 } & Omit<LinkProps, 'to'>;
 
 // @public
@@ -412,6 +413,7 @@ export type EntityRefLinksProps<
 > = {
   defaultKind?: string;
   entityRefs: TRef[];
+  noIcons?: boolean;
   fetchEntities?: boolean;
   getTitle?(entity: TRef): string | undefined;
 } & Omit<LinkProps, 'to'>;
