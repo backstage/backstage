@@ -7585,7 +7585,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@types/express": ^4.17.6
-    "@types/jenkins": ^0.23.1
+    "@types/jenkins": ^1.0.0
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -18929,12 +18929,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jenkins@npm:^0.23.1":
-  version: 0.23.4
-  resolution: "@types/jenkins@npm:0.23.4"
+"@types/jenkins@npm:^1.0.0":
+  version: 1.0.2
+  resolution: "@types/jenkins@npm:1.0.2"
   dependencies:
     "@types/node": "*"
-  checksum: 378af85d2f7c3da13cb04098837224551d5d048e6a7b87e78aea8c5e4385f8a1b2cdabd592bb7a6eaa0d46a27eb840c3aa3baa35f1f0449f7f03b8eb527c8562
+    form-data: ^4.0.0
+  checksum: c02895642c81a74cb40740117b5fce0af768ac7985028b6fd0c68d88b350261473db8c05681fc1de0c612579f905f283f0de33efe683ea9a716ae5264287bfba
   languageName: node
   linkType: hard
 
