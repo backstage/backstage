@@ -20,7 +20,7 @@ import { execFile } from 'child_process';
 
 export async function checkIfDockerIsOperational(
   logger: winston.Logger,
-): Promise<bool> {
+): Promise<boolean> {
   logger.info('Checking Docker status...');
   try {
     const runCheck = promisify(execFile);
