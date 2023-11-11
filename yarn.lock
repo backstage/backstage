@@ -3538,7 +3538,7 @@ __metadata:
     "@types/webpack-env": ^1.15.2
     "@types/yauzl": ^2.10.0
     archiver: ^5.0.2
-    aws-sdk-client-mock: ^2.0.0
+    aws-sdk-client-mock: ^3.0.0
     base64-stream: ^1.0.0
     better-sqlite3: ^9.0.0
     compression: ^1.7.4
@@ -4432,7 +4432,7 @@ __metadata:
     "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    aws-sdk-client-mock: ^2.0.0
+    aws-sdk-client-mock: ^3.0.0
     aws-sdk-client-mock-jest: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -5457,7 +5457,7 @@ __metadata:
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/lodash": ^4.14.151
-    aws-sdk-client-mock: ^2.0.0
+    aws-sdk-client-mock: ^3.0.0
     aws-sdk-client-mock-jest: ^2.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -6773,7 +6773,7 @@ __metadata:
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    aws-sdk-client-mock: ^2.0.0
+    aws-sdk-client-mock: ^3.0.0
     luxon: ^3.0.0
     winston: ^3.2.1
   languageName: unknown
@@ -9861,7 +9861,7 @@ __metadata:
     "@types/mime-types": ^2.1.0
     "@types/recursive-readdir": ^2.2.0
     "@types/supertest": ^2.0.8
-    aws-sdk-client-mock: ^2.0.0
+    aws-sdk-client-mock: ^3.0.0
     express: ^4.17.1
     fs-extra: 10.1.0
     git-url-parse: ^13.0.0
@@ -21857,14 +21857,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk-client-mock@npm:^2.0.0":
-  version: 2.2.0
-  resolution: "aws-sdk-client-mock@npm:2.2.0"
+"aws-sdk-client-mock@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "aws-sdk-client-mock@npm:3.0.0"
   dependencies:
     "@types/sinon": ^10.0.10
     sinon: ^14.0.2
     tslib: ^2.1.0
-  checksum: 25232d56cd0401bc1212730a4a0192efc5154a211a648fe0cb4d71bd693216f63c8f13776ef04b4b36fb8eb70b9a7d19d87a3979816b9fd153450d44515d5598
+  checksum: 6298de923260bc824d0c2788196f8839a20da8d64ed82e662913f19417ab872c6cb4c029c5f8f2782da0a4c16e37a8ac077da0bdb19c4e0c82707cf286f7c5d3
   languageName: node
   linkType: hard
 
