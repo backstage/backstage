@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@types/marked": "^4.0.0",
+    "@types/marked": "^5.0.0",
     "@types/supertest": "^2.0.8",
     "msw": "^1.0.0",
     "supertest": "^6.1.3"
