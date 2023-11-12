@@ -71,10 +71,11 @@ export function useWorkflowRuns({
       owner,
       repo,
     });
+
     setDefaultBranch(fetchedDefaultBranch);
+    let selectedBranch = branch;
     if (branch === 'default') {
-      // eslint-disable-next-line no-param-reassign
-      branch = fetchedDefaultBranch;
+      selectedBranch = fetchedDefaultBranch;
     }
 
     const fetchBranches = async () => {
@@ -109,7 +110,7 @@ export function useWorkflowRuns({
       repo,
       pageSize,
       page: page + 1,
-      branch,
+      branch: selectedBranch,
     });
     setTotal(workflowRunsData.total_count);
     // Transformation here
