@@ -59,7 +59,6 @@ export interface CatalogTableProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   subtitle?: string;
-  enablePagination?: boolean;
 }
 
 const YellowStar = withStyles({
@@ -131,7 +130,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
   } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const entityListContext = useEntityList();
-  const { loading, error, entities, filters } = entityListContext;
+  const { loading, error, entities, filters, pageInfo } = entityListContext;
+  const enablePagination = !!pageInfo;
 
   const tableColumns = useMemo(
     () =>
@@ -217,7 +217,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
     .filter(s => s)
     .join(' ');
 
-  if (props.enablePagination) {
+  if (enablePagination) {
     return (
       <PaginatedCatalogTable
         columns={tableColumns}
