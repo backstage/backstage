@@ -12,6 +12,21 @@ You can find out more about the types of contributions over at [getting involved
 
 If you need help, just jump into our [Discord chatroom](https://discord.gg/backstage-687207715902193673).
 
+## Table of Contents
+
+- [Code of Conduct](#code-of-conduct)
+- [Security Issues?](#security-issues)
+- [Accessibility](#accessibility)
+- [Get Started!](#get-started)
+- [Coding Guidelines](#coding-guidelines)
+- [Package Scripts](#package-scripts)
+- [Local configuration](#local-configuration)
+- [Creating Changesets](#creating-changesets)
+- [Developer Certificate of Origin](#developer-certificate-of-origin)
+- [API Reports](#api-reports)
+- [Submitting a Pull Request](#submitting-a-pull-request)
+- [Review Process](#review-process)
+
 ## Code of Conduct
 
 This project adheres to the [CNCF Code of Conduct][code-of-conduct]. By participating, you are expected to honor this code.
