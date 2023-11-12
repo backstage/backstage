@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,3 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { WarningPanel } from '../WarningPanel';
+import { screen } from '@testing-library/react';
+import React from 'react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { WarningProps } from '../WarningPanel/WarningPanel';
+
+describe('<ErrorPanel />', () => {
+  const propsErrorMessage: WarningProps = {
+    severity: 'error',
+    title: 'Mock title',
+    message: 'Some more info',
+  };
+
+  it('renders a title formatted by markdown', async () => {
+    await renderInTestApp(
+      <WarningPanel
+        {...propsErrorMessage}
+        titleFormat="markdown"
+        title="Step has failed. [Help](https://commonmark.org/help)"
+      />,
+    );
+    expect(screen.getByText('Error: Step has failed.')).toBeInTheDocument();
+
+    expect(screen.getByText('Help')).toHaveAttribute(
+      'href',
+      'https://commonmark.org/help',
+    );
+  });
+});

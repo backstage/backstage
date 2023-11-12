@@ -73,7 +73,7 @@ export const TaskSteps = (props: TaskStepsProps) => {
               };
 
             return (
-              <MuiStep key={`${step.id}`}>
+              <MuiStep key={step.id}>
                 <MuiStepButton>
                   <MuiStepLabel
                     StepIconProps={stepIconProps}
