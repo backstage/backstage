@@ -50,20 +50,19 @@ import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 export interface BaseCatalogPageProps {
   filters: ReactNode;
   content?: ReactNode;
-  enablePagination?: boolean;
 }
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
-  const {
-    filters,
-    enablePagination,
-    content = <CatalogTable enablePagination={enablePagination} />,
-  } = props;
+  const { filters, content = <CatalogTable /> } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
   const { t } = useTranslationRef(catalogTranslationRef);
+
+  const enablePagination = useApi(configApiRef).getOptionalBoolean(
+    'catalog.experimental.paginatedEntities',
+  );
 
   return (
     <PageWithHeader title={t('catalog_page_title', { orgName })} themeId="home">
@@ -99,7 +98,6 @@ export interface DefaultCatalogPageProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
-  enablePagination?: boolean;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -111,12 +109,10 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     tableOptions = {},
     emptyContent,
     ownerPickerMode,
-    enablePagination,
   } = props;
 
   return (
     <BaseCatalogPage
-      enablePagination={enablePagination}
       filters={
         <>
           <EntityKindPicker initialFilter={initialKind} />
@@ -135,7 +131,6 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
           actions={actions}
           tableOptions={tableOptions}
           emptyContent={emptyContent}
-          enablePagination={enablePagination}
         />
       }
     />
