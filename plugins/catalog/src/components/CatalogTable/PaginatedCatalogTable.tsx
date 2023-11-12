@@ -19,13 +19,18 @@ import Box from '@material-ui/core/Box';
 
 import { BaseTable, TableProps, tableStyles } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
-import { useEntityList } from '@backstage/plugin-catalog-react';
 
-export function PaginatedCatalogTable(props: TableProps<CatalogTableRow>) {
-  const { columns, data } = props;
+type PaginatedCatalogTableProps = {
+  prev?(): void;
+  next?(): void;
+} & TableProps<CatalogTableRow>;
+
+/**
+ * @internal
+ */
+export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
+  const { columns, data, next, prev } = props;
   const tableClasses = tableStyles();
-
-  const { next, prev } = useEntityList();
 
   return (
     <>
