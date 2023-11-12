@@ -96,8 +96,6 @@ export type EntityListContextProps<
       | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
   ) => void;
 
-  next?: () => void;
-  prev?: () => void;
   /**
    * Filter values from query parameters.
    */
@@ -105,6 +103,11 @@ export type EntityListContextProps<
 
   loading: boolean;
   error?: Error;
+
+  pageInfo?: {
+    next?: () => void;
+    prev?: () => void;
+  };
 };
 
 /**
@@ -152,8 +155,10 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     });
 
     return {
-      queryParameters:
-        parsed.filters ?? ({} as Record<string, string | string[]>),
+      queryParameters: (parsed.filters ?? {}) as Record<
+        string,
+        string | string[]
+      >,
       cursor: typeof parsed.cursor === 'string' ? parsed.cursor : undefined,
     };
   }, [location]);
@@ -166,6 +171,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         appliedFilters: {} as EntityFilters,
         entities: [],
         backendEntities: [],
+        pageInfo: props.enablePagination ? {} : undefined,
       };
     },
   );
@@ -311,23 +317,18 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     [],
   );
 
-  const next = useMemo(() => {
-    const newCursor = outputState.pageInfo?.nextCursor;
-    if (!newCursor || !props.enablePagination) {
+  const pageInfo = useMemo(() => {
+    if (!props.enablePagination) {
       return undefined;
     }
 
-    return () => setCursor(newCursor);
-  }, [outputState.pageInfo?.nextCursor, props.enablePagination]);
-
-  const prev = useMemo(() => {
-    const newCursor = outputState.pageInfo?.prevCursor;
-    if (!newCursor || !props.enablePagination) {
-      return undefined;
-    }
-
-    return () => setCursor(newCursor);
-  }, [outputState.pageInfo?.prevCursor, props.enablePagination]);
+    const prevCursor = outputState.pageInfo?.prevCursor;
+    const nextCursor = outputState.pageInfo?.nextCursor;
+    return {
+      prev: prevCursor ? () => setCursor(prevCursor) : undefined,
+      next: nextCursor ? () => setCursor(nextCursor) : undefined,
+    };
+  }, [props.enablePagination, outputState.pageInfo]);
 
   const value = useMemo(
     () => ({
@@ -338,10 +339,9 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       queryParameters,
       loading,
       error,
-      next,
-      prev,
+      pageInfo,
     }),
-    [outputState, updateFilters, queryParameters, loading, error, next, prev],
+    [outputState, updateFilters, queryParameters, loading, error, pageInfo],
   );
 
   return (
