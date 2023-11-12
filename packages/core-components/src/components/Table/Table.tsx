@@ -308,10 +308,9 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     subtitle,
     filters,
     initialState,
-    emptyContent,
     onStateChange,
     components,
-    isLoading: isLoading,
+    isLoading: loading,
     ...restProps
   } = props;
   const tableClasses = tableStyles();
@@ -477,6 +476,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         columns={columns}
         title={title}
         subtitle={subtitle}
+        loading={loading}
         data={typeof data === 'function' ? data : tableData}
         {...restProps}
       />
