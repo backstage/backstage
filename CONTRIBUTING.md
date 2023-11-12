@@ -288,7 +288,7 @@ Awesome commit message
 Signed-off-by: Jane Smith <jane.smith@example.com>
 ```
 
-> Note: this assumes you have setup your git name and email, if you haven you can use these commands to set that up:
+> Note: this assumes you have setup your git name and email, if you have not you can use these commands to set that up:
 >
 > ```shell
 > git config --global user.name "Your Name"
@@ -305,7 +305,7 @@ Note: If you have already pushed your branch to a remote, you might have to forc
 
 If you are using the GitHub Desktop client, you need to manually add the `Signed-off-by` line to the Description field on the Changes tab before committing:
 
-```
+```text
 Awesome description (commit message)
 
 Signed-off-by: Jane Smith <jane.smith@example.com>
@@ -315,13 +315,13 @@ In case you forgot to add the line to your most recent commit, you can amend the
 
 ### Using VS Code?
 
-If you are using VS Code you can enable always signing your commits by setting the following in your `settings.json`:
+If you are using VS Code you can enable always signing your commits by setting the following in your `settings.json` file:
 
 ```json
 "git.alwaysSignOff": true,
 ```
 
-Or from the Settings UI look for the "Git: Always Sign Off" setting and check the "Controls the signoff flag for all commits" box
+Or from the Settings UI look for the "Git: Always Sign Off" setting and check the "Controls the signoff flag for all commits" box.
 
 ## API Reports
 
