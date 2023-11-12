@@ -151,6 +151,7 @@ export const WorkflowRunsCardView = ({
                           run.conclusion as keyof typeof statusColors
                         ] as Color
                       }
+                      style={{ alignItems: 'center' }}
                     >
                       <Typography variant="h6">
                         <Link
@@ -165,22 +166,36 @@ export const WorkflowRunsCardView = ({
                     </Alert>
                   </Tooltip>
                   <Tooltip title={run.message ?? 'No run message'}>
-                    <Typography variant="body2" component="span">
-                      <MarkdownContent content={run.source.commit.hash!} />
+                    <Typography
+                      variant="body2"
+                      component="span"
+                      style={{ fontSize: 'smaller' }}
+                    >
+                      <MarkdownContent
+                        content={`Commit ID : ${run.source.commit.hash!}`}
+                      />
                     </Typography>
                   </Tooltip>
 
                   {run.source.branchName && (
-                    <MarkdownContent content={run.source.branchName} />
+                    <MarkdownContent
+                      content={`Branch : ${run.source.branchName}`}
+                    />
                   )}
-                  <Chip key={run.id} size="small" label={run.id} />
+                  <Chip
+                    key={run.id}
+                    size="small"
+                    label={`Workflow ID : ${run.id}`}
+                  />
                   <Chip
                     size="small"
                     label={
-                      <WorkflowRunStatus
-                        status={run.status}
-                        conclusion={run.conclusion}
-                      />
+                      <Box display="flex" alignItems="center">
+                        <WorkflowRunStatus
+                          status={run.status}
+                          conclusion={run.conclusion}
+                        />
+                      </Box>
                     }
                   />
                   <div className={classes.bottomline}>
