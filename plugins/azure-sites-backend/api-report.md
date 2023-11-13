@@ -62,7 +62,7 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  permissions: PermissionEvaluator;
+  permissions?: PermissionEvaluator;
 }
 
 // (No @packageDocumentation comment for this package)

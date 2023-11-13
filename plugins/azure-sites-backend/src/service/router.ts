@@ -39,7 +39,7 @@ export interface RouterOptions {
   logger: Logger;
   azureSitesApi: AzureSitesApi;
   catalogApi: CatalogApi;
-  permissions: PermissionEvaluator;
+  permissions?: PermissionEvaluator;
 }
 
 /** @public */
@@ -84,15 +84,17 @@ export async function createRouter(
           throw new NotAllowedError();
         }
 
-        const decision = (
-          await permissions.authorize(
-            [{ permission: azureSitesActionPermission, resourceRef }],
-            {
-              token,
-            },
-          )
-        )[0];
-        if (decision.result === AuthorizeResult.DENY) {
+        const decision = permissions
+          ? (
+              await permissions.authorize(
+                [{ permission: azureSitesActionPermission, resourceRef }],
+                {
+                  token,
+                },
+              )
+            )[0]
+          : undefined;
+        if (decision && decision.result === AuthorizeResult.DENY) {
           throw new NotAllowedError('Unauthorized');
         }
 
@@ -133,15 +135,17 @@ export async function createRouter(
           throw new NotAllowedError();
         }
 
-        const decision = (
-          await permissions.authorize(
-            [{ permission: azureSitesActionPermission, resourceRef }],
-            {
-              token,
-            },
-          )
-        )[0];
-        if (decision.result === AuthorizeResult.DENY) {
+        const decision = permissions
+          ? (
+              await permissions.authorize(
+                [{ permission: azureSitesActionPermission, resourceRef }],
+                {
+                  token,
+                },
+              )
+            )[0]
+          : undefined;
+        if (decision && decision.result === AuthorizeResult.DENY) {
           throw new NotAllowedError('Unauthorized');
         }
 
