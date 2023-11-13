@@ -32,7 +32,7 @@ export type EntityRefLinksProps<
 > = {
   defaultKind?: string;
   entityRefs: TRef[];
-  noIcons?: boolean;
+  hideIcons?: boolean;
   /** @deprecated This option is no longer used; presentation is handled by entityPresentationApiRef instead */
   fetchEntities?: boolean;
   /** @deprecated This option is no longer used; presentation is handled by entityPresentationApiRef instead */
@@ -47,7 +47,7 @@ export type EntityRefLinksProps<
 export function EntityRefLinks<
   TRef extends string | CompoundEntityRef | Entity,
 >(props: EntityRefLinksProps<TRef>) {
-  const { entityRefs, noIcons, ...linkProps } = props;
+  const { entityRefs, hideIcons, ...linkProps } = props;
 
   return (
     <>
@@ -57,7 +57,7 @@ export function EntityRefLinks<
         return (
           <React.Fragment key={`${i}.${entityRefString}`}>
             {i > 0 && ', '}
-            <EntityRefLink {...linkProps} entityRef={r} noIcon={noIcons} />
+            <EntityRefLink {...linkProps} entityRef={r} hideIcon={hideIcons} />
           </React.Fragment>
         );
       })}

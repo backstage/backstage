@@ -49,7 +49,7 @@ const useStyles = makeStyles(
  */
 export type EntityDisplayNameProps = {
   entityRef: Entity | CompoundEntityRef | string;
-  noIcon?: boolean;
+  hideIcon?: boolean;
   noTooltip?: boolean;
   defaultKind?: string;
   defaultNamespace?: string;
@@ -63,7 +63,8 @@ export type EntityDisplayNameProps = {
 export const EntityDisplayName = (
   props: EntityDisplayNameProps,
 ): JSX.Element => {
-  const { entityRef, noIcon, noTooltip, defaultKind, defaultNamespace } = props;
+  const { entityRef, hideIcon, noTooltip, defaultKind, defaultNamespace } =
+    props;
 
   const classes = useStyles();
   const { primaryTitle, secondaryTitle, Icon } = useEntityPresentation(
@@ -77,7 +78,7 @@ export const EntityDisplayName = (
   // Optionally an icon, and wrapper around them both
   content = (
     <Box component="span" className={classes.root}>
-      {Icon && !noIcon ? (
+      {Icon && !hideIcon ? (
         <Box component="span" className={classes.icon}>
           <Icon fontSize="inherit" />
         </Box>

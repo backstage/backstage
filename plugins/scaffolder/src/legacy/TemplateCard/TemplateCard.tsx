@@ -246,7 +246,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
           <EntityRefLinks
             entityRefs={ownedByRelations}
             defaultKind="Group"
-            noIcons
+            hideIcons
           />
         </Box>
         <Box>
