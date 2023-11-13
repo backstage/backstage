@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-auth-backend': minor
+'@backstage/plugin-auth-backend': patch
 ---
 
 Allow additional user-defined scopes for Okta auth in config yaml
