@@ -44,7 +44,7 @@
     "@types/express": "*",
     "@types/supertest": "^2.0.8",
     "msw": "^1.0.0",
-    "openapi3-ts": "^3.1.2",
+    "openapi3-ts": "^4.0.0",
     "supertest": "^6.2.4"
   },
   "configSchema": "config.d.ts",

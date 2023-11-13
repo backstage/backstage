@@ -3616,7 +3616,7 @@ __metadata:
     json-schema-to-ts: ^2.6.2
     lodash: ^4.17.21
     openapi-merge: ^1.3.2
-    openapi3-ts: ^3.1.2
+    openapi3-ts: ^4.0.0
     supertest: ^6.1.3
   languageName: unknown
   linkType: soft
@@ -5516,7 +5516,7 @@ __metadata:
     lodash: ^4.17.21
     msw: ^1.0.0
     openapi-merge: ^1.3.2
-    openapi3-ts: ^3.1.2
+    openapi3-ts: ^4.0.0
     supertest: ^6.2.4
     uuid: ^9.0.0
     yn: ^4.0.0
@@ -36976,12 +36976,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi3-ts@npm:^3.1.2":
-  version: 3.2.0
-  resolution: "openapi3-ts@npm:3.2.0"
+"openapi3-ts@npm:^4.0.0":
+  version: 4.1.2
+  resolution: "openapi3-ts@npm:4.1.2"
   dependencies:
-    yaml: ^2.2.1
-  checksum: 8796a29a1363bc892ba1acb3ddffd9e6b80e8f83cbfad4cd507262e957317139cac2528ab4b14c1b30bf350ebc9cc4c43ad32a89da4d7c4b85f7e815ffba3ebe
+    yaml: ^2.2.2
+  checksum: 019a66f4195966bf58ee29f913b91e39975616458fdb40a15507a3b3e338eacfc882def0dda1a5001edf962e382ed6f46c8a0d40684adcccb868960267df30d9
   languageName: node
   linkType: hard
 
@@ -46398,7 +46398,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:2.3.4, yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2":
+"yaml@npm:2.3.4, yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2":
   version: 2.3.4
   resolution: "yaml@npm:2.3.4"
   checksum: e6d1dae1c6383bcc8ba11796eef3b8c02d5082911c6723efeeb5ba50fc8e881df18d645e64de68e421b577296000bea9c75d6d9097c2f6699da3ae0406c030d8
