@@ -17,9 +17,9 @@
 import { Config } from '@backstage/config';
 import { Knex } from 'knex';
 import { omit } from 'lodash';
-import { normalizeConnection } from '../connection';
 import { getClientType } from './getClientType';
 import { getPluginDivisionModeConfig } from './getPluginDivisionModeConfig';
+import { normalizeConnection } from './normalizeConnection';
 
 /**
  * Provides a Knex connection plugin config by combining base and plugin

@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import { ensureDirSync } from 'fs-extra';
-import knexFactory, { Knex } from 'knex';
-import path from 'path';
 import { DevDataStore } from '@backstage/backend-dev-utils';
-import { mergeDatabaseConfig } from '../config/mergeDatabaseConfig';
-import { DatabaseConnector } from '../types';
 import {
   LifecycleService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
+import { ensureDirSync } from 'fs-extra';
+import knexFactory, { Knex } from 'knex';
+import path from 'path';
+import { PluginDatabaseSettings } from '../DatabaseConfigReader';
+import { mergeDatabaseConfig } from '../config/mergeDatabaseConfig';
 
 /**
  * Creates a knex SQLite3 database connection
- *
- * @param dbConfig - The database config
- * @param overrides - Additional options to merge with the config
  */
-export function createSqliteDatabaseClient(
-  dbConfig: Config,
-  overrides?: Knex.Config,
+export async function createSqliteDatabaseClient(
+  settings: PluginDatabaseSettings,
   deps?: {
     lifecycle: LifecycleService;
     pluginMetadata: PluginMetadataService;
   },
-) {
+): Promise<Knex> {
   const knexConfig = buildSqliteDatabaseConfig(dbConfig, overrides);
   const connConfig = knexConfig.connection as Knex.Sqlite3ConnectionConfig;
 
@@ -63,7 +59,7 @@ export function createSqliteDatabaseClient(
       const dataKey = `sqlite3-db-${deps.pluginMetadata.getId()}`;
 
       const connectionLoader = async () => {
-        // If seed data is available, use it tconnectionLoader restore the database
+        // If seed data is available, use it to restore the database
         const { data: seedData } = await devStore.load(dataKey);
 
         return {
@@ -153,14 +149,3 @@ export function parseSqliteConnectionString(
     filename: name,
   };
 }
-
-/**
- * SQLite3 database connector.
- *
- * Exposes database connector functionality via an immutable object.
- */
-export const sqlite3Connector: DatabaseConnector = Object.freeze({
-  createClient: createSqliteDatabaseClient,
-  createNameOverride: createSqliteNameOverride,
-  parseConnectionString: parseSqliteConnectionString,
-});

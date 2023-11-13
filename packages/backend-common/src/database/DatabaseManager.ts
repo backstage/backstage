@@ -19,23 +19,15 @@ import {
   LoggerService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
-import { Config, ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 import { stringifyError } from '@backstage/errors';
-import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
-import { getConfigForPlugin } from './config/getConfigForPlugin';
-import { getDatabaseName } from './config/getDatabaseName';
-import { getDatabaseOverrides } from './config/getDatabaseOverrides';
-import { getEnsureExistsConfig } from './config/getEnsureExistsConfig';
-import { getPluginDivisionModeConfig } from './config/getPluginDivisionModeConfig';
-import { getSchemaOverrides } from './config/getSchemaOverrides';
-import { mergeDatabaseConfig } from './config/mergeDatabaseConfig';
-import {
-  createDatabaseClient,
-  ensureDatabaseExists,
-  ensureSchemaExists,
-} from './connection';
-import { PluginDatabaseManager } from './types';
+import { DatabaseConfigReader } from './DatabaseConfigReader';
+import { createFallbackDatabaseClient } from './connectors/fallback';
+import { createMysqlDatabaseClient } from './connectors/mysql';
+import { createPgDatabaseClient } from './connectors/postgres';
+import { createSqliteDatabaseClient } from './connectors/sqlite3';
+import { ClientFactory, PluginDatabaseManager } from './types';
 
 /**
  * Creation options for {@link DatabaseManager}.
@@ -70,15 +62,22 @@ export class DatabaseManager {
     config: Config,
     options?: DatabaseManagerOptions,
   ): DatabaseManager {
-    const databaseConfig = config.getConfig('backend.database');
-
-    return new DatabaseManager(databaseConfig, options);
+    const reader = DatabaseConfigReader.fromConfig(config);
+    return new DatabaseManager(reader, options);
   }
 
   private constructor(
-    private readonly config: Config,
+    private readonly configReader: DatabaseConfigReader,
     private readonly options?: DatabaseManagerOptions,
-    private readonly databaseCache: Map<string, Promise<Knex>> = new Map(),
+    private readonly clientFactories: Map<string, ClientFactory> = new Map([
+      ['pg', createPgDatabaseClient],
+      ['better-sqlite3', createSqliteDatabaseClient],
+      ['sqlite3', createSqliteDatabaseClient],
+      ['mysql', createMysqlDatabaseClient],
+      ['mysql2', createMysqlDatabaseClient],
+    ]),
+    private readonly fallbackClientFactory: ClientFactory = createFallbackDatabaseClient,
+    private readonly clientInstances: Map<string, Promise<Knex>> = new Map(),
   ) {}
 
   /**
@@ -114,19 +113,16 @@ export class DatabaseManager {
       pluginMetadata: PluginMetadataService;
     },
   ): Promise<Knex> {
-    if (this.databaseCache.has(pluginId)) {
-      return this.databaseCache.get(pluginId)!;
+    if (this.clientInstances.has(pluginId)) {
+      return this.clientInstances.get(pluginId)!;
     }
 
-    const clientPromise = Promise.resolve().then(async () => {
-      const pluginConfig = new ConfigReader(
-        getConfigForPlugin(this.config, pluginId) as JsonObject,
-      );
-
+    const instancePromise = Promise.resolve().then(async () => {
+      /*
       const databaseName = getDatabaseName(this.config, pluginId);
       if (databaseName && getEnsureExistsConfig(this.config, pluginId)) {
         try {
-          await ensureDatabaseExists(pluginConfig, databaseName);
+          await ensureDatabaseExists(this.config, pluginId);
         } catch (error) {
           throw new Error(
             `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
@@ -139,7 +135,7 @@ export class DatabaseManager {
         schemaOverrides = getSchemaOverrides(this.config, pluginId);
         if (getEnsureExistsConfig(this.config, pluginId)) {
           try {
-            await ensureSchemaExists(pluginConfig, pluginId);
+            await ensureSchemaExists(this.config, pluginId);
           } catch (error) {
             throw new Error(
               `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
@@ -154,20 +150,35 @@ export class DatabaseManager {
         schemaOverrides,
       );
 
+      const pluginConfig = new ConfigReader(
+        getConfigForPlugin(this.config, pluginId) as JsonObject,
+      );
+
       const client = createDatabaseClient(
         pluginConfig,
         databaseClientOverrides,
         deps,
       );
+      */
+
+      const pluginConfig = this.configReader.forPlugin(pluginId);
+
+      const factory =
+        this.clientFactories.get(pluginConfig.client) ??
+        this.fallbackClientFactory;
+
+      const instance = await factory(pluginConfig, deps);
+
       if (process.env.NODE_ENV !== 'test') {
-        this.startKeepaliveLoop(pluginId, client);
+        this.startKeepaliveLoop(pluginId, instance);
       }
-      return client;
+
+      return instance;
     });
 
-    this.databaseCache.set(pluginId, clientPromise);
+    this.clientInstances.set(pluginId, instancePromise);
 
-    return clientPromise;
+    return instancePromise;
   }
 
   private startKeepaliveLoop(pluginId: string, client: Knex): void {

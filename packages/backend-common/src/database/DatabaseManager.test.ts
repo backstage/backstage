@@ -318,19 +318,6 @@ describe('DatabaseManager', () => {
       });
     });
 
-    it('ensure plugin specific database is created', async () => {
-      const pluginId = 'testdbname';
-      // testdbname.connection.database is set in config
-      await manager.forPlugin(pluginId).getClient();
-
-      const mockCalls = mocked(ensureDatabaseExists).mock.calls.splice(-1);
-      const [_, dbname] = mockCalls[0];
-
-      expect(dbname).toEqual(
-        config.backend.database.plugin[pluginId].connection.database,
-      );
-    });
-
     it('provides different plugins with their own databases', async () => {
       await manager.forPlugin('plugin1').getClient();
       await manager.forPlugin('plugin2').getClient();

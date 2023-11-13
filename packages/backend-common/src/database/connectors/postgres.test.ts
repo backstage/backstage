@@ -17,7 +17,7 @@
 import { Config, ConfigReader } from '@backstage/config';
 import {
   createPgDatabaseClient,
-  buildPgDatabaseConfig,
+  buildKnexConfig,
   getPgConnectionConfig,
   parsePgConnectionString,
 } from './postgres';
@@ -40,7 +40,7 @@ describe('postgres', () => {
     it('builds a postgres config', () => {
       const mockConnection = createMockConnection();
 
-      expect(buildPgDatabaseConfig(createConfig(mockConnection))).toEqual({
+      expect(buildKnexConfig(createConfig(mockConnection))).toEqual({
         client: 'pg',
         connection: mockConnection,
         useNullAsDefault: true,
@@ -50,20 +50,18 @@ describe('postgres', () => {
     it('builds a connection string config', () => {
       const mockConnectionString = createMockConnectionString();
 
-      expect(buildPgDatabaseConfig(createConfig(mockConnectionString))).toEqual(
-        {
-          client: 'pg',
-          connection: mockConnectionString,
-          useNullAsDefault: true,
-        },
-      );
+      expect(buildKnexConfig(createConfig(mockConnectionString))).toEqual({
+        client: 'pg',
+        connection: mockConnectionString,
+        useNullAsDefault: true,
+      });
     });
 
     it('overrides the database name', () => {
       const mockConnection = createMockConnection();
 
       expect(
-        buildPgDatabaseConfig(createConfig(mockConnection), {
+        buildKnexConfig(createConfig(mockConnection), {
           connection: { database: 'other_db' },
         }),
       ).toEqual({
@@ -83,7 +81,7 @@ describe('postgres', () => {
       };
 
       expect(
-        buildPgDatabaseConfig(createConfig(mockConnection), {
+        buildKnexConfig(createConfig(mockConnection), {
           searchPath: ['schemaName'],
         }),
       ).toEqual({
@@ -98,7 +96,7 @@ describe('postgres', () => {
       const mockConnection = createMockConnection();
 
       expect(
-        buildPgDatabaseConfig(createConfig(mockConnection), {
+        buildKnexConfig(createConfig(mockConnection), {
           connection: { database: 'other_db' },
           pool: { min: 0, max: 7 },
           debug: true,
@@ -120,7 +118,7 @@ describe('postgres', () => {
       const mockConnection = createMockConnection();
 
       expect(
-        buildPgDatabaseConfig(createConfig(mockConnectionString), {
+        buildKnexConfig(createConfig(mockConnectionString), {
           connection: { database: 'other_db' },
         }),
       ).toEqual({

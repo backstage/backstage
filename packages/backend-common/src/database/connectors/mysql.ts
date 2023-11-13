@@ -22,17 +22,14 @@ import { InputError } from '@backstage/errors';
 import { mergeDatabaseConfig } from '../config/mergeDatabaseConfig';
 import { DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
+import { PluginDatabaseSettings } from '../DatabaseConfigReader';
 
 /**
  * Creates a knex mysql database connection
- *
- * @param dbConfig - The database config
- * @param overrides - Additional options to merge with the config
  */
 export function createMysqlDatabaseClient(
-  dbConfig: Config,
-  overrides?: Knex.Config,
-) {
+  settings: PluginDatabaseSettings,
+): Promise<Knex> {
   const knexConfig = buildMysqlDatabaseConfig(dbConfig, overrides);
   const database = knexFactory(knexConfig);
   return database;
@@ -182,15 +179,3 @@ export async function ensureMysqlDatabaseExists(
     await admin.destroy();
   }
 }
-
-/**
- * MySQL database connector.
- *
- * Exposes database connector functionality via an immutable object.
- */
-export const mysqlConnector: DatabaseConnector = Object.freeze({
-  createClient: createMysqlDatabaseClient,
-  ensureDatabaseExists: ensureMysqlDatabaseExists,
-  createNameOverride: defaultNameOverride,
-  parseConnectionString: parseMysqlConnectionString,
-});

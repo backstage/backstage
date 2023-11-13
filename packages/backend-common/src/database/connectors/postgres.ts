@@ -14,52 +14,117 @@
  * limitations under the License.
  */
 
-import knexFactory, { Knex } from 'knex';
-
-import { Config } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
+import { JsonObject } from '@backstage/types';
+import { deleteBranch } from 'isomorphic-git';
+import knexFactory, { Knex } from 'knex';
+import { Client } from 'pg';
+import { PluginDatabaseSettings } from '../DatabaseConfigReader';
+import { getConfigForPlugin } from '../config/getConfigForPlugin';
 import { mergeDatabaseConfig } from '../config/mergeDatabaseConfig';
-import { DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
-import { Client } from 'pg';
 
 /**
  * Creates a knex postgres database connection
- *
- * @param dbConfig - The database config
- * @param overrides - Additional options to merge with the config
  */
-export function createPgDatabaseClient(
-  dbConfig: Config,
-  overrides?: Knex.Config,
-) {
-  const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
+export async function createPgDatabaseClient(
+  settings: PluginDatabaseSettings,
+): Promise<Knex> {
+  await ensureExists(settings);
+
+  const knexConfig = buildKnexConfig(settings);
+  enableReloadingConnection(settings, knexConfig);
+
   const database = knexFactory(knexConfig);
-
-  const role = dbConfig.getOptionalString('role');
-
-  if (role) {
-    database.client.pool.on(
-      'createSuccess',
-      async (_event: number, pgClient: Client) => {
+  database.client.pool.on(
+    'createSuccess',
+    async (_event: number, pgClient: Client) => {
+      const role = settings.role;
+      if (role) {
         await pgClient.query(`SET ROLE ${role}`);
-      },
-    );
-  }
+      }
+    },
+  );
+
   return database;
 }
 
+async function ensureExists(settings: PluginDatabaseSettings) {
+  if (!settings.ensureExists) {
+    return;
+  }
+
+  const connection = settings.connection as string | Knex.PgConnectionConfig;
+
+  function getDatabaseName(): string {
+    const defaultName = `${settings.prefix}${settings.pluginId}`;
+    if (typeof connection !== 'string') {
+      return connection.database || defaultName;
+    }
+    // parse etc
+    return defaultName;
+  }
+
+  const defaultSchemaName = settings.pluginId;
+  if (settings.pluginDivisionMode === 'database') {
+    const databaseName = getDatabaseName();
+  }
+
+  /*
+  const prefix = config.getOptionalString('prefix') ?? 'backstage_plugin_';
+  const connection = getConnectionConfig(config, pluginId);
+  const databaseName = (connection as Knex.ConnectionConfig)?.database;
+  // `pluginDivisionMode` as `schema` should use overridden databaseName if supplied or fallback to default knex database
+  if (getPluginDivisionModeConfig(config) === 'schema') {
+    return databaseName;
+  }
+  // all other supported databases should fallback to an auto-prefixed name
+  return databaseName ?? `${prefix}${pluginId}`;
+  */
+
+  // TODO
+}
+
 /**
- * Builds a knex postgres database connection
- *
- * @param dbConfig - The database config
- * @param overrides - Additional options to merge with the config
+ * Takes a knex config with a regular connection section, and transforms that
+ * section to the callback form. The expiration condition is based on whether
+ * the overall config objet changes. This may make it reload unnecessarily in
+ * some circumstances, but this should be both very rare and cheap.
  */
-export function buildPgDatabaseConfig(
-  dbConfig: Config,
-  overrides?: Knex.Config,
+function enableReloadingConnection(
+  settings: PluginDatabaseSettings,
+  knexConfig: Knex.Config,
 ) {
+  let connectionHasExpired = true;
+  settings.subscribe(() => {
+    connectionHasExpired = true;
+  });
+
+  let currentConnection = knexConfig.connection;
+  knexConfig.connection = () => {
+    if (connectionHasExpired) {
+      connectionHasExpired = false;
+      currentConnection = buildKnexConfig(settings).connection;
+    }
+    if (typeof currentConnection === 'string') {
+      return {
+        connectionString: currentConnection,
+        expirationChecker: () => connectionHasExpired,
+      };
+    }
+    return {
+      ...currentConnection,
+      expirationChecker: () => connectionHasExpired,
+    };
+  };
+}
+
+/**
+ * Builds a database-specific knex config object from raw configuration
+ */
+export function buildKnexConfig(settings: PluginDatabaseSettings): Knex.Config {
   return mergeDatabaseConfig(
     dbConfig.get(),
     {
@@ -78,7 +143,7 @@ export function buildPgDatabaseConfig(
  */
 export function getPgConnectionConfig(
   dbConfig: Config,
-  parseConnectionString?: boolean,
+  parseIfString?: boolean,
 ): Knex.PgConnectionConfig | string {
   const connection = dbConfig.get('connection') as any;
   const isConnectionString =
@@ -87,10 +152,10 @@ export function getPgConnectionConfig(
 
   const shouldParseConnectionString = autoParse
     ? isConnectionString
-    : parseConnectionString && isConnectionString;
+    : parseIfString && isConnectionString;
 
   return shouldParseConnectionString
-    ? parsePgConnectionString(connection as string)
+    ? parseConnectionString(connection as string)
     : connection;
 }
 
@@ -99,7 +164,9 @@ export function getPgConnectionConfig(
  *
  * @param connectionString - The postgres connection string
  */
-export function parsePgConnectionString(connectionString: string) {
+function parseConnectionString(
+  connectionString: string,
+): Knex.PgConnectionConfig {
   const parse = requirePgConnectionString();
   return parse(connectionString);
 }
@@ -114,15 +181,14 @@ function requirePgConnectionString() {
 
 /**
  * Creates the missing Postgres database if it does not exist
- *
- * @param dbConfig - The database config
- * @param databases - The name of the databases to create
  */
-export async function ensurePgDatabaseExists(
-  dbConfig: Config,
-  ...databases: Array<string>
-) {
-  const admin = createPgDatabaseClient(dbConfig, {
+export async function ensurePgDatabaseExists(config: Config, pluginId: string) {
+  // TODO(freben): Remove this unnecessary wrapping
+  const pluginConfig = new ConfigReader(
+    getConfigForPlugin(config, pluginId) as JsonObject,
+  );
+
+  const admin = createPgDatabaseClient(pluginConfig, {
     connection: {
       database: 'postgres',
     },
@@ -133,36 +199,32 @@ export async function ensurePgDatabaseExists(
   });
 
   try {
-    const ensureDatabase = async (database: string) => {
+    const ensureDatabase = async (db: string) => {
       const result = await admin
         .from('pg_database')
-        .where('datname', database)
+        .where('datname', deleteBranch)
         .count<Record<string, { count: string }>>();
 
       if (parseInt(result[0].count, 10) > 0) {
         return;
       }
 
-      await admin.raw(`CREATE DATABASE ??`, [database]);
+      await admin.raw(`CREATE DATABASE ??`, [db]);
     };
 
-    await Promise.all(
-      databases.map(async database => {
-        // For initial setup we use a smaller timeout but several retries. Given that this
-        // is a separate connection pool we should never really run into issues with connection
-        // acquisition timeouts, but we do anyway. This might be a bug in knex or some other dependency.
-        let lastErr: Error | undefined = undefined;
-        for (let i = 0; i < 3; i++) {
-          try {
-            return await ensureDatabase(database);
-          } catch (err) {
-            lastErr = err;
-          }
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        throw lastErr;
-      }),
-    );
+    // For initial setup we use a smaller timeout but several retries. Given that this
+    // is a separate connection pool we should never really run into issues with connection
+    // acquisition timeouts, but we do anyway. This might be a bug in knex or some other dependency.
+    let lastErr: Error | undefined = undefined;
+    for (let i = 0; i < 3; i++) {
+      try {
+        return await ensureDatabase(getDatabaseName(config, pluginId)!);
+      } catch (err) {
+        lastErr = err;
+      }
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    throw lastErr;
   } finally {
     await admin.destroy();
   }
@@ -170,45 +232,33 @@ export async function ensurePgDatabaseExists(
 
 /**
  * Creates the missing Postgres schema if it does not exist
- *
- * @param dbConfig - The database config
- * @param schemas - The name of the schemas to create
  */
 export async function ensurePgSchemaExists(
-  dbConfig: Config,
-  ...schemas: Array<string>
+  config: Config,
+  pluginId: string,
 ): Promise<void> {
-  const admin = createPgDatabaseClient(dbConfig);
-  const role = dbConfig.getOptionalString('role');
+  // TODO(freben): Remove this unnecessary wrapping
+  const pluginConfig = new ConfigReader(
+    getConfigForPlugin(config, pluginId) as JsonObject,
+  );
+
+  const admin = createPgDatabaseClient(pluginConfig);
+  const role = pluginConfig.getOptionalString('role');
 
   try {
-    const ensureSchema = async (database: string) => {
+    const ensureSchema = async (s: string) => {
       if (role) {
         await admin.raw(`CREATE SCHEMA IF NOT EXISTS ?? AUTHORIZATION ??`, [
-          database,
+          s,
           role,
         ]);
       } else {
-        await admin.raw(`CREATE SCHEMA IF NOT EXISTS ??`, [database]);
+        await admin.raw(`CREATE SCHEMA IF NOT EXISTS ??`, [s]);
       }
     };
 
-    await Promise.all(schemas.map(ensureSchema));
+    await ensureSchema(pluginId);
   } finally {
     await admin.destroy();
   }
 }
-
-/**
- * PostgreSQL database connector.
- *
- * Exposes database connector functionality via an immutable object.
- */
-export const pgConnector: DatabaseConnector = Object.freeze({
-  createClient: createPgDatabaseClient,
-  ensureDatabaseExists: ensurePgDatabaseExists,
-  ensureSchemaExists: ensurePgSchemaExists,
-  createNameOverride: defaultNameOverride,
-  createSchemaOverride: defaultSchemaOverride,
-  parseConnectionString: parsePgConnectionString,
-});
