@@ -16,7 +16,7 @@
 
 import { BuildTable } from '../BuildTable/BuildTable';
 import React from 'react';
-import { useBuildRuns } from '../../hooks/useBuildRuns';
+import { useBuildRuns } from '../../hooks';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 export const EntityPageAzurePipelines = (props: { defaultLimit?: number }) => {
