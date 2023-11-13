@@ -301,6 +301,7 @@ export const useFilteredSchemaProperties: (
   }[];
   title: string;
   description?: string | undefined;
+  presentation?: TemplatePresentationV1beta3 | undefined;
 } | null;
 
 // @alpha
@@ -330,9 +331,6 @@ export type WorkflowProps = {
   description?: string;
   namespace: string;
   templateName: string;
-  components?: {
-    ReviewStepComponent?: React_2.ComponentType<ReviewStepProps>;
-  };
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<
   StepperProps,

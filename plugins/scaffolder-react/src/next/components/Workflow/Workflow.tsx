@@ -27,9 +27,7 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
-
 import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
-import { ReviewStepProps } from '../../../components';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   markdown: {
@@ -51,9 +49,6 @@ export type WorkflowProps = {
   description?: string;
   namespace: string;
   templateName: string;
-  components?: {
-    ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
-  };
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<
   StepperProps,
