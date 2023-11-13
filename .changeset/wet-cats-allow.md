@@ -12,7 +12,6 @@ import { FeaturedDocsCard } from '@backstage/plugin-home';
     'spec.type': 'documentation',
     'metadata.name': 'getting-started-with-backstage',
   }}
-  title={cardTitleReactNode}
   subLinkText="More Details"
   emptyState={emptyStateReactNode}
   linkDestination={'/customPath'}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FeaturedDocsCard } from './FeaturedDocsCard';
+import { Content } from './Content';
 import React from 'react';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -51,13 +51,12 @@ describe('<FeaturedDocsCard />', () => {
   it('should show expected featured doc and title', async () => {
     const { getByTestId, getByText } = await renderInTestApp(
       <Wrapper>
-        <FeaturedDocsCard
+        <Content
           filter={{
             'spec.type': 'documentation',
             'metadata.name': 'getting-started-with-idp',
           }}
           emptyState={undefined}
-          title="Featured Doc"
         />
       </Wrapper>,
       {
@@ -68,9 +67,7 @@ describe('<FeaturedDocsCard />', () => {
     );
     const docsCardContent = getByTestId('docs-card-content');
     const docsEntity = getByText('Getting Started Docs');
-    const docsTitle = getByText('Featured Doc');
 
     expect(docsCardContent).toContainElement(docsEntity);
-    expect(docsTitle).toBeInTheDocument();
   });
 });

@@ -103,16 +103,17 @@ export type CustomHomepageGridProps = {
 };
 
 // @public
-export const FeaturedDocsCard: (props: FeaturedDocsCardProps) => JSX_2.Element;
+export const FeaturedDocsCard: (
+  props: CardExtensionProps_2<FeaturedDocsCardProps>,
+) => JSX_2.Element;
 
 // @public
 export type FeaturedDocsCardProps = {
   filter: EntityFilterQuery;
-  emptyState?: React_2.ReactNode;
+  emptyState?: React_2.JSX.Element;
   linkDestination?: string;
   responseLimit?: number;
   subLinkText?: string;
-  title?: React_2.ReactNode;
 };
 
 // @public

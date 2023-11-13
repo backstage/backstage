@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { FeaturedDocsCard } from './FeaturedDocsCard';
-export type { FeaturedDocsCardProps } from './FeaturedDocsCard';
+export { Content } from './Content';
+export type { FeaturedDocsCardProps } from './Content';

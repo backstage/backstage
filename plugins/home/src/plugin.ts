@@ -19,12 +19,15 @@ import {
   createComponentExtension,
   createPlugin,
   createRoutableExtension,
-  createReactExtension,
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home-react';
-import { ToolkitContentProps, VisitedByTypeProps } from './homePageComponents';
+import {
+  ToolkitContentProps,
+  VisitedByTypeProps,
+  FeaturedDocsCardProps,
+} from './homePageComponents';
 import { rootRouteRef } from './routes';
 import { VisitsStorageApi, visitsApiRef } from './api';
 
@@ -218,13 +221,9 @@ export const HomePageRecentlyVisited = homePlugin.provide(
  * @public
  */
 export const FeaturedDocsCard = homePlugin.provide(
-  createReactExtension({
-    name: 'FeaturedDocs',
-    component: {
-      lazy: () =>
-        import('./homePageComponents/FeaturedDocsCard').then(
-          m => m.FeaturedDocsCard,
-        ),
-    },
+  createCardExtension<FeaturedDocsCardProps>({
+    name: 'FeaturedDocsCard',
+    title: 'Featured Docs',
+    components: () => import('./homePageComponents/FeaturedDocsCard'),
   }),
 );

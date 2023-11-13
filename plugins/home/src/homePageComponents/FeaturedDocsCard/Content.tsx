@@ -20,7 +20,6 @@ import {
   LinkButton,
   EmptyState,
   Link,
-  InfoCard,
   Progress,
   ErrorPanel,
 } from '@backstage/core-components';
@@ -39,15 +38,13 @@ export type FeaturedDocsCardProps = {
   /** The entity filter used to display only the intended item/s */
   filter: EntityFilterQuery;
   /** An optional ReactNode for empty states */
-  emptyState?: React.ReactNode;
+  emptyState?: React.JSX.Element;
   /** An optional linkDestination to set for the Featured Doc  */
   linkDestination?: string;
   /** An optional limit to set for link destination  */
   responseLimit?: number;
   /** An optional string to customize sublink text */
   subLinkText?: string;
-  /** An optional string or ReactNode to customize the card title */
-  title?: React.ReactNode;
 };
 
 const useStyles = makeStyles<Theme>(
@@ -77,15 +74,9 @@ const useStyles = makeStyles<Theme>(
  *
  * @public
  */
-export const FeaturedDocsCard = (props: FeaturedDocsCardProps) => {
-  const {
-    emptyState,
-    filter,
-    linkDestination,
-    responseLimit,
-    subLinkText,
-    title,
-  } = props;
+export const Content = (props: FeaturedDocsCardProps): JSX.Element => {
+  const { emptyState, filter, linkDestination, responseLimit, subLinkText } =
+    props;
   const linkText = subLinkText || 'LEARN MORE';
   const styles = useStyles();
   const catalogApi: CatalogApi = useApi(catalogApiRef);
@@ -108,60 +99,60 @@ export const FeaturedDocsCard = (props: FeaturedDocsCardProps) => {
     return <ErrorPanel error={error} />;
   }
 
-  return (
-    <InfoCard variant="gridItem" title={title || 'Featured Docs'}>
-      {entities?.length
-        ? entities.map(d => (
-            <div
-              key={`${d.metadata.name}-${d.kind}-${d.metadata.namespace}`}
-              data-testid="docs-card-content"
-            >
-              <Link
-                className={styles.docsTitleLink}
-                data-testid="docs-card-title"
-                to={
-                  linkDestination ||
-                  `/docs/${d.metadata.namespace || 'default'}/${d.kind}/${
-                    d.metadata.name
-                  }/`
-                }
-              >
-                {d.metadata.title}
-              </Link>
-              {d.metadata.description && (
-                <Typography className={styles.docDescription}>
-                  {d.metadata.description}
-                </Typography>
-              )}
-              <Link
-                className={styles.docSubLink}
-                data-testid="docs-card-sub-link"
-                to={
-                  linkDestination ||
-                  `/docs/${d.metadata.namespace || 'default'}/${d.kind}/${
-                    d.metadata.name
-                  }/`
-                }
-              >
-                {linkText}
-              </Link>
-            </div>
-          ))
-        : emptyState || (
-            <EmptyState
-              missing="data"
-              title="No documents to show"
-              description="Create your own document. Check out our Getting Started Information"
-              action={
-                <LinkButton
-                  to="https://backstage.io/docs/features/techdocs/getting-started"
-                  variant="contained"
-                >
-                  DOCS
-                </LinkButton>
-              }
-            />
+  return entities?.length ? (
+    <>
+      {entities.map(d => (
+        <div
+          key={`${d.metadata.name}-${d.kind}-${d.metadata.namespace}`}
+          data-testid="docs-card-content"
+        >
+          <Link
+            className={styles.docsTitleLink}
+            data-testid="docs-card-title"
+            to={
+              linkDestination ||
+              `/docs/${d.metadata.namespace || 'default'}/${d.kind}/${
+                d.metadata.name
+              }/`
+            }
+          >
+            {d.metadata.title}
+          </Link>
+          {d.metadata.description && (
+            <Typography className={styles.docDescription}>
+              {d.metadata.description}
+            </Typography>
           )}
-    </InfoCard>
+          <Link
+            className={styles.docSubLink}
+            data-testid="docs-card-sub-link"
+            to={
+              linkDestination ||
+              `/docs/${d.metadata.namespace || 'default'}/${d.kind}/${
+                d.metadata.name
+              }/`
+            }
+          >
+            {linkText}
+          </Link>
+        </div>
+      ))}
+    </>
+  ) : (
+    emptyState || (
+      <EmptyState
+        missing="data"
+        title="No documents to show"
+        description="Create your own document. Check out our Getting Started Information"
+        action={
+          <LinkButton
+            to="https://backstage.io/docs/features/techdocs/getting-started"
+            variant="contained"
+          >
+            DOCS
+          </LinkButton>
+        }
+      />
+    )
   );
 };

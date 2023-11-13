@@ -65,7 +65,6 @@ export const Default = () => {
           'spec.type': 'documentation',
           'metadata.name': 'getting-started-with-backstage',
         }}
-        title="Featured Doc"
       />
     </Grid>
   );
