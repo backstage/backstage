@@ -284,12 +284,21 @@ export type EntityListContextProps<
   queryParameters: Partial<Record<keyof EntityFilters, string | string[]>>;
   loading: boolean;
   error?: Error;
+  pageInfo?: {
+    next?: () => void;
+    prev?: () => void;
+  };
 };
 
 // @public
 export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
-  props: PropsWithChildren<{}>,
+  props: EntityListProviderProps,
 ) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type EntityListProviderProps = PropsWithChildren<{
+  enablePagination?: boolean;
+}>;
 
 // @public (undocumented)
 export type EntityLoadingStatus<TEntity extends Entity = Entity> = {

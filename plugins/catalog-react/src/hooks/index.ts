@@ -32,6 +32,7 @@ export {
 export type {
   DefaultEntityFilters,
   EntityListContextProps,
+  EntityListProviderProps,
 } from './useEntityListProvider';
 export { useEntityTypeFilter } from './useEntityTypeFilter';
 export { useRelatedEntities } from './useRelatedEntities';
