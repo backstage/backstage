@@ -154,6 +154,11 @@ const useFilterStyles = makeStyles<BackstageTheme>(
 
 export type TableClassKey = 'root';
 
+/**
+ * Style classes for the `Table` component.
+ *
+ * @public
+ */
 export const tableStyles = makeStyles<BackstageTheme>(
   () => ({
     root: {
@@ -486,6 +491,9 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
 Table.icons = Object.freeze(tableIcons);
 
+/**
+ * @public
+ */
 export function BaseTable<T extends object = {}>(
   props: TableProps<T> & {
     loading?: boolean;
