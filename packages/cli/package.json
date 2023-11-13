@@ -171,7 +171,7 @@
     "msw": "^1.0.0",
     "nodemon": "^3.0.1",
     "ts-node": "^10.0.0",
-    "type-fest": "^2.19.0"
+    "type-fest": "^4.0.0"
   },
   "peerDependencies": {
     "@vitejs/plugin-react": "^4.0.4",
