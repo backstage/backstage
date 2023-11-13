@@ -158,7 +158,11 @@ export const CatalogTable: {
     createSystemColumn(): TableColumn<CatalogTableRow>;
     createOwnerColumn(): TableColumn<CatalogTableRow>;
     createSpecTargetsColumn(): TableColumn<CatalogTableRow>;
-    createSpecTypeColumn(): TableColumn<CatalogTableRow>;
+    createSpecTypeColumn({
+      hidden,
+    }?: {
+      hidden: boolean;
+    }): TableColumn<CatalogTableRow>;
     createSpecLifecycleColumn(): TableColumn<CatalogTableRow>;
     createMetadataDescriptionColumn(): TableColumn<CatalogTableRow>;
     createTagsColumn(): TableColumn<CatalogTableRow>;

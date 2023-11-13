@@ -126,7 +126,10 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   pageInfo?: QueryEntitiesResponse['pageInfo'];
 };
 
-type EntityListProviderProps = PropsWithChildren<{
+/**
+ * @public
+ */
+export type EntityListProviderProps = PropsWithChildren<{
   enablePagination?: boolean;
 }>;
 
