@@ -76,7 +76,7 @@
     "@types/mime-types": "^2.1.0",
     "@types/recursive-readdir": "^2.2.0",
     "@types/supertest": "^2.0.8",
-    "aws-sdk-client-mock": "^2.0.0",
+    "aws-sdk-client-mock": "^3.0.0",
     "supertest": "^6.1.3"
   }
 }
