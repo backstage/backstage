@@ -1,3 +1,5 @@
+import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
+
 /*
  * Copyright 2023 The Backstage Authors
  *
@@ -13,5 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './Secret';
-export * from './validation';
+export const secretFieldValidation: CustomFieldValidator<string> = (
+  value,
+  errors,
+  { uiSchema },
+) => {
+  console.log(uiSchema);
+  if (uiSchema['ui:options'].required && !value) {
+    errors.addError('Required');
+  }
+};

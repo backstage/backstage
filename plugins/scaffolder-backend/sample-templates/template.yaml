@@ -1,0 +1,19 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: test
+  title: Test template
+spec: 
+  parameters:
+    - title: Do something
+      properties:
+        myKey:
+          title: My key
+          description: asd
+          type: string
+          ui:field: Secret  
+          ui:options: 
+            required: true
+  steps: []
+  type: service
+    
