@@ -55,5 +55,21 @@ export interface Config {
      *
      */
     recoverTasksTimeout?: HumanDuration;
+
+    /**
+     * Makes sure to auto-expire and clean up things that time out or for other reasons should not be left lingering.
+     *
+     * By default, the frequency is every 5 minutes.
+     */
+    taskTimeoutJanitorFrequency?: HumanDuration;
+
+    /**
+     * Sets the task's heartbeat timeout, when to consider a task to be staled.
+     *
+     * Once task is considered to be staled, the scheduler will shut it down on the next cycle.
+     *
+     * Default value is 24 hours.
+     */
+    taskTimeout?: HumanDuration;
   };
 }

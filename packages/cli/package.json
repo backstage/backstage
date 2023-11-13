@@ -73,7 +73,7 @@
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
     "commander": "^9.1.0",
-    "cross-fetch": "^3.1.5",
+    "cross-fetch": "^4.0.0",
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
     "ctrlc-windows": "^2.1.0",
@@ -170,8 +170,7 @@
     "del": "^7.0.0",
     "msw": "^1.0.0",
     "nodemon": "^3.0.1",
-    "ts-node": "^10.0.0",
-    "type-fest": "^2.19.0"
+    "ts-node": "^10.0.0"
   },
   "peerDependencies": {
     "@vitejs/plugin-react": "^4.0.4",

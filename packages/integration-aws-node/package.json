@@ -44,8 +44,8 @@
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "aws-sdk-client-mock": "^2.0.0",
-    "aws-sdk-client-mock-jest": "^2.0.0"
+    "aws-sdk-client-mock": "^3.0.0",
+    "aws-sdk-client-mock-jest": "^3.0.0"
   },
   "files": [
     "dist",

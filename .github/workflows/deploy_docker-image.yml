@@ -1,5 +1,7 @@
 name: Build and push Docker image
 on:
+  workflow_dispatch:
+
   repository_dispatch:
     types: [release-published]
 
@@ -25,7 +27,7 @@ jobs:
           ref: v${{ github.event.client_payload.version }}
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3.8.2
+        uses: actions/setup-node@v4.0.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -59,7 +61,7 @@ jobs:
         with:
           context: './example-app'
           file: ./example-app/packages/backend/Dockerfile
-          push: true
+          push: ${{ github.event_name == "repository_dispatch" && github.event.action == "release-published" }}
           platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ github.repository_owner }}/backstage:latest

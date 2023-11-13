@@ -23,10 +23,6 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
-  SerializedTaskEvent,
-  SerializedTask,
-  TaskStatus,
-  TaskEventType,
   TaskStore,
   TaskStoreEmitOptions,
   TaskStoreListEventsOptions,
@@ -35,6 +31,12 @@ import {
   TaskStoreShutDownTaskOptions,
   TaskStoreRecoverTaskOptions,
 } from './types';
+import {
+  SerializedTaskEvent,
+  SerializedTask,
+  TaskStatus,
+  TaskEventType,
+} from '@backstage/plugin-scaffolder-node';
 import { DateTime } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { compactEvents } from './taskRecoveryHelper';
