@@ -85,6 +85,55 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
    </Grid>
    ```
 
+### Customization
+
+Copy the default implementation `DefaultRenderNode.tsx` and add more classes to the styles:
+
+```typescript
+const useStyles = makeStyles<Theme>(
+    theme => ({
+        node: {
+            …
+            '&.system': {
+                fill: '#F5DC70',
+                stroke: '#F2CE34',
+            },
+            '&.domain': {
+                fill: '#F5DC70',
+                stroke: '#F2CE34',
+            },
+        …
+);
+```
+
+Now you can use the new classes in your component with `className={classNames(classes.node, kind?.toLowerCase(), type?.toLowerCase())}`
+
+```tsx
+return (
+  <g onClick={onClick} className={classNames(onClick && classes.clickable)}>
+    <rect
+      className={classNames(
+        classes.node,
+        kind?.toLowerCase(),
+        type?.toLowerCase(),
+      )}
+      width={paddedWidth}
+      height={paddedHeight}
+    />
+    <text
+      ref={idRef}
+      className={classNames(classes.text, focused && 'focused')}
+      y={paddedHeight / 2}
+      x={paddedWidth / 2}
+      textAnchor="middle"
+      alignmentBaseline="middle"
+    >
+      {displayTitle}
+    </text>
+  </g>
+);
+```
+
 ## Development
 
 Run `yarn` in the root of this plugin to install all dependencies and then `yarn start` to run a [development version](./dev/index.tsx) of this plugin.

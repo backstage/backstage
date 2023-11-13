@@ -21,6 +21,7 @@ import {
   List,
   ListItem,
   ListItemIcon,
+  ListItemSecondaryAction,
   makeStyles,
   Typography,
 } from '@material-ui/core';
@@ -36,6 +37,8 @@ import {
   ListSubheader,
 } from './common';
 import { EntityKindIcon } from './EntityKindIcon';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { CopyTextButton } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   root: {
@@ -60,6 +63,7 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
     'type',
   );
 
+  const entityRef = stringifyEntityRef(props.entity);
   return (
     <>
       <DialogContentText variant="h2">Overview</DialogContentText>
@@ -83,13 +87,25 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
             {metadata.uid && (
               <ListItem>
                 <ListItemText primary="uid" secondary={metadata.uid} />
+                <ListItemSecondaryAction>
+                  <CopyTextButton text={metadata.uid} />
+                </ListItemSecondaryAction>
               </ListItem>
             )}
             {metadata.etag && (
               <ListItem>
                 <ListItemText primary="etag" secondary={metadata.etag} />
+                <ListItemSecondaryAction>
+                  <CopyTextButton text={metadata.etag} />
+                </ListItemSecondaryAction>
               </ListItem>
             )}
+            <ListItem>
+              <ListItemText primary="entityRef" secondary={entityRef} />
+              <ListItemSecondaryAction>
+                <CopyTextButton text={entityRef} />
+              </ListItemSecondaryAction>
+            </ListItem>
           </List>
         </Container>
 

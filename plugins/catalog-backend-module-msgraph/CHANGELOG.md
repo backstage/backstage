@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.5.14-next.2
+
+### Patch Changes
+
+- [#20958](https://github.com/backstage/backstage/pull/20958) [`224aa6f64c`](https://github.com/backstage/backstage/commit/224aa6f64c501a6a06b296ac4783ff4dbf3574ae) Thanks [@mrooding](https://github.com/mrooding)! - export the function to read ms graph provider config
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/backend-tasks@0.5.12-next.2
+  - @backstage/plugin-catalog-node@1.5.0-next.2
+
 ## 0.5.14-next.1
 
 ### Patch Changes

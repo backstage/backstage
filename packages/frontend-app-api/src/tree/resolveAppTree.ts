@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { AppTree, AppNode, AppNodeInstance, AppNodeSpec } from './types';
+import {
+  AppTree,
+  AppNode,
+  AppNodeInstance,
+  AppNodeSpec,
+} from '@backstage/frontend-plugin-api';
 
 function indent(str: string) {
   return str.replace(/^/gm, '  ');

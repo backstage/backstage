@@ -107,7 +107,3 @@ export async function findTemplate(options: {
 
   return template as TemplateEntityV1beta3;
 }
-
-export type TemplateTransform = (
-  template: TemplateEntityV1beta3,
-) => TemplateEntityV1beta3;

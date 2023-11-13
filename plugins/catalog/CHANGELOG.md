@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog
 
+## 1.15.0-next.2
+
+### Patch Changes
+
+- [#20777](https://github.com/backstage/backstage/pull/20777) [`eb817ee6d4`](https://github.com/backstage/backstage/commit/eb817ee6d4720322773389dbe6ed20d6fc80a541) Thanks [@is343](https://github.com/is343)! - Fix spacing inconsistency with links and labels in headers
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/frontend-plugin-api@0.3.0-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/plugin-search-react@1.7.2-next.2
+
 ## 1.15.0-next.1
 
 ### Patch Changes

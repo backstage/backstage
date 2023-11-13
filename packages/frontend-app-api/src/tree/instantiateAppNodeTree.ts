@@ -20,7 +20,11 @@ import {
   ExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
-import { AppNode, AppNodeInstance, AppNodeSpec } from './types';
+import {
+  AppNode,
+  AppNodeInstance,
+  AppNodeSpec,
+} from '@backstage/frontend-plugin-api';
 
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
@@ -176,7 +180,9 @@ export function instantiateAppNodeTree(rootNode: AppNode): void {
         }
         return [{ id: child.spec.id, instance: childInstance }];
       });
-      instantiatedAttachments.set(input, instantiatedChildren);
+      if (instantiatedChildren.length > 0) {
+        instantiatedAttachments.set(input, instantiatedChildren);
+      }
     }
 
     (node as Mutable<AppNode>).instance = createAppNodeInstance({

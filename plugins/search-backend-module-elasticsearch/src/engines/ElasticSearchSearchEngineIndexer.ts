@@ -33,6 +33,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   logger: Logger | LoggerService;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
   batchSize: number;
+  skipRefresh?: boolean;
 };
 
 function duration(startTimestamp: [number, number]): string {
@@ -95,7 +96,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
           index: { _index: that.indexName },
         };
       },
-      refreshOnCompletion: that.indexName,
+      refreshOnCompletion: options.skipRefresh !== true,
     });
 
     // Safely catch errors thrown by the bulk helper client, e.g. HTTP timeouts

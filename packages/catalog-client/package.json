@@ -35,7 +35,7 @@
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "cross-fetch": "^3.1.5"
+    "cross-fetch": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

@@ -41,12 +41,18 @@ import useAsync from 'react-use/lib/useAsync';
 import { usePlaylistList } from '../../hooks';
 import { PlaylistFilter } from '../../types';
 
+/**
+ * @public
+ */
 export const enum PersonalListFilterValue {
   owned = 'owned',
   following = 'following',
   all = 'all',
 }
 
+/**
+ * @public
+ */
 export class PersonalListFilter implements PlaylistFilter {
   constructor(
     readonly value: PersonalListFilterValue,
@@ -131,6 +137,9 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
   ];
 }
 
+/**
+ * @public
+ */
 export const PersonalListPicker = () => {
   const classes = useStyles();
   const configApi = useApi(configApiRef);

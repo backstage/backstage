@@ -470,6 +470,57 @@ describe('fetch:template', () => {
         ),
       ).resolves.toEqual('1234');
     });
+
+    describe('with exclusion filter', () => {
+      beforeEach(async () => {
+        context = mockContext({
+          values: {
+            name: 'test-project',
+            count: 1234,
+          },
+          copyWithoutTemplating: [
+            '.unprocessed',
+            '!*/templated-process-content-${{ values.name }}.txt',
+          ],
+        });
+
+        mockFetchContents.mockImplementation(({ outputPath }) => {
+          mockDir.setContent({
+            [outputPath]: {
+              processed: {
+                'templated-content-${{ values.name }}.txt':
+                  '${{ values.count }}',
+              },
+              '.unprocessed': {
+                'templated-content-${{ values.name }}.txt':
+                  '${{ values.count }}',
+                'templated-process-content-${{ values.name }}.txt':
+                  '${{ values.count }}',
+              },
+            },
+          });
+
+          return Promise.resolve();
+        });
+
+        await action.handler(context);
+      });
+
+      it('renders path template including excluded matches in copyWithoutTemplating', async () => {
+        await expect(
+          fs.readFile(
+            `${workspacePath}/target/.unprocessed/templated-process-content-test-project.txt`,
+            'utf-8',
+          ),
+        ).resolves.toEqual('1234');
+        await expect(
+          fs.readFile(
+            `${workspacePath}/target/.unprocessed/templated-content-test-project.txt`,
+            'utf-8',
+          ),
+        ).resolves.toEqual('${{ values.count }}');
+      });
+    });
   });
 
   describe('cookiecutter compatibility mode', () => {

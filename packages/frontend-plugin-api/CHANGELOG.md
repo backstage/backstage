@@ -1,5 +1,14 @@
 # @backstage/frontend-plugin-api
 
+## 0.3.0-next.2
+
+### Patch Changes
+
+- [#20888](https://github.com/backstage/backstage/pull/20888) [`733bd95746`](https://github.com/backstage/backstage/commit/733bd95746b99ad8cdb4a7b87e8dc3e16d3b764a) Thanks [@Rugvip](https://github.com/Rugvip)! - Add new `AppTreeApi`.
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+
 ## 0.3.0-next.1
 
 ### Minor Changes

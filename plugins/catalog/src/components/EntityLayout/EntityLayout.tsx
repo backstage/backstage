@@ -79,7 +79,7 @@ function EntityLayoutTitle(props: {
         whiteSpace="nowrap"
         overflow="hidden"
       >
-        {entity ? <EntityDisplayName entityRef={entity} noIcon /> : title}
+        {entity ? <EntityDisplayName entityRef={entity} hideIcon /> : title}
       </Box>
       {entity && <FavoriteEntity entity={entity} />}
     </Box>
@@ -119,6 +119,7 @@ function EntityLabels(props: { entity: Entity }) {
       {ownedByRelations.length > 0 && (
         <HeaderLabel
           label="Owner"
+          contentTypograpyRootComponent="p"
           value={
             <EntityRefLinks
               entityRefs={ownedByRelations}

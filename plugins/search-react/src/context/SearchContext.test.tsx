@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { configApiRef } from '@backstage/core-plugin-api';
+import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import {
   render,
   screen,
@@ -32,7 +32,9 @@ import {
 import { searchApiRef } from '../api';
 
 describe('SearchContext', () => {
-  const searchApiMock = { query: jest.fn() };
+  const searchApiMock = {
+    query: jest.fn().mockResolvedValue({}),
+  } satisfies typeof searchApiRef.T;
 
   const wrapper = ({ children, initialState, config = {} }: any) => {
     const configApiMock = new MockConfigApi(config);
@@ -57,10 +59,6 @@ describe('SearchContext', () => {
   };
 
   beforeEach(() => {
-    searchApiMock.query.mockResolvedValue({});
-  });
-
-  afterAll(() => {
     jest.resetAllMocks();
   });
 
@@ -376,9 +374,9 @@ describe('SearchContext', () => {
 
       await waitFor(() => {
         expect(result.current).toEqual(expect.objectContaining(initialState));
+        expect(result.current.fetchNextPage).toBeDefined();
       });
 
-      expect(result.current.fetchNextPage).toBeDefined();
       expect(result.current.fetchPreviousPage).toBeUndefined();
 
       await act(async () => {
@@ -418,6 +416,66 @@ describe('SearchContext', () => {
         types: ['*'],
         filters: {},
         pageCursor: 'PREVIOUS',
+      });
+    });
+  });
+
+  describe('analytics', () => {
+    it('captures analytics events if enabled in app', async () => {
+      const analyticsApiMock = {
+        captureEvent: jest.fn(),
+      } satisfies typeof analyticsApiRef.T;
+
+      searchApiMock.query.mockResolvedValue({
+        results: [],
+        numberOfResults: 3,
+      });
+
+      const { result } = renderHook(() => useSearch(), {
+        wrapper: ({ children }) => {
+          const configApiMock = new MockConfigApi({});
+          return (
+            <TestApiProvider
+              apis={[
+                [configApiRef, configApiMock],
+                [searchApiRef, searchApiMock],
+                [analyticsApiRef, analyticsApiMock],
+              ]}
+            >
+              <SearchContextProvider initialState={initialState}>
+                {children}
+              </SearchContextProvider>
+            </TestApiProvider>
+          );
+        },
+      });
+
+      await waitFor(() => {
+        expect(result.current).toEqual(expect.objectContaining(initialState));
+      });
+
+      const term = 'term';
+
+      await act(async () => {
+        result.current.setTerm(term);
+      });
+
+      await waitFor(() => {
+        expect(searchApiMock.query).toHaveBeenLastCalledWith({
+          term: 'term',
+          types: ['*'],
+          filters: {},
+        });
+        expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
+          action: 'search',
+          subject: 'term',
+          value: 3,
+          context: {
+            extension: 'App',
+            pluginId: 'root',
+            routeRef: 'unknown',
+          },
+        });
       });
     });
   });

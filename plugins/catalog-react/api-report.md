@@ -22,7 +22,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
@@ -196,8 +196,8 @@ export const EntityDisplayName: (props: EntityDisplayNameProps) => JSX.Element;
 // @public
 export type EntityDisplayNameProps = {
   entityRef: Entity | CompoundEntityRef | string;
-  noIcon?: boolean;
-  noTooltip?: boolean;
+  hideIcon?: boolean;
+  disableTooltip?: boolean;
   defaultKind?: string;
   defaultNamespace?: string;
 };
@@ -399,6 +399,7 @@ export type EntityRefLinkProps = {
   defaultNamespace?: string;
   title?: string;
   children?: React_2.ReactNode;
+  hideIcon?: boolean;
 } & Omit<LinkProps, 'to'>;
 
 // @public
@@ -412,6 +413,7 @@ export type EntityRefLinksProps<
 > = {
   defaultKind?: string;
   entityRefs: TRef[];
+  hideIcons?: boolean;
   fetchEntities?: boolean;
   getTitle?(entity: TRef): string | undefined;
 } & Omit<LinkProps, 'to'>;
@@ -597,7 +599,7 @@ export function getEntityRelations(
 // @public (undocumented)
 export function getEntitySourceLocation(
   entity: Entity,
-  scmIntegrationsApi: ScmIntegrationRegistry,
+  scmIntegrationsApi: typeof scmIntegrationsApiRef.T,
 ): EntitySourceLocation | undefined;
 
 // @public (undocumented)

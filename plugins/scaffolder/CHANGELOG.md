@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder
 
+## 1.16.0-next.2
+
+### Minor Changes
+
+- [#20357](https://github.com/backstage/backstage/pull/20357) [`f28c11743a`](https://github.com/backstage/backstage/commit/f28c11743a97c972c0c14b58f24696448810dcc5) Thanks [@acierto](https://github.com/acierto)! - Add a possibility to use a formatter on a warning panel. Applied it for a scaffolder template
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/plugin-scaffolder-react@1.6.0-next.2
+
 ## 1.16.0-next.1
 
 ### Patch Changes

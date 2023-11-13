@@ -25,7 +25,7 @@ import {
   createAppNodeInstance,
   instantiateAppNodeTree,
 } from './instantiateAppNodeTree';
-import { AppNodeInstance, AppNodeSpec } from './types';
+import { AppNodeInstance, AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { resolveAppTree } from './resolveAppTree';
 
 const testDataRef = createExtensionDataRef<string>('test');
@@ -167,7 +167,8 @@ describe('instantiateAppNodeTree', () => {
       {
         ...makeSpec(simpleExtension),
         id: 'child-node',
-        attachTo: { id: 'root-node', input: 'test' },
+        // Using an invalid input should not be an error when disabled
+        attachTo: { id: 'root-node', input: 'invalid' },
         disabled: true,
       },
     ]);

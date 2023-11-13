@@ -569,7 +569,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
           ),
         ),
       rest.get(
-        `https://gitlab.com/api/v4/groups/group1/members`,
+        `https://gitlab.com/api/v4/groups/group1/members/all`,
         (_req, res, ctx) => {
           const response = [
             {

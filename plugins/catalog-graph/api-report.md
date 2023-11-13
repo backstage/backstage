@@ -8,6 +8,7 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DependencyGraphTypes } from '@backstage/core-components';
+import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { JsonObject } from '@backstage/types';
@@ -90,14 +91,15 @@ export type EntityNode = DependencyGraphTypes.DependencyNode<EntityNodeData>;
 
 // @public
 export type EntityNodeData = {
+  entity: Entity;
+  focused?: boolean;
+  color?: 'primary' | 'secondary' | 'default';
+  onClick?: MouseEventHandler<unknown>;
   name: string;
   kind?: string;
   title?: string;
   namespace: string;
   spec?: JsonObject;
-  focused?: boolean;
-  color?: 'primary' | 'secondary' | 'default';
-  onClick?: MouseEventHandler<unknown>;
 };
 
 // @public
