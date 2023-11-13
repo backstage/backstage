@@ -27,8 +27,9 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
-import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
-import { useFeatureFlaggedProperties } from '../../hooks/useFeatureFlaggedProperties';
+
+import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
+import { ReviewStepProps } from '../../../components';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   markdown: {
@@ -82,7 +83,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
   const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
 
-  const sortedManifest = useFeatureFlaggedProperties(manifest);
+  const sortedManifest = useFilteredSchemaProperties(manifest);
 
   useEffect(() => {
     if (error) {

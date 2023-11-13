@@ -22,7 +22,7 @@ import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
  * @alpha
  */
 
-export const useFeatureFlaggedProperties = (
+export const useFilteredSchemaProperties = (
   manifest: TemplateParameterSchema | undefined,
 ) => {
   const featureFlagKey = 'backstage:featureFlag';

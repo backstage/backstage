@@ -291,7 +291,7 @@ export interface TemplateGroupsProps {
 }
 
 // @alpha
-export const useFeatureFlaggedProperties: (
+export const useFilteredSchemaProperties: (
   manifest: TemplateParameterSchema | undefined,
 ) => {
   steps: {
