@@ -4848,6 +4848,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-auth-backend-module-atlassian-provider@workspace:^, @backstage/plugin-auth-backend-module-atlassian-provider@workspace:plugins/auth-backend-module-atlassian-provider":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-auth-backend-module-atlassian-provider@workspace:plugins/auth-backend-module-atlassian-provider"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    express: ^4.18.2
+    passport: ^0.6.0
+    passport-atlassian-oauth2: ^2.1.0
+    supertest: ^6.3.3
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:^, @backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:plugins/auth-backend-module-gcp-iap-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:plugins/auth-backend-module-gcp-iap-provider"
@@ -4995,6 +5013,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-backend-module-atlassian-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-gcp-iap-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-gitlab-provider": "workspace:^"
@@ -37440,6 +37459,15 @@ __metadata:
     no-case: ^3.0.4
     tslib: ^2.0.3
   checksum: ba98bfd595fc91ef3d30f4243b1aee2f6ec41c53b4546bfa3039487c367abaa182471dcfc830a1f9e1a0df00c14a370514fa2b3a1aacc68b15a460c31116873e
+  languageName: node
+  linkType: hard
+
+"passport-atlassian-oauth2@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "passport-atlassian-oauth2@npm:2.1.0"
+  dependencies:
+    passport-oauth2: ^1.4.0
+  checksum: fc1d46951018d03a792a469a0c856d16f4c21df13d743aa5a0111f60253588c042881c560c737c77d85f4751e42b9ad3a485db7a5d5ea39e0f76160bc4010182
   languageName: node
   linkType: hard
 
