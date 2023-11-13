@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Fixed `Select` component default filter state.
+Fixed an issue causing the `Select` component to show empty chips when some of the selected values did not match any item
