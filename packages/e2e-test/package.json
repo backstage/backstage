@@ -32,7 +32,7 @@
     "@backstage/errors": "workspace:^",
     "chalk": "^4.0.0",
     "commander": "^9.1.0",
-    "cross-fetch": "^3.1.5",
+    "cross-fetch": "^4.0.0",
     "fs-extra": "10.1.0",
     "handlebars": "^4.7.3",
     "mysql2": "^2.2.5",
