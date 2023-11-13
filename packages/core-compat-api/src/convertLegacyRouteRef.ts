@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { routeRefType } from './types';
 import {
   RouteRef as LegacyRouteRef,
   SubRouteRef as LegacySubRouteRef,
@@ -22,9 +21,9 @@ import {
   AnyRouteRefParams,
 } from '@backstage/core-plugin-api';
 
-// Relative imports to avoid dependency, at least for now
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import { routeRefType } from '@backstage/core-plugin-api/src/routing/types';
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   RouteRef,
   SubRouteRef,
@@ -32,29 +31,13 @@ import {
   createRouteRef,
   createSubRouteRef,
   createExternalRouteRef,
-} from '../../../frontend-plugin-api/src/routing';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalRouteRef } from '../../../frontend-plugin-api/src/routing/RouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalSubRouteRef } from '../../../frontend-plugin-api/src/routing/SubRouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
-
-// TODO(Rugvip): Once this is moved to a compat package these aliases can be removed and imported from frontend- instead
-
-/** @ignore */
-type NewRouteRef<TParams extends AnyRouteRefParams = AnyRouteRefParams> =
-  RouteRef<TParams>;
-
-/** @ignore */
-type NewSubRouteRef<TParams extends AnyRouteRefParams = AnyRouteRefParams> =
-  SubRouteRef<TParams>;
-
-/** @ignore */
-type NewExternalRouteRef<
-  TParams extends AnyRouteRefParams = AnyRouteRefParams,
-  TOptional extends boolean = boolean,
-> = ExternalRouteRef<TParams, TOptional>;
+} from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import { toInternalRouteRef } from '@backstage/frontend-plugin-api/src/routing/RouteRef';
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import { toInternalSubRouteRef } from '@backstage/frontend-plugin-api/src/routing/SubRouteRef';
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import { toInternalExternalRouteRef } from '@backstage/frontend-plugin-api/src/routing/ExternalRouteRef';
 
 /**
  * A temporary helper to convert a legacy route ref to the new system.
@@ -66,7 +49,7 @@ type NewExternalRouteRef<
  */
 export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
   ref: LegacyRouteRef<TParams>,
-): NewRouteRef<TParams>;
+): RouteRef<TParams>;
 
 /**
  * A temporary helper to convert a legacy sub route ref to the new system.
@@ -78,7 +61,7 @@ export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
  */
 export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
   ref: LegacySubRouteRef<TParams>,
-): NewSubRouteRef<TParams>;
+): SubRouteRef<TParams>;
 
 /**
  * A temporary helper to convert a legacy external route ref to the new system.
@@ -93,14 +76,14 @@ export function convertLegacyRouteRef<
   TOptional extends boolean,
 >(
   ref: LegacyExternalRouteRef<TParams, TOptional>,
-): NewExternalRouteRef<TParams, TOptional>;
+): ExternalRouteRef<TParams, TOptional>;
 
 export function convertLegacyRouteRef(
   ref: LegacyRouteRef | LegacySubRouteRef | LegacyExternalRouteRef,
-): NewRouteRef | NewSubRouteRef | NewExternalRouteRef {
+): RouteRef | SubRouteRef | ExternalRouteRef {
   // Ref has already been converted
   if ('$$type' in ref) {
-    return ref as unknown as NewRouteRef | NewSubRouteRef | NewExternalRouteRef;
+    return ref as unknown as RouteRef | SubRouteRef | ExternalRouteRef;
   }
 
   const type = (ref as unknown as { [routeRefType]: unknown })[routeRefType];
