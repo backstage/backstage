@@ -50,7 +50,7 @@ const useStyles = makeStyles(
 export type EntityDisplayNameProps = {
   entityRef: Entity | CompoundEntityRef | string;
   hideIcon?: boolean;
-  noTooltip?: boolean;
+  disableTooltip?: boolean;
   defaultKind?: string;
   defaultNamespace?: string;
 };
@@ -63,7 +63,7 @@ export type EntityDisplayNameProps = {
 export const EntityDisplayName = (
   props: EntityDisplayNameProps,
 ): JSX.Element => {
-  const { entityRef, hideIcon, noTooltip, defaultKind, defaultNamespace } =
+  const { entityRef, hideIcon, disableTooltip, defaultKind, defaultNamespace } =
     props;
 
   const classes = useStyles();
@@ -88,7 +88,7 @@ export const EntityDisplayName = (
   );
 
   // Optionally, a tooltip as the outermost layer
-  if (secondaryTitle && !noTooltip) {
+  if (secondaryTitle && !disableTooltip) {
     content = (
       <Tooltip enterDelay={1500} title={secondaryTitle}>
         {content}
