@@ -67,7 +67,7 @@ import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
 import { SearchType } from './components/SearchType';
 import { UrlUpdater } from './components/SearchPage/SearchPage';
-import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 
 /** @alpha */
 export const SearchApi = createApiExtension({
