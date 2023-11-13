@@ -86,6 +86,51 @@ export { alertApiRef };
 
 export { AlertMessage };
 
+// @public
+export type AnalyticsApi = {
+  captureEvent(event: AnalyticsEvent): void;
+};
+
+// @public
+export const analyticsApiRef: ApiRef<AnalyticsApi>;
+
+// @public
+export const AnalyticsContext: (options: {
+  attributes: Partial<AnalyticsContextValue>;
+  children: ReactNode;
+}) => React_2.JSX.Element;
+
+// @public
+export type AnalyticsContextValue = CommonAnalyticsContext & {
+  [param in string]: string | boolean | number | undefined;
+};
+
+// @public
+export type AnalyticsEvent = {
+  action: string;
+  subject: string;
+  value?: number;
+  attributes?: AnalyticsEventAttributes;
+  context: AnalyticsContextValue;
+};
+
+// @public
+export type AnalyticsEventAttributes = {
+  [attribute in string]: string | boolean | number;
+};
+
+// @public
+export type AnalyticsTracker = {
+  captureEvent: (
+    action: string,
+    subject: string,
+    options?: {
+      value?: number;
+      attributes?: AnalyticsEventAttributes;
+    },
+  ) => void;
+};
+
 export { AnyApiFactory };
 
 export { AnyApiRef };
@@ -232,6 +277,13 @@ export { BackstageUserIdentity };
 export { bitbucketAuthApiRef };
 
 export { bitbucketServerAuthApiRef };
+
+// @public
+export type CommonAnalyticsContext = {
+  pluginId: string;
+  routeRef: string;
+  extension: string;
+};
 
 export { ConfigApi };
 
@@ -769,6 +821,9 @@ export interface SubRouteRef<
 }
 
 export { TypesToApiRefs };
+
+// @public
+export function useAnalytics(): AnalyticsTracker;
 
 export { useApi };
 
