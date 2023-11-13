@@ -3,4 +3,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Use `EntityRefLinks` with `noIcons` property for `TemplateCard` component to avoid double icons
+Use `EntityRefLinks` with `hideIcons` property for `TemplateCard` component to avoid double icons
