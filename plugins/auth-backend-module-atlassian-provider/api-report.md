@@ -11,10 +11,6 @@ import { PassportProfile } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
-const authModuleAtlassianProvider: () => BackendFeature;
-export default authModuleAtlassianProvider;
-
-// @public (undocumented)
 export const atlassianAuthenticator: OAuthAuthenticator<
   PassportOAuthAuthenticatorHelper,
   PassportProfile
@@ -27,4 +23,8 @@ export namespace atlassianSignInResolvers {
     unknown
   >;
 }
+
+// @public (undocumented)
+const authModuleAtlassianProvider: () => BackendFeature;
+export default authModuleAtlassianProvider;
 ```
