@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
-import { TestApiProvider } from '@backstage/test-utils';
 import { useFilteredSchemaProperties } from './useFilteredSchemaProperties';
 import { TemplateParameterSchema } from '../../types';
 
