@@ -196,8 +196,8 @@ export const EntityDisplayName: (props: EntityDisplayNameProps) => JSX.Element;
 // @public
 export type EntityDisplayNameProps = {
   entityRef: Entity | CompoundEntityRef | string;
-  noIcon?: boolean;
-  noTooltip?: boolean;
+  hideIcon?: boolean;
+  disableTooltip?: boolean;
   defaultKind?: string;
   defaultNamespace?: string;
 };
@@ -399,6 +399,7 @@ export type EntityRefLinkProps = {
   defaultNamespace?: string;
   title?: string;
   children?: React_2.ReactNode;
+  hideIcon?: boolean;
 } & Omit<LinkProps, 'to'>;
 
 // @public
@@ -412,6 +413,7 @@ export type EntityRefLinksProps<
 > = {
   defaultKind?: string;
   entityRefs: TRef[];
+  hideIcons?: boolean;
   fetchEntities?: boolean;
   getTitle?(entity: TRef): string | undefined;
 } & Omit<LinkProps, 'to'>;
