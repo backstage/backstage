@@ -5392,7 +5392,7 @@ __metadata:
     "@openapitools/openapi-generator-cli": ^2.4.26
     cross-fetch: ^4.0.0
     msw: ^1.0.0
-    ts-morph: ^17.0.0
+    ts-morph: ^20.0.0
   languageName: unknown
   linkType: soft
 
@@ -18143,15 +18143,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ts-morph/common@npm:~0.18.0":
-  version: 0.18.1
-  resolution: "@ts-morph/common@npm:0.18.1"
+"@ts-morph/common@npm:~0.21.0":
+  version: 0.21.0
+  resolution: "@ts-morph/common@npm:0.21.0"
   dependencies:
     fast-glob: ^3.2.12
-    minimatch: ^5.1.0
-    mkdirp: ^1.0.4
+    minimatch: ^7.4.3
+    mkdirp: ^2.1.6
     path-browserify: ^1.0.1
-  checksum: 848fff5f7a6428d7c2f055de20cf8df864a967aac0cc03adc558d853442085a8fd9dec70429da24d67d263794b315edb0791c46d23ad9ae513251a7702df8031
+  checksum: c322e2a58608d7d924646b10ba9ad432b03e7b119788c9f0f270550bd5aca22947fcaa1c63f27e80898a50de3ed99fc8d9c23569c6a2f3f36c9307e35ceba3ed
   languageName: node
   linkType: hard
 
@@ -23619,10 +23619,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"code-block-writer@npm:^11.0.3":
-  version: 11.0.3
-  resolution: "code-block-writer@npm:11.0.3"
-  checksum: f0a2605f19963d7087267c9b0fd0b05a6638a50e7b29b70f97aa01a514f59475b0626f8aa092188df853ee6d96745426dfa132d6a677795df462c6ce32c21639
+"code-block-writer@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "code-block-writer@npm:12.0.0"
+  checksum: 9f6505a4d668c9131c6f3f686359079439e66d5f50c236614d52fcfa53aeb0bc615b2c6c64ef05b5511e3b0433ccfd9f7756ad40eb3b9298af6a7d791ab1981d
   languageName: node
   linkType: hard
 
@@ -35700,6 +35700,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mkdirp@npm:^2.1.6":
+  version: 2.1.6
+  resolution: "mkdirp@npm:2.1.6"
+  bin:
+    mkdirp: dist/cjs/src/bin.js
+  checksum: 8a1d09ffac585e55f41c54f445051f5bc33a7de99b952bb04c576cafdf1a67bb4bae8cb93736f7da6838771fbf75bc630430a3a59e1252047d2278690bd150ee
+  languageName: node
+  linkType: hard
+
 "mock-fs@npm:5.2.0":
   version: 5.2.0
   resolution: "mock-fs@npm:5.2.0"
@@ -44051,13 +44060,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-morph@npm:^17.0.0":
-  version: 17.0.1
-  resolution: "ts-morph@npm:17.0.1"
+"ts-morph@npm:^20.0.0":
+  version: 20.0.0
+  resolution: "ts-morph@npm:20.0.0"
   dependencies:
-    "@ts-morph/common": ~0.18.0
-    code-block-writer: ^11.0.3
-  checksum: 4748ab45d0fb0be235f69399ea217cf1c5984ad2ef3ff9eba5a417571f73098c6f1f765fc011eaadc48179471b977f1e44f72eb993932e5c74c5031ab6c60f3a
+    "@ts-morph/common": ~0.21.0
+    code-block-writer: ^12.0.0
+  checksum: 8a96d72a26e4e3c4139c581834364a97207f78a5878f70aa6f58787c0f4003a9386a64f43b814bac7bf028e572ef8660939f56844641b05bfaf7ae7437be9011
   languageName: node
   linkType: hard
 
