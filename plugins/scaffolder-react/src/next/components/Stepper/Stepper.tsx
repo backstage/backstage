@@ -191,11 +191,21 @@ export const Stepper = (stepperProps: StepperProps) => {
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
       <MuiStepper activeStep={activeStep} alternativeLabel variant="elevation">
-        {steps.map((step, index) => (
-          <MuiStep key={index}>
-            <MuiStepLabel>{step.title}</MuiStepLabel>
-          </MuiStep>
-        ))}
+        {steps.map((step, index) => {
+          const isAllowedTitleClick = activeStep > index;
+          return (
+            <MuiStep key={step.title}>
+              <MuiStepLabel
+                style={{ cursor: isAllowedTitleClick ? 'pointer' : 'text' }}
+                onClick={() => {
+                  if (isAllowedTitleClick) setActiveStep(index);
+                }}
+              >
+                {step.title}
+              </MuiStepLabel>
+            </MuiStep>
+          );
+        })}
         <MuiStep>
           <MuiStepLabel>Review</MuiStepLabel>
         </MuiStep>
