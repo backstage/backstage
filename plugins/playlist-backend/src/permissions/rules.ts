@@ -31,15 +31,7 @@ const createPlaylistPermissionRule = makeCreatePermissionRule<
   typeof PLAYLIST_LIST_RESOURCE_TYPE
 >();
 
-// TODO: Update createPlaylistPermissionRule to take two params instead of needing the spread
-// This is the rule implementation
-// The imported part is the rule definition of sorts
-// Doing this this way means that we don't break the APIs I think
-// TODO: Can we add some type checking to the Permission to that only ones
-//  with split definitions can have default decisions, or is that not
-//  needed since you can have a none conditional checks?
-const isOwner = createPlaylistPermissionRule({
-  ...isOwnerDefinition,
+const isOwner = createPlaylistPermissionRule(isOwnerDefinition, {
   apply: (list: PlaylistMetadata, { owners }) => owners.includes(list.owner),
   toQuery: ({ owners }) => ({
     key: 'owner',
@@ -47,19 +39,20 @@ const isOwner = createPlaylistPermissionRule({
   }),
 });
 
-const isCurrentUserAnOwner = createPlaylistPermissionRule({
-  ...isCurrentUserAnOwnerDefinition,
-  apply: (list: PlaylistMetadata, _, identity) => {
-    return !!identity?.ownershipEntityRefs?.includes(list.owner);
+const isCurrentUserAnOwner = createPlaylistPermissionRule(
+  isCurrentUserAnOwnerDefinition,
+  {
+    apply: (list: PlaylistMetadata, _, identity) => {
+      return !!identity?.ownershipEntityRefs?.includes(list.owner);
+    },
+    toQuery: (_, identity) => ({
+      key: 'owner',
+      values: identity?.ownershipEntityRefs ?? [],
+    }),
   },
-  toQuery: (_, identity) => ({
-    key: 'owner',
-    values: identity?.ownershipEntityRefs ?? [],
-  }),
-});
+);
 
-const isPublic = createPlaylistPermissionRule({
-  ...isPublicDefinition,
+const isPublic = createPlaylistPermissionRule(isPublicDefinition, {
   apply: (list: PlaylistMetadata) => list.public,
   toQuery: () => ({ key: 'public', values: [true] }),
 });

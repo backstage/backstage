@@ -14,8 +14,26 @@
  * limitations under the License.
  */
 
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import {
+  PermissionRuleDefinition,
+  PermissionRuleParams,
+} from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
+
+type CreatePermissionRuleArgs<
+  TResource,
+  TQuery,
+  TResourceType extends string,
+  TParams extends PermissionRuleParams = undefined,
+> =
+  | [PermissionRule<TResource, TQuery, TResourceType, TParams>]
+  | [
+      PermissionRuleDefinition<TResourceType, TParams>,
+      Pick<
+        PermissionRule<TResource, TQuery, TResourceType, TParams>,
+        'apply' | 'toQuery'
+      >,
+    ];
 
 /**
  * Helper function to ensure that {@link PermissionRule} definitions are typed correctly.
@@ -28,8 +46,14 @@ export const createPermissionRule = <
   TResourceType extends string,
   TParams extends PermissionRuleParams = undefined,
 >(
-  rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
-) => rule;
+  ...args: CreatePermissionRuleArgs<TResource, TQuery, TResourceType, TParams>
+): PermissionRule<TResource, TQuery, TResourceType, TParams> =>
+  args.length === 2
+    ? {
+        ...args[0],
+        ...args[1],
+      }
+    : args[0];
 
 /**
  * Helper for making plugin-specific createPermissionRule functions, that have
@@ -42,6 +66,6 @@ export const createPermissionRule = <
 export const makeCreatePermissionRule =
   <TResource, TQuery, TResourceType extends string>() =>
   <TParams extends PermissionRuleParams = undefined>(
-    rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
+    ...args: CreatePermissionRuleArgs<TResource, TQuery, TResourceType, TParams>
   ) =>
-    createPermissionRule(rule);
+    createPermissionRule(...args);

@@ -56,24 +56,20 @@ export function createPermission({
   resourceType?: string;
   defaultDecision?: PolicyDecision;
 }): Permission {
-  let permission: Permission;
-
   if (resourceType) {
-    permission = {
+    return {
       type: 'resource',
       name,
       attributes,
       resourceType,
       defaultDecision,
     };
-  } else {
-    permission = {
-      type: 'basic',
-      name,
-      attributes,
-      defaultDecision,
-    };
   }
 
-  return permission;
+  return {
+    type: 'basic',
+    name,
+    attributes,
+    defaultDecision,
+  };
 }

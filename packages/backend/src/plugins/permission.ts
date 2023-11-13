@@ -23,16 +23,12 @@ import {
   PermissionPolicy,
   PolicyQuery,
 } from '@backstage/plugin-permission-node';
-import { isPlaylistPermission } from '@backstage/plugin-playlist-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
 class ExamplePermissionPolicy implements PermissionPolicy {
   async handle(request: PolicyQuery): Promise<PolicyDecision> {
-    if (
-      isPlaylistPermission(request.permission) &&
-      !!request.permission.defaultDecision
-    ) {
+    if (!!request.permission.defaultDecision) {
       return request.permission.defaultDecision;
     }
     return {

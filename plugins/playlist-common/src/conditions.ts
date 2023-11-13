@@ -16,7 +16,7 @@
 import { z } from 'zod';
 import {
   createConditionExports,
-  PermissionRuleDefinition,
+  createPermissionRuleDefinition,
 } from '@backstage/plugin-permission-common';
 
 /**
@@ -25,35 +25,26 @@ import {
 export const PLAYLIST_LIST_RESOURCE_TYPE = 'playlist-list';
 
 // TODO: Create a helper function to set the type generics correctly
-export const isOwnerDefinition: PermissionRuleDefinition<
-  typeof PLAYLIST_LIST_RESOURCE_TYPE,
-  { owners: string[] }
-> = {
+export const isOwnerDefinition = createPermissionRuleDefinition({
   name: 'IS_OWNER',
   description: 'Allow playlists owned by the given entity refs',
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
   paramsSchema: z.object({
     owners: z.array(z.string()).describe('List of entity refs to match on'),
   }),
-};
+});
 
-export const isCurrentUserAnOwnerDefinition: PermissionRuleDefinition<
-  typeof PLAYLIST_LIST_RESOURCE_TYPE,
-  undefined
-> = {
+export const isCurrentUserAnOwnerDefinition = createPermissionRuleDefinition({
   name: 'IS_CURRENT_USER_OWNER',
   description: 'Allow playlists owned by the given entity refs',
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
-};
+});
 
-export const isPublicDefinition: PermissionRuleDefinition<
-  typeof PLAYLIST_LIST_RESOURCE_TYPE,
-  undefined
-> = {
+export const isPublicDefinition = createPermissionRuleDefinition({
   name: 'IS_PUBLIC',
   description: 'Allow playlists that are set as public',
   resourceType: PLAYLIST_LIST_RESOURCE_TYPE,
-};
+});
 
 export const definitions = {
   isOwner: isOwnerDefinition,

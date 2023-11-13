@@ -52,3 +52,4 @@ export type {
   Condition,
   Conditions,
 } from './permission';
+export { createPermissionRuleDefinition } from './permission';

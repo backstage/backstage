@@ -117,10 +117,15 @@ export type AuthorizeRequestOptions = {
   token?: string;
 };
 
-// //////////////////////
-// I ADDED THESE
-// //////////////////////
-
+/**
+ * A conditional rule that can be provided in an {@link EvaluatePermissionResponse} to an authorization request, and also
+ * specified as a default decision in a {@link Permission}
+ *
+ * @public
+ *
+ * PermissionRuleDefinition represent one half of a conditional rule, with the implementation being defined in the
+ * backend.
+ */
 export type PermissionRuleDefinition<
   TResourceType extends string,
   TParams extends PermissionRuleParams = PermissionRuleParams,
@@ -134,6 +139,31 @@ export type PermissionRuleDefinition<
    */
   paramsSchema?: z.ZodSchema<TParams>;
 };
+
+/**
+ * Helper for making a {@link PermissionRuleDefinition} that has the TResourceType
+ * and TParams type parameters inferred from the parameters
+ * @public
+ */
+export const createPermissionRuleDefinition = <
+  TResourceType extends string,
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+>({
+  name,
+  description,
+  resourceType,
+  paramsSchema,
+}: {
+  name: string;
+  description: string;
+  resourceType: TResourceType;
+  paramsSchema?: z.ZodSchema<TParams>;
+}): PermissionRuleDefinition<TResourceType, TParams> => ({
+  name,
+  description,
+  resourceType,
+  paramsSchema,
+});
 
 /**
  * A utility type for mapping a single {@link PermissionRule} to its
