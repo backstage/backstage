@@ -24,12 +24,12 @@ import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 
 export const useFilteredSchemaProperties = (
   manifest: TemplateParameterSchema | undefined,
-) => {
+): TemplateParameterSchema | undefined => {
   const featureFlagKey = 'backstage:featureFlag';
   const featureFlagApi = useApi(featureFlagsApiRef);
 
   if (!manifest) {
-    return null;
+    return undefined;
   }
 
   const filteredSteps = manifest?.steps

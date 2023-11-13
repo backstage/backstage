@@ -293,16 +293,7 @@ export interface TemplateGroupsProps {
 // @alpha
 export const useFilteredSchemaProperties: (
   manifest: TemplateParameterSchema | undefined,
-) => {
-  steps: {
-    title: string;
-    description?: string | undefined;
-    schema: JsonObject;
-  }[];
-  title: string;
-  description?: string | undefined;
-  presentation?: TemplatePresentationV1beta3 | undefined;
-} | null;
+) => TemplateParameterSchema | undefined;
 
 // @alpha
 export const useFormDataFromQuery: (
@@ -331,6 +322,9 @@ export type WorkflowProps = {
   description?: string;
   namespace: string;
   templateName: string;
+  components?: {
+    ReviewStepComponent?: React_2.ComponentType<ReviewStepProps>;
+  };
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<
   StepperProps,
