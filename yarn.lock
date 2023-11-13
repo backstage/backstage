@@ -27074,14 +27074,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-testing-library@npm:^5.9.1":
-  version: 5.11.1
-  resolution: "eslint-plugin-testing-library@npm:5.11.1"
+"eslint-plugin-testing-library@npm:^6.0.0":
+  version: 6.1.2
+  resolution: "eslint-plugin-testing-library@npm:6.1.2"
   dependencies:
     "@typescript-eslint/utils": ^5.58.0
   peerDependencies:
     eslint: ^7.5.0 || ^8.0.0
-  checksum: 9f3fc68ef9f13016a4381b33ab5dbffcc189e5de3eaeba184bcf7d2771faa7f54e59c04b652162fb1c0f83fb52428dd909db5450a25508b94be59eba69fcc990
+  checksum: 74e6b1bdff52e9a3937be1ae0e3ddb6cfedcd97044ac5275be6e7472c77cf8ae0f6e29fd7d3b90aac1318e22850086e73ee8dde7de8d9034be59cdfed9ba7bd7
   languageName: node
   linkType: hard
 
@@ -41348,7 +41348,7 @@ __metadata:
     eslint: ^8.6.0
     eslint-plugin-notice: ^0.9.10
     eslint-plugin-react: ^7.28.0
-    eslint-plugin-testing-library: ^5.9.1
+    eslint-plugin-testing-library: ^6.0.0
     fs-extra: 10.1.0
     husky: ^8.0.0
     lint-staged: ^15.0.0
