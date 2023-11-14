@@ -69,7 +69,7 @@ export const EntityAdrContent = adrPlugin.provide(
  */
 export const AdrSearchResultListItem: (
   props: AdrSearchResultListItemProps,
-) => JSX.Element | null = adrPlugin.provide(
+) => JSX.Element | undefined = adrPlugin.provide(
   createSearchResultListItemExtension({
     name: 'AdrSearchResultListItem',
     component: () =>
