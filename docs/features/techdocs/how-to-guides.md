@@ -483,6 +483,8 @@ plugins:
   - techdocs-core
 ```
 
+note: 
+
 3. Create a `/docs` folder in the skeleton folder with at least an `index.md`
    file in it.
 
@@ -503,6 +505,18 @@ folder (/docs) or replace the content in this file.
 > on how you have configured your `template.yaml`
 
 Done! You now have support for TechDocs in your own software template!
+
+### Prevent download of Google fonts
+
+If your Backstage instance does not have internet access, the generation will fail. TechDocs tries to download the Roboto font from Google. You can disable it by adding the following lines to mkdocs.yaml:
+
+```markdown
+theme:
+  name: material
+  font: false
+```
+
+note: The addition "name material" is necessary. Otherwise it will not work
 
 ## How to enable iframes in TechDocs
 
