@@ -48,7 +48,7 @@ After restart of the Backstage second step won't have an access anymore to the w
 once again. You can avoid situation of step's dependency by making each step completely self-sufficient by combining
 few steps into one. The downside of it, as you have to make all steps custom to achieve it.
 
-By default, the recoverability is switched off, to enable it you have to include in your `app-config.yaml` file:
+By default, the task recovery is switched off, to enable it you have to include in your `app-config.yaml` file:
 
 ```yaml
 scaffolder:
