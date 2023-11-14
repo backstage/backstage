@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 1.4.6
+
+### Patch Changes
+
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
 ## 1.4.5
 
 ### Patch Changes

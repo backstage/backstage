@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.3.4
+
+### Patch Changes
+
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-auth-node@0.4.1
+
 ## 0.3.4-next.2
 
 ### Patch Changes

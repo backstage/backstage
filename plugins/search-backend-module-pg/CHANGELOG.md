@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.16
+
+### Patch Changes
+
+- 2b4cd1ccae: Optimize outdated documents deletion logic in PgSearchEngine DatabaseDocumentStore which significantly reduces cost on large tables
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.2.11
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.8
+
 ## 0.5.16-next.2
 
 ### Patch Changes

@@ -1,5 +1,50 @@
 # @backstage/plugin-home
 
+## 0.5.10
+
+### Patch Changes
+
+- d86b2acec4: Fix bug where `retrieveAll` method wasn't fetching visits
+- 3fdffbb699: Remove the duplicate versions of `@rjsf/*` as they're no longer needed
+- 6c2b872153: Add official support for React 18.
+- 5b364984bf: Added experimental support for declarative integration via the `/alpha` subpath.
+- c838da0edd: Updated dependency `@rjsf/utils` to `5.13.6`.
+  Updated dependency `@rjsf/core` to `5.13.6`.
+  Updated dependency `@rjsf/material-ui` to `5.13.6`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.13.6`.
+- cc0e8d0b51: Temporarily pin the `react-grid-layout` sub-dependency to version `1.3.4` while the horizontal resizing of the latest version is not fixed. For more details, see [#20712](https://github.com/backstage/backstage/issues/20712).
+- 302316d231: Added a new Featured Docs component to `plugin-home`, which can display any entity given a filter.
+
+  ```
+  import { FeaturedDocsCard } from '@backstage/plugin-home';
+
+  <FeaturedDocsCard
+    filter={{
+      'spec.type': 'documentation',
+      'metadata.name': 'getting-started-with-backstage',
+    }}
+    subLinkText="More Details"
+    emptyState={emptyStateReactNode}
+    linkDestination={'/customPath'}
+    responseLimit={5}
+  />
+  ```
+
+  See the [storybook examples](https://backstage.io/storybook/?path=/story/plugins-home-components-featureddocs--default)
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/core-app-api@1.11.1
+  - @backstage/plugin-home-react@0.1.5
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 0.5.10-next.2
 
 ### Patch Changes
