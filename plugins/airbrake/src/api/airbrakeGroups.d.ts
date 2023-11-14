@@ -17,7 +17,7 @@
 export interface Groups {
   count: number;
   end: string;
-  groups?: Group[] | null;
+  groups?: Group[] | undefined;
   page: number;
   resolvedCount: number;
   unresolvedCount: number;
@@ -29,12 +29,12 @@ export interface Group {
   resolved: boolean;
   muted: boolean;
   mutedBy: number;
-  mutedAt?: string | null;
+  mutedAt?: string | undefined;
   errors?: Error[];
-  attributes?: string | null;
+  attributes?: string | undefined;
   context: Context;
   lastDeployId: string;
-  lastDeployAt?: string | null;
+  lastDeployAt?: string | undefined;
   lastNoticeId: string;
   lastNoticeAt: string;
   noticeCount: number;
@@ -54,7 +54,7 @@ export interface Backtrace {
   function: string;
   line: number;
   column: number;
-  code?: string | null;
+  code?: string | undefined;
 }
 
 export interface Context {
