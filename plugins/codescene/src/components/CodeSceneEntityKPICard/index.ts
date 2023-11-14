@@ -13,15 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  codescenePlugin,
-  CodeScenePage,
-  CodeSceneProjectDetailsPage,
-  CodeSceneEntityPage,
-  CodeSceneEntityKPICard,
-} from './plugin';
-export { CodeSceneIcon } from './CodeSceneIcon';
-export {
-  isCodeSceneAvailable,
-  CODESCENE_PROJECT_ANNOTATION,
-} from './utils/commonUtil';
+export { CodeSceneEntityKPICard } from './CodeSceneEntityKPICard';

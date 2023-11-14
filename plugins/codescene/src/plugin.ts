@@ -67,3 +67,25 @@ export const CodeSceneProjectDetailsPage = codescenePlugin.provide(
     mountPoint: projectDetailsRouteRef,
   }),
 );
+
+export const CodeSceneEntityKPICard = codescenePlugin.provide(
+  createRoutableExtension({
+    name: 'CodeSceneEntityKPICard',
+    component: () =>
+      import('./components/CodeSceneEntityKPICard').then(
+        m => m.CodeSceneEntityKPICard,
+      ),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+export const CodeSceneEntityPage = codescenePlugin.provide(
+  createRoutableExtension({
+    name: 'CodeSceneEntityPage',
+    component: () =>
+      import('./components/CodeSceneEntityPage').then(
+        m => m.CodeSceneEntityPage,
+      ),
+    mountPoint: rootRouteRef,
+  }),
+);

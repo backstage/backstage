@@ -60,3 +60,34 @@ proxy:
 codescene:
   baseUrl: https://codescene.my-company.net # replace with your own URL
 ```
+
+5. Adding the codescene plugin to Entity page:
+
+```yaml
+# Add `codescene` annotations to the `catalog-info.yaml` of an entity.
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage
+  annotations:
+    codescene.io/project-id: <codescene project id>
+```
+
+```tsx
+// In packages/app/src/components/catalog/EntityPage.tsx
+
+import {
+  CodeSceneEntityPage,
+  isCodeSceneAvailable,
+} from '@backstage/plugin-codescene';
+
+/* other EntityLayout.Route items... */
+
+<EntityLayout.Route
+  path="/codescene"
+  title="codescene"
+  if={isCodeSceneAvailable}
+>
+  <CodeSceneEntityPage />
+</EntityLayout.Route>;
+```
