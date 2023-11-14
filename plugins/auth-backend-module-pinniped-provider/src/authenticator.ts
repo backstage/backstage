@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Config } from '@backstage/config';
 import { PassportDoneCallback } from '@backstage/plugin-auth-node';
 import {
   createOAuthAuthenticator,
@@ -24,7 +25,9 @@ import {
   Issuer,
   TokenSet,
   Strategy as OidcStrategy,
+  BaseClient,
 } from 'openid-client';
+import { DateTime } from 'luxon';
 
 const rfc8693TokenExchange = async ({
   subject_token,
@@ -53,22 +56,78 @@ const rfc8693TokenExchange = async ({
     });
 };
 
+const OIDC_METADATA_TTL_SECONDS = 3600;
+
 /** @public */
-export const pinnipedAuthenticator = createOAuthAuthenticator({
-  defaultProfileTransform: async (_r, _c) => ({ profile: {} }),
-  async initialize({ callbackUrl, config }) {
+export class PinnipedStrategyCache {
+  private readonly callbackUrl: string;
+  private readonly config: Config;
+  private strategyPromise: Promise<{
+    providerStrategy: OidcStrategy<{ tokenset: TokenSet }, BaseClient>;
+    client: BaseClient;
+  }>;
+
+  private cachedPromise?: Promise<{
+    providerStrategy: OidcStrategy<{ tokenset: TokenSet }, BaseClient>;
+    client: BaseClient;
+  }>;
+  private cachedPromiseExpiry?: Date;
+
+  constructor(callbackUrl: string, config: Config) {
+    this.callbackUrl = callbackUrl;
+    this.config = config;
+    this.strategyPromise = this.buildStrategy();
+  }
+
+  public async getStrategy(): Promise<{
+    providerStrategy: OidcStrategy<{ tokenset: TokenSet }, BaseClient>;
+    client: BaseClient;
+  }> {
+    if (this.cachedPromise) {
+      if (
+        this.cachedPromiseExpiry &&
+        DateTime.fromJSDate(this.cachedPromiseExpiry) > DateTime.local()
+      ) {
+        return this.cachedPromise;
+      }
+      // cachedPromise has expired, remove promise from cache and regenerate strategy
+      this.strategyPromise = this.buildStrategy();
+      delete this.cachedPromise;
+    }
+
+    try {
+      // if strategy is generated successfully, save it to cache
+      await this.strategyPromise;
+      this.cachedPromise = this.strategyPromise;
+      this.cachedPromiseExpiry = DateTime.utc()
+        .plus({ seconds: OIDC_METADATA_TTL_SECONDS })
+        .toJSDate();
+    } catch (error) {
+      // if we fail to generate a strategy, retry and overwrite strategy
+      this.strategyPromise = this.buildStrategy();
+      delete this.cachedPromise;
+      delete this.cachedPromiseExpiry;
+    }
+
+    return this.strategyPromise;
+  }
+
+  private async buildStrategy(): Promise<{
+    providerStrategy: OidcStrategy<{ tokenset: TokenSet }, BaseClient>;
+    client: BaseClient;
+  }> {
     const issuer = await Issuer.discover(
-      `${config.getString(
+      `${this.config.getString(
         'federationDomain',
       )}/.well-known/openid-configuration`,
     );
     const client = new issuer.Client({
-      access_type: 'offline', // this option must be passed to provider to receive a refresh token
-      client_id: config.getString('clientId'),
-      client_secret: config.getString('clientSecret'),
-      redirect_uris: [callbackUrl],
+      access_type: 'offline',
+      client_id: this.config.getString('clientId'),
+      client_secret: this.config.getString('clientSecret'),
+      redirect_uris: [this.callbackUrl],
       response_types: ['code'],
-      scope: config.getOptionalString('scope') || '',
+      scope: this.config.getOptionalString('scope') || '',
       id_token_signed_response_alg: 'ES256',
     });
     const providerStrategy = new OidcStrategy(
@@ -88,12 +147,18 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
         done(undefined, { tokenset }, {});
       },
     );
-
     return { providerStrategy, client };
-  },
+  }
+}
 
-  async start(input, ctx) {
-    const { providerStrategy } = await ctx;
+/** @public */
+export const pinnipedAuthenticator = createOAuthAuthenticator({
+  defaultProfileTransform: async (_r, _c) => ({ profile: {} }),
+  initialize({ callbackUrl, config }) {
+    return new PinnipedStrategyCache(callbackUrl, config);
+  },
+  async start(input, ctx): Promise<{ url: string; status?: number }> {
+    const { providerStrategy } = await ctx.getStrategy();
     const stringifiedAudience = input.req.query?.audience as string;
     const decodedState = decodeOAuthState(input.state);
     const state = { ...decodedState, audience: stringifiedAudience };
@@ -117,7 +182,7 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
   },
 
   async authenticate(input, ctx) {
-    const { providerStrategy } = await ctx;
+    const { providerStrategy } = await ctx.getStrategy();
     const { req } = input;
     const { searchParams } = new URL(req.url, 'https://pinniped.com');
     const stateParam = searchParams.get('state');
@@ -132,7 +197,7 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
           ? rfc8693TokenExchange({
               subject_token: user.tokenset.access_token,
               target_audience: audience,
-              ctx,
+              ctx: ctx.getStrategy(),
             }).catch(err =>
               reject(
                 new Error(
@@ -172,7 +237,7 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
   },
 
   async refresh(input, ctx) {
-    const { client } = await ctx;
+    const { client } = await ctx.getStrategy();
     const tokenset = await client.refresh(input.refreshToken);
 
     return new Promise((resolve, reject) => {

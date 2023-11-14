@@ -25,14 +25,15 @@
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
+    "luxon": "^3.4.3",
     "openid-client": "^5.4.3"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
