@@ -8,6 +8,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Duration } from 'luxon';
+import { EventBroker } from '@backstage/plugin-events-node';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
 import express from 'express';
@@ -38,6 +39,7 @@ import { TaskBrokerDispatchResult as TaskBrokerDispatchResult_2 } from '@backsta
 import { TaskCompletionState as TaskCompletionState_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskContext as TaskContext_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskEventType as TaskEventType_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -841,8 +843,11 @@ export class DatabaseTaskStore implements TaskStore {
   listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: {
       taskId: string;
+      recovery?: TaskRecovery;
     }[];
   }>;
+  // (undocumented)
+  recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<string[]>;
   // (undocumented)
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -886,6 +891,8 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;
+  // (undocumented)
+  eventBroker?: EventBroker;
   // (undocumented)
   identity?: IdentityApi;
   // (undocumented)
@@ -948,6 +955,7 @@ export class TaskManager implements TaskContext {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
+    stepIdToRecoverFrom?: string,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;
@@ -955,6 +963,8 @@ export class TaskManager implements TaskContext {
   get done(): boolean;
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
+  // (undocumented)
+  getStepIdToRecoverFrom(): Promise<string | undefined>;
   // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
@@ -1006,6 +1016,8 @@ export interface TaskStore {
     }[];
   }>;
   // (undocumented)
+  recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<string[]>;
+  // (undocumented)
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
@@ -1031,6 +1043,12 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 export type TaskStoreListEventsOptions = {
   taskId: string;
   after?: number | undefined;
+  raw?: boolean;
+};
+
+// @public
+export type TaskStoreRecoverTaskOptions = {
+  timeoutS: number;
 };
 
 // @public

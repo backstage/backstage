@@ -251,6 +251,7 @@ export class ScaffolderClient implements ScaffolderApi {
               : {},
           });
           eventSource.addEventListener('log', processEvent);
+          eventSource.addEventListener('recovered', processEvent);
           eventSource.addEventListener('cancelled', processEvent);
           eventSource.addEventListener('completion', (event: any) => {
             processEvent(event);
@@ -283,7 +284,15 @@ export class ScaffolderClient implements ScaffolderApi {
           const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
             taskId,
           )}/events?${qs.stringify({ after })}`;
-          const response = await this.fetchApi.fetch(url);
+          const originalAfter = after;
+          let response;
+
+          try {
+            response = await this.fetchApi.fetch(url);
+          } catch (_) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            continue;
+          }
 
           if (!response.ok) {
             // wait for one second to not run into an
@@ -302,6 +311,10 @@ export class ScaffolderClient implements ScaffolderApi {
               subscriber.complete();
               return;
             }
+          }
+
+          if (originalAfter && logs.find(e => e.type === 'recovered')) {
+            after = undefined;
           }
         }
       });

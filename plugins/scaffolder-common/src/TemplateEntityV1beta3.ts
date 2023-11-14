@@ -52,6 +52,11 @@ export interface TemplateEntityV1beta3 extends Entity {
     presentation?: TemplatePresentationV1beta3;
 
     /**
+     * Recovery strategy for the template
+     */
+    recovery?: TemplateRecoveryV1beta3;
+
+    /**
      * This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend
      * to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
      * variables passed from the user into each action in the template.
@@ -96,6 +101,23 @@ export interface TemplatePresentationV1beta3 extends JsonObject {
      */
     reviewButtonText?: string;
   };
+}
+
+/**
+ * Depends on how you designed your task you might tailor the behaviour for each of them.
+ *
+ * @public
+ */
+export interface TemplateRecoveryV1beta3 extends JsonObject {
+  /**
+   *
+   * none - not recover, let the task be marked as failed
+   * idempotent - do recover, treat a task as idempotent and rerun the task from the step which has failed.
+   * restart - do recover, start the execution of the task from the first step.
+   *
+   * @public
+   */
+  strategy?: 'none' | 'idempotent' | 'restart';
 }
 
 /**

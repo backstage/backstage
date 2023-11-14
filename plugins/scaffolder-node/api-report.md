@@ -145,6 +145,8 @@ export interface TaskBroker {
     tasks: SerializedTask[];
   }>;
   // (undocumented)
+  recoverTasks?(): Promise<boolean>;
+  // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
 
@@ -176,6 +178,8 @@ export interface TaskContext {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
+  getStepIdToRecoverFrom?(): Promise<string | undefined>;
+  // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
   isDryRun?: boolean;
@@ -186,7 +190,7 @@ export interface TaskContext {
 }
 
 // @public
-export type TaskEventType = 'completion' | 'log' | 'cancelled';
+export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 
 // @public
 export type TaskSecrets = Record<string, string> & {

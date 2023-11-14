@@ -112,6 +112,13 @@ export class TaskWorker {
   }
 
   start() {
+    const recoverTasksId = setInterval(async () => {
+      const enabled = await this.options.taskBroker.recoverTasks?.();
+      if (!enabled) {
+        clearInterval(recoverTasksId);
+      }
+    }, 60000);
+
     (async () => {
       for (;;) {
         await this.onReadyToClaimTask();

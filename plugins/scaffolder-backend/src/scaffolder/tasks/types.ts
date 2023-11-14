@@ -121,6 +121,7 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 export type TaskStoreListEventsOptions = {
   taskId: string;
   after?: number | undefined;
+  raw?: boolean;
 };
 
 /**
@@ -143,6 +144,14 @@ export type TaskStoreCreateTaskOptions = {
 };
 
 /**
+ * The options passed to {@link TaskStore.recoverTasks}
+ * @public
+ */
+export type TaskStoreRecoverTaskOptions = {
+  timeoutS: number;
+};
+
+/**
  * The response from {@link TaskStore.createTask}
  * @public
  */
@@ -161,6 +170,8 @@ export interface TaskStore {
   createTask(
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
+
+  recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<string[]>;
 
   getTask(taskId: string): Promise<SerializedTask>;
 
