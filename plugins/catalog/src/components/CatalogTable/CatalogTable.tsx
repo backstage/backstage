@@ -34,6 +34,7 @@ import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
@@ -146,8 +147,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            {/* eslint-disable-next-line react/forbid-elements */}
-            <span style={visuallyHidden}>{title}</span>
+            <Typography style={visuallyHidden}>{title}</Typography>
             <OpenInNew fontSize="small" />
           </>
         ),
@@ -166,8 +166,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            {/* eslint-disable-next-line react/forbid-elements */}
-            <span style={visuallyHidden}>{title}</span>
+            <Typography style={visuallyHidden}>{title}</Typography>
             <Edit fontSize="small" />
           </>
         ),
@@ -187,8 +186,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         cellStyle: { paddingLeft: '1em' },
         icon: () => (
           <>
-            {/* eslint-disable-next-line react/forbid-elements */}
-            <span style={visuallyHidden}>{title}</span>
+            <Typography style={visuallyHidden}>{title}</Typography>
             {isStarred ? <YellowStar /> : <StarBorder />}
           </>
         ),
