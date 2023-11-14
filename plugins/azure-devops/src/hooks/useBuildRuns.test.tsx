@@ -17,14 +17,14 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
-import { RepoBuild } from '@backstage/plugin-azure-devops-common';
+import { BuildRun } from '@backstage/plugin-azure-devops-common';
 import { TestApiProvider } from '@backstage/test-utils';
 import { AzureDevOpsApi, azureDevOpsApiRef } from '../api';
-import { useRepoBuilds } from './useRepoBuilds';
+import { useBuildRuns } from './useBuildRuns';
 
-describe('useRepoBuilds', () => {
+describe('useBuildRuns', () => {
   const azureDevOpsApiMock = {
-    getRepoBuilds: jest.fn(),
+    getBuildRuns: jest.fn(),
   };
   const azureDevOpsApi =
     azureDevOpsApiMock as Partial<AzureDevOpsApi> as AzureDevOpsApi;
@@ -35,7 +35,7 @@ describe('useRepoBuilds', () => {
     </TestApiProvider>
   );
 
-  it('should provide an array of RepoBuild', async () => {
+  it('should provide an array of BuildRun', async () => {
     const entity: Entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
@@ -47,7 +47,7 @@ describe('useRepoBuilds', () => {
         },
       },
     };
-    const repoBuilds: RepoBuild[] = [
+    const buildRuns: BuildRun[] = [
       {
         id: 1,
         title: 'title-1',
@@ -67,10 +67,10 @@ describe('useRepoBuilds', () => {
         link: 'https://dev.azure.com/org/project/repo',
       },
     ];
-    azureDevOpsApiMock.getRepoBuilds.mockResolvedValue({
-      items: repoBuilds,
+    azureDevOpsApiMock.getBuildRuns.mockResolvedValue({
+      items: buildRuns,
     });
-    const { result } = renderHook(() => useRepoBuilds(entity), {
+    const { result } = renderHook(() => useBuildRuns(entity), {
       wrapper: Wrapper,
     });
 
@@ -79,7 +79,7 @@ describe('useRepoBuilds', () => {
     await waitFor(() => {
       expect(result.current).toEqual({
         error: undefined,
-        items: repoBuilds,
+        items: buildRuns,
         loading: false,
       });
     });
@@ -96,7 +96,7 @@ describe('useRepoBuilds', () => {
     };
 
     expect(() =>
-      renderHook(() => useRepoBuilds(entity), {
+      renderHook(() => useBuildRuns(entity), {
         wrapper: Wrapper,
       }),
     ).toThrow('Value for annotation "dev.azure.com/project" was not found');
@@ -116,7 +116,7 @@ describe('useRepoBuilds', () => {
     };
 
     expect(() =>
-      renderHook(() => useRepoBuilds(entity), {
+      renderHook(() => useBuildRuns(entity), {
         wrapper: Wrapper,
       }),
     ).toThrow(

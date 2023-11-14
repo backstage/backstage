@@ -28,11 +28,11 @@ export function useGitTags(entity: Entity): {
   error?: Error;
 } {
   const api = useApi(azureDevOpsApiRef);
-  const { project, repo } = getAnnotationValuesFromEntity(entity);
 
-  const { value, loading, error } = useAsync(async () => {
-    return await api.getGitTags(project, repo as string);
-  }, [api, project, repo]);
+  const { value, loading, error } = useAsync(() => {
+    const { project, repo } = getAnnotationValuesFromEntity(entity);
+    return api.getGitTags(project, repo as string);
+  }, [api]);
 
   return {
     items: value?.items,
