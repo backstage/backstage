@@ -1,5 +1,11 @@
 # @backstage/plugin-search-react
 
+## 1.7.3
+
+### Patch Changes
+
+- 43a3ce18947c: Removed `@backstage/frontend-app-api` dependency.
+
 ## 1.7.2
 
 ### Patch Changes
