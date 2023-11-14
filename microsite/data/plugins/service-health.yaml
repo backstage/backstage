@@ -1,0 +1,10 @@
+---
+title: Service Health
+author: Samantha Betts
+authorUrl: https://uk.linkedin.com/in/samantha-betts-5baa7964
+category: Monitoring / Services
+description: This plugin displays the current status and any active incidents of third party services directly in Backstage.
+documentation: https://github.com/sammbetts/backstage-plugin-service-health/blob/main/README.md
+iconUrl: /img/ovo-for-you.svg
+npmPackageName: '@sammbetts/backstage-plugin-service-health-dashboard'
+addedDate: '2023-11-14'
