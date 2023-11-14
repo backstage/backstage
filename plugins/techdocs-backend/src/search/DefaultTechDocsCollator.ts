@@ -65,6 +65,41 @@ type EntityInfo = {
   kind: string;
 };
 
+// Helper function for handling fetch with token retry
+async function fetchWithTokenRetry(
+  url: string,
+  currentToken: string,
+  tokenManager: TokenManager,
+  logger: Logger,
+  entityInfo: EntityInfo,
+) {
+  let response;
+  try {
+    response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${currentToken}`,
+      },
+    });
+    if (response.status === 401) {
+      // Refresh token if 401 received
+      const { token: newToken } = await tokenManager.getToken();
+      response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+        },
+      });
+    }
+    return response;
+  } catch (error) {
+    logger.error(
+      `Error fetching tech docs for ${stringifyEntityRef(
+        entityInfo,
+      )}: ${error}`,
+    );
+    throw error; // rethrow the error for further handling
+  }
+}
+
 /**
  * A search collator responsible for gathering and transforming TechDocs documents.
  *
@@ -136,17 +171,20 @@ export class DefaultTechDocsCollator {
         );
 
         try {
-          const searchIndexResponse = await fetch(
-            DefaultTechDocsCollator.constructDocsIndexUrl(
-              techDocsBaseUrl,
-              entityInfo,
-            ),
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
+          const techDocsUrl = DefaultTechDocsCollator.constructDocsIndexUrl(
+            techDocsBaseUrl,
+            entityInfo,
           );
+
+          // Use helper function for fetch
+          const searchIndexResponse = await fetchWithTokenRetry(
+            techDocsUrl,
+            token,
+            tokenManager,
+            logger,
+            entityInfo,
+          );
+
           const searchIndex = await searchIndexResponse.json();
 
           return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
