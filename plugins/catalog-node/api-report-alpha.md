@@ -4,6 +4,7 @@
 
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogPermissionRuleInput } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
@@ -25,6 +26,12 @@ export interface CatalogProcessingExtensionPoint {
   // (undocumented)
   addEntityProvider(
     ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): void;
+  // (undocumented)
+  addPermissionRules(
+    ...rules: Array<
+      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
+    >
   ): void;
   // (undocumented)
   addPlaceholderResolver(key: string, resolver: PlaceholderResolver): void;
