@@ -39,7 +39,7 @@ const timeDeltaToLabel = (delta: TimeDelta): string => {
 
 const relativeDeltaToLabel = (delta: RelativeDelta) => {
   const params = Object.entries(delta)
-    .filter(o => o[0] !== '__type' && o[1] !== null && o[1] !== 0)
+    .filter(o => o[0] !== '__type' && o[1] !== undefined && o[1] !== 0)
     .map(o => (o[1] > 0 ? `${o[0]}=+${o[1]}` : `${o[0]}=-${o[1]}`));
   return `relativedelta(${params})`;
 };
