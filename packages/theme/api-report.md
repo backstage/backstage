@@ -15,6 +15,7 @@ import { Theme as Theme_3 } from '@material-ui/core';
 import { ThemeOptions } from '@mui/material/styles';
 import { ThemeOptions as ThemeOptions_2 } from '@material-ui/core/styles';
 import type { ThemeOptions as ThemeOptions_3 } from '@material-ui/core';
+import { UnifiedTheme as UnifiedTheme_2 } from '@backstage/theme';
 
 // @public @deprecated
 export type BackstagePalette = Palette & BackstagePaletteAdditions;
@@ -217,6 +218,9 @@ export function genPageTheme(props: {
 export const lightTheme: Theme_3;
 
 // @public
+export interface OverrideComponentNameToClassKeys {}
+
+// @public
 export type PageTheme = {
   colors: string[];
   shape: string;
@@ -401,8 +405,8 @@ export type SupportedVersions = 'v4' | 'v5';
 
 // @public
 export const themes: {
-  light: UnifiedTheme;
-  dark: UnifiedTheme;
+  light: UnifiedTheme_2;
+  dark: UnifiedTheme_2;
 };
 
 // @public
