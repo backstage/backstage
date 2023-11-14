@@ -68,6 +68,9 @@ export const CodeSceneProjectDetailsPage = codescenePlugin.provide(
   }),
 );
 
+/**
+ * @public
+ */
 export const CodeSceneEntityKPICard = codescenePlugin.provide(
   createRoutableExtension({
     name: 'CodeSceneEntityKPICard',
@@ -79,6 +82,9 @@ export const CodeSceneEntityKPICard = codescenePlugin.provide(
   }),
 );
 
+/**
+ * @public
+ */
 export const CodeSceneEntityPage = codescenePlugin.provide(
   createRoutableExtension({
     name: 'CodeSceneEntityPage',

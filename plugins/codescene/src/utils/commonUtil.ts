@@ -16,8 +16,14 @@
 
 import { Entity } from '@backstage/catalog-model';
 
+/**
+ * @public
+ */
 export const CODESCENE_PROJECT_ANNOTATION = 'codescene.io/project-id';
 
+/**
+ * @public
+ */
 export const getProjectAnnotation = (entity: Entity) => {
   const annotation =
     entity?.metadata.annotations?.[CODESCENE_PROJECT_ANNOTATION];
@@ -25,5 +31,8 @@ export const getProjectAnnotation = (entity: Entity) => {
   return { projectId: Number(projectId) };
 };
 
+/**
+ * @public
+ */
 export const isCodeSceneAvailable = (entity: Entity) =>
   Boolean(getProjectAnnotation(entity).projectId);
