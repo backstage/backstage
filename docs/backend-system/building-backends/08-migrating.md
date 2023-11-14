@@ -262,6 +262,67 @@ If you have other customizations made to `plugins/catalog.ts`, such as adding
 custom processors or entity providers, read on. Otherwise, you should be able to
 just delete that file at this point.
 
+#### Microsoft Graph
+
+Import the Microsoft Graph catalog module
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-msgraph/alpha'));
+/* highlight-add-end */
+```
+
+If you were providng a `schedule` programtically, this now needs to be set via configuration
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    microsoftGraphOrg:
+      provider:
+        /* highlight-add-start */
+        schedule:
+          frequency: PT4H
+          timeout: PT30M
+        /* highlight-add-end */
+
+```
+
+If you were providing transformers, these can be configured by extending `microsoftGraphOrgEntityProviderTransformExtensionPoint`
+
+```ts title="packages/backend/src/index.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { microsoftGraphOrgEntityProviderTransformExtensionPoint } from '@backstage/plugin-catalog-backend-module-msgraph/alpha';
+
+backend.add(
+  createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'microsoftGraphExtensions',
+    register(env) {
+      env.registerInit({
+        deps: {
+          /* highlight-add-start */
+          microsoftGraphTransformers:
+            microsoftGraphOrgEntityProviderTransformExtensionPoint,
+          /* highlight-add-end */
+        },
+        async init({ microsoftGraphTransformers }) {
+          /* highlight-add-start */
+          microsoftGraphTransformers.setUserTransformer(myUserTransformer);
+          microsoftGraphTransformers.setGroupTransformer(myGroupTransformer);
+          microsoftGraphTransformers.setOrganizationTransformer(
+            myOrganizationTransformer,
+          );
+          /* highlight-add-end */
+        },
+      });
+    },
+  }),
+);
+```
+
+#### Other Catalog Extensions
+
 You will use the [extension points](../architecture/05-extension-points.md)
 mechanism to extend or tweak the functionality of the plugin. To do that,
 you'll make your own bespoke [module](../architecture/06-modules.md) which
