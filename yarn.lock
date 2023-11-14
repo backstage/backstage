@@ -27215,9 +27215,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"example-app@link:../app::locator=example-backend%40workspace%3Apackages%2Fbackend":
+"example-app@link:../app::locator=example-backend-old%40workspace%3Apackages%2Fbackend-old":
   version: 0.0.0-use.local
-  resolution: "example-app@link:../app::locator=example-backend%40workspace%3Apackages%2Fbackend"
+  resolution: "example-app@link:../app::locator=example-backend-old%40workspace%3Apackages%2Fbackend-old"
   languageName: node
   linkType: soft
 
@@ -27330,52 +27330,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"example-backend-next@workspace:packages/backend-next":
+"example-backend-old@workspace:packages/backend-old":
   version: 0.0.0-use.local
-  resolution: "example-backend-next@workspace:packages/backend-next"
-  dependencies:
-    "@backstage/backend-defaults": "workspace:^"
-    "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-tasks": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@backstage/plugin-adr-backend": "workspace:^"
-    "@backstage/plugin-app-backend": "workspace:^"
-    "@backstage/plugin-auth-node": "workspace:^"
-    "@backstage/plugin-azure-devops-backend": "workspace:^"
-    "@backstage/plugin-badges-backend": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
-    "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
-    "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
-    "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
-    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
-    "@backstage/plugin-devtools-backend": "workspace:^"
-    "@backstage/plugin-entity-feedback-backend": "workspace:^"
-    "@backstage/plugin-jenkins-backend": "workspace:^"
-    "@backstage/plugin-kubernetes-backend": "workspace:^"
-    "@backstage/plugin-lighthouse-backend": "workspace:^"
-    "@backstage/plugin-linguist-backend": "workspace:^"
-    "@backstage/plugin-nomad-backend": "workspace:^"
-    "@backstage/plugin-permission-backend": "workspace:^"
-    "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"
-    "@backstage/plugin-permission-common": "workspace:^"
-    "@backstage/plugin-permission-node": "workspace:^"
-    "@backstage/plugin-playlist-backend": "workspace:^"
-    "@backstage/plugin-proxy-backend": "workspace:^"
-    "@backstage/plugin-scaffolder-backend": "workspace:^"
-    "@backstage/plugin-search-backend": "workspace:^"
-    "@backstage/plugin-search-backend-module-catalog": "workspace:^"
-    "@backstage/plugin-search-backend-module-explore": "workspace:^"
-    "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
-    "@backstage/plugin-search-backend-node": "workspace:^"
-    "@backstage/plugin-sonarqube-backend": "workspace:^"
-    "@backstage/plugin-techdocs-backend": "workspace:^"
-    "@backstage/plugin-todo-backend": "workspace:^"
-  languageName: unknown
-  linkType: soft
-
-"example-backend@workspace:packages/backend":
-  version: 0.0.0-use.local
-  resolution: "example-backend@workspace:packages/backend"
+  resolution: "example-backend-old@workspace:packages/backend-old"
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
@@ -27452,6 +27409,49 @@ __metadata:
     pg-connection-string: ^2.3.0
     prom-client: ^14.0.1
     winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
+"example-backend@workspace:packages/backend":
+  version: 0.0.0-use.local
+  resolution: "example-backend@workspace:packages/backend"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-adr-backend": "workspace:^"
+    "@backstage/plugin-app-backend": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-azure-devops-backend": "workspace:^"
+    "@backstage/plugin-badges-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
+    "@backstage/plugin-devtools-backend": "workspace:^"
+    "@backstage/plugin-entity-feedback-backend": "workspace:^"
+    "@backstage/plugin-jenkins-backend": "workspace:^"
+    "@backstage/plugin-kubernetes-backend": "workspace:^"
+    "@backstage/plugin-lighthouse-backend": "workspace:^"
+    "@backstage/plugin-linguist-backend": "workspace:^"
+    "@backstage/plugin-nomad-backend": "workspace:^"
+    "@backstage/plugin-permission-backend": "workspace:^"
+    "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
+    "@backstage/plugin-playlist-backend": "workspace:^"
+    "@backstage/plugin-proxy-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-search-backend": "workspace:^"
+    "@backstage/plugin-search-backend-module-catalog": "workspace:^"
+    "@backstage/plugin-search-backend-module-explore": "workspace:^"
+    "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-sonarqube-backend": "workspace:^"
+    "@backstage/plugin-techdocs-backend": "workspace:^"
+    "@backstage/plugin-todo-backend": "workspace:^"
   languageName: unknown
   linkType: soft
 
