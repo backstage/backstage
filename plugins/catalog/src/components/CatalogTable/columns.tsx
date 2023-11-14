@@ -105,7 +105,7 @@ export const columnFactories = Object.freeze({
       hidden,
     }: {
       hidden: boolean;
-    } = { hidden: true },
+    } = { hidden: false },
   ): TableColumn<CatalogTableRow> {
     return {
       title: 'Type',
