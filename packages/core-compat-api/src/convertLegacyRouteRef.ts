@@ -21,8 +21,8 @@ import {
   AnyRouteRefParams,
 } from '@backstage/core-plugin-api';
 
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
-import { routeRefType } from '@backstage/core-plugin-api/src/routing/types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { routeRefType } from '../../core-plugin-api/src/routing/types';
 
 import {
   RouteRef,
