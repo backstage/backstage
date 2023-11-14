@@ -51,9 +51,14 @@ export class TaskWorker {
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
 
-    const cadence = Duration.fromISO(settings.cadence);
-    const workCheckFrequency =
-      cadence < this.workCheckFrequency ? cadence : this.workCheckFrequency;
+    let workCheckFrequency = this.workCheckFrequency;
+    const isCron = !settings?.cadence.startsWith('P');
+    if (!isCron) {
+      const cadence = Duration.fromISO(settings.cadence);
+      if (cadence < workCheckFrequency) {
+        workCheckFrequency = cadence;
+      }
+    }
 
     let attemptNum = 1;
     (async () => {
