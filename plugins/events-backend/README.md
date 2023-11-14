@@ -105,7 +105,7 @@ class ExampleSubscriber implements EventSubscriber {
 The events backend plugin provides a router to handler http events and publish the http requests onto the event
 broker.
 
-To configure it add a file [`packages/backend/src/plugins/events.ts`](../../packages/backend/src/plugins/events.ts)
+To configure it add a file [`packages/backend/src/plugins/events.ts`](../../packages/backend-old/src/plugins/events.ts)
 to your Backstage project.
 
 Additionally, add the events plugin to your backend.

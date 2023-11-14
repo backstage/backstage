@@ -8,7 +8,7 @@ description: Details of the new backend system
 
 The new backend system is in alpha, and some plugins do not yet fully implement it. But do feel free to try it out! We would love to hear back about your impressions.
 
-You can find an example backend setup in [the backend-next package](https://github.com/backstage/backstage/tree/master/packages/backend-next).
+You can find an example backend setup in [the backend package](https://github.com/backstage/backstage/tree/master/packages/backend).
 
 ## Overview
 

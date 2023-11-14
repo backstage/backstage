@@ -64,7 +64,7 @@ This feature assumes your backstage instance has enabled the [permissions framew
 
 A sample policy like:
 
-[packages/backend/src/plugins/permissions.ts](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/permission.ts)
+[packages/backend/src/plugins/permissions.ts](https://github.com/backstage/backstage/blob/master/packages/backend-old/src/plugins/permission.ts)
 
 ```typescript
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
