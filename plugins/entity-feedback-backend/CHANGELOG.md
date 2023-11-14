@@ -1,5 +1,19 @@
 # @backstage/plugin-entity-feedback-backend
 
+## 0.2.4
+
+### Patch Changes
+
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-auth-node@0.4.1
+  - @backstage/plugin-entity-feedback-common@0.1.3
+
 ## 0.2.4-next.2
 
 ### Patch Changes

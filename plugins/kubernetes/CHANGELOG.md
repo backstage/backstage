@@ -1,5 +1,23 @@
 # @backstage/plugin-kubernetes
 
+## 0.11.1
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- fdb5e23602: Import `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react` to remove the cyclical dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/plugin-kubernetes-common@0.7.1
+  - @backstage/plugin-kubernetes-react@0.1.1
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.11.1-next.2
 
 ### Patch Changes

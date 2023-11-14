@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.3.10
+
+### Patch Changes
+
+- 006df4a581: Support AWS OpenSearch Serverless search backend. Does not support `_refresh` endpoint.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.2.11
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.8
+
 ## 1.3.10-next.2
 
 ### Patch Changes

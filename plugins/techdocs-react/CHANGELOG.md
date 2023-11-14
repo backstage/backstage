@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.13
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/version-bridge@1.0.7
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+
 ## 1.1.13-next.2
 
 ### Patch Changes
