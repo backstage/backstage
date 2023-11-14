@@ -263,7 +263,6 @@ const WorkflowRunsCardSearch = ({
     <>
       <Box flexGrow={1} />
       <TextField
-        id="search"
         type="search"
         label="Search"
         value={searchTerm}
