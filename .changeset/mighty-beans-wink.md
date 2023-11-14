@@ -8,4 +8,4 @@
 '@backstage/plugin-search': patch
 ---
 
-`convertLegacyRouteRef` utility is now imported from `@backstage/core-compat-api`.
+The `convertLegacyRouteRef` utility used by the alpha exports is now imported from `@backstage/core-compat-api`.
