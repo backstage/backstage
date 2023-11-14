@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { CatalogPermissionRuleInput } from '@backstage/plugin-catalog-backend';
 import {
   EntityProvider,
   CatalogProcessor,
@@ -32,6 +33,11 @@ export interface CatalogProcessingExtensionPoint {
     ...providers: Array<EntityProvider | Array<EntityProvider>>
   ): void;
   addPlaceholderResolver(key: string, resolver: PlaceholderResolver): void;
+  addPermissionRules(
+    ...rules: Array<
+      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
+    >
+  ): void;
 }
 
 /**
