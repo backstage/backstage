@@ -21,6 +21,7 @@
  */
 exports.up = async function up(knex) {
   const isMySQL = knex.client.config.client.includes('mysql');
+  const isSqlite = knex.client.config.client.includes('sqlite');
   await knex.schema.createTable('refresh_state', table => {
     table.comment('Location refresh states');
     table
@@ -126,9 +127,11 @@ exports.up = async function up(knex) {
 
   await knex.schema.createTable('relations', table => {
     table.comment('All relations between entities');
-    table
-      .increments('id', { primaryKey: true })
-      .comment('Primary key to distinguish unique lines from each other');
+    if (!isSqlite) {
+      table
+        .bigIncrements('id', { primaryKey: true })
+        .comment('Primary key to distinguish unique lines from each other');
+    }
     table
       .string('originating_entity_id')
       .references('entity_id')
@@ -154,9 +157,11 @@ exports.up = async function up(knex) {
 
   await knex.schema.createTable('search', table => {
     table.comment('Flattened key-values from the entities, for filtering');
-    table
-      .bigIncrements('id', { primaryKey: true })
-      .comment('Primary key to distinguish unique lines from each other');
+    if (!isSqlite) {
+      table
+        .bigIncrements('id', { primaryKey: true })
+        .comment('Primary key to distinguish unique lines from each other');
+    }
     table
       .string('entity_id')
       .references('entity_id')
