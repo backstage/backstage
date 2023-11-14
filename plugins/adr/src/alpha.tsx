@@ -47,7 +47,7 @@ export const AdrSearchResultListItemExtension =
       return ({ result, ...rest }) =>
         isAdrDocument(result) ? (
           <AdrSearchResultListItem {...rest} {...config} result={result} />
-        ) : null;
+        ) : undefined;
     },
   });
 
