@@ -135,20 +135,6 @@ export interface Config {
         acceptedClockSkewMs?: number;
       };
       /** @visibility frontend */
-      okta?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          audience: string;
-          authServerId?: string;
-          idp?: string;
-          callbackUrl?: string;
-        };
-      };
-      /** @visibility frontend */
       oauth2?: {
         [authEnv: string]: {
           clientId: string;

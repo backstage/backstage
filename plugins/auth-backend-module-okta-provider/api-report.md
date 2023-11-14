@@ -22,7 +22,7 @@ export const oktaAuthenticator: OAuthAuthenticator<
 
 // @public
 export namespace oktaSignInResolvers {
-  const usernameMatchingUserEntityName: SignInResolverFactory<
+  const emailMatchingUserEntityAnnotation: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
     unknown
   >;

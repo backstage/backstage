@@ -28,22 +28,26 @@ import {
  */
 export namespace oktaSignInResolvers {
   /**
-   * Looks up the user by matching their Okta username to the entity name.
+   * Looks up the user by matching their Okta   email to the entity email.
    */
-  export const usernameMatchingUserEntityName = createSignInResolverFactory({
+
+  export const emailMatchingUserEntityAnnotation = createSignInResolverFactory({
     create() {
       return async (
         info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
         ctx,
       ) => {
-        const { result } = info;
+        const { profile } = info;
 
-        const id = result.fullProfile.username;
-        if (!id) {
-          throw new Error(`Okta user profile does not contain a username`);
+        if (!profile.email) {
+          throw new Error('Okta profile contained no email');
         }
 
-        return ctx.signInWithCatalogUser({ entityRef: { name: id } });
+        return ctx.signInWithCatalogUser({
+          annotations: {
+            'okta.com/email': profile.email,
+          },
+        });
       };
     },
   });
