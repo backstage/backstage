@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-pinniped-provider
 
+## 0.1.1
+
+### Patch Changes
+
+- a8f6afda4a: Introduced metadata cache for the `pinniped` provider.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/config@1.1.1
+  - @backstage/plugin-auth-node@0.4.1
+
 ## 0.1.1-next.2
 
 ### Patch Changes

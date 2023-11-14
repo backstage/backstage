@@ -1,5 +1,23 @@
 # @backstage/plugin-graphiql
 
+## 0.3.0
+
+### Minor Changes
+
+- 57fda44b90: Upgrade to GraphiQL to 3.0.6
+
+### Patch Changes
+
+- 68fc9dc60e: Updated alpha exports according to routing changes in `@backstage/frontend-plugin-api`.
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+
 ## 0.3.0-next.2
 
 ### Patch Changes

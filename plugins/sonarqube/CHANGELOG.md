@@ -1,5 +1,22 @@
 # @backstage/plugin-sonarqube
 
+## 0.7.8
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- 62b5922916: Internal theme type updates
+- 8613ba3928: Switched to using `"exports"` field for `/alpha` subpath export.
+- fdb5e23602: Import `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react` to remove the cyclical dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-sonarqube-react@0.1.10
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+
 ## 0.7.8-next.2
 
 ### Patch Changes

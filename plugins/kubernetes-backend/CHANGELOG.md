@@ -1,5 +1,27 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.13.1
+
+### Patch Changes
+
+- 62180df4ee: Allow storing dashboard parameters for kubernetes in catalog
+- df40b067e1: Fixed the lack of `resourcequotas` as part of the Default Objects to fetch from the kubernetes api
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0
+  - @backstage/plugin-kubernetes-common@0.7.1
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/catalog-client@1.4.6
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1
+  - @backstage/plugin-kubernetes-node@0.1.1
+  - @backstage/plugin-permission-node@0.7.18
+
 ## 0.13.1-next.2
 
 ### Patch Changes

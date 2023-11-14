@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.3.1
+
+### Patch Changes
+
+- 20d97d28a3: Updated dependency `aws-sdk-client-mock-jest` to `^3.0.0`.
+- 3d043526f4: Updated dependency `aws-sdk-client-mock` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0
+  - @backstage/plugin-kubernetes-common@0.7.1
+  - @backstage/integration@1.7.2
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-tasks@0.5.12
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+
 ## 0.3.1-next.2
 
 ### Patch Changes

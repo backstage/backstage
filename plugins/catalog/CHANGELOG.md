@@ -1,5 +1,48 @@
 # @backstage/plugin-catalog
 
+## 1.15.0
+
+### Minor Changes
+
+- 1e5b7d993a: Added the `DefaultEntityPresentationApi`, which is an implementation of the
+  `EntityPresentationApi` that `@backstage/plugin-catalog-react` exposes through
+  its `entityPresentationApiRef`. This implementation is also by default made
+  available automatically by the catalog plugin, unless you replace it with a
+  custom one. It batch fetches and caches data from the catalog as needed for
+  display, and is customizable by adopters to add their own rendering functions.
+
+### Patch Changes
+
+- eb817ee6d4: Fix spacing inconsistency with links and labels in headers
+- 8a8445663b: Migrate catalog entity cards to new frontend system extension format.
+- e964c17db9: Use default extensions boundary and suspense on the alpha declarative `createCatalogFilterExtension` extension factory.
+- 71c97e7d73: The `spec.lifecycle' field in entities will now always be rendered as a string.
+- 6c2b872153: Add official support for React 18.
+- 0bf6ebda88: Initial entity page implementation for new frontend system at `/alpha`, with an overview page enabled by default and the about card available as an optional card.
+- bb98953cb9: Create declarative extensions for the `Catalog` plugin; this initial plugin preset contains sidebar item, index page and filter extensions, all distributed via `/alpha` subpath.
+
+  The `EntityPage` will be migrated in a follow-up patch.
+
+- 7c265b9758: Fix type error on `CatalogTable` when using Material UI v5
+- 69c14904b6: Use `EntityRefLinks` with `hideIcons` property to avoid double icons
+- 62b5922916: Internal theme type updates
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/plugin-scaffolder-common@1.4.3
+  - @backstage/integration-react@1.1.21
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-search-react@1.7.2
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-search-common@1.2.8
+
 ## 1.15.0-next.2
 
 ### Patch Changes

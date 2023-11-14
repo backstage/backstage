@@ -291,6 +291,11 @@ export interface TemplateGroupsProps {
 }
 
 // @alpha
+export const useFilteredSchemaProperties: (
+  manifest: TemplateParameterSchema | undefined,
+) => TemplateParameterSchema | undefined;
+
+// @alpha
 export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];

@@ -1,5 +1,19 @@
 # @backstage/plugin-org-react
 
+## 0.1.15
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+
 ## 0.1.15-next.2
 
 ### Patch Changes

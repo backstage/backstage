@@ -1,5 +1,16 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.43
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+
 ## 0.3.43-next.2
 
 ### Patch Changes

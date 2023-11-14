@@ -1,5 +1,20 @@
 # @backstage/backend-test-utils
 
+## 0.2.8
+
+### Patch Changes
+
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- bb688f7b3b: Ensure recursive deletion of temporary directories in tests
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-app-api@0.5.8
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1
+
 ## 0.2.8-next.2
 
 ### Patch Changes

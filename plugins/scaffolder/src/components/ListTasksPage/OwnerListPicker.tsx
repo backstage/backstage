@@ -111,7 +111,6 @@ export const OwnerListPicker = (props: {
               {group.items.map(item => (
                 <MenuItem
                   key={item.id}
-                  button
                   divider
                   ContainerProps={{ role: 'menuitem' }}
                   onClick={() => onSelectOwner(item.id as 'owned' | 'all')}

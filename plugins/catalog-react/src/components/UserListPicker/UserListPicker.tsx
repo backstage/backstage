@@ -243,7 +243,6 @@ export const UserListPicker = (props: UserListPickerProps) => {
                 <MenuItem
                   role="none presentation"
                   key={item.id}
-                  button
                   divider
                   onClick={() => setSelectedUserFilter(item.id)}
                   selected={item.id === filters.user?.value}
