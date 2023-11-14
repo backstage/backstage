@@ -47,7 +47,6 @@
   "dependencies": {
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/theme": "workspace:^",
@@ -69,6 +68,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
+    "@backstage/frontend-app-api": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
