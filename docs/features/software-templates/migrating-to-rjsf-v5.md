@@ -5,6 +5,8 @@ title: 'Migrating to react-jsonschema-form@v5'
 description: Docs on migrating to `react-jsonschema-form`@v5 and the new designs
 ---
 
+> Note: If you were previously using the `/alpha` imports to test out the `scaffolder/next` work, those imports have been promoted to the default exports from the respective packages. You should just have to remove the `/alpha` from the import path, and remove the `Next` from the import name. `NextScaffolderPage` -> `ScaffolderPage`, `createNextScaffolderFieldExtension` -> `createScaffolderFieldExtension` etc.
+
 ## What's `react-jsonschema-form`?
 
 This library is core to the frontend part of the scaffolder plugin, and is responsible for rendering the form in which developers and end users fill out to meet the `jsonschema` requirement for the parameters section.
