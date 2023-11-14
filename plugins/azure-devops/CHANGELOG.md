@@ -1,5 +1,72 @@
 # @backstage/plugin-azure-devops
 
+## 0.3.8
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- ce9e59cbb3: Refactored the error handling for some of the hooks
+- 361bb34d8e: Consolidated getting the annotation values into a single function to help with future changes
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-azure-devops-common@0.3.1
+
+## 0.3.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+
+## 0.3.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/plugin-azure-devops-common@0.3.1
+
+## 0.3.8-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 361bb34d8e: Consolidated getting the annotation values into a single function to help with future changes
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-azure-devops-common@0.3.1
+
+## 0.3.7
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.3
+  - @backstage/plugin-azure-devops-common@0.3.1
+
 ## 0.3.7-next.2
 
 ### Patch Changes

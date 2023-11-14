@@ -24,8 +24,8 @@ export class CommonJSModuleLoader implements ModuleLoader {
     backstageRoot: string,
     dynamicPluginsPaths: string[],
   ): Promise<void> {
-    const allowedNodeModulesPaths = [
-      `${backstageRoot}/node_modules`,
+    const backstageRootNodeModulesPath = `${backstageRoot}/node_modules`;
+    const dynamicNodeModulesPaths = [
       ...dynamicPluginsPaths.map(p => path.resolve(p, 'node_modules')),
     ];
     const Module = require('module');
@@ -35,8 +35,12 @@ export class CommonJSModuleLoader implements ModuleLoader {
       if (!dynamicPluginsPaths.some(p => from.startsWith(p))) {
         return result;
       }
-
-      const filtered = result.filter(p => allowedNodeModulesPaths.includes(p));
+      const filtered = result.filter(nodeModulePath => {
+        return (
+          nodeModulePath === backstageRootNodeModulesPath ||
+          dynamicNodeModulesPaths.some(p => nodeModulePath.startsWith(p))
+        );
+      });
       this.logger.debug(
         `Overriding node_modules search path for dynamic plugin ${from} to: ${filtered}`,
       );

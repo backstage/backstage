@@ -1,5 +1,23 @@
 # @backstage/plugin-api-docs-module-protoc-gen-doc
 
+## 0.1.5
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+
+## 0.1.4
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+
 ## 0.1.3
 
 ### Patch Changes

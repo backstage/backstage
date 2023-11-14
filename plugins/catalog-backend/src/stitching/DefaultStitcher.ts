@@ -15,14 +15,26 @@
  */
 
 import { Config } from '@backstage/config';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
 import splitToChunks from 'lodash/chunk';
 import { DateTime } from 'luxon';
 import { Logger } from 'winston';
+import { getDeferredStitchableEntities } from '../database/operations/stitcher/getDeferredStitchableEntities';
+import { markForStitching } from '../database/operations/stitcher/markForStitching';
 import { performStitching } from '../database/operations/stitcher/performStitching';
 import { DbRefreshStateRow } from '../database/tables';
+import { startTaskPipeline } from '../processing/TaskPipeline';
 import { progressTracker } from './progressTracker';
-import { Stitcher, StitchingStrategy } from './types';
+import {
+  Stitcher,
+  StitchingStrategy,
+  stitchingStrategyFromConfig,
+} from './types';
+
+type DeferredStitchItem = Awaited<
+  ReturnType<typeof getDeferredStitchableEntities>
+>[0];
 
 type StitchProgressTracker = ReturnType<typeof progressTracker>;
 
@@ -36,9 +48,10 @@ export class DefaultStitcher implements Stitcher {
   private readonly logger: Logger;
   private readonly strategy: StitchingStrategy;
   private readonly tracker: StitchProgressTracker;
+  private stopFunc?: () => void;
 
   static fromConfig(
-    _config: Config,
+    config: Config,
     options: {
       knex: Knex;
       logger: Logger;
@@ -47,7 +60,7 @@ export class DefaultStitcher implements Stitcher {
     return new DefaultStitcher({
       knex: options.knex,
       logger: options.logger,
-      strategy: { mode: 'immediate' },
+      strategy: stitchingStrategyFromConfig(config),
     });
   }
 
@@ -67,6 +80,16 @@ export class DefaultStitcher implements Stitcher {
     entityIds?: Iterable<string>;
   }) {
     const { entityRefs, entityIds } = options;
+
+    if (this.strategy.mode === 'deferred') {
+      await markForStitching({
+        knex: this.knex,
+        strategy: this.strategy,
+        entityRefs,
+        entityIds,
+      });
+      return;
+    }
 
     if (entityRefs) {
       for (const entityRef of entityRefs) {
@@ -91,11 +114,55 @@ export class DefaultStitcher implements Stitcher {
   }
 
   async start() {
-    // Only called immediately for now
+    if (this.strategy.mode === 'deferred') {
+      if (this.stopFunc) {
+        throw new Error('Processing engine is already started');
+      }
+
+      const { pollingInterval, stitchTimeout } = this.strategy;
+
+      const stopPipeline = startTaskPipeline<DeferredStitchItem>({
+        lowWatermark: 2,
+        highWatermark: 5,
+        pollingIntervalMs: durationToMilliseconds(pollingInterval),
+        loadTasks: async count => {
+          return await this.#getStitchableEntities(count, stitchTimeout);
+        },
+        processTask: async item => {
+          return await this.#stitchOne({
+            entityRef: item.entityRef,
+            stitchTicket: item.stitchTicket,
+            stitchRequestedAt: item.stitchRequestedAt,
+          });
+        },
+      });
+
+      this.stopFunc = () => {
+        stopPipeline();
+      };
+    }
   }
 
   async stop() {
-    // Only called immediately for now
+    if (this.strategy.mode === 'deferred') {
+      if (this.stopFunc) {
+        this.stopFunc();
+        this.stopFunc = undefined;
+      }
+    }
+  }
+
+  async #getStitchableEntities(count: number, stitchTimeout: HumanDuration) {
+    try {
+      return await getDeferredStitchableEntities({
+        knex: this.knex,
+        batchSize: count,
+        stitchTimeout: stitchTimeout,
+      });
+    } catch (error) {
+      this.logger.warn('Failed to load stitchable entities', error);
+      return [];
+    }
   }
 
   async #stitchOne(options: {

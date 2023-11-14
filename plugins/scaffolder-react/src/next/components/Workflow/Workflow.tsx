@@ -28,6 +28,9 @@ import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSche
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
 
+import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
+import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
+
 const useStyles = makeStyles<BackstageTheme>(() => ({
   markdown: {
     /** to make the styles for React Markdown not leak into the description */
@@ -48,11 +51,14 @@ export type WorkflowProps = {
   description?: string;
   namespace: string;
   templateName: string;
+  components?: {
+    ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
+  };
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<
   StepperProps,
   | 'extensions'
-  | 'FormProps'
+  | 'formProps'
   | 'components'
   | 'onCreate'
   | 'initialState'
@@ -77,6 +83,8 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
   const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
 
+  const sortedManifest = useFilteredSchemaProperties(manifest);
+
   useEffect(() => {
     if (error) {
       errorApi.post(new Error(`Failed to load template, ${error}`));
@@ -90,19 +98,25 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   return (
     <Content>
       {loading && <Progress />}
-      {manifest && (
+      {sortedManifest && (
         <InfoCard
-          title={title ?? manifest.title}
+          title={title ?? sortedManifest.title}
           subheader={
             <MarkdownContent
               className={styles.markdown}
-              content={description ?? manifest.description ?? 'No description'}
+              content={
+                description ?? sortedManifest.description ?? 'No description'
+              }
             />
           }
           noPadding
           titleTypographyProps={{ component: 'h2' }}
         >
-          <Stepper manifest={manifest} templateName={templateName} {...props} />
+          <Stepper
+            manifest={sortedManifest}
+            templateName={templateName}
+            {...props}
+          />
         </InfoCard>
       )}
     </Content>

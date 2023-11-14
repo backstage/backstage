@@ -1,5 +1,52 @@
 # @backstage/plugin-graphql-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/plugin-catalog-graphql@0.4.1
+  - @backstage/config@1.1.1
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.2
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-graphql@0.4.1-next.0
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-graphql@0.4.1-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/config@1.1.1
+
+## 0.2.0
+
+### Minor Changes
+
+- 9def1e95ab: This package has been deprecated, consider using [@frontside/backstage-plugin-graphql-backend](https://www.npmjs.com/package/@frontside/backstage-plugin-graphql-backend) instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-catalog-graphql@0.4.0
+  - @backstage/config@1.1.1
+
 ## 0.1.44-next.2
 
 ### Patch Changes

@@ -18,7 +18,7 @@ import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 
-import { rootRouteRef } from '../../routes';
+import { playlistRouteRef, rootRouteRef } from '../../routes';
 import { PlaylistCard } from './PlaylistCard';
 
 describe('<PlaylistCard/>', () => {
@@ -39,6 +39,7 @@ describe('<PlaylistCard/>', () => {
       {
         mountedRoutes: {
           '/playlists': rootRouteRef,
+          '/playlists/:playlistId': playlistRouteRef,
           '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
       },

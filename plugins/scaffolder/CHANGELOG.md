@@ -1,5 +1,142 @@
 # @backstage/plugin-scaffolder
 
+## 1.16.0
+
+### Minor Changes
+
+- f28c11743a: Add a possibility to use a formatter on a warning panel. Applied it for a scaffolder template
+- 3fdffbb699: Release design improvements for the `Scaffolder` plugin and support v5 of `@rjsf/*` libraries.
+
+  This change should be non-breaking. If you're seeing typescript issues after migrating please [open an issue](https://github.com/backstage/backstage/issues/new/choose)
+
+  The `next` versions like `createNextFieldExtension` and `NextScaffolderPage` have been promoted to the public interface under `createScaffolderFieldExtension` and `ScaffolderPage`, so any older imports which are no longer found will need updating from `@backstage/plugin-scaffolder/alpha` or `@backstage/plugin-scaffolder-react/alpha` will need to be imported from `@backstage/plugin-scaffolder` and `@backstage/plugin-scaffolder-react` respectively.
+
+  The legacy versions are now available in `/alpha` under `createLegacyFieldExtension` and `LegacyScaffolderPage` if you're running into issues, but be aware that these will be removed in a next mainline release.
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 69ee8d75f4: Remove `button` prop from used MaterialUI `MenuItem` component fixing incompatibility with MaterialUI v5.
+- c838da0edd: Updated dependency `@rjsf/utils` to `5.13.6`.
+  Updated dependency `@rjsf/core` to `5.13.6`.
+  Updated dependency `@rjsf/material-ui` to `5.13.6`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.13.6`.
+- 26e4d916d5: Title and description in RepoUrlPicker are now correctly displayed.
+- 69c14904b6: Use `EntityRefLinks` with `hideIcons` property to avoid double icons
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/plugin-scaffolder-common@1.4.3
+  - @backstage/integration@1.7.2
+  - @backstage/integration-react@1.1.21
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-permission-react@0.4.17
+  - @backstage/plugin-scaffolder-react@1.6.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+
+## 1.16.0-next.2
+
+### Minor Changes
+
+- [#20357](https://github.com/backstage/backstage/pull/20357) [`f28c11743a`](https://github.com/backstage/backstage/commit/f28c11743a97c972c0c14b58f24696448810dcc5) Thanks [@acierto](https://github.com/acierto)! - Add a possibility to use a formatter on a warning panel. Applied it for a scaffolder template
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/plugin-scaffolder-react@1.6.0-next.2
+
+## 1.16.0-next.1
+
+### Patch Changes
+
+- 26e4d916d5: Title and description in RepoUrlPicker are now correctly displayed.
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/plugin-scaffolder-react@1.6.0-next.1
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/plugin-scaffolder-common@1.4.3-next.1
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-permission-react@0.4.17-next.0
+
+## 1.16.0-next.0
+
+### Minor Changes
+
+- 3fdffbb699: Release design improvements for the `Scaffolder` plugin and support v5 of `@rjsf/*` libraries.
+
+  This change should be non-breaking. If you're seeing typescript issues after migrating please [open an issue](https://github.com/backstage/backstage/issues/new/choose)
+
+  The `next` versions like `createNextFieldExtension` and `NextScaffolderPage` have been promoted to the public interface under `createScaffolderFieldExtension` and `ScaffolderPage`, so any older imports which are no longer found will need updating from `@backstage/plugin-scaffolder/alpha` or `@backstage/plugin-scaffolder-react/alpha` will need to be imported from `@backstage/plugin-scaffolder` and `@backstage/plugin-scaffolder-react` respectively.
+
+  The legacy versions are now available in `/alpha` under `createLegacyFieldExtension` and `LegacyScaffolderPage` if you're running into issues, but be aware that these will be removed in a next mainline release.
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/plugin-scaffolder-common@1.4.3-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/integration-react@1.1.21-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/plugin-permission-react@0.4.17-next.0
+  - @backstage/plugin-scaffolder-react@1.6.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+
+## 1.15.1
+
+### Patch Changes
+
+- b337d78c3b: fixed issue related template editor fails with multiple templates per file.
+- ff2ab02690: Make entity picker more reliable with only one available entity
+- 83e4a42ccd: Display log visibility button on the template panel
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 4c70fe497d: `RepoUrlPickerRepoName` now correctly handles value changes in allowed repos.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/integration-react@1.1.20
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-permission-react@0.4.16
+  - @backstage/plugin-scaffolder-react@1.5.6
+  - @backstage/theme@0.4.3
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-scaffolder-common@1.4.2
+
 ## 1.15.1-next.2
 
 ### Patch Changes

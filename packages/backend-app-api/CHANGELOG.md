@@ -1,5 +1,89 @@
 # @backstage/backend-app-api
 
+## 0.5.8
+
+### Patch Changes
+
+- bc9a18d5ec: Added a workaround for double `default` wrapping when dynamically importing CommonJS modules with default exports.
+- Updated dependencies
+  - @backstage/config-loader@1.5.3
+  - @backstage/cli-node@0.2.0
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-tasks@0.5.12
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1
+  - @backstage/plugin-permission-node@0.7.18
+
+## 0.5.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/backend-tasks@0.5.12-next.2
+  - @backstage/plugin-auth-node@0.4.1-next.2
+  - @backstage/plugin-permission-node@0.7.18-next.2
+  - @backstage/config-loader@1.5.3-next.0
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/backend-tasks@0.5.12-next.1
+  - @backstage/config-loader@1.5.3-next.0
+  - @backstage/plugin-auth-node@0.4.1-next.1
+  - @backstage/plugin-permission-node@0.7.18-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.0-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.5.8-next.0
+
+### Patch Changes
+
+- bc9a18d5ec: Added a workaround for double `default` wrapping when dynamically importing CommonJS modules with default exports.
+- Updated dependencies
+  - @backstage/config-loader@1.5.2-next.0
+  - @backstage/cli-node@0.2.0-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/backend-tasks@0.5.12-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1-next.0
+  - @backstage/plugin-permission-node@0.7.18-next.0
+
+## 0.5.6
+
+### Patch Changes
+
+- 74491c9602: Moved `HostDiscovery` from `@backstage/backend-common`.
+- a4617c422a: Added `watch` option to configuration loaders that can be used to disable file watching by setting it to `false`.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/config-loader@1.5.1
+  - @backstage/errors@1.2.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-permission-node@0.7.17
+  - @backstage/cli-node@0.1.5
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 0.5.6-next.2
 
 ### Patch Changes

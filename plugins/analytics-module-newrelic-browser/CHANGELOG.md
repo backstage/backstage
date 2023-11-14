@@ -1,5 +1,51 @@
 # @backstage/plugin-analytics-module-newrelic-browser
 
+## 0.0.4
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/config@1.1.1
+
+## 0.0.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+
+## 0.0.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.0-next.0
+
+## 0.0.4-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/config@1.1.1
+
+## 0.0.3
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/config@1.1.1
+
 ## 0.0.3-next.2
 
 ### Patch Changes

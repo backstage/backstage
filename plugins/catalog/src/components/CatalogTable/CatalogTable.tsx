@@ -19,6 +19,7 @@ import {
   Entity,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
@@ -33,17 +34,18 @@ import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
 import { capitalize } from 'lodash';
+import pluralize from 'pluralize';
 import React, { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
-import pluralize from 'pluralize';
 
 /**
  * Props for {@link CatalogTable}.
@@ -145,7 +147,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography variant="srOnly">{title}</Typography>
+            <Typography style={visuallyHidden}>{title}</Typography>
             <OpenInNew fontSize="small" />
           </>
         ),
@@ -164,7 +166,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography variant="srOnly">{title}</Typography>
+            <Typography style={visuallyHidden}>{title}</Typography>
             <Edit fontSize="small" />
           </>
         ),
@@ -184,7 +186,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         cellStyle: { paddingLeft: '1em' },
         icon: () => (
           <>
-            <Typography variant="srOnly">{title}</Typography>
+            <Typography style={visuallyHidden}>{title}</Typography>
             {isStarred ? <YellowStar /> : <StarBorder />}
           </>
         ),
@@ -203,9 +205,13 @@ export const CatalogTable = (props: CatalogTableProps) => {
     return {
       entity,
       resolved: {
+        // This name is here for backwards compatibility mostly; the
+        // presentation of refs in the table should in general be handled with
+        // EntityRefLink / EntityName components
         name: humanizeEntityRef(entity, {
           defaultKind: 'Component',
         }),
+        entityRef: stringifyEntityRef(entity),
         ownedByRelationsTitle: ownedByRelations
           .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
           .join(', '),

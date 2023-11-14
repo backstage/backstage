@@ -1,5 +1,168 @@
 # @backstage/plugin-catalog
 
+## 1.15.0
+
+### Minor Changes
+
+- 1e5b7d993a: Added the `DefaultEntityPresentationApi`, which is an implementation of the
+  `EntityPresentationApi` that `@backstage/plugin-catalog-react` exposes through
+  its `entityPresentationApiRef`. This implementation is also by default made
+  available automatically by the catalog plugin, unless you replace it with a
+  custom one. It batch fetches and caches data from the catalog as needed for
+  display, and is customizable by adopters to add their own rendering functions.
+
+### Patch Changes
+
+- eb817ee6d4: Fix spacing inconsistency with links and labels in headers
+- 8a8445663b: Migrate catalog entity cards to new frontend system extension format.
+- e964c17db9: Use default extensions boundary and suspense on the alpha declarative `createCatalogFilterExtension` extension factory.
+- 71c97e7d73: The `spec.lifecycle' field in entities will now always be rendered as a string.
+- 6c2b872153: Add official support for React 18.
+- 0bf6ebda88: Initial entity page implementation for new frontend system at `/alpha`, with an overview page enabled by default and the about card available as an optional card.
+- bb98953cb9: Create declarative extensions for the `Catalog` plugin; this initial plugin preset contains sidebar item, index page and filter extensions, all distributed via `/alpha` subpath.
+
+  The `EntityPage` will be migrated in a follow-up patch.
+
+- 7c265b9758: Fix type error on `CatalogTable` when using Material UI v5
+- 69c14904b6: Use `EntityRefLinks` with `hideIcons` property to avoid double icons
+- 62b5922916: Internal theme type updates
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/plugin-scaffolder-common@1.4.3
+  - @backstage/integration-react@1.1.21
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-search-react@1.7.2
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.15.0-next.2
+
+### Patch Changes
+
+- [#20777](https://github.com/backstage/backstage/pull/20777) [`eb817ee6d4`](https://github.com/backstage/backstage/commit/eb817ee6d4720322773389dbe6ed20d6fc80a541) Thanks [@is343](https://github.com/is343)! - Fix spacing inconsistency with links and labels in headers
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/frontend-plugin-api@0.3.0-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/plugin-search-react@1.7.2-next.2
+
+## 1.15.0-next.1
+
+### Patch Changes
+
+- 62b5922916: Internal theme type updates
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.3.0-next.1
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/plugin-search-react@1.7.2-next.1
+  - @backstage/plugin-scaffolder-common@1.4.3-next.1
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-search-common@1.2.7
+
+## 1.15.0-next.0
+
+### Minor Changes
+
+- 1e5b7d993a: Added the `DefaultEntityPresentationApi`, which is an implementation of the
+  `EntityPresentationApi` that `@backstage/plugin-catalog-react` exposes through
+  its `entityPresentationApiRef`. This implementation is also by default made
+  available automatically by the catalog plugin, unless you replace it with a
+  custom one. It batch fetches and caches data from the catalog as needed for
+  display, and is customizable by adopters to add their own rendering functions.
+
+### Patch Changes
+
+- 8a8445663b: Migrate catalog entity cards to new frontend system extension format.
+- e964c17db9: Use default extensions boundary and suspense on the alpha declarative `createCatalogFilterExtension` extension factory.
+- 71c97e7d73: The `spec.lifecycle' field in entities will now always be rendered as a string.
+- 6c2b872153: Add official support for React 18.
+- 0bf6ebda88: Initial entity page implementation for new frontend system at `/alpha`, with an overview page enabled by default and the about card available as an optional card.
+- bb98953cb9: Create declarative extensions for the `Catalog` plugin; this initial plugin preset contains sidebar item, index page and filter extensions, all distributed via `/alpha` subpath.
+
+  The `EntityPage` will be migrated in a follow-up patch.
+
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/frontend-plugin-api@0.3.0-next.0
+  - @backstage/plugin-scaffolder-common@1.4.3-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/integration-react@1.1.21-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/plugin-search-react@1.7.2-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-search-common@1.2.7
+
+## 1.14.0
+
+### Minor Changes
+
+- 28f1ab2e1a: The catalog plugin no longer implements the experimental reconfiguration API. The create button title can now instead be configured using the new experimental internationalization API, via the `catalogTranslationRef` exported at `/alpha`. For example:
+
+  ```ts
+  import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
+
+  const app = createApp({
+    __experimentalTranslations: {
+      resources: [
+        createTranslationMessages({
+          ref: catalogTranslationRef,
+          catalog_page_create_button_title: 'Create Software',
+        }),
+      ],
+    },
+  });
+  ```
+
+- f3561a2935: include owner chip in catalog search result item
+
+### Patch Changes
+
+- 7c4a8e4d5f: Create an experimental `CatalogSearchResultItemExtension` for declarative integration with Backstage; it can be accessed via the `/alpha` import.
+- 0296f272b4: The `spec.lifecycle' field in entities will now always be rendered as a string.
+- 0b55f773a7: Removed some unused dependencies
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- e5a2956dd2: Migrate catalog api to declarative integration system, it is exported from `/alpha` subpath.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/frontend-plugin-api@0.2.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/integration-react@1.1.20
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-react@1.7.1
+  - @backstage/theme@0.4.3
+  - @backstage/catalog-client@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+  - @backstage/plugin-scaffolder-common@1.4.2
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.14.0-next.2
 
 ### Patch Changes

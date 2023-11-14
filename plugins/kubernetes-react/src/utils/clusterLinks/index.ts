@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { formatClusterLink } from './formatClusterLink';
+export {
+  formatClusterLink,
+  type FormatClusterLinkOptions,
+} from './formatClusterLink';
 export { clusterLinksFormatters } from './formatters';

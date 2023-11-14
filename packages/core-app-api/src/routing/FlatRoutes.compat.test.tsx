@@ -83,7 +83,7 @@ describe.each(['beta', 'stable'])('FlatRoutes %s', rrVersion => {
       );
       if (rendered) {
         rendered.unmount();
-        rendered.rerender(content);
+        rendered = render(content);
       } else {
         rendered = render(content);
       }

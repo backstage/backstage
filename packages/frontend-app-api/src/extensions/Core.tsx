@@ -22,7 +22,7 @@ import {
 
 export const Core = createExtension({
   id: 'core',
-  attachTo: { id: 'root', input: 'default' },
+  attachTo: { id: 'root', input: 'default' }, // ignored
   inputs: {
     apis: createExtensionInput({
       api: coreExtensionData.apiFactory,
@@ -40,9 +40,9 @@ export const Core = createExtension({
   output: {
     root: coreExtensionData.reactElement,
   },
-  factory({ bind, inputs }) {
-    bind({
+  factory({ inputs }) {
+    return {
       root: inputs.root.element,
-    });
+    };
   },
 });

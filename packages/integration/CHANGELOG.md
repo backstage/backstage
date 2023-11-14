@@ -1,5 +1,31 @@
 # @backstage/integration
 
+## 1.7.2
+
+### Patch Changes
+
+- 243c655a68: JSDoc and Error message updates to handle `Azure Active Directory` re-brand to `Entra ID`
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/config@1.1.1
+
+## 1.7.2-next.0
+
+### Patch Changes
+
+- 243c655a68: JSDoc and Error message updates to handle `Azure Active Directory` re-brand to `Entra ID`
+- Updated dependencies
+  - @backstage/config@1.1.1
+
+## 1.7.1
+
+### Patch Changes
+
+- 3963d0b885: Ensure that all relevant config fields are properly marked as secret
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/config@1.1.1
+
 ## 1.7.1-next.1
 
 ### Patch Changes

@@ -1,5 +1,72 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.2.6
+
+### Patch Changes
+
+- dd0350379b: Added dependency on `@backstage/config`
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- 8613ba3928: Switched to using `"exports"` field for `/alpha` subpath export.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1
+
+## 0.2.6-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-auth-node@0.4.1-next.2
+
+## 0.2.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/plugin-auth-node@0.4.1-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.2.6-next.0
+
+### Patch Changes
+
+- dd0350379b: Added dependency on `@backstage/config`
+- 8613ba3928: Switched to using `"exports"` field for `/alpha` subpath export.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1-next.0
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/types@1.1.1
+
 ## 0.2.4-next.2
 
 ### Patch Changes

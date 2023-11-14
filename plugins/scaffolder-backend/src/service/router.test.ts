@@ -38,7 +38,8 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
+import { createRouter, DatabaseTaskStore } from '../index';
+import { TaskBroker } from '@backstage/plugin-scaffolder-node';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import {
   IdentityApiGetIdentityRequest,

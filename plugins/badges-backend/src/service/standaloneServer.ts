@@ -21,12 +21,12 @@ import {
   loadBackendConfig,
   ServerTokenManager,
   HostDiscovery,
-  useHotMemoize,
+  DatabaseManager,
 } from '@backstage/backend-common';
 import { createRouter } from './router';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { DatabaseBadgesStore } from '../database/badgesStore';
-import Knex from 'knex';
+import { ConfigReader } from '@backstage/config';
 
 export interface ServerOptions {
   port: number;
@@ -40,13 +40,14 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'badges-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
   const discovery = HostDiscovery.fromConfig(config);
-  const database = useHotMemoize(module, () => {
-    return Knex({
-      client: 'better-sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
-  });
+  const manager = DatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: { client: 'better-sqlite3', connection: ':memory:' },
+      },
+    }),
+  );
+  const database = manager.forPlugin('badges');
 
   logger.debug('Creating application...');
 
@@ -70,9 +71,7 @@ export async function startStandaloneServer(
     tokenManager,
     logger,
     identity,
-    badgeStore: await DatabaseBadgesStore.create({
-      database: { getClient: async () => database },
-    }),
+    badgeStore: await DatabaseBadgesStore.create({ database }),
   });
 
   let service = createServiceBuilder(module)

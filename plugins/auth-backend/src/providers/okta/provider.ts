@@ -60,6 +60,7 @@ export type OktaAuthProviderOptions = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
   resolverContext: AuthResolverContext;
+  additionalScopes?: string;
 };
 
 export class OktaAuthProvider implements OAuthHandlers {
@@ -67,6 +68,7 @@ export class OktaAuthProvider implements OAuthHandlers {
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
   private readonly resolverContext: AuthResolverContext;
+  private readonly additionalScopes: string;
 
   /**
    * Due to passport-okta-oauth forcing options.state = true,
@@ -89,6 +91,7 @@ export class OktaAuthProvider implements OAuthHandlers {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
     this.resolverContext = options.resolverContext;
+    this.additionalScopes = options.additionalScopes || '';
 
     this.strategy = new OktaStrategy(
       {
@@ -125,11 +128,19 @@ export class OktaAuthProvider implements OAuthHandlers {
     );
   }
 
+  private combineScopeStrings(scopesA: string, scopesB: string) {
+    const scopesAArray = scopesA.split(' ');
+    const scopesBArray = scopesB.split(' ');
+    const combinedScopes = new Set([...scopesAArray, ...scopesBArray]);
+    return Array.from(combinedScopes).join(' ');
+  }
+
   async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
+    const scope = this.combineScopeStrings(req.scope, this.additionalScopes);
     return await executeRedirectStrategy(req, this.strategy, {
       accessType: 'offline',
       prompt: 'consent',
-      scope: req.scope,
+      scope: scope,
       state: encodeState(req.state),
     });
   }
@@ -147,12 +158,9 @@ export class OktaAuthProvider implements OAuthHandlers {
   }
 
   async refresh(req: OAuthRefreshRequest) {
+    const scope = this.combineScopeStrings(req.scope, this.additionalScopes);
     const { accessToken, refreshToken, params } =
-      await executeRefreshTokenStrategy(
-        this.strategy,
-        req.refreshToken,
-        req.scope,
-      );
+      await executeRefreshTokenStrategy(this.strategy, req.refreshToken, scope);
 
     const fullProfile = await executeFetchUserProfileStrategy(
       this.strategy,
@@ -230,6 +238,8 @@ export const okta = createAuthProviderIntegration({
         const callbackUrl =
           customCallbackUrl ||
           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+        const additionalScopes =
+          envConfig.getOptionalString('additionalScopes');
 
         // This is a safe assumption as `passport-okta-oauth` uses the audience
         // as the base for building the authorization, token, and user info URLs.
@@ -254,6 +264,7 @@ export const okta = createAuthProviderIntegration({
           authHandler,
           signInResolver: options?.signIn?.resolver,
           resolverContext,
+          additionalScopes,
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {

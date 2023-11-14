@@ -1,5 +1,76 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.18
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.3.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+
+## 0.3.18-next.1
+
+### Patch Changes
+
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.3.18-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.3.17
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 21f409d776: Export `ScorecardInfo` and `ScorecardsList` components to be able to use manually queried check results directly.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
 ## 0.3.17-next.2
 
 ### Patch Changes

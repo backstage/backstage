@@ -1,5 +1,62 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.1.5
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- a11cdb9200: Added filtering and sorting to unprocessed entities tables.
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- [#20998](https://github.com/backstage/backstage/pull/20998) [`a11cdb9200`](https://github.com/backstage/backstage/commit/a11cdb9200077312ca92ed85b159527226574c08) Thanks [@alde](https://github.com/alde)! - Added filtering and sorting to unprocessed entities tables.
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.4-next.0
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
+## 0.1.4
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.3
+
 ## 0.1.4-next.2
 
 ### Patch Changes

@@ -17,24 +17,19 @@
 import React, { JSX } from 'react';
 import { ConfigReader, Config } from '@backstage/config';
 import {
+  AppTree,
+  appTreeApiRef,
   BackstagePlugin,
   coreExtensionData,
   ExtensionDataRef,
   ExtensionOverrides,
+  RouteRef,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { Core } from '../extensions/Core';
 import { CoreRoutes } from '../extensions/CoreRoutes';
 import { CoreLayout } from '../extensions/CoreLayout';
 import { CoreNav } from '../extensions/CoreNav';
-import {
-  createExtensionInstance,
-  ExtensionInstance,
-} from './createExtensionInstance';
-import {
-  ExtensionInstanceParameters,
-  mergeExtensionParameters,
-  readAppExtensionParameters,
-} from './parameters';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -44,11 +39,9 @@ import {
   ConfigApi,
   configApiRef,
   IconComponent,
-  RouteRef,
   BackstagePlugin as LegacyBackstagePlugin,
   featureFlagsApiRef,
   attachComponentData,
-  useRouteRef,
   identityApiRef,
   AppTheme,
 } from '@backstage/core-plugin-api';
@@ -57,7 +50,6 @@ import {
   ApiFactoryRegistry,
   ApiProvider,
   ApiResolver,
-  AppRouteBinder,
   AppThemeSelector,
 } from '@backstage/core-app-api';
 
@@ -75,10 +67,6 @@ import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultCo
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { RoutingProvider } from '../../../core-app-api/src/routing/RoutingProvider';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { resolveRouteBindings } from '../../../core-app-api/src/app/resolveRouteBindings';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementations/AppLanguageApi/AppLanguageSelector';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
@@ -91,12 +79,27 @@ import {
 import { BrowserRouter, Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
-import { extractRouteInfoFromInstanceTree } from '../routing/extractRouteInfoFromInstanceTree';
+import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 import {
   appLanguageApiRef,
   translationApiRef,
 } from '@backstage/core-plugin-api/alpha';
+import { AppRouteBinder } from '../routing';
+import { RoutingProvider } from '../routing/RoutingProvider';
+import { resolveRouteBindings } from '../routing/resolveRouteBindings';
+import { collectRouteIds } from '../routing/collectRouteIds';
+import { createAppTree } from '../tree';
+import { AppNode } from '@backstage/frontend-plugin-api';
+
+const builtinExtensions = [
+  Core,
+  CoreRoutes,
+  CoreNav,
+  CoreLayout,
+  LightTheme,
+  DarkTheme,
+];
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -116,21 +119,39 @@ export interface ExtensionTree {
 export function createExtensionTree(options: {
   config: Config;
 }): ExtensionTree {
-  const features = getAvailableFeatures();
-  const { instances } = createInstances({
+  const features = getAvailableFeatures(options.config);
+  const tree = createAppTree({
     features,
+    builtinExtensions,
     config: options.config,
   });
 
+  function convertNode(node?: AppNode): ExtensionTreeNode | undefined {
+    return (
+      node && {
+        id: node.spec.id,
+        getData<T>(ref: ExtensionDataRef<T>): T | undefined {
+          return node.instance?.getData(ref);
+        },
+      }
+    );
+  }
+
   return {
     getExtension(id: string): ExtensionTreeNode | undefined {
-      return instances.get(id);
+      return convertNode(tree.nodes.get(id));
     },
     getExtensionAttachments(
       id: string,
       inputName: string,
     ): ExtensionTreeNode[] {
-      return instances.get(id)?.attachments.get(inputName) ?? [];
+      return (
+        tree.nodes
+          .get(id)
+          ?.edges.attachments.get(inputName)
+          ?.map(convertNode)
+          .filter((node): node is ExtensionTreeNode => Boolean(node)) ?? []
+      );
     },
     getRootRoutes(): JSX.Element[] {
       return this.getExtensionAttachments('core.routes', 'routes').map(node => {
@@ -180,96 +201,31 @@ export function createExtensionTree(options: {
   };
 }
 
-/**
- * @internal
- */
-export function createInstances(options: {
-  features: (BackstagePlugin | ExtensionOverrides)[];
-  config: Config;
-}) {
-  const builtinExtensions = [
-    Core,
-    CoreRoutes,
-    CoreNav,
-    CoreLayout,
-    LightTheme,
-    DarkTheme,
-  ];
+function deduplicateFeatures(
+  allFeatures: (BackstagePlugin | ExtensionOverrides)[],
+): (BackstagePlugin | ExtensionOverrides)[] {
+  // Start by removing duplicates by reference
+  const features = Array.from(new Set(allFeatures));
 
-  // pull in default extension instance from discovered packages
-  // apply config to adjust default extension instances and add more
-  const extensionParams = mergeExtensionParameters({
-    features: options.features,
-    builtinExtensions,
-    parameters: readAppExtensionParameters(options.config),
-  });
-
-  // TODO: validate the config of all extension instances
-  // We do it at this point to ensure that merging (if any) of config has already happened
-
-  // Create attachment map so that we can look attachments up during instance creation
-  const attachmentMap = new Map<
-    string,
-    Map<string, ExtensionInstanceParameters[]>
-  >();
-  for (const instanceParams of extensionParams) {
-    const extensionId = instanceParams.attachTo.id;
-    const pointId = instanceParams.attachTo.input;
-    let pointMap = attachmentMap.get(extensionId);
-    if (!pointMap) {
-      pointMap = new Map();
-      attachmentMap.set(extensionId, pointMap);
-    }
-
-    let instances = pointMap.get(pointId);
-    if (!instances) {
-      instances = [];
-      pointMap.set(pointId, instances);
-    }
-
-    instances.push(instanceParams);
-  }
-
-  const instances = new Map<string, ExtensionInstance>();
-
-  function createInstance(
-    instanceParams: ExtensionInstanceParameters,
-  ): ExtensionInstance {
-    const extensionId = instanceParams.extension.id;
-    const existingInstance = instances.get(extensionId);
-    if (existingInstance) {
-      return existingInstance;
-    }
-
-    const attachments = new Map(
-      Array.from(attachmentMap.get(extensionId)?.entries() ?? []).map(
-        ([inputName, attachmentConfigs]) => {
-          return [inputName, attachmentConfigs.map(createInstance)];
-        },
-      ),
-    );
-
-    const newInstance = createExtensionInstance({
-      extension: instanceParams.extension,
-      source: instanceParams.source,
-      config: instanceParams.config,
-      attachments,
-    });
-
-    instances.set(extensionId, newInstance);
-
-    return newInstance;
-  }
-
-  const coreInstance = createInstance(
-    extensionParams.find(p => p.extension.id === 'core')!,
-  );
-
-  return { coreInstance, instances };
+  // Plugins are deduplicated by ID, last one wins
+  const seenIds = new Set<string>();
+  return features
+    .reverse()
+    .filter(feature => {
+      if (feature.$$type !== '@backstage/BackstagePlugin') {
+        return true;
+      }
+      if (seenIds.has(feature.id)) {
+        return false;
+      }
+      seenIds.add(feature.id);
+      return true;
+    })
+    .reverse();
 }
 
 /** @public */
-export function createApp(options: {
+export function createApp(options?: {
   features?: (BackstagePlugin | ExtensionOverrides)[];
   configLoader?: () => Promise<ConfigApi>;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
@@ -286,18 +242,17 @@ export function createApp(options: {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const discoveredFeatures = getAvailableFeatures();
-    const loadedFeatures = (await options.featureLoader?.({ config })) ?? [];
-    const allFeatures = Array.from(
-      new Set([
-        ...discoveredFeatures,
-        ...(options.features ?? []),
-        ...loadedFeatures,
-      ]),
-    );
+    const discoveredFeatures = getAvailableFeatures(config);
+    const loadedFeatures = (await options?.featureLoader?.({ config })) ?? [];
+    const allFeatures = deduplicateFeatures([
+      ...discoveredFeatures,
+      ...loadedFeatures,
+      ...(options?.features ?? []),
+    ]);
 
-    const { coreInstance } = createInstances({
+    const tree = createAppTree({
       features: allFeatures,
+      builtinExtensions,
       config,
     });
 
@@ -307,17 +262,23 @@ export function createApp(options: {
       ),
     );
 
+    const routeIds = collectRouteIds(allFeatures);
+
     const App = () => (
-      <ApiProvider apis={createApiHolder(coreInstance, config)}>
+      <ApiProvider apis={createApiHolder(tree, config)}>
         <AppContextProvider appContext={appContext}>
           <AppThemeProvider>
             <RoutingProvider
-              {...extractRouteInfoFromInstanceTree(coreInstance)}
-              routeBindings={resolveRouteBindings(options.bindRoutes)}
+              {...extractRouteInfoFromAppNode(tree.root)}
+              routeBindings={resolveRouteBindings(
+                options?.bindRoutes,
+                config,
+                routeIds,
+              )}
             >
               {/* TODO: set base path using the logic from AppRouter */}
               <BrowserRouter>
-                {coreInstance.getData(coreExtensionData.reactElement)}
+                {tree.root.instance!.getData(coreExtensionData.reactElement)}
               </BrowserRouter>
             </RoutingProvider>
           </AppThemeProvider>
@@ -398,22 +359,19 @@ function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
   };
 }
 
-function createApiHolder(
-  coreExtension: ExtensionInstance,
-  configApi: ConfigApi,
-): ApiHolder {
+function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
   const pluginApis =
-    coreExtension.attachments
+    tree.root.edges.attachments
       .get('apis')
-      ?.map(e => e.getData(coreExtensionData.apiFactory))
+      ?.map(e => e.instance?.getData(coreExtensionData.apiFactory))
       .filter((x): x is AnyApiFactory => !!x) ?? [];
 
   const themeExtensions =
-    coreExtension.attachments
+    tree.root.edges.attachments
       .get('themes')
-      ?.map(e => e.getData(coreExtensionData.theme))
+      ?.map(e => e.instance?.getData(coreExtensionData.theme))
       .filter((x): x is AppTheme => !!x) ?? [];
 
   for (const factory of [...defaultApis, ...pluginApis]) {
@@ -460,10 +418,33 @@ function createApiHolder(
   });
 
   factoryRegistry.register('static', {
+    api: appTreeApiRef,
+    deps: {},
+    factory: () => ({
+      getTree: () => ({ tree }),
+    }),
+  });
+
+  factoryRegistry.register('static', {
     api: appThemeApiRef,
     deps: {},
     // TODO: add extension for registering themes
     factory: () => AppThemeSelector.createWithStorage(themeExtensions),
+  });
+
+  factoryRegistry.register('static', {
+    api: appLanguageApiRef,
+    deps: {},
+    factory: () => AppLanguageSelector.createWithStorage(),
+  });
+
+  factoryRegistry.register('default', {
+    api: translationApiRef,
+    deps: { languageApi: appLanguageApiRef },
+    factory: ({ languageApi }) =>
+      I18nextTranslationApi.create({
+        languageApi,
+      }),
   });
 
   factoryRegistry.register('static', {

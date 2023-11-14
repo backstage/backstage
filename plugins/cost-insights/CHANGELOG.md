@@ -1,5 +1,78 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.15
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 69ee8d75f4: Remove `button` prop from used MaterialUI `MenuItem` component fixing incompatibility with MaterialUI v5.
+- d49cffaf6a: Updated dependency `@types/pluralize` to `^0.0.33`.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- 7da799d5b7: Updated dependency `@types/pluralize` to `^0.0.32`.
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-cost-insights-common@0.1.2
+
+## 0.12.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+
+## 0.12.15-next.1
+
+### Patch Changes
+
+- 7da799d5b7: Updated dependency `@types/pluralize` to `^0.0.32`.
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/plugin-cost-insights-common@0.1.2
+
+## 0.12.15-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-cost-insights-common@0.1.2
+
+## 0.12.14
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- ba4820883c: Updated dependency `@types/pluralize` to `^0.0.31`.
+- 959aa2a09f: The experimental plugin configuration has been removed. The trend line can now instead be hidden by setting `costInsights.hideTrendLine` to `true` in the configuration.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/theme@0.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-cost-insights-common@0.1.2
+
 ## 0.12.14-next.2
 
 ### Patch Changes

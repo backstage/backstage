@@ -151,6 +151,32 @@ export async function createRouter(
     },
   );
 
+  router.get(
+    '/v1/entity/:namespace/:kind/:name/job/:jobFullName',
+    async (request, response) => {
+      const token = getBearerTokenFromAuthorizationHeader(
+        request.header('authorization'),
+      );
+      const { namespace, kind, name, jobFullName } = request.params;
+
+      const jenkinsInfo = await jenkinsInfoProvider.getInstance({
+        entityRef: {
+          kind,
+          namespace,
+          name,
+        },
+        jobFullName,
+        backstageToken: token,
+      });
+
+      const build = await jenkinsApi.getJobBuilds(jenkinsInfo, jobFullName);
+
+      response.json({
+        build: build,
+      });
+    },
+  );
+
   router.post(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber',
     async (request, response) => {

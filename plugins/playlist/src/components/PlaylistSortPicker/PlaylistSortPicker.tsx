@@ -74,6 +74,9 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * @public
+ */
 export const PlaylistSortPicker = () => {
   const classes = useStyles();
   const { updateSort } = usePlaylistList();

@@ -14,3 +14,5 @@
  * limitations under the License.
  */
 import '@testing-library/jest-dom';
+
+Element.prototype.scrollIntoView = jest.fn();

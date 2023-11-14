@@ -1,5 +1,70 @@
 # @backstage/plugin-github-issues
 
+## 0.2.15
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/integration@1.7.2
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
+## 0.2.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+
+## 0.2.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.4-next.0
+
+## 0.2.15-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
+## 0.2.14
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 7bd0a8ab3c: Filters out entities that belonged to a different github instance other than the one configured by the plugin
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.3
+
 ## 0.2.14-next.2
 
 ### Patch Changes

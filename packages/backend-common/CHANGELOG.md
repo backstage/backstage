@@ -1,5 +1,92 @@
 # @backstage/backend-common
 
+## 0.19.9
+
+### Patch Changes
+
+- aa13482090: Limit the database creation concurrency to one, defensively
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- 3d043526f4: Updated dependency `aws-sdk-client-mock` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.5.3
+  - @backstage/integration@1.7.2
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/backend-app-api@0.5.8
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.19.9-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-app-api@0.5.8-next.2
+  - @backstage/config-loader@1.5.3-next.0
+
+## 0.19.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/backend-app-api@0.5.8-next.1
+  - @backstage/config-loader@1.5.3-next.0
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/types@1.1.1
+
+## 0.19.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.5.2-next.0
+  - @backstage/backend-app-api@0.5.8-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.19.8
+
+### Patch Changes
+
+- 74491c9602: The `HostDiscovery` export has been deprecated, import it from `@backstage/backend-app-api` instead.
+- b95d66d4ea: Properly close write stream when writing temporary archive for processing zip-based `.readTree()` responses.
+- b94f32271e: Added the ability to fetch git tags through the `Git` class. This is useful for scaffolder actions that want to take action based on tag versions in a cloned repository
+- 0b55f773a7: Removed some unused dependencies
+- 4c39e38f1e: Added `/testUtils` entry point, with a utility for mocking resolve package paths as returned by `resolvePackagePath`.
+- 9101c0d1b6: Updated dependency `@kubernetes/client-node` to `0.19.0`.
+- a250ad775f: Removed `mock-fs` dev dependency.
+- 2a40cd46a8: Adds the optional flag for useRedisSets for the Redis cache to the config.
+- 1c3d6fa2b2: The `useHotCleanup` and `useHotMemoize` helpers are now deprecated, since hot module reloads for backend are being phased out.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/config-loader@1.5.1
+  - @backstage/errors@1.2.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/backend-app-api@0.5.6
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/types@1.1.1
+
 ## 0.19.8-next.2
 
 ### Patch Changes

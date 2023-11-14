@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   AnalyticsContext,
   configApiRef,
@@ -30,12 +31,12 @@ import React, {
   KeyboardEvent,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 
 import { SearchContextProvider, useSearch } from '../../context';
-import { TrackSearch } from '../SearchTracker';
 
 function withContext<T>(Component: ComponentType<T>) {
   return forwardRef<HTMLDivElement, T>((props, ref) => (
@@ -88,14 +89,28 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
 
       const configApi = useApi(configApiRef);
       const [value, setValue] = useState<string>('');
+      const forwardedValueRef = useRef<string>('');
 
       useEffect(() => {
-        setValue(prevValue =>
-          prevValue !== defaultValue ? String(defaultValue) : prevValue,
-        );
-      }, [defaultValue]);
+        setValue(prevValue => {
+          // We only update the value if our current value is the same as it was
+          // for the most recent onChange call. Otherwise it means that the users
+          // has continued typing and we should not replace their input.
+          if (prevValue === forwardedValueRef.current) {
+            return String(defaultValue);
+          }
+          return prevValue;
+        });
+      }, [defaultValue, forwardedValueRef]);
 
-      useDebounce(() => onChange(value), debounceTime, [value]);
+      useDebounce(
+        () => {
+          forwardedValueRef.current = value;
+          onChange(value);
+        },
+        debounceTime,
+        [value],
+      );
 
       const handleChange = useCallback(
         (e: ChangeEvent<HTMLInputElement>) => {
@@ -115,7 +130,9 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       );
 
       const handleClear = useCallback(() => {
+        forwardedValueRef.current = '';
         onChange('');
+        setValue('');
         if (onClear) {
           onClear();
         }
@@ -154,33 +171,29 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       );
 
       return (
-        <TrackSearch>
-          <TextField
-            id="search-bar-text-field"
-            data-testid="search-bar-next"
-            variant="outlined"
-            margin="normal"
-            inputRef={ref}
-            value={value}
-            label={label}
-            placeholder={inputPlaceholder}
-            InputProps={{
-              startAdornment,
-              endAdornment: clearButton
-                ? clearButtonEndAdornment
-                : endAdornment,
-              ...InputProps,
-            }}
-            inputProps={{
-              'aria-label': ariaLabel,
-              ...inputProps,
-            }}
-            fullWidth={fullWidth}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            {...rest}
-          />
-        </TrackSearch>
+        <TextField
+          id="search-bar-text-field"
+          data-testid="search-bar-next"
+          variant="outlined"
+          margin="normal"
+          inputRef={ref}
+          value={value}
+          label={label}
+          placeholder={inputPlaceholder}
+          InputProps={{
+            startAdornment,
+            endAdornment: clearButton ? clearButtonEndAdornment : endAdornment,
+            ...InputProps,
+          }}
+          inputProps={{
+            'aria-label': ariaLabel,
+            ...inputProps,
+          }}
+          fullWidth={fullWidth}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          {...rest}
+        />
       );
     }),
   );

@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import fetch from 'node-fetch';
 import {
   getGitLabRequestOptions,
   GitLabIntegrationConfig,
 } from '@backstage/integration';
+import fetch from 'node-fetch';
 import { Logger } from 'winston';
+
 import {
-  GitLabGroup,
   GitLabDescendantGroupsResponse,
+  GitLabGroup,
   GitLabGroupMembersResponse,
   GitLabUser,
+  PagedResponse,
 } from './types';
 
 export type CommonListOptions = {
@@ -43,11 +44,6 @@ interface UserListOptions extends CommonListOptions {
   without_project_bots?: boolean | undefined;
   exclude_internal?: boolean | undefined;
 }
-
-export type PagedResponse<T> = {
-  items: T[];
-  nextPage?: number;
-};
 
 export class GitLabClient {
   private readonly config: GitLabIntegrationConfig;
@@ -96,7 +92,7 @@ export class GitLabClient {
     options?: CommonListOptions,
   ): Promise<PagedResponse<GitLabUser>> {
     return this.pagedRequest(
-      `/groups/${encodeURIComponent(groupPath)}/members`,
+      `/groups/${encodeURIComponent(groupPath)}/members/all`,
       {
         ...options,
         show_seat_info: true,

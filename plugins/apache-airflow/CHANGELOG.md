@@ -1,5 +1,49 @@
 # @backstage/plugin-apache-airflow
 
+## 0.2.17
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+
+## 0.2.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+
+## 0.2.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/core-plugin-api@1.8.0-next.0
+
+## 0.2.17-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+
+## 0.2.16
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+
 ## 0.2.16-next.2
 
 ### Patch Changes

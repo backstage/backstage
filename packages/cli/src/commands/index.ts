@@ -131,10 +131,6 @@ export function registerScriptCommand(program: Command) {
       'Minify the generated code. Does not apply to app or backend packages.',
     )
     .option(
-      '--experimental-type-build',
-      'Enable experimental type build. Does not apply to app or backend packages. [DEPRECATED]',
-    )
-    .option(
       '--skip-build-dependencies',
       'Skip the automatic building of local dependencies. Applies to backend packages only.',
     )

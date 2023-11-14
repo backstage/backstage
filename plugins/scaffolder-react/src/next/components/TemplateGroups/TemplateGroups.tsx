@@ -23,15 +23,8 @@ import {
 import { Progress, Link } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
 import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
-import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
-
-/**
- * @alpha
- */
-export type TemplateGroupFilter = {
-  title?: React.ReactNode;
-  filter: (entity: TemplateEntityV1beta3) => boolean;
-};
+import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
+import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
 
 /**
  * @alpha

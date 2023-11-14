@@ -1,5 +1,85 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.4.11
+
+### Patch Changes
+
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.15.0
+  - @backstage/plugin-catalog-node@1.5.0
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-tasks@0.5.12
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-events-node@0.2.16
+
+## 0.4.11-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-catalog-backend@1.15.0-next.2
+  - @backstage/backend-tasks@0.5.12-next.2
+  - @backstage/plugin-catalog-node@1.5.0-next.2
+  - @backstage/plugin-events-node@0.2.16-next.2
+
+## 0.4.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.15.0-next.1
+  - @backstage/plugin-catalog-node@1.5.0-next.1
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/backend-tasks@0.5.12-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-events-node@0.2.16-next.1
+  - @backstage/plugin-permission-common@0.7.9
+
+## 0.4.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.15.0-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/backend-tasks@0.5.12-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-node@1.4.8-next.0
+  - @backstage/plugin-events-node@0.2.16-next.0
+  - @backstage/plugin-permission-common@0.7.9
+
+## 0.4.10
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-catalog-backend@1.14.0
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+  - @backstage/plugin-events-node@0.2.15
+  - @backstage/plugin-permission-common@0.7.9
+
 ## 0.4.10-next.2
 
 ### Patch Changes

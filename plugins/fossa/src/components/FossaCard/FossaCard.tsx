@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import { Grid, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -31,7 +34,6 @@ import {
   EmptyState,
   InfoCard,
   InfoCardVariants,
-  MissingAnnotationEmptyState,
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';

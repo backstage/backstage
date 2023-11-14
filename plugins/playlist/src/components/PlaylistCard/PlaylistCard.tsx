@@ -22,7 +22,6 @@ import {
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import { Playlist } from '@backstage/plugin-playlist-common';
-import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Card,
@@ -36,10 +35,9 @@ import {
 } from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
 import React from 'react';
-
 import { playlistRouteRef } from '../../routes';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   cardHeader: {
     position: 'relative',
   },

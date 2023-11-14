@@ -15,6 +15,7 @@
  */
 
 import { PortableSchema } from '../schema';
+import { Expand } from '../types';
 import { ExtensionDataRef } from './createExtensionDataRef';
 import { ExtensionInput } from './createExtensionInput';
 import { BackstagePlugin } from './createPlugin';
@@ -31,13 +32,6 @@ export type AnyExtensionInputMap = {
     { optional: boolean; singleton: boolean }
   >;
 };
-
-// TODO(Rugvip): This might be a quite useful utility type, maybe add to @backstage/types?
-/**
- * Utility type to expand type aliases into their equivalent type.
- * @ignore
- */
-export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 /**
  * Converts an extension data map into the matching concrete data values type.
@@ -87,10 +81,9 @@ export interface CreateExtensionOptions<
   configSchema?: PortableSchema<TConfig>;
   factory(options: {
     source?: BackstagePlugin;
-    bind(values: Expand<ExtensionDataValues<TOutput>>): void;
     config: TConfig;
     inputs: Expand<ExtensionInputValues<TInputs>>;
-  }): void;
+  }): Expand<ExtensionDataValues<TOutput>>;
 }
 
 /** @public */
@@ -104,13 +97,12 @@ export interface Extension<TConfig> {
   configSchema?: PortableSchema<TConfig>;
   factory(options: {
     source?: BackstagePlugin;
-    bind(values: ExtensionInputValues<any>): void;
     config: TConfig;
     inputs: Record<
       string,
       undefined | Record<string, unknown> | Array<Record<string, unknown>>
     >;
-  }): void;
+  }): ExtensionDataValues<any>;
 }
 
 /** @public */
@@ -126,12 +118,11 @@ export function createExtension<
     disabled: options.disabled ?? false,
     $$type: '@backstage/Extension',
     inputs: options.inputs ?? {},
-    factory({ bind, config, inputs }) {
+    factory({ inputs, ...rest }) {
       // TODO: Simplify this, but TS wouldn't infer the input type for some reason
       return options.factory({
-        bind,
-        config,
         inputs: inputs as Expand<ExtensionInputValues<TInputs>>,
+        ...rest,
       });
     },
   };

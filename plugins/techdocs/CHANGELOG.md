@@ -1,5 +1,132 @@
 # @backstage/plugin-techdocs
 
+## 1.9.0
+
+### Minor Changes
+
+- 17f93d5589: A new analytics event `not-found` will be published when a user visits a documentation site that does not exist
+
+### Patch Changes
+
+- 4728b3960d: Fixed navigation bug that caused users to not be scrolled to the top of a new page. Fixed navigation bug where using backwards and forwards browser navigation did not scroll users to the correct place on the TechDoc page.
+- a3add7a682: Export alpha routes and nav item extension, only available for applications that uses the new Frontend system.
+- 71c97e7d73: The `spec.lifecycle' field in entities will now always be rendered as a string.
+- 68fc9dc60e: Updated alpha exports according to routing changes in `@backstage/frontend-plugin-api`.
+- 6c2b872153: Add official support for React 18.
+- 0bf6ebda88: Added entity page content for the new plugin exported via `/alpha`.
+- 67cc85bb14: Switched the conditional `react-dom/client` import to use `import(...)` rather than `require(...)`.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- 38cda52746: Added support for React 18. The new `createRoot` API from `react-dom/client` will now be used if present.
+- fdb5e23602: Import `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react` to remove the cyclical dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/integration@1.7.2
+  - @backstage/integration-react@1.1.21
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-techdocs-react@1.1.13
+  - @backstage/plugin-search-react@1.7.2
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.9.0-next.2
+
+### Minor Changes
+
+- [#20851](https://github.com/backstage/backstage/pull/20851) [`17f93d5589`](https://github.com/backstage/backstage/commit/17f93d5589812df3dea53d956212e184b080fbac) Thanks [@agentbellnorm](https://github.com/agentbellnorm)! - A new analytics event `not-found` will be published when a user visits a documentation site that does not exist
+
+### Patch Changes
+
+- [#20842](https://github.com/backstage/backstage/pull/20842) [`fdb5e23602`](https://github.com/backstage/backstage/commit/fdb5e2360299c5faa30f4d4236fc548b94d37446) Thanks [@benjdlambert](https://github.com/benjdlambert)! - Import `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react` to remove the cyclical dependency
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/frontend-plugin-api@0.3.0-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/plugin-search-react@1.7.2-next.2
+  - @backstage/plugin-techdocs-react@1.1.13-next.2
+
+## 1.8.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/frontend-plugin-api@0.3.0-next.1
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/plugin-search-react@1.7.2-next.1
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/plugin-search-common@1.2.7
+  - @backstage/plugin-techdocs-react@1.1.13-next.1
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- 4728b3960d: Fixed navigation bug that caused users to not be scrolled to the top of a new page. Fixed navigation bug where using backwards and forwards browser navigation did not scroll users to the correct place on the TechDoc page.
+- a3add7a682: Export alpha routes and nav item extension, only available for applications that uses the new Frontend system.
+- 71c97e7d73: The `spec.lifecycle' field in entities will now always be rendered as a string.
+- 68fc9dc60e: Updated alpha exports according to routing changes in `@backstage/frontend-plugin-api`.
+- 6c2b872153: Add official support for React 18.
+- 0bf6ebda88: Added entity page content for the new plugin exported via `/alpha`.
+- 67cc85bb14: Switched the conditional `react-dom/client` import to use `import(...)` rather than `require(...)`.
+- 38cda52746: Added support for React 18. The new `createRoot` API from `react-dom/client` will now be used if present.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/frontend-plugin-api@0.3.0-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/integration-react@1.1.21-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/plugin-techdocs-react@1.1.13-next.0
+  - @backstage/plugin-search-react@1.7.2-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-common@1.2.7
+
+## 1.8.0
+
+### Minor Changes
+
+- 27740caa2d: Added experimental support for declarative integration via the `/alpha` subpath.
+
+### Patch Changes
+
+- 4918f65ab2: Create an experimental `TechDocsSearchResultItemExtension` for declarative integration with Backstage; it can be accessed via the `/alpha` import.
+- 3605370af6: Improved `DocsTable` to display pagination controls dynamically, appearing only when needed.
+- 0296f272b4: The `spec.lifecycle' field in entities will now always be rendered as a string.
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 9468a67b92: Added support for React 18. The new `createRoot` API from `react-dom/client` will now be used if present.
+- df449a7a31: Add kind column by default to TechDocsTable
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/frontend-plugin-api@0.2.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/integration-react@1.1.20
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-react@1.7.1
+  - @backstage/plugin-techdocs-react@1.1.12
+  - @backstage/theme@0.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.7.1-next.2
 
 ### Patch Changes

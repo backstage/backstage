@@ -1,5 +1,75 @@
 # @backstage/backend-test-utils
 
+## 0.2.8
+
+### Patch Changes
+
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- bb688f7b3b: Ensure recursive deletion of temporary directories in tests
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-app-api@0.5.8
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1
+
+## 0.2.8-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/backend-app-api@0.5.8-next.2
+  - @backstage/plugin-auth-node@0.4.1-next.2
+
+## 0.2.8-next.1
+
+### Patch Changes
+
+- bb688f7b3b: Ensure recursive deletion of temporary directories in tests
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/backend-app-api@0.5.8-next.1
+  - @backstage/plugin-auth-node@0.4.1-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.8-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1-next.0
+
+## 0.2.7
+
+### Patch Changes
+
+- a250ad775f: Added `createMockDirectory()` to help out with file system mocking in tests.
+- 5ddc03813e: Remove third type parameter used for `MockInstance`, in order to be compatible with older versions of `@types/jest`.
+- 74491c9602: Updated to import `HostDiscovery` from `@backstage/backend-app-api`.
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/errors@1.2.3
+  - @backstage/backend-app-api@0.5.6
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 0.2.7-next.2
 
 ### Patch Changes

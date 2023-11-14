@@ -16,7 +16,7 @@
 
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { cleanup } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import { AnalyzeResult } from '../api';
 
 import {
@@ -73,7 +73,6 @@ describe('useImportState', () => {
   describe('onAnalysis & onPrepare & onReview & onReset', () => {
     it('should work', async () => {
       const { result } = renderHook(() => useImportState());
-      await cleanup();
 
       expect(result.current).toMatchObject({
         activeFlow: 'unknown',
@@ -148,7 +147,6 @@ describe('useImportState', () => {
 
     it('should work skipped', async () => {
       const { result } = renderHook(() => useImportState());
-      await cleanup();
 
       expect(result.current).toMatchObject({
         activeFlow: 'unknown',
@@ -198,7 +196,6 @@ describe('useImportState', () => {
 
     it('should ignore on invalid state', async () => {
       const { result } = renderHook(() => useImportState());
-      await cleanup();
 
       // state 'analyze'
       act(() => {
@@ -264,7 +261,6 @@ describe('useImportState', () => {
   describe('onGoBack', () => {
     it('should work', async () => {
       const { result } = renderHook(() => useImportState());
-      await cleanup();
 
       expect(result.current.activeStepNumber).toBe(0);
       expect(result.current.onGoBack).toBeUndefined();
@@ -303,7 +299,6 @@ describe('useImportState', () => {
 
     it('should work for skipped', async () => {
       const { result } = renderHook(() => useImportState());
-      await cleanup();
 
       expect(result.current.activeStepNumber).toBe(0);
       expect(result.current.onGoBack).toBeUndefined();
@@ -329,7 +324,6 @@ describe('useImportState', () => {
     describe('should consider prepareNotRepeatable', () => {
       it('as true', async () => {
         const { result } = renderHook(() => useImportState());
-        await cleanup();
 
         expect(result.current.onGoBack).toBeUndefined();
 
@@ -351,7 +345,6 @@ describe('useImportState', () => {
 
       it('as false', async () => {
         const { result } = renderHook(() => useImportState());
-        await cleanup();
 
         expect(result.current.onGoBack).toBeUndefined();
 

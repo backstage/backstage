@@ -1,5 +1,72 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-server
 
+## 0.1.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0
+  - @backstage/integration@1.7.2
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-tasks@0.5.12
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.1.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/backend-tasks@0.5.12-next.2
+  - @backstage/plugin-catalog-node@1.5.0-next.2
+
+## 0.1.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0-next.1
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/backend-tasks@0.5.12-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.1.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/backend-tasks@0.5.12-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-node@1.4.8-next.0
+
+## 0.1.19
+
+### Patch Changes
+
+- 890e3b5ad4: Make sure to include the error message when ingestion fails
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+
 ## 0.1.19-next.2
 
 ### Patch Changes

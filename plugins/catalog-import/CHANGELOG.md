@@ -1,5 +1,92 @@
 # @backstage/plugin-catalog-import
 
+## 0.10.2
+
+### Patch Changes
+
+- 6db75b900a: Create an experimental plugin that is compatible with the declarative integration system, it is exported from the `/alpha` subpath.
+- 6c2b872153: Add official support for React 18.
+- dee1f39fcc: Fix missing children key warning on the default catalog import page.
+- 71c97e7d73: The `app.title` configuration is now properly required to be a string.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/integration@1.7.2
+  - @backstage/integration-react@1.1.21
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.18
+
+## 0.10.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/frontend-plugin-api@0.3.0-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+  - @backstage/integration-react@1.1.21-next.1
+
+## 0.10.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/frontend-plugin-api@0.3.0-next.1
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.17
+
+## 0.10.2-next.0
+
+### Patch Changes
+
+- 6db75b900a: Create an experimental plugin that is compatible with the declarative integration system, it is exported from the `/alpha` subpath.
+- 6c2b872153: Add official support for React 18.
+- 71c97e7d73: The `app.title` configuration is now properly required to be a string.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/frontend-plugin-api@0.3.0-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/integration-react@1.1.21-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.17
+
+## 0.10.1
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 0296f272b4: The `app.title` configuration is now properly required to be a string.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/integration-react@1.1.20
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.17
+
 ## 0.10.1-next.2
 
 ### Patch Changes

@@ -53,12 +53,15 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-auth-backend': '1.0.0',
     '@backstage/plugin-auth-node': '1.0.0',
     '@backstage/plugin-catalog-backend': '1.0.0',
+    '@backstage/plugin-catalog-backend-module-scaffolder-entity-model': '1.0.0',
     '@backstage/plugin-permission-common': '1.0.0',
     '@backstage/plugin-permission-node': '1.0.0',
     '@backstage/plugin-proxy-backend': '1.0.0',
     '@backstage/plugin-scaffolder-backend': '1.0.0',
     '@backstage/plugin-search-backend': '1.0.0',
+    '@backstage/plugin-search-backend-module-catalog': '1.0.0',
     '@backstage/plugin-search-backend-module-pg': '1.0.0',
+    '@backstage/plugin-search-backend-module-techdocs': '1.0.0',
     '@backstage/plugin-search-backend-node': '1.0.0',
     '@backstage/plugin-techdocs-backend': '1.0.0',
     '@backstage/app-defaults': '1.0.0',
@@ -103,6 +106,7 @@ describe('tasks', () => {
 
   const mockDir = createMockDirectory();
 
+  const origCwd = process.cwd();
   const realChdir = process.chdir;
   // If anyone calls chdir then make it resolve within the tmpdir
   const mockChdir = jest.spyOn(process, 'chdir');
@@ -128,6 +132,10 @@ describe('tasks', () => {
   afterEach(() => {
     mockExec.mockRestore();
     mockChdir.mockReset();
+  });
+
+  afterAll(() => {
+    realChdir(origCwd);
   });
 
   describe('checkAppExistsTask', () => {

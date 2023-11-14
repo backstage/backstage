@@ -10,6 +10,7 @@ import { Config } from '@backstage/config';
 import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -22,6 +23,12 @@ export class DirectoryPreparer implements PreparerBase {
   static fromConfig(config: Config, options: PreparerConfig): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
   shouldCleanPreparedDirectory(): boolean;
+}
+
+// @public
+export interface DocsBuildStrategy {
+  // (undocumented)
+  shouldBuild(params: { entity: Entity }): Promise<boolean>;
 }
 
 // @public
@@ -228,6 +235,15 @@ export type RemoteProtocol = 'url' | 'dir';
 
 // @public
 export type SupportedGeneratorKey = 'techdocs' | string;
+
+// @public
+export interface TechdocsBuildsExtensionPoint {
+  // (undocumented)
+  setBuildStrategy(buildStrategy: DocsBuildStrategy): void;
+}
+
+// @public
+export const techdocsBuildsExtensionPoint: ExtensionPoint<TechdocsBuildsExtensionPoint>;
 
 // @public
 export interface TechDocsDocument extends IndexableDocument {

@@ -1,5 +1,51 @@
 # @backstage/core-app-api
 
+## 1.11.1
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 89d13e5618: Add current and default scopes when refreshing session
+- 9ab0572217: Add component data `core.type` marker for `AppRouter` and `FlatRoutes`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/version-bridge@1.0.7
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 89d13e5618: Add current and default scopes when refreshing session
+- 9ab0572217: Add component data `core.type` marker for `AppRouter` and `FlatRoutes`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.11.0
+
+### Minor Changes
+
+- c9d9bfeca2: URL encode some well known unsafe characters in `RouteResolver` (and therefore `useRouteRef`)
+
+### Patch Changes
+
+- 29e4d8b76b: Fixed bug in `AppRouter` to determine the correct `signOutTargetUrl` if `app.baseUrl` contains a `basePath`
+- acca17e91a: Wrap entire app in `<Suspense>`, enabling support for using translations outside plugins.
+- 1a0616fa10: Add missing resource and template app icons
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- f1b349cfba: Fixed a bug in `TranslationApi` implementation where in some cases it wouldn't notify subscribers of language changes.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/version-bridge@1.0.6
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 1.11.0-next.2
 
 ### Minor Changes

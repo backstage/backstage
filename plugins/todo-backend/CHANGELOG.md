@@ -1,5 +1,75 @@
 # @backstage/plugin-todo-backend
 
+## 0.3.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0
+  - @backstage/integration@1.7.2
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/catalog-client@1.4.6
+  - @backstage/backend-openapi-utils@0.1.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.3.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/backend-openapi-utils@0.1.0-next.2
+  - @backstage/plugin-catalog-node@1.5.0-next.2
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0-next.1
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/backend-openapi-utils@0.1.0-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.1.0-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/catalog-client@1.4.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-node@1.4.8-next.0
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/integration@1.7.1
+  - @backstage/plugin-catalog-node@1.4.7
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/backend-openapi-utils@0.0.5
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/catalog-client@1.4.5
+  - @backstage/config@1.1.1
+
 ## 0.3.4-next.2
 
 ### Patch Changes

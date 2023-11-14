@@ -47,7 +47,7 @@ describe('RefreshingAuthSessionManager', () => {
     await manager.getSession({});
     expect(createSession).toHaveBeenCalledTimes(1);
 
-    expect(refreshSession).toHaveBeenCalledWith(undefined);
+    expect(refreshSession).toHaveBeenCalledWith(new Set());
     expect(stateSubscriber.mock.calls).toEqual([
       [SessionState.SignedOut],
       [SessionState.SignedIn],
@@ -134,7 +134,7 @@ describe('RefreshingAuthSessionManager', () => {
 
     expect(await manager.getSession({ optional: true })).toBe(undefined);
     expect(createSession).toHaveBeenCalledTimes(0);
-    expect(refreshSession).toHaveBeenCalledWith(undefined);
+    expect(refreshSession).toHaveBeenCalledWith(new Set());
   });
 
   it('should forward option to instantly show auth popup and not attempt refresh', async () => {

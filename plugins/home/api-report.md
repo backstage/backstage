@@ -14,6 +14,7 @@ import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
 import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
+import { EntityFilterQuery } from '@backstage/catalog-client';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -99,6 +100,20 @@ export type CustomHomepageGridProps = {
   compactType?: 'vertical' | 'horizontal' | null;
   allowOverlap?: boolean;
   preventCollision?: boolean;
+};
+
+// @public
+export const FeaturedDocsCard: (
+  props: CardExtensionProps_2<FeaturedDocsCardProps>,
+) => JSX_2.Element;
+
+// @public
+export type FeaturedDocsCardProps = {
+  filter: EntityFilterQuery;
+  emptyState?: React_2.JSX.Element;
+  linkDestination?: string;
+  responseLimit?: number;
+  subLinkText?: string;
 };
 
 // @public
