@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-backend-module-pinniped-provider': patch
 ---
 
-Introduced PinnipedStrategyCache to act as a metadata cache for the PinnipedAuthenticator.
+Introduced metadata cache for the `pinniped` provider.
