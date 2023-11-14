@@ -47,10 +47,6 @@ jobs:
         run: |
           cp -f ./.github/uffizzi/uffizzi.production.app-config.yaml ./app-config.yaml
 
-      - name: typescript build
-        run: |
-          yarn tsc
-
       - name: backstage build
         run: |
           yarn workspace example-backend build
