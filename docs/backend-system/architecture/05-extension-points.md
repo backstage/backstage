@@ -70,7 +70,7 @@ Note that we create a closure that adds to a shared `actions` structure when `ad
 
 ## Module Extension Points
 
-Just like plugins, modules can also provide their own extension points. The API for registering and using extension points is the same as for plugins. However, modules should typically only use extension points to allow for complex internal customizations by users of the plugin module. It is therefore preferred to export the extension point directly from the module package, rather than creating a separate node library for that purpose.
+Just like plugins, modules can also provide their own extension points. The API for registering and using extension points is the same as for plugins. However, modules should typically only use extension points to allow for complex internal customizations by users of the plugin module. It is therefore preferred to export the extension point directly from the module package, rather than creating a separate node library for that purpose. Extension points exported by a module are used the same way as extension points exported by a plugin, you create your own separate module and declare a dependency on the extension point that you want to interact with.
 
 ## Extension Point Design
 
