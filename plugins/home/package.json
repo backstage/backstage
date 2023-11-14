@@ -47,6 +47,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
