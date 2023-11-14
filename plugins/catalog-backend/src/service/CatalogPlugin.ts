@@ -17,7 +17,7 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { CatalogBuilder } from './CatalogBuilder';
+import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
   CatalogAnalysisExtensionPoint,
   catalogAnalysisExtensionPoint,
@@ -38,6 +38,7 @@ class CatalogProcessingExtensionPointImpl
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
   #placeholderResolvers: Record<string, PlaceholderResolver> = {};
+  #permissionRules = new Array<CatalogPermissionRuleInput>();
 
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
@@ -59,6 +60,14 @@ class CatalogProcessingExtensionPointImpl
     this.#placeholderResolvers[key] = resolver;
   }
 
+  addPermissionRules(
+    ...rules: Array<
+      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
+    >
+  ): void {
+    this.#permissionRules.push(...rules.flat());
+  }
+
   get processors() {
     return this.#processors;
   }
@@ -69,6 +78,10 @@ class CatalogProcessingExtensionPointImpl
 
   get placeholderResolvers() {
     return this.#placeholderResolvers;
+  }
+
+  get permissionRules() {
+    return this.#permissionRules;
   }
 }
 
@@ -142,6 +155,7 @@ export const catalogPlugin = createBackendPlugin({
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
         builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
+        builder.addPermissionRules(...processingExtensions.permissionRules);
 
         const { processingEngine, router } = await builder.build();
 
