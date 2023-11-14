@@ -31,6 +31,9 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
     const clientSecret = config.getString('clientSecret');
     const tenantId = config.getString('tenantId');
     const domainHint = config.getOptionalString('domainHint');
+    const scope: string[] = config.getOptionalStringArray('scope') || [
+      'user.read',
+    ];
 
     const helper = PassportOAuthAuthenticatorHelper.from(
       new ExtendedMicrosoftStrategy(
@@ -39,7 +42,7 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
           clientSecret: clientSecret,
           callbackURL: callbackUrl,
           tenant: tenantId,
-          scope: ['user.read'],
+          scope: scope,
         },
         (
           accessToken: string,
