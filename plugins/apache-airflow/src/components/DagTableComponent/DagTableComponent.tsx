@@ -146,7 +146,7 @@ export const DenseTable = ({ dags, rowClick }: DenseTableProps) => {
       title: 'Link',
       field: 'dagUrl',
       render: (row: Partial<DagTableRow>) =>
-        !row.dagUrl ? null : (
+        !row.dagUrl ? undefined : (
           <Link to={row.dagUrl}>
             <IconButton aria-label="details">
               <OpenInBrowserIcon />
