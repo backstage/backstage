@@ -11,7 +11,7 @@ description: Docs on migrating to `react-jsonschema-form`@v5 and the new designs
 
 This library is core to the frontend part of the scaffolder plugin, and is responsible for rendering the form in which developers and end users fill out to meet the `jsonschema` requirement for the parameters section.
 
-Since the initial release of the `scaffolder` plugin, we we're on a pretty old version of `react-jsonschema-form` (v3), which has been pretty outdated as of late. The problem with us just bumping this library was that there are several breaking changes with the new v5 verison, which we've tried pretty agressively not to pass on to our end users for their templates and [Custom Field Extensions](https://backstage.io/docs/features/software-templates/writing-custom-field-extensions/).
+Since the initial release of the `scaffolder` plugin, we we're on a pretty old version of `react-jsonschema-form` (v3), which has been pretty outdated as of late. The problem with us just bumping this library was that there are several breaking changes with the new v5 version, which we've tried pretty aggressively not to pass on to our end users for their templates and [Custom Field Extensions](https://backstage.io/docs/features/software-templates/writing-custom-field-extensions/).
 
 We're hoping that by duplicating the types from version 3 of `react-jsonschema-form` and making these the types that we will support even though the underlying library is v5, it should get us through all of the breaking changes without passing that down.
 
