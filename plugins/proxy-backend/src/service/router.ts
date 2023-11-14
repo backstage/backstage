@@ -55,6 +55,7 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   skipInvalidProxies?: boolean;
   reviveConsumedRequestBodies?: boolean;
+  agent?: any;
 }
 
 export interface ProxyConfig extends Options {
@@ -71,6 +72,7 @@ export function buildMiddleware(
   route: string,
   config: string | ProxyConfig,
   reviveConsumedRequestBodies?: boolean,
+  agent?: any,
 ): RequestHandler {
   const fullConfig =
     typeof config === 'string' ? { target: config } : { ...config };
@@ -191,6 +193,10 @@ export function buildMiddleware(
     fullConfig.onProxyReq = fixRequestBody;
   }
 
+  if (agent !== undefined) {
+    fullConfig.agent = agent;
+  }
+
   return createProxyMiddleware(filter, fullConfig);
 }
 
@@ -255,6 +261,7 @@ export async function createRouter(
     skipInvalidProxies,
     reviveConsumedRequestBodies,
     logger: options.logger,
+    agent: options.agent,
   };
 
   const externalUrl = await options.discovery.getExternalBaseUrl('proxy');
@@ -292,6 +299,7 @@ function configureMiddlewares(
     reviveConsumedRequestBodies: boolean;
     skipInvalidProxies: boolean;
     logger: Logger;
+    agent: any;
   },
   router: express.Router,
   pathPrefix: string,
@@ -307,6 +315,7 @@ function configureMiddlewares(
           route,
           proxyRouteConfig,
           options.reviveConsumedRequestBodies,
+          options.agent,
         ),
       );
     } catch (e) {

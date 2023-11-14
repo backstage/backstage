@@ -19,6 +19,8 @@ export default proxyPlugin;
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
+  agent?: any;
+  // (undocumented)
   config: Config;
   // (undocumented)
   discovery: PluginEndpointDiscovery;

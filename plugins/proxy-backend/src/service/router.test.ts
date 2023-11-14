@@ -514,4 +514,23 @@ describe('buildMiddleware', () => {
       buildMiddleware('/proxy', logger, '/test', { target: 'backstage.io' }),
     ).toThrow(/Proxy target is not a valid URL/);
   });
+
+  it('should set agent when provided', async () => {
+    const agent = 'agent';
+    buildMiddleware(
+      '/proxy',
+      logger,
+      '/test',
+      {
+        target: 'http://mocked',
+      },
+      false,
+      agent,
+    );
+
+    expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
+
+    const config = mockCreateProxyMiddleware.mock.calls[0][1] as Options;
+    expect(config.agent).toEqual(agent);
+  });
 });
