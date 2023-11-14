@@ -32,12 +32,13 @@ import {
   createSubRouteRef,
   createExternalRouteRef,
 } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
-import { toInternalRouteRef } from '@backstage/frontend-plugin-api/src/routing/RouteRef';
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
-import { toInternalSubRouteRef } from '@backstage/frontend-plugin-api/src/routing/SubRouteRef';
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
-import { toInternalExternalRouteRef } from '@backstage/frontend-plugin-api/src/routing/ExternalRouteRef';
+
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalRouteRef } from '../../frontend-plugin-api/src/routing/RouteRef';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalSubRouteRef } from '../../frontend-plugin-api/src/routing/SubRouteRef';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalExternalRouteRef } from '../../frontend-plugin-api/src/routing/ExternalRouteRef';
 
 /**
  * A temporary helper to convert a legacy route ref to the new system.
