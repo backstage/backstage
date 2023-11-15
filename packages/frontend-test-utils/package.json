@@ -28,5 +28,12 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@backstage/frontend-app-api": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@testing-library/react": "^14.0.0"
+  }
 }

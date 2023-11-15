@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from './app';
+export { createExtensionTester } from './createExtensionTester';
