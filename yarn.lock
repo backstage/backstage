@@ -14568,14 +14568,14 @@ __metadata:
   linkType: hard
 
 "@octokit/webhooks@npm:^10.0.0":
-  version: 10.9.1
-  resolution: "@octokit/webhooks@npm:10.9.1"
+  version: 10.9.2
+  resolution: "@octokit/webhooks@npm:10.9.2"
   dependencies:
     "@octokit/request-error": ^3.0.0
     "@octokit/webhooks-methods": ^3.0.0
     "@octokit/webhooks-types": 6.11.0
     aggregate-error: ^3.1.0
-  checksum: 3ee4ae98777653d629068c7914a8df29affb399a385ae55954953afa0caa856bab0cf8e92cfa80d36db0e7dd08eada0a3597cffd2f503a9078410660f0609161
+  checksum: 06ad79021adf9facff3937d387ed5949a2c42ef550401ce2b12df88816b2de30f5b868129a7af523c6036d18b76fb89d22c71d26223f1c2e07c40552f45f6387
   languageName: node
   linkType: hard
 
