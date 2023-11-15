@@ -69,6 +69,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
