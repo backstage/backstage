@@ -53,6 +53,7 @@ import React, {
   ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 
@@ -159,12 +160,7 @@ const useFilterStyles = makeStyles(
 
 export type TableClassKey = 'root';
 
-/**
- * Style classes for the `Table` component.
- *
- * @public
- */
-export const tableStyles = makeStyles<BackstageTheme>(
+const tableStyles = makeStyles<BackstageTheme>(
   () => ({
     root: {
       display: 'flex',
@@ -313,9 +309,11 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   const {
     data,
     columns,
+    emptyContent,
     options,
     title,
     subtitle,
+    localization,
     filters,
     initialState,
     onStateChange,
@@ -324,6 +322,8 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     ...restProps
   } = props;
   const tableClasses = tableStyles();
+
+  const theme = useTheme();
 
   const calculatedInitialState = { ...defaultInitialState, ...initialState };
 
@@ -334,8 +334,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     () => setFiltersOpen(v => !v),
     [setFiltersOpen],
   );
-  const [selectedFiltersLength, setSelectedFiltersLength] = useState(0);
-  const [tableData, setTableData] = useState(data as any[]);
+
   const [selectedFilters, setSelectedFilters] = useState(
     calculatedInitialState.filters,
   );
@@ -363,13 +362,9 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     [columns],
   );
 
-  useEffect(() => {
-    if (typeof data === 'function') {
-      return;
-    }
-    if (!selectedFilters) {
-      setTableData(data as any[]);
-      return;
+  const tableData = useMemo(() => {
+    if (typeof data === 'function' || !selectedFilters) {
+      return data;
     }
 
     const selectedFiltersArray = Object.values(selectedFilters);
@@ -395,62 +390,12 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
               return fieldValue === filterValue;
             }),
       );
-      setTableData(newData);
-    } else {
-      setTableData(data as any[]);
+      return newData;
     }
-    setSelectedFiltersLength(selectedFiltersArray.flat().length);
+    return data;
   }, [data, selectedFilters, getFieldByTitle]);
 
-  const constructFilters = (
-    filterConfig: TableFilter[],
-    dataValue: any[] | undefined,
-  ): Filter[] => {
-    const extractDistinctValues = (field: string | keyof T): Set<any> => {
-      const distinctValues = new Set<any>();
-      const addValue = (value: any) => {
-        if (value !== undefined && value !== null) {
-          distinctValues.add(value);
-        }
-      };
-
-      if (dataValue) {
-        dataValue.forEach(el => {
-          const value = extractValueByField(
-            el,
-            getFieldByTitle(field) as string,
-          );
-
-          if (Array.isArray(value)) {
-            (value as []).forEach(addValue);
-          } else {
-            addValue(value);
-          }
-        });
-      }
-
-      return distinctValues;
-    };
-
-    const constructSelect = (
-      filter: TableFilter,
-    ): Without<SelectProps, 'onChange'> => {
-      return {
-        placeholder: 'All results',
-        label: filter.column,
-        multiple: filter.type === 'multiple-select',
-        items: [...extractDistinctValues(filter.column)].sort().map(value => ({
-          label: value,
-          value,
-        })),
-      };
-    };
-
-    return filterConfig.map(filter => ({
-      type: filter.type,
-      element: constructSelect(filter),
-    }));
-  };
+  const selectedFiltersLength = Object.values(selectedFilters).flat().length;
 
   const hasFilters = !!filters?.length;
   const Toolbar = useCallback(
@@ -468,26 +413,50 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     [toggleFilters, hasFilters, selectedFiltersLength, setSearch],
   );
 
+  const hasNoRows = typeof data !== 'function' && data.length === 0;
+  const columnCount = columns.length;
+  const Body = useMemo(
+    () => makeBody({ hasNoRows, emptyContent, columnCount, loading }),
+    [hasNoRows, emptyContent, columnCount, loading],
+  );
+
   return (
     <Box className={tableClasses.root}>
       {filtersOpen && data && typeof data !== 'function' && filters?.length && (
         <Filters
-          filters={constructFilters(filters, data as any[])}
+          filters={constructFilters(filters, data as any[], columns)}
           selectedFilters={selectedFilters}
           onChangeFilters={setSelectedFilters}
         />
       )}
-      <BaseTable<T>
+      <MTable<T>
         components={{
+          Header: StyledMTableHeader,
+          Body,
           Toolbar,
           ...components,
         }}
-        options={options}
-        columns={columns}
-        title={title}
-        subtitle={subtitle}
-        loading={loading}
-        data={typeof data === 'function' ? data : tableData}
+        options={{ headerStyle: { textTransform: 'uppercase' }, ...options }}
+        columns={convertColumns(columns, theme)}
+        icons={tableIcons}
+        title={
+          <>
+            <Typography variant="h5" component="h2">
+              {title}
+            </Typography>
+            {subtitle && (
+              <Typography color="textSecondary" variant="body1">
+                {subtitle}
+              </Typography>
+            )}
+          </>
+        }
+        data={tableData}
+        style={{ width: '100%' }}
+        localization={{
+          toolbar: { searchPlaceholder: 'Filter', searchTooltip: 'Filter' },
+          ...localization,
+        }}
         {...restProps}
       />
     </Box>
@@ -496,83 +465,83 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
 
 Table.icons = Object.freeze(tableIcons);
 
-/**
- * @public
- */
-export function BaseTable<T extends object = {}>(
-  props: TableProps<T> & {
-    loading?: boolean;
-    emptyContent?: ReactNode;
-    subtitle?: string;
-  },
-) {
-  const {
-    columns,
-    components,
-    data,
-    emptyContent,
-    loading,
-    options,
-    title,
-    subtitle,
-    localization,
-    ...restProps
-  } = props;
+function makeBody({
+  columnCount,
+  emptyContent,
+  hasNoRows,
+  loading,
+}: {
+  hasNoRows: boolean;
+  emptyContent: ReactNode;
+  columnCount: number;
+  loading?: boolean;
+}) {
+  return (bodyProps: any /* no type for this in material-table */) => {
+    if (loading) {
+      return <TableLoadingBody colSpan={columnCount} />;
+    }
 
-  const hasNoRows = typeof data !== 'function' && data.length === 0;
+    if (emptyContent && hasNoRows) {
+      return (
+        <tbody>
+          <tr>
+            <td colSpan={columnCount}>{emptyContent}</td>
+          </tr>
+        </tbody>
+      );
+    }
 
-  const columnCount = columns.length;
-  const Body = useCallback(
-    (bodyProps: any /* no type for this in material-table */) => {
-      if (loading) {
-        return <TableLoadingBody colSpan={columnCount} />;
+    return <MTableBody {...bodyProps} />;
+  };
+}
+
+function constructFilters<T extends object>(
+  filterConfig: TableFilter[],
+  dataValue: any[] | undefined,
+  columns: TableColumn<T>[],
+): Filter[] {
+  const extractDistinctValues = (field: string | keyof T): Set<any> => {
+    const distinctValues = new Set<any>();
+    const addValue = (value: any) => {
+      if (value !== undefined && value !== null) {
+        distinctValues.add(value);
       }
+    };
 
-      if (emptyContent && hasNoRows) {
-        return (
-          <tbody>
-            <tr>
-              <td colSpan={columnCount}>{emptyContent}</td>
-            </tr>
-          </tbody>
+    if (dataValue) {
+      dataValue.forEach(el => {
+        const value = extractValueByField(
+          el,
+          columns.find(c => c.title === field)?.field as string,
         );
-      }
 
-      return <MTableBody {...bodyProps} />;
-    },
-    [hasNoRows, emptyContent, columnCount, loading],
-  );
-  const theme = useTheme();
+        if (Array.isArray(value)) {
+          (value as []).forEach(addValue);
+        } else {
+          addValue(value);
+        }
+      });
+    }
 
-  return (
-    <MTable<T>
-      components={{
-        Header: StyledMTableHeader,
-        Body,
-        ...components,
-      }}
-      options={{ headerStyle: { textTransform: 'uppercase' }, ...options }}
-      columns={convertColumns(columns, theme)}
-      icons={tableIcons}
-      title={
-        <>
-          <Typography variant="h5" component="h2">
-            {title}
-          </Typography>
-          {subtitle && (
-            <Typography color="textSecondary" variant="body1">
-              {subtitle}
-            </Typography>
-          )}
-        </>
-      }
-      data={data}
-      style={{ width: '100%' }}
-      localization={{
-        ...localization,
-        toolbar: { searchPlaceholder: 'Filter', searchTooltip: 'Filter' },
-      }}
-      {...restProps}
-    />
-  );
+    return distinctValues;
+  };
+
+  const constructSelect = (
+    filter: TableFilter,
+  ): Without<SelectProps, 'onChange'> => {
+    return {
+      placeholder: 'All results',
+      label: filter.column,
+      multiple: filter.type === 'multiple-select',
+      items: [...extractDistinctValues(filter.column)].sort().map(value => ({
+        label: value,
+        value,
+      })),
+    };
+  };
+
+  return filterConfig.map(filter => ({
+    type: filter.type,
+    element: constructSelect(filter),
+  }));
 }

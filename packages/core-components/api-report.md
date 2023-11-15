@@ -12,7 +12,6 @@ import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { BottomNavigationActionProps } from '@material-ui/core/BottomNavigationAction';
 import { ButtonProps as ButtonProps_2 } from '@material-ui/core/Button';
 import { CardHeaderProps } from '@material-ui/core/CardHeader';
-import { ClassNameMap } from '@material-ui/styles';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
@@ -103,15 +102,6 @@ export type BackstageOverrides = Overrides & {
     StyleRules_2<BackstageComponentsNameToClassKey[Name]>
   >;
 };
-
-// @public (undocumented)
-export function BaseTable<T extends object = {}>(
-  props: TableProps<T> & {
-    loading?: boolean;
-    emptyContent?: ReactNode;
-    subtitle?: string;
-  },
-): React_2.JSX.Element;
 
 // @public (undocumented)
 export type BoldHeaderClassKey = 'root' | 'title' | 'subheader';
@@ -1447,9 +1437,6 @@ export type TableState = {
   filters?: SelectedFilters;
 };
 
-// @public
-export const tableStyles: (props?: any) => ClassNameMap<string>;
-
 // Warning: (ae-missing-release-tag) "TableToolbarClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -1550,6 +1537,6 @@ export type WarningPanelClassKey =
 // src/components/DependencyGraph/types.d.ts:22:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/DependencyGraph/types.d.ts:26:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
-// src/components/Table/Table.d.ts:26:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
+// src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:8:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
 ```
