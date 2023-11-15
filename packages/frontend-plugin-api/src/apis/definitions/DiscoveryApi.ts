@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-export {
-  type DiscoveryApi,
-  discoveryApiRef,
-} from '../../../../core-plugin-api';
+export { type DiscoveryApi, discoveryApiRef } from '@backstage/core-plugin-api';

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 export {
   type ErrorApiError,
   type ErrorApiErrorContext,
   type ErrorApi,
   errorApiRef,
-} from '../../../../core-plugin-api';
+} from '@backstage/core-plugin-api';

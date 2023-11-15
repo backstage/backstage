@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 export {
   type AppLanguageApi,
   appLanguageApiRef,
-} from '../../../../core-plugin-api/src/alpha';
+} from '@backstage/core-plugin-api/alpha';
