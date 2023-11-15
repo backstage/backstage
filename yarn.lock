@@ -3754,7 +3754,7 @@ __metadata:
   resolution: "@backstage/cli-common@workspace:packages/cli-common"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@types/node": ^18.17.8
+    "@types/node": ^20.0.0
   languageName: unknown
   linkType: soft
 
@@ -3829,7 +3829,7 @@ __metadata:
     "@types/inquirer": ^8.1.3
     "@types/jest": ^29.0.0
     "@types/minimatch": ^5.0.0
-    "@types/node": ^18.17.8
+    "@types/node": ^20.0.0
     "@types/npm-packlist": ^3.0.0
     "@types/recursive-readdir": ^2.2.0
     "@types/rollup-plugin-peer-deps-external": ^2.2.0
@@ -3943,7 +3943,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@types/jscodeshift": ^0.11.0
-    "@types/node": ^18.17.8
+    "@types/node": ^20.0.0
     chalk: ^4.0.0
     commander: ^9.1.0
     jscodeshift: ^0.15.0
@@ -4207,7 +4207,7 @@ __metadata:
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
     "@types/inquirer": ^8.1.3
-    "@types/node": ^18.17.8
+    "@types/node": ^20.0.0
     "@types/recursive-readdir": ^2.2.0
     chalk: ^4.0.0
     commander: ^9.1.0
@@ -7619,7 +7619,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/node": ^16.11.26
+    "@types/node": ^20.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     cronstrue: ^2.2.0
     js-yaml: ^4.0.0
@@ -8628,7 +8628,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^9.0.1
-    "@types/node": ^18.17.8
+    "@types/node": ^20.0.0
     command-exists: ^1.2.9
     fs-extra: ^10.0.1
     jest-when: ^3.1.0
@@ -10036,7 +10036,7 @@ __metadata:
     "@stoplight/types": ^13.14.0
     "@types/is-glob": ^4.0.2
     "@types/mock-fs": ^4.13.0
-    "@types/node": ^18.17.8
+    "@types/node": ^20.0.0
     "@types/prettier": ^2.0.0
     chalk: ^4.0.0
     codeowners-utils: ^1.0.2
@@ -17748,7 +17748,7 @@ __metadata:
     "@types/dockerode": ^3.3.0
     "@types/fs-extra": ^9.0.6
     "@types/http-proxy": ^1.17.4
-    "@types/node": ^18.17.8
+    "@types/node": ^20.0.0
     "@types/serve-handler": ^6.1.0
     "@types/webpack-env": ^1.15.3
     commander: ^9.1.0
@@ -19054,7 +19054,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:^20.1.1":
+"@types/node@npm:*, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:^20.0.0, @types/node@npm:^20.1.1":
   version: 20.9.0
   resolution: "@types/node@npm:20.9.0"
   dependencies:
@@ -19077,7 +19077,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.26, @types/node@npm:^16.7.10, @types/node@npm:^16.9.2":
+"@types/node@npm:^16.7.10, @types/node@npm:^16.9.2":
   version: 16.18.61
   resolution: "@types/node@npm:16.18.61"
   checksum: fdd162829eddc9b0b82a1ec485ba3876428ff3bd94c5869b13f4a36eb2aa9bddd22ea7e8ee3b2faa91a0f70ff08d8fd8d4be7dd0d143f8ee776907d6a1d2ed25
@@ -19088,15 +19088,6 @@ __metadata:
   version: 17.0.45
   resolution: "@types/node@npm:17.0.45"
   checksum: aa04366b9103b7d6cfd6b2ef64182e0eaa7d4462c3f817618486ea0422984c51fc69fd0d436eae6c9e696ddfdbec9ccaa27a917f7c2e8c75c5d57827fe3d95e8
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^18.17.8":
-  version: 18.18.9
-  resolution: "@types/node@npm:18.18.9"
-  dependencies:
-    undici-types: ~5.26.4
-  checksum: 629ce20357586144031cb43d601617eef45e59460dea6b1e123f708e6885664f44d54f65e5b72b2614af5b8613f3652ced832649c0b991accbc6a85139befa51
   languageName: node
   linkType: hard
 
@@ -25872,7 +25863,7 @@ __metadata:
     "@backstage/create-app": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@types/fs-extra": ^9.0.1
-    "@types/node": ^18.17.8
+    "@types/node": ^20.0.0
     "@types/puppeteer": ^5.4.4
     chalk: ^4.0.0
     commander: ^9.1.0
@@ -41091,7 +41082,7 @@ __metadata:
     "@spotify/eslint-plugin": ^14.1.3
     "@spotify/prettier-config": ^14.0.0
     "@techdocs/cli": "workspace:*"
-    "@types/node": ^18.17.8
+    "@types/node": ^20.0.0
     "@types/webpack": ^5.28.0
     "@useoptic/optic": ^0.50.10
     command-exists: ^1.2.9

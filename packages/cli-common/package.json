@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@types/node": "^18.17.8"
+    "@types/node": "^20.0.0"
   },
   "files": [
     "dist"

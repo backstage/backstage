@@ -43,7 +43,7 @@
     "@backstage/cli": "workspace:^",
     "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.1",
-    "@types/node": "^18.17.8",
+    "@types/node": "^20.0.0",
     "jest-when": "^3.1.0"
   },
   "files": [
