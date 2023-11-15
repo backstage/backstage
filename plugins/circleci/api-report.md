@@ -8,14 +8,260 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { JSX as JSX_2 } from 'react';
+import { PathParams } from '@backstage/core-plugin-api';
+import { default as React_2 } from 'react';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { SubRouteRef } from '@backstage/core-plugin-api';
+
+// @public (undocumented)
+export interface Build {
+  // (undocumented)
+  all_commit_details?: PreviousBuild;
+  // (undocumented)
+  all_commit_details_truncated?: boolean;
+  // (undocumented)
+  author_date?: string;
+  // (undocumented)
+  author_email?: string;
+  // (undocumented)
+  author_name?: string;
+  // (undocumented)
+  body?: string;
+  // (undocumented)
+  branch: string;
+  // (undocumented)
+  build_num?: number;
+  // (undocumented)
+  build_parameters?: string;
+  // (undocumented)
+  build_time_millis?: number;
+  // (undocumented)
+  build_url?: string;
+  // (undocumented)
+  canceled?: boolean;
+  // (undocumented)
+  canceler?: string;
+  // (undocumented)
+  circle_yml?: CircleConfig;
+  // (undocumented)
+  committer_date?: string;
+  // (undocumented)
+  committer_email?: string;
+  // (undocumented)
+  committer_name?: string;
+  // (undocumented)
+  compare?: string;
+  // (undocumented)
+  dont_build?: boolean;
+  // (undocumented)
+  fail_reason?: string;
+  // (undocumented)
+  failed?: boolean;
+  // (undocumented)
+  has_artifacts?: boolean;
+  // (undocumented)
+  infrastructure_fail?: boolean;
+  // (undocumented)
+  is_first_green_build?: boolean;
+  // (undocumented)
+  job_name?: string;
+  // (undocumented)
+  lifecycle?: string;
+  // (undocumented)
+  messages?: string[];
+  // (undocumented)
+  no_dependency_cache?: boolean;
+  // (undocumented)
+  node?: any;
+  // (undocumented)
+  oss?: boolean;
+  // (undocumented)
+  outcome?: string;
+  // (undocumented)
+  parallel?: number;
+  // (undocumented)
+  picard?: BuildPicard;
+  // (undocumented)
+  platform?: string;
+  // (undocumented)
+  previous?: PreviousBuild;
+  // (undocumented)
+  previous_successful_build?: PreviousBuild;
+  // (undocumented)
+  pull_requests: PullRequest[];
+  // (undocumented)
+  queued_at?: string;
+  // (undocumented)
+  reponame?: string;
+  // (undocumented)
+  retries?: number;
+  // (undocumented)
+  retry_of?: number;
+  // (undocumented)
+  ssh_disabled?: boolean;
+  // (undocumented)
+  ssh_users?: any[];
+  // (undocumented)
+  start_time?: string;
+  // (undocumented)
+  status?: string;
+  // (undocumented)
+  steps: BuildStep[];
+  // (undocumented)
+  stop_time?: string;
+  // (undocumented)
+  subject?: string;
+  // (undocumented)
+  timedout?: boolean;
+  // (undocumented)
+  usage_queued_at?: string;
+  // (undocumented)
+  user?: User;
+  // (undocumented)
+  username?: string;
+  // (undocumented)
+  vcs_revision?: string;
+  // (undocumented)
+  vcs_tag?: string;
+  // (undocumented)
+  vcs_type?: string;
+  // (undocumented)
+  vcs_url?: string;
+  // (undocumented)
+  why?: string;
+  // (undocumented)
+  workflows?: Workflow;
+}
+
+// @public (undocumented)
+export interface BuildPicard {
+  // (undocumented)
+  build_agent?: {
+    image?: null;
+    properties?: {
+      build_agent?: string;
+      executor?: string;
+    };
+  };
+  // (undocumented)
+  executor?: string;
+  // (undocumented)
+  resource_class?: {
+    cpu?: number;
+    ram?: number;
+    class?: string;
+  };
+}
+
+// @public (undocumented)
+export interface BuildStep {
+  // (undocumented)
+  actions: BuildStepAction[];
+  // (undocumented)
+  name: string;
+}
+
+// @public (undocumented)
+export interface BuildStepAction {
+  // (undocumented)
+  allocation_id?: string;
+  // (undocumented)
+  background?: boolean;
+  // (undocumented)
+  bash_command?: string;
+  // (undocumented)
+  canceled?: boolean;
+  // (undocumented)
+  continue?: boolean;
+  // (undocumented)
+  end_time: string;
+  // (undocumented)
+  exit_code?: number;
+  // (undocumented)
+  failed?: boolean;
+  // (undocumented)
+  has_output?: boolean;
+  // (undocumented)
+  index?: number;
+  // (undocumented)
+  infrastructure_fail?: boolean;
+  // (undocumented)
+  insignificant?: boolean;
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  output_url?: string;
+  // (undocumented)
+  parallel?: boolean;
+  // (undocumented)
+  run_time_millis?: number;
+  // (undocumented)
+  start_time: string;
+  // (undocumented)
+  status?: string;
+  // (undocumented)
+  step?: number;
+  // (undocumented)
+  timedout?: boolean;
+  // (undocumented)
+  truncated?: boolean;
+  // (undocumented)
+  type?: string;
+}
 
 // @public (undocumented)
 export const CIRCLECI_ANNOTATION = 'circleci.com/project-slug';
 
 // @public (undocumented)
+export interface CircleCIApi {
+  // (undocumented)
+  getBuild(projectSlug: string, buildNumber: number): Promise<Build>;
+  // (undocumented)
+  getPipelinesForProject(
+    projectSlug: string,
+    pageToken?: string,
+  ): Promise<PipelineListResponse>;
+  // (undocumented)
+  getStepOutput(options: {
+    projectSlug: string;
+    buildNumber: number;
+    index: number;
+    step: number;
+  }): Promise<string>;
+  // (undocumented)
+  getWorkflow(workflowId: string): Promise<Workflow>;
+  // (undocumented)
+  getWorkflowJobs(
+    workflowId: string,
+    pageToken?: string,
+  ): Promise<WorkflowJobListResponse>;
+  // (undocumented)
+  getWorkflowsForPipeline(
+    pipelineId: string,
+    pageToken?: string,
+  ): Promise<WorkflowListResponse>;
+  // (undocumented)
+  rerunWorkflow(workflowId: string): Promise<RerunWorkflowResponse>;
+}
+
+// @public (undocumented)
 const circleCIPlugin: BackstagePlugin<{}, {}>;
 export { circleCIPlugin };
 export { circleCIPlugin as plugin };
+
+// @public (undocumented)
+export const circleCIRouteRef: RouteRef<undefined>;
+
+// @public (undocumented)
+export const circleCIWorkflowRouteRef: SubRouteRef<
+  PathParams<'/workflows/:workflowId'>
+>;
+
+// @public (undocumented)
+export interface CircleConfig {
+  // (undocumented)
+  string?: string;
+}
 
 // @public (undocumented)
 export const EntityCircleCIContent: () => JSX_2.Element;
@@ -24,4 +270,398 @@ export const EntityCircleCIContent: () => JSX_2.Element;
 const isCircleCIAvailable: (entity: Entity) => boolean;
 export { isCircleCIAvailable };
 export { isCircleCIAvailable as isPluginApplicableToEntity };
+
+// @public (undocumented)
+export interface Job {
+  // (undocumented)
+  approval_request_id?: string;
+  // (undocumented)
+  approved_by?: string;
+  // (undocumented)
+  canceled_by?: string;
+  // (undocumented)
+  dependencies: Array<string>;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  job_number?: number;
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  project_slug: string;
+  // (undocumented)
+  started_at: string;
+  // (undocumented)
+  status: Job.StatusEnum;
+  // (undocumented)
+  stopped_at?: string;
+  // (undocumented)
+  type: Job.TypeEnum;
+}
+
+// @public (undocumented)
+export namespace Job {
+  // (undocumented)
+  export enum StatusEnum {
+    // (undocumented)
+    Blocked = 'blocked',
+    // (undocumented)
+    Canceled = 'canceled',
+    // (undocumented)
+    Failed = 'failed',
+    // (undocumented)
+    InfrastructureFail = 'infrastructure_fail',
+    // (undocumented)
+    NotRun = 'not_run',
+    // (undocumented)
+    NotRunning = 'not_running',
+    // (undocumented)
+    OnHold = 'on_hold',
+    // (undocumented)
+    Queued = 'queued',
+    // (undocumented)
+    Retried = 'retried',
+    // (undocumented)
+    Running = 'running',
+    // (undocumented)
+    Success = 'success',
+    // (undocumented)
+    TerminatedUnknown = 'terminated-unknown',
+    // (undocumented)
+    Timedout = 'timedout',
+    // (undocumented)
+    Unauthorized = 'unauthorized',
+  }
+  // (undocumented)
+  export enum TypeEnum {
+    // (undocumented)
+    Approval = 'approval',
+    // (undocumented)
+    Build = 'build',
+  }
+}
+
+// @public (undocumented)
+export const legacyCircleCIBuildRouteRef: SubRouteRef<PathParams<'/:buildId'>>;
+
+// @public (undocumented)
+export interface Pipeline {
+  // (undocumented)
+  created_at: string;
+  // (undocumented)
+  errors: Array<PipelineErrors>;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  number: number;
+  // (undocumented)
+  project_slug: string;
+  // (undocumented)
+  state: Pipeline.StateEnum;
+  // (undocumented)
+  trigger: PipelineTrigger;
+  // (undocumented)
+  trigger_parameters?: {
+    [key: string]: string | number | boolean | any;
+  };
+  // (undocumented)
+  updated_at?: Date;
+  // (undocumented)
+  vcs?: PipelineVcs;
+}
+
+// @public (undocumented)
+export namespace Pipeline {
+  // (undocumented)
+  export enum StateEnum {
+    // (undocumented)
+    Created = 'created',
+    // (undocumented)
+    Errored = 'errored',
+    // (undocumented)
+    Pending = 'pending',
+    // (undocumented)
+    Setup = 'setup',
+    // (undocumented)
+    SetupPending = 'setup-pending',
+  }
+}
+
+// @public (undocumented)
+export interface PipelineErrors {
+  // (undocumented)
+  message: string;
+  // (undocumented)
+  type: PipelineErrors.TypeEnum;
+}
+
+// @public (undocumented)
+export namespace PipelineErrors {
+  // (undocumented)
+  export enum TypeEnum {
+    // (undocumented)
+    Config = 'config',
+    // (undocumented)
+    ConfigFetch = 'config-fetch',
+    // (undocumented)
+    Other = 'other',
+    // (undocumented)
+    Permission = 'permission',
+    // (undocumented)
+    Plan = 'plan',
+    // (undocumented)
+    Timeout = 'timeout',
+  }
+}
+
+// @public (undocumented)
+export type PipelineInfo = Pipeline & {
+  workflows: Workflow[];
+};
+
+// @public (undocumented)
+export interface PipelineListResponse {
+  // (undocumented)
+  items: Array<Pipeline>;
+  // (undocumented)
+  next_page_token: string;
+}
+
+// @public (undocumented)
+export interface PipelineTrigger {
+  // (undocumented)
+  actor: PipelineTriggerActor;
+  // (undocumented)
+  receivedAt: Date;
+  // (undocumented)
+  type: PipelineTrigger.TypeEnum;
+}
+
+// @public (undocumented)
+export namespace PipelineTrigger {
+  // (undocumented)
+  export enum TypeEnum {
+    // (undocumented)
+    Api = 'api',
+    // (undocumented)
+    Explicit = 'explicit',
+    // (undocumented)
+    ScheduledPipeline = 'scheduled_pipeline',
+    // (undocumented)
+    Webhook = 'webhook',
+  }
+}
+
+// @public (undocumented)
+export interface PipelineTriggerActor {
+  // (undocumented)
+  avatar_url: string;
+  // (undocumented)
+  login: string;
+}
+
+// @public (undocumented)
+export interface PipelineTriggerActor {
+  // (undocumented)
+  avatarUrl: string;
+  // (undocumented)
+  login: string;
+}
+
+// @public (undocumented)
+export interface PipelineVcs {
+  // (undocumented)
+  branch?: string;
+  // (undocumented)
+  commit?: PipelineVcsCommit;
+  // (undocumented)
+  origin_repository_url: string;
+  // (undocumented)
+  provider_name: string;
+  // (undocumented)
+  review_id?: string;
+  // (undocumented)
+  review_url?: string;
+  // (undocumented)
+  revision: string;
+  // (undocumented)
+  tag?: string;
+  // (undocumented)
+  target_repository_url: string;
+}
+
+// @public (undocumented)
+export interface PipelineVcs {
+  // (undocumented)
+  branch?: string;
+  // (undocumented)
+  commit?: PipelineVcsCommit;
+  // (undocumented)
+  originRepositoryUrl: string;
+  // (undocumented)
+  providerName: string;
+  // (undocumented)
+  reviewId?: string;
+  // (undocumented)
+  reviewUrl?: string;
+  // (undocumented)
+  revision: string;
+  // (undocumented)
+  tag?: string;
+  // (undocumented)
+  targetRepositoryUrl: string;
+}
+
+// @public (undocumented)
+export interface PipelineVcsCommit {
+  // (undocumented)
+  body: string;
+  // (undocumented)
+  subject: string;
+}
+
+// @public (undocumented)
+export interface PipelineVcsCommit {
+  // (undocumented)
+  body: string;
+  // (undocumented)
+  subject: string;
+}
+
+// @public (undocumented)
+export interface PreviousBuild {
+  // (undocumented)
+  build_num?: number;
+  // (undocumented)
+  build_time_millis?: number;
+  // (undocumented)
+  status?: string;
+}
+
+// @public (undocumented)
+export interface PullRequest {
+  // (undocumented)
+  [key: string]: any;
+  // (undocumented)
+  head_sha: string;
+  // (undocumented)
+  url: string;
+}
+
+// @public (undocumented)
+export interface RerunWorkflowResponse {
+  // (undocumented)
+  workflow_id: string;
+}
+
+// @public (undocumented)
+export const Router: () => React_2.JSX.Element;
+
+// @public (undocumented)
+export interface User {
+  // (undocumented)
+  avatar_url?: string;
+  // (undocumented)
+  id?: number;
+  // (undocumented)
+  is_user?: boolean;
+  // (undocumented)
+  login?: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  vcs_type?: string;
+}
+
+// @public (undocumented)
+export interface Workflow {
+  // (undocumented)
+  canceled_by?: string;
+  // (undocumented)
+  created_at: string;
+  // (undocumented)
+  errored_by?: string;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  pipeline_id: string;
+  // (undocumented)
+  pipeline_number: number;
+  // (undocumented)
+  project_slug: string;
+  // (undocumented)
+  started_by: string;
+  // (undocumented)
+  status: Workflow.StatusEnum;
+  // (undocumented)
+  stopped_at: string;
+  // (undocumented)
+  tag?: Workflow.TagEnum;
+}
+
+// @public (undocumented)
+export namespace Workflow {
+  // (undocumented)
+  export enum StatusEnum {
+    // (undocumented)
+    Canceled = 'canceled',
+    // (undocumented)
+    Error = 'error',
+    // (undocumented)
+    Failed = 'failed',
+    // (undocumented)
+    Failing = 'failing',
+    // (undocumented)
+    NotRun = 'not_run',
+    // (undocumented)
+    OnHold = 'on_hold',
+    // (undocumented)
+    Running = 'running',
+    // (undocumented)
+    Success = 'success',
+    // (undocumented)
+    Unauthorized = 'unauthorized',
+  }
+  // (undocumented)
+  export enum TagEnum {
+    // (undocumented)
+    Setup = 'setup',
+  }
+}
+
+// @public (undocumented)
+export interface Workflow {
+  // (undocumented)
+  job_id: string;
+  // (undocumented)
+  job_name: string;
+  // (undocumented)
+  upstream_concurrency_map?: any;
+  // (undocumented)
+  upstream_job_ids?: any[];
+  // (undocumented)
+  workflow_id: string;
+  // (undocumented)
+  workflow_name: string;
+  // (undocumented)
+  workspace_id: string;
+}
+
+// @public (undocumented)
+export interface WorkflowJobListResponse {
+  // (undocumented)
+  items: Array<Job>;
+  // (undocumented)
+  next_page_token: string;
+}
+
+// @public (undocumented)
+export interface WorkflowListResponse {
+  // (undocumented)
+  items: Array<Workflow>;
+  // (undocumented)
+  next_page_token: string;
+}
 ```

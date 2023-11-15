@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+/** @public */
 import { createApiRef } from '@backstage/core-plugin-api';
+/** @public */
 import {
   Build,
   PipelineListResponse,
@@ -24,6 +26,7 @@ import {
   WorkflowListResponse,
 } from '../types';
 
+/** @public */
 export interface CircleCIApi {
   getPipelinesForProject(
     projectSlug: string,

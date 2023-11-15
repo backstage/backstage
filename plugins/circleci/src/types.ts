@@ -16,11 +16,13 @@
 
 // API v2
 
+/** @public */
 export interface PipelineListResponse {
   items: Array<Pipeline>;
   next_page_token: string;
 }
 
+/** @public */
 export interface Pipeline {
   id: string;
   errors: Array<PipelineErrors>;
@@ -34,6 +36,7 @@ export interface Pipeline {
   vcs?: PipelineVcs;
 }
 
+/** @public */
 export namespace Pipeline {
   export enum StateEnum {
     Created = 'created',
@@ -44,11 +47,13 @@ export namespace Pipeline {
   }
 }
 
+/** @public */
 export interface PipelineErrors {
   type: PipelineErrors.TypeEnum;
   message: string;
 }
 
+/** @public */
 export namespace PipelineErrors {
   export enum TypeEnum {
     Config = 'config',
@@ -60,12 +65,14 @@ export namespace PipelineErrors {
   }
 }
 
+/** @public */
 export interface PipelineTrigger {
   type: PipelineTrigger.TypeEnum;
   receivedAt: Date;
   actor: PipelineTriggerActor;
 }
 
+/** @public */
 export namespace PipelineTrigger {
   export enum TypeEnum {
     ScheduledPipeline = 'scheduled_pipeline',
@@ -75,11 +82,13 @@ export namespace PipelineTrigger {
   }
 }
 
+/** @public */
 export interface PipelineTriggerActor {
   login: string;
   avatar_url: string;
 }
 
+/** @public */
 export interface PipelineVcs {
   provider_name: string;
   target_repository_url: string;
@@ -92,16 +101,19 @@ export interface PipelineVcs {
   origin_repository_url: string;
 }
 
+/** @public */
 export interface PipelineVcsCommit {
   subject: string;
   body: string;
 }
 
+/** @public */
 export interface PipelineTriggerActor {
   login: string;
   avatarUrl: string;
 }
 
+/** @public */
 export interface PipelineVcs {
   providerName: string;
   targetRepositoryUrl: string;
@@ -114,11 +126,13 @@ export interface PipelineVcs {
   originRepositoryUrl: string;
 }
 
+/** @public */
 export interface PipelineVcsCommit {
   subject: string;
   body: string;
 }
 
+/** @public */
 export interface Workflow {
   pipeline_id: string;
   canceled_by?: string;
@@ -134,6 +148,7 @@ export interface Workflow {
   stopped_at: string;
 }
 
+/** @public */
 export namespace Workflow {
   export enum TagEnum {
     Setup = 'setup',
@@ -152,20 +167,24 @@ export namespace Workflow {
   }
 }
 
+/** @public */
 export interface WorkflowListResponse {
   items: Array<Workflow>;
   next_page_token: string;
 }
 
+/** @public */
 export interface WorkflowJobListResponse {
   items: Array<Job>;
   next_page_token: string;
 }
 
+/** @public */
 export interface RerunWorkflowResponse {
   workflow_id: string;
 }
 
+/** @public */
 export interface Job {
   canceled_by?: string;
   dependencies: Array<string>;
@@ -181,6 +200,7 @@ export interface Job {
   approval_request_id?: string;
 }
 
+/** @public */
 export namespace Job {
   export enum StatusEnum {
     Success = 'success',
@@ -207,6 +227,7 @@ export namespace Job {
 
 // API v1.1
 
+/** @public */
 export interface Workflow {
   job_name: string;
   job_id: string;
@@ -217,6 +238,7 @@ export interface Workflow {
   upstream_concurrency_map?: any;
 }
 
+/** @public */
 export interface Build {
   dont_build?: boolean;
   previous?: PreviousBuild;
@@ -279,17 +301,20 @@ export interface Build {
   pull_requests: PullRequest[];
 }
 
+/** @public */
 export interface BuildStep {
   name: string;
   actions: BuildStepAction[];
 }
 
+/** @public */
 export interface PullRequest {
   head_sha: string;
   url: string;
   [key: string]: any;
 }
 
+/** @public */
 export interface BuildStepAction {
   truncated?: boolean;
   index?: number;
@@ -315,16 +340,19 @@ export interface BuildStepAction {
   has_output?: boolean;
 }
 
+/** @public */
 export interface PreviousBuild {
   build_num?: number;
   status?: string;
   build_time_millis?: number;
 }
 
+/** @public */
 export interface CircleConfig {
   string?: string;
 }
 
+/** @public */
 export interface BuildPicard {
   build_agent?: {
     image?: null;
@@ -341,6 +369,7 @@ export interface BuildPicard {
   executor?: string;
 }
 
+/** @public */
 export interface User {
   is_user?: boolean;
   login?: string;
@@ -350,6 +379,7 @@ export interface User {
   id?: number;
 }
 
+/** @public */
 export type PipelineInfo = Pipeline & {
   workflows: Workflow[];
 };

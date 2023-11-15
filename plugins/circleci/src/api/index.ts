@@ -15,4 +15,5 @@
  */
 
 export { circleCIApiRef } from './CircleCIApi';
+export type { CircleCIApi } from './CircleCIApi';
 export { CircleCIClient } from './CircleCIClient';

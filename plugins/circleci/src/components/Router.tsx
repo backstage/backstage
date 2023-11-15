@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { circleCIWorkflowRouteRef } from '../route-refs';
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import {
+  circleCIRouteRef,
+  circleCIWorkflowRouteRef,
+  legacyCircleCIBuildRouteRef,
+} from '../route-refs';
 import { PipelinesPage } from './PipelinesPage';
 import { CIRCLECI_ANNOTATION } from '../constants';
 import { Entity } from '@backstage/catalog-model';
@@ -25,6 +29,23 @@ import {
   MissingAnnotationEmptyState,
 } from '@backstage/plugin-catalog-react';
 import { WorkflowWithJobsPage } from './WorkflowWithJobsPage';
+import { useRouteRef } from '@backstage/core-plugin-api';
+
+/**
+ * This component can be deleted once the old route have been deprecated.
+ */
+const RedirectingComponent = () => {
+  const rootLink = useRouteRef(circleCIRouteRef);
+  useEffect(
+    () =>
+      // eslint-disable-next-line no-console
+      console.warn(
+        'The route /:buildId is deprecated, please use the new /workflows/:workflowId route instead',
+      ),
+    [],
+  );
+  return <Navigate to={rootLink()} />;
+};
 
 /** @public */
 export const isCircleCIAvailable = (entity: Entity) =>
@@ -44,6 +65,10 @@ export const Router = () => {
       <Route
         path={`${circleCIWorkflowRouteRef.path}`}
         element={<WorkflowWithJobsPage />}
+      />
+      <Route
+        path={`${legacyCircleCIBuildRouteRef.path}`}
+        element={<RedirectingComponent />}
       />
     </Routes>
   );
