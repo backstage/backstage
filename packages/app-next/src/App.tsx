@@ -46,8 +46,8 @@ import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import Button from '@material-ui/core/Button';
 import { createSignInPageExtension } from '@backstage/frontend-plugin-api';
+import { SignInPage } from '@backstage/core-components';
 
 /*
 
@@ -93,32 +93,7 @@ const homePageExtension = createExtension({
 const signInPage = createSignInPageExtension({
   id: 'signInPage',
   loader: async () => (props: SignInPageProps) =>
-    (
-      <div>
-        <h1>Sign in page</h1>
-        <div>
-          <Button
-            onClick={() =>
-              props.onSignInSuccess({
-                getProfileInfo: async () => ({
-                  email: 'guest@example.com',
-                  displayName: 'Guest',
-                }),
-                getBackstageIdentity: async () => ({
-                  type: 'user',
-                  userEntityRef: 'user:default/guest',
-                  ownershipEntityRefs: ['user:default/guest'],
-                }),
-                getCredentials: async () => ({}),
-                signOut: async () => {},
-              })
-            }
-          >
-            Sign in
-          </Button>
-        </div>
-      </div>
-    ),
+    <SignInPage {...props} providers={['guest']} />,
 });
 
 const scmAuthExtension = createApiExtension({
