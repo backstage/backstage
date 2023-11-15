@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.19.1
+
+### Patch Changes
+
+- 25a0c75a99bd: Fix issue with Circular JSON dependencies in templating
+
 ## 1.19.0
 
 ### Minor Changes
