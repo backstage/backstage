@@ -420,7 +420,25 @@ export function getGerritRequestOptions(config: GerritIntegrationConfig): {
 };
 
 // @public
+export function getGiteaArchiveUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+): string;
+
+// @public
+export function getGiteaEditContentsUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+): string;
+
+// @public
 export function getGiteaFileContentsUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+): string;
+
+// @public
+export function getGiteaLatestCommitUrl(
   config: GiteaIntegrationConfig,
   url: string,
 ): string;
@@ -657,6 +675,18 @@ export function parseGerritGitilesUrl(
 
 // @public
 export function parseGerritJsonResponse(response: Response): Promise<unknown>;
+
+// @public
+export function parseGiteaUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+): {
+  url: string;
+  owner: string;
+  name: string;
+  ref: string;
+  path: string;
+};
 
 // @public
 export type PersonalAccessTokenCredential = AzureCredentialBase & {
