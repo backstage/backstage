@@ -245,27 +245,37 @@ export interface TableOptions<T extends object = {}> extends Options<T> {}
 
 export function TableToolbar(toolbarProps: {
   toolbarRef: MutableRefObject<any>;
+  searchText: string;
   setSearch: (value: string) => void;
+  setVisibleData: (data: any[]) => void;
   onSearchChanged: (value: string) => void;
   toggleFilters: () => void;
   hasFilters: boolean;
   selectedFiltersLength: number;
+  data: T[];
 }) {
   const {
+    data,
     toolbarRef,
+    searchText,
     setSearch,
     hasFilters,
     selectedFiltersLength,
     toggleFilters,
+    setVisibleData,
   } = toolbarProps;
   const filtersClasses = useFilterStyles();
   const onSearchChanged = useCallback(
-    (searchText: string) => {
-      toolbarProps.onSearchChanged(searchText);
-      setSearch(searchText);
+    (newSearch: string) => {
+      toolbarProps.onSearchChanged(newSearch);
+      setSearch(newSearch);
     },
     [toolbarProps, setSearch],
   );
+
+  useEffect(() => {
+    setVisibleData(searchText ? data : []);
+  }, [data, searchText, setVisibleData]);
 
   if (hasFilters) {
     return (
@@ -329,6 +339,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   );
   const [selectedFiltersLength, setSelectedFiltersLength] = useState(0);
   const [tableData, setTableData] = useState(data as any[]);
+  const [visibleData, setVisibleData] = useState<any[]>([]);
   const [selectedFilters, setSelectedFilters] = useState(
     calculatedInitialState.filters,
   );
@@ -368,6 +379,12 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     if (typeof data === 'function') {
       return;
     }
+
+    if (visibleData.length) {
+      setTableData(visibleData);
+      return;
+    }
+
     if (!selectedFilters) {
       setTableData(data as any[]);
       return;
@@ -401,7 +418,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       setTableData(data as any[]);
     }
     setSelectedFiltersLength(selectedFiltersArray.flat().length);
-  }, [data, selectedFilters, getFieldByTitle]);
+  }, [data, visibleData, selectedFilters, getFieldByTitle]);
 
   const constructFilters = (
     filterConfig: TableFilter[],
@@ -459,6 +476,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       return (
         <TableToolbar
           setSearch={setSearch}
+          setVisibleData={setVisibleData}
           hasFilters={hasFilters}
           selectedFiltersLength={selectedFiltersLength}
           toggleFilters={toggleFilters}
