@@ -54,9 +54,7 @@ describe('ExtensionBoundary', () => {
     const TextComponent = () => {
       return <p>{text}</p>;
     };
-    await createExtensionTester(
-      wrapInBoundaryExtension(<TextComponent />),
-    ).render();
+    createExtensionTester(wrapInBoundaryExtension(<TextComponent />)).render();
     await waitFor(() => expect(screen.getByText(text)).toBeInTheDocument());
   });
 
@@ -65,9 +63,7 @@ describe('ExtensionBoundary', () => {
     const ErrorComponent = () => {
       throw new Error(error);
     };
-    await createExtensionTester(
-      wrapInBoundaryExtension(<ErrorComponent />),
-    ).render();
+    createExtensionTester(wrapInBoundaryExtension(<ErrorComponent />)).render();
     await waitFor(() => expect(screen.getByText(error)).toBeInTheDocument());
   });
 
@@ -84,7 +80,7 @@ describe('ExtensionBoundary', () => {
       return null;
     };
 
-    await createExtensionTester(
+    createExtensionTester(
       wrapInBoundaryExtension(
         <TestApiProvider apis={[[analyticsApiRef, analyticsApiMock]]}>
           <AnalyticsComponent />
