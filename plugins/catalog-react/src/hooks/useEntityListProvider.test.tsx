@@ -416,4 +416,73 @@ describe('<EntityListProvider enablePagination />', () => {
       expect(result.current.error).toBeDefined();
     });
   });
+
+  describe('pageInfo', () => {
+    it('returns an empty pageInfo', async () => {
+      mockCatalogApi.queryEntities!.mockResolvedValueOnce({
+        items: [],
+        pageInfo: {},
+        totalItems: 10,
+      });
+      const { result } = renderHook(() => useEntityList(), {
+        wrapper: createWrapper({ enablePagination }),
+      });
+      await waitFor(() => {
+        expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+      });
+
+      expect(result.current.pageInfo).toStrictEqual({
+        prev: undefined,
+        next: undefined,
+      });
+    });
+
+    it('returns pageInfo with next function and properly fetch next batch', async () => {
+      const { result } = renderHook(() => useEntityList(), {
+        wrapper: createWrapper({ enablePagination }),
+      });
+      await waitFor(() => {
+        expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+      });
+
+      await waitFor(() => {
+        expect(result.current.pageInfo!.next).toBeDefined();
+      });
+
+      act(() => {
+        result.current.pageInfo!.next!();
+      });
+
+      await waitFor(() => {
+        expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+          cursor: 'nextCursor',
+          limit,
+        });
+      });
+    });
+
+    it('returns pageInfo with prev function and properly fetch prev batch', async () => {
+      const { result } = renderHook(() => useEntityList(), {
+        wrapper: createWrapper({ enablePagination }),
+      });
+      await waitFor(() => {
+        expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+      });
+
+      await waitFor(() => {
+        expect(result.current.pageInfo!.prev).toBeDefined();
+      });
+
+      act(() => {
+        result.current.pageInfo!.prev!();
+      });
+
+      await waitFor(() => {
+        expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+          cursor: 'prevCursor',
+          limit,
+        });
+      });
+    });
+  });
 });
