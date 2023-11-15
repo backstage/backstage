@@ -271,3 +271,149 @@ describe('<EntityListProvider />', () => {
     expect(result.current.pageInfo).toBeUndefined();
   });
 });
+
+describe('<EntityListProvider enablePagination />', () => {
+  const origReplaceState = window.history.replaceState;
+  const enablePagination = true;
+  const limit = 2;
+  const orderFields = [{ field: 'metadata.name', order: 'asc' }];
+
+  beforeEach(() => {
+    window.history.replaceState = jest.fn();
+  });
+  afterEach(() => {
+    window.history.replaceState = origReplaceState;
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should send backend filters', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ enablePagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+    });
+
+    expect(result.current.entities.length).toBe(2);
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+      filter: { kind: 'component' },
+      limit,
+      orderFields,
+    });
+  });
+
+  it('resolves frontend filters', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ enablePagination }),
+      initialProps: {
+        userFilter: 'all',
+      },
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.owned(ownershipEntityRefs),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.entities.length).toBe(1);
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('resolves query param filter values', async () => {
+    const query = qs.stringify({
+      filters: { kind: 'component', type: 'service' },
+    });
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({
+        location: `/catalog?${query}`,
+        enablePagination,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.queryParameters).toBeTruthy();
+    });
+    expect(result.current.queryParameters).toEqual({
+      kind: 'component',
+      type: 'service',
+    });
+  });
+
+  it('fetch when frontend filters change', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ enablePagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.entities.length).toBe(2);
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.owned(ownershipEntityRefs),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.entities.length).toBe(1);
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('debounces multiple filter changes', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ enablePagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBeGreaterThan(0);
+    });
+    expect(result.current.backendEntities.length).toBe(2);
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+      result.current.updateFilters({ type: new EntityTypeFilter('service') });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenNthCalledWith(2, {
+        filter: { kind: 'api', 'spec.type': ['service'] },
+        limit,
+        orderFields,
+      });
+    });
+  });
+
+  it('returns an error on catalogApi failure', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ enablePagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBeGreaterThan(0);
+    });
+    expect(result.current.backendEntities.length).toBe(2);
+
+    mockCatalogApi.queryEntities!.mockRejectedValueOnce('error');
+    act(() => {
+      result.current.updateFilters({ kind: new EntityKindFilter('api') });
+    });
+    await waitFor(() => {
+      expect(result.current.error).toBeDefined();
+    });
+  });
+});
