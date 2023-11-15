@@ -221,7 +221,15 @@ export const CatalogTable = (props: CatalogTableProps) => {
     return (
       <PaginatedCatalogTable
         columns={tableColumns}
+        emptyContent={emptyContent}
+        isLoading={loading}
+        title={`${titleDisplay} (${entities.length})`}
+        actions={actions || defaultActions}
+        subtitle={subtitle}
+        options={tableOptions}
         data={entities.map(toEntityRow)}
+        next={pageInfo.next}
+        prev={pageInfo.prev}
       />
     );
   }
@@ -230,11 +238,11 @@ export const CatalogTable = (props: CatalogTableProps) => {
     <LegacyCatalogTable
       columns={tableColumns}
       emptyContent={emptyContent}
-      entities={entities}
-      loading={loading}
+      isLoading={loading}
       title={`${titleDisplay} (${entities.length})`}
       actions={actions || defaultActions}
       subtitle={subtitle}
+      data={entities}
       options={tableOptions}
     />
   );
@@ -245,8 +253,8 @@ function LegacyCatalogTable(props: {
   actions?: TableProps<CatalogTableRow>['actions'];
   columns: TableColumn<CatalogTableRow>[];
   emptyContent: React.ReactNode;
-  entities: Entity[];
-  loading: boolean;
+  data: Entity[];
+  isLoading: boolean;
   options?: TableProps<CatalogTableRow>['options'];
   subtitle?: string;
   title: string;
@@ -255,26 +263,26 @@ function LegacyCatalogTable(props: {
     actions,
     columns,
     emptyContent,
-    entities,
-    loading,
+    data,
+    isLoading,
     subtitle,
     options,
     title,
   } = props;
 
-  const rows = entities.sort(refCompare).map(toEntityRow);
+  const rows = data.sort(refCompare).map(toEntityRow);
   const showPagination = rows.length > 20;
 
   return (
     <Table<CatalogTableRow>
-      isLoading={loading}
+      isLoading={isLoading}
       columns={columns}
       options={{
         paging: showPagination,
         pageSize: 20,
         actionsColumnIndex: -1,
         loadingType: 'linear',
-        showEmptyDataSourceMessage: !loading,
+        showEmptyDataSourceMessage: !isLoading,
         padding: 'dense',
         pageSizeOptions: [20, 50, 100],
         ...options,
