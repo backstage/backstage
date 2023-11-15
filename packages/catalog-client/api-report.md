@@ -154,6 +154,8 @@ export class CatalogClient implements CatalogApi {
 // @public
 export interface CatalogRequestOptions {
   // (undocumented)
+  headers?: Record<string, string>;
+  // (undocumented)
   token?: string;
 }
 
