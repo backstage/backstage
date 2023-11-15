@@ -244,49 +244,18 @@ export function createApp(options?: {
 
     const discoveredFeatures = getAvailableFeatures(config);
     const loadedFeatures = (await options?.featureLoader?.({ config })) ?? [];
-    const allFeatures = deduplicateFeatures([
-      ...discoveredFeatures,
-      ...loadedFeatures,
-      ...(options?.features ?? []),
-    ]);
 
-    const tree = createAppTree({
-      features: allFeatures,
-      builtinExtensions,
+    const app = createSpecializedApp({
       config,
-    });
+      features: [
+        ...discoveredFeatures,
+        ...loadedFeatures,
+        ...(options?.features ?? []),
+      ],
+      bindRoutes: options?.bindRoutes,
+    }).createRoot();
 
-    const appContext = createLegacyAppContext(
-      allFeatures.filter(
-        (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
-      ),
-    );
-
-    const routeIds = collectRouteIds(allFeatures);
-
-    const App = () => (
-      <ApiProvider apis={createApiHolder(tree, config)}>
-        <AppContextProvider appContext={appContext}>
-          <AppThemeProvider>
-            <RoutingProvider
-              {...extractRouteInfoFromAppNode(tree.root)}
-              routeBindings={resolveRouteBindings(
-                options?.bindRoutes,
-                config,
-                routeIds,
-              )}
-            >
-              {/* TODO: set base path using the logic from AppRouter */}
-              <BrowserRouter>
-                {tree.root.instance!.getData(coreExtensionData.reactElement)}
-              </BrowserRouter>
-            </RoutingProvider>
-          </AppThemeProvider>
-        </AppContextProvider>
-      </ApiProvider>
-    );
-
-    return { default: App };
+    return { default: () => app };
   }
 
   return {
@@ -297,6 +266,66 @@ export function createApp(options?: {
           <LazyApp />
         </React.Suspense>
       );
+    },
+  };
+}
+
+/**
+ * Synchronous version of {@link createApp}, expecting all features and
+ * config to have been loaded already.
+ * @public
+ */
+export function createSpecializedApp(options?: {
+  features?: (BackstagePlugin | ExtensionOverrides)[];
+  config?: ConfigApi;
+  bindRoutes?(context: { bind: AppRouteBinder }): void;
+}): { createRoot(): JSX.Element } {
+  const {
+    features: duplicatedFeatures = [],
+    config = new ConfigReader({}, 'empty-config'),
+  } = options ?? {};
+
+  const features = deduplicateFeatures(duplicatedFeatures);
+
+  const tree = createAppTree({
+    features,
+    builtinExtensions,
+    config,
+  });
+
+  const appContext = createLegacyAppContext(
+    features.filter(
+      (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
+    ),
+  );
+
+  const routeIds = collectRouteIds(features);
+
+  const App = () => (
+    <ApiProvider apis={createApiHolder(tree, config)}>
+      <AppContextProvider appContext={appContext}>
+        <AppThemeProvider>
+          <RoutingProvider
+            {...extractRouteInfoFromAppNode(tree.root)}
+            routeBindings={resolveRouteBindings(
+              options?.bindRoutes,
+              config,
+              routeIds,
+            )}
+          >
+            {/* TODO: set base path using the logic from AppRouter */}
+            <BrowserRouter>
+              {tree.root.instance!.getData(coreExtensionData.reactElement)}
+            </BrowserRouter>
+          </RoutingProvider>
+        </AppThemeProvider>
+      </AppContextProvider>
+    </ApiProvider>
+  );
+
+  return {
+    createRoot() {
+      return <App />;
     },
   };
 }
