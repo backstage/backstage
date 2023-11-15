@@ -542,6 +542,17 @@ export type HorizontalScrollGridClassKey =
   | 'buttonRight';
 
 // @public (undocumented)
+export function IconLinkVertical({
+  color,
+  disabled,
+  href,
+  icon,
+  label,
+  onClick,
+  title,
+}: IconLinkVerticalProps): React_2.JSX.Element;
+
+// @public (undocumented)
 export type IconLinkVerticalClassKey =
   | 'link'
   | 'disabled'
