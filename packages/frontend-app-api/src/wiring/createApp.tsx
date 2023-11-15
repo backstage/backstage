@@ -299,24 +299,22 @@ export function createSpecializedApp(options?: {
     ),
   );
 
-  const routeIds = collectRouteIds(features);
+  const apiHolder = createApiHolder(tree, config);
+  const routeInfo = extractRouteInfoFromAppNode(tree.root);
+  const routeBindings = resolveRouteBindings(
+    options?.bindRoutes,
+    config,
+    collectRouteIds(features),
+  );
+  const rootEl = tree.root.instance!.getData(coreExtensionData.reactElement);
 
   const App = () => (
-    <ApiProvider apis={createApiHolder(tree, config)}>
+    <ApiProvider apis={apiHolder}>
       <AppContextProvider appContext={appContext}>
         <AppThemeProvider>
-          <RoutingProvider
-            {...extractRouteInfoFromAppNode(tree.root)}
-            routeBindings={resolveRouteBindings(
-              options?.bindRoutes,
-              config,
-              routeIds,
-            )}
-          >
+          <RoutingProvider {...routeInfo} routeBindings={routeBindings}>
             {/* TODO: set base path using the logic from AppRouter */}
-            <BrowserRouter>
-              {tree.root.instance!.getData(coreExtensionData.reactElement)}
-            </BrowserRouter>
+            <BrowserRouter>{rootEl}</BrowserRouter>
           </RoutingProvider>
         </AppThemeProvider>
       </AppContextProvider>
