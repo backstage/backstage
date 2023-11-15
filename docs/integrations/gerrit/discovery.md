@@ -26,18 +26,11 @@ Then add the plugin to the plugin catalog `packages/backend/src/plugins/catalog.
 ```ts
 /* packages/backend/src/plugins/catalog.ts */
 import { GerritEntityProvider } from '@backstage/plugin-catalog-backend-module-gerrit';
-import { Duration } from 'luxon';
 const builder = await CatalogBuilder.create(env);
 /** ... other processors and/or providers ... */
 builder.addEntityProvider(
   GerritEntityProvider.fromConfig(env.config, {
     logger: env.logger,
-    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-    schedule: env.scheduler.createScheduledTaskRunner({
-      frequency: { minutes: 30 },
-      timeout: { minutes: 3 },
-    }),
-    // optional: alternatively, use schedule
     scheduler: env.scheduler,
   }),
 );
@@ -57,7 +50,7 @@ catalog:
         host: gerrit-your-company.com
         branch: master # Optional
         query: 'state=ACTIVE&prefix=webapps'
-        schedule: # optional; same options as in TaskScheduleDefinition
+        schedule:
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code

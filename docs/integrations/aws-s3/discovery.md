@@ -32,7 +32,7 @@ catalog:
         bucketName: sample-bucket
         prefix: prefix/ # optional
         region: us-east-2 # optional, uses the default region otherwise
-        schedule: # optional; same options as in TaskScheduleDefinition
+        schedule: # same options as in TaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code
@@ -52,7 +52,7 @@ catalog:
       bucketName: sample-bucket
       prefix: prefix/ # optional
       region: us-east-2 # optional, uses the default region otherwise
-      schedule: # optional; same options as in TaskScheduleDefinition
+      schedule: # same options as in TaskScheduleDefinition
         # supports cron, ISO duration, "human duration" as used in code
         frequency: { minutes: 30 }
         # supports ISO duration, "human duration" as used in code
@@ -79,12 +79,6 @@ const builder = await CatalogBuilder.create(env);
 builder.addEntityProvider(
   AwsS3EntityProvider.fromConfig(env.config, {
     logger: env.logger,
-    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-    schedule: env.scheduler.createScheduledTaskRunner({
-      frequency: { minutes: 30 },
-      timeout: { minutes: 3 },
-    }),
-    // optional: alternatively, use schedule
     scheduler: env.scheduler,
   }),
 );
