@@ -95,7 +95,7 @@ const signInPageComponentDataRef =
 
 const signInPage = createExtension({
   id: 'signInPage',
-  attachTo: { id: 'core', input: 'signInPage' },
+  attachTo: { id: 'core.router', input: 'signInPage' },
   output: {
     component: signInPageComponentDataRef,
   },

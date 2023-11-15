@@ -92,9 +92,11 @@ import { createAppTree } from '../tree';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { toLegacyPlugin } from '../routing/toLegacyPlugin';
 import { InternalAppContext } from './InternalAppContext';
+import { CoreRouter } from '../extensions/CoreRouter';
 
 const builtinExtensions = [
   Core,
+  CoreRouter,
   CoreRoutes,
   CoreNav,
   CoreLayout,
