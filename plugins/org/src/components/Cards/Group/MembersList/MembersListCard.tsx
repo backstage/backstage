@@ -119,6 +119,15 @@ const MemberComponent = (props: { member: UserEntity }) => {
   );
 };
 
+const useListStyles = makeStyles(() => ({
+  root: {
+    height: '100%',
+  },
+  cardContent: {
+    overflow: 'auto',
+  },
+}));
+
 /** @public */
 export const MembersListCard = (props: {
   memberDisplayTitle?: string;
@@ -130,6 +139,7 @@ export const MembersListCard = (props: {
     pageSize = 50,
     showAggregateMembersToggle,
   } = props;
+  const classes = useListStyles();
 
   const { entity: groupEntity } = useEntity<GroupEntity>();
   const {
@@ -210,13 +220,15 @@ export const MembersListCard = (props: {
   );
 
   return (
-    <Grid item>
+    <Grid item className={classes.root}>
       <InfoCard
         title={`${memberDisplayTitle} (${
           members?.length || 0
         }${paginationLabel})`}
         subheader={`of ${displayName}`}
         {...(nbPages <= 1 ? {} : { actions: pagination })}
+        className={classes.root}
+        cardClassName={classes.cardContent}
       >
         {showAggregateMembersToggle && (
           <>
