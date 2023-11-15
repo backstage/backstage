@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * @packageDocumentation
+ *
+ * Contains utilities that can be used when testing frontend features such as extensions.
+ */
+
 export * from './app';

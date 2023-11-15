@@ -27,6 +27,4 @@ export class ExtensionTester {
   // (undocumented)
   render(options?: { config?: JsonObject }): RenderResult;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

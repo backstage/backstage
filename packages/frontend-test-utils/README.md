@@ -1,12 +1,12 @@
 # @backstage/frontend-test-utils
 
-_This package was created through the Backstage CLI_.
+Contains utilities that can be used when testing frontend features such as extensions.
 
 ## Installation
 
-Install the package via Yarn:
+Install the package via Yarn into your own packages:
 
 ```sh
 cd <package-dir> # if within a monorepo
-yarn add @backstage/frontend-test-utils
+yarn add --dev @backstage/frontend-test-utils
 ```
