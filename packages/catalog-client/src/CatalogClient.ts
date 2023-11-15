@@ -474,9 +474,10 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<void> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const headers: Record<string, string> = options?.token
-      ? { Authorization: `Bearer ${options.token}` }
-      : {};
+    const headers: Record<string, string> = { ...options?.headers };
+    if (options?.token) {
+      headers.Authorization = `Bearer ${options.token}`;
+    }
     const response = await this.fetchApi.fetch(url, { method, headers });
 
     if (!response.ok) {
@@ -490,9 +491,10 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<T> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const headers: Record<string, string> = options?.token
-      ? { Authorization: `Bearer ${options.token}` }
-      : {};
+    const headers: Record<string, string> = { ...options?.headers };
+    if (options?.token) {
+      headers.Authorization = `Bearer ${options.token}`;
+    }
     const response = await this.fetchApi.fetch(url, { method, headers });
 
     if (!response.ok) {
@@ -508,9 +510,10 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<any | undefined> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const headers: Record<string, string> = options?.token
-      ? { Authorization: `Bearer ${options.token}` }
-      : {};
+    const headers: Record<string, string> = { ...options?.headers };
+    if (options?.token) {
+      headers.Authorization = `Bearer ${options.token}`;
+    }
     const response = await this.fetchApi.fetch(url, { method, headers });
 
     if (!response.ok) {

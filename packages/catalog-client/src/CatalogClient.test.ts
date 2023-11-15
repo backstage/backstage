@@ -519,6 +519,23 @@ describe('CatalogClient', () => {
       await client.getLocationById('42', { token });
     });
 
+    it('forwards extra headers', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/locations/42`, (req, res, ctx) => {
+          expect(req.headers.get('x-backstage-custom')).toBe(
+            'a custom header value',
+          );
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+
+      await client.getLocationById('42', {
+        headers: { 'x-backstage-custom': 'a custom header value' },
+      });
+    });
+
     it('skips authorization header if token is omitted', async () => {
       expect.assertions(1);
 

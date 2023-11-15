@@ -332,6 +332,7 @@ export interface GetEntityFacetsResponse {
  */
 export interface CatalogRequestOptions {
   token?: string;
+  headers?: Record<string, string>;
 }
 
 /**
