@@ -15,6 +15,7 @@
  */
 
 export { HeaderIconLinkRow } from './HeaderIconLinkRow';
+export { IconLinkVertical } from './IconLinkVertical';
 export type { HeaderIconLinkRowClassKey } from './HeaderIconLinkRow';
 export type {
   IconLinkVerticalProps,
