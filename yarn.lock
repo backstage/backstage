@@ -4672,6 +4672,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-auth-backend-module-okta-provider@workspace:^, @backstage/plugin-auth-backend-module-okta-provider@workspace:plugins/auth-backend-module-okta-provider":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-auth-backend-module-okta-provider@workspace:plugins/auth-backend-module-okta-provider"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@davidzemon/passport-okta-oauth": ^0.0.5
+    express: ^4.18.2
+    passport: ^0.6.0
+    supertest: ^6.3.3
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-pinniped-provider@workspace:plugins/auth-backend-module-pinniped-provider"
@@ -4716,10 +4734,10 @@ __metadata:
     "@backstage/plugin-auth-backend-module-gitlab-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-google-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-oauth2-provider": "workspace:^"
+    "@backstage/plugin-auth-backend-module-okta-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@davidzemon/passport-okta-oauth": ^0.0.5
     "@google-cloud/firestore": ^6.0.0
     "@types/body-parser": ^1.19.0
     "@types/cookie-parser": ^1.4.2
