@@ -16,6 +16,7 @@
 
 export {
   createApp,
+  createSpecializedApp,
   createExtensionTree,
   type ExtensionTreeNode,
   type ExtensionTree,
