@@ -49,7 +49,7 @@ export class ExtensionTester {
     return this;
   }
 
-  async render(options?: { config?: JsonObject }): Promise<RenderResult> {
+  render(options?: { config?: JsonObject }): RenderResult {
     const { config = {} } = options ?? {};
 
     const [subject, ...rest] = this.#extensions;

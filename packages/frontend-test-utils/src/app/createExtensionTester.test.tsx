@@ -24,7 +24,7 @@ import { createExtensionTester } from './createExtensionTester';
 
 describe('createExtensionTester', () => {
   it('should render a simple extension', async () => {
-    await createExtensionTester(
+    createExtensionTester(
       createExtension({
         id: 'test',
         attachTo: { id: 'ignored', input: 'ignored' },
@@ -37,7 +37,7 @@ describe('createExtensionTester', () => {
   });
 
   it('should render an extension even if disabled by default', async () => {
-    await createExtensionTester(
+    createExtensionTester(
       createExtension({
         id: 'test',
         attachTo: { id: 'ignored', input: 'ignored' },
@@ -51,7 +51,7 @@ describe('createExtensionTester', () => {
   });
 
   it("should fail to render an extension that doesn't output a react element", async () => {
-    await expect(
+    expect(() =>
       createExtensionTester(
         createExtension({
           id: 'test',
@@ -61,7 +61,7 @@ describe('createExtensionTester', () => {
           factory: () => ({ path: '/foo' }),
         }),
       ).render(),
-    ).rejects.toThrow(
+    ).toThrow(
       "Failed to instantiate extension 'core', input 'root' did not receive required extension data 'core.reactElement' from extension 'test'",
     );
   });

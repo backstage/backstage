@@ -147,7 +147,7 @@ describe('createSearchResultListItemExtension', () => {
       },
     });
 
-    await createExtensionTester(SearchPageExtension)
+    createExtensionTester(SearchPageExtension)
       .add(TechDocsSearchResultItemExtension, {
         // TODO(Rugvip): We need to make the config input type available for use here
         config: {
