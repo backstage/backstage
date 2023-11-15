@@ -19,8 +19,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import { NotAllowedError } from '@backstage/errors';
+import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
   PermissionEvaluator,
@@ -71,23 +70,30 @@ export async function createRouter(
         request.header('authorization'),
       );
       const entityRef = request.body.entityRef;
+      if (typeof entityRef !== 'string') {
+        throw new InputError('Invalid entityRef, not a string');
+      }
       const entity = await catalogApi.getEntityByRef(entityRef);
 
       if (entity) {
         const annotationName =
           entity.metadata?.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
-        const resourceRef = stringifyEntityRef(entity);
         if (
           annotationName &&
-          (await azureSitesApi.validateSite(annotationName, name))
+          !(await azureSitesApi.validateSite(annotationName, name))
         ) {
-          throw new NotAllowedError();
+          throw new NotFoundError();
         }
 
         const decision = permissions
           ? (
               await permissions.authorize(
-                [{ permission: azureSitesActionPermission, resourceRef }],
+                [
+                  {
+                    permission: azureSitesActionPermission,
+                    resourceRef: entityRef,
+                  },
+                ],
                 {
                   token,
                 },
@@ -109,7 +115,7 @@ export async function createRouter(
           }),
         );
       } else {
-        throw new NotAllowedError();
+        throw new NotFoundError();
       }
     },
   );
@@ -122,23 +128,31 @@ export async function createRouter(
       );
 
       const entityRef = request.body.entityRef;
+      if (typeof entityRef !== 'string') {
+        throw new InputError('Invalid entityRef, not a string');
+      }
       const entity = await catalogApi.getEntityByRef(entityRef);
 
       if (entity) {
         const annotationName =
           entity.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
-        const resourceRef = stringifyEntityRef(entity);
+
         if (
           annotationName &&
-          (await azureSitesApi.validateSite(annotationName, name))
+          !(await azureSitesApi.validateSite(annotationName, name))
         ) {
-          throw new NotAllowedError();
+          throw new NotFoundError();
         }
 
         const decision = permissions
           ? (
               await permissions.authorize(
-                [{ permission: azureSitesActionPermission, resourceRef }],
+                [
+                  {
+                    permission: azureSitesActionPermission,
+                    resourceRef: entityRef,
+                  },
+                ],
                 {
                   token,
                 },
@@ -160,7 +174,7 @@ export async function createRouter(
           }),
         );
       } else {
-        throw new NotAllowedError();
+        throw new NotFoundError();
       }
     },
   );
