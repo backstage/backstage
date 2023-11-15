@@ -31,14 +31,13 @@ import React, { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { catalogApiRef } from '../api';
 import { starredEntitiesApiRef, MockStarredEntitiesApi } from '../apis';
-import { EntityKindPicker, UserListPicker } from '../components';
 import {
   EntityKindFilter,
   EntityTypeFilter,
   EntityUserFilter,
 } from '../filters';
-import { UserListFilterKind } from '../types';
 import { EntityListProvider, useEntityList } from './useEntityListProvider';
+import { useMountEffect } from '@react-hookz/web';
 
 const entities: Entity[] = [
   {
@@ -77,43 +76,53 @@ const mockIdentityApi: Partial<IdentityApi> = {
   }),
   getCredentials: async () => ({ token: undefined }),
 };
-const mockCatalogApi: Partial<CatalogApi> = {
-  getEntities: jest.fn().mockImplementation(async () => ({ items: entities })),
-  getEntityByRef: async () => undefined,
+const mockCatalogApi: Partial<jest.Mocked<CatalogApi>> = {
+  getEntities: jest.fn().mockResolvedValue({ items: entities }),
+  queryEntities: jest.fn().mockResolvedValue({
+    items: entities,
+    pageInfo: { prevCursor: 'prevCursor', nextCursor: 'nextCursor' },
+    totalItems: 10,
+  }),
+  getEntityByRef: jest.fn().mockResolvedValue(undefined),
 };
 
-const wrapper = ({
-  userFilter,
-  location,
-  children,
-}: PropsWithChildren<{
-  userFilter?: UserListFilterKind;
-  location?: string;
-}>) => {
-  return (
-    <MemoryRouter initialEntries={[location ?? '']}>
-      <TestApiProvider
-        apis={[
-          [configApiRef, mockConfigApi],
-          [catalogApiRef, mockCatalogApi],
-          [identityApiRef, mockIdentityApi],
-          [storageApiRef, MockStorageApi.create()],
-          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-          [alertApiRef, { post: jest.fn() }],
-        ]}
-      >
-        <EntityListProvider>
-          <EntityKindPicker initialFilter="component" hidden />
-          <UserListPicker initialFilter={userFilter} />
-          {children}
-        </EntityListProvider>
-      </TestApiProvider>
-    </MemoryRouter>
-  );
-};
+const createWrapper =
+  (options: { location?: string; enablePagination: boolean }) =>
+  (props: PropsWithChildren) => {
+    const InitialFiltersWrapper = ({ children }: PropsWithChildren) => {
+      const { updateFilters } = useEntityList();
+
+      useMountEffect(() => {
+        updateFilters({ kind: new EntityKindFilter('component') });
+      });
+
+      return <>{children}</>;
+    };
+
+    return (
+      <MemoryRouter initialEntries={[options.location ?? '']}>
+        <TestApiProvider
+          apis={[
+            [configApiRef, mockConfigApi],
+            [catalogApiRef, mockCatalogApi],
+            [identityApiRef, mockIdentityApi],
+            [storageApiRef, MockStorageApi.create()],
+            [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+            [alertApiRef, { post: jest.fn() }],
+          ]}
+        >
+          <EntityListProvider enablePagination={options.enablePagination}>
+            <InitialFiltersWrapper>{props.children}</InitialFiltersWrapper>
+          </EntityListProvider>
+        </TestApiProvider>
+      </MemoryRouter>
+    );
+  };
 
 describe('<EntityListProvider />', () => {
   const origReplaceState = window.history.replaceState;
+  const enablePagination = false;
+
   beforeEach(() => {
     window.history.replaceState = jest.fn();
   });
@@ -125,16 +134,17 @@ describe('<EntityListProvider />', () => {
     jest.clearAllMocks();
   });
 
-  it('resolves backend filters', async () => {
+  it('should send backend filters', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper,
+      wrapper: createWrapper({ enablePagination }),
     });
 
     await waitFor(() => {
-      expect(result.current.backendEntities.length).toBeGreaterThan(0);
+      expect(result.current.backendEntities.length).toBe(2);
     });
 
-    expect(result.current.backendEntities.length).toBe(2);
+    expect(result.current.entities.length).toBe(2);
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
     });
@@ -142,16 +152,11 @@ describe('<EntityListProvider />', () => {
 
   it('resolves frontend filters', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper,
+      wrapper: createWrapper({ enablePagination }),
       initialProps: {
         userFilter: 'all',
       },
     });
-
-    await waitFor(() => {
-      expect(result.current.backendEntities.length).toBeGreaterThan(0);
-    });
-    expect(result.current.backendEntities.length).toBe(2);
 
     act(() =>
       result.current.updateFilters({
@@ -171,8 +176,10 @@ describe('<EntityListProvider />', () => {
       filters: { kind: 'component', type: 'service' },
     });
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: ({ children }) =>
-        wrapper({ location: `/catalog?${query}`, children }),
+      wrapper: createWrapper({
+        location: `/catalog?${query}`,
+        enablePagination,
+      }),
     });
 
     await waitFor(() => {
@@ -186,7 +193,7 @@ describe('<EntityListProvider />', () => {
 
   it('does not fetch when only frontend filters change', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper,
+      wrapper: createWrapper({ enablePagination }),
     });
 
     await waitFor(() => {
@@ -202,13 +209,18 @@ describe('<EntityListProvider />', () => {
 
     await waitFor(() => {
       expect(result.current.entities.length).toBe(1);
-      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     });
+
+    await expect(() =>
+      waitFor(() => {
+        expect(mockCatalogApi.getEntities).not.toHaveBeenCalledTimes(1);
+      }),
+    ).rejects.toThrow();
   });
 
   it('debounces multiple filter changes', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper,
+      wrapper: createWrapper({ enablePagination }),
     });
 
     await waitFor(() => {
@@ -218,18 +230,20 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      result.current.updateFilters({ kind: new EntityKindFilter('component') });
+      result.current.updateFilters({ kind: new EntityKindFilter('api') });
       result.current.updateFilters({ type: new EntityTypeFilter('service') });
     });
 
     await waitFor(() => {
-      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(2);
+      expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
+        filter: { kind: 'api', 'spec.type': ['service'] },
+      });
     });
   });
 
   it('returns an error on catalogApi failure', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper,
+      wrapper: createWrapper({ enablePagination }),
     });
 
     await waitFor(() => {
@@ -237,12 +251,23 @@ describe('<EntityListProvider />', () => {
     });
     expect(result.current.backendEntities.length).toBe(2);
 
-    mockCatalogApi.getEntities = jest.fn().mockRejectedValue('error');
+    mockCatalogApi.getEntities!.mockRejectedValueOnce('error');
     act(() => {
       result.current.updateFilters({ kind: new EntityKindFilter('api') });
     });
     await waitFor(() => {
       expect(result.current.error).toBeDefined();
     });
+  });
+
+  it('returns an empty pageInfo', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ enablePagination }),
+    });
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenCalled();
+    });
+
+    expect(result.current.pageInfo).toBeUndefined();
   });
 });
