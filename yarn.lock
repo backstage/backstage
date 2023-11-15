@@ -4371,7 +4371,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/frontend-test-utils@workspace:packages/frontend-test-utils":
+"@backstage/frontend-test-utils@workspace:^, @backstage/frontend-test-utils@workspace:packages/frontend-test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/frontend-test-utils@workspace:packages/frontend-test-utils"
   dependencies:
@@ -4382,6 +4382,8 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
   languageName: unknown
   linkType: soft
 

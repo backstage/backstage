@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export { createExtensionTester } from './createExtensionTester';
+export {
+  createExtensionTester,
+  type ExtensionTester,
+} from './createExtensionTester';
