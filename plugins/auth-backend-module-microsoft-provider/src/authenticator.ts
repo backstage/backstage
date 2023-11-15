@@ -21,6 +21,7 @@ import {
   PassportProfile,
 } from '@backstage/plugin-auth-node';
 import { ExtendedMicrosoftStrategy } from './strategy';
+import { scopeHelper } from './scopes';
 
 /** @public */
 export const microsoftAuthenticator = createOAuthAuthenticator({
@@ -31,9 +32,10 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
     const clientSecret = config.getString('clientSecret');
     const tenantId = config.getString('tenantId');
     const domainHint = config.getOptionalString('domainHint');
-    const scope: string[] = config.getOptionalStringArray('scope') || [
-      'user.read',
-    ];
+    const scope = scopeHelper(
+      ['user.read'],
+      config.getOptionalStringArray('additionalScopes'),
+    );
 
     const helper = PassportOAuthAuthenticatorHelper.from(
       new ExtendedMicrosoftStrategy(

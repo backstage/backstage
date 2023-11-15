@@ -55,8 +55,8 @@ auth:
         clientSecret: ${AZURE_CLIENT_SECRET}
         tenantId: ${AZURE_TENANT_ID}
         domainHint: ${AZURE_TENANT_ID}
-        scope:
-          - user.read
+        additionalScopes:
+          - Mail.Send
 ```
 
 The Microsoft provider is a structure with three mandatory configuration keys:

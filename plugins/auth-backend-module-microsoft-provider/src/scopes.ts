@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-export interface Config {
-  auth?: {
-    providers?: {
-      /** @visibility frontend */
-      microsoft?: {
-        [authEnv: string]: {
-          clientId: string;
-          tenantId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          domainHint?: string;
-          callbackUrl?: string;
-          additionalScopes?: string[];
-        };
-      };
-    };
-  };
-}
+/**
+ * Combine two arrays of scopes without duplicates
+ * @param defaultScopes Default scopes
+ * @param additionalScopes Optional additional scopes
+ * @returns List of scopes
+ * @public
+ */
+export const scopeHelper = function (
+  defaultScopes: string[],
+  additionalScopes?: string[],
+): string[] {
+  const scope: string[] = defaultScopes.concat(additionalScopes || []);
+  return scope.filter((value, index) => scope.indexOf(value) === index);
+};
