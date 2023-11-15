@@ -15,9 +15,8 @@
  */
 
 import React from 'react';
-import Box from '@material-ui/core/Box';
 
-import { BaseTable, TableProps, tableStyles } from '@backstage/core-components';
+import { Table, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
 
 type PaginatedCatalogTableProps = {
@@ -30,35 +29,30 @@ type PaginatedCatalogTableProps = {
  */
 export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
   const { columns, data, next, prev } = props;
-  const tableClasses = tableStyles();
 
   return (
-    <>
-      <Box className={tableClasses.root}>
-        <BaseTable
-          columns={columns}
-          data={data}
-          options={{
-            paginationPosition: 'both',
-            pageSizeOptions: [],
-            showFirstLastPageButtons: false,
-            pageSize: Number.MAX_SAFE_INTEGER,
-            emptyRowsWhenPaging: false,
-          }}
-          onPageChange={page => {
-            if (page > 0) {
-              next?.();
-            } else {
-              prev?.();
-            }
-          }}
-          /* this will enable the prev button accordingly */
-          page={prev ? 1 : 0}
-          /* this will enable the next button accordingly */
-          totalCount={next ? Number.MAX_VALUE : Number.MAX_SAFE_INTEGER}
-          localization={{ pagination: { labelDisplayedRows: '' } }}
-        />
-      </Box>
-    </>
+    <Table
+      columns={columns}
+      data={data}
+      options={{
+        paginationPosition: 'both',
+        pageSizeOptions: [],
+        showFirstLastPageButtons: false,
+        pageSize: Number.MAX_SAFE_INTEGER,
+        emptyRowsWhenPaging: false,
+      }}
+      onPageChange={page => {
+        if (page > 0) {
+          next?.();
+        } else {
+          prev?.();
+        }
+      }}
+      /* this will enable the prev button accordingly */
+      page={prev ? 1 : 0}
+      /* this will enable the next button accordingly */
+      totalCount={next ? Number.MAX_VALUE : Number.MAX_SAFE_INTEGER}
+      localization={{ pagination: { labelDisplayedRows: '' } }}
+    />
   );
 }
