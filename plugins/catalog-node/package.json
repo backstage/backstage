@@ -46,7 +46,6 @@
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/types": "workspace:^"
   },
