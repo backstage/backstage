@@ -16,44 +16,12 @@
 
 import React, { useEffect } from 'react';
 import { screen, waitFor } from '@testing-library/react';
-import {
-  MockAnalyticsApi,
-  MockConfigApi,
-  TestApiProvider,
-  renderWithEffects,
-} from '@backstage/test-utils';
+import { MockAnalyticsApi, TestApiProvider } from '@backstage/test-utils';
 import { ExtensionBoundary } from './ExtensionBoundary';
-import {
-  Extension,
-  coreExtensionData,
-  createExtension,
-  createPlugin,
-} from '../wiring';
+import { coreExtensionData, createExtension } from '../wiring';
 import { analyticsApiRef, useAnalytics } from '@backstage/core-plugin-api';
-import { createApp } from '@backstage/frontend-app-api';
-import { JsonObject } from '@backstage/types';
 import { createRouteRef } from '../routing';
-
-function renderExtensionInTestApp(
-  extension: Extension<unknown>,
-  options?: {
-    config?: JsonObject;
-  },
-) {
-  const { config = {} } = options ?? {};
-
-  const app = createApp({
-    features: [
-      createPlugin({
-        id: 'plugin',
-        extensions: [extension],
-      }),
-    ],
-    configLoader: async () => new MockConfigApi(config),
-  });
-
-  return renderWithEffects(app.createRoot());
-}
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 const wrapInBoundaryExtension = (element: JSX.Element) => {
   const id = 'plugin.extension';
@@ -86,7 +54,9 @@ describe('ExtensionBoundary', () => {
     const TextComponent = () => {
       return <p>{text}</p>;
     };
-    await renderExtensionInTestApp(wrapInBoundaryExtension(<TextComponent />));
+    await createExtensionTester(
+      wrapInBoundaryExtension(<TextComponent />),
+    ).render();
     await waitFor(() => expect(screen.getByText(text)).toBeInTheDocument());
   });
 
@@ -95,7 +65,9 @@ describe('ExtensionBoundary', () => {
     const ErrorComponent = () => {
       throw new Error(error);
     };
-    await renderExtensionInTestApp(wrapInBoundaryExtension(<ErrorComponent />));
+    await createExtensionTester(
+      wrapInBoundaryExtension(<ErrorComponent />),
+    ).render();
     await waitFor(() => expect(screen.getByText(error)).toBeInTheDocument());
   });
 
@@ -112,13 +84,13 @@ describe('ExtensionBoundary', () => {
       return null;
     };
 
-    await renderExtensionInTestApp(
+    await createExtensionTester(
       wrapInBoundaryExtension(
         <TestApiProvider apis={[[analyticsApiRef, analyticsApiMock]]}>
           <AnalyticsComponent />
         </TestApiProvider>,
       ),
-    );
+    ).render();
 
     await waitFor(() =>
       expect(analyticsApiMock.getEvents()[0]).toMatchObject({
