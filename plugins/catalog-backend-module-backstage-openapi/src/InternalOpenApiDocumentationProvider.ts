@@ -30,7 +30,7 @@ import type {
   OpenAPIObject,
   OperationObject,
   PathItemObject,
-} from 'openapi3-ts';
+} from 'openapi3-ts/oas30';
 import fetch from 'cross-fetch';
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import * as uuid from 'uuid';

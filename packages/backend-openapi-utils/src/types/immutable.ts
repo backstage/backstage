@@ -21,7 +21,7 @@ import type {
   ParameterObject,
   SchemaObject,
   ResponseObject,
-} from 'openapi3-ts';
+} from 'openapi3-ts/oas30';
 
 /**
  * This file is meant to hold Immutable overwrites of the values provided by the `openapi3-ts`
