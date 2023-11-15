@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
@@ -29,6 +29,7 @@ import {
   createExtension,
   createApiExtension,
   createExtensionOverrides,
+  createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import { homePage } from './HomePage';
@@ -36,12 +37,17 @@ import { collectLegacyRoutes } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
-import { createApiFactory, configApiRef } from '@backstage/core-plugin-api';
+import {
+  createApiFactory,
+  configApiRef,
+  SignInPageProps,
+} from '@backstage/core-plugin-api';
 import {
   ScmAuth,
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
+import Button from '@material-ui/core/Button';
 
 /*
 
@@ -84,6 +90,47 @@ const homePageExtension = createExtension({
   },
 });
 
+const signInPageComponentDataRef =
+  createExtensionDataRef<ComponentType<SignInPageProps>>('core.signInPage');
+
+const signInPage = createExtension({
+  id: 'signInPage',
+  attachTo: { id: 'core', input: 'signInPage' },
+  output: {
+    component: signInPageComponentDataRef,
+  },
+  factory() {
+    return {
+      component: (props: SignInPageProps) => (
+        <div>
+          <h1>Sign in page</h1>
+          <div>
+            <Button
+              onClick={() =>
+                props.onSignInSuccess({
+                  getProfileInfo: async () => ({
+                    email: 'guest@example.com',
+                    displayName: 'Guest',
+                  }),
+                  getBackstageIdentity: async () => ({
+                    type: 'user',
+                    userEntityRef: 'user:default/guest',
+                    ownershipEntityRefs: ['user:default/guest'],
+                  }),
+                  getCredentials: async () => ({}),
+                  signOut: async () => {},
+                })
+              }
+            >
+              Sign in
+            </Button>
+          </div>
+        </div>
+      ),
+    };
+  },
+});
+
 const scmAuthExtension = createApiExtension({
   factory: ScmAuth.createDefaultApiFactory(),
 });
@@ -112,7 +159,12 @@ const app = createApp({
     homePlugin,
     ...collectedLegacyPlugins,
     createExtensionOverrides({
-      extensions: [homePageExtension, scmAuthExtension, scmIntegrationApi],
+      extensions: [
+        homePageExtension,
+        scmAuthExtension,
+        scmIntegrationApi,
+        signInPage,
+      ],
     }),
   ],
   /* Handled through config instead */

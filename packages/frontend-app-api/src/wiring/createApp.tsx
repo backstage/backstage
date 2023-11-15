@@ -76,7 +76,7 @@ import {
   components as defaultComponents,
   icons as defaultIcons,
 } from '../../../app-defaults/src/defaults';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
@@ -91,6 +91,7 @@ import { collectRouteIds } from '../routing/collectRouteIds';
 import { createAppTree } from '../tree';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { toLegacyPlugin } from '../routing/toLegacyPlugin';
+import { InternalAppContext } from './InternalAppContext';
 
 const builtinExtensions = [
   Core,
@@ -299,7 +300,8 @@ export function createSpecializedApp(options?: {
     ),
   );
 
-  const apiHolder = createApiHolder(tree, config);
+  const appIdentityProxy = new AppIdentityProxy();
+  const apiHolder = createApiHolder(tree, config, appIdentityProxy);
   const routeInfo = extractRouteInfoFromAppNode(tree.root);
   const routeBindings = resolveRouteBindings(
     options?.bindRoutes,
@@ -313,8 +315,9 @@ export function createSpecializedApp(options?: {
       <AppContextProvider appContext={appContext}>
         <AppThemeProvider>
           <RoutingProvider {...routeInfo} routeBindings={routeBindings}>
-            {/* TODO: set base path using the logic from AppRouter */}
-            <BrowserRouter>{rootEl}</BrowserRouter>
+            <InternalAppContext.Provider value={{ appIdentityProxy }}>
+              {rootEl}
+            </InternalAppContext.Provider>
           </RoutingProvider>
         </AppThemeProvider>
       </AppContextProvider>
@@ -350,7 +353,11 @@ function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
   };
 }
 
-function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
+function createApiHolder(
+  tree: AppTree,
+  configApi: ConfigApi,
+  appIdentityProxy: AppIdentityProxy,
+): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
   const pluginApis =
@@ -379,33 +386,7 @@ function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
   factoryRegistry.register('static', {
     api: identityApiRef,
     deps: {},
-    factory: () => {
-      const appIdentityProxy = new AppIdentityProxy();
-      // TODO: Remove this when sign-in page is migrated
-      appIdentityProxy.setTarget(
-        {
-          getUserId: () => 'guest',
-          getIdToken: async () => undefined,
-          getProfile: () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getProfileInfo: async () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getBackstageIdentity: async () => ({
-            type: 'user',
-            userEntityRef: 'user:default/guest',
-            ownershipEntityRefs: ['user:default/guest'],
-          }),
-          getCredentials: async () => ({}),
-          signOut: async () => {},
-        },
-        { signOutTargetUrl: '/' },
-      );
-      return appIdentityProxy;
-    },
+    factory: () => appIdentityProxy,
   });
 
   factoryRegistry.register('static', {
