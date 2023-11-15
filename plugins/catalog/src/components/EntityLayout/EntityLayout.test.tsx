@@ -266,6 +266,7 @@ describe('EntityLayout', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
