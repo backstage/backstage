@@ -28,7 +28,7 @@ import {
   RouteRef,
   getComponentData,
 } from '@backstage/core-plugin-api';
-import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
+import { convertLegacyRouteRef } from './convertLegacyRouteRef';
 
 /*
 

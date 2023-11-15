@@ -34,7 +34,7 @@ import {
 } from '@backstage/plugin-graphiql';
 import { createApiFactory, IconComponent } from '@backstage/core-plugin-api';
 import { graphiQLRouteRef } from './route-refs';
-import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 
 /** @alpha */
 export const GraphiqlPage = createPageExtension({

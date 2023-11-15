@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@backstage/core-app-api": "workspace:^",
+    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
