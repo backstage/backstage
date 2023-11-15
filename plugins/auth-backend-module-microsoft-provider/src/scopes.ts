@@ -21,10 +21,10 @@
  * @returns List of scopes
  * @public
  */
-export const scopeHelper = function (
+export const scopeHelper = (
   defaultScopes: string[],
   additionalScopes?: string[],
-): string[] {
+): string[] => {
   const scope: string[] = defaultScopes.concat(additionalScopes || []);
   return scope.filter((value, index) => scope.indexOf(value) === index);
 };
