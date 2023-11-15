@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 export {
   type BackstageIdentityApi,
   type BackstageIdentityResponse,
@@ -37,4 +36,4 @@ export {
   oktaAuthApiRef,
   microsoftAuthApiRef,
   oneloginAuthApiRef,
-} from '../../../../core-plugin-api';
+} from '@backstage/core-plugin-api';

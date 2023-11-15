@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-export { useApiHolder, useApi, withApis } from '../../../../core-plugin-api';
+export { useApiHolder, useApi, withApis } from '@backstage/core-plugin-api';

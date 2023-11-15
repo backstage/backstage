@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-export { createApiFactory } from '../../../../core-plugin-api';
+export { createApiFactory } from '@backstage/core-plugin-api';

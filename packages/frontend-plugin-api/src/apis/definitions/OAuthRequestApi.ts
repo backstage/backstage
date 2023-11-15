@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 export {
   type OAuthRequesterOptions,
   type OAuthRequester,
   type PendingOAuthRequest,
   type OAuthRequestApi,
   oauthRequestApiRef,
-} from '../../../../core-plugin-api';
+} from '@backstage/core-plugin-api';

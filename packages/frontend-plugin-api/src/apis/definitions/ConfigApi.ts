@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-export { type ConfigApi, configApiRef } from '../../../../core-plugin-api';
+export { type ConfigApi, configApiRef } from '@backstage/core-plugin-api';

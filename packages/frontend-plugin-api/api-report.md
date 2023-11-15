@@ -5,80 +5,76 @@
 ```ts
 /// <reference types="react" />
 
-import { AlertApi } from '../../../../core-plugin-api';
-import { alertApiRef } from '../../../../core-plugin-api';
-import { AlertMessage } from '../../../../core-plugin-api';
-import { AnyApiFactory } from '../../../../core-plugin-api';
-import { AnyApiFactory as AnyApiFactory_2 } from '@backstage/core-plugin-api';
-import { AnyApiRef } from '../../../../core-plugin-api';
-import { AnyApiRef as AnyApiRef_2 } from '@backstage/core-plugin-api';
-import { ApiFactory } from '../../../../core-plugin-api';
-import { ApiHolder } from '../../../../core-plugin-api';
-import { ApiRef } from '../../../../core-plugin-api';
-import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api';
-import { ApiRefConfig } from '../../../../core-plugin-api';
-import { AppTheme } from '../../../../core-plugin-api';
-import { AppTheme as AppTheme_2 } from '@backstage/core-plugin-api';
-import { AppThemeApi } from '../../../../core-plugin-api';
-import { appThemeApiRef } from '../../../../core-plugin-api';
-import { atlassianAuthApiRef } from '../../../../core-plugin-api';
-import { AuthProviderInfo } from '../../../../core-plugin-api';
-import { AuthRequestOptions } from '../../../../core-plugin-api';
-import { BackstageIdentityApi } from '../../../../core-plugin-api';
-import { BackstageIdentityResponse } from '../../../../core-plugin-api';
-import { BackstageUserIdentity } from '../../../../core-plugin-api';
-import { bitbucketAuthApiRef } from '../../../../core-plugin-api';
-import { bitbucketServerAuthApiRef } from '../../../../core-plugin-api';
+import { AlertApi } from '@backstage/core-plugin-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
+import { AlertMessage } from '@backstage/core-plugin-api';
+import { AnyApiFactory } from '@backstage/core-plugin-api';
+import { AnyApiRef } from '@backstage/core-plugin-api';
+import { ApiFactory } from '@backstage/core-plugin-api';
+import { ApiHolder } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/core-plugin-api';
+import { ApiRefConfig } from '@backstage/core-plugin-api';
+import { AppTheme } from '@backstage/core-plugin-api';
+import { AppThemeApi } from '@backstage/core-plugin-api';
+import { appThemeApiRef } from '@backstage/core-plugin-api';
+import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
+import { AuthProviderInfo } from '@backstage/core-plugin-api';
+import { AuthRequestOptions } from '@backstage/core-plugin-api';
+import { BackstageIdentityApi } from '@backstage/core-plugin-api';
+import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
+import { BackstageUserIdentity } from '@backstage/core-plugin-api';
+import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
+import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
-import { ConfigApi } from '../../../../core-plugin-api';
-import { configApiRef } from '../../../../core-plugin-api';
-import { createApiFactory } from '../../../../core-plugin-api';
-import { createApiRef } from '../../../../core-plugin-api';
-import { DiscoveryApi } from '../../../../core-plugin-api';
-import { discoveryApiRef } from '../../../../core-plugin-api';
-import { ErrorApi } from '../../../../core-plugin-api';
-import { ErrorApiError } from '../../../../core-plugin-api';
-import { ErrorApiErrorContext } from '../../../../core-plugin-api';
-import { errorApiRef } from '../../../../core-plugin-api';
-import { FeatureFlag } from '../../../../core-plugin-api';
-import { FeatureFlagsApi } from '../../../../core-plugin-api';
-import { featureFlagsApiRef } from '../../../../core-plugin-api';
-import { FeatureFlagsSaveOptions } from '../../../../core-plugin-api';
-import { FeatureFlagState } from '../../../../core-plugin-api';
-import { FetchApi } from '../../../../core-plugin-api';
-import { fetchApiRef } from '../../../../core-plugin-api';
-import { githubAuthApiRef } from '../../../../core-plugin-api';
-import { gitlabAuthApiRef } from '../../../../core-plugin-api';
-import { googleAuthApiRef } from '../../../../core-plugin-api';
+import { ConfigApi } from '@backstage/core-plugin-api';
+import { configApiRef } from '@backstage/core-plugin-api';
+import { createApiFactory } from '@backstage/core-plugin-api';
+import { createApiRef } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { discoveryApiRef } from '@backstage/core-plugin-api';
+import { ErrorApi } from '@backstage/core-plugin-api';
+import { ErrorApiError } from '@backstage/core-plugin-api';
+import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
+import { FeatureFlag } from '@backstage/core-plugin-api';
+import { FeatureFlagsApi } from '@backstage/core-plugin-api';
+import { featureFlagsApiRef } from '@backstage/core-plugin-api';
+import { FeatureFlagsSaveOptions } from '@backstage/core-plugin-api';
+import { FeatureFlagState } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
+import { fetchApiRef } from '@backstage/core-plugin-api';
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
+import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
+import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
-import { IdentityApi } from '../../../../core-plugin-api';
-import { identityApiRef } from '../../../../core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
+import { identityApiRef } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
-import { microsoftAuthApiRef } from '../../../../core-plugin-api';
-import { OAuthApi } from '../../../../core-plugin-api';
-import { OAuthRequestApi } from '../../../../core-plugin-api';
-import { oauthRequestApiRef } from '../../../../core-plugin-api';
-import { OAuthRequester } from '../../../../core-plugin-api';
-import { OAuthRequesterOptions } from '../../../../core-plugin-api';
-import { OAuthScope } from '../../../../core-plugin-api';
-import { oktaAuthApiRef } from '../../../../core-plugin-api';
-import { oneloginAuthApiRef } from '../../../../core-plugin-api';
-import { OpenIdConnectApi } from '../../../../core-plugin-api';
-import { PendingOAuthRequest } from '../../../../core-plugin-api';
-import { ProfileInfo } from '../../../../core-plugin-api';
-import { ProfileInfoApi } from '../../../../core-plugin-api';
+import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
+import { OAuthApi } from '@backstage/core-plugin-api';
+import { OAuthRequestApi } from '@backstage/core-plugin-api';
+import { oauthRequestApiRef } from '@backstage/core-plugin-api';
+import { OAuthRequester } from '@backstage/core-plugin-api';
+import { OAuthRequesterOptions } from '@backstage/core-plugin-api';
+import { OAuthScope } from '@backstage/core-plugin-api';
+import { oktaAuthApiRef } from '@backstage/core-plugin-api';
+import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
+import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { PendingOAuthRequest } from '@backstage/core-plugin-api';
+import { ProfileInfo } from '@backstage/core-plugin-api';
+import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
-import { SessionApi } from '../../../../core-plugin-api';
-import { SessionState } from '../../../../core-plugin-api';
-import { StorageApi } from '../../../../core-plugin-api';
-import { storageApiRef } from '../../../../core-plugin-api';
-import { StorageValueSnapshot } from '../../../../core-plugin-api';
-import { TypesToApiRefs } from '../../../../core-plugin-api';
-import { useApi } from '../../../../core-plugin-api';
-import { useApiHolder } from '../../../../core-plugin-api';
-import { withApis } from '../../../../core-plugin-api';
+import { SessionApi } from '@backstage/core-plugin-api';
+import { SessionState } from '@backstage/core-plugin-api';
+import { StorageApi } from '@backstage/core-plugin-api';
+import { storageApiRef } from '@backstage/core-plugin-api';
+import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { TypesToApiRefs } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
+import { useApiHolder } from '@backstage/core-plugin-api';
+import { withApis } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
@@ -203,7 +199,7 @@ export interface AppTreeApi {
 }
 
 // @public
-export const appTreeApiRef: ApiRef_2<AppTreeApi>;
+export const appTreeApiRef: ApiRef<AppTreeApi>;
 
 export { atlassianAuthApiRef };
 
@@ -262,10 +258,10 @@ export interface ConfigurableExtensionDataRef<
 export const coreExtensionData: {
   reactElement: ConfigurableExtensionDataRef<JSX_2.Element, {}>;
   routePath: ConfigurableExtensionDataRef<string, {}>;
-  apiFactory: ConfigurableExtensionDataRef<AnyApiFactory_2, {}>;
+  apiFactory: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
   routeRef: ConfigurableExtensionDataRef<RouteRef<AnyRouteRefParams>, {}>;
   navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
-  theme: ConfigurableExtensionDataRef<AppTheme_2, {}>;
+  theme: ConfigurableExtensionDataRef<AppTheme, {}>;
 };
 
 // @public (undocumented)
@@ -275,14 +271,14 @@ export function createApiExtension<
 >(
   options: (
     | {
-        api: AnyApiRef_2;
+        api: AnyApiRef;
         factory: (options: {
           config: TConfig;
           inputs: Expand<ExtensionInputValues<TInputs>>;
-        }) => AnyApiFactory_2;
+        }) => AnyApiFactory;
       }
     | {
-        factory: AnyApiFactory_2;
+        factory: AnyApiFactory;
       }
   ) & {
     configSchema?: PortableSchema<TConfig>;
@@ -468,7 +464,7 @@ export function createSubRouteRef<
 }): MakeSubRouteRef<PathParams<Path>, ParentParams>;
 
 // @public (undocumented)
-export function createThemeExtension(theme: AppTheme_2): Extension<never>;
+export function createThemeExtension(theme: AppTheme): Extension<never>;
 
 export { DiscoveryApi };
 

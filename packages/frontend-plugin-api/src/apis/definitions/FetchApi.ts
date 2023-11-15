@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-export { type FetchApi, fetchApiRef } from '../../../../core-plugin-api';
+export { type FetchApi, fetchApiRef } from '@backstage/core-plugin-api';

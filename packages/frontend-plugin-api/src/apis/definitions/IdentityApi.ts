@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-export { type IdentityApi, identityApiRef } from '../../../../core-plugin-api';
+export { type IdentityApi, identityApiRef } from '@backstage/core-plugin-api';

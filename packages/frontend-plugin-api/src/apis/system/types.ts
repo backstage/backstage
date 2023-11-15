@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 export type {
   ApiRef,
   AnyApiRef,
@@ -22,4 +21,4 @@ export type {
   ApiHolder,
   ApiFactory,
   AnyApiFactory,
-} from '../../../../core-plugin-api';
+} from '@backstage/core-plugin-api';
