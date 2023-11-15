@@ -43,6 +43,7 @@ import {
 
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
+import { SingleTenantServiceLocator } from '../service-locator/SingleTenantServiceLocator';
 import {
   CustomResource,
   KubernetesClustersSupplier,
@@ -276,6 +277,10 @@ export class KubernetesBuilder {
         this.serviceLocator =
           this.buildMultiTenantServiceLocator(clusterSupplier);
         break;
+      case 'singleTenant':
+        this.serviceLocator =
+          this.buildSingleTenantServiceLocator(clusterSupplier);
+        break;
       case 'http':
         this.serviceLocator = this.buildHttpServiceLocator(clusterSupplier);
         break;
@@ -292,6 +297,12 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator {
     return new MultiTenantServiceLocator(clusterSupplier);
+  }
+
+  protected buildSingleTenantServiceLocator(
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesServiceLocator {
+    return new SingleTenantServiceLocator(clusterSupplier);
   }
 
   protected buildHttpServiceLocator(

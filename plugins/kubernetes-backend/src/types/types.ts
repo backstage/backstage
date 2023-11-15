@@ -144,7 +144,7 @@ export interface KubernetesServiceLocator {
  *
  * @public
  */
-export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
+export type ServiceLocatorMethod = 'multiTenant' | 'singleTenant' | 'http'; // TODO implement http
 
 /**
  * Provider-specific authentication configuration
