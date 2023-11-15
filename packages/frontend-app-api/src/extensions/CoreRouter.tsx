@@ -18,7 +18,6 @@ import React, { ComponentType, ReactNode, useContext, useState } from 'react';
 import {
   coreExtensionData,
   createExtension,
-  createExtensionDataRef,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -32,6 +31,8 @@ import { InternalAppContext } from '../wiring/InternalAppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BrowserRouter } from 'react-router-dom';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { signInPageComponentDataRef } from '../../../frontend-plugin-api/src/extensions/createSignInPageExtension';
 
 export const CoreRouter = createExtension({
   id: 'core.router',
@@ -39,10 +40,7 @@ export const CoreRouter = createExtension({
   inputs: {
     signInPage: createExtensionInput(
       {
-        component:
-          createExtensionDataRef<ComponentType<SignInPageProps>>(
-            'core.signInPage',
-          ),
+        component: signInPageComponentDataRef,
       },
       { singleton: true, optional: true },
     ),
