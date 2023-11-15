@@ -23,3 +23,31 @@ declare module 'passport-okta2' {
     authenticate(this: StrategyCreated<this>, req: Request, options?: any): any;
   }
 }
+
+declare module 'passport-onelogin-oauth' {
+  import { Request } from 'express';
+  import { StrategyCreated } from 'passport';
+
+  export class Strategy {
+    constructor(options: any, verify: any);
+    authenticate(this: StrategyCreated<this>, req: Request, options?: any): any;
+  }
+}
+declare module 'passport-bitbucket-oauth2' {
+  import { Request } from 'express';
+  import { StrategyCreated } from 'passport';
+
+  export class Strategy {
+    constructor(options: any, verify: any);
+    authenticate(this: StrategyCreated<this>, req: Request, options?: any): any;
+  }
+}
+declare module 'passport-gitlab2' {
+  import { Request } from 'express';
+  import { StrategyCreated } from 'passport';
+
+  export class Strategy {
+    constructor(options: any, verify: any);
+    authenticate(this: StrategyCreated<this>, req: Request, options?: any): any;
+  }
+}
