@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { createApp } from '@backstage/frontend-app-api';
+import { createSpecializedApp } from '@backstage/frontend-app-api';
 import { Extension, createPlugin } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
-import { RenderResult, render, waitFor } from '@testing-library/react';
+import { RenderResult, render } from '@testing-library/react';
 
-class ExtensionTester {
+/** @public */
+export class ExtensionTester {
   /** @internal */
   static forSubject<TConfig>(
     subject: Extension<TConfig>,
@@ -90,25 +91,21 @@ class ExtensionTester {
       },
     };
 
-    const app = createApp({
+    const app = createSpecializedApp({
       features: [
         createPlugin({
           id: 'test',
           extensions: this.#extensions.map(entry => entry.extension),
         }),
       ],
-      configLoader: async () => new MockConfigApi(finalConfig),
+      config: new MockConfigApi(finalConfig),
     });
 
-    const result = render(app.createRoot());
-    await waitFor(() =>
-      // eslint-disable-next-line jest/no-standalone-expect
-      expect(result.queryByText('Loading...')).not.toBeInTheDocument(),
-    );
-    return result;
+    return render(app.createRoot());
   }
 }
 
+/** @public */
 export function createExtensionTester<TConfig>(
   subject: Extension<TConfig>,
   options?: { config?: TConfig },
