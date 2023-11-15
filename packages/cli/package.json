@@ -64,7 +64,7 @@
     "@swc/jest": "^0.2.22",
     "@types/jest": "^29.0.0",
     "@types/webpack-env": "^1.15.2",
-    "@typescript-eslint/eslint-plugin": "6.10.0",
+    "@typescript-eslint/eslint-plugin": "6.11.0",
     "@typescript-eslint/parser": "^6.7.2",
     "@yarnpkg/lockfile": "^1.1.0",
     "@yarnpkg/parsers": "^3.0.0-rc.4",
