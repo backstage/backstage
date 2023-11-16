@@ -1,5 +1,11 @@
 # @backstage/release-manifests
 
+## 0.0.11
+
+### Patch Changes
+
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+
 ## 0.0.10
 
 ### Patch Changes

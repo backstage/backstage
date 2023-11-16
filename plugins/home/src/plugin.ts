@@ -23,7 +23,11 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home-react';
-import { ToolkitContentProps, VisitedByTypeProps } from './homePageComponents';
+import {
+  ToolkitContentProps,
+  VisitedByTypeProps,
+  FeaturedDocsCardProps,
+} from './homePageComponents';
 import { rootRouteRef } from './routes';
 import { VisitsStorageApi, visitsApiRef } from './api';
 
@@ -208,5 +212,18 @@ export const HomePageRecentlyVisited = homePlugin.provide(
     name: 'HomePageRecentlyVisited',
     components: () =>
       import('./homePageComponents/VisitedByType/RecentlyVisited'),
+  }),
+);
+
+/**
+ * A component to display specific Featured Docs.
+ *
+ * @public
+ */
+export const FeaturedDocsCard = homePlugin.provide(
+  createCardExtension<FeaturedDocsCardProps>({
+    name: 'FeaturedDocsCard',
+    title: 'Featured Docs',
+    components: () => import('./homePageComponents/FeaturedDocsCard'),
   }),
 );

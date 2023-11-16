@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.89-next.2",
+  "version": "0.2.89",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -102,7 +102,7 @@
     "react-use": "^17.2.4",
     "vite": "^4.4.9",
     "vite-plugin-html": "^3.2.0",
-    "vite-plugin-node-polyfills": "^0.14.1",
+    "vite-plugin-node-polyfills": "^0.16.0",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {

@@ -15,8 +15,9 @@
  */
 
 import { DependencyGraphTypes } from '@backstage/core-components';
-import { JsonObject } from '@backstage/types';
 import { MouseEventHandler } from 'react';
+import { Entity } from '@backstage/catalog-model';
+import { JsonObject } from '@backstage/types';
 
 /**
  * Additional Data for entities.
@@ -31,7 +32,7 @@ export type EntityEdgeData = {
   /**
    * Whether the entity is visible or not.
    */
-  // Not used, but has to be non empty to draw a label at all!
+  // Not used, but has to be non-empty to draw a label at all!
   label: 'visible';
 };
 
@@ -49,25 +50,9 @@ export type EntityEdge = DependencyGraphTypes.DependencyEdge<EntityEdgeData>;
  */
 export type EntityNodeData = {
   /**
-   * Name of the entity.
+   * The Entity
    */
-  name: string;
-  /**
-   * Optional kind of the entity.
-   */
-  kind?: string;
-  /**
-   * Optional title of the entity.
-   */
-  title?: string;
-  /**
-   * Namespace of the entity.
-   */
-  namespace: string;
-  /**
-   * Optional spec of the entity.
-   */
-  spec?: JsonObject;
+  entity: Entity;
   /**
    * Whether the entity is focused, optional, defaults to false. Focused
    * entities are highlighted in the graph.
@@ -81,6 +66,33 @@ export type EntityNodeData = {
    * Optional click handler.
    */
   onClick?: MouseEventHandler<unknown>;
+
+  /**
+   * Name of the entity.
+   * @deprecated use {@link EntityNodeData#entity} instead
+   */
+  name: string;
+  /**
+   * Optional kind of the entity.
+   * @deprecated use {@link EntityNodeData#entity} instead
+   */
+  kind?: string;
+  /**
+   * Optional title of the entity.
+   * @deprecated use {@link EntityNodeData#entity} instead
+   */
+  title?: string;
+  /**
+   * Namespace of the entity.
+   * @deprecated use {@link EntityNodeData#entity} instead
+   * The Entity
+   */
+  namespace: string;
+  /**
+   * Optional spec of the entity.
+   * @deprecated use {@link EntityNodeData#entity} instead
+   */
+  spec?: JsonObject;
 };
 
 /**

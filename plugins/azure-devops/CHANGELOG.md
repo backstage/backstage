@@ -1,5 +1,21 @@
 # @backstage/plugin-azure-devops
 
+## 0.3.8
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- ce9e59cbb3: Refactored the error handling for some of the hooks
+- 361bb34d8e: Consolidated getting the annotation values into a single function to help with future changes
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-azure-devops-common@0.3.1
+
 ## 0.3.8-next.2
 
 ### Patch Changes

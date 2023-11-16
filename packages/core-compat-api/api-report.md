@@ -5,9 +5,16 @@
 ```ts
 /// <reference types="react" />
 
+import { AnyRouteRefParams } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { ExtensionOverrides } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { ExternalRouteRef as ExternalRouteRef_2 } from '@backstage/frontend-plugin-api';
 import { default as React_2 } from 'react';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
+import { SubRouteRef } from '@backstage/core-plugin-api';
+import { SubRouteRef as SubRouteRef_2 } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
 export function collectLegacyRoutes(
@@ -18,6 +25,24 @@ export function collectLegacyRoutes(
 export function convertLegacyApp(
   rootElement: React_2.JSX.Element,
 ): (ExtensionOverrides | BackstagePlugin)[];
+
+// @public
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: RouteRef<TParams>,
+): RouteRef_2<TParams>;
+
+// @public
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: SubRouteRef<TParams>,
+): SubRouteRef_2<TParams>;
+
+// @public
+export function convertLegacyRouteRef<
+  TParams extends AnyRouteRefParams,
+  TOptional extends boolean,
+>(
+  ref: ExternalRouteRef<TParams, TOptional>,
+): ExternalRouteRef_2<TParams, TOptional>;
 
 // (No @packageDocumentation comment for this package)
 ```

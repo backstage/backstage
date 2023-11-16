@@ -20,6 +20,11 @@ locations like GitHub or GitLab.
 > Be sure to have covered
 > [Getting Started with Backstage](../../getting-started) before proceeding.
 
+> Note: if you're running Backstage with Node 20 or later, you'll need to pass the flag `--no-node-snapshot` to Node in order to
+> use the templates feature.
+> One way to do this is to specify the `NODE_OPTIONS` environment variable before starting Backstage:
+> `export NODE_OPTIONS=--no-node-snapshot`
+
 The Software Templates are available under `/create`. For local development you
 should be able to reach them at `http://localhost:3000/create`.
 

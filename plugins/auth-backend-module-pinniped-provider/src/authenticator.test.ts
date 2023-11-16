@@ -28,9 +28,10 @@ import { ConfigReader } from '@backstage/config';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { rest } from 'msw';
 import express from 'express';
+import { DateTime } from 'luxon';
 
 describe('pinnipedAuthenticator', () => {
-  let implementation: any;
+  let authCtx: any;
   let oauthState: OAuthState;
   let idToken: string;
   let publicKey: JWK;
@@ -85,6 +86,7 @@ describe('pinnipedAuthenticator', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
 
     mswServer.use(
       rest.get(
@@ -128,7 +130,7 @@ describe('pinnipedAuthenticator', () => {
       }),
     );
 
-    implementation = pinnipedAuthenticator.initialize({
+    authCtx = pinnipedAuthenticator.initialize({
       callbackUrl: 'https://backstage.test/callback',
       config: new ConfigReader({
         federationDomain: 'https://federationDomain.test',
@@ -141,6 +143,17 @@ describe('pinnipedAuthenticator', () => {
       nonce: 'nonce',
       env: 'env',
     };
+  });
+
+  describe('#initialize', () => {
+    it('always returns a PinnipedStrategyCache', async () => {
+      const { providerStrategy, client } = await authCtx.getStrategy();
+
+      expect(providerStrategy).toBeDefined();
+      expect(client.issuer.authorization_endpoint).toMatch(
+        'https://pinniped.test/oauth2/authorize',
+      );
+    });
   });
 
   describe('#start', () => {
@@ -162,7 +175,7 @@ describe('pinnipedAuthenticator', () => {
     it('redirects to authorization endpoint returned from OIDC metadata endpoint', async () => {
       const startResponse = await pinnipedAuthenticator.start(
         startRequest,
-        implementation,
+        authCtx,
       );
       const url = new URL(startResponse.url);
 
@@ -174,7 +187,7 @@ describe('pinnipedAuthenticator', () => {
     it('initiates authorization code grant', async () => {
       const startResponse = await pinnipedAuthenticator.start(
         startRequest,
-        implementation,
+        authCtx,
       );
       const { searchParams } = new URL(startResponse.url);
 
@@ -185,7 +198,7 @@ describe('pinnipedAuthenticator', () => {
       startRequest.req.query = { audience: 'test-cluster' };
       const startResponse = await pinnipedAuthenticator.start(
         startRequest,
-        implementation,
+        authCtx,
       );
       const { searchParams } = new URL(startResponse.url);
       const stateParam = searchParams.get('state');
@@ -201,7 +214,7 @@ describe('pinnipedAuthenticator', () => {
     it('passes client ID from config', async () => {
       const startResponse = await pinnipedAuthenticator.start(
         startRequest,
-        implementation,
+        authCtx,
       );
       const { searchParams } = new URL(startResponse.url);
 
@@ -211,7 +224,7 @@ describe('pinnipedAuthenticator', () => {
     it('passes callback URL from config', async () => {
       const startResponse = await pinnipedAuthenticator.start(
         startRequest,
-        implementation,
+        authCtx,
       );
       const { searchParams } = new URL(startResponse.url);
 
@@ -223,7 +236,7 @@ describe('pinnipedAuthenticator', () => {
     it('generates PKCE challenge', async () => {
       const startResponse = await pinnipedAuthenticator.start(
         startRequest,
-        implementation,
+        authCtx,
       );
       const { searchParams } = new URL(startResponse.url);
 
@@ -232,14 +245,14 @@ describe('pinnipedAuthenticator', () => {
     });
 
     it('stores PKCE verifier in session', async () => {
-      await pinnipedAuthenticator.start(startRequest, implementation);
+      await pinnipedAuthenticator.start(startRequest, authCtx);
       expect(fakeSession['oidc:pinniped.test'].code_verifier).toBeDefined();
     });
 
     it('requests sufficient scopes for token exchange by default', async () => {
       const startResponse = await pinnipedAuthenticator.start(
         startRequest,
-        implementation,
+        authCtx,
       );
       const { searchParams } = new URL(startResponse.url);
       const scopes = searchParams.get('scope')?.split(' ') ?? [];
@@ -257,7 +270,7 @@ describe('pinnipedAuthenticator', () => {
     it('encodes OAuth state in query param', async () => {
       const startResponse = await pinnipedAuthenticator.start(
         startRequest,
-        implementation,
+        authCtx,
       );
       const { searchParams } = new URL(startResponse.url);
       const stateParam = searchParams.get('state');
@@ -276,9 +289,102 @@ describe('pinnipedAuthenticator', () => {
               url: 'test',
             },
           } as unknown as OAuthAuthenticatorStartInput,
-          implementation,
+          authCtx,
         ),
       ).rejects.toThrow('authentication requires session support');
+    });
+
+    it('refreshes oidc metadata after a failed fetch', async () => {
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, _ctx) => res.networkError('Timeout'),
+        ),
+      );
+
+      const authCtxCreatedWhileSupervisorUnavailable =
+        pinnipedAuthenticator.initialize({
+          callbackUrl: 'https://backstage.test/callback',
+          config: new ConfigReader({
+            federationDomain: 'https://federationDomain.test',
+            clientId: 'clientId',
+            clientSecret: 'clientSecret',
+          }),
+        });
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            ),
+        ),
+      );
+
+      const response = await pinnipedAuthenticator.start(
+        startRequest,
+        authCtxCreatedWhileSupervisorUnavailable,
+      );
+
+      expect(response.url).toMatch('https://pinniped.test/oauth2/authorize');
+    });
+
+    it('caches oidc metadata after a success', async () => {
+      // we start with 1 because the supervisor was called once already when we initialize.
+      let supervisorCalls: number = 1;
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) => {
+            supervisorCalls += 1;
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            );
+          },
+        ),
+      );
+
+      await pinnipedAuthenticator.start(startRequest, authCtx);
+      await pinnipedAuthenticator.start(startRequest, authCtx);
+
+      expect(supervisorCalls).toEqual(1);
+    });
+
+    it('refreshes oidc metadata when current one in cache expires', async () => {
+      // we start with 1 because the supervisor was called once already when we initialize.
+      let supervisorCalls: number = 1;
+      const fixedTime = DateTime.local();
+      jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) => {
+            supervisorCalls += 1;
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            );
+          },
+        ),
+      );
+
+      await pinnipedAuthenticator.start(startRequest, authCtx);
+
+      jest
+        .spyOn(DateTime, 'local')
+        .mockImplementation(() => fixedTime.plus({ seconds: 60000 }));
+
+      await pinnipedAuthenticator.start(startRequest, authCtx);
+
+      expect(supervisorCalls).toEqual(2);
     });
   });
 
@@ -304,7 +410,7 @@ describe('pinnipedAuthenticator', () => {
     it('exchanges authorization code for access token', async () => {
       const handlerResponse = await pinnipedAuthenticator.authenticate(
         handlerRequest,
-        implementation,
+        authCtx,
       );
       const accessToken = handlerResponse.session.accessToken;
 
@@ -314,7 +420,7 @@ describe('pinnipedAuthenticator', () => {
     it('exchanges authorization code for refresh token', async () => {
       const handlerResponse = await pinnipedAuthenticator.authenticate(
         handlerRequest,
-        implementation,
+        authCtx,
       );
       const refreshToken = handlerResponse.session.refreshToken;
 
@@ -324,7 +430,7 @@ describe('pinnipedAuthenticator', () => {
     it('returns granted scope', async () => {
       const handlerResponse = await pinnipedAuthenticator.authenticate(
         handlerRequest,
-        implementation,
+        authCtx,
       );
       const responseScope = handlerResponse.session.scope;
 
@@ -349,7 +455,7 @@ describe('pinnipedAuthenticator', () => {
 
       const handlerResponse = await pinnipedAuthenticator.authenticate(
         handlerRequest,
-        implementation,
+        authCtx,
       );
 
       expect(handlerResponse.session.idToken).toEqual(clusterScopedIdToken);
@@ -413,7 +519,7 @@ describe('pinnipedAuthenticator', () => {
       };
 
       await expect(
-        pinnipedAuthenticator.authenticate(handlerRequest, implementation),
+        pinnipedAuthenticator.authenticate(handlerRequest, authCtx),
       ).rejects.toThrow(
         `Failed to get cluster specific ID token for "test_cluster": Error: RFC8693 token exchange failed with error: NetworkError: Connection timed out`,
       );
@@ -422,7 +528,7 @@ describe('pinnipedAuthenticator', () => {
     it('fails without authorization code', async () => {
       handlerRequest.req.url = 'https://test.com';
       return expect(
-        pinnipedAuthenticator.authenticate(handlerRequest, implementation),
+        pinnipedAuthenticator.authenticate(handlerRequest, authCtx),
       ).rejects.toThrow('Unexpected redirect');
     });
 
@@ -440,7 +546,7 @@ describe('pinnipedAuthenticator', () => {
               },
             } as unknown as express.Request,
           },
-          implementation,
+          authCtx,
         ),
       ).rejects.toThrow(
         'Authentication rejected, state missing from the response',
@@ -456,9 +562,139 @@ describe('pinnipedAuthenticator', () => {
               url: 'https://test.com',
             } as unknown as express.Request,
           },
-          implementation,
+          authCtx,
         ),
       ).rejects.toThrow('authentication requires session support');
+    });
+
+    it('refreshes oidc metadata after a failed fetch', async () => {
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, _ctx) => res.networkError('Timeout'),
+        ),
+      );
+
+      const authCtxCreatedWhileSupervisorUnavailable =
+        pinnipedAuthenticator.initialize({
+          callbackUrl: 'https://backstage.test/callback',
+          config: new ConfigReader({
+            federationDomain: 'https://federationDomain.test',
+            clientId: 'clientId',
+            clientSecret: 'clientSecret',
+          }),
+        });
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            ),
+        ),
+      );
+
+      const response = await pinnipedAuthenticator.authenticate(
+        handlerRequest,
+        authCtxCreatedWhileSupervisorUnavailable,
+      );
+      expect(response.session.accessToken).toEqual('accessToken');
+    });
+
+    it('caches oidc metadata after a success', async () => {
+      let supervisorCalls: number = 1;
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) => {
+            supervisorCalls += 1;
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            );
+          },
+        ),
+      );
+
+      await pinnipedAuthenticator.authenticate(handlerRequest, authCtx);
+
+      await pinnipedAuthenticator.authenticate(
+        {
+          req: {
+            method: 'GET',
+            url: `https://test?code=authorization_code&state=${encodeOAuthState(
+              oauthState,
+            )}`,
+            session: {
+              'oidc:pinniped.test': {
+                state: encodeOAuthState(oauthState),
+              },
+            },
+          } as unknown as express.Request,
+        },
+        authCtx,
+      );
+
+      expect(supervisorCalls).toEqual(1);
+    });
+
+    it('refreshes oidc metadata when current one in cache expires', async () => {
+      let supervisorCalls: number = 0;
+      const fixedTime = DateTime.local();
+      jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) => {
+            supervisorCalls += 1;
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            );
+          },
+        ),
+      );
+
+      authCtx = pinnipedAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          federationDomain: 'https://federationDomain.test',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+        }),
+      });
+
+      await pinnipedAuthenticator.authenticate(handlerRequest, authCtx);
+
+      jest
+        .spyOn(DateTime, 'local')
+        .mockImplementation(() => fixedTime.plus({ seconds: 60000 }));
+
+      await pinnipedAuthenticator.authenticate(
+        {
+          req: {
+            method: 'GET',
+            url: `https://test?code=authorization_code&state=${encodeOAuthState(
+              oauthState,
+            )}`,
+            session: {
+              'oidc:pinniped.test': {
+                state: encodeOAuthState(oauthState),
+              },
+            },
+          } as unknown as express.Request,
+        },
+        authCtx,
+      );
+
+      expect(supervisorCalls).toEqual(2);
     });
   });
 
@@ -476,7 +712,7 @@ describe('pinnipedAuthenticator', () => {
     it('gets new refresh token', async () => {
       const refreshResponse = await pinnipedAuthenticator.refresh(
         refreshRequest,
-        implementation,
+        authCtx,
       );
 
       expect(refreshResponse.session.refreshToken).toBe('refreshToken');
@@ -485,7 +721,7 @@ describe('pinnipedAuthenticator', () => {
     it('gets access token', async () => {
       const refreshResponse = await pinnipedAuthenticator.refresh(
         refreshRequest,
-        implementation,
+        authCtx,
       );
 
       expect(refreshResponse.session.accessToken).toBe('accessToken');
@@ -494,10 +730,100 @@ describe('pinnipedAuthenticator', () => {
     it('gets id token', async () => {
       const refreshResponse = await pinnipedAuthenticator.refresh(
         refreshRequest,
-        implementation,
+        authCtx,
       );
 
       expect(refreshResponse.session.idToken).toBe(idToken);
+    });
+
+    it('refreshes oidc metadata after a failed fetch', async () => {
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, _ctx) => res.networkError('Timeout'),
+        ),
+      );
+
+      const authCtxCreatedWhileSupervisorUnavailable =
+        pinnipedAuthenticator.initialize({
+          callbackUrl: 'https://backstage.test/callback',
+          config: new ConfigReader({
+            federationDomain: 'https://federationDomain.test',
+            clientId: 'clientId',
+            clientSecret: 'clientSecret',
+          }),
+        });
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            ),
+        ),
+      );
+
+      const response = await pinnipedAuthenticator.refresh(
+        refreshRequest,
+        authCtxCreatedWhileSupervisorUnavailable,
+      );
+      expect(response.session.accessToken).toEqual('accessToken');
+    });
+
+    it('caches oidc metadata after a success', async () => {
+      let supervisorCalls: number = 1;
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) => {
+            supervisorCalls += 1;
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            );
+          },
+        ),
+      );
+
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
+
+      expect(supervisorCalls).toEqual(1);
+    });
+
+    it('refreshes oidc metadata when current one in cache expires', async () => {
+      let supervisorCalls: number = 1;
+      const fixedTime = DateTime.local();
+      jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
+
+      mswServer.use(
+        rest.get(
+          'https://federationDomain.test/.well-known/openid-configuration',
+          (_req, res, ctx) => {
+            supervisorCalls += 1;
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(issuerMetadata),
+            );
+          },
+        ),
+      );
+
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
+
+      jest
+        .spyOn(DateTime, 'local')
+        .mockImplementation(() => fixedTime.plus({ seconds: 60000 }));
+
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
+
+      expect(supervisorCalls).toEqual(2);
     });
   });
 });

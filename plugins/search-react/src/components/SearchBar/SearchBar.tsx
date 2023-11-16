@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   AnalyticsContext,
   configApiRef,
@@ -36,7 +37,6 @@ import React, {
 import useDebounce from 'react-use/lib/useDebounce';
 
 import { SearchContextProvider, useSearch } from '../../context';
-import { TrackSearch } from '../SearchTracker';
 
 function withContext<T>(Component: ComponentType<T>) {
   return forwardRef<HTMLDivElement, T>((props, ref) => (
@@ -171,33 +171,29 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       );
 
       return (
-        <TrackSearch>
-          <TextField
-            id="search-bar-text-field"
-            data-testid="search-bar-next"
-            variant="outlined"
-            margin="normal"
-            inputRef={ref}
-            value={value}
-            label={label}
-            placeholder={inputPlaceholder}
-            InputProps={{
-              startAdornment,
-              endAdornment: clearButton
-                ? clearButtonEndAdornment
-                : endAdornment,
-              ...InputProps,
-            }}
-            inputProps={{
-              'aria-label': ariaLabel,
-              ...inputProps,
-            }}
-            fullWidth={fullWidth}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            {...rest}
-          />
-        </TrackSearch>
+        <TextField
+          id="search-bar-text-field"
+          data-testid="search-bar-next"
+          variant="outlined"
+          margin="normal"
+          inputRef={ref}
+          value={value}
+          label={label}
+          placeholder={inputPlaceholder}
+          InputProps={{
+            startAdornment,
+            endAdornment: clearButton ? clearButtonEndAdornment : endAdornment,
+            ...InputProps,
+          }}
+          inputProps={{
+            'aria-label': ariaLabel,
+            ...inputProps,
+          }}
+          fullWidth={fullWidth}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          {...rest}
+        />
       );
     }),
   );

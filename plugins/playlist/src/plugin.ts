@@ -24,7 +24,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { playlistApiRef, PlaylistClient } from './api';
-import { rootRouteRef } from './routes';
+import { playlistRouteRef, rootRouteRef } from './routes';
 
 /**
  * @public
@@ -53,8 +53,21 @@ export const playlistPlugin = createPlugin({
 export const PlaylistIndexPage = playlistPlugin.provide(
   createRoutableExtension({
     name: 'PlaylistIndexPage',
-    component: () => import('./components/Router').then(m => m.Router),
+    component: () =>
+      import('./components/PlaylistIndexPage').then(m => m.PlaylistIndexPage),
     mountPoint: rootRouteRef,
+  }),
+);
+
+/**
+ * @public
+ */
+export const PlaylistPage = playlistPlugin.provide(
+  createRoutableExtension({
+    name: 'PlaylistPage',
+    component: () =>
+      import('./components/PlaylistPage').then(m => m.PlaylistPage),
+    mountPoint: playlistRouteRef,
   }),
 );
 

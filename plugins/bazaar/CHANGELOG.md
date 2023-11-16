@@ -1,5 +1,27 @@
 # @backstage/plugin-bazaar
 
+## 0.2.18
+
+### Patch Changes
+
+- c6e7940ccf: Updated Readme document in bazaar plugin
+- 4e66e37bd1: Added alert popup for link and unlink entity in bazaar project
+- c5aad900e3: Adding descending sort in a bazaar plugin
+- 6c2b872153: Add official support for React 18.
+- 69ee8d75f4: Remove `button` prop from used MaterialUI `MenuItem` component fixing incompatibility with MaterialUI v5.
+- b3acba9091: Added alert popup in the bazaar plugin
+- 1a40159acb: Removed unnecessary dependency on `@backstage/cli`.
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/plugin-catalog@1.15.0
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
 ## 0.2.18-next.2
 
 ### Patch Changes

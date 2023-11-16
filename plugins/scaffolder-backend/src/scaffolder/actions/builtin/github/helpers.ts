@@ -134,7 +134,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   secrets: { [key: string]: string } | undefined,
   logger: Logger,
 ) {
-  // eslint-disable-next-line testing-library/no-await-sync-query
+  // eslint-disable-next-line testing-library/no-await-sync-queries
   const user = await client.rest.users.getByUsername({
     username: owner,
   });
@@ -409,7 +409,7 @@ async function validateAccessTeam(client: Octokit, access: string) {
   try {
     // Below rule disabled because of a 'getByName' check for a different library
     // incorrectly triggers here.
-    // eslint-disable-next-line testing-library/no-await-sync-query
+    // eslint-disable-next-line testing-library/no-await-sync-queries
     await client.rest.teams.getByName({
       org,
       team_slug,

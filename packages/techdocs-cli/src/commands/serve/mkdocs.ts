@@ -21,6 +21,7 @@ import { runMkdocsServer } from '../../lib/mkdocsServer';
 import { LogFunc, waitForSignal } from '../../lib/run';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
+import { checkIfDockerIsOperational } from './utils';
 
 export default async function serveMkdocs(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
@@ -28,6 +29,13 @@ export default async function serveMkdocs(opts: OptionValues) {
   const dockerAddr = `http://0.0.0.0:${opts.port}`;
   const localAddr = `http://127.0.0.1:${opts.port}`;
   const expectedDevAddr = opts.docker ? dockerAddr : localAddr;
+
+  if (opts.docker) {
+    const isDockerOperational = await checkIfDockerIsOperational(logger);
+    if (!isDockerOperational) {
+      return;
+    }
+  }
 
   const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml(
     './',

@@ -1,5 +1,27 @@
 # @backstage/plugin-api-docs
 
+## 0.10.0
+
+### Minor Changes
+
+- 0ac0e10822: Replace GraphiQL playground with DocExplorer
+- 62310404b7: Define a default for oauth2RedirectUrl option of swagger-ui-react to match documentation
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- 613a55911f: Updated dependency `graphiql` to `3.0.9`.
+- 4ad15278e6: Updated dependency `@graphiql/react` to `^0.20.0`.
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/plugin-catalog@1.15.0
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+
 ## 0.10.0-next.2
 
 ### Minor Changes

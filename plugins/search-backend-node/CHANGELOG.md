@@ -1,5 +1,19 @@
 # @backstage/plugin-search-backend-node
 
+## 1.2.11
+
+### Patch Changes
+
+- b168d7e7ea: Fix highlighting for non-string fields on the `Lunr` search engine implementation.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-tasks@0.5.12
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-common@1.2.8
+
 ## 1.2.11-next.2
 
 ### Patch Changes
