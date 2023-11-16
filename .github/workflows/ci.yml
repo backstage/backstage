@@ -154,7 +154,7 @@ jobs:
     name: Test ${{ matrix.node-version }}
     services:
       postgres13:
-        image: postgres:13
+        image: postgres:16
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -165,7 +165,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres9:
-        image: postgres:9
+        image: postgres:16
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
