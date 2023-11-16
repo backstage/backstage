@@ -4,17 +4,13 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { FetchApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
-export function createSentryCreateProjectAction(
-  options: {
-    config: Config;
-  },
-  fetchApi?: FetchApi,
-): TemplateAction<
+export function createSentryCreateProjectAction(options: {
+  config: Config;
+}): TemplateAction<
   {
     organizationSlug: string;
     teamSlug: string;

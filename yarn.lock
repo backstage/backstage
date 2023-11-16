@@ -8661,12 +8661,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-sentry@workspace:plugins/scaffolder-backend-module-sentry"
   dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/types": "workspace:^"
+    msw: ^1.0.0
     yaml: ^2.3.3
   languageName: unknown
   linkType: soft

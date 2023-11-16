@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
-import { createSentryCreateProjectAction } from './createProject';
-import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
+import { ActionContext } from '@backstage/plugin-scaffolder-node';
+import { JsonObject } from '@backstage/types';
 import { randomBytes } from 'crypto';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { createSentryCreateProjectAction } from './createProject';
 
 describe('sentry:project:create action', () => {
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
+
   const createScaffolderConfig = (configData: JsonObject = {}) => ({
     config: new ConfigReader({
       scaffolder: {
@@ -28,26 +34,6 @@ describe('sentry:project:create action', () => {
       },
     }),
   });
-
-  let fetch: jest.Func;
-
-  const mockFetch = (response = {}) => {
-    const mockedResponse = {
-      status: 201,
-      headers: {
-        get: () => 'application/json',
-      },
-      json: async () =>
-        Promise.resolve({
-          detail: 'project creation mocked result',
-        }),
-      text: async () => Promise.resolve('Unexpected error.'),
-      ...response,
-    };
-
-    fetch = jest.fn().mockImplementation(() => Promise.resolve(mockedResponse));
-    return mockedResponse;
-  };
 
   const getActionContext = (): ActionContext<{
     organizationSlug: string;
@@ -69,64 +55,71 @@ describe('sentry:project:create action', () => {
     output: jest.fn(),
   });
 
-  beforeEach(() => {
-    mockFetch();
-  });
+  it('should request sentry project create with specified parameters.', async () => {
+    expect.assertions(3);
 
-  test('should request sentry project create with specified parameters.', async () => {
-    const action = createSentryCreateProjectAction(createScaffolderConfig(), {
-      fetch,
-    });
-
+    const action = createSentryCreateProjectAction(createScaffolderConfig());
     const actionContext = getActionContext();
+
+    worker.use(
+      rest.post(
+        `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
+        async (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe(
+            `Bearer ${actionContext.input.authToken}`,
+          );
+          expect(req.headers.get('Content-Type')).toBe(`application/json`);
+          await expect(req.json()).resolves.toEqual({
+            name: actionContext.input.name,
+          });
+          return res(
+            ctx.status(201),
+            ctx.json({
+              detail: 'project creation mocked result',
+            }),
+          );
+        },
+      ),
+    );
 
     await action.handler(actionContext);
-
-    expect(fetch).toHaveBeenNthCalledWith(
-      1,
-      `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${actionContext.input.authToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: actionContext.input.name,
-        }),
-      },
-    );
   });
 
-  test('should request sentry project create with added optional specified project slug', async () => {
-    const action = createSentryCreateProjectAction(createScaffolderConfig(), {
-      fetch,
-    });
+  it('should request sentry project create with added optional specified project slug', async () => {
+    expect.assertions(3);
 
+    const action = createSentryCreateProjectAction(createScaffolderConfig());
     const actionContext = getActionContext();
-
     actionContext.input = { ...actionContext.input, slug: 'project-slug' };
 
-    await action.handler(actionContext);
-
-    expect(fetch).toHaveBeenNthCalledWith(
-      1,
-      `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${actionContext.input.authToken}`,
-          'Content-Type': 'application/json',
+    worker.use(
+      rest.post(
+        `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
+        async (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe(
+            `Bearer ${actionContext.input.authToken}`,
+          );
+          expect(req.headers.get('Content-Type')).toBe(`application/json`);
+          await expect(req.json()).resolves.toEqual({
+            name: actionContext.input.name,
+            slug: actionContext.input.slug,
+          });
+          return res(
+            ctx.status(201),
+            ctx.json({
+              detail: 'project creation mocked result',
+            }),
+          );
         },
-        body: JSON.stringify({
-          name: actionContext.input.name,
-          slug: actionContext.input.slug,
-        }),
-      },
+      ),
     );
+
+    await action.handler(actionContext);
   });
 
-  test('should take Sentry auth token from scaffolder config when input authToken is missing.', async () => {
+  it('should take Sentry auth token from scaffolder config when input authToken is missing.', async () => {
+    expect.assertions(3);
+
     const sentryScaffolderConfigToken = randomBytes(5).toString('hex');
     const action = createSentryCreateProjectAction(
       createScaffolderConfig({
@@ -134,89 +127,98 @@ describe('sentry:project:create action', () => {
           token: sentryScaffolderConfigToken,
         },
       }),
-      { fetch },
     );
-
     const actionContext = getActionContext();
-
     actionContext.input.authToken = undefined;
+
+    worker.use(
+      rest.post(
+        `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
+        async (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe(
+            `Bearer ${sentryScaffolderConfigToken}`,
+          );
+          expect(req.headers.get('Content-Type')).toBe(`application/json`);
+          await expect(req.json()).resolves.toEqual({
+            name: actionContext.input.name,
+          });
+          return res(
+            ctx.status(201),
+            ctx.json({
+              detail: 'project creation mocked result',
+            }),
+          );
+        },
+      ),
+    );
 
     await action.handler(actionContext);
-
-    expect(fetch).toHaveBeenNthCalledWith(
-      1,
-      `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${sentryScaffolderConfigToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: actionContext.input.name,
-        }),
-      },
-    );
   });
 
-  test('should throw InputError when auth token is missing from input parameters and scaffolder config.', async () => {
-    const action = createSentryCreateProjectAction(createScaffolderConfig(), {
-      fetch,
-    });
+  it('should throw InputError when auth token is missing from input parameters and scaffolder config.', async () => {
+    const action = createSentryCreateProjectAction(createScaffolderConfig());
     const actionContext = getActionContext();
-
     actionContext.input.authToken = undefined;
 
-    expect.assertions(1);
-
-    await expect(async () => {
-      await action.handler(actionContext);
-    }).rejects.toThrow(new InputError('No valid sentry token given'));
-  });
-
-  test('should throw InputError when sentry API returns unexpected content-type.', async () => {
-    const actionContext = getActionContext();
-
-    const mockedFetchResponse = mockFetch({
-      headers: {
-        get: () => 'text/html',
-      },
-    });
-
-    const action = createSentryCreateProjectAction(createScaffolderConfig(), {
-      fetch,
-    });
-
-    expect.assertions(1);
-
-    await expect(async () => {
-      await action.handler(actionContext);
-    }).rejects.toThrow(
-      new InputError(
-        `Unexpected Sentry Response Type: ${await mockedFetchResponse.text()}`,
+    worker.use(
+      rest.post(
+        `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
+        async (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe(
+            `Bearer ${actionContext.input.authToken}`,
+          );
+          expect(req.headers.get('Content-Type')).toBe(`application/json`);
+          await expect(req.json()).resolves.toEqual({
+            name: actionContext.input.name,
+          });
+          return res(
+            ctx.status(201),
+            ctx.json({
+              detail: 'project creation mocked result',
+            }),
+          );
+        },
       ),
+    );
+
+    await expect(() => action.handler(actionContext)).rejects.toThrow(
+      new InputError('No valid sentry token given'),
     );
   });
 
-  test('should throw InputError when sentry API returns unexpected status code.', async () => {
+  it('should throw InputError when sentry API returns unexpected content-type.', async () => {
+    const action = createSentryCreateProjectAction(createScaffolderConfig());
     const actionContext = getActionContext();
 
-    const mockedFetchResponse = mockFetch({
-      status: 400,
-    });
-
-    const action = createSentryCreateProjectAction(createScaffolderConfig(), {
-      fetch,
-    });
-
-    expect.assertions(1);
-
-    await expect(async () => {
-      await action.handler(actionContext);
-    }).rejects.toThrow(
-      new InputError(
-        `Sentry Response was: ${(await mockedFetchResponse.json()).detail}`,
+    worker.use(
+      rest.post(
+        `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
+        async (_, res, ctx) => {
+          return res(ctx.status(201), ctx.text('Bad response'));
+        },
       ),
+    );
+
+    await expect(() => action.handler(actionContext)).rejects.toThrow(
+      new InputError(`Unexpected Sentry Response Type: Bad response`),
+    );
+  });
+
+  it('should throw InputError when sentry API returns unexpected status code.', async () => {
+    const action = createSentryCreateProjectAction(createScaffolderConfig());
+    const actionContext = getActionContext();
+
+    worker.use(
+      rest.post(
+        `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
+        async (_, res, ctx) => {
+          return res(ctx.status(400), ctx.json({ detail: 'OUCH' }));
+        },
+      ),
+    );
+
+    await expect(() => action.handler(actionContext)).rejects.toThrow(
+      new InputError(`Sentry Response was: OUCH`),
     );
   });
 });
