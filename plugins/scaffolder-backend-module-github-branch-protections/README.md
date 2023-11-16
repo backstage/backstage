@@ -2,6 +2,14 @@
 
 Welcome to the Github Branch Protections module for Scaffolder.
 
+This module adds an action to apply a multiple branch protections including wildcard patterns.
+
+For instance, the pattern "release/\*" will protect all of these branches with a common ruleset:
+
+- release/1.0.0
+- release/2.0.0
+- release/feature-a
+
 ## Getting started
 
 ## From your Backstage root directory
@@ -11,8 +19,7 @@ Welcome to the Github Branch Protections module for Scaffolder.
 yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-github-branch-protections
 ```
 
-Configure the action:
-(you can check the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to see all options):
+Configure the action without losing the built-in actions, and check the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) for more information:
 
 ```typescript
 // packages/backend/src/plugins/scaffolder.ts
@@ -66,14 +73,14 @@ export default async function createPlugin(
 }
 ```
 
-After that you can use the action in your template:
+After installing the action, you can start to use it in your templates. Here is an example template:
 
 ```yaml
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: github-branch-protections-demo
-  title: Gitlab DEMO
+  title: Github DEMO
   description: Scaffolder Github Demo
 spec:
   owner: backstage/techdocs-core
