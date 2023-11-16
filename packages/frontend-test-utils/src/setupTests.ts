@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  createApp,
-  createSpecializedApp,
-  createExtensionTree,
-  type ExtensionTreeNode,
-  type ExtensionTree,
-} from './createApp';
+import '@testing-library/jest-dom';

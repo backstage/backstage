@@ -15,9 +15,6 @@
  */
 
 export {
-  createApp,
-  createSpecializedApp,
-  createExtensionTree,
-  type ExtensionTreeNode,
-  type ExtensionTree,
-} from './createApp';
+  createExtensionTester,
+  type ExtensionTester,
+} from './createExtensionTester';

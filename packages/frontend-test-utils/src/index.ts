@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export {
-  createApp,
-  createSpecializedApp,
-  createExtensionTree,
-  type ExtensionTreeNode,
-  type ExtensionTree,
-} from './createApp';
+/**
+ * @packageDocumentation
+ *
+ * Contains utilities that can be used when testing frontend features such as extensions.
+ */
+
+export * from './app';
