@@ -32,44 +32,45 @@ export namespace vmwareCSPSignInResolvers {
    * Looks up the user by matching their profile email to the entity's profile email.
    * If that fails, sign in the user without associating with a catalog user.
    */
-  export const usernameMatchingUserEntityName = createSignInResolverFactory({
-    create() {
-      return async (
-        info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
-        ctx,
-      ) => {
-        const email = info.profile.email;
+  export const profileEmailMatchingUserEntityEmail =
+    createSignInResolverFactory({
+      create() {
+        return async (
+          info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
+          ctx,
+        ) => {
+          const email = info.profile.email;
 
-        if (!email) {
-          throw new Error(
-            'VMware login failed, user profile does not contain an email',
-          );
-        }
-
-        const userEntityRef = stringifyEntityRef({
-          kind: 'User',
-          name: email,
-        });
-
-        try {
-          // we await here so that signInWithCatalogUser throws in the current `try`
-          return await ctx.signInWithCatalogUser({
-            filter: {
-              'spec.profile.email': email,
-            },
-          });
-        } catch (e) {
-          if (!(e instanceof NotFoundError)) {
-            throw e;
+          if (!email) {
+            throw new Error(
+              'VMware login failed, user profile does not contain an email',
+            );
           }
-          return ctx.issueToken({
-            claims: {
-              sub: userEntityRef,
-              ent: [userEntityRef],
-            },
+
+          const userEntityRef = stringifyEntityRef({
+            kind: 'User',
+            name: email,
           });
-        }
-      };
-    },
-  });
+
+          try {
+            // we await here so that signInWithCatalogUser throws in the current `try`
+            return await ctx.signInWithCatalogUser({
+              filter: {
+                'spec.profile.email': email,
+              },
+            });
+          } catch (e) {
+            if (!(e instanceof NotFoundError)) {
+              throw e;
+            }
+            return ctx.issueToken({
+              claims: {
+                sub: userEntityRef,
+                ent: [userEntityRef],
+              },
+            });
+          }
+        };
+      },
+    });
 }
