@@ -62,7 +62,7 @@ describe('createExtensionTester', () => {
         }),
       ).render(),
     ).toThrow(
-      "Failed to instantiate extension 'core', input 'root' did not receive required extension data 'core.reactElement' from extension 'test'",
+      "Failed to instantiate extension 'core.router', input 'children' did not receive required extension data 'core.reactElement' from extension 'test'",
     );
   });
 });

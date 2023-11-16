@@ -133,7 +133,7 @@ describe('createPlugin', () => {
     await renderWithEffects(
       createTestAppRoot({
         features: [plugin],
-        config: { app: { extensions: [{ 'core.layout': false }] } },
+        config: { app: { extensions: [{ 'core.router': false }] } },
       }),
     );
 
@@ -161,7 +161,7 @@ describe('createPlugin', () => {
         config: {
           app: {
             extensions: [
-              { 'core.layout': false },
+              { 'core.router': false },
               {
                 'plugin.catalog.page': {
                   config: { name: 'CatalogRenamed' },
