@@ -23,6 +23,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { assertError } from '@backstage/errors';
 import { TemplateFilter, TemplateGlobal } from '../../lib';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+
 /**
  * TaskWorkerOptions
  *
@@ -111,14 +112,19 @@ export class TaskWorker {
     });
   }
 
-  start() {
-    const recoverTasksId = setInterval(async () => {
+  async recoverTasks() {
+    try {
       const enabled = await this.options.taskBroker.recoverTasks?.();
-      if (!enabled) {
-        clearInterval(recoverTasksId);
+      if (enabled) {
+        setTimeout(async () => await this.recoverTasks(), 60000);
       }
-    }, 60000);
+    } catch (_err) {
+      // ignore
+    }
+  }
 
+  start() {
+    setTimeout(async () => await this.recoverTasks(), 1);
     (async () => {
       for (;;) {
         await this.onReadyToClaimTask();
