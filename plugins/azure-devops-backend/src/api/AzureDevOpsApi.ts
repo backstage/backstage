@@ -51,7 +51,7 @@ import { Logger } from 'winston';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
 import {
   WebApi,
-  getBearerHandler,
+  getHandlerFromToken,
   getPersonalAccessTokenHandler,
 } from 'azure-devops-node-api';
 import {
@@ -61,6 +61,7 @@ import {
 import { UrlReader } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import {
+  AzureDevOpsCredentialsProvider,
   DefaultAzureDevOpsCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -70,42 +71,57 @@ export class AzureDevOpsApi {
   private readonly logger: Logger;
   private readonly urlReader: UrlReader;
   private readonly config: Config;
-  private readonly credentialsProvider: DefaultAzureDevOpsCredentialsProvider;
+  private readonly credentialsProvider: AzureDevOpsCredentialsProvider;
 
-  private constructor(logger: Logger, urlReader: UrlReader, config: Config) {
+  private constructor(
+    logger: Logger,
+    urlReader: UrlReader,
+    config: Config,
+    credentialsProvider: AzureDevOpsCredentialsProvider,
+  ) {
     this.logger = logger;
     this.urlReader = urlReader;
     this.config = config;
-
-    const scmIntegrations = ScmIntegrations.fromConfig(this.config);
-    this.credentialsProvider =
-      DefaultAzureDevOpsCredentialsProvider.fromIntegrations(scmIntegrations);
+    this.credentialsProvider = credentialsProvider;
   }
 
   static fromConfig(
     config: Config,
     options: { logger: Logger; urlReader: UrlReader },
   ) {
-    return new AzureDevOpsApi(options.logger, options.urlReader, config);
+    const scmIntegrations = ScmIntegrations.fromConfig(config);
+    const credentialsProvider =
+      DefaultAzureDevOpsCredentialsProvider.fromIntegrations(scmIntegrations);
+    return new AzureDevOpsApi(
+      options.logger,
+      options.urlReader,
+      config,
+      credentialsProvider,
+    );
   }
 
   private async getWebApi(host?: string, org?: string): Promise<WebApi> {
+    // If no host or org is provided we fall back to the values from the `azureDevOps` config section
+    // these may have been setup in the `integrations.azure` config section
+    // which is why use them here and not just falling back on them entirely
     const validHost = host ?? this.config.getString('azureDevOps.host');
     const validOrg = org ?? this.config.getString('azureDevOps.organization');
-    const url = `https://${validHost}/${validOrg}`;
+    const url = `https://${validHost}/${encodeURI(validOrg)}`;
 
     const credentials = await this.credentialsProvider.getCredentials({
       url,
     });
 
-    // TODO:(awanlin) use `getHandlerFromToken` once we no longer
-    // need to support the 'azureDevOps.token' fallback config value
-    const authHandler =
-      credentials?.type === 'pat'
-        ? getPersonalAccessTokenHandler(
-            credentials!.token ?? this.config.getString('azureDevOps.token'),
-          )
-        : getBearerHandler(credentials!.token);
+    let authHandler;
+    if (!credentials) {
+      // No credentials found for the provided host and org in the `integrations.azure` config section
+      // use the fall back personal access token from `azureDevOps.token`
+      const token = this.config.getString('azureDevOps.token');
+      authHandler = getPersonalAccessTokenHandler(token);
+    } else {
+      authHandler = getHandlerFromToken(credentials.token);
+    }
+
     const webApi = new WebApi(url, authHandler);
     return webApi;
   }
