@@ -31,6 +31,8 @@ import {
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 /**
  * @internal
@@ -54,6 +56,8 @@ export const TemplateList = ({
   group,
   templateFilter,
 }: TemplateListProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const { loading, error, entities } = useEntityList();
   const Card = TemplateCardComponent || TemplateCard;
   const templateEntities = entities.filter(isTemplateEntityV1beta3);
@@ -69,7 +73,7 @@ export const TemplateList = ({
       return group.title;
     }
 
-    return <ContentHeader title="Other Templates" />;
+    return <ContentHeader title={t('other_templates')} />;
   })();
 
   if (group && maybeFilteredEntities.length === 0) {
@@ -80,16 +84,16 @@ export const TemplateList = ({
       {loading && <Progress />}
 
       {error && (
-        <WarningPanel title="Oops! Something went wrong loading the templates">
+        <WarningPanel title={t('template_list_error_loading_template')}>
           {error.message}
         </WarningPanel>
       )}
 
       {!error && !loading && !entities.length && (
         <Typography variant="body2">
-          No templates found that match your filter. Learn more about{' '}
+          {t('template_list_empty_templates_state')}{' '}
           <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
-            adding templates
+            {t('adding_templates')}
           </Link>
           .
         </Typography>

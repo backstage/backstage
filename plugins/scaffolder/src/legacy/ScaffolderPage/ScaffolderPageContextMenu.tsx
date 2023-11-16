@@ -34,6 +34,8 @@ import {
   editRouteRef,
   scaffolderListTaskRouteRef,
 } from '../../routes';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   button: {
@@ -50,6 +52,8 @@ export type ScaffolderPageContextMenuProps = {
 export function ScaffolderPageContextMenu(
   props: ScaffolderPageContextMenuProps,
 ) {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const editLink = useRouteRef(editRouteRef);
@@ -104,7 +108,7 @@ export function ScaffolderPageContextMenu(
               <ListItemIcon>
                 <Edit fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="Template Editor" />
+              <ListItemText primary={t('template_editor')} />
             </MenuItem>
           )}
           {showActions && (
@@ -112,7 +116,7 @@ export function ScaffolderPageContextMenu(
               <ListItemIcon>
                 <Description fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="Installed Actions" />
+              <ListItemText primary={t('installed_actions')} />
             </MenuItem>
           )}
           {showTasks && (
@@ -120,7 +124,7 @@ export function ScaffolderPageContextMenu(
               <ListItemIcon>
                 <List fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="Task List" />
+              <ListItemText primary={t('task_list')} />
             </MenuItem>
           )}
         </MenuList>

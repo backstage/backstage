@@ -23,6 +23,8 @@ import Typography from '@material-ui/core/Typography';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import { WebFileSystemAccess } from '../../lib/filesystem';
+import { scaffolderTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles(theme => ({
   introText: {
@@ -48,6 +50,8 @@ interface EditorIntroProps {
 }
 
 export function TemplateEditorIntro(props: EditorIntroProps) {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const classes = useStyles();
   const supportsLoad = WebFileSystemAccess.isSupported();
 
@@ -65,14 +69,13 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
             color={supportsLoad ? undefined : 'textSecondary'}
             style={{ display: 'flex', flexFlow: 'row nowrap' }}
           >
-            Load Template Directory
+            {t('load_template_directory')}
           </Typography>
           <Typography
             variant="body1"
             color={supportsLoad ? undefined : 'textSecondary'}
           >
-            Load a local template directory, allowing you to both edit and try
-            executing your own template.
+            {t('template_editor_intro_subtitle')}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -80,7 +83,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
         <div className={classes.infoIcon}>
           <Tooltip
             placement="top"
-            title="Only supported in some Chromium-based browsers"
+            title={t('only_supported_in_some_chromium_based_browsers')}
           >
             <InfoOutlinedIcon />
           </Tooltip>
@@ -94,11 +97,10 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
       <CardActionArea onClick={() => props.onSelect?.('form')}>
         <CardContent>
           <Typography variant="h4" component="h3" gutterBottom>
-            Edit Template Form
+            {t('edit_template_form')}
           </Typography>
           <Typography variant="body1">
-            Preview and edit a template form, either using a sample template or
-            by loading a template from the catalog.
+            {t('template_editor_intro_edit_help')}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -110,11 +112,10 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
       <CardActionArea onClick={() => props.onSelect?.('field-explorer')}>
         <CardContent>
           <Typography variant="h4" component="h3" gutterBottom>
-            Custom Field Explorer
+            {t('custom_field_explorer')}
           </Typography>
           <Typography variant="body1">
-            View and play around with available installed custom field
-            extensions.
+            {t('template_editor_intro_custom_field_help')}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -124,7 +125,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
   return (
     <div style={props.style}>
       <Typography variant="h4" component="h2" className={classes.introText}>
-        Get started by choosing one of the options below
+        {t('get_started_by_choosing_one_of_the_options_below')}
       </Typography>
       <div
         style={{

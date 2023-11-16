@@ -21,12 +21,16 @@ import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import useAsync from 'react-use/lib/useAsync';
 
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
+
 export const RepoUrlPickerHost = (props: {
   host?: string;
   hosts?: string[];
   onChange: (host: string) => void;
   rawErrors: string[];
 }) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const { host, hosts, onChange, rawErrors } = props;
   const scaffolderApi = useApi(scaffolderApiRef);
 
@@ -57,7 +61,7 @@ export const RepoUrlPickerHost = (props: {
     ? integrations
         .filter(i => (hosts?.length ? hosts?.includes(i.host) : true))
         .map(i => ({ label: i.title, value: i.host }))
-    : [{ label: 'Loading...', value: 'loading' }];
+    : [{ label: t('loading'), value: 'loading' }];
 
   if (loading) {
     return <Progress />;
@@ -73,7 +77,7 @@ export const RepoUrlPickerHost = (props: {
         <Select
           native
           disabled={hosts?.length === 1 ?? false}
-          label="Host"
+          label={t('host')}
           onChange={s => onChange(String(Array.isArray(s) ? s[0] : s))}
           selected={host}
           items={hostsOptions}
@@ -81,7 +85,7 @@ export const RepoUrlPickerHost = (props: {
         />
 
         <FormHelperText>
-          The host where the repository will be created
+          {t('the_host_where_the_repository_will_be_created')}
         </FormHelperText>
       </FormControl>
     </>

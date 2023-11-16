@@ -27,6 +27,8 @@ import {
   type LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorIntro } from './TemplateEditorIntro';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 type Selection =
   | {
@@ -47,6 +49,8 @@ interface TemplateEditorPageProps {
 }
 
 export function TemplateEditorPage(props: TemplateEditorPageProps) {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const [selection, setSelection] = useState<Selection>();
 
   let content: JSX.Element | null = null;
@@ -98,8 +102,8 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
   return (
     <Page themeId="home">
       <Header
-        title="Template Editor"
-        subtitle="Edit, preview, and try out templates and template forms"
+        title={t('template_editor')}
+        subtitle={t('template_editor_subtitle')}
       />
       {content}
     </Page>

@@ -17,6 +17,7 @@ import { default as React_2 } from 'react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha @deprecated
 export type FormProps = Pick<
@@ -57,6 +58,128 @@ export type LegacyRouterProps = {
 
 // @alpha
 export const LegacyScaffolderPage: (props: LegacyRouterProps) => JSX_2.Element;
+
+// @alpha (undocumented)
+export const scaffolderTranslationRef: TranslationRef<
+  'scaffolder',
+  {
+    readonly activity_for_task: 'Activity for task: {{taskId}}';
+    readonly adding_templates: 'adding templates';
+    readonly all_tasks_that_have_been_started: 'All tasks that have been started';
+    readonly allowed_projects: 'Allowed Projects';
+    readonly allowed_workspaces: 'Allowed Workspaces';
+    readonly an_entity_from_the_catalog: 'An entity from the catalog';
+    readonly apply: 'Apply';
+    readonly are_you_sure_unsaved_changes_will_be_lost: 'Are you sure? Unsaved changes will be lost';
+    readonly available_templates: 'Available Templates';
+    readonly back: 'Back';
+    readonly cancel: 'Cancel';
+    readonly cancelling: 'Cancelling...';
+    readonly choose: 'Choose';
+    readonly choose_custom_field_extension: 'Choose Custom Field Extension';
+    readonly close_directory: 'Close directory';
+    readonly create: 'Create';
+    readonly create_a_new_component: 'Create a New Component';
+    readonly create_new_software_components_using_standard_templates: 'Create new software components using standard templates';
+    readonly created: 'Created';
+    readonly custom_field_explorer: 'Custom Field Explorer';
+    readonly custom_field_title_example: '{{customFieldName}} Example';
+    readonly delete_result: 'Delete result';
+    readonly description: 'Description';
+    readonly download_as_zip: 'Download as .zip';
+    readonly dry_run_result: 'Result {{resultId}}';
+    readonly edit_template_form: 'Edit Template Form';
+    readonly entity: 'Entity';
+    readonly entity_name_picker_validation_message: 'Must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.';
+    readonly entity_tags_picker_helper_text: "Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters";
+    readonly error_loading_exisiting_templates: 'Error loading exisiting templates: {{errorMessage}}';
+    readonly example_template_spec: 'Example Template Spec';
+    readonly examples: 'Examples';
+    readonly failed_to_load_installed_actions: 'Failed to load installed actions';
+    readonly field_options: 'Field Options';
+    readonly files: 'Files';
+    readonly get_started_by_choosing_one_of_the_options_below: 'Get started by choosing one of the options below';
+    readonly hide_button_bar: 'Hide Button Bar';
+    readonly hide_logs: 'Hide Logs';
+    readonly host: 'Host';
+    readonly input: 'Input';
+    readonly installed_actions: 'Installed Actions';
+    readonly links: 'Links';
+    readonly list_task_page_empty_state_description: 'There is no Tasks or there was an issue communicating with backend.';
+    readonly list_template_tasks: 'List template tasks';
+    readonly load_existing_template: 'Load Existing Template';
+    readonly load_template_directory: 'Load Template Directory';
+    readonly loading: 'Loading...';
+    readonly log: 'Log';
+    readonly name: 'Name';
+    readonly no_information_to_display: 'No information to display';
+    readonly no_schema_defined: 'No schema defined';
+    readonly no_task_found_with_this_id: 'No task found with this ID';
+    readonly no_user_entity_ref_found: 'No user entity ref found';
+    readonly only_supported_in_some_chromium_based_browsers: 'Only supported in some Chromium-based browsers';
+    readonly organization: 'Organization';
+    readonly other_templates: 'Other Templates';
+    readonly output: 'Output';
+    readonly owner: 'Owner';
+    readonly owner_available: 'Owner Available';
+    readonly page_not_found: 'Page not found';
+    readonly parent: 'Parent';
+    readonly project: 'Project';
+    readonly register_existing_component: 'Register Existing Component';
+    readonly reload_directory: 'Reload directory';
+    readonly repo_picker_github_help_text: 'The organization, user or project that this repo will belong to';
+    readonly repo_picker_gitlab_help_text: 'GitLab namespace where this repository will belong to. It can be the name of organization, group, subgroup, user, or the project.';
+    readonly repo_picker_organization_help_text: 'The Organization that this repo will belong to';
+    readonly repo_picker_project_help_text: 'The Project that this repo will belong to';
+    readonly repo_picker_project_help_text_optional: 'The owner of the project (optional)';
+    readonly repo_picker_project_parent_help_text: 'The project parent that the repo will belong to';
+    readonly repo_picker_workspace_helper_text: 'The Workspace that this repo will belong to';
+    readonly repositories_available: 'Repositories Available';
+    readonly repository: 'Repository';
+    readonly reset: 'Reset';
+    readonly run_of_template_name: 'Run of {{templateName}}';
+    readonly save_all_files: 'Save all files';
+    readonly scaffolder_page_support_button: 'Create new software components using standard templates. Different templates create different kinds of components (services, websites, documentation, ...).';
+    readonly show_button_bar: 'Show Button Bar';
+    readonly show_logs: 'Show Logs';
+    readonly skipped: 'Skipped';
+    readonly start_over: 'Start Over';
+    readonly status: 'Status';
+    readonly tags: 'Tags';
+    readonly task_activity: 'Task Activity';
+    readonly task_id: 'Task ID';
+    readonly task_list: 'Task List';
+    readonly task_not_found: 'Task not found';
+    readonly task_taskid: 'Task {{taskId}}';
+    readonly template: 'Template';
+    readonly template_card_warning_deprecated: 'This template uses a syntax that has been deprecated, and should be migrated to a newer syntax. Click for more info.';
+    readonly template_editor: 'Template Editor';
+    readonly template_editor_intro_custom_field_help: 'View and play around with available installed custom field extensions.';
+    readonly template_editor_intro_edit_help: 'Preview and edit a template form, either using a sample template or by loading a template from the catalog.';
+    readonly template_editor_intro_subtitle: 'Load a local template directory, allowing you to both edit and try executing your own template.';
+    readonly template_editor_subtitle: 'Edit, preview, and try out templates and template forms';
+    readonly template_list_empty_templates_state: 'No templates found that match your filter. Learn more about';
+    readonly template_list_error_loading_template: 'Oops! Something went wrong loading the templates';
+    readonly template_list_page_subtitle: 'Create new software components using standard templates in your organization';
+    readonly template_list_page_support_button: 'Create new software components using standard templates. Different templates create different kinds of components (services, websites, documentation, ...).';
+    readonly template_parameters_must_be_an_array: 'Template parameters must be an array';
+    readonly template_wizard_page_subtitle: 'Create new software components using standard templates in your organization';
+    readonly templates: 'Templates';
+    readonly templates_tasks: 'Templates Tasks';
+    readonly the_host_where_the_repository_will_be_created: 'The host where the repository will be created';
+    readonly the_name_of_the_repository: 'The name of the repository';
+    readonly the_owner_of_the_component: 'The owner of the component';
+    readonly this_is_the_collection_of_all_installed_actions: 'This is the collection of all installed actions';
+    readonly title: 'Title';
+    readonly try_it: 'Try It';
+    readonly type: 'Type';
+    readonly unique_name_of_the_component: 'Unique name of the component from here';
+    readonly unknown: 'unknown';
+    readonly view_techdocs: 'View TechDocs';
+    readonly waiting_for_logs: 'Waiting for logs...';
+    readonly workspace: 'Workspace';
+  }
+>;
 
 // @alpha (undocumented)
 export type TemplateListPageProps = {

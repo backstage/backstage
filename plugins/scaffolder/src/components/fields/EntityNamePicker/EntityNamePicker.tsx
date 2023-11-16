@@ -18,15 +18,21 @@ import { EntityNamePickerProps } from './schema';
 import { TextField } from '@material-ui/core';
 
 export { EntityNamePickerSchema } from './schema';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 /**
  * EntityName Picker
  */
 export const EntityNamePicker = (props: EntityNamePickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
     onChange,
     required,
-    schema: { title = 'Name', description = 'Unique name of the component' },
+    schema: {
+      title = t('name'),
+      description = t('unique_name_of_the_component'),
+    },
     rawErrors,
     formData,
     uiSchema: { 'ui:autofocus': autoFocus },

@@ -19,6 +19,9 @@ import { OwnerPickerProps } from './schema';
 
 export { OwnerPickerSchema } from './schema';
 
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
+
 /**
  * The underlying component that is rendered in the form for the `OwnerPicker`
  * field extension.
@@ -26,8 +29,13 @@ export { OwnerPickerSchema } from './schema';
  * @public
  */
 export const OwnerPicker = (props: OwnerPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const {
-    schema: { title = 'Owner', description = 'The owner of the component' },
+    schema: {
+      title = t('owner'),
+      description = t('the_owner_of_the_component'),
+    },
     uiSchema,
     ...restProps
   } = props;

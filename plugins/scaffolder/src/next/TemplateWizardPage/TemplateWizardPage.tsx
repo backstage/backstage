@@ -39,6 +39,8 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
+import { scaffolderTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /**
  * @alpha
@@ -53,6 +55,7 @@ export type TemplateWizardPageProps = {
 };
 
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const rootRef = useRouteRef(rootRouteRef);
   const taskRoute = useRouteRef(scaffolderTaskRouteRef);
   const { secrets } = useTemplateSecrets();
@@ -84,9 +87,9 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
       <Page themeId="website">
         <Header
-          pageTitleOverride="Create a new component"
-          title="Create a new component"
-          subtitle="Create new software components using standard templates in your organization"
+          pageTitleOverride={t('create_a_new_component')}
+          title={t('create_a_new_component')}
+          subtitle={t('template_wizard_page_subtitle')}
         />
         <Workflow
           namespace={namespace}

@@ -29,6 +29,8 @@ import { DryRunResultsSplitView } from './DryRunResultsSplitView';
 import { FileBrowser } from '../../../components/FileBrowser';
 import { TaskPageLinks } from '../../../legacy/TaskPage/TaskPageLinks';
 import { TaskStatusStepper } from '../../../legacy/TaskPage/TaskPage';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 const useStyles = makeStyles({
   root: {
@@ -169,6 +171,7 @@ function OutputContent() {
 }
 
 export function DryRunResultsView() {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState<'files' | 'log' | 'output'>(
     'files',
@@ -177,9 +180,9 @@ export function DryRunResultsView() {
   return (
     <div className={classes.root}>
       <Tabs value={selectedTab} onChange={(_, v) => setSelectedTab(v)}>
-        <Tab value="files" label="Files" />
-        <Tab value="log" label="Log" />
-        <Tab value="output" label="Output" />
+        <Tab value="files" label={t('files')} />
+        <Tab value="log" label={t('log')} />
+        <Tab value="output" label={t('output')} />
       </Tabs>
       <Divider />
 

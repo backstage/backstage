@@ -51,6 +51,8 @@ import {
 import { TemplateListPage, TemplateWizardPage } from '../../next';
 import { OngoingTask } from '../OngoingTask';
 import { TemplateEditorPage } from '../../next/TemplateEditorPage';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 /**
  * The Props for the Scaffolder Router
@@ -107,6 +109,8 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
         TemplateWizardPageComponent = TemplateWizardPage,
     } = {},
   } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const outlet = useOutlet() || props.children;
   const customFieldExtensions =
     useCustomFieldExtensions<FieldExtensionOptions>(outlet);
@@ -176,7 +180,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
       />
       <Route
         path="*"
-        element={<ErrorPage status="404" statusMessage="Page not found" />}
+        element={<ErrorPage status="404" statusMessage={t('page_not_found')} />}
       />
     </Routes>
   );

@@ -40,12 +40,16 @@ import {
   TemplateTitleColumn,
 } from './columns';
 import { rootRouteRef } from '../../routes';
+import { scaffolderTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';
 }
 
 const ListTaskPageContent = (props: MyTaskPageProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const { initiallySelectedFilter = 'owned' } = props;
 
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -75,8 +79,8 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
         <ErrorPanel error={error} />
         <EmptyState
           missing="info"
-          title="No information to display"
-          description="There is no Tasks or there was an issue communicating with backend."
+          title={t('no_information_to_display')}
+          description={t('list_task_page_empty_state_description')}
         />
       </>
     );
@@ -96,14 +100,14 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
           title="Tasks"
           columns={[
             {
-              title: 'Task ID',
+              title: t('task_id'),
               field: 'id',
               render: row => (
                 <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
               ),
             },
             {
-              title: 'Template',
+              title: t('template'),
               render: row => (
                 <TemplateTitleColumn
                   entityRef={row.spec.templateInfo?.entityRef}
@@ -111,19 +115,19 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
               ),
             },
             {
-              title: 'Created',
+              title: t('created'),
               field: 'createdAt',
               render: row => <CreatedAtColumn createdAt={row.createdAt} />,
             },
             {
-              title: 'Owner',
+              title: t('owner'),
               field: 'createdBy',
               render: row => (
                 <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
               ),
             },
             {
-              title: 'Status',
+              title: t('status'),
               field: 'status',
               render: row => <TaskStatusColumn status={row.status} />,
             },
@@ -135,16 +139,17 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
 };
 
 export const ListTasksPage = (props: MyTaskPageProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   return (
     <Page themeId="home">
       <Header
-        pageTitleOverride="Templates Tasks"
+        pageTitleOverride={t('templates_tasks')}
         title={
           <>
-            List template tasks <Lifecycle shorthand alpha />
+            {t('list_template_tasks')} <Lifecycle shorthand alpha />
           </>
         }
-        subtitle="All tasks that have been started"
+        subtitle={t('all_tasks_that_have_been_started')}
       />
       <Content>
         <ListTaskPageContent {...props} />

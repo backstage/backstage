@@ -42,6 +42,8 @@ import {
 } from './schema';
 
 export { EntityPickerSchema } from './schema';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 /**
  * The underlying component that is rendered in the form for the `EntityPicker`
@@ -50,9 +52,14 @@ export { EntityPickerSchema } from './schema';
  * @public
  */
 export const EntityPicker = (props: EntityPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const {
     onChange,
-    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    schema: {
+      title = t('entity'),
+      description = t('an_entity_from_the_catalog'),
+    },
     required,
     uiSchema,
     rawErrors,

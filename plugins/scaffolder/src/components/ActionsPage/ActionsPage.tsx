@@ -52,6 +52,8 @@ import {
   Progress,
 } from '@backstage/core-components';
 import Chip from '@material-ui/core/Chip';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -108,6 +110,7 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
 };
 
 export const ActionsPage = () => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const api = useApi(scaffolderApiRef);
   const classes = useStyles();
   const { loading, value, error } = useAsync(async () => {
@@ -122,7 +125,7 @@ export const ActionsPage = () => {
   if (error) {
     return (
       <ErrorPage
-        statusMessage="Failed to load installed actions"
+        statusMessage={t('failed_to_load_installed_actions')}
         status="500"
       />
     );
@@ -130,17 +133,17 @@ export const ActionsPage = () => {
 
   const renderTable = (rows?: JSX.Element[]) => {
     if (!rows || rows.length < 1) {
-      return <Typography>No schema defined</Typography>;
+      return <Typography>{t('no_schema_defined')}</Typography>;
     }
     return (
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Type</TableCell>
+              <TableCell>{t('name')}</TableCell>
+              <TableCell>{t('title')}</TableCell>
+              <TableCell>{t('description')}</TableCell>
+              <TableCell>{t('type')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>{rows}</TableBody>
@@ -160,7 +163,7 @@ export const ActionsPage = () => {
 
     return [
       `${properties.type}(${
-        (properties.items as JSONSchema7 | undefined)?.type ?? 'unknown'
+        (properties.items as JSONSchema7 | undefined)?.type ?? t('unknown')
       })`,
     ];
   };
@@ -284,7 +287,7 @@ export const ActionsPage = () => {
         {action.schema?.input && (
           <Box pb={2}>
             <Typography variant="h5" component="h3">
-              Input
+              {t('input')}
             </Typography>
             {renderTable(
               formatRows(`${action.id}.input`, action?.schema?.input),
@@ -295,7 +298,7 @@ export const ActionsPage = () => {
         {action.schema?.output && (
           <Box pb={2}>
             <Typography variant="h5" component="h3">
-              Output
+              {t('output')}
             </Typography>
             {renderTable(
               formatRows(`${action.id}.output`, action?.schema?.output),
@@ -306,7 +309,7 @@ export const ActionsPage = () => {
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="h5" component="h3">
-                Examples
+                {t('examples')}
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
@@ -323,9 +326,9 @@ export const ActionsPage = () => {
   return (
     <Page themeId="home">
       <Header
-        pageTitleOverride="Create a New Component"
-        title="Installed actions"
-        subtitle="This is the collection of all installed actions"
+        pageTitleOverride={t('create_a_new_component')}
+        title={t('installed_actions')}
+        subtitle={t('this_is_the_collection_of_all_installed_actions')}
       />
       <Content>{items}</Content>
     </Page>

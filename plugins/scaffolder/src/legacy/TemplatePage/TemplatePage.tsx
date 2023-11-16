@@ -44,6 +44,8 @@ import {
   selectedTemplateRouteRef,
 } from '../../routes';
 import { LegacyFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
+import { scaffolderTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -71,6 +73,7 @@ export const TemplatePage = ({
   layouts = [],
   headerOptions,
 }: Props) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const apiHolder = useApiHolder();
   const secretsContext = useTemplateSecrets();
   const errorApi = useApi(errorApiRef);
@@ -146,9 +149,11 @@ export const TemplatePage = ({
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
       <Page themeId="home">
         <Header
-          pageTitleOverride="Create a New Component"
-          title="Create a New Component"
-          subtitle="Create new software components using standard templates"
+          pageTitleOverride={t('create_a_new_component')}
+          title={t('create_a_new_component')}
+          subtitle={t(
+            'create_new_software_components_using_standard_templates',
+          )}
           {...headerOptions}
         />
         <Content>
