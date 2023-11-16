@@ -119,7 +119,7 @@ jobs:
       # Create/Update comment with action deployment status
       - name: Create or Update Comment with Deployment Notification
         id: notification
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ needs.cache-manifests-file.outputs.pr-number }}
@@ -168,7 +168,7 @@ jobs:
           echo "Access the \`backstage\` endpoint at [\`${BACKSTAGE_HOST}\`](http://${BACKSTAGE_HOST})" >> $GITHUB_STEP_SUMMARY
 
       - name: Create or Update Comment with Deployment URL
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         with:
           comment-id: ${{ steps.notification.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -232,7 +232,7 @@ jobs:
           direction: last
 
       - name: Update Comment with Deletion
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ needs.cache-manifests-file.outputs.pr-number }}
