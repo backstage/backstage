@@ -1,5 +1,42 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.9.0
+
+### Minor Changes
+
+- 67cff7b06f: Expose an extension point to set a custom build strategy. Also move `DocsBuildStrategy` type to `@backstage/plugin-techdocs-node` and deprecate `ShouldBuildParameters` type.
+
+### Patch Changes
+
+- c3c5c7e514: Add info about the entity when tech docs fail to build
+- 48a61bfdca: Fix potential memory leak by not creating a build log transport if not given via `RouterOptions`.
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.10.0
+  - @backstage/integration@1.7.2
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/plugin-search-backend-module-techdocs@0.1.11
+  - @backstage/catalog-client@1.4.6
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.9.0-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-search-backend-module-techdocs@0.1.11-next.2
+  - @backstage/plugin-techdocs-node@1.10.0-next.2
+
 ## 1.9.0-next.1
 
 ### Minor Changes

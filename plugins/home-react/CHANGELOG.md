@@ -1,5 +1,26 @@
 # @backstage/plugin-home-react
 
+## 0.1.5
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- c838da0edd: Updated dependency `@rjsf/utils` to `5.13.6`.
+  Updated dependency `@rjsf/core` to `5.13.6`.
+  Updated dependency `@rjsf/material-ui` to `5.13.6`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.13.6`.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+
 ## 0.1.5-next.1
 
 ### Patch Changes

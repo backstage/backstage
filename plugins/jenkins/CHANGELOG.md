@@ -1,5 +1,31 @@
 # @backstage/plugin-jenkins
 
+## 0.9.1
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- fdb5e23602: Import `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react` to remove the cyclical dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-jenkins-common@0.1.21
+
+## 0.9.1-next.2
+
+### Patch Changes
+
+- [#20842](https://github.com/backstage/backstage/pull/20842) [`fdb5e23602`](https://github.com/backstage/backstage/commit/fdb5e2360299c5faa30f4d4236fc548b94d37446) Thanks [@benjdlambert](https://github.com/benjdlambert)! - Import `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react` to remove the cyclical dependency
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+
 ## 0.9.1-next.1
 
 ### Patch Changes

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   createPageExtension,
   coreExtensionData,

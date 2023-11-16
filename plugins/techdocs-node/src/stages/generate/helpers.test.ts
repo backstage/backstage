@@ -508,8 +508,9 @@ describe('helpers', () => {
       await createOrUpdateMetadata(filePath, mockLogger);
 
       const json = await fs.readJson(filePath);
-      expect(json.files[0]).toEqual(Object.keys(mockFiles)[0]);
-      expect(json.files[1]).toEqual(Object.keys(mockFiles)[1]);
+      expect(json.files).toEqual(
+        expect.arrayContaining(Object.keys(mockFiles)),
+      );
     });
   });
 

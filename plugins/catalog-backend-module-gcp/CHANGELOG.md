@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog-backend-module-gcp
 
+## 0.1.7
+
+### Patch Changes
+
+- 62180df4ee: Allow integration with kubernetes dashboard
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0
+  - @backstage/plugin-kubernetes-common@0.7.1
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-tasks@0.5.12
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+
+## 0.1.7-next.2
+
+### Patch Changes
+
+- [#20321](https://github.com/backstage/backstage/pull/20321) [`62180df4ee`](https://github.com/backstage/backstage/commit/62180df4ee3cb2f75459ee245d5da9c7e2342375) Thanks [@szubster](https://github.com/szubster)! - Allow integration with kubernetes dashboard
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.7.1-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/backend-tasks@0.5.12-next.2
+  - @backstage/plugin-catalog-node@1.5.0-next.2
+
 ## 0.1.7-next.1
 
 ### Patch Changes

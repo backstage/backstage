@@ -1,5 +1,26 @@
 # @backstage/plugin-octopus-deploy
 
+## 0.2.8
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4d2f72c572: Added Deep link into Octopus Deploy project from the Release Table.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+
+## 0.2.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+
 ## 0.2.8-next.1
 
 ### Patch Changes

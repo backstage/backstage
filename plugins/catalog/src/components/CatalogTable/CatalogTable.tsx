@@ -34,17 +34,18 @@ import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
 import { capitalize } from 'lodash';
+import pluralize from 'pluralize';
 import React, { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
-import pluralize from 'pluralize';
 
 /**
  * Props for {@link CatalogTable}.
@@ -146,7 +147,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography variant="srOnly">{title}</Typography>
+            <Typography style={visuallyHidden}>{title}</Typography>
             <OpenInNew fontSize="small" />
           </>
         ),
@@ -165,7 +166,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography variant="srOnly">{title}</Typography>
+            <Typography style={visuallyHidden}>{title}</Typography>
             <Edit fontSize="small" />
           </>
         ),
@@ -185,7 +186,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         cellStyle: { paddingLeft: '1em' },
         icon: () => (
           <>
-            <Typography variant="srOnly">{title}</Typography>
+            <Typography style={visuallyHidden}>{title}</Typography>
             {isStarred ? <YellowStar /> : <StarBorder />}
           </>
         ),

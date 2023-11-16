@@ -51,10 +51,12 @@ kubernetes:
 
 This configures how to determine which clusters a component is running in.
 
-Currently, the only valid value is:
+Valid values are:
 
 - `multiTenant` - This configuration assumes that all components run on all the
   provided clusters.
+
+- `singleTenant` - This configuration assumes that current component run on one cluster in provided clusters.
 
 ### `clusterLocatorMethods`
 
@@ -576,6 +578,22 @@ for more info.
 ```yaml
 'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end'
 ```
+
+### Cluster Selection annotation
+
+This is applicable only for `singleTenant` serviceLocatorMethod.
+
+You can now select `single` kubernetes cluster that the entity is part-of from all your defined kubernetes clusters. To apply this use the following annotation.
+
+SingleTenant Cluster:
+
+```yaml
+'backstage.io/kubernetes-cluster': dice-cluster
+```
+
+In the example above, we configured the "backstage.io/kubernetes-cluster" annotation on the entity `catalog-info.yaml` file to specify that the current component is running in a single cluster called "dice-cluster", so this cluster must have been specified in the `app-config.yaml`, under the Kubernetes clusters configuration (for more details, see [`Configuring Kubernetes clusters`](#configuring-kubernetes-clusters)).
+
+If you do not specify the annotation by `default Backstage fetches all` defined Kubernetes cluster.
 
 [1]: https://cloud.google.com/kubernetes-engine
 [2]: https://cloud.google.com/docs/authentication/production#linux-or-macos

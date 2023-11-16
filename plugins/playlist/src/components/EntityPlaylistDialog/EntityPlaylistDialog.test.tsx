@@ -28,7 +28,7 @@ import { fireEvent, getByRole, waitFor, act } from '@testing-library/react';
 import React from 'react';
 import { SWRConfig } from 'swr';
 import { PlaylistApi, playlistApiRef } from '../../api';
-import { rootRouteRef } from '../../routes';
+import { playlistRouteRef, rootRouteRef } from '../../routes';
 import { EntityPlaylistDialog } from './EntityPlaylistDialog';
 
 const navigateMock = jest.fn();
@@ -103,7 +103,12 @@ describe('EntityPlaylistDialog', () => {
         </TestApiProvider>
         ,
       </SWRConfig>,
-      { mountedRoutes: { '/playlists': rootRouteRef } },
+      {
+        mountedRoutes: {
+          '/playlists': rootRouteRef,
+          '/playlists/:playlistId': playlistRouteRef,
+        },
+      },
     );
 
   beforeEach(() => {

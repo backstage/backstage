@@ -1,5 +1,68 @@
 # @backstage/plugin-catalog-react
 
+## 1.9.0
+
+### Minor Changes
+
+- 1e5b7d993a: Added an `EntityPresentationApi` and associated `entityPresentationApiRef`. This
+  API lets you control how references to entities (e.g. in links, headings,
+  iconography etc) are represented in the user interface.
+
+  Usage of this API is initially added to the `EntityRefLink` and `EntityRefLinks`
+  components, so that they can render richer, more correct representation of
+  entity refs. There's also a new `EntityDisplayName` component, which works just like
+  the `EntityRefLink` but without the link.
+
+  Along with that change, the `fetchEntities` and `getTitle` props of
+  `EntityRefLinksProps` are deprecated and no longer used, since the same need
+  instead is fulfilled (and by default always enabled) by the
+  `entityPresentationApiRef`.
+
+- 1fd53fa0c6: The `UserListPicker` component has undergone improvements to enhance its performance.
+
+  The previous implementation inferred the number of owned and starred entities based on the entities available in the `EntityListContext`. The updated version no longer relies on the `EntityListContext` for inference, allowing for better decoupling.
+
+  The component now loads the entities' count asynchronously, resulting in improved performance and responsiveness. For this purpose, some of the exported filters such as `EntityTagFilter`, `EntityOwnerFilter`, `EntityLifecycleFilter` and `EntityNamespaceFilter` have now the `getCatalogFilters` method implemented.
+
+### Patch Changes
+
+- 2ad1bacef7: Add EntityRef to Entity Inspector UI
+- 6c2b872153: Add official support for React 18.
+- 69ee8d75f4: Remove `button` prop from used MaterialUI `MenuItem` component fixing incompatibility with MaterialUI v5.
+- 0bf6ebda88: Added new APIs at the `/alpha` subpath for creating entity page cards and content for the new frontend system.
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- 71c97e7d73: The `spec.type` field in entities will now always be rendered as a string.
+- 69c14904b6: Move the `EntityRefLink` icon to the left hand side as per Material-UI guidelines
+- 000dcd01af: Removed unnecessary `@backstage/integration` dependency, replaced by `@backstage/integration-react`.
+- 6c357184e2: Export `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react`
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/integration-react@1.1.21
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-permission-react@0.4.17
+  - @backstage/version-bridge@1.0.7
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-client@1.4.6
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+
+## 1.9.0-next.2
+
+### Patch Changes
+
+- [#20962](https://github.com/backstage/backstage/pull/20962) [`000dcd01af`](https://github.com/backstage/backstage/commit/000dcd01afaa4a06b67da20c3590a7753af4f532) Thanks [@Rugvip](https://github.com/Rugvip)! - Removed unnecessary `@backstage/integration` dependency, replaced by `@backstage/integration-react`.
+
+- [#20842](https://github.com/backstage/backstage/pull/20842) [`6c357184e2`](https://github.com/backstage/backstage/commit/6c357184e27d86796fac6005ec6a597f994aa19d) Thanks [@benjdlambert](https://github.com/benjdlambert)! - Export `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react`
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/frontend-plugin-api@0.3.0-next.2
+  - @backstage/integration-react@1.1.21-next.1
+
 ## 1.9.0-next.1
 
 ### Patch Changes

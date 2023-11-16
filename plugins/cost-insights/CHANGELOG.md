@@ -1,5 +1,32 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.15
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 69ee8d75f4: Remove `button` prop from used MaterialUI `MenuItem` component fixing incompatibility with MaterialUI v5.
+- d49cffaf6a: Updated dependency `@types/pluralize` to `^0.0.33`.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- 7da799d5b7: Updated dependency `@types/pluralize` to `^0.0.32`.
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-cost-insights-common@0.1.2
+
+## 0.12.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+
 ## 0.12.15-next.1
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.16
+
+### Patch Changes
+
+- 55725922a5: Ensure that shortcuts aren't duplicate-checked against themselves
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/types@1.1.1
+
+## 0.3.16-next.2
+
+### Patch Changes
+
+- [#20990](https://github.com/backstage/backstage/pull/20990) [`55725922a5`](https://github.com/backstage/backstage/commit/55725922a5d149ed6a5bb0d5976ec3130b14dd96) Thanks [@freben](https://github.com/freben)! - Ensure that shortcuts aren't duplicate-checked against themselves
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+
 ## 0.3.16-next.1
 
 ### Patch Changes

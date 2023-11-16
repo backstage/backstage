@@ -113,3 +113,7 @@ configured differently should be running on `/catalog-import`.
 
 For information about writing your own templates, you can check out the docs
 [here](./writing-templates.md)
+
+If you are looking for a method to discover templates without the need for manual ingestion, there are several options available. One approach is to utilize Discovery providers, such as [GitHub Discovery](https://backstage.io/docs/integrations/github/discover).
+
+Alternatively, you can choose to set up an external integration. This involves connecting your system to external sources or platforms that may host templates relevant to your needs, as mentioned in [External Integration](https://backstage.io/docs/features/software-catalog/external-integrations/).

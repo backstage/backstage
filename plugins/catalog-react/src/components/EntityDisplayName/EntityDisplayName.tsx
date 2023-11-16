@@ -34,7 +34,7 @@ const useStyles = makeStyles(
       alignItems: 'center',
     },
     icon: {
-      marginLeft: theme.spacing(0.5),
+      marginRight: theme.spacing(0.5),
       color: theme.palette.text.secondary,
       lineHeight: 0,
     },
@@ -49,8 +49,8 @@ const useStyles = makeStyles(
  */
 export type EntityDisplayNameProps = {
   entityRef: Entity | CompoundEntityRef | string;
-  noIcon?: boolean;
-  noTooltip?: boolean;
+  hideIcon?: boolean;
+  disableTooltip?: boolean;
   defaultKind?: string;
   defaultNamespace?: string;
 };
@@ -63,7 +63,8 @@ export type EntityDisplayNameProps = {
 export const EntityDisplayName = (
   props: EntityDisplayNameProps,
 ): JSX.Element => {
-  const { entityRef, noIcon, noTooltip, defaultKind, defaultNamespace } = props;
+  const { entityRef, hideIcon, disableTooltip, defaultKind, defaultNamespace } =
+    props;
 
   const classes = useStyles();
   const { primaryTitle, secondaryTitle, Icon } = useEntityPresentation(
@@ -77,17 +78,17 @@ export const EntityDisplayName = (
   // Optionally an icon, and wrapper around them both
   content = (
     <Box component="span" className={classes.root}>
-      {content}
-      {Icon && !noIcon ? (
+      {Icon && !hideIcon ? (
         <Box component="span" className={classes.icon}>
           <Icon fontSize="inherit" />
         </Box>
       ) : null}
+      {content}
     </Box>
   );
 
   // Optionally, a tooltip as the outermost layer
-  if (secondaryTitle && !noTooltip) {
+  if (secondaryTitle && !disableTooltip) {
     content = (
       <Tooltip enterDelay={1500} title={secondaryTitle}>
         {content}

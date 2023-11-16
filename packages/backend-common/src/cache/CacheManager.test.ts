@@ -33,11 +33,13 @@ jest.mock('./CacheClient', () => {
   };
 });
 
+const globalDefaultTtl = 1234;
 describe('CacheManager', () => {
   const defaultConfigOptions = {
     backend: {
       cache: {
         store: 'memory',
+        defaultTtl: globalDefaultTtl,
       },
     },
   };
@@ -49,9 +51,11 @@ describe('CacheManager', () => {
     it('accesses the backend.cache key', () => {
       const getOptionalString = jest.fn();
       const getOptionalBoolean = jest.fn();
+      const getOptionalNumber = jest.fn();
       const config = defaultConfig();
       config.getOptionalString = getOptionalString;
       config.getOptionalBoolean = getOptionalBoolean;
+      config.getOptionalNumber = getOptionalNumber;
 
       CacheManager.fromConfig(config);
 
@@ -61,6 +65,9 @@ describe('CacheManager', () => {
       );
       expect(getOptionalBoolean.mock.calls[0][0]).toEqual(
         'backend.cache.useRedisSets',
+      );
+      expect(getOptionalNumber.mock.calls[0][0]).toEqual(
+        'backend.cache.defaultTtl',
       );
     });
 
@@ -159,6 +166,20 @@ describe('CacheManager', () => {
       });
     });
 
+    it('returns memory client with a global defaultTtl when explicitly configured', () => {
+      const manager = CacheManager.fromConfig(defaultConfig());
+      const expectedNamespace = 'test-plugin';
+      manager.forPlugin(expectedNamespace).getClient();
+
+      const cache = Keyv as unknown as jest.Mock;
+      const mockCalls = cache.mock.calls.splice(-1);
+      const callArgs = mockCalls[0];
+      expect(callArgs[0]).toMatchObject({
+        ttl: globalDefaultTtl,
+        namespace: expectedNamespace,
+      });
+    });
+
     it('shares memory across multiple instances of the memory client', () => {
       const manager = CacheManager.fromConfig(defaultConfig());
       const plugin = 'test-plugin';
@@ -201,6 +222,32 @@ describe('CacheManager', () => {
       expect(mockMemcacheCalls[0][0]).toEqual(expectedHost);
     });
 
+    it('returns a memcache client with a global defaultTtl when configured', () => {
+      const expectedHost = '127.0.0.1:11211';
+      const manager = CacheManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            cache: {
+              store: 'memcache',
+              connection: expectedHost,
+              defaultTtl: globalDefaultTtl,
+            },
+          },
+        }),
+      );
+      manager.forPlugin('test').getClient();
+
+      const cache = Keyv as unknown as jest.Mock;
+      const mockCacheCalls = cache.mock.calls.splice(-1);
+      expect(mockCacheCalls[0][0]).toMatchObject({
+        ttl: globalDefaultTtl,
+      });
+      expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvMemcache);
+      const memcache = KeyvMemcache as unknown as jest.Mock;
+      const mockMemcacheCalls = memcache.mock.calls.splice(-1);
+      expect(mockMemcacheCalls[0][0]).toEqual(expectedHost);
+    });
+
     it('returns a Redis client when configured', () => {
       const redisConnection = 'redis://127.0.0.1:6379';
       const manager = CacheManager.fromConfig(
@@ -220,6 +267,32 @@ describe('CacheManager', () => {
       const mockCacheCalls = cache.mock.calls.splice(-1);
       expect(mockCacheCalls[0][0]).toMatchObject({
         ttl: expectedTtl,
+      });
+      expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvRedis);
+      const redis = KeyvRedis as unknown as jest.Mock;
+      const mockRedisCalls = redis.mock.calls.splice(-1);
+      expect(mockRedisCalls[0][0]).toEqual(redisConnection);
+    });
+
+    it('returns a Redis client with a global defaultTtl when configured', () => {
+      const redisConnection = 'redis://127.0.0.1:6379';
+      const manager = CacheManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: redisConnection,
+              defaultTtl: globalDefaultTtl,
+            },
+          },
+        }),
+      );
+      manager.forPlugin('test').getClient();
+
+      const cache = Keyv as unknown as jest.Mock;
+      const mockCacheCalls = cache.mock.calls.splice(-1);
+      expect(mockCacheCalls[0][0]).toMatchObject({
+        ttl: globalDefaultTtl,
       });
       expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvRedis);
       const redis = KeyvRedis as unknown as jest.Mock;

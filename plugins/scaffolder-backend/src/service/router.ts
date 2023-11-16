@@ -24,10 +24,10 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { JsonObject, JsonValue } from '@backstage/types';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
   TaskSpec,
   TemplateEntityV1beta3,
@@ -48,11 +48,14 @@ import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
-import { TemplateFilter, TemplateGlobal } from '../lib';
+import {
+  TaskBroker,
+  TemplateFilter,
+  TemplateGlobal,
+} from '@backstage/plugin-scaffolder-node';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
-  TaskBroker,
   TaskWorker,
   TemplateActionRegistry,
 } from '../scaffolder';
@@ -74,6 +77,7 @@ import {
   PermissionRule,
 } from '@backstage/plugin-permission-node';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
+import { Duration } from 'luxon';
 
 /**
  *
@@ -212,6 +216,17 @@ function buildDefaultIdentityClient(options: RouterOptions): IdentityApi {
   };
 }
 
+const readDuration = (
+  config: Config,
+  key: string,
+  defaultValue: HumanDuration,
+) => {
+  if (config.has(key)) {
+    return readDurationFromConfig(config, { key });
+  }
+  return defaultValue;
+};
+
 /**
  * A method to create a router for the scaffolder backend plugin.
  * @public
@@ -256,11 +271,21 @@ export async function createRouter(
     if (scheduler && databaseTaskStore.listStaleTasks) {
       await scheduler.scheduleTask({
         id: 'close_stale_tasks',
-        frequency: { cron: '*/5 * * * *' }, // every 5 minutes, also supports Duration
+        frequency: readDuration(
+          config,
+          'scaffolder.taskTimeoutJanitorFrequency',
+          {
+            minutes: 5,
+          },
+        ),
         timeout: { minutes: 15 },
         fn: async () => {
           const { tasks } = await databaseTaskStore.listStaleTasks({
-            timeoutS: 86400,
+            timeoutS: Duration.fromObject(
+              readDuration(config, 'scaffolder.taskTimeout', {
+                hours: 24,
+              }),
+            ).as('seconds'),
           });
 
           for (const task of tasks) {

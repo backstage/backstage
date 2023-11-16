@@ -16,21 +16,13 @@
 
 import { BuildTable } from '../BuildTable/BuildTable';
 import React from 'react';
-import { getAnnotationValuesFromEntity } from '../../utils/getAnnotationValuesFromEntity';
-import { useBuildRuns } from '../../hooks/useBuildRuns';
+import { useBuildRuns } from '../../hooks';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 export const EntityPageAzurePipelines = (props: { defaultLimit?: number }) => {
   const { entity } = useEntity();
 
-  const { project, repo, definition } = getAnnotationValuesFromEntity(entity);
-
-  const { items, loading, error } = useBuildRuns(
-    project,
-    props.defaultLimit,
-    repo,
-    definition,
-  );
+  const { items, loading, error } = useBuildRuns(entity, props.defaultLimit);
 
   return <BuildTable items={items} loading={loading} error={error} />;
 };

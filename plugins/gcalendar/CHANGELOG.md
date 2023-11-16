@@ -1,5 +1,25 @@
 # @backstage/plugin-gcalendar
 
+## 0.3.20
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/errors@1.2.3
+
+## 0.3.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+
 ## 0.3.20-next.1
 
 ### Patch Changes

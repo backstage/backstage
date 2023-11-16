@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.13.8-next.1",
+  "version": "0.13.8",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -55,8 +55,8 @@
     "dagre": "^0.8.5",
     "history": "^5.0.0",
     "immer": "^9.0.1",
-    "linkify-react": "4.1.1",
-    "linkifyjs": "4.1.1",
+    "linkify-react": "4.1.2",
+    "linkifyjs": "4.1.2",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
@@ -100,7 +100,7 @@
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
     "@types/zen-observable": "^0.8.0",
-    "cross-fetch": "^3.1.5",
+    "cross-fetch": "^4.0.0",
     "msw": "^1.0.0"
   },
   "files": [

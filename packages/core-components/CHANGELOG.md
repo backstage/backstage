@@ -1,5 +1,44 @@
 # @backstage/core-components
 
+## 0.13.8
+
+### Patch Changes
+
+- 81c8db2088: Fix `RoutedTabs` so that it does not explode without tabs.
+- eb817ee6d4: Fix spacing inconsistency with links and labels in headers
+- f28c11743a: Add a possibility to use a formatter on a warning panel. Applied it for a scaffolder template
+- 6c2b872153: Add official support for React 18.
+- e07570a740: Fixed an issue causing the `Select` component to show empty chips when some of the selected values did not match any item
+- 7bdc1b0a12: Fixed compatibility with Safari <16.3 by eliminating RegEx lookbehind in `extractInitials`.
+
+  This PR also changed how initials are generated resulting in _John Jonathan Doe_ => _JD_ instead of _JJ_.
+
+- 66071b42c0: Make the `options.titleFormat` prop of `<StructuredMetadataTable />` apply to all keys including nested ones. Previously, this option would only apply to the root keys of the `metadata` prop.
+
+  Document and improve the props of `<StructuredMetadataTable />`. Previously, the `options` prop was `any`.
+
+- 71c97e7d73: Fixed the type declaration of `DependencyGraphProps`, the `defs` prop now expects `JSX.Element`s.
+- 0c5b78650c: Reverting the `MissingAnnotationEmptyState` component due to cyclical dependency. This component is now deprecated, please use the import from `@backstage/plugin-catalog-react` instead to use the new functionality
+- 4b7d341746: Updated dependency `linkify-react` to `4.1.2`.
+- 0ef24425c1: Updated dependency `linkifyjs` to `4.1.2`.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/version-bridge@1.0.7
+  - @backstage/theme@0.4.4
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.13.8-next.2
+
+### Patch Changes
+
+- [#20777](https://github.com/backstage/backstage/pull/20777) [`eb817ee6d4`](https://github.com/backstage/backstage/commit/eb817ee6d4720322773389dbe6ed20d6fc80a541) Thanks [@is343](https://github.com/is343)! - Fix spacing inconsistency with links and labels in headers
+
+- [#20357](https://github.com/backstage/backstage/pull/20357) [`f28c11743a`](https://github.com/backstage/backstage/commit/f28c11743a97c972c0c14b58f24696448810dcc5) Thanks [@acierto](https://github.com/acierto)! - Add a possibility to use a formatter on a warning panel. Applied it for a scaffolder template
+
+- [#20842](https://github.com/backstage/backstage/pull/20842) [`0c5b78650c`](https://github.com/backstage/backstage/commit/0c5b78650c97b574b89b323d33728ed1e827bcb3) Thanks [@benjdlambert](https://github.com/benjdlambert)! - Reverting the `MissingAnnotationEmptyState` component due to cyclical dependency. This component is now deprecated, please use the import from `@backstage/plugin-catalog-react` instead to use the new functionality
+
 ## 0.13.8-next.1
 
 ### Patch Changes

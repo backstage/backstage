@@ -804,11 +804,11 @@ export class DatabaseTaskStore implements TaskStore {
     >,
   ): Promise<void>;
   // (undocumented)
-  claimTask(): Promise<SerializedTask | undefined>;
+  claimTask(): Promise<SerializedTask_2 | undefined>;
   // (undocumented)
   completeTask(options: {
     taskId: string;
-    status: TaskStatus;
+    status: TaskStatus_2;
     eventBody: JsonObject;
   }): Promise<void>;
   // (undocumented)
@@ -826,16 +826,16 @@ export class DatabaseTaskStore implements TaskStore {
     >,
   ): Promise<void>;
   // (undocumented)
-  getTask(taskId: string): Promise<SerializedTask>;
+  getTask(taskId: string): Promise<SerializedTask_2>;
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
   list(options: { createdBy?: string }): Promise<{
-    tasks: SerializedTask[];
+    tasks: SerializedTask_2[];
   }>;
   // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{
-    events: SerializedTaskEvent[];
+    events: SerializedTaskEvent_2[];
   }>;
   // (undocumented)
   listStaleTasks(options: { timeoutS: number }): Promise<{
@@ -876,9 +876,9 @@ export interface RouterOptions {
   // (undocumented)
   actions?: TemplateAction_2<any, any>[];
   // (undocumented)
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   // (undocumented)
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   // (undocumented)
   catalogClient: CatalogApi;
   concurrentTasksLimit?: number;
@@ -901,7 +901,7 @@ export interface RouterOptions {
   // (undocumented)
   scheduler?: PluginTaskScheduler;
   // (undocumented)
-  taskBroker?: TaskBroker;
+  taskBroker?: TaskBroker_2;
   // @deprecated (undocumented)
   taskWorkers?: number;
 }

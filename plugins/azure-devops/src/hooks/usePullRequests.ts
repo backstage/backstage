@@ -44,11 +44,11 @@ export function usePullRequests(
   };
 
   const api = useApi(azureDevOpsApiRef);
-  const { project, repo } = getAnnotationValuesFromEntity(entity);
 
-  const { value, loading, error } = useAsync(async () => {
-    return await api.getPullRequests(project, repo as string, options);
-  }, [api, project, repo, top, status]);
+  const { value, loading, error } = useAsync(() => {
+    const { project, repo } = getAnnotationValuesFromEntity(entity);
+    return api.getPullRequests(project, repo as string, options);
+  }, [api, top, status]);
 
   return {
     items: value?.items,

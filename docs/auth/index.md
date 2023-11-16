@@ -371,6 +371,7 @@ createApiFactory({
       configApi,
       discoveryApi,
       oauthRequestApi,
+      provider: { id: 'ghe', title: 'GitHub Enterprise', icon: () => null },
       defaultScopes: ['read:user'],
       environment: configApi.getOptionalString('auth.environment'),
     }),

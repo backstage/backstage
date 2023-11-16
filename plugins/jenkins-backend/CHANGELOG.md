@@ -1,5 +1,34 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.3.1
+
+### Patch Changes
+
+- 4bfb878807: Updated dependency `@types/jenkins` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/catalog-client@1.4.6
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-auth-node@0.4.1
+  - @backstage/plugin-jenkins-common@0.1.21
+  - @backstage/plugin-permission-node@0.7.18
+
+## 0.3.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-auth-node@0.4.1-next.2
+  - @backstage/plugin-catalog-node@1.5.0-next.2
+  - @backstage/plugin-permission-node@0.7.18-next.2
+
 ## 0.3.1-next.1
 
 ### Patch Changes

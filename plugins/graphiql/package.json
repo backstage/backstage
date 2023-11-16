@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-graphiql",
   "description": "Backstage plugin for browsing GraphQL APIs",
-  "version": "0.3.0-next.1",
+  "version": "0.3.0",
   "publishConfig": {
     "access": "public"
   },
@@ -46,6 +46,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
@@ -74,7 +75,7 @@
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/codemirror": "^5.0.0",
-    "cross-fetch": "^3.1.5",
+    "cross-fetch": "^4.0.0",
     "msw": "^1.0.0"
   },
   "files": [

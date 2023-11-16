@@ -1,5 +1,24 @@
 # @backstage/plugin-gitops-profiles
 
+## 0.3.42
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/config@1.1.1
+
+## 0.3.42-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+
 ## 0.3.42-next.1
 
 ### Patch Changes

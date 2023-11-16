@@ -25,13 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        uses: step-security/harden-runner@1b05615854632b887b69ae1be8cbefe72d3ae423 # v2.6.0
         with:
           egress-policy: audit
 
       - uses: actions/checkout@v4.1.1
       - name: Monitor and Synchronize Snyk Policies
-        uses: snyk/actions/node@39091e69b560da335383b404e50d65b408f4f812 # master
+        uses: snyk/actions/node@3e2680e8df93a24b52d119b1305fb7cedc60ceae # master
         with:
           command: monitor
           args: >
@@ -46,7 +46,7 @@ jobs:
       # Above we run the `monitor` command, this runs the `test` command which is
       # the one that generates the SARIF report that we can upload to GitHub.
       - name: Create Snyk report
-        uses: snyk/actions/node@39091e69b560da335383b404e50d65b408f4f812 # master
+        uses: snyk/actions/node@3e2680e8df93a24b52d119b1305fb7cedc60ceae # master
         continue-on-error: true # To make sure that SARIF upload gets called
         with:
           args: >
@@ -58,6 +58,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           NODE_OPTIONS: --max-old-space-size=7168
       - name: Upload Snyk report
-        uses: github/codeql-action/upload-sarif@v2.22.5
+        uses: github/codeql-action/upload-sarif@v2.22.6
         with:
           sarif_file: snyk.sarif

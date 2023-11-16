@@ -20,7 +20,10 @@ export type {
   MetadataTableListClassKey,
   MetadataTableListItemClassKey,
 } from './MetadataTable';
-export { StructuredMetadataTable } from './StructuredMetadataTable';
+export {
+  StructuredMetadataTable,
+  type StructuredMetadataTableProps,
+} from './StructuredMetadataTable';
 export type {
   StructuredMetadataTableListClassKey,
   StructuredMetadataTableNestedListClassKey,

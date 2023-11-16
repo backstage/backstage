@@ -28,7 +28,7 @@ jobs:
     name: Storybook
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        uses: step-security/harden-runner@1b05615854632b887b69ae1be8cbefe72d3ae423 # v2.6.0
         with:
           egress-policy: audit
 
@@ -37,7 +37,7 @@ jobs:
           fetch-depth: 0 # Required to retrieve git history
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3.8.2
+        uses: actions/setup-node@v4.0.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -51,7 +51,7 @@ jobs:
 
       - run: yarn build-storybook
 
-      - uses: chromaui/action@d726e4e790a99e876f71b8e09d3053bfe783d6b8 # v1
+      - uses: chromaui/action@b52e14dd333579901e7099e0094b652e8284dea9 # v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks
