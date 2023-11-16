@@ -8597,6 +8597,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-github-branch-protections@workspace:plugins/scaffolder-backend-module-github-branch-protections":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-github-branch-protections@workspace:plugins/scaffolder-backend-module-github-branch-protections"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@octokit/core": 4.2.1
+    jsonschema: ^1.4.1
+    octokit: 2.1.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab"
@@ -14262,7 +14279,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/core@npm:^4.0.0, @octokit/core@npm:^4.2.1":
+"@octokit/core@npm:4.2.1, @octokit/core@npm:^4.0.0, @octokit/core@npm:^4.2.1":
   version: 4.2.1
   resolution: "@octokit/core@npm:4.2.1"
   dependencies:
@@ -32845,7 +32862,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonschema@npm:^1.2.6":
+"jsonschema@npm:^1.2.6, jsonschema@npm:^1.4.1":
   version: 1.4.1
   resolution: "jsonschema@npm:1.4.1"
   checksum: 1ef02a6cd9bc32241ec86bbf1300bdbc3b5f2d8df6eb795517cf7d1cd9909e7beba1e54fdf73990fd66be98a182bda9add9607296b0cb00b1348212988e424b2
@@ -36619,7 +36636,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"octokit@npm:^2.0.0, octokit@npm:^2.0.4":
+"octokit@npm:2.1.0, octokit@npm:^2.0.0, octokit@npm:^2.0.4":
   version: 2.1.0
   resolution: "octokit@npm:2.1.0"
   dependencies:
