@@ -174,7 +174,7 @@
   },
   "peerDependencies": {
     "@vitejs/plugin-react": "^4.0.4",
-    "vite": "^4.4.9",
+    "vite": "^5.0.0",
     "vite-plugin-html": "^3.2.0",
     "vite-plugin-node-polyfills": "^0.16.0"
   },
