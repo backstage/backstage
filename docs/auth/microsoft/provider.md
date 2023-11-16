@@ -68,7 +68,7 @@ The Microsoft provider is a structure with three mandatory configuration keys:
   Leave blank if your app registration is multi tenant.
   When specified, this reduces login friction for users with accounts in multiple tenants by automatically filtering away accounts from other tenants.
   For more details, see [Home Realm Discovery](https://learn.microsoft.com/en-us/azure/active-directory/manage-apps/home-realm-discovery-policy)
-- `scope` (optional): List of scopes for the App Registration. The default and mandatory value is ['user.read'].
+- `additionalScopes` (optional): List of scopes for the App Registration. The default and mandatory value is ['user.read'].
 
 ## Adding the provider to the Backstage frontend
 
