@@ -159,6 +159,7 @@ export async function getOrganizationUsers(
 
   // There is no user -> teams edge, so we leave the memberships empty for
   // now and let the team iteration handle it instead
+  const fetchEmail = tokenType === 'token' || tokenType === 'app'; 
 
   const users = await queryWithPaging(
     client,
@@ -168,7 +169,7 @@ export async function getOrganizationUsers(
     userTransformer,
     {
       org,
-      email: tokenType === 'token',
+      email: tokenType === fetchEmail,
     },
   );
 
