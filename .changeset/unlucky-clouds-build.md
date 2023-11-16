@@ -1,5 +1,7 @@
 ---
-'@backstage/plugin-azure-devops-backend': patch
+'@backstage/plugin-azure-devops-backend': minor
 ---
 
-Added support for using `AzureDevOpsCredentialsProvider` and deprecated `azureDevOps.token` configuration value
+**BREAKING** New `fromConfig` static method must be used now when created an instance of the `AzureDevOpsApi`
+
+Added support for using the `AzureDevOpsCredentialsProvider` and deprecated the entire `azureDevOps` configuration section
