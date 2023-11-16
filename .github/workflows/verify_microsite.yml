@@ -3,7 +3,6 @@ on:
   # NOTE: If you change these you must update verify_microsite-noop.yml as well
   pull_request:
     paths:
-      - '.github/workflows/verify_microsite-next.yml'
       - '.github/workflows/verify_microsite.yml'
       - 'microsite/**'
       - 'mkdocs.yml'
