@@ -275,7 +275,7 @@ describe('<EntityListProvider />', () => {
 describe('<EntityListProvider enablePagination />', () => {
   const origReplaceState = window.history.replaceState;
   const enablePagination = true;
-  const limit = 2;
+  const limit = 20;
   const orderFields = [{ field: 'metadata.name', order: 'asc' }];
 
   beforeEach(() => {

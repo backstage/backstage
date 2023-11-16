@@ -60,9 +60,9 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   const createComponentLink = useRouteRef(createComponentRouteRef);
   const { t } = useTranslationRef(catalogTranslationRef);
 
-  const enablePagination = useApi(configApiRef).getOptionalBoolean(
-    'catalog.experimental.paginatedEntities',
-  );
+  const experimentalPagination = useApi(configApiRef).getOptional(
+    'catalog.experimentalPagination',
+  ) as boolean | { limit: number } | undefined;
 
   return (
     <PageWithHeader title={t('catalog_page_title', { orgName })} themeId="home">
@@ -74,7 +74,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
           />
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
-        <EntityListProvider enablePagination={enablePagination}>
+        <EntityListProvider enablePagination={experimentalPagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>

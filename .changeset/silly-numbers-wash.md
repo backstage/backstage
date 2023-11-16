@@ -10,6 +10,5 @@ To activate the pagination mode, simply update your configuration as follows:
 
 ```diff
   catalog:
-+  experimental:
-+    paginatedEntities: true
++   experimentalPagination: true
 ```
