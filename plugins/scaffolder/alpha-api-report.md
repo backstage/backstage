@@ -70,6 +70,11 @@ export type TemplateListPageProps = {
     actions?: boolean;
     tasks?: boolean;
   };
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
 };
 
 // @alpha (undocumented)
