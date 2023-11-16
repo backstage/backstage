@@ -24,11 +24,18 @@ import {
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 
-type EntitiesSearchFilter = {
+/**
+ * @alpha
+ */
+export type EntitiesSearchFilter = {
   key: string;
   values?: string[];
 };
-type CatalogPermissionRuleInput<
+
+/**
+ * @alpha
+ */
+export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
