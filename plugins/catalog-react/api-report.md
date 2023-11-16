@@ -297,7 +297,11 @@ export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
 
 // @public (undocumented)
 export type EntityListProviderProps = PropsWithChildren<{
-  enablePagination?: boolean;
+  enablePagination?:
+    | boolean
+    | {
+        limit?: number;
+      };
 }>;
 
 // @public (undocumented)

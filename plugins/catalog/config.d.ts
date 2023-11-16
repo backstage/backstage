@@ -15,11 +15,13 @@
  */
 export interface Config {
   catalog?: {
-    experimental?: {
-      /**
-       * @visibility frontend
-       */
-      paginatedEntities?: boolean;
-    };
+    /**
+     * @deepVisibility frontend
+     */
+    experimentalPagination?:
+      | boolean
+      | {
+          limit?: number;
+        };
   };
 }

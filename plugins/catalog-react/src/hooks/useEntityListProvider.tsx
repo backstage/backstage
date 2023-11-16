@@ -130,7 +130,7 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
  * @public
  */
 export type EntityListProviderProps = PropsWithChildren<{
-  enablePagination?: boolean;
+  enablePagination?: boolean | { limit?: number };
 }>;
 
 /**
@@ -151,6 +151,17 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // trigger a useLocation change; this would instead come from an external source, such as a manual
   // update of the URL or two catalog sidebar links with different catalog filters.
   const location = useLocation();
+
+  const enablePagination =
+    props.enablePagination === true ||
+    typeof props.enablePagination === 'object';
+
+  const limit =
+    props.enablePagination &&
+    typeof props.enablePagination === 'object' &&
+    typeof props.enablePagination.limit === 'number'
+      ? props.enablePagination.limit
+      : 20;
 
   const { queryParameters, cursor: initialCursor } = useMemo(() => {
     const parsed = qs.parse(location.search, {
@@ -174,7 +185,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         appliedFilters: {} as EntityFilters,
         entities: [],
         backendEntities: [],
-        pageInfo: props.enablePagination ? {} : undefined,
+        pageInfo: enablePagination ? {} : undefined,
       };
     },
   );
@@ -199,8 +210,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         {} as Record<string, string | string[]>,
       );
 
-      if (props.enablePagination) {
-        const limit = 2;
+      if (enablePagination) {
         if (cursor) {
           if (cursor !== outputState.appliedCursor) {
             const entityFilter = reduceEntityFilters(compacted);
@@ -290,7 +300,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       requestedFilters,
       outputState,
       cursor,
-      props.enablePagination,
+      enablePagination,
     ],
     { loading: true },
   );
@@ -321,7 +331,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   );
 
   const pageInfo = useMemo(() => {
-    if (!props.enablePagination) {
+    if (!enablePagination) {
       return undefined;
     }
 
@@ -331,7 +341,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       prev: prevCursor ? () => setCursor(prevCursor) : undefined,
       next: nextCursor ? () => setCursor(nextCursor) : undefined,
     };
-  }, [props.enablePagination, outputState.pageInfo]);
+  }, [enablePagination, outputState.pageInfo]);
 
   const value = useMemo(
     () => ({
