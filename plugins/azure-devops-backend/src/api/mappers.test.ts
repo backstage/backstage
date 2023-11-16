@@ -36,7 +36,7 @@ import {
   mappedGitTag,
   mappedPullRequest,
   mappedRepoBuild,
-} from './AzureDevOpsApi';
+} from './mappers';
 
 import { IdentityRef } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 
