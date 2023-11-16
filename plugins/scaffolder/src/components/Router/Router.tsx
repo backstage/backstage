@@ -133,6 +133,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
             contextMenu={props.contextMenu}
             groups={props.groups}
             templateFilter={props.templateFilter}
+            headerOptions={props.headerOptions}
           />
         }
       />
