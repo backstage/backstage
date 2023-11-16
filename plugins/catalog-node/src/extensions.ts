@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { CatalogPermissionRuleInput } from '@backstage/plugin-catalog-backend';
+import { Entity } from '@backstage/catalog-model';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 import {
   EntityProvider,
   CatalogProcessor,
   PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
+
+type EntitiesSearchFilter = {
+  key: string;
+  values?: string[];
+};
+type CatalogPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 /**
  * @alpha

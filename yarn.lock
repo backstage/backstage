@@ -5837,6 +5837,8 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
   languageName: unknown
   linkType: soft

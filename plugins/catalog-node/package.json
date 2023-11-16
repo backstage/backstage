@@ -47,6 +47,8 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/types": "workspace:^"
   },
   "devDependencies": {
