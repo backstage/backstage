@@ -44,3 +44,8 @@ export type BackstageOverrides = Overrides & {
     StyleRules<CatalogReactComponentsNameToClassKey[Name]>
   >;
 };
+
+declare module '@backstage/theme' {
+  interface OverrideComponentNameToClassKeys
+    extends CatalogReactComponentsNameToClassKey {}
+}
