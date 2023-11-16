@@ -72,33 +72,6 @@ export function createGithubBranchProtectionsAction(options: {
             description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
             type: 'string',
           },
-          bypassPullRequestAllowances: {
-            title: 'Bypass pull request requirements',
-            description:
-              'Allow specific users, teams, or apps to bypass pull request requirements.',
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              apps: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              users: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              teams: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-            },
-          },
           requiresApprovingReviews: {
             title: 'Require an approval to update branches',
             description:
@@ -109,33 +82,6 @@ export function createGithubBranchProtectionsAction(options: {
             title: 'Required approving review count',
             type: 'number',
             description: `Specify the number of reviewers required to approve pull requests. Use a number between 1 and 6 or 0 to not require reviewers. Defaults to 1.`,
-          },
-          restrictions: {
-            title: 'Restrict who can push to the protected branch',
-            description:
-              'Restrict who can push to the protected branch. User, app, and team restrictions are only available for organization-owned repositories.',
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              apps: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              users: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              teams: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-            },
           },
           requiresStatusChecks: {
             title: 'Require a status check',
