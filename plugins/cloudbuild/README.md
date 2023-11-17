@@ -101,7 +101,7 @@ spec:
   lifecycle: development
 ```
 
-You can also automatically filter the results based on trigger name instead of repository name. To so so, use the following annotation:
+You can also automatically filter the results based on trigger name instead of repository name. To do so, use the following annotation:
 
 ```diff
 // component-info.yaml
