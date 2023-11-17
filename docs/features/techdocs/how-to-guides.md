@@ -483,8 +483,6 @@ plugins:
   - techdocs-core
 ```
 
-note: 
-
 3. Create a `/docs` folder in the skeleton folder with at least an `index.md`
    file in it.
 
