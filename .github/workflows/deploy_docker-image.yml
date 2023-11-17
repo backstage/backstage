@@ -61,7 +61,7 @@ jobs:
         with:
           context: './example-app'
           file: ./example-app/packages/backend/Dockerfile
-          push: ${{ github.event_name == "repository_dispatch" && github.event.action == "release-published" }}
+          push: ${{ (github.event_name == "repository_dispatch") && (github.event.action == "release-published") }}
           platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ github.repository_owner }}/backstage:latest
