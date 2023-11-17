@@ -1379,18 +1379,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/arm-appservice@npm:^13.0.1":
-  version: 13.0.3
-  resolution: "@azure/arm-appservice@npm:13.0.3"
+"@azure/arm-appservice@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "@azure/arm-appservice@npm:14.0.0"
   dependencies:
     "@azure/abort-controller": ^1.0.0
     "@azure/core-auth": ^1.3.0
-    "@azure/core-client": ^1.6.1
-    "@azure/core-lro": ^2.2.0
+    "@azure/core-client": ^1.7.0
+    "@azure/core-lro": ^2.5.0
     "@azure/core-paging": ^1.2.0
     "@azure/core-rest-pipeline": ^1.8.0
     tslib: ^2.2.0
-  checksum: 9cd73985a31744fd7da56654c1de2d1396e93fa0cc3527b7c2843e56913e2b0abd81d996a319447f2f289421c45ede6a87f820ed0f4414e7cd2afeb383ee8a0a
+  checksum: a34776202f28808237a00958e6498f74547ed61cb284b681ac69fbd62fc9c174b12570ac8a02224162d4c9a2f066736ca40c4e31d12098fa630f9a9eef87d8ab
   languageName: node
   linkType: hard
 
@@ -1417,9 +1417,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-client@npm:^1.4.0, @azure/core-client@npm:^1.6.1":
-  version: 1.6.1
-  resolution: "@azure/core-client@npm:1.6.1"
+"@azure/core-client@npm:^1.4.0, @azure/core-client@npm:^1.7.0":
+  version: 1.7.3
+  resolution: "@azure/core-client@npm:1.7.3"
   dependencies:
     "@azure/abort-controller": ^1.0.0
     "@azure/core-auth": ^1.4.0
@@ -1428,7 +1428,7 @@ __metadata:
     "@azure/core-util": ^1.0.0
     "@azure/logger": ^1.0.0
     tslib: ^2.2.0
-  checksum: 400890a9b5f0c8801ff92005c3cba7bb5124634e321735406731bef33688a79f23d28b49fccdfab90814dade41a13f3d3cb99f80151a2bff17628416e811afb6
+  checksum: 155a188b75b2d5ea783d5fde50479337c41796736f0fced1576466c8251e429195c229f2aff0bf897761f15c19d8fd0deea9a54aab514bd3584e37140e3f0cdc
   languageName: node
   linkType: hard
 
@@ -1454,15 +1454,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-lro@npm:^2.2.0":
-  version: 2.2.4
-  resolution: "@azure/core-lro@npm:2.2.4"
+"@azure/core-lro@npm:^2.2.0, @azure/core-lro@npm:^2.5.0":
+  version: 2.5.4
+  resolution: "@azure/core-lro@npm:2.5.4"
   dependencies:
     "@azure/abort-controller": ^1.0.0
-    "@azure/core-tracing": 1.0.0-preview.13
+    "@azure/core-util": ^1.2.0
     "@azure/logger": ^1.0.0
     tslib: ^2.2.0
-  checksum: f3db331409f95fc71206acd9f64efbbdf43a83d86c2012bdd19e577a603225b3a7e74e827e5c6aad1cf18024bdd8110c4cf341f7386fc83c5cb86ab72f5ad9ca
+  checksum: f048b99850e8497b557cf661c2f8a384ea1227de6ea0c0e1436653851c3932e28a05056a380f7c20ebc51e4c6d7bd15d7dfabc6ecca80eddb9dc3e3339df9519
   languageName: node
   linkType: hard
 
@@ -1512,7 +1512,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-util@npm:^1.0.0, @azure/core-util@npm:^1.1.0, @azure/core-util@npm:^1.1.1, @azure/core-util@npm:^1.6.1":
+"@azure/core-util@npm:^1.0.0, @azure/core-util@npm:^1.1.0, @azure/core-util@npm:^1.1.1, @azure/core-util@npm:^1.2.0, @azure/core-util@npm:^1.6.1":
   version: 1.6.1
   resolution: "@azure/core-util@npm:1.6.1"
   dependencies:
@@ -4889,7 +4889,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-sites-backend@workspace:plugins/azure-sites-backend"
   dependencies:
-    "@azure/arm-appservice": ^13.0.1
+    "@azure/arm-appservice": ^14.0.0
     "@azure/arm-resourcegraph": ^4.2.1
     "@azure/identity": ^3.2.1
     "@backstage/backend-common": "workspace:^"

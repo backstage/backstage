@@ -32,7 +32,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@azure/arm-appservice": "^13.0.1",
+    "@azure/arm-appservice": "^14.0.0",
     "@azure/arm-resourcegraph": "^4.2.1",
     "@azure/identity": "^3.2.1",
     "@backstage/backend-common": "workspace:^",
