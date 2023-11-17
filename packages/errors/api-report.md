@@ -34,6 +34,7 @@ export type ConsumedResponse = {
     values(): IterableIterator<string>;
     [Symbol.iterator](): Iterator<[string, string]>;
   };
+  readonly bodyUsed: boolean;
   readonly ok: boolean;
   readonly redirected: boolean;
   readonly status: number;
@@ -111,7 +112,15 @@ export class NotModifiedError extends CustomErrorBase {
   name: 'NotModifiedError';
 }
 
+// Warning: (ae-missing-release-tag) "parseErrorResponseBody" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
 // @public
+export function parseErrorResponseBody(
+  response: ConsumedResponse,
+  rawBody: string,
+): Promise<ErrorResponseBody>;
+
+// @public (undocumented)
 export function parseErrorResponseBody(
   response: ConsumedResponse & {
     text(): Promise<string>;
@@ -125,8 +134,10 @@ export class ResponseError extends Error {
   static fromResponse(
     response: ConsumedResponse & {
       text(): Promise<string>;
+      bodyUsed: boolean;
     },
   ): Promise<ResponseError>;
+  readonly rawBody: string;
   readonly response: ConsumedResponse;
 }
 
