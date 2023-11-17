@@ -77,9 +77,7 @@ export class ResponseError extends Error {
 
     const data = await parseErrorResponseBody(
       // TS isn't smart enough to know that this is done under the hood,
-      response as ConsumedResponse & {
-        bodyUsed: true;
-      },
+      response,
       rawBody,
     );
 
