@@ -28,7 +28,11 @@ export class DefaultComponentsApi implements ComponentsApi {
     this.#components = components;
   }
 
-  getComponent<T>(ref: ComponentRef<T>): T | undefined {
-    return this.#components.get(ref);
+  getComponent<T>(ref: ComponentRef<T>): T {
+    const impl = this.#components.get(ref);
+    if (!impl) {
+      throw new Error(`No implementation found for component ref ${ref}`);
+    }
+    return impl;
   }
 }

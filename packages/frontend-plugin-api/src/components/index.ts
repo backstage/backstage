@@ -15,12 +15,6 @@
  */
 
 export {
-  ComponentsProvider,
-  useComponent,
-  type ComponentsContextValue,
-} from './ComponentsContext';
-
-export {
   coreProgressComponentRef,
   coreBootErrorPageComponentRef,
   coreErrorBoundaryFallbackComponentRef,
