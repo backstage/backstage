@@ -237,9 +237,9 @@ export interface StorageSource {
 // @public (undocumented)
 export interface Substitutions {
   // (undocumented)
-  REF_NAME: string;
-  // (undocumented)
   COMMIT_SHA: string;
+  // (undocumented)
+  REF_NAME: string;
   // (undocumented)
   REPO_NAME: string;
   // (undocumented)
