@@ -17,6 +17,9 @@
 import {
   AppTreeApi,
   appTreeApiRef,
+  coreExtensionData,
+  createExtension,
+  createExtensionOverrides,
   createPageExtension,
   createPlugin,
   createThemeExtension,
@@ -25,7 +28,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { createApp } from './createApp';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 
 describe('createApp', () => {
   it('should allow themes to be installed', async () => {
@@ -92,6 +95,58 @@ describe('createApp', () => {
     await waitFor(() =>
       expect(screen.getByText('Last Page')).toBeInTheDocument(),
     );
+  });
+
+  it('should register feature flags', async () => {
+    const app = createApp({
+      configLoader: async () => new MockConfigApi({}),
+      features: [
+        createPlugin({
+          id: 'test',
+          featureFlags: [{ name: 'test-1' }],
+          extensions: [
+            createExtension({
+              id: 'test.page.first',
+              attachTo: { id: 'core', input: 'root' },
+              output: { element: coreExtensionData.reactElement },
+              factory() {
+                const Component = () => {
+                  const flagsApi = useApi(featureFlagsApiRef);
+                  return (
+                    <div>
+                      Flags:{' '}
+                      {flagsApi
+                        .getRegisteredFlags()
+                        .map(flag => `${flag.name} from '${flag.pluginId}'`)
+                        .join(', ')}
+                    </div>
+                  );
+                };
+                return { element: <Component /> };
+              },
+            }),
+          ],
+        }),
+        createExtensionOverrides({
+          featureFlags: [{ name: 'test-2' }],
+          extensions: [
+            createExtension({
+              id: 'core.router',
+              attachTo: { id: 'core', input: 'root' },
+              disabled: true,
+              output: {},
+              factory: () => ({}),
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText("Flags: test-1 from 'test', test-2 from ''"),
+    ).resolves.toBeInTheDocument();
   });
 
   it('should make the app structure available through the AppTreeApi', async () => {
