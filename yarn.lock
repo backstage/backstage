@@ -5801,7 +5801,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/plugin-cicd-statistics": "workspace:^"
     "@gitbeaker/browser": ^35.6.0
-    "@gitbeaker/core": ^35.6.0
+    "@gitbeaker/core": ^39.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
     p-limit: ^4.0.0
@@ -8389,7 +8389,7 @@ __metadata:
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@gitbeaker/core": ^35.6.0
+    "@gitbeaker/core": ^39.0.0
     "@gitbeaker/node": ^35.1.0
     "@octokit/webhooks": ^10.0.0
     "@types/command-exists": ^1.2.0
@@ -11123,7 +11123,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/core@npm:^35.6.0, @gitbeaker/core@npm:^35.8.1":
+"@gitbeaker/core@npm:^35.8.1":
   version: 35.8.1
   resolution: "@gitbeaker/core@npm:35.8.1"
   dependencies:
@@ -11134,6 +11134,17 @@ __metadata:
     query-string: ^7.0.0
     xcase: ^2.0.1
   checksum: 8fc7b8d32a2162b70fd8e8ec4e019a3654da3fd1bcb7204b5030e8c9b4af52f4e7addafcd5503042e31dd4e4e3bdd7f8245dd963c77427d4471ab2e331266cf7
+  languageName: node
+  linkType: hard
+
+"@gitbeaker/core@npm:^39.0.0":
+  version: 39.23.0
+  resolution: "@gitbeaker/core@npm:39.23.0"
+  dependencies:
+    "@gitbeaker/requester-utils": ^39.23.0
+    qs: ^6.11.2
+    xcase: ^2.0.1
+  checksum: eb4d48ca47d3afa57a4c8413d1848e061729953ab409a0b66c0ac6dec91436b83425196d432ac1af5f54be753387b8344bc3212003dfd25d944c638537830255
   languageName: node
   linkType: hard
 
@@ -11158,6 +11169,18 @@ __metadata:
     qs: ^6.10.1
     xcase: ^2.0.1
   checksum: c3c94ad90dab481887380f5bcff0416c1e1eee935fc3ca4f12d8db83d85c5f0d47f7f35cee6f2b05491bda99c03fb7eb88b849c986822eae3b1bfc26641ec899
+  languageName: node
+  linkType: hard
+
+"@gitbeaker/requester-utils@npm:^39.23.0":
+  version: 39.23.0
+  resolution: "@gitbeaker/requester-utils@npm:39.23.0"
+  dependencies:
+    async-sema: ^3.1.1
+    micromatch: ^4.0.5
+    qs: ^6.11.2
+    xcase: ^2.0.1
+  checksum: 6d109821aaadc8b8ef6699d36584fb3d4324208612b7f3a7628eb5785eb5433b337a4e3ed15f2bd3cd036209d4cae32e1d93b63a32f82ba6929c63bb2b9be63f
   languageName: node
   linkType: hard
 
@@ -20550,6 +20573,13 @@ __metadata:
   dependencies:
     retry: 0.13.1
   checksum: 38a7152ff7265a9321ea214b9c69e8224ab1febbdec98efbbde6e562f17ff68405569b796b1c5271f354aef8783665d29953f051f68c1fc45306e61aec82fdc4
+  languageName: node
+  linkType: hard
+
+"async-sema@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "async-sema@npm:3.1.1"
+  checksum: 07b8c51f6cab107417ecdd8126b7a9fe5a75151b7f69fdd420dcc8ee08f9e37c473a217247e894b56e999b088b32e902dbe41637e4e9b594d3f8dfcdddfadc5e
   languageName: node
   linkType: hard
 
@@ -37655,7 +37685,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.11.0, qs@npm:^6.9.1, qs@npm:^6.9.4, qs@npm:^6.9.6":
+"qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.11.0, qs@npm:^6.11.2, qs@npm:^6.9.1, qs@npm:^6.9.4, qs@npm:^6.9.6":
   version: 6.11.2
   resolution: "qs@npm:6.11.2"
   dependencies:
