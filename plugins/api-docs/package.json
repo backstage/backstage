@@ -47,6 +47,7 @@
     "@types/react": "^16.13.1 || ^17.0.0",
     "graphiql": "3.0.9",
     "graphql": "^16.0.0",
+    "graphql-config": "^5.0.2",
     "graphql-ws": "^5.4.1",
     "isomorphic-form-data": "^2.0.0",
     "react-use": "^17.2.4",
