@@ -47,7 +47,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@aws-crypto/sha256-js": "^3.0.0",
+    "@aws-crypto/sha256-js": "^5.0.0",
     "@aws-sdk/credential-providers": "^3.350.0",
     "@aws-sdk/signature-v4": "^3.347.0",
     "@azure/identity": "^4.0.0",
