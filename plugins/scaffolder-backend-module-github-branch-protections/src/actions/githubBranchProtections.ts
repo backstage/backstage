@@ -195,7 +195,7 @@ export function createGithubBranchProtectionsAction(options: {
         throw new NotFoundError('Input repository does not exist');
       }
 
-      branches.forEach(async (branchName: string) => {
+      for (const branchName of branches) {
         try {
           ctx.logger.info(`adding protections for the branch: ${branchName}`);
           await client.graphql(`
@@ -217,21 +217,21 @@ export function createGithubBranchProtectionsAction(options: {
                 requiresCommitSignatures: ${requiresCommitSignatures}
               })
               {
-                branchProtectionRule {
-                  pattern
-                }
+                clientMutationId
               }
             }
           `);
           ctx.logger.info(
             `Successfully created branch protections for '${branchName}'`,
           );
-        } catch (e) {
+        } catch (error) {
           ctx.logger.warn(
-            `Failed: created branch protections on branch: ${branchName}, repo: ${repo}`,
+            `Failed: created branch protections on branch: ${branchName}, repo: ${repo}, error: ${
+              (error as Error).message
+            }`,
           );
         }
-      });
+      }
     },
   });
 }
