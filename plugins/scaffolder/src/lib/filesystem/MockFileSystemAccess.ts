@@ -17,7 +17,10 @@
 import { TemplateDirectoryAccess, TemplateFileAccess } from './types';
 
 class MockFileAccess implements TemplateFileAccess {
-  constructor(readonly path: string, private content: string) {}
+  constructor(
+    readonly path: string,
+    private content: string,
+  ) {}
 
   async file(): Promise<File> {
     const blob = new Blob([this.content]);

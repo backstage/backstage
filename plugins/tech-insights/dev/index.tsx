@@ -49,7 +49,7 @@ createDevApp()
           '' as any,
         getFacts: async (_: CompoundEntityRef, __: string[]) => '' as any,
         getFactSchemas: async () => [],
-      } as TechInsightsApi),
+      }) as TechInsightsApi,
   })
   .addPage({
     element: (

@@ -223,7 +223,7 @@ export class KubernetesBuilder {
           apiVersion: c.getString('apiVersion'),
           plural: c.getString('plural'),
           objectType: 'customresources',
-        } as CustomResource),
+        }) as CustomResource,
     );
 
     this.env.logger.info(

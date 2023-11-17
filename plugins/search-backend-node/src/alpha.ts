@@ -103,12 +103,12 @@ class DefaultSearchIndexService implements SearchIndexService {
       searchEngine: options.searchEngine,
     });
 
-    options.collators.forEach(collator =>
-      this.indexBuilder?.addCollator(collator),
+    options.collators.forEach(
+      collator => this.indexBuilder?.addCollator(collator),
     );
 
-    options.decorators.forEach(decorator =>
-      this.indexBuilder?.addDecorator(decorator),
+    options.decorators.forEach(
+      decorator => this.indexBuilder?.addDecorator(decorator),
     );
 
     const { scheduler } = await this.indexBuilder?.build();

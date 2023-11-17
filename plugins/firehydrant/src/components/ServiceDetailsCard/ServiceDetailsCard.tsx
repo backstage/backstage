@@ -179,9 +179,11 @@ export const ServiceDetailsCard = () => {
   }
 
   const headerText: string = showServiceDetails
-    ? `There ${activeIncidents?.length === 1 ? 'is' : 'are'} ${
-        activeIncidents?.length
-      } active incident${activeIncidents?.length === 1 ? '' : 's'}.`
+    ? `There ${
+        activeIncidents?.length === 1 ? 'is' : 'are'
+      } ${activeIncidents?.length} active incident${
+        activeIncidents?.length === 1 ? '' : 's'
+      }.`
     : '';
 
   const serviceIncidentsLink: string = `${BASE_URL}/incidents?search={"services":[{"label":${JSON.stringify(

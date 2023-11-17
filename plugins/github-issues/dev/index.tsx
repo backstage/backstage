@@ -34,7 +34,7 @@ createDevApp()
     factory: () =>
       ({
         fetchIssuesByRepoFromGithub: async () => testData,
-      } as GithubIssuesApi),
+      }) as GithubIssuesApi,
   })
   .registerApi({
     api: catalogApiRef,
@@ -42,7 +42,7 @@ createDevApp()
     factory: () =>
       ({
         getEntities: () => ({}),
-      } as CatalogApi),
+      }) as CatalogApi,
   })
   .addPage({
     title: 'Component Issues',

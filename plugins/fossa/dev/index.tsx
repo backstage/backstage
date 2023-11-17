@@ -45,7 +45,7 @@ const entity = (name?: string) =>
         targetRef: `group:default/${name}`,
       },
     ],
-  } as Entity);
+  }) as Entity;
 
 createDevApp()
   .registerPlugin(fossaPlugin)
@@ -129,7 +129,7 @@ createDevApp()
             ],
           ]);
         },
-      } as FossaApi),
+      }) as FossaApi,
   })
   .registerApi({
     api: catalogApiRef,
@@ -148,7 +148,7 @@ createDevApp()
             ],
           };
         },
-      } as Partial<CatalogApi> as any),
+      }) as Partial<CatalogApi> as any,
   })
   .addPage({
     title: 'Entity Content',

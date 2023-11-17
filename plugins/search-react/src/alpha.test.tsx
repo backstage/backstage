@@ -57,8 +57,7 @@ describe('createSearchResultListItemExtension', () => {
         predicate: result => result.type === 'techdocs',
         component:
           async ({ config }) =>
-          props =>
-            <TechDocsSearchResultItemComponent {...props} {...config} />,
+          props => <TechDocsSearchResultItemComponent {...props} {...config} />,
       });
 
     const ExploreSearchResultItemComponent = (
@@ -117,8 +116,8 @@ describe('createSearchResultListItemExtension', () => {
         );
 
         const getResultItemComponent = (result: SearchResult) => {
-          const value = inputs.items.find(({ item }) =>
-            item?.predicate?.(result),
+          const value = inputs.items.find(
+            ({ item }) => item?.predicate?.(result),
           );
           return value?.item.component ?? DefaultResultItem;
         };

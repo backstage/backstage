@@ -110,8 +110,7 @@ const mockedOptionResources: PermissionIntegrationRouterOptions = {
 };
 
 const createApp = (
-  mockedGetResources:
-    | typeof defaultMockedGetResources1 = defaultMockedGetResources1,
+  mockedGetResources: typeof defaultMockedGetResources1 = defaultMockedGetResources1,
 ) => {
   const router = mockedGetResources
     ? createPermissionIntegrationRouter({

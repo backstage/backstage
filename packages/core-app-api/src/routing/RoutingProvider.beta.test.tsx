@@ -127,7 +127,7 @@ const Extension5 = plugin.provide(
 );
 
 const mockContext = {
-  getComponents: () => ({ Progress: () => null } as any),
+  getComponents: () => ({ Progress: () => null }) as any,
   getSystemIcon: jest.fn(),
   getSystemIcons: jest.fn(),
   getPlugins: jest.fn(),

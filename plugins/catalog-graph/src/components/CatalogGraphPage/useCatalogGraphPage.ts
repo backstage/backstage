@@ -107,11 +107,12 @@ export function useCatalogGraphPage({
       ? query.selectedRelations
       : initialState?.selectedRelations,
   );
-  const [selectedKinds, setSelectedKinds] = useState<string[] | undefined>(() =>
-    (Array.isArray(query.selectedKinds)
-      ? query.selectedKinds
-      : initialState?.selectedKinds
-    )?.map(k => k.toLocaleLowerCase('en-US')),
+  const [selectedKinds, setSelectedKinds] = useState<string[] | undefined>(
+    () =>
+      (Array.isArray(query.selectedKinds)
+        ? query.selectedKinds
+        : initialState?.selectedKinds
+      )?.map(k => k.toLocaleLowerCase('en-US')),
   );
   const [unidirectional, setUnidirectional] = useState<boolean>(() =>
     typeof query.unidirectional === 'string'
@@ -128,10 +129,11 @@ export function useCatalogGraphPage({
       ? query.direction
       : initialState?.direction ?? Direction.LEFT_RIGHT,
   );
-  const [curve, setCurve] = useState<'curveStepBefore' | 'curveMonotoneX'>(() =>
-    typeof query.curve === 'string'
-      ? query.curve
-      : initialState?.curve ?? 'curveMonotoneX',
+  const [curve, setCurve] = useState<'curveStepBefore' | 'curveMonotoneX'>(
+    () =>
+      typeof query.curve === 'string'
+        ? query.curve
+        : initialState?.curve ?? 'curveMonotoneX',
   );
   const [showFilters, setShowFilters] = useState<boolean>(() =>
     typeof query.showFilters === 'string'

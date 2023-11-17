@@ -128,7 +128,10 @@ export const getRepoUrlFromLocationAnnotation = (
 };
 
 class UnknownTag {
-  constructor(public readonly data: any, public readonly type?: string) {}
+  constructor(
+    public readonly data: any,
+    public readonly type?: string,
+  ) {}
 }
 
 export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([

@@ -55,7 +55,10 @@ type RawDbFactSchemaRow = {
 export class TechInsightsDatabase implements TechInsightsStore {
   private readonly CHUNK_SIZE = 50;
 
-  constructor(private readonly db: Knex, private readonly logger: Logger) {}
+  constructor(
+    private readonly db: Knex,
+    private readonly logger: Logger,
+  ) {}
 
   async getLatestSchemas(ids?: string[]): Promise<FactSchema[]> {
     const queryBuilder = this.db<RawDbFactSchemaRow>('fact_schemas');

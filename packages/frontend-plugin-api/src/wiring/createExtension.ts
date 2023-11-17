@@ -61,10 +61,10 @@ export type ExtensionInputValues<
   [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
     ? Array<Expand<ExtensionDataValues<TInputs[InputName]['extensionData']>>>
     : false extends TInputs[InputName]['config']['optional']
-    ? Expand<ExtensionDataValues<TInputs[InputName]['extensionData']>>
-    : Expand<
-        ExtensionDataValues<TInputs[InputName]['extensionData']> | undefined
-      >;
+      ? Expand<ExtensionDataValues<TInputs[InputName]['extensionData']>>
+      : Expand<
+          ExtensionDataValues<TInputs[InputName]['extensionData']> | undefined
+        >;
 };
 
 /** @public */

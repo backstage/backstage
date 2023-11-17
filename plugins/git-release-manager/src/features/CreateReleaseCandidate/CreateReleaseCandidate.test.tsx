@@ -45,7 +45,7 @@ jest.mock('./hooks/useCreateReleaseCandidate', () => ({
       responseSteps: [],
       progress: 0,
       runInvoked: false,
-    } as ReturnType<typeof useCreateReleaseCandidate>),
+    }) as ReturnType<typeof useCreateReleaseCandidate>,
 }));
 
 describe('CreateReleaseCandidate', () => {

@@ -82,9 +82,8 @@ export const PagerDutyCard = (props: PagerDutyCardProps) => {
     loading,
     error,
   } = useAsync(async () => {
-    const { service: foundService } = await api.getServiceByPagerDutyEntity(
-      props,
-    );
+    const { service: foundService } =
+      await api.getServiceByPagerDutyEntity(props);
 
     return {
       id: foundService.id,

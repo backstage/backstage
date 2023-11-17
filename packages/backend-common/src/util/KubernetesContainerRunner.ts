@@ -84,9 +84,8 @@ export class KubernetesContainerRunner implements ContainerRunner {
   private getNamespace(kubeConfig: KubeConfig, namespace?: string): string {
     let _namespace = namespace;
     if (!_namespace) {
-      _namespace = kubeConfig.getContextObject(
-        kubeConfig.currentContext,
-      )?.namespace;
+      _namespace = kubeConfig.getContextObject(kubeConfig.currentContext)
+        ?.namespace;
     }
     if (!_namespace) {
       throw new Error('Cannot read current namespace from Kubernetes cluster');

@@ -32,7 +32,7 @@ createDevApp()
         async getAccessToken() {
           return Promise.resolve('token');
         },
-      } as unknown as typeof microsoftAuthApiRef.T),
+      }) as unknown as typeof microsoftAuthApiRef.T,
   })
   .registerApi({
     api: microsoftCalendarApiRef,
@@ -45,7 +45,7 @@ createDevApp()
         async getEvents() {
           return Promise.resolve(responseMock.events);
         },
-      } as unknown as typeof microsoftCalendarApiRef.T),
+      }) as unknown as typeof microsoftCalendarApiRef.T,
   })
   .addPage({
     element: (

@@ -30,7 +30,13 @@ import { playlistRouteRef, rootRouteRef } from '../../routes';
 import { CreatePlaylistButton } from './CreatePlaylistButton';
 
 jest.mock('../PlaylistEditDialog', () => ({
-  PlaylistEditDialog: ({ onSave, open }: { onSave: Function; open: boolean }) =>
+  PlaylistEditDialog: ({
+    onSave,
+    open,
+  }: {
+    onSave: Function;
+    open: boolean;
+  }) =>
     open ? (
       <Button
         data-testid="mock-playlist-edit-dialog"

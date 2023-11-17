@@ -67,9 +67,8 @@ export const useEventsQuery = ({
             });
 
             return (data.items || []).map(event => {
-              const responseStatus = event.attendees?.find(
-                a => !!a.self,
-              )?.responseStatus;
+              const responseStatus = event.attendees?.find(a => !!a.self)
+                ?.responseStatus;
 
               return {
                 ...event,

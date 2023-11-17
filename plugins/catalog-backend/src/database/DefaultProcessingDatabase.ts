@@ -252,7 +252,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
             state: i.cache ? JSON.parse(i.cache) : undefined,
             errors: i.errors,
             locationKey: i.location_key,
-          } as RefreshStateItem),
+          }) as RefreshStateItem,
       ),
     };
   }

@@ -303,7 +303,7 @@ describe('AuthorizedSearchEngine', () => {
         _ =>
           ({
             result: AuthorizeResult.CONDITIONAL,
-          } as EvaluatePermissionResponse),
+          }) as EvaluatePermissionResponse,
       ),
     );
 
@@ -348,7 +348,7 @@ describe('AuthorizedSearchEngine', () => {
         _ =>
           ({
             result: AuthorizeResult.CONDITIONAL,
-          } as PolicyDecision),
+          }) as PolicyDecision,
       ),
     );
 
@@ -441,7 +441,7 @@ describe('AuthorizedSearchEngine', () => {
         _ =>
           ({
             result: AuthorizeResult.CONDITIONAL,
-          } as PolicyDecision),
+          }) as PolicyDecision,
       ),
     );
 
@@ -533,7 +533,7 @@ describe('AuthorizedSearchEngine', () => {
         _ =>
           ({
             result: AuthorizeResult.CONDITIONAL,
-          } as PolicyDecision),
+          }) as PolicyDecision,
       ),
     );
 

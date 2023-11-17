@@ -81,7 +81,7 @@ const columns: TableColumn<rowType>[] = [
         running: <StatusOK>running</StatusOK>,
         failed: <StatusError>failed</StatusError>,
         complete: <StatusRunning>complete</StatusRunning>,
-      }[row.ClientStatus] || <text>{row.ClientStatus}</text>),
+      })[row.ClientStatus] || <text>{row.ClientStatus}</text>,
   },
   {
     title: 'Version',

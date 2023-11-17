@@ -36,7 +36,7 @@ createDevApp()
             `http://localhost:5050/allure-docker-service/projects/${projectId}/reports/latest/index.html`,
           );
         },
-      } as unknown as typeof allureApiRef.T),
+      }) as unknown as typeof allureApiRef.T,
   })
   .addPage({
     element: (

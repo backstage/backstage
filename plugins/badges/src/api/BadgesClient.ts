@@ -52,9 +52,8 @@ export class BadgesClient implements BadgesApi {
       const entityUuid = await this.getEntityUuid(entityUuidUrl).then(data => {
         return data.uuid;
       });
-      const entityUuidBadgeSpecsUrl = await this.getEntityUuidBadgeSpecsUrl(
-        entityUuid,
-      );
+      const entityUuidBadgeSpecsUrl =
+        await this.getEntityUuidBadgeSpecsUrl(entityUuid);
 
       const response = await this.fetchApi.fetch(entityUuidBadgeSpecsUrl);
       if (!response.ok) {

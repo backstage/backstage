@@ -31,7 +31,7 @@ createDevApp()
         async getAccessToken() {
           return Promise.resolve('token');
         },
-      } as unknown as typeof googleAuthApiRef.T),
+      }) as unknown as typeof googleAuthApiRef.T,
   })
   .registerApi({
     api: gcalendarApiRef,
@@ -46,7 +46,7 @@ createDevApp()
             items: eventsMock,
           });
         },
-      } as unknown as typeof gcalendarApiRef.T),
+      }) as unknown as typeof gcalendarApiRef.T,
   })
   .addPage({
     element: (

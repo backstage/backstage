@@ -90,8 +90,9 @@ export async function ensureDatabaseExists(
 ): Promise<void> {
   const client: DatabaseClient = dbConfig.getString('client');
 
-  return await ddlLimiter(() =>
-    ConnectorMapping[client]?.ensureDatabaseExists?.(dbConfig, ...databases),
+  return await ddlLimiter(
+    () =>
+      ConnectorMapping[client]?.ensureDatabaseExists?.(dbConfig, ...databases),
   );
 }
 
@@ -106,8 +107,8 @@ export async function ensureSchemaExists(
 ): Promise<void> {
   const client: DatabaseClient = dbConfig.getString('client');
 
-  return await ddlLimiter(() =>
-    ConnectorMapping[client]?.ensureSchemaExists?.(dbConfig, ...schemas),
+  return await ddlLimiter(
+    () => ConnectorMapping[client]?.ensureSchemaExists?.(dbConfig, ...schemas),
   );
 }
 

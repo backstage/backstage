@@ -118,7 +118,10 @@ export class NomadHttpApi implements NomadApi {
     return new NomadHttpApi(discoveryApi, fetchApi);
   }
 
-  constructor(private discoveryApi: DiscoveryApi, private fetchApi: FetchApi) {}
+  constructor(
+    private discoveryApi: DiscoveryApi,
+    private fetchApi: FetchApi,
+  ) {}
 
   // TODO: pagination
   async listAllocations(

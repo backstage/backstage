@@ -30,7 +30,7 @@ const entity = (name?: string) =>
       },
       name: 'something',
     },
-  } as Entity);
+  }) as Entity;
 
 describe('sentry annotations', () => {
   it('getOrganization should works', () => {

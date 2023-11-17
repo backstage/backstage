@@ -245,8 +245,9 @@ export class ServiceRegistry {
 
         implementation = {
           context: Promise.all(rootDeps)
-            .then(entries =>
-              factory.createRootContext?.(Object.fromEntries(entries)),
+            .then(
+              entries =>
+                factory.createRootContext?.(Object.fromEntries(entries)),
             )
             .catch(error => {
               const cause = stringifyError(error);

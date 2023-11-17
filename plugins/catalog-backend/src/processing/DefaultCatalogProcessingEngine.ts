@@ -241,11 +241,12 @@ export class DefaultCatalogProcessingEngine {
             if (!result.ok) {
               // notify the error listener if the entity can not be processed.
               Promise.resolve(undefined)
-                .then(() =>
-                  this.onProcessingError?.({
-                    unprocessedEntity,
-                    errors: result.errors,
-                  }),
+                .then(
+                  () =>
+                    this.onProcessingError?.({
+                      unprocessedEntity,
+                      errors: result.errors,
+                    }),
                 )
                 .catch(error => {
                   this.logger.debug(

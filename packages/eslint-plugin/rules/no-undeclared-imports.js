@@ -97,8 +97,8 @@ function findConflict(pkg, name, expectedType) {
     const oldDepsField = isDep
       ? depFields.dep
       : isDevDep
-      ? depFields.dev
-      : undefined;
+        ? depFields.dev
+        : undefined;
 
     return { oldDepsField, depsField };
   }

@@ -122,8 +122,8 @@ type ExpandRecursive<T> = T extends infer O
 type Trim<T> = T extends ` ${infer U}`
   ? Trim<U>
   : T extends `${infer U} `
-  ? Trim<U>
-  : T;
+    ? Trim<U>
+    : T;
 
 /**
  * Extracts the key and format from a replacement string.
@@ -188,8 +188,8 @@ type ReplaceOptionsFromFormats<TFormats extends {}> = {
   [Key in keyof TFormats]: TFormats[Key] extends keyof I18nextFormatMap
     ? I18nextFormatMap[TFormats[Key]]['type']
     : TFormats[Key] extends {}
-    ? Expand<ReplaceOptionsFromFormats<TFormats[Key]>>
-    : string;
+      ? Expand<ReplaceOptionsFromFormats<TFormats[Key]>>
+      : string;
 };
 
 /**
@@ -201,8 +201,8 @@ type ReplaceFormatParamsFromFormats<TFormats extends {}> = {
   [Key in keyof TFormats]?: TFormats[Key] extends keyof I18nextFormatMap
     ? I18nextFormatMap[TFormats[Key]]['options']
     : TFormats[Key] extends {}
-    ? Expand<ReplaceFormatParamsFromFormats<TFormats[Key]>>
-    : undefined;
+      ? Expand<ReplaceFormatParamsFromFormats<TFormats[Key]>>
+      : undefined;
 };
 
 /**

@@ -140,9 +140,8 @@ export class PluginManager implements BackendPluginProvider {
       `${plugin.location}/${plugin.manifest.main}`,
     );
     try {
-      const { dynamicPluginInstaller } = await this.moduleLoader.load(
-        packagePath,
-      );
+      const { dynamicPluginInstaller } =
+        await this.moduleLoader.load(packagePath);
       if (!isBackendDynamicPluginInstaller(dynamicPluginInstaller)) {
         this.logger.error(
           `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${plugin.location}': the module should export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field.`,

@@ -178,9 +178,7 @@ export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {
         });
 
         adrFiles = await Promise.all(
-          (
-            await tree.files()
-          ).map(async f => ({
+          (await tree.files()).map(async f => ({
             path: f.path,
             content: (await f.content()).toString('utf8'),
           })),

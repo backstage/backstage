@@ -44,12 +44,15 @@ import {
 const reduceBackendFilters = (
   filters: PlaylistFilter[],
 ): Record<string, string | string[] | null> => {
-  return filters.reduce((compoundFilter, filter) => {
-    return {
-      ...compoundFilter,
-      ...(filter.getBackendFilters ? filter.getBackendFilters() : {}),
-    };
-  }, {} as Record<string, string | string[] | null>);
+  return filters.reduce(
+    (compoundFilter, filter) => {
+      return {
+        ...compoundFilter,
+        ...(filter.getBackendFilters ? filter.getBackendFilters() : {}),
+      };
+    },
+    {} as Record<string, string | string[] | null>,
+  );
 };
 
 type OutputState<PlaylistFilters extends DefaultPlaylistFilters> = {

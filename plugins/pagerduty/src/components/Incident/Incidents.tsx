@@ -35,9 +35,8 @@ export const Incidents = ({ serviceId, refreshIncidents }: Props) => {
 
   const [{ value: incidents, loading, error }, getIncidents] = useAsyncFn(
     async () => {
-      const { incidents: foundIncidents } = await api.getIncidentsByServiceId(
-        serviceId,
-      );
+      const { incidents: foundIncidents } =
+        await api.getIncidentsByServiceId(serviceId);
       return foundIncidents;
     },
   );

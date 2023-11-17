@@ -25,9 +25,8 @@ const hpaErrorMappers: ErrorMapper<HorizontalPodAutoscaler>[] = [
         return [
           {
             type: 'hpa-max-current-replicas',
-            message: `Current number of replicas (${
-              hpa.status?.currentReplicas
-            }) is equal to the configured max number of replicas (${
+            message: `Current number of replicas (${hpa.status
+              ?.currentReplicas}) is equal to the configured max number of replicas (${
               hpa.spec?.maxReplicas ?? -1
             })`,
             severity: 8,

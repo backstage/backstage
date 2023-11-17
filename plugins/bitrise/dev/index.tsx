@@ -85,7 +85,7 @@ const entity = (name?: string) =>
       },
       name: name,
     },
-  } as Entity);
+  }) as Entity;
 
 createDevApp()
   .registerApi({
@@ -153,7 +153,7 @@ createDevApp()
             expiring_download_url: 'some-url',
           } as BitriseBuildArtifactDetails;
         },
-      } as BitriseApi),
+      }) as BitriseApi,
   })
   .addPage({
     title: 'Bitrise CI',

@@ -152,9 +152,8 @@ export async function createRouter(
     }
 
     try {
-      const techdocsMetadata = await publisher.fetchTechDocsMetadata(
-        entityName,
-      );
+      const techdocsMetadata =
+        await publisher.fetchTechDocsMetadata(entityName);
 
       res.json(techdocsMetadata);
     } catch (err) {

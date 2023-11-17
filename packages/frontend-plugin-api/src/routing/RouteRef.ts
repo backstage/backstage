@@ -71,7 +71,10 @@ export class RouteRefImpl implements InternalRouteRef {
   #params: string[];
   #creationSite: string;
 
-  constructor(readonly params: string[] = [], creationSite: string) {
+  constructor(
+    readonly params: string[] = [],
+    creationSite: string,
+  ) {
     this.#params = params;
     this.#creationSite = creationSite;
   }
@@ -126,8 +129,8 @@ export function createRouteRef<
   keyof TParams extends never
     ? undefined
     : string extends TParamKeys
-    ? TParams
-    : { [param in TParamKeys]: string }
+      ? TParams
+      : { [param in TParamKeys]: string }
 > {
   return new RouteRefImpl(
     config?.params as string[] | undefined,

@@ -49,7 +49,7 @@ export async function createModule(options: ModuleOptions): Promise<Module> {
       },
     },
     Query: {
-      catalog: () => ({} as CatalogQuery),
+      catalog: () => ({}) as CatalogQuery,
     },
     CatalogQuery: {
       list: async () => {

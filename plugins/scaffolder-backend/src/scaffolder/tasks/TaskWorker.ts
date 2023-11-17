@@ -142,9 +142,8 @@ export class TaskWorker {
         );
       }
 
-      const { output } = await this.options.runners.workflowRunner.execute(
-        task,
-      );
+      const { output } =
+        await this.options.runners.workflowRunner.execute(task);
 
       await task.complete('completed', { output });
     } catch (error) {

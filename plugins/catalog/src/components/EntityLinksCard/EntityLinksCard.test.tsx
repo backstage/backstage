@@ -29,7 +29,7 @@ describe('EntityLinksCard', () => {
         links,
       },
       kind: 'MockKind',
-    } as Entity);
+    }) as Entity;
 
   const createLink = ({
     url = 'https://dashboard.dashexample.com',

@@ -64,7 +64,7 @@ const catalogApi: Partial<CatalogApi> = {
             spec: {
               owner: `${n}@example.com`,
             },
-          } as Entity),
+          }) as Entity,
       ),
     };
   },

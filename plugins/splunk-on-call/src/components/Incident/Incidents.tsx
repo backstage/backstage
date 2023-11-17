@@ -66,8 +66,8 @@ export const Incidents = ({ readOnly, refreshIncidents, team }: Props) => {
       const teams = await api.getTeams();
       const teamSlug = teams.find(teamValue => teamValue.name === team)?.slug;
       const filteredIncidents = teamSlug
-        ? allIncidents.filter(incident =>
-            incident.pagedTeams?.includes(teamSlug),
+        ? allIncidents.filter(
+            incident => incident.pagedTeams?.includes(teamSlug),
           )
         : [];
       return filteredIncidents;

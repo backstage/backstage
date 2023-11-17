@@ -38,7 +38,7 @@ const entity = (name?: string) =>
       },
       name: name,
     },
-  } as Entity);
+  }) as Entity;
 
 createDevApp()
   .registerApi({
@@ -64,7 +64,7 @@ createDevApp()
               return [];
           }
         },
-      } as CodeClimateApi),
+      }) as CodeClimateApi,
   })
   .addPage({
     title: 'Cards',

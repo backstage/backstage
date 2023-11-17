@@ -136,9 +136,8 @@ describe('DefaultProcessingDatabase', () => {
         });
         await db.transaction(tx => db.updateProcessedEntity(tx, options));
 
-        const entities = await knex<DbRefreshStateRow>(
-          'refresh_state',
-        ).select();
+        const entities =
+          await knex<DbRefreshStateRow>('refresh_state').select();
         expect(entities.length).toBe(1);
 
         await db.transaction(tx =>
@@ -183,9 +182,8 @@ describe('DefaultProcessingDatabase', () => {
           }),
         );
 
-        const entities = await knex<DbRefreshStateRow>(
-          'refresh_state',
-        ).select();
+        const entities =
+          await knex<DbRefreshStateRow>('refresh_state').select();
         expect(entities.length).toBe(1);
         expect(entities[0].processed_entity).toEqual(
           JSON.stringify(processedEntity),
@@ -434,9 +432,8 @@ describe('DefaultProcessingDatabase', () => {
               expect(mockLogger.warn).not.toHaveBeenCalled();
             }
 
-            const states = await knexTx<DbRefreshStateRow>(
-              'refresh_state',
-            ).select();
+            const states =
+              await knexTx<DbRefreshStateRow>('refresh_state').select();
             expect(states).toEqual(
               expect.arrayContaining([
                 expect.objectContaining({
@@ -560,9 +557,8 @@ describe('DefaultProcessingDatabase', () => {
           }),
         );
 
-        const entities = await knex<DbRefreshStateRow>(
-          'refresh_state',
-        ).select();
+        const entities =
+          await knex<DbRefreshStateRow>('refresh_state').select();
         expect(entities.length).toBe(1);
         expect(entities[0].cache).toEqual(JSON.stringify(state));
 
@@ -573,9 +569,8 @@ describe('DefaultProcessingDatabase', () => {
           }),
         );
 
-        const entities2 = await knex<DbRefreshStateRow>(
-          'refresh_state',
-        ).select();
+        const entities2 =
+          await knex<DbRefreshStateRow>('refresh_state').select();
         expect(entities2.length).toBe(1);
         expect(entities2[0].cache).toEqual('{}');
       },

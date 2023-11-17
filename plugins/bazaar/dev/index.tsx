@@ -30,7 +30,7 @@ createDevApp()
     factory: () =>
       ({
         getProjects: async () => getProjectsData,
-      } as any),
+      }) as any,
   })
   .registerApi({
     api: catalogApiRef,
@@ -38,7 +38,7 @@ createDevApp()
     factory: () =>
       ({
         getEntities: () => ({}),
-      } as CatalogApi),
+      }) as CatalogApi,
   })
   .addPage({
     element: <BazaarPage />,

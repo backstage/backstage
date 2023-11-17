@@ -26,7 +26,7 @@ createDevApp()
     factory: () =>
       ({
         getEntities: () => ({}),
-      } as CatalogApi),
+      }) as CatalogApi,
   })
   .addPage({
     element: <EntityValidationPage />,

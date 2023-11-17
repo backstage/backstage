@@ -16,5 +16,5 @@
 import { AsyncState } from 'react-use/lib/useAsync';
 
 export const useIsPodExecTerminalSupported: () => AsyncState<boolean> = jest.fn(
-  () => ({ loading: false, value: false } as AsyncState<boolean>),
+  () => ({ loading: false, value: false }) as AsyncState<boolean>,
 );

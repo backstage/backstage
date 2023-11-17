@@ -167,10 +167,13 @@ export class PermissionClient implements PermissionEvaluator {
       new Set(request.items.map(({ id }) => id)),
     ).parse(responseBody);
 
-    const responsesById = parsedResponse.items.reduce((acc, r) => {
-      acc[r.id] = r;
-      return acc;
-    }, {} as Record<string, z.infer<typeof itemSchema>>);
+    const responsesById = parsedResponse.items.reduce(
+      (acc, r) => {
+        acc[r.id] = r;
+        return acc;
+      },
+      {} as Record<string, z.infer<typeof itemSchema>>,
+    );
 
     return request.items.map(query => responsesById[query.id]);
   }

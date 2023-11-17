@@ -42,7 +42,7 @@ CodeCoverageDatabase.create = jest.fn(
       }),
       getHistory: async () => ({}),
       insertCodeCoverage: async () => undefined,
-    } as any),
+    }) as any,
 );
 
 let catalogRequestOptions: CatalogRequestOptions;

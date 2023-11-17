@@ -65,9 +65,8 @@ export const TechDocsReaderProvider = (props: TechDocsReaderProviderProps) => {
 
 export const withTechDocsReaderProvider =
   <T extends {}>(Component: ComponentType<T>) =>
-  (props: T) =>
-    (
-      <TechDocsReaderProvider>
-        <Component {...props} />
-      </TechDocsReaderProvider>
-    );
+  (props: T) => (
+    <TechDocsReaderProvider>
+      <Component {...props} />
+    </TechDocsReaderProvider>
+  );

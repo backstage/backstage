@@ -27,8 +27,8 @@ type ProjectGrowthAlertProps = {
 export const ProjectGrowthAlertCard = ({ alert }: ProjectGrowthAlertProps) => {
   const subheader = `
     ${pluralize('product', alert.products.length, true)}${
-    alert.products.length > 1 ? ', sorted by cost' : ''
-  }`;
+      alert.products.length > 1 ? ', sorted by cost' : ''
+    }`;
 
   return (
     <InfoCard

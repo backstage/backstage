@@ -126,9 +126,7 @@ const JobListItem = ({
       <AccordionDetails className={classes.accordionDetails}>
         <TableContainer>
           <Table>
-            {job.steps?.map(step => (
-              <StepView key={step.number} step={step} />
-            ))}
+            {job.steps?.map(step => <StepView key={step.number} step={step} />)}
           </Table>
         </TableContainer>
       </AccordionDetails>

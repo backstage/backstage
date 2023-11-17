@@ -30,12 +30,15 @@ import {
 export function reduceCatalogFilters(
   filters: EntityFilter[],
 ): Record<string, string | symbol | (string | symbol)[]> {
-  return filters.reduce((compoundFilter, filter) => {
-    return {
-      ...compoundFilter,
-      ...(filter.getCatalogFilters ? filter.getCatalogFilters() : {}),
-    };
-  }, {} as Record<string, string | symbol | (string | symbol)[]>);
+  return filters.reduce(
+    (compoundFilter, filter) => {
+      return {
+        ...compoundFilter,
+        ...(filter.getCatalogFilters ? filter.getCatalogFilters() : {}),
+      };
+    },
+    {} as Record<string, string | symbol | (string | symbol)[]>,
+  );
 }
 
 /**

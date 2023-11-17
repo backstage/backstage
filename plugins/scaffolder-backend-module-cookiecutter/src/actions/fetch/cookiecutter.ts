@@ -73,9 +73,8 @@ export class CookiecutterRunner {
     const resultDir = path.join(workspacePath, 'result');
 
     // First lets grab the default cookiecutter.json file
-    const cookieCutterJson = await this.fetchTemplateCookieCutter(
-      templateContentsDir,
-    );
+    const cookieCutterJson =
+      await this.fetchTemplateCookieCutter(templateContentsDir);
 
     const cookieInfo = {
       ...cookieCutterJson,

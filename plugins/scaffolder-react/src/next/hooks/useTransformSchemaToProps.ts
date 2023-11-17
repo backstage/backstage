@@ -33,9 +33,8 @@ export const useTransformSchemaToProps = (
     return step;
   }
 
-  const Layout = layouts.find(
-    layout => layout.name === objectFieldTemplate,
-  )?.component;
+  const Layout = layouts.find(layout => layout.name === objectFieldTemplate)
+    ?.component;
 
   if (!Layout) {
     return step;

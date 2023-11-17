@@ -116,9 +116,8 @@ export function transformSchemaToProps(
   extractUiSchema(schema, uiSchema);
 
   if (customLayoutName) {
-    const Layout = layouts.find(
-      layout => layout.name === customLayoutName,
-    )?.component;
+    const Layout = layouts.find(layout => layout.name === customLayoutName)
+      ?.component;
 
     if (Layout) {
       uiSchema['ui:ObjectFieldTemplate'] = Layout;

@@ -58,7 +58,7 @@ class MockKubernetesClient implements KubernetesApi {
   constructor(fixtureData: { [resourceType: string]: any[] }) {
     this.resources = Object.entries(fixtureData).flatMap(
       ([type, resources]) =>
-        ({ type: type.toLocaleLowerCase('en-US'), resources } as FetchResponse),
+        ({ type: type.toLocaleLowerCase('en-US'), resources }) as FetchResponse,
     );
   }
   async getPodLogs(_request: {

@@ -32,18 +32,17 @@ import { normalizeAjvPath } from './utils';
  *
  * @public
  */
-export type LoadConfigSchemaOptions =
-  | (
-      | {
-          dependencies: string[];
-          packagePaths?: string[];
-        }
-      | {
-          serialized: JsonObject;
-        }
-    ) & {
-      noUndeclaredProperties?: boolean;
-    };
+export type LoadConfigSchemaOptions = (
+  | {
+      dependencies: string[];
+      packagePaths?: string[];
+    }
+  | {
+      serialized: JsonObject;
+    }
+) & {
+  noUndeclaredProperties?: boolean;
+};
 
 function errorsToError(errors: ValidationError[]): Error {
   const messages = errors.map(({ instancePath, message, params }) => {

@@ -36,10 +36,13 @@ export const DeploymentDrawer = ({
       renderObject={(deploymentObj: V1Deployment) => {
         const conditions = (deploymentObj.status?.conditions ?? [])
           .map(renderCondition)
-          .reduce((accum, next) => {
-            accum[next[0]] = next[1];
-            return accum;
-          }, {} as { [key: string]: React.ReactNode });
+          .reduce(
+            (accum, next) => {
+              accum[next[0]] = next[1];
+              return accum;
+            },
+            {} as { [key: string]: React.ReactNode },
+          );
 
         return {
           strategy: deploymentObj.spec?.strategy ?? '???',

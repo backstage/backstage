@@ -37,7 +37,7 @@ const entity = (name?: string) =>
       },
       name: name,
     },
-  } as Entity);
+  }) as Entity;
 
 createDevApp()
   .registerPlugin(sonarQubePlugin)
@@ -153,6 +153,6 @@ createDevApp()
               return undefined;
           }
         },
-      } as SonarQubeApi),
+      }) as SonarQubeApi,
   })
   .render();

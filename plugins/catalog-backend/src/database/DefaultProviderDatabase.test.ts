@@ -131,9 +131,8 @@ describe('DefaultProviderDatabase', () => {
           }),
         );
 
-        const currentRefreshState = await knex<DbRefreshStateRow>(
-          'refresh_state',
-        ).select();
+        const currentRefreshState =
+          await knex<DbRefreshStateRow>('refresh_state').select();
 
         const currentRefRowState = await knex<DbRefreshStateReferencesRow>(
           'refresh_state_references',
@@ -247,9 +246,8 @@ describe('DefaultProviderDatabase', () => {
           });
         });
 
-        const currentRefreshState = await knex<DbRefreshStateRow>(
-          'refresh_state',
-        ).select();
+        const currentRefreshState =
+          await knex<DbRefreshStateRow>('refresh_state').select();
 
         const currentRefRowState = await knex<DbRefreshStateReferencesRow>(
           'refresh_state_references',
@@ -356,9 +354,8 @@ describe('DefaultProviderDatabase', () => {
           });
         });
 
-        const currentRefreshState = await knex<DbRefreshStateRow>(
-          'refresh_state',
-        ).select();
+        const currentRefreshState =
+          await knex<DbRefreshStateRow>('refresh_state').select();
 
         const currentRefRowState = await knex<DbRefreshStateReferencesRow>(
           'refresh_state_references',
@@ -421,9 +418,8 @@ describe('DefaultProviderDatabase', () => {
           });
         });
 
-        const currentRefreshState = await knex<DbRefreshStateRow>(
-          'refresh_state',
-        ).select();
+        const currentRefreshState =
+          await knex<DbRefreshStateRow>('refresh_state').select();
 
         const currentRefRowState = await knex<DbRefreshStateReferencesRow>(
           'refresh_state_references',
@@ -469,9 +465,8 @@ describe('DefaultProviderDatabase', () => {
           });
         });
 
-        const currentRefreshState = await knex<DbRefreshStateRow>(
-          'refresh_state',
-        ).select();
+        const currentRefreshState =
+          await knex<DbRefreshStateRow>('refresh_state').select();
 
         const currentRefRowState = await knex<DbRefreshStateReferencesRow>(
           'refresh_state_references',
@@ -537,9 +532,8 @@ describe('DefaultProviderDatabase', () => {
           });
         });
 
-        const currentRefreshState = await knex<DbRefreshStateRow>(
-          'refresh_state',
-        ).select();
+        const currentRefreshState =
+          await knex<DbRefreshStateRow>('refresh_state').select();
         expect(currentRefreshState).toEqual([
           expect.objectContaining({
             entity_ref: 'location:default/replaced',
