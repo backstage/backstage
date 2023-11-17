@@ -40,6 +40,7 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import { MockStarredEntitiesApi, starredEntitiesApiRef } from '../../apis';
+import { DefaultEntityFilters } from '../../hooks';
 
 const mockUser: UserEntity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -289,13 +290,37 @@ describe('<UserListPicker />', () => {
     const updateFilters = jest.fn();
     render(
       <ApiProvider apis={apis}>
-        <MockEntityListContextProvider value={{ updateFilters }}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            filters: { kind: new EntityKindFilter('component') },
+          }}
+        >
           <UserListPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
 
     fireEvent.click(screen.getByText('Starred'));
+
+    // wait until the component has finished loading
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+        filter: { kind: 'component', 'metadata.name': ['e-1', 'e-2'] },
+        limit: 1000,
+      });
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+        filter: { kind: 'component' },
+        limit: 0,
+      });
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+        filter: {
+          kind: 'component',
+          'relations.ownedBy': ['user:default/testuser'],
+        },
+        limit: 0,
+      });
+    });
 
     await waitFor(() =>
       expect(updateFilters).toHaveBeenLastCalledWith({
@@ -360,12 +385,17 @@ describe('<UserListPicker />', () => {
   describe('filter resetting', () => {
     const updateFilters = jest.fn();
 
-    const Picker = ({ ...props }: UserListPickerProps) => (
+    const Picker = ({
+      filters,
+      ...props
+    }: UserListPickerProps & { filters?: DefaultEntityFilters }) => (
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
             updateFilters,
-            filters: { kind: new EntityKindFilter('component') },
+            filters: filters || {
+              kind: new EntityKindFilter('component'),
+            },
           }}
         >
           <UserListPicker {...props} />
@@ -408,6 +438,21 @@ describe('<UserListPicker />', () => {
         await waitFor(() =>
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(3),
         );
+        expect(updateFilters).not.toHaveBeenCalledWith({
+          user: expect.any(Object),
+        });
+      });
+
+      it('does not reset the filter when request is empty', async () => {
+        render(<Picker initialFilter="owned" filters={{}} />);
+
+        await waitFor(() => {
+          expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+          expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+            filter: { 'metadata.name': ['e-1', 'e-2'] },
+            limit: 1000,
+          });
+        });
         expect(updateFilters).not.toHaveBeenCalledWith({
           user: expect.any(Object),
         });
@@ -540,6 +585,21 @@ describe('<UserListPicker />', () => {
             user: EntityUserFilter.owned(expect.any(Array)),
           }),
         );
+      });
+
+      it('does not reset the filter when request is empty xxxx', async () => {
+        render(<Picker initialFilter="owned" filters={{}} />);
+
+        await waitFor(() => {
+          expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+          expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+            filter: { 'metadata.name': ['e-1', 'e-2'] },
+            limit: 1000,
+          });
+        });
+        expect(updateFilters).not.toHaveBeenCalledWith({
+          user: expect.any(Object),
+        });
       });
     });
 
