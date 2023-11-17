@@ -24,7 +24,7 @@ import { ScmIntegrations } from '@backstage/integration';
 const mockOctokit = {
   rest: {
     actions: {
-      getRepoPublicKey: jest.fn(),
+      getEnvironmentPublicKey: jest.fn(),
       createEnvironmentVariable: jest.fn(),
       createOrUpdateEnvironmentSecret: jest.fn(),
     },
@@ -71,7 +71,7 @@ describe('github:environment:create', () => {
   };
 
   beforeEach(() => {
-    mockOctokit.rest.actions.getRepoPublicKey.mockResolvedValue({
+    mockOctokit.rest.actions.getEnvironmentPublicKey.mockResolvedValue({
       data: {
         key: publicKey,
         key_id: 'keyid',

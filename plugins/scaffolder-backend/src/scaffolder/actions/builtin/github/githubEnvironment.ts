@@ -167,9 +167,9 @@ export function createGithubEnvironmentAction(options: {
       }
 
       if (secrets) {
-        const publicKeyResponse = await client.rest.actions.getRepoPublicKey({
-          owner: owner,
-          repo: repo,
+        const publicKeyResponse = await client.rest.actions.getEnvironmentPublicKey({
+          repository_id: repository.data.id,
+          environment_name: name,
         });
 
         await Sodium.ready;
