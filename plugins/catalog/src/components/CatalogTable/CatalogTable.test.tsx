@@ -31,7 +31,8 @@ import {
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { act, fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
-import { CatalogTable, CatalogTableColumnsFunc } from './CatalogTable';
+import { CatalogTable } from './CatalogTable';
+import { CatalogTableColumnsFunc } from './types';
 
 const entities: Entity[] = [
   {

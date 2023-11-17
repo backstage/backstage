@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import { EntityListContextProps } from '@backstage/plugin-catalog-react';
+import { TableColumn } from '@backstage/core-components';
 
 /** @public */
 export interface CatalogTableRow {
@@ -31,3 +33,12 @@ export interface CatalogTableRow {
     ownedByRelations: CompoundEntityRef[];
   };
 }
+
+/**
+ * Typed columns function to dynamically render columns based on entity list context.
+ *
+ * @public
+ */
+export type CatalogTableColumnsFunc = (
+  entityListContext: EntityListContextProps,
+) => TableColumn<CatalogTableRow>[];

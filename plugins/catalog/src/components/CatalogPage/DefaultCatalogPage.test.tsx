@@ -44,7 +44,8 @@ import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTableRow } from '../CatalogTable';
 import { DefaultCatalogPage } from './DefaultCatalogPage';
-import { CatalogTableColumnsFunc } from '../CatalogTable/CatalogTable';
+
+import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 
 describe('DefaultCatalogPage', () => {
   const origReplaceState = window.history.replaceState;
