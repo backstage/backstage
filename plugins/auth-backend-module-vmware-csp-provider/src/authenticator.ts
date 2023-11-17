@@ -22,7 +22,7 @@ import {
   PassportOAuthDoneCallback,
   PassportProfile,
 } from '@backstage/plugin-auth-node';
-import jwtDecoder from 'jwt-decode';
+import { decodeJwt } from 'jose';
 import {
   Metadata,
   StateStoreStoreCallback,
@@ -54,7 +54,7 @@ export const vmWareCSPAuthenticator = createOAuthAuthenticator<
       );
     }
 
-    const identity: Record<string, string> = jwtDecoder(input.session.idToken);
+    const identity = decodeJwt(input.session.idToken);
     const missingClaims = [
       'email',
       'given_name',
@@ -75,7 +75,7 @@ export const vmWareCSPAuthenticator = createOAuthAuthenticator<
     return {
       profile: {
         displayName: `${identity.given_name} ${identity.family_name}`,
-        email: identity.email,
+        email: identity.email as string,
       },
     };
   },

@@ -4921,18 +4921,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-vmware-csp-provider@workspace:plugins/auth-backend-module-vmware-csp-provider"
   dependencies:
+    "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
-    "@types/jwt-decode": ^3.1.0
-    jwt-decode: ^3.1.0
+    express: ^4.18.2
+    express-session: ^1.17.3
+    jose: ^4.6.0
+    msw: ^2.0.8
     passport-oauth2: ^1.6.1
+    supertest: ^6.3.3
   languageName: unknown
   linkType: soft
 
@@ -10213,6 +10218,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bundled-es-modules/cookie@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@bundled-es-modules/cookie@npm:2.0.0"
+  dependencies:
+    cookie: ^0.5.0
+  checksum: 53114eabbedda20ba6c63f45dcea35c568616d22adf5d1882cef9761f65ae636bf47e0c66325572cc8e3a335e0257caf5f76ff1287990d9e9265be7bc9767a87
+  languageName: node
+  linkType: hard
+
+"@bundled-es-modules/js-levenshtein@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@bundled-es-modules/js-levenshtein@npm:2.0.1"
+  dependencies:
+    js-levenshtein: ^1.1.6
+  checksum: 13d0cbd2b00e563e09a797559dcff8c7e208c1f71e1787535a3d248f7e3d33ef3f0809b9f498d41788ab5fd399882dcca79917d70d97921b7dde94a282c1b7d8
+  languageName: node
+  linkType: hard
+
+"@bundled-es-modules/statuses@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@bundled-es-modules/statuses@npm:1.0.1"
+  dependencies:
+    statuses: ^2.0.1
+  checksum: bcaa7de192e73056950b5fd20e75140d8d09074b1adc4437924b2051bb02b4dbf568c96e67d53b220fb7d735c3446e2ba746599cb1793ab2d23dd2ef230a8622
+  languageName: node
+  linkType: hard
+
 "@changesets/apply-release-plan@npm:^6.1.4":
   version: 6.1.4
   resolution: "@changesets/apply-release-plan@npm:6.1.4"
@@ -13198,6 +13230,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mswjs/cookies@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@mswjs/cookies@npm:1.1.0"
+  checksum: 1d9be44548907b92ff6acd46795292968661be19f1c04c43fdb2beb98bc7e58b8ffcef3be19d0f2cb58df07a36a6b53b4bbc0ea34e023b7366dbc28ffee90338
+  languageName: node
+  linkType: hard
+
 "@mswjs/interceptors@npm:^0.17.10":
   version: 0.17.10
   resolution: "@mswjs/interceptors@npm:0.17.10"
@@ -13211,6 +13250,20 @@ __metadata:
     strict-event-emitter: ^0.2.4
     web-encoding: ^1.1.5
   checksum: 0e6d32f399144b5cefe6fd7620f2776c83adc9bbbbccf2eb4ea347332be059f585136c44168c09b544c41cd3d686f88e43432e10192227a24fbb0c98a2f52dc8
+  languageName: node
+  linkType: hard
+
+"@mswjs/interceptors@npm:^0.25.11":
+  version: 0.25.12
+  resolution: "@mswjs/interceptors@npm:0.25.12"
+  dependencies:
+    "@open-draft/deferred-promise": ^2.2.0
+    "@open-draft/logger": ^0.3.0
+    "@open-draft/until": ^2.0.0
+    is-node-process: ^1.2.0
+    outvariant: ^1.2.1
+    strict-event-emitter: ^0.5.1
+  checksum: 0676808700059f55536b51ffe38e9ea07e26b4d9c284fbbdf7a52b7282b7a93703f18d93b109c384205fe5f72b585506d5550cc8f3559267892b01a0f7561d3d
   languageName: node
   linkType: hard
 
@@ -14146,10 +14199,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@open-draft/deferred-promise@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@open-draft/deferred-promise@npm:2.2.0"
+  checksum: 7f29d39725bb8ab5b62f89d88a4202ce2439ac740860979f9e3d0015dfe4bc3daddcfa5727fa4eed482fdbee770aa591b1136b98b0a0f0569a65294f35bdf56a
+  languageName: node
+  linkType: hard
+
+"@open-draft/logger@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@open-draft/logger@npm:0.3.0"
+  dependencies:
+    is-node-process: ^1.2.0
+    outvariant: ^1.4.0
+  checksum: 7adfe3d0ed8ca32333ce2a77f9a93d561ebc89c989eaa9722f1dc8a2d2854f5de1bef6fa6894cdf58e16fa4dd9cfa99444ea1f5cac6eb1518e9247911ed042d5
+  languageName: node
+  linkType: hard
+
 "@open-draft/until@npm:^1.0.3":
   version: 1.0.3
   resolution: "@open-draft/until@npm:1.0.3"
   checksum: 323e92ebef0150ed0f8caedc7d219b68cdc50784fa4eba0377eef93533d3f46514eb2400ced83dda8c51bddc3d2c7b8e9cf95e5ec85ab7f62dfc015d174f62f2
+  languageName: node
+  linkType: hard
+
+"@open-draft/until@npm:^2.0.0, @open-draft/until@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@open-draft/until@npm:2.1.0"
+  checksum: 140ea3b16f4a3a6a729c1256050e20a93d408d7aa1e125648ce2665b3c526ed452510c6e4a6f4b15d95fb5e41203fb51510eb8fbc8812d5e5a91880293d66471
   languageName: node
   linkType: hard
 
@@ -19145,6 +19222,13 @@ __metadata:
   version: 2.0.0
   resolution: "@types/stack-utils@npm:2.0.0"
   checksum: b3fbae25b073116977ecb5c67d22f14567b51a7792403b0bf46e5de8f29bde3bd4ec1626afb22065495ca7f1c699c8bd66720050c94b8f8f9bcefbee79d161fd
+  languageName: node
+  linkType: hard
+
+"@types/statuses@npm:^2.0.1":
+  version: 2.0.4
+  resolution: "@types/statuses@npm:2.0.4"
+  checksum: 3a806c3b96d1845e3e7441fbf0839037e95f717334760ddb7c29223c9a34a7206b68e2998631f89f1a1e3ef5b67b15652f6e8fa14987ebd7f6d38587c1bffd18
   languageName: node
   linkType: hard
 
@@ -28963,6 +29047,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"headers-polyfill@npm:^4.0.1":
+  version: 4.0.2
+  resolution: "headers-polyfill@npm:4.0.2"
+  checksum: a95280ed58df429fc86c4f49b21596be3ea3f5f3d790e7d75238668df9b90b292f15a968c7c19ae1db88c0ae036dd1bf363a71b8e771199d82848e2d8b3c6c2e
+  languageName: node
+  linkType: hard
+
 "helmet@npm:^6.0.0":
   version: 6.0.1
   resolution: "helmet@npm:6.0.1"
@@ -34684,6 +34775,42 @@ __metadata:
   bin:
     msw: cli/index.js
   checksum: c2d4f7747f5806f0fd8d8cc3ca250ee1c2a7a6cd608de43f95bd072ba1fb13cdce0b52932ce9bf8f4a21b194d2815db535501e224ec8f7052593447fe1c0cb70
+  languageName: node
+  linkType: hard
+
+"msw@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "msw@npm:2.0.8"
+  dependencies:
+    "@bundled-es-modules/cookie": ^2.0.0
+    "@bundled-es-modules/js-levenshtein": ^2.0.1
+    "@bundled-es-modules/statuses": ^1.0.1
+    "@mswjs/cookies": ^1.1.0
+    "@mswjs/interceptors": ^0.25.11
+    "@open-draft/until": ^2.1.0
+    "@types/cookie": ^0.4.1
+    "@types/js-levenshtein": ^1.1.1
+    "@types/statuses": ^2.0.1
+    chalk: ^4.1.2
+    chokidar: ^3.4.2
+    graphql: ^16.8.1
+    headers-polyfill: ^4.0.1
+    inquirer: ^8.2.0
+    is-node-process: ^1.2.0
+    js-levenshtein: ^1.1.6
+    outvariant: ^1.4.0
+    path-to-regexp: ^6.2.0
+    strict-event-emitter: ^0.5.0
+    type-fest: ^2.19.0
+    yargs: ^17.3.1
+  peerDependencies:
+    typescript: ">= 4.7.x <= 5.2.x"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  bin:
+    msw: cli/index.js
+  checksum: 8737dae4cf516d8c591ad8d3751cef2f8f07d10a1f995b8cd7d19d8e955a29352dd6fc092f04bc0e1d0025663ccc3c64ae7e56e29c8d4a4b13699e3ee4747c46
   languageName: node
   linkType: hard
 
@@ -41274,7 +41401,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"statuses@npm:2.0.1":
+"statuses@npm:2.0.1, statuses@npm:^2.0.1":
   version: 2.0.1
   resolution: "statuses@npm:2.0.1"
   checksum: 18c7623fdb8f646fb213ca4051be4df7efb3484d4ab662937ca6fbef7ced9b9e12842709872eb3020cc3504b93bde88935c9f6417489627a7786f24f8031cbcb
@@ -41408,6 +41535,13 @@ __metadata:
   version: 0.4.3
   resolution: "strict-event-emitter@npm:0.4.3"
   checksum: ee335aba8a43bc6749d3337d78b9f6dbe8358d34b6eb38e7075dadf7f1cae621d96588663dda22dce17e6e7c7e281ddac79ca47421da8250bb4bf53b979508a5
+  languageName: node
+  linkType: hard
+
+"strict-event-emitter@npm:^0.5.0, strict-event-emitter@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "strict-event-emitter@npm:0.5.1"
+  checksum: 350480431bc1c28fdb601ef4976c2f8155fc364b4740f9692dd03e5bdd48aafc99a5e021fe655fbd986d0b803e9f3fc5c4b018b35cb838c4690d60f2a26f1cf3
   languageName: node
   linkType: hard
 
