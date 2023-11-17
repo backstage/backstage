@@ -93,8 +93,8 @@ describe('useOwnedEntitiesCount', () => {
     ).rejects.toThrow();
 
     expect(result.current).toEqual({
-      count: 0,
-      loading: false,
+      count: undefined,
+      loading: true,
       filter: EntityUserFilter.owned([
         'user:default/spiderman',
         'user:group/a-group',
