@@ -218,15 +218,13 @@ export interface BackstagePlugin<
   ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
 > {
   // (undocumented)
-  $$type: '@backstage/BackstagePlugin';
+  readonly $$type: '@backstage/BackstagePlugin';
   // (undocumented)
-  extensions: Extension<unknown>[];
+  readonly externalRoutes: ExternalRoutes;
   // (undocumented)
-  externalRoutes: ExternalRoutes;
+  readonly id: string;
   // (undocumented)
-  id: string;
-  // (undocumented)
-  routes: Routes;
+  readonly routes: Routes;
 }
 
 export { BackstageUserIdentity };
@@ -606,13 +604,15 @@ export type ExtensionInputValues<
 // @public (undocumented)
 export interface ExtensionOverrides {
   // (undocumented)
-  $$type: '@backstage/ExtensionOverrides';
+  readonly $$type: '@backstage/ExtensionOverrides';
 }
 
 // @public (undocumented)
 export interface ExtensionOverridesOptions {
   // (undocumented)
   extensions: Extension<unknown>[];
+  // (undocumented)
+  featureFlags?: FeatureFlagConfig[];
 }
 
 // @public
@@ -629,6 +629,11 @@ export interface ExternalRouteRef<
 }
 
 export { FeatureFlag };
+
+// @public
+export type FeatureFlagConfig = {
+  name: string;
+};
 
 export { FeatureFlagsApi };
 
@@ -706,6 +711,8 @@ export interface PluginOptions<
   extensions?: Extension<unknown>[];
   // (undocumented)
   externalRoutes?: ExternalRoutes;
+  // (undocumented)
+  featureFlags?: FeatureFlagConfig[];
   // (undocumented)
   id: string;
   // (undocumented)
