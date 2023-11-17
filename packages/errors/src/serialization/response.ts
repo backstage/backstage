@@ -43,6 +43,19 @@ export type ErrorResponseBody = {
 
 /**
  * Attempts to construct an ErrorResponseBody out of a failed server request.
+ * Assumes that the response has already been checked to be not ok. This function
+ *  expects that rawBody is the body of the response and will not attempt to
+ *  parse the body from the response again.
+ *
+ * @public
+ * @param response - The response of a failed request
+ */
+export async function parseErrorResponseBody(
+  response: ConsumedResponse,
+  rawBody: string,
+): Promise<ErrorResponseBody>;
+/**
+ * Attempts to construct an ErrorResponseBody out of a failed server request.
  * Assumes that the response has already been checked to be not ok. This
  * function consumes the body of the response, and assumes that it hasn't
  * been consumed before.
@@ -53,10 +66,6 @@ export type ErrorResponseBody = {
  * @public
  * @param response - The response of a failed request
  */
-export async function parseErrorResponseBody(
-  response: ConsumedResponse,
-  rawBody: string,
-): Promise<ErrorResponseBody>;
 export async function parseErrorResponseBody(
   response: ConsumedResponse & { text(): Promise<string> },
 ): Promise<ErrorResponseBody>;
