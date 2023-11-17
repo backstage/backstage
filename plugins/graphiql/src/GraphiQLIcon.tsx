@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import SvgIcon from '@material-ui/core/SvgIcon';
+import SvgIcon from '@mui/material/SvgIcon';
 import { IconComponent } from '@backstage/core-plugin-api';
 
 /**
