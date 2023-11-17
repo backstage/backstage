@@ -13,6 +13,7 @@ import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiFactory } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
+import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api/src/apis/system/types';
 import { ApiRefConfig } from '@backstage/core-plugin-api';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
@@ -26,7 +27,6 @@ import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/core-plugin-api
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
-import { ComponentRef as ComponentRef_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { configApiRef } from '@backstage/core-plugin-api';
@@ -293,15 +293,14 @@ export type ComponentRef<T> = {
   T: T;
 };
 
-// @public (undocumented)
-export type ComponentsContextValue = Record<string, ComponentType<any>>;
+// @public
+export interface ComponentsApi {
+  // (undocumented)
+  getComponent<T>(ref: ComponentRef<T>): T;
+}
 
-// @public (undocumented)
-export function ComponentsProvider(
-  props: PropsWithChildren<{
-    value: ComponentsContextValue;
-  }>,
-): React_2.JSX.Element;
+// @public
+export const componentsApiRef: ApiRef_2<ComponentsApi>;
 
 export { ConfigApi };
 
@@ -909,12 +908,6 @@ export function useAnalytics(): AnalyticsTracker;
 export { useApi };
 
 export { useApiHolder };
-
-// @public (undocumented)
-export function useComponent<
-  P extends {},
-  T extends ComponentRef_2<ComponentType<P>>,
->(ref: T): T['T'];
 
 // @public
 export function useRouteRef<

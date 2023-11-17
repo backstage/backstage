@@ -21,11 +21,8 @@ import {
   appTreeApiRef,
   BackstagePlugin,
   ComponentRef,
-  coreBootErrorPageComponentRef,
-  coreErrorBoundaryFallbackComponentRef,
+  componentsApiRef,
   coreExtensionData,
-  coreNotFoundErrorPageComponentRef,
-  coreProgressComponentRef,
   ExtensionDataRef,
   ExtensionOverrides,
   RouteRef,
@@ -108,6 +105,7 @@ import { CoreRouter } from '../extensions/CoreRouter';
 import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
+import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
 
 export const builtinExtensions = [
   Core,
@@ -319,7 +317,6 @@ export function createSpecializedApp(options?: {
     features.filter(
       (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
     ),
-    tree.root,
   );
 
   const appIdentityProxy = new AppIdentityProxy();
@@ -375,49 +372,7 @@ export function createSpecializedApp(options?: {
   };
 }
 
-function createLegacyAppContext(
-  plugins: BackstagePlugin[],
-  core: AppNode,
-): AppContext {
-  const components = core.edges.attachments
-    .get('components')
-    ?.map(e => e.instance?.getData(coreExtensionData.component));
-
-  function getComponent<TRef extends ComponentRef<unknown>>(
-    ref: TRef,
-  ): TRef['T'] | undefined {
-    return components?.find(component => component?.ref.id === ref.id)?.impl;
-  }
-
-  const {
-    Progress: DefaultProgress,
-    BootErrorPage: DefaultBootErrorPage,
-    NotFoundErrorPage: DefaultNotFoundErrorPage,
-    ErrorBoundaryFallback: DefaultErrorBoundaryFallback,
-    ...rest
-  } = defaultComponents;
-
-  const CustomProgress = getComponent(coreProgressComponentRef);
-
-  const CustomBootErrorPage = getComponent(coreBootErrorPageComponentRef);
-
-  const CustomNotFoundErrorPage = getComponent(
-    coreNotFoundErrorPageComponentRef,
-  );
-
-  const CustomErrorBoundaryFallback = getComponent(
-    coreErrorBoundaryFallbackComponentRef,
-  );
-
-  const overriddenComponents = {
-    ...rest,
-    Progress: CustomProgress ?? DefaultProgress,
-    BootErrorPage: CustomBootErrorPage ?? DefaultBootErrorPage,
-    NotFoundErrorPage: CustomNotFoundErrorPage ?? DefaultNotFoundErrorPage,
-    ErrorBoundaryFallback:
-      CustomErrorBoundaryFallback ?? DefaultErrorBoundaryFallback,
-  };
-
+function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
   return {
     getPlugins(): LegacyBackstagePlugin[] {
       return plugins.map(toLegacyPlugin);
@@ -434,7 +389,7 @@ function createLegacyAppContext(
     },
 
     getComponents(): AppComponents {
-      return overriddenComponents;
+      return defaultComponents;
     },
   };
 }
@@ -481,6 +436,24 @@ function createApiHolder(
     factory: () => ({
       getTree: () => ({ tree }),
     }),
+  });
+
+  const componentsExtensions =
+    tree.root.edges.attachments
+      .get('components')
+      ?.map(e => e.instance?.getData(coreExtensionData.component))
+      .filter(x => !!x) ?? [];
+
+  const componentsMap = componentsExtensions.reduce(
+    (components, component) =>
+      component ? components.set(component.ref, component?.impl) : components,
+    new Map<ComponentRef<any>, any>(),
+  );
+
+  factoryRegistry.register('static', {
+    api: componentsApiRef,
+    deps: {},
+    factory: () => new DefaultComponentsApi(componentsMap),
   });
 
   factoryRegistry.register('static', {

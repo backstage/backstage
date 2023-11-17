@@ -24,7 +24,7 @@ import { createApiRef } from '../system';
  */
 export interface ComponentsApi {
   // TODO: Should component refs also provide the default implementation so that we're guaranteed to get a component?
-  getComponent<T>(ref: ComponentRef<T>): T | undefined;
+  getComponent<T>(ref: ComponentRef<T>): T;
 }
 
 /**
