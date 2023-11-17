@@ -137,9 +137,11 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const entityListContext = useEntityList();
   const { loading, error, entities, filters } = entityListContext;
 
-  const tableColumns = useMemo(() => {
-    return typeof columns === 'function' ? columns(entityListContext) : columns;
-  }, [columns, entityListContext]);
+  const tableColumns = useMemo(
+    () =>
+      typeof columns === 'function' ? columns(entityListContext) : columns,
+    [columns, entityListContext],
+  );
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
