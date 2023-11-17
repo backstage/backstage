@@ -137,7 +137,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const entityListContext = useEntityList();
   const { loading, error, entities, filters } = entityListContext;
 
-  const overrideColumns = useMemo(() => {
+  const tableColumns = useMemo(() => {
     return typeof columns === 'function' ? columns(entityListContext) : columns;
   }, [columns, entityListContext]);
 
@@ -247,7 +247,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
     };
   });
 
-  const typeColumn = overrideColumns.find(c => c.title === 'Type');
+  const typeColumn = tableColumns.find(c => c.title === 'Type');
   if (typeColumn) {
     typeColumn.hidden = !showTypeColumn;
   }
@@ -261,7 +261,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   return (
     <Table<CatalogTableRow>
       isLoading={loading}
-      columns={overrideColumns}
+      columns={tableColumns}
       options={{
         paging: showPagination,
         pageSize: 20,
