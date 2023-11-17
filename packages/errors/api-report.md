@@ -112,15 +112,13 @@ export class NotModifiedError extends CustomErrorBase {
   name: 'NotModifiedError';
 }
 
-// Warning: (ae-missing-release-tag) "parseErrorResponseBody" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function parseErrorResponseBody(
   response: ConsumedResponse,
   rawBody: string,
 ): Promise<ErrorResponseBody>;
 
-// @public (undocumented)
+// @public
 export function parseErrorResponseBody(
   response: ConsumedResponse & {
     text(): Promise<string>;
