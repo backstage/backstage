@@ -58,6 +58,7 @@ export const CLOUDBUILD_ANNOTATION = 'google.com/cloudbuild-project-slug';
 export type CloudbuildApi = {
   listWorkflowRuns: (options: {
     projectId: string;
+    cloudBuildFilter: string;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
   getWorkflow: (options: {
     projectId: string;
@@ -94,6 +95,7 @@ export class CloudbuildClient implements CloudbuildApi {
   // (undocumented)
   listWorkflowRuns(options: {
     projectId: string;
+    cloudBuildFilter: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData>;
   // (undocumented)
   reRunWorkflow(options: { projectId: string; runId: string }): Promise<void>;

@@ -26,6 +26,7 @@ import { buildRouteRef } from '../../routes';
 import { DateTime } from 'luxon';
 import { Table, TableColumn, Link } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { getCloudbuildFilter } from '../useCloudBuildFilter';
 
 const generatedColumns: TableColumn[] = [
   {
@@ -162,9 +163,11 @@ export const WorkflowRunsTableView = ({
 export const WorkflowRunsTable = (props: { entity: Entity }) => {
   const { value: projectName, loading } = useProjectName(props.entity);
   const [projectId] = (projectName ?? '/').split('/');
+  const cloudBuildFilter = getCloudbuildFilter(props.entity);
 
   const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
     projectId,
+    cloudBuildFilter,
   });
 
   return (

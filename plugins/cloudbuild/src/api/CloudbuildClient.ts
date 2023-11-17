@@ -45,11 +45,12 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async listWorkflowRuns(options: {
     projectId: string;
+    cloudBuildFilter: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
     const workflowRuns = await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
-      )}/builds`,
+      )}/builds?filter=${encodeURIComponent(options.cloudBuildFilter)}`,
       {
         headers: new Headers({
           Accept: '*/*',

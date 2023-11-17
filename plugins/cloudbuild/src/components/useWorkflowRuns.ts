@@ -33,8 +33,11 @@ export type WorkflowRun = {
   rerun: () => void;
 };
 
-export function useWorkflowRuns(options: { projectId: string }) {
-  const { projectId } = options;
+export function useWorkflowRuns(options: {
+  projectId: string;
+  cloudBuildFilter: string;
+}) {
+  const { projectId, cloudBuildFilter } = options;
   const api = useApi(cloudbuildApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -51,6 +54,7 @@ export function useWorkflowRuns(options: { projectId: string }) {
     return api
       .listWorkflowRuns({
         projectId,
+        cloudBuildFilter,
       })
       .then(
         (
