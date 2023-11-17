@@ -103,28 +103,50 @@ exports.up = async function up(knex) {
  * @param { import("knex").Knex } knex
  */
 exports.down = async function down(knex) {
-  await knex.schema.renameTable(
-    'static_assets_cache',
-    'tmp_static_assets_cache',
-  );
-  await knex.schema.createTable('static_assets_cache', table => {
-    table.comment(
-      'A cache of static assets that where previously deployed and may still be lazy-loaded by clients',
+  const isSqlite = knex.client.config.client.includes('sqlite3');
+
+  if (isSqlite) {
+    await knex.schema.renameTable(
+      'static_assets_cache',
+      'tmp_static_assets_cache',
     );
-    table.text('path').primary().notNullable().comment('The path of the file');
-    table
-      .dateTime('last_modified_at')
-      .defaultTo(knex.fn.now())
-      .notNullable()
-      .comment(
-        'Timestamp of when the asset was most recently seen in a deployment',
+    await knex.schema.table('tmp_static_assets_cache', table => {
+      table.dropIndex('path', 'static_assets_cache_path_unique');
+      table.dropIndex(
+        'last_modified_at',
+        'static_asset_cache_last_modified_at_idx',
       );
-    table.binary('content').notNullable().comment('The asset content');
-    table.index('last_modified_at', 'static_asset_cache_last_modified_at_idx');
-  });
-  await knex.schema.raw(
-    `INSERT INTO static_assets_cache SELECT * FROM tmp_static_assets_cache`,
-  );
-  // Clean up
-  await knex.schema.dropTable('tmp_static_assets_cache');
+    });
+    await knex.schema.createTable('static_assets_cache', table => {
+      table.comment(
+        'A cache of static assets that where previously deployed and may still be lazy-loaded by clients',
+      );
+      table
+        .text('path')
+        .primary()
+        .notNullable()
+        .comment('The path of the file');
+      table
+        .dateTime('last_modified_at')
+        .defaultTo(knex.fn.now())
+        .notNullable()
+        .comment(
+          'Timestamp of when the asset was most recently seen in a deployment',
+        );
+      table.binary('content').notNullable().comment('The asset content');
+      table.index(
+        'last_modified_at',
+        'static_asset_cache_last_modified_at_idx',
+      );
+    });
+    await knex.schema.raw(
+      `INSERT INTO static_assets_cache SELECT path, last_modified_at, content FROM tmp_static_assets_cache`,
+    );
+    // Clean up
+    await knex.schema.dropTable('tmp_static_assets_cache');
+  } else {
+    await knex.schema.table('static_assets_cache', table => {
+      table.dropColumn('id');
+    });
+  }
 };

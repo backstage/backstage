@@ -31,9 +31,12 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  await knex.schema.alterTable('task_events', table => {
-    if (knex.client.config.client.includes('mysql')) {
+  if (knex.client.config.client.includes('mysql')) {
+    await knex('task_events').update({
+      body: knex.raw('SUBSTRING(body, 1, 65535)'),
+    });
+    await knex.schema.alterTable('task_events', table => {
       table.text('body', 'text').alter();
-    }
-  });
+    });
+  }
 };

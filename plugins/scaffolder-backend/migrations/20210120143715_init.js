@@ -77,6 +77,7 @@ exports.up = async function up(knex) {
 exports.down = async function down(knex) {
   if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('task_events', table => {
+      table.dropForeign('task_id');
       table.dropIndex([], 'task_events_task_id_idx');
     });
   }
