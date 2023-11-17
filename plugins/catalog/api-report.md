@@ -183,11 +183,14 @@ export const CatalogTable: {
 };
 
 // @public
+export type CatalogTableColumnsFunc = (
+  entityListContext: EntityListContextProps,
+) => TableColumn<CatalogTableRow>[];
+
+// @public
 export interface CatalogTableProps {
   // (undocumented)
   actions?: TableProps<CatalogTableRow>['actions'];
-  // Warning: (ae-forgotten-export) The symbol "CatalogTableColumnsFunc" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)

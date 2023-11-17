@@ -43,7 +43,8 @@ import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { catalogTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { CatalogTableColumnsFunc } from '../CatalogTable/CatalogTable';
+
+import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 
 /** @internal */
 export interface BaseCatalogPageProps {

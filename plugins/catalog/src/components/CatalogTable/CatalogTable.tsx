@@ -29,7 +29,6 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import {
-  EntityListContextProps,
   getEntityRelations,
   humanizeEntityRef,
   useEntityList,
@@ -46,16 +45,7 @@ import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
 import React, { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
-import { CatalogTableRow } from './types';
-
-/**
- * Typed columns function to dynamically render columns based on entity list context.
- *
- * @public
- */
-export type CatalogTableColumnsFunc = (
-  entityListContext: EntityListContextProps,
-) => TableColumn<CatalogTableRow>[];
+import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 
 /**
  * Props for {@link CatalogTable}.
