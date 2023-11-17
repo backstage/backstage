@@ -27,7 +27,7 @@ export type AppRouteBinder = <
 ) => void;
 
 // @public (undocumented)
-export function createApp(options: {
+export function createApp(options?: {
   features?: (BackstagePlugin | ExtensionOverrides)[];
   configLoader?: () => Promise<ConfigApi>;
   bindRoutes?(context: { bind: AppRouteBinder }): void;
