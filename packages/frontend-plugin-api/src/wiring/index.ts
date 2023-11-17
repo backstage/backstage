@@ -45,3 +45,4 @@ export {
   type ExtensionOverrides,
   type ExtensionOverridesOptions,
 } from './createExtensionOverrides';
+export type { FeatureFlagConfig } from './types';

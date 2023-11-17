@@ -93,6 +93,10 @@ import { AppNode } from '@backstage/frontend-plugin-api';
 import { toLegacyPlugin } from '../routing/toLegacyPlugin';
 import { InternalAppContext } from './InternalAppContext';
 import { CoreRouter } from '../extensions/CoreRouter';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createPlugin';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 
 const builtinExtensions = [
   Core,
@@ -304,6 +308,26 @@ export function createSpecializedApp(options?: {
 
   const appIdentityProxy = new AppIdentityProxy();
   const apiHolder = createApiHolder(tree, config, appIdentityProxy);
+
+  const featureFlagApi = apiHolder.get(featureFlagsApiRef);
+  if (featureFlagApi) {
+    for (const feature of features) {
+      if (feature.$$type === '@backstage/BackstagePlugin') {
+        toInternalBackstagePlugin(feature).featureFlags.forEach(flag =>
+          featureFlagApi.registerFlag({
+            name: flag.name,
+            pluginId: feature.id,
+          }),
+        );
+      }
+      if (feature.$$type === '@backstage/ExtensionOverrides') {
+        toInternalExtensionOverrides(feature).featureFlags.forEach(flag =>
+          featureFlagApi.registerFlag({ name: flag.name, pluginId: '' }),
+        );
+      }
+    }
+  }
+
   const routeInfo = extractRouteInfoFromAppNode(tree.root);
   const routeBindings = resolveRouteBindings(
     options?.bindRoutes,
