@@ -86,52 +86,56 @@ const refCompare = (a: Entity, b: Entity) => {
   return toRef(a).localeCompare(toRef(b));
 };
 
+const defaultColumnsFunc: CatalogTableColumnsFunc = ({ filters, entities }) => {
+  return [
+    columnFactories.createTitleColumn({ hidden: true }),
+    columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
+    ...createEntitySpecificColumns(),
+    columnFactories.createMetadataDescriptionColumn(),
+    columnFactories.createTagsColumn(),
+  ];
+
+  function createEntitySpecificColumns(): TableColumn<CatalogTableRow>[] {
+    const baseColumns = [
+      columnFactories.createSystemColumn(),
+      columnFactories.createOwnerColumn(),
+      columnFactories.createSpecTypeColumn(),
+      columnFactories.createSpecLifecycleColumn(),
+    ];
+    switch (filters.kind?.value) {
+      case 'user':
+        return [];
+      case 'domain':
+      case 'system':
+        return [columnFactories.createOwnerColumn()];
+      case 'group':
+      case 'template':
+        return [columnFactories.createSpecTypeColumn()];
+      case 'location':
+        return [
+          columnFactories.createSpecTypeColumn(),
+          columnFactories.createSpecTargetsColumn(),
+        ];
+      default:
+        return entities.every(entity => entity.metadata.namespace === 'default')
+          ? baseColumns
+          : [...baseColumns, columnFactories.createNamespaceColumn()];
+    }
+  }
+};
+
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
-  const { columns, actions, tableOptions, subtitle, emptyContent } = props;
+  const {
+    columns = defaultColumnsFunc,
+    actions,
+    tableOptions,
+    subtitle,
+    emptyContent,
+  } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const entityListContext = useEntityList();
   const { loading, error, entities, filters } = entityListContext;
-
-  const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
-    return [
-      columnFactories.createTitleColumn({ hidden: true }),
-      columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
-      ...createEntitySpecificColumns(),
-      columnFactories.createMetadataDescriptionColumn(),
-      columnFactories.createTagsColumn(),
-    ];
-
-    function createEntitySpecificColumns(): TableColumn<CatalogTableRow>[] {
-      const baseColumns = [
-        columnFactories.createSystemColumn(),
-        columnFactories.createOwnerColumn(),
-        columnFactories.createSpecTypeColumn(),
-        columnFactories.createSpecLifecycleColumn(),
-      ];
-      switch (filters.kind?.value) {
-        case 'user':
-          return [];
-        case 'domain':
-        case 'system':
-          return [columnFactories.createOwnerColumn()];
-        case 'group':
-        case 'template':
-          return [columnFactories.createSpecTypeColumn()];
-        case 'location':
-          return [
-            columnFactories.createSpecTypeColumn(),
-            columnFactories.createSpecTargetsColumn(),
-          ];
-        default:
-          return entities.every(
-            entity => entity.metadata.namespace === 'default',
-          )
-            ? baseColumns
-            : [...baseColumns, columnFactories.createNamespaceColumn()];
-      }
-    }
-  }, [filters.kind?.value, entities]);
 
   const overrideColumns = useMemo(() => {
     return typeof columns === 'function' ? columns(entityListContext) : columns;
@@ -243,9 +247,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
     };
   });
 
-  const typeColumn = (overrideColumns || defaultColumns).find(
-    c => c.title === 'Type',
-  );
+  const typeColumn = overrideColumns.find(c => c.title === 'Type');
   if (typeColumn) {
     typeColumn.hidden = !showTypeColumn;
   }
@@ -259,7 +261,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   return (
     <Table<CatalogTableRow>
       isLoading={loading}
-      columns={overrideColumns || defaultColumns}
+      columns={overrideColumns}
       options={{
         paging: showPagination,
         pageSize: 20,
