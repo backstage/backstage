@@ -43,7 +43,7 @@ import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { catalogTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { ColumnsFunc } from '../CatalogTable/CatalogTable';
+import { CatalogTableColumnsFunc } from '../CatalogTable/CatalogTable';
 
 /** @internal */
 export interface BaseCatalogPageProps {
@@ -87,7 +87,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
  */
 export interface DefaultCatalogPageProps {
   initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<CatalogTableRow>[] | ColumnsFunc;
+  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   actions?: TableProps<CatalogTableRow>['actions'];
   initialKind?: string;
   tableOptions?: TableProps<CatalogTableRow>['options'];

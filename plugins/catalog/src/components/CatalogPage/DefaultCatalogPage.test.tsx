@@ -44,7 +44,7 @@ import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTableRow } from '../CatalogTable';
 import { DefaultCatalogPage } from './DefaultCatalogPage';
-import { ColumnsFunc } from '../CatalogTable/CatalogTable';
+import { CatalogTableColumnsFunc } from '../CatalogTable/CatalogTable';
 
 describe('DefaultCatalogPage', () => {
   const origReplaceState = window.history.replaceState;
@@ -219,7 +219,7 @@ describe('DefaultCatalogPage', () => {
   }, 20_000);
 
   it('should render the custom column function passed as prop', async () => {
-    const columns: ColumnsFunc = ({ filters, entities }) => {
+    const columns: CatalogTableColumnsFunc = ({ filters, entities }) => {
       return filters.kind?.value === 'component' && entities.length
         ? [
             { title: 'Foo', field: 'entity.foo' },

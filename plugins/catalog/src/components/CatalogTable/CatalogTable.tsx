@@ -53,7 +53,7 @@ import { CatalogTableRow } from './types';
  *
  * @public
  */
-export type ColumnsFunc = (
+export type CatalogTableColumnsFunc = (
   entityListContext: EntityListContextProps,
 ) => TableColumn<CatalogTableRow>[];
 
@@ -63,7 +63,7 @@ export type ColumnsFunc = (
  * @public
  */
 export interface CatalogTableProps {
-  columns?: TableColumn<CatalogTableRow>[] | ColumnsFunc;
+  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   actions?: TableProps<CatalogTableRow>['actions'];
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;

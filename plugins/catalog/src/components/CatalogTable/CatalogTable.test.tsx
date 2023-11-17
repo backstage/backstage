@@ -31,7 +31,7 @@ import {
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { act, fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
-import { CatalogTable, ColumnsFunc } from './CatalogTable';
+import { CatalogTable, CatalogTableColumnsFunc } from './CatalogTable';
 
 const entities: Entity[] = [
   {
@@ -381,7 +381,10 @@ describe('CatalogTable component', () => {
   });
 
   it('should render the label column with customised title and value as specified using function', async () => {
-    const columns: ColumnsFunc = ({ filters, entities: entities1 }) => {
+    const columns: CatalogTableColumnsFunc = ({
+      filters,
+      entities: entities1,
+    }) => {
       return filters.kind?.value === 'api' && entities1.length
         ? [
             CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
