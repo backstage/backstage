@@ -109,7 +109,9 @@ describe('github:environment:create examples', () => {
     expect(
       mockOctokit.rest.actions.createEnvironmentVariable,
     ).not.toHaveBeenCalled();
-    expect(mockOctokit.rest.actions.getEnvironmentPublicKey).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.getEnvironmentPublicKey,
+    ).not.toHaveBeenCalled();
     expect(
       mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
     ).not.toHaveBeenCalled();
@@ -141,7 +143,9 @@ describe('github:environment:create examples', () => {
     expect(
       mockOctokit.rest.actions.createEnvironmentVariable,
     ).not.toHaveBeenCalled();
-    expect(mockOctokit.rest.actions.getEnvironmentPublicKey).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.getEnvironmentPublicKey,
+    ).not.toHaveBeenCalled();
     expect(
       mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
     ).not.toHaveBeenCalled();
