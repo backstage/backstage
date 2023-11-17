@@ -11,6 +11,7 @@ import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { EntityRefPresentation } from '@backstage/plugin-catalog-react';
@@ -185,8 +186,10 @@ export const CatalogTable: {
 export interface CatalogTableProps {
   // (undocumented)
   actions?: TableProps<CatalogTableRow>['actions'];
+  // Warning: (ae-forgotten-export) The symbol "CatalogTableColumnsFunc" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
-  columns?: TableColumn<CatalogTableRow>[];
+  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
@@ -218,7 +221,7 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   actions?: TableProps<CatalogTableRow>['actions'];
   // (undocumented)
-  columns?: TableColumn<CatalogTableRow>[];
+  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
