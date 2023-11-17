@@ -6,9 +6,9 @@ category: Quality
 description: This plugin tracks the defined SLOs and Error Budgets for your Monitored services in Harness SRM Module.
 documentation: https://github.com/harness/backstage-plugins/tree/main/plugins/harness-srm
 iconUrl: https://static.harness.io/ng-static/images/favicon.png
-npmPackageName: '@harnessio/backstage-plugin-harness-srm'
+npmPackageName: "@harnessio/backstage-plugin-harness-srm"
 tags:
   - service-reliability-management
   - slo
   - sli
-addedDate: '2023-11-17'
+addedDate: "2023-11-17"
