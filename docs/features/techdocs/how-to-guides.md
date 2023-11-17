@@ -516,7 +516,7 @@ theme:
   font: false
 ```
 
-note: The addition "name material" is necessary. Otherwise it will not work
+> Note: The addition `name: material` is necessary. Otherwise it will not work
 
 ## How to enable iframes in TechDocs
 
