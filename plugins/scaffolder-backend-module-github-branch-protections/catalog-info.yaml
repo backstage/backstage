@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-scaffolder-backend-module-github-branch-protections
+  title: '@backstage/plugin-scaffolder-backend-module-github-branch-protections'
+  description: >-
+    A module for the scaffolder backend that lets you add wildcard branch protections to your github repositories.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers
