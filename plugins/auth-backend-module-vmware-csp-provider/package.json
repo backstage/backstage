@@ -28,15 +28,20 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
-    "jwt-decode": "^3.1.0",
+    "jose": "^4.6.0",
     "passport-oauth2": "^1.6.1"
   },
   "devDependencies": {
+    "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
-    "@types/jwt-decode": "^3.1.0"
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "msw": "^2.0.8",
+    "supertest": "^6.3.3"
   },
   "files": [
     "dist"

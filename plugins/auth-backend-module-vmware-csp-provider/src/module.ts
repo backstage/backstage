@@ -31,7 +31,7 @@ export const authModuleVmwareCspProvider = createBackendModule({
       deps: { providers: authProvidersExtensionPoint },
       async init({ providers }) {
         providers.registerProvider({
-          providerId: 'oauth2',
+          providerId: 'vmwareCloudServices',
           factory: createOAuthProviderFactory({
             authenticator: vmWareCSPAuthenticator,
             signInResolverFactories: {
