@@ -32,8 +32,7 @@ type Repository = {
   id: string;
 };
 /**
- * Creates a new action that initializes a git repository of the content in the workspace
- * and publishes it to GitHub.
+ * Creates a new action that can add wildcard branch protections to a GitHub repository.
  *
  * @public
  */

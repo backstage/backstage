@@ -15,7 +15,7 @@
  */
 
 /**
- * The github-branch-protections module for @backstage/plugin-scaffolder-backend.
+ * A module for the scaffolder backend that lets you set wildcard branch protections for GitHub repos
  *
  * @packageDocumentation
  */
