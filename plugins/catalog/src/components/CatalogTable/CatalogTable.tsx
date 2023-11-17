@@ -42,7 +42,8 @@ import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
-import { capitalize, isFunction } from 'lodash';
+import { capitalize } from 'lodash';
+import pluralize from 'pluralize';
 import React, { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
@@ -133,7 +134,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   }, [filters.kind?.value, entities]);
 
   const overrideColumns = useMemo(() => {
-    return isFunction(columns) ? columns(entityListContext) : columns;
+    return typeof columns === 'function' ? columns(entityListContext) : columns;
   }, [columns, entityListContext]);
 
   const showTypeColumn = filters.type === undefined;
