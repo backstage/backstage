@@ -127,7 +127,7 @@ const DetailsPage = () => {
                 {details?.name && (
                   <Button>
                     <a
-                      href={`${cloud_home_url}/home/dashboard?project=${details.name}&supportedpurview=project`}
+                      href={`${cloud_home_url}/home/dashboard?project=${details.projectId}&supportedpurview=project`}
                       target="_blank"
                       rel="noreferrer noopener"
                     >
@@ -138,7 +138,7 @@ const DetailsPage = () => {
                 {details?.name && (
                   <Button>
                     <a
-                      href={`${cloud_home_url}/logs/query?project=${details.name}&supportedpurview=project`}
+                      href={`${cloud_home_url}/logs/query?project=${details.projectId}&supportedpurview=project`}
                       target="_blank"
                       rel="noreferrer noopener"
                     >
