@@ -15,28 +15,21 @@
  */
 
 export interface Config {
-  /** Configuration options for the azure-devops-backend plugin
-   * @deprecated Use `integrations.azure` instead.
-   * @see https://backstage.io/docs/integrations/azure/locations
+  /**
+   * Configuration options for the azure-devops-backend plugin
    */
   azureDevOps: {
     /**
      * The hostname of the given Azure instance
-     * @deprecated Use `integrations.azure` instead.
-     * @see https://backstage.io/docs/integrations/azure/locations
      */
     host: string;
     /**
      * Token used to authenticate requests.
      * @visibility secret
-     * @deprecated Use `integrations.azure` instead.
-     * @see https://backstage.io/docs/integrations/azure/locations
      */
     token: string;
     /**
      * The organization of the given Azure instance
-     * @deprecated Use `integrations.azure` instead.
-     * @see https://backstage.io/docs/integrations/azure/locations
      */
     organization: string;
   };
