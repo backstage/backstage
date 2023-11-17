@@ -97,9 +97,9 @@ export const WorkflowRunDetails = (props: { entity: Entity }) => {
           <TableBody>
             <TableRow>
               <TableCell>
-                <Typography noWrap>Branch</Typography>
+                <Typography noWrap>Ref</Typography>
               </TableCell>
-              <TableCell>{details.value?.substitutions.BRANCH_NAME}</TableCell>
+              <TableCell>{details.value?.substitutions.REF_NAME}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>

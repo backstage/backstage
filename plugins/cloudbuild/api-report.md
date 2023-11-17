@@ -237,7 +237,7 @@ export interface StorageSource {
 // @public (undocumented)
 export interface Substitutions {
   // (undocumented)
-  BRANCH_NAME: string;
+  REF_NAME: string;
   // (undocumented)
   COMMIT_SHA: string;
   // (undocumented)

@@ -72,7 +72,7 @@ const generatedColumns: TableColumn[] = [
     title: 'Ref',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        {row.substitutions?.BRANCH_NAME}
+        {row.substitutions?.REF_NAME}
       </Typography>
     ),
   },
