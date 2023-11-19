@@ -26,6 +26,7 @@ export const runMkdocsServer = async (options: {
   stdoutLogFunc?: LogFunc;
   stderrLogFunc?: LogFunc;
   mkdocsConfigFileName?: string;
+  mkdocsConfigs?: string[];
 }): Promise<ChildProcess> => {
   const port = options.port ?? '8000';
   const useDocker = options.useDocker ?? true;
@@ -55,6 +56,7 @@ export const runMkdocsServer = async (options: {
         ...(options.mkdocsConfigFileName
           ? ['--config-file', options.mkdocsConfigFileName]
           : []),
+        ...(options.mkdocsConfigs ?? []),
       ],
       {
         stdoutLogFunc: options.stdoutLogFunc,
@@ -72,6 +74,7 @@ export const runMkdocsServer = async (options: {
       ...(options.mkdocsConfigFileName
         ? ['--config-file', options.mkdocsConfigFileName]
         : []),
+      ...(options.mkdocsConfigs ?? []),
     ],
     {
       stdoutLogFunc: options.stdoutLogFunc,
