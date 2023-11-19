@@ -294,6 +294,10 @@ export function registerCommands(program: Command) {
       '-c, --mkdocs-config-file-name <FILENAME>',
       'Mkdocs config file name',
     )
+    .option(
+      '--mkdocs-configs',
+      'Additional parameters to pass to containerized mkdocs',
+    )
     .hook('preAction', command => {
       if (
         command.opts().previewAppPort !== defaultPreviewAppPort &&
