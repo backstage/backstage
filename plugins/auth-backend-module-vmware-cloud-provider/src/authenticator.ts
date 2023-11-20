@@ -30,18 +30,22 @@ import {
   Strategy as OAuth2Strategy,
 } from 'passport-oauth2';
 
+/** @public */
 export interface vmwareCloudAuthenticatorContext {
   organizationId?: string;
   providerStrategy: OAuth2Strategy;
   helper: PassportOAuthAuthenticatorHelper;
 }
 
-type vmwarePassportProfile = PassportProfile & {
+/** @public */
+export type vmwarePassportProfile = PassportProfile & {
   organizationId?: string;
 };
 
 /**
  * VMware Cloud Authenticator to be used by `createOAuthProviderFactory`
+ *
+ * @public
  */
 export const vmwareCloudAuthenticator = createOAuthAuthenticator<
   vmwareCloudAuthenticatorContext,

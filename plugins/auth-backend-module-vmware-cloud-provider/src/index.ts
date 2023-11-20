@@ -20,6 +20,10 @@
  * @packageDocumentation
  */
 
-export { vmwareCloudAuthenticator } from './authenticator';
+export {
+  vmwareCloudAuthenticator,
+  type vmwareCloudAuthenticatorContext,
+  type vmwarePassportProfile,
+} from './authenticator';
 export { authModuleVmwareCloudProvider as default } from './module';
 export { vmwareCloudSignInResolvers } from './resolvers';

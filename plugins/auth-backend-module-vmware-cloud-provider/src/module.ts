@@ -23,6 +23,11 @@ import {
 import { vmwareCloudAuthenticator } from './authenticator';
 import { vmwareCloudSignInResolvers } from './resolvers';
 
+/**
+ * VMware Cloud Provider backend module for the auth plugin
+ *
+ * @public
+ */
 export const authModuleVmwareCloudProvider = createBackendModule({
   pluginId: 'auth',
   moduleId: 'vmware-cloud-provider',
@@ -31,7 +36,7 @@ export const authModuleVmwareCloudProvider = createBackendModule({
       deps: { providers: authProvidersExtensionPoint },
       async init({ providers }) {
         providers.registerProvider({
-          providerId: 'vmwareCloud',
+          providerId: 'vmwareCloudServices',
           factory: createOAuthProviderFactory({
             authenticator: vmwareCloudAuthenticator,
             signInResolverFactories: {
