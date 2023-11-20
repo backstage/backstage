@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
 import { xcmetricsApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import useMeasure from 'react-use/lib/useMeasure';
@@ -28,7 +28,7 @@ const CELL_SIZE = 12;
 const CELL_MARGIN = 4;
 const MAX_ROWS = 4;
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     marginTop: 8,
     display: 'flex',

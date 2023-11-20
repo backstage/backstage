@@ -16,7 +16,6 @@
 
 import { ApiEntity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Button,
@@ -33,7 +32,7 @@ import React, { useEffect } from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   fullHeightDialog: {
     height: 'calc(100% - 64px)',
   },

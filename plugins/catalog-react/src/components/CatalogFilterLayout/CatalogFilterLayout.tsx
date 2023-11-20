@@ -20,12 +20,12 @@ import {
   Button,
   Drawer,
   Grid,
+  Theme,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import { BackstageTheme } from '@backstage/theme';
 
 /** @public */
 export const Filters = (props: {
@@ -35,10 +35,10 @@ export const Filters = (props: {
     drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
   };
 }) => {
-  const isScreenSmallerThanBreakpoint = useMediaQuery<BackstageTheme>(theme =>
+  const isScreenSmallerThanBreakpoint = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down(props.options?.drawerBreakpoint ?? 'md'),
   );
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
   const [filterDrawerOpen, setFilterDrawerOpen] = useState<boolean>(false);
 
   return isScreenSmallerThanBreakpoint ? (

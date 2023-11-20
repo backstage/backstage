@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useEffect } from 'react';
 import {
   Content,
@@ -22,16 +23,14 @@ import {
 } from '@backstage/core-components';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
-
 import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 
-const useStyles = makeStyles<BackstageTheme>(() => ({
+const useStyles = makeStyles({
   markdown: {
     /** to make the styles for React Markdown not leak into the description */
     '& :first-child': {
@@ -41,7 +40,7 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
       marginBottom: 0,
     },
   },
-}));
+});
 
 /**
  * @alpha
