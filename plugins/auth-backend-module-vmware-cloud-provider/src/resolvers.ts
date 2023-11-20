@@ -23,11 +23,11 @@ import {
 } from '@backstage/plugin-auth-node';
 
 /**
- * Available sign-in resolvers for the VMWare CSP auth provider.
+ * Available sign-in resolvers for the VMware Cloud auth provider.
  *
  * @public
  */
-export namespace vmwareCSPSignInResolvers {
+export namespace vmwareCloudSignInResolvers {
   /**
    * Looks up the user by matching their profile email to the entity's profile email.
    * If that fails, sign in the user without associating with a catalog user.

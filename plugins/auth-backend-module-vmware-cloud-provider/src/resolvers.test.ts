@@ -22,12 +22,12 @@ import {
   SignInResolver,
 } from '@backstage/plugin-auth-node';
 
-import { vmwareCSPSignInResolvers } from './resolvers';
+import { vmwareCloudSignInResolvers } from './resolvers';
 
-describe('CSPResolver', () => {
+describe('vmwareCloudResolver', () => {
   let resolverContext: jest.Mocked<AuthResolverContext>;
   let signInInfo: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>;
-  let cspResolver: SignInResolver<OAuthAuthenticatorResult<PassportProfile>>;
+  let signInResolver: SignInResolver<OAuthAuthenticatorResult<PassportProfile>>;
 
   beforeEach(() => {
     resolverContext = {
@@ -48,12 +48,12 @@ describe('CSPResolver', () => {
       },
     };
 
-    cspResolver =
-      vmwareCSPSignInResolvers.profileEmailMatchingUserEntityEmail();
+    signInResolver =
+      vmwareCloudSignInResolvers.profileEmailMatchingUserEntityEmail();
   });
 
   it('looks up backstage identity by email', async () => {
-    const backstageIdentity = await cspResolver(signInInfo, resolverContext);
+    const backstageIdentity = await signInResolver(signInInfo, resolverContext);
 
     expect(backstageIdentity.token).toBe('backstageToken');
     expect(resolverContext.signInWithCatalogUser).toHaveBeenCalledWith({
@@ -68,7 +68,7 @@ describe('CSPResolver', () => {
       new NotFoundError('User not found'),
     );
 
-    const backstageIdentity = await cspResolver(signInInfo, resolverContext);
+    const backstageIdentity = await signInResolver(signInInfo, resolverContext);
 
     expect(backstageIdentity.token).toBe('defaultBackstageToken');
     expect(resolverContext.issueToken).toHaveBeenCalledWith({
@@ -83,7 +83,7 @@ describe('CSPResolver', () => {
     const error = new Error('bizarre');
     resolverContext.signInWithCatalogUser.mockRejectedValue(error);
 
-    return expect(cspResolver(signInInfo, resolverContext)).rejects.toThrow(
+    return expect(signInResolver(signInInfo, resolverContext)).rejects.toThrow(
       error,
     );
   });

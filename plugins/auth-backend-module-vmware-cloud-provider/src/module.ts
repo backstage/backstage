@@ -20,12 +20,12 @@ import {
   createOAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
 
-import { vmWareCSPAuthenticator } from './authenticator';
-import { vmwareCSPSignInResolvers } from './resolvers';
+import { vmwareCloudAuthenticator } from './authenticator';
+import { vmwareCloudSignInResolvers } from './resolvers';
 
-export const authModuleVmwareCspProvider = createBackendModule({
+export const authModuleVmwareCloudProvider = createBackendModule({
   pluginId: 'auth',
-  moduleId: 'vmware-csp-provider',
+  moduleId: 'vmware-cloud-provider',
   register(reg) {
     reg.registerInit({
       deps: { providers: authProvidersExtensionPoint },
@@ -33,9 +33,9 @@ export const authModuleVmwareCspProvider = createBackendModule({
         providers.registerProvider({
           providerId: 'vmwareCloudServices',
           factory: createOAuthProviderFactory({
-            authenticator: vmWareCSPAuthenticator,
+            authenticator: vmwareCloudAuthenticator,
             signInResolverFactories: {
-              ...vmwareCSPSignInResolvers,
+              ...vmwareCloudSignInResolvers,
               ...commonSignInResolvers,
             },
           }),

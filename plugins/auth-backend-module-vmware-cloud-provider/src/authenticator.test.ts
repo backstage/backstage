@@ -29,8 +29,8 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 import {
-  vmWareCSPAuthenticator,
-  vmWareCSPAuthenticatorContext,
+  vmwareCloudAuthenticator,
+  vmwareCloudAuthenticatorContext,
 } from './authenticator';
 
 jest.mock('uid2', () => jest.fn().mockReturnValue('sessionid'));
@@ -60,7 +60,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
   };
 
   let fakeSession: Record<string, any>;
-  let authenticatorCtx: vmWareCSPAuthenticatorContext;
+  let authenticatorCtx: vmwareCloudAuthenticatorContext;
 
   beforeAll(async () => {
     idToken = await new SignJWT(signInInfo)
@@ -85,7 +85,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
       ),
     );
 
-    authenticatorCtx = vmWareCSPAuthenticator.initialize({
+    authenticatorCtx = vmwareCloudAuthenticator.initialize({
       callbackUrl: 'http://callbackUrl',
       config: new ConfigReader({
         clientId: 'placeholderClientId',
@@ -97,7 +97,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
   describe('#initialize', () => {
     it('fails when organizationId is not configured', () => {
       return expect(() =>
-        vmWareCSPAuthenticator.initialize({
+        vmwareCloudAuthenticator.initialize({
           callbackUrl: 'http://callbackUrl',
           config: new ConfigReader({
             clientId: 'placeholderClientId',
@@ -122,7 +122,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('redirects to the Cloud Services Console consent page', async () => {
-      const startResponse = await vmWareCSPAuthenticator.start(
+      const startResponse = await vmwareCloudAuthenticator.start(
         startRequest,
         authenticatorCtx,
       );
@@ -134,7 +134,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('passes client ID from config', async () => {
-      const startResponse = await vmWareCSPAuthenticator.start(
+      const startResponse = await vmwareCloudAuthenticator.start(
         startRequest,
         authenticatorCtx,
       );
@@ -144,7 +144,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('passes organizationId from config', async () => {
-      const startResponse = await vmWareCSPAuthenticator.start(
+      const startResponse = await vmwareCloudAuthenticator.start(
         startRequest,
         authenticatorCtx,
       );
@@ -154,7 +154,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('passes callback URL', async () => {
-      const startResponse = await vmWareCSPAuthenticator.start(
+      const startResponse = await vmwareCloudAuthenticator.start(
         startRequest,
         authenticatorCtx,
       );
@@ -164,7 +164,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('requests scopes for ID and refresh token', async () => {
-      const startResponse = await vmWareCSPAuthenticator.start(
+      const startResponse = await vmwareCloudAuthenticator.start(
         startRequest,
         authenticatorCtx,
       );
@@ -174,7 +174,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('generates PKCE challenge', async () => {
-      const startResponse = await vmWareCSPAuthenticator.start(
+      const startResponse = await vmwareCloudAuthenticator.start(
         startRequest,
         authenticatorCtx,
       );
@@ -185,7 +185,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('stores PKCE verifier in session', async () => {
-      await vmWareCSPAuthenticator.start(startRequest, authenticatorCtx);
+      await vmwareCloudAuthenticator.start(startRequest, authenticatorCtx);
 
       expect(
         fakeSession['oauth2:console.cloud.vmware.com'].state.code_verifier,
@@ -194,7 +194,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
 
     it('fails when request has no session', () => {
       return expect(
-        vmWareCSPAuthenticator.start(
+        vmwareCloudAuthenticator.start(
           {
             state: encodeOAuthState(oAuthState),
             req: {
@@ -207,7 +207,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('adds session ID handle to state param', async () => {
-      const startResponse = await vmWareCSPAuthenticator.start(
+      const startResponse = await vmwareCloudAuthenticator.start(
         startRequest,
         authenticatorCtx,
       );
@@ -264,7 +264,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     it('stores refresh token in cookie', async () => {
       const {
         session: { refreshToken },
-      } = await vmWareCSPAuthenticator.authenticate(
+      } = await vmwareCloudAuthenticator.authenticate(
         authenticateRequest,
         authenticatorCtx,
       );
@@ -273,7 +273,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('responds with ID token', async () => {
-      const { session } = await vmWareCSPAuthenticator.authenticate(
+      const { session } = await vmwareCloudAuthenticator.authenticate(
         authenticateRequest,
         authenticatorCtx,
       );
@@ -282,15 +282,16 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('default transform decodes ID token', async () => {
-      const result = await vmWareCSPAuthenticator.authenticate(
+      const result = await vmwareCloudAuthenticator.authenticate(
         authenticateRequest,
         authenticatorCtx,
       );
 
-      const { profile } = await vmWareCSPAuthenticator.defaultProfileTransform(
-        result,
-        resolverContext,
-      );
+      const { profile } =
+        await vmwareCloudAuthenticator.defaultProfileTransform(
+          result,
+          resolverContext,
+        );
 
       expect(profile).toStrictEqual({
         email: signInInfo.email,
@@ -299,7 +300,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('default transform fails if claims are missing', async () => {
-      authenticatorCtx = vmWareCSPAuthenticator.initialize({
+      authenticatorCtx = vmwareCloudAuthenticator.initialize({
         callbackUrl: 'http://callbackUrl',
         config: new ConfigReader({
           clientId: 'placeholderClientId',
@@ -307,13 +308,16 @@ describe('VMwareCloudServicesAuthenticator', () => {
         }),
       });
 
-      const result = await vmWareCSPAuthenticator.authenticate(
+      const result = await vmwareCloudAuthenticator.authenticate(
         authenticateRequest,
         authenticatorCtx,
       );
 
       return expect(
-        vmWareCSPAuthenticator.defaultProfileTransform(result, resolverContext),
+        vmwareCloudAuthenticator.defaultProfileTransform(
+          result,
+          resolverContext,
+        ),
       ).rejects.toThrow('ID token organizationId mismatch');
     });
 
@@ -333,13 +337,16 @@ describe('VMwareCloudServicesAuthenticator', () => {
         ),
       );
 
-      const result = await vmWareCSPAuthenticator.authenticate(
+      const result = await vmwareCloudAuthenticator.authenticate(
         authenticateRequest,
         authenticatorCtx,
       );
 
       return expect(
-        vmWareCSPAuthenticator.defaultProfileTransform(result, resolverContext),
+        vmwareCloudAuthenticator.defaultProfileTransform(
+          result,
+          resolverContext,
+        ),
       ).rejects.toThrow(
         'ID token missing required claims: email, given_name, family_name',
       );
@@ -347,7 +354,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
 
     it('fails when request has no session', () => {
       return expect(
-        vmWareCSPAuthenticator.authenticate(
+        vmwareCloudAuthenticator.authenticate(
           {
             req: {
               query: {},
@@ -360,7 +367,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
 
     it('fails when request has no authorization code', () => {
       return expect(
-        vmWareCSPAuthenticator.authenticate(
+        vmwareCloudAuthenticator.authenticate(
           {
             req: {
               query: {},
@@ -383,7 +390,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('state param is compatible', async () => {
-      const startResponse = await vmWareCSPAuthenticator.start(
+      const startResponse = await vmwareCloudAuthenticator.start(
         {
           req: {
             query: {},
@@ -394,7 +401,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
         authenticatorCtx,
       );
       const { searchParams } = new URL(startResponse.url);
-      const { session } = await vmWareCSPAuthenticator.authenticate(
+      const { session } = await vmwareCloudAuthenticator.authenticate(
         {
           req: {
             query: {
@@ -441,7 +448,7 @@ describe('VMwareCloudServicesAuthenticator', () => {
     it('gets new refresh token', async () => {
       const {
         session: { refreshToken },
-      } = await vmWareCSPAuthenticator.refresh(
+      } = await vmwareCloudAuthenticator.refresh(
         refreshRequest,
         authenticatorCtx,
       );
@@ -450,15 +457,16 @@ describe('VMwareCloudServicesAuthenticator', () => {
     });
 
     it('default transform decodes ID token', async () => {
-      const result = await vmWareCSPAuthenticator.refresh(
+      const result = await vmwareCloudAuthenticator.refresh(
         refreshRequest,
         authenticatorCtx,
       );
 
-      const { profile } = await vmWareCSPAuthenticator.defaultProfileTransform(
-        result,
-        resolverContext,
-      );
+      const { profile } =
+        await vmwareCloudAuthenticator.defaultProfileTransform(
+          result,
+          resolverContext,
+        );
 
       expect(profile).toStrictEqual({
         email: signInInfo.email,

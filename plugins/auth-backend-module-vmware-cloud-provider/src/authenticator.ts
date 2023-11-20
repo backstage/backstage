@@ -30,22 +30,22 @@ import {
   Strategy as OAuth2Strategy,
 } from 'passport-oauth2';
 
-export interface vmWareCSPAuthenticatorContext {
+export interface vmwareCloudAuthenticatorContext {
   organizationId?: string;
   providerStrategy: OAuth2Strategy;
   helper: PassportOAuthAuthenticatorHelper;
 }
 
-type CSPPassportProfile = PassportProfile & {
+type vmwarePassportProfile = PassportProfile & {
   organizationId?: string;
 };
 
 /**
- * VMWare CSP Authenticator to be used by `createOAuthProviderFactory`
+ * VMware Cloud Authenticator to be used by `createOAuthProviderFactory`
  */
-export const vmWareCSPAuthenticator = createOAuthAuthenticator<
-  vmWareCSPAuthenticatorContext,
-  CSPPassportProfile
+export const vmwareCloudAuthenticator = createOAuthAuthenticator<
+  vmwareCloudAuthenticatorContext,
+  vmwarePassportProfile
 >({
   defaultProfileTransform: async input => {
     if (!input.session.idToken) {
@@ -120,7 +120,7 @@ export const vmWareCSPAuthenticator = createOAuthAuthenticator<
       },
     );
 
-    // Both VMWare & OAuth2Strategy fight over control of the state when PKCE is on, thus this hack
+    // Both VMware & OAuth2Strategy fight over control of the state when PKCE is on, thus this hack
     const pkceSessionStore = Object.create(
       (providerStrategy as any)._stateStore,
     );
@@ -197,7 +197,7 @@ export const vmWareCSPAuthenticator = createOAuthAuthenticator<
       fullProfile: {
         ...result.fullProfile,
         organizationId: ctx.organizationId,
-      } as CSPPassportProfile,
+      } as vmwarePassportProfile,
     }));
   },
 
@@ -207,7 +207,7 @@ export const vmWareCSPAuthenticator = createOAuthAuthenticator<
       fullProfile: {
         ...result.fullProfile,
         organizationId: ctx.organizationId,
-      } as CSPPassportProfile,
+      } as vmwarePassportProfile,
     }));
   },
 });

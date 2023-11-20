@@ -4917,9 +4917,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-vmware-csp-provider@workspace:plugins/auth-backend-module-vmware-csp-provider":
+"@backstage/plugin-auth-backend-module-vmware-cloud-provider@workspace:plugins/auth-backend-module-vmware-cloud-provider":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-auth-backend-module-vmware-csp-provider@workspace:plugins/auth-backend-module-vmware-csp-provider"
+  resolution: "@backstage/plugin-auth-backend-module-vmware-cloud-provider@workspace:plugins/auth-backend-module-vmware-cloud-provider"
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": "workspace:^"
