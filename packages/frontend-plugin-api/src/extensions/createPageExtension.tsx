@@ -15,7 +15,7 @@
  */
 
 import React, { lazy } from 'react';
-import { ExtensionError, ExtensionBoundary } from '../components';
+import { ExtensionBoundary } from '../components';
 import { createSchemaFromZod, PortableSchema } from '../schema';
 import {
   coreExtensionData,
@@ -79,10 +79,7 @@ export function createPageExtension<
       const ExtensionComponent = lazy(() =>
         options
           .loader({ config, inputs })
-          .then(element => ({ default: () => element }))
-          .catch(error => ({
-            default: () => <ExtensionError error={error} />,
-          })),
+          .then(element => ({ default: () => element })),
       );
 
       return {

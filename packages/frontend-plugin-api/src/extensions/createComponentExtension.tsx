@@ -23,7 +23,7 @@ import {
 } from '../wiring';
 import { Expand } from '../types';
 import { PortableSchema } from '../schema';
-import { ExtensionError, ExtensionBoundary, ComponentRef } from '../components';
+import { ExtensionBoundary, ComponentRef } from '../components';
 
 /** @public */
 export function createComponentExtension<
@@ -54,10 +54,7 @@ export function createComponentExtension<
       const ExtensionComponent = lazy(() =>
         options
           .component({ config, inputs })
-          .then(component => ({ default: component }))
-          .catch(error => ({
-            default: () => <ExtensionError error={error} />,
-          })),
+          .then(component => ({ default: component })),
       );
 
       return {

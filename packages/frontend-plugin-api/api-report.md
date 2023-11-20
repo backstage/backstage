@@ -696,9 +696,6 @@ export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
 };
 
 // @public (undocumented)
-export function ExtensionError(props: { error: Error }): React_2.JSX.Element;
-
-// @public (undocumented)
 export interface ExtensionInput<
   TExtensionData extends AnyExtensionDataMap,
   TConfig extends {
