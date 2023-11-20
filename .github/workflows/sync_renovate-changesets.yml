@@ -26,7 +26,7 @@ jobs:
           git config --global user.email noreply@backstage.io
           git config --global user.name 'Github changeset workflow'
       - name: Generate changeset
-        uses: actions/github-script@v7.0.0
+        uses: actions/github-script@v7.0.1
         with:
           script: |
             const { promises: fs } = require("fs");
