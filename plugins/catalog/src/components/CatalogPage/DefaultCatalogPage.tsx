@@ -44,6 +44,8 @@ import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { catalogTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
+import { CatalogTableColumnsFunc } from '../CatalogTable/types';
+
 /** @internal */
 export interface BaseCatalogPageProps {
   filters: ReactNode;
@@ -86,7 +88,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
  */
 export interface DefaultCatalogPageProps {
   initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<CatalogTableRow>[];
+  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   actions?: TableProps<CatalogTableRow>['actions'];
   initialKind?: string;
   tableOptions?: TableProps<CatalogTableRow>['options'];

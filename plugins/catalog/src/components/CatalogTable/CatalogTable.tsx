@@ -45,7 +45,7 @@ import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
 import React, { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
-import { CatalogTableRow } from './types';
+import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 
 /**
  * Props for {@link CatalogTable}.
@@ -53,7 +53,7 @@ import { CatalogTableRow } from './types';
  * @public
  */
 export interface CatalogTableProps {
-  columns?: TableColumn<CatalogTableRow>[];
+  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   actions?: TableProps<CatalogTableRow>['actions'];
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
@@ -76,51 +76,62 @@ const refCompare = (a: Entity, b: Entity) => {
   return toRef(a).localeCompare(toRef(b));
 };
 
+const defaultColumnsFunc: CatalogTableColumnsFunc = ({ filters, entities }) => {
+  return [
+    columnFactories.createTitleColumn({ hidden: true }),
+    columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
+    ...createEntitySpecificColumns(),
+    columnFactories.createMetadataDescriptionColumn(),
+    columnFactories.createTagsColumn(),
+  ];
+
+  function createEntitySpecificColumns(): TableColumn<CatalogTableRow>[] {
+    const baseColumns = [
+      columnFactories.createSystemColumn(),
+      columnFactories.createOwnerColumn(),
+      columnFactories.createSpecTypeColumn(),
+      columnFactories.createSpecLifecycleColumn(),
+    ];
+    switch (filters.kind?.value) {
+      case 'user':
+        return [];
+      case 'domain':
+      case 'system':
+        return [columnFactories.createOwnerColumn()];
+      case 'group':
+      case 'template':
+        return [columnFactories.createSpecTypeColumn()];
+      case 'location':
+        return [
+          columnFactories.createSpecTypeColumn(),
+          columnFactories.createSpecTargetsColumn(),
+        ];
+      default:
+        return entities.every(entity => entity.metadata.namespace === 'default')
+          ? baseColumns
+          : [...baseColumns, columnFactories.createNamespaceColumn()];
+    }
+  }
+};
+
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
-  const { columns, actions, tableOptions, subtitle, emptyContent } = props;
+  const {
+    columns = defaultColumnsFunc,
+    actions,
+    tableOptions,
+    subtitle,
+    emptyContent,
+  } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
-  const { loading, error, entities, filters } = useEntityList();
+  const entityListContext = useEntityList();
+  const { loading, error, entities, filters } = entityListContext;
 
-  const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
-    return [
-      columnFactories.createTitleColumn({ hidden: true }),
-      columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
-      ...createEntitySpecificColumns(),
-      columnFactories.createMetadataDescriptionColumn(),
-      columnFactories.createTagsColumn(),
-    ];
-
-    function createEntitySpecificColumns(): TableColumn<CatalogTableRow>[] {
-      const baseColumns = [
-        columnFactories.createSystemColumn(),
-        columnFactories.createOwnerColumn(),
-        columnFactories.createSpecTypeColumn(),
-        columnFactories.createSpecLifecycleColumn(),
-      ];
-      switch (filters.kind?.value) {
-        case 'user':
-          return [];
-        case 'domain':
-        case 'system':
-          return [columnFactories.createOwnerColumn()];
-        case 'group':
-        case 'template':
-          return [columnFactories.createSpecTypeColumn()];
-        case 'location':
-          return [
-            columnFactories.createSpecTypeColumn(),
-            columnFactories.createSpecTargetsColumn(),
-          ];
-        default:
-          return entities.every(
-            entity => entity.metadata.namespace === 'default',
-          )
-            ? baseColumns
-            : [...baseColumns, columnFactories.createNamespaceColumn()];
-      }
-    }
-  }, [filters.kind?.value, entities]);
+  const tableColumns = useMemo(
+    () =>
+      typeof columns === 'function' ? columns(entityListContext) : columns,
+    [columns, entityListContext],
+  );
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
@@ -228,7 +239,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
     };
   });
 
-  const typeColumn = (columns || defaultColumns).find(c => c.title === 'Type');
+  const typeColumn = tableColumns.find(c => c.title === 'Type');
   if (typeColumn) {
     typeColumn.hidden = !showTypeColumn;
   }
@@ -242,7 +253,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   return (
     <Table<CatalogTableRow>
       isLoading={loading}
-      columns={columns || defaultColumns}
+      columns={tableColumns}
       options={{
         paging: showPagination,
         pageSize: 20,
