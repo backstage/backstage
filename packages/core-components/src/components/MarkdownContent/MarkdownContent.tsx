@@ -18,13 +18,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import ReactMarkdown, { Options } from 'react-markdown';
 import gfm from 'remark-gfm';
 import React from 'react';
-import { BackstageTheme } from '@backstage/theme';
 import { CodeSnippet } from '../CodeSnippet';
 import { HeadingProps } from 'react-markdown/lib/ast-to-react';
 
 export type MarkdownContentClassKey = 'markdown';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     markdown: {
       '& table': {

@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstagePalette, BackstageTheme } from '@backstage/theme';
+
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Palette } from '@material-ui/core/styles/createPalette';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Circle } from 'rc-progress';
 import React, { useEffect, useState } from 'react';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     root: {
       position: 'relative',
@@ -51,7 +52,7 @@ export type GaugeProps = {
 };
 
 export type GaugePropsGetColorOptions = {
-  palette: BackstagePalette;
+  palette: Palette;
   value: number;
   max: number;
 };
@@ -78,11 +79,10 @@ export const getProgressColor: GaugePropsGetColor = ({
 
 /**
  * Circular Progress Bar
- *
  */
 export function Gauge(props: GaugeProps) {
   const classes = useStyles(props);
-  const { palette } = useTheme<BackstageTheme>();
+  const { palette } = useTheme();
   const [hoverRef, setHoverRef] = useState<HTMLDivElement | null>(null);
   const [open, setOpen] = useState(false);
   const { value, max, tooltipDelay, tooltipText } = {

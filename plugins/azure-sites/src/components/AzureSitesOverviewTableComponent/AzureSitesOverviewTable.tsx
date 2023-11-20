@@ -39,7 +39,6 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { DateTime } from 'luxon';
 import { useApi } from '@backstage/core-plugin-api';
 import { azureSiteApiRef } from '../../api';
-import { BackstageTheme } from '@backstage/theme';
 
 type States = 'Waiting' | 'Running' | 'Paused' | 'Failed' | 'Stopped';
 type Kinds = 'app' | 'functionapp';
@@ -50,7 +49,7 @@ const State = ({ value }: { value: States }) => {
       common: { black },
       status: { ok, error },
     },
-  } = useTheme<BackstageTheme>();
+  } = useTheme();
 
   const colorMap = {
     Waiting: '#dcbc21',

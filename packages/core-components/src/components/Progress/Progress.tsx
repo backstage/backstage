@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
+
 import Box from '@material-ui/core/Box';
 import LinearProgress, {
   LinearProgressProps,
@@ -22,7 +22,7 @@ import { useTheme } from '@material-ui/core/styles';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 
 export function Progress(props: PropsWithChildren<LinearProgressProps>) {
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {

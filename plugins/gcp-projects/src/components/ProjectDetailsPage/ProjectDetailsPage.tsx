@@ -23,7 +23,6 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  Theme,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
@@ -43,7 +42,7 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: 720,
     margin: theme.spacing(2),

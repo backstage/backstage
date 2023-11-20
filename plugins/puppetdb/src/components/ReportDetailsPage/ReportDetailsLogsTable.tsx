@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { puppetDbApiRef, PuppetDbReportLog } from '../../api';
@@ -24,13 +25,12 @@ import {
 import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
 
 type ReportLogsTableProps = {
   hash: string;
 };
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   empty: {
     padding: theme.spacing(2),
     display: 'flex',

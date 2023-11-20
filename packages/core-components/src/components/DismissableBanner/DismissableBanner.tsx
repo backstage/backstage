@@ -19,7 +19,6 @@ import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import useObservable from 'react-use/lib/useObservable';
 import classNames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
@@ -42,7 +41,7 @@ export type DismissableBannerClassKey =
 export type DismissbleBannerClassKey = DismissableBannerClassKey;
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+  theme => ({
     root: {
       padding: theme.spacing(0),
       marginBottom: theme.spacing(0),

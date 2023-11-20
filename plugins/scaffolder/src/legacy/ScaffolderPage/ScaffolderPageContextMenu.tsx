@@ -15,7 +15,6 @@
  */
 
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -35,7 +34,7 @@ import {
   scaffolderListTaskRouteRef,
 } from '../../routes';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   button: {
     color: theme.page.fontColor,
   },

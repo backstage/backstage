@@ -18,13 +18,13 @@ import React from 'react';
 import { SentryIssue } from '../../api';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
 import { Link } from '@backstage/core-components';
 
 function stripText(text: string, maxLength: number) {
   return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 }
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+
+const useStyles = makeStyles(theme => ({
   root: {
     minWidth: 260,
     position: 'relative',

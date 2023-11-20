@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   IconComponent,
   useAnalytics,
   useElementFilter,
 } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import Badge from '@material-ui/core/Badge';
 import Box from '@material-ui/core/Box';
 import { makeStyles, styled, Theme } from '@material-ui/core/styles';
@@ -90,7 +90,7 @@ export type SidebarItemClassKey =
   | 'selected';
 
 const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
-  makeStyles<BackstageTheme>(
+  makeStyles(
     theme => ({
       root: {
         color: theme.palette.navigation.color,
@@ -501,7 +501,7 @@ const SidebarItemWithSubmenu = ({
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
   const isActive = useLocationMatch(children, location);
-  const isSmallScreen = useMediaQuery<BackstageTheme>((theme: BackstageTheme) =>
+  const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
 
@@ -726,7 +726,7 @@ export const SidebarExpandButton = () => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useMemoStyles(sidebarConfig);
   const { isOpen, setOpen } = useSidebarOpenState();
-  const isSmallScreen = useMediaQuery<BackstageTheme>(
+  const isSmallScreen = useMediaQuery<Theme>(
     theme => theme.breakpoints.down('md'),
     { noSsr: true },
   );

@@ -27,7 +27,7 @@ import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
 import { useApi } from '@backstage/core-plugin-api';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 
-import { makeStyles, Theme, Typography } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 
 /**
  * Props customizing the <FeaturedDocsCard/> component.
@@ -47,7 +47,7 @@ export type FeaturedDocsCardProps = {
   subLinkText?: string;
 };
 
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles(
   theme => ({
     docDescription: {
       fontSize: theme.typography.body1.fontSize,
