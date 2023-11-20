@@ -57,6 +57,15 @@ export const ReviewState = (props: ReviewStateProps) => {
           if (definitionInSchema['ui:widget'] === 'password') {
             return [key, '******'];
           }
+
+          if (definitionInSchema.enum && definitionInSchema.enumNames) {
+            return [
+              key,
+              definitionInSchema.enumNames[
+                definitionInSchema.enum.indexOf(value)
+              ] || value,
+            ];
+          }
         }
       }
       return [key, value];
