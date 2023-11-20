@@ -18,7 +18,7 @@ export interface Config {
   auth?: {
     providers?: {
       /** @visibility frontend */
-      vmwareCloudServices?: {
+      vmwareCloud?: {
         [authEnv: string]: {
           clientId: string;
           organizationId: string;
