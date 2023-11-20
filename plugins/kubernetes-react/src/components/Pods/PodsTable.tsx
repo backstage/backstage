@@ -181,7 +181,7 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
     <div style={tableStyle}>
       <Table
         options={{ paging: true, search: false, emptyRowsWhenPaging: false }}
-        // It was observed that in some instances the pod "sideboard" closes when new data (like CPU usage) is available and the table reloads.
+        // It was observed that in some instances the pod drawer closes when new data (like CPU usage) is available and the table reloads.
         // Mapping the metadata UID to the tables ID fixes this problem.
         data={
           (pods as Pod[]).map((pod: Pod) => ({
