@@ -73,7 +73,7 @@ export async function createRouter(
       if (typeof entityRef !== 'string') {
         throw new InputError('Invalid entityRef, not a string');
       }
-      const entity = await catalogApi.getEntityByRef(entityRef);
+      const entity = await catalogApi.getEntityByRef(entityRef, { token });
 
       if (entity) {
         const annotationName =
@@ -131,7 +131,7 @@ export async function createRouter(
       if (typeof entityRef !== 'string') {
         throw new InputError('Invalid entityRef, not a string');
       }
-      const entity = await catalogApi.getEntityByRef(entityRef);
+      const entity = await catalogApi.getEntityByRef(entityRef, { token });
 
       if (entity) {
         const annotationName =
