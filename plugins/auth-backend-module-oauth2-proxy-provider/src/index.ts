@@ -20,3 +20,8 @@
  * @packageDocumentation
  */
 export { authModuleOauth2ProxyProvider } from './module';
+export {
+  oauth2ProxyAuthenticator,
+  OAUTH2_PROXY_JWT_HEADER,
+} from './authenticator';
+export type { OAuth2ProxyResult } from './types';
