@@ -52,7 +52,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
-    "@google-cloud/container": "^4.15.0",
+    "@google-cloud/container": "^5.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
