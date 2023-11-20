@@ -67,6 +67,11 @@ export type TemplateListPageProps = {
     actions?: boolean;
     tasks?: boolean;
   };
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
 };
 
 const defaultGroup: TemplateGroupFilter = {
@@ -93,6 +98,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     TemplateCardComponent,
     groups: givenGroups = [],
     templateFilter,
+    headerOptions,
   } = props;
   const navigate = useNavigate();
   const editorLink = useRouteRef(editRouteRef);
@@ -151,11 +157,12 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
 
   return (
     <EntityListProvider>
-      <Page themeId="website">
+      <Page themeId="home">
         <Header
           pageTitleOverride="Create a new component"
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
+          {...headerOptions}
         >
           <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
         </Header>
