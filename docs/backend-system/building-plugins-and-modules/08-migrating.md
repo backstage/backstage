@@ -88,7 +88,7 @@ backend.add(import('@backstage/plugin-kubernetes-backend'));
 
 There's one thing missing that those sharp eyed readers might have noticed: the `clusterSupplier` option is missing from the original plugin. Let's add it and discuss the alternatives.
 
-One alternative is to make it possible to build the cluster supplier using static configuration. It could for example be that there are a selection of built-in implementations to choose from, or that the logic for how the `ClusterSupplier` is supposed to function is all determined by configuration, or a combination of the two. Using static configuration for customization is always the preferred option whenever it's possible. In this case, we could for example imagine that we would be able to configure our cluster supplier like this:
+One alternative is to make it possible to build the cluster supplier using static configuration. It could for example be that there is a selection of built-in implementations to choose from, or that the logic for how the `ClusterSupplier` is supposed to function is all determined by configuration, or a combination of the two. Using static configuration for customization is always the preferred option whenever it's possible. In this case, we could for example imagine that we would be able to configure our cluster supplier like this:
 
 ```ts
 /* omitted imports but they remain the same as above */
@@ -124,7 +124,7 @@ There are however many types of customizations that are not possible to do with 
 
 The new [extension points](../architecture/05-extension-points.md) API allows [modules](../architecture/06-modules.md) to add functionality into the backend plugin itself, in this case an additional `ClusterSupplier`. Let's look at how we could add support for installing custom suppliers using an extension point. This will allow integrators to build their own internal module with a custom `ClusterSupplier` implementation.
 
-First we'll go ahead and create a `@backstage/plugin-kubernetes-node` package where we can defined our extension point. A separate package is used to avoid direct dependencies on the plugin package itself. With the new package created, we defined the extension point like this:
+First we'll go ahead and create a `@backstage/plugin-kubernetes-node` package where we can define our extension point. A separate package is used to avoid direct dependencies on the plugin package itself. With the new package created, we define the extension point like this:
 
 ```ts
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
