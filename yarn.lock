@@ -38462,18 +38462,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resize-detector@npm:^8.0.4":
-  version: 8.0.4
-  resolution: "react-resize-detector@npm:8.0.4"
-  dependencies:
-    lodash: ^4.17.21
-  peerDependencies:
-    react: ^16.0.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: f53a99cc5413844a6fc2a713b0b1094d23947897c14ab64481938632f4e77fadded52d91a6619055abf6240c7cacd6cc7dd492ea866639b302f81df680709d45
-  languageName: node
-  linkType: hard
-
 "react-router-beta@npm:react-router@6.0.0-beta.0, react-router@npm:6.0.0-beta.0":
   version: 6.0.0-beta.0
   resolution: "react-router@npm:6.0.0-beta.0"
@@ -38557,7 +38545,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-smooth@npm:^2.0.4":
+"react-smooth@npm:^2.0.5":
   version: 2.0.5
   resolution: "react-smooth@npm:2.0.5"
   dependencies:
@@ -38925,15 +38913,14 @@ __metadata:
   linkType: hard
 
 "recharts@npm:^2.5.0":
-  version: 2.9.3
-  resolution: "recharts@npm:2.9.3"
+  version: 2.10.1
+  resolution: "recharts@npm:2.10.1"
   dependencies:
-    classnames: ^2.2.5
+    clsx: ^2.0.0
     eventemitter3: ^4.0.1
     lodash: ^4.17.19
     react-is: ^16.10.2
-    react-resize-detector: ^8.0.4
-    react-smooth: ^2.0.4
+    react-smooth: ^2.0.5
     recharts-scale: ^0.4.4
     tiny-invariant: ^1.3.1
     victory-vendor: ^36.6.8
@@ -38941,7 +38928,7 @@ __metadata:
     prop-types: ^15.6.0
     react: ^16.0.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: e08bcc76a1ec2ea0cbcfcf8f57013acd11fb5ac44f40f43bb208880a8c410a9bc8d0eb421e8d1a5943eb0899729ae136a579a8008c720cb2e18367771edd86d7
+  checksum: f1ee4dfe000c18f3c74855ea559e87d805c86f3b127441684187416ff4d22df4f92a6298259dfd9869d355d03291516ac75aaa6620f623b7b79c53f48fe6c9fb
   languageName: node
   linkType: hard
 
