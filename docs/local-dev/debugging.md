@@ -47,3 +47,32 @@ The resulting log should now have more information available for debugging:
 [1] 2023-04-12T00:51:44.118Z search info Collating documents for tools succeeded type=plugin documentType=tools
 [1] 2023-04-12T00:51:44.119Z backstage debug task: search_index_tools will next occur around 2023-04-11T21:01:44.118-04:00 type=taskManager task=search_index_tools
 ```
+
+## Debugger
+
+### VSCode
+
+In your `launch.json`, add a new entry with the following,
+
+```jsonc
+{
+    // Can't get normal logs
+    "name": "Start Backend",
+    "request": "launch",
+    "env": {
+        "LOG_LEVEL": "DEBUG"
+    },
+    "args": [
+        "package",
+        "start"
+    ],
+    "cwd": "${workspaceFolder}/packages/backend",
+    "program": "${workspaceFolder}/node_modules/.bin/backstage-cli",
+    "skipFiles": [
+        "<node_internals>/**"
+    ],
+    "type": "node"
+},
+```
+
+You may notice that the normal logs mentioned above do not get logged, this is an issue with the logging library we're using, `winston`, and is not easily solved. See [this thread](https://github.com/winstonjs/winston/issues/1544) for more information.
