@@ -102,11 +102,11 @@ async function createBackendWithSession<TExtensionPoints extends any[]>(
       const app = express();
 
       const middleware = MiddlewareFactory.create({ config, logger });
-      const secret = 'secret';
+      const testSecret = 'secret';
 
       app.use(
         session({
-          secret,
+          secret: testSecret,
           resave: false,
           saveUninitialized: false,
         }),
@@ -186,7 +186,7 @@ describe('authModuleVmwareCloudProvider', () => {
             },
             auth: {
               providers: {
-                vmwareCloudServices: {
+                vmwareCloud: {
                   development: {
                     clientId: 'placeholderClientId',
                     organizationId: 'orgId',
@@ -203,15 +203,13 @@ describe('authModuleVmwareCloudProvider', () => {
 
     const agent = request.agent(server);
 
-    const res = await agent.get(
-      '/api/auth/vmwareCloudServices/start?env=development',
-    );
+    const res = await agent.get('/api/auth/vmwareCloud/start?env=development');
 
     expect(res.status).toEqual(302);
 
-    const nonceCookie = agent.jar.getCookie('vmwareCloudServices-nonce', {
+    const nonceCookie = agent.jar.getCookie('vmwareCloud-nonce', {
       domain: 'localhost',
-      path: '/api/auth/vmwareCloudServices/handler',
+      path: '/api/auth/vmwareCloud/handler',
       script: false,
       secure: false,
     });
@@ -223,7 +221,7 @@ describe('authModuleVmwareCloudProvider', () => {
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
       response_type: 'code',
       client_id: 'placeholderClientId',
-      redirect_uri: `http://localhost:${server.port()}/api/auth/vmwareCloudServices/handler/frame`,
+      redirect_uri: `http://localhost:${server.port()}/api/auth/vmwareCloud/handler/frame`,
       code_challenge: expect.any(String),
       state: expect.any(String),
       scope: 'openid offline_access',
