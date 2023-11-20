@@ -105,9 +105,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/explorer@npm:^2.0.0":
-  version: 2.0.2
-  resolution: "@apollo/explorer@npm:2.0.2"
+"@apollo/explorer@npm:^3.0.0":
+  version: 3.6.0
+  resolution: "@apollo/explorer@npm:3.6.0"
   dependencies:
     "@types/whatwg-mimetype": ^3.0.0
     graphql-ws: ^5.9.0
@@ -125,7 +125,7 @@ __metadata:
       optional: true
     use-deep-compare-effect:
       optional: true
-  checksum: 02ba8732b25ea568905f7c68bd68ae5f9f988743348e93b7ecba4a6882fc5cba3f4f1a426368d96b8aa795c5c9f32fab0fd2be35e4ad01d1cfefa495a22eb92b
+  checksum: 0617cd1995cb8a63e25ee93204e09f6210a9031ca7942a7c74b9ac74677072fd6242d1479110d9a756c013589626706766380788e9b07dc63a18b494f581406c
   languageName: node
   linkType: hard
 
@@ -4478,7 +4478,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-apollo-explorer@workspace:plugins/apollo-explorer"
   dependencies:
-    "@apollo/explorer": ^2.0.0
+    "@apollo/explorer": ^3.0.0
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
