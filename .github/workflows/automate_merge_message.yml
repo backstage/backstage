@@ -44,7 +44,7 @@ jobs:
           node generate.js ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > message.txt
 
       - name: Post Message
-        uses: actions/github-script@v7.0.0
+        uses: actions/github-script@v7.0.1
         env:
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
         with:
