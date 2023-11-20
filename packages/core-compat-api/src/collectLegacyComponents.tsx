@@ -18,20 +18,17 @@ import {
   Extension,
   ComponentRef,
   createComponentExtension,
-  coreProgressComponentRef,
-  coreBootErrorPageComponentRef,
-  coreNotFoundErrorPageComponentRef,
-  coreErrorBoundaryFallbackComponentRef,
+  coreComponentsRefs,
 } from '@backstage/frontend-plugin-api';
 import { AppComponents } from '@backstage/core-plugin-api';
 
 type ComponentTypes<T = AppComponents> = T[keyof T];
 
 const refs: Record<string, ComponentRef<ComponentTypes>> = {
-  Progress: coreProgressComponentRef,
-  BootErrorPage: coreBootErrorPageComponentRef,
-  NotFoundErrorPage: coreNotFoundErrorPageComponentRef,
-  ErrorBoundaryFallback: coreErrorBoundaryFallbackComponentRef,
+  Progress: coreComponentsRefs.progress,
+  BootErrorPage: coreComponentsRefs.bootErrorPage,
+  NotFoundErrorPage: coreComponentsRefs.notFoundErrorPage,
+  ErrorBoundaryFallback: coreComponentsRefs.errorBoundaryFallback,
 };
 
 /** @public */
