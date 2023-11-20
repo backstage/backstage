@@ -15,18 +15,21 @@
  */
 
 import { AuthenticationError } from '@backstage/errors';
-import { OAuth2ProxyResult } from '@backstage/plugin-auth-backend';
 import {
   createProxyAuthenticator,
   getBearerTokenFromAuthorizationHeader,
 } from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
+import { OAuth2ProxyResult } from './types';
 
 // NOTE: This may come in handy if you're doing work on this provider:
 // plugins/auth-backend/examples/docker-compose.oauth2-proxy.yaml
 export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
 
-export const oauth2ProxyAuthenticator = createProxyAuthenticator({
+export const oauth2ProxyAuthenticator = createProxyAuthenticator<
+  unknown,
+  OAuth2ProxyResult
+>({
   defaultProfileTransform: async (result: OAuth2ProxyResult) => {
     return {
       profile: {
