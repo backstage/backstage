@@ -24,18 +24,17 @@ const useStyles = makeStyles({
   },
 });
 
-export const About = (props: { codename: string }) => {
-  const { codename } = props;
+export const About = () => {
   const classes = useStyles();
   return (
     <Grid container spacing={4}>
       <Grid item xs={5}>
-        <InfoCard title={`About ${codename}`}>
+        <InfoCard title="About Bazaar">
           <Typography className={classes.subheader} variant="body1">
-            What is the {codename}?
+            What is the Bazaar?
           </Typography>
           <Typography paragraph>
-            The {codename} is a place where teams can propose projects for
+            The Bazaar is a place where teams can propose projects for
             cross-functional team development. Essentially a marketplace for
             internal projects suitable for{' '}
             <Link
@@ -63,14 +62,14 @@ export const About = (props: { codename: string }) => {
             How?
           </Typography>
           <Typography paragraph>
-            The {codename} allows engineers and teams to open up and announce
-            their new and exciting projects for transparent cooperation in other
-            parts of larger organizations. The {codename} ensures that new Inner
-            Sourcing friendly projects gain visibility through Backstage and a
-            way for interested engineers to show their interest and in the
-            future contribute with their specific skill set. The {codename} also
-            provides an easy way to manage, catalog, and browse these Inner
-            Sourcing friendly projects and components.
+            The Bazaar allows engineers and teams to open up and announce their
+            new and exciting projects for transparent cooperation in other parts
+            of larger organizations. The Bazaar ensures that new Inner Sourcing
+            friendly projects gain visibility through Backstage and a way for
+            interested engineers to show their interest and in the future
+            contribute with their specific skill set. The Bazaar also provides
+            an easy way to manage, catalog, and browse these Inner Sourcing
+            friendly projects and components.
           </Typography>
         </InfoCard>
       </Grid>

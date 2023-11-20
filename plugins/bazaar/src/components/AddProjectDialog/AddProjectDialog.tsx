@@ -29,7 +29,6 @@ type Props = {
   handleClose: () => void;
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   fetchCatalogEntities: () => Promise<Entity[]>;
-  codename: string;
 };
 
 export const AddProjectDialog = ({
@@ -38,7 +37,6 @@ export const AddProjectDialog = ({
   handleClose,
   fetchBazaarProjects,
   fetchCatalogEntities,
-  codename,
 }: Props) => {
   const bazaarApi = useApi(bazaarApiRef);
   const alertApi = useApi(alertApiRef);
@@ -80,7 +78,7 @@ export const AddProjectDialog = ({
       fetchBazaarProjects();
       fetchCatalogEntities();
       alertApi.post({
-        message: `Added project '${formValues.title}' to the ${codename} list`,
+        message: `Added project '${formValues.title}' to the Bazaar list`,
         severity: 'success',
         display: 'transient',
       });

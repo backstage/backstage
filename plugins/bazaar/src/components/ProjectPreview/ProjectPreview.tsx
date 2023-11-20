@@ -33,7 +33,6 @@ type Props = {
   useTablePagination?: boolean;
   gridSize?: GridSize;
   height: 'large' | 'small';
-  codename: string;
 };
 
 const useStyles = makeStyles({
@@ -63,7 +62,6 @@ export const ProjectPreview = ({
   useTablePagination = true,
   gridSize = 2,
   height = 'large',
-  codename,
 }: Props) => {
   const classes = useStyles();
   const [page, setPage] = useState(1);
@@ -82,9 +80,7 @@ export const ProjectPreview = ({
 
   if (!bazaarProjects.length) {
     return (
-      <div className={classes.empty}>
-        Please add projects to the {codename}.
-      </div>
+      <div className={classes.empty}>Please add projects to the Bazaar.</div>
     );
   }
 
@@ -102,7 +98,6 @@ export const ProjectPreview = ({
                   fetchBazaarProjects={fetchBazaarProjects}
                   catalogEntities={catalogEntities}
                   height={height}
-                  codename={codename}
                 />
               </Grid>
             );
