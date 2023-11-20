@@ -22,10 +22,15 @@ import {
 import { decodeJwt } from 'jose';
 import { OAuth2ProxyResult } from './types';
 
-// NOTE: This may come in handy if you're doing work on this provider:
-// plugins/auth-backend/examples/docker-compose.oauth2-proxy.yaml
+/**
+ * NOTE: This may come in handy if you're doing work on this provider:
+ * plugins/auth-backend/examples/docker-compose.oauth2-proxy.yaml
+ *
+ * @public
+ */
 export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
 
+/** @public */
 export const oauth2ProxyAuthenticator = createProxyAuthenticator<
   unknown,
   OAuth2ProxyResult
