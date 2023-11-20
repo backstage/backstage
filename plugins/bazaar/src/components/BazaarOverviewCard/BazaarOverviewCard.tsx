@@ -52,16 +52,23 @@ const getUnlinkedCatalogEntities = (
 
 /** @public */
 export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
-  const { title, order, fullWidth = false, fullHeight = false } = props;
+  const {
+    title = 'Bazaar',
+    order,
+    fullWidth = false,
+    fullHeight = false,
+  } = props;
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
   const root = useRouteRef(bazaarPlugin.routes.root);
 
   const defaultTitle =
-    order === 'latest' ? 'Bazaar Latest Projects' : 'Bazaar Random Projects';
+    order === 'latest'
+      ? `${title} Latest Projects`
+      : `${title} Random Projects`;
 
   const bazaarLink = {
-    title: 'Go to Bazaar',
+    title: `Go to ${title}`,
     link: `${root()}`,
   };
 
@@ -131,7 +138,7 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
 
   return (
     <InfoCard
-      title={title ?? defaultTitle}
+      title={title === 'Bazaar' ? defaultTitle : title}
       action={
         <IconButton>
           <Link to={bazaarLink.link} title={bazaarLink.title}>
@@ -147,6 +154,7 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
         useTablePagination={false}
         gridSize={fullWidth ? 2 : 4}
         height={fullHeight ? 'large' : 'small'}
+        codename={title}
       />
     </InfoCard>
   );

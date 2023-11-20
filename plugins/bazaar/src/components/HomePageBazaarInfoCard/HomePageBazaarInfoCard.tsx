@@ -76,12 +76,14 @@ type Props = {
   initProject: BazaarProject;
   handleClose: () => void;
   initEntity: Entity;
+  codename: string;
 };
 
 export const HomePageBazaarInfoCard = ({
   initProject,
   handleClose,
   initEntity,
+  codename,
 }: Props) => {
   const classes = useStyles();
   const entityLink = useRouteRef(entityRouteRef);
@@ -270,6 +272,7 @@ export const HomePageBazaarInfoCard = ({
           handleEditClose={() => setOpenEdit(false)}
           handleCardClose={handleClose}
           fetchBazaarProject={fetchBazaarProject}
+          codename={codename}
         />
 
         <CardHeader

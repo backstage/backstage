@@ -55,6 +55,7 @@ export const EntityBazaarInfoCard = () => {
         <EntityBazaarInfoContent
           bazaarProject={bazaarProject.value}
           fetchBazaarProject={fetchBazaarProject}
+          codename="Bazaar"
         />
       </Card>
     );

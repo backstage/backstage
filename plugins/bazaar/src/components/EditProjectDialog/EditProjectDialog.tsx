@@ -29,6 +29,7 @@ type Props = {
   handleEditClose: () => void;
   handleCardClose?: () => void;
   fetchBazaarProject: () => Promise<BazaarProject | null>;
+  codename: string;
 };
 
 const useStyles = makeStyles({
@@ -49,6 +50,7 @@ export const EditProjectDialog = ({
   handleEditClose,
   handleCardClose,
   fetchBazaarProject,
+  codename,
 }: Props) => {
   const classes = useStyles();
   const bazaarApi = useApi(bazaarApiRef);
@@ -73,7 +75,7 @@ export const EditProjectDialog = ({
     handleDeleteClose();
     fetchBazaarProject();
     alertApi.post({
-      message: `Deleted project '${bazaarProject.title}' from the Bazaar list`,
+      message: `Deleted project '${bazaarProject.title}' from the ${codename} list`,
       severity: 'success',
       display: 'transient',
     });
@@ -104,7 +106,7 @@ export const EditProjectDialog = ({
     if (updateResponse.status === 'ok') fetchBazaarProject();
     handleEditClose();
     alertApi.post({
-      message: `Updated project '${formValues.title}' in the Bazaar list`,
+      message: `Updated project '${formValues.title}' in the ${codename} list`,
       severity: 'success',
       display: 'transient',
     });
@@ -120,7 +122,7 @@ export const EditProjectDialog = ({
           <b key={bazaarProject.id} className={classes.wordBreak}>
             {bazaarProject.title}
           </b>,
-          ' from the Bazaar?',
+          ` from the ${codename}?`,
         ]}
         type="delete"
         handleSubmit={handleDeleteSubmit}

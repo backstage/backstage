@@ -75,11 +75,12 @@ const getUnlinkedCatalogEntities = (
 export type SortViewProps = {
   fullWidth?: boolean;
   fullHeight?: boolean;
+  codename: string;
 };
 
 /** @public */
 export const SortView = (props: SortViewProps) => {
-  const { fullWidth = true, fullHeight = true } = props;
+  const { fullWidth = true, fullHeight = true, codename } = props;
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
   const classes = useStyles();
@@ -209,6 +210,7 @@ export const SortView = (props: SortViewProps) => {
           open={openAdd}
           fetchBazaarProjects={fetchBazaarProjects}
           fetchCatalogEntities={fetchCatalogEntities}
+          codename={codename}
         />
         <SupportButton />
       </div>
@@ -218,6 +220,7 @@ export const SortView = (props: SortViewProps) => {
         catalogEntities={unlinkedCatalogEntities || []}
         gridSize={fullWidth ? 2 : 4}
         height={fullHeight ? 'large' : 'small'}
+        codename={codename}
       />
       <Content noPadding className={classes.container} />
     </Content>
