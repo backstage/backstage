@@ -30,6 +30,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import MemoryIcon from '@material-ui/icons/Memory';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
+import WorkIcon from '@material-ui/icons/Work';
 import get from 'lodash/get';
 import { EntityRefPresentationSnapshot } from './EntityPresentationApi';
 
@@ -39,6 +40,7 @@ const DEFAULT_ICONS: Record<string, IconComponent> = {
   api: ExtensionIcon,
   component: MemoryIcon,
   system: BusinessIcon,
+  resource: WorkIcon,
   domain: ApartmentIcon,
   location: LocationOnIcon,
   user: PersonIcon,
