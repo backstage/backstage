@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-auth-backend-module-vmware-csp-provider': patch
+'@backstage/plugin-auth-backend-module-vmware-cloud-provider': patch
 ---
 
-Add VMWare CSP (Cloud Service Provider) auth backend module provider
+Add VMware CSP (Cloud Service Provider) auth backend module provider
