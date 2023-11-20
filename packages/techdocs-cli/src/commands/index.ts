@@ -295,8 +295,19 @@ export function registerCommands(program: Command) {
       'Mkdocs config file name',
     )
     .option(
-      '--mkdocs-configs',
-      'Additional parameters to pass to containerized mkdocs',
+      '--mkdocs-parameter-clean',
+      'Pass "--clean" parameter to mkdocs server running in containerized environment',
+      false,
+    )
+    .option(
+      '--mkdocs-parameter-dirty',
+      'Pass "--dirty" parameter to mkdocs server running in containerized environment',
+      false,
+    )
+    .option(
+      '--mkdocs-parameter-strict',
+      'Pass "--strict" parameter to mkdocs server running in containerized environment',
+      false,
     )
     .hook('preAction', command => {
       if (

@@ -99,7 +99,10 @@ describe('runMkdocsServer', () => {
     });
 
     it('should accept additinoal mkdocs CLI parameters', async () => {
-      await runMkdocsServer({ mkdocsConfigs: ['--clean', '--strict'] });
+      await runMkdocsServer({
+        mkdocsParameterClean: true,
+        mkdocsParameterStrict: true,
+      });
       expect(run).toHaveBeenCalledWith(
         'docker',
         expect.arrayContaining([

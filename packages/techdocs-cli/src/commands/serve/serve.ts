@@ -67,7 +67,6 @@ export default async function serve(opts: OptionValues) {
     ? mkdocsDockerAddr
     : mkdocsLocalAddr;
   const mkdocsConfigFileName = opts.mkdocsConfigFileName;
-  const mkdocsConfigs = opts.mkdocsConfig.split(' ');
   const siteName = opts.siteName;
 
   const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml('./', {
@@ -117,7 +116,9 @@ export default async function serve(opts: OptionValues) {
     stdoutLogFunc: mkdocsLogFunc,
     stderrLogFunc: mkdocsLogFunc,
     mkdocsConfigFileName: mkdocsYmlPath,
-    mkdocsConfigs: mkdocsConfigs,
+    mkdocsParameterClean: opts.mkdocsParameterClean,
+    mkdocsParameterDirty: opts.mkdocsParameterDirty,
+    mkdocsParameterStrict: opts.mkdocsParameterStrict,
   });
 
   // Wait until mkdocs server has started so that Backstage starts with docs loaded
