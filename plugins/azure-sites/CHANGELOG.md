@@ -1,5 +1,12 @@
 # @backstage/plugin-azure-sites
 
+## 0.1.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.1
+
 ## 0.1.15
 
 ### Patch Changes

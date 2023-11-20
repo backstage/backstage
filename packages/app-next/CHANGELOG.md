@@ -1,5 +1,66 @@
 # example-app-next
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder@1.16.1
+  - @backstage/plugin-catalog-react@1.9.1
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.2
+  - @backstage/plugin-adr@0.6.10
+  - @backstage/plugin-airbrake@0.3.27
+  - @backstage/plugin-api-docs@0.10.1
+  - @backstage/plugin-azure-devops@0.3.9
+  - @backstage/plugin-azure-sites@0.1.16
+  - @backstage/plugin-badges@0.2.51
+  - @backstage/plugin-catalog@1.15.1
+  - @backstage/plugin-catalog-graph@0.3.1
+  - @backstage/plugin-catalog-import@0.10.3
+  - @backstage/plugin-circleci@0.3.27
+  - @backstage/plugin-cloudbuild@0.3.27
+  - @backstage/plugin-code-coverage@0.2.20
+  - @backstage/plugin-cost-insights@0.12.16
+  - @backstage/plugin-dynatrace@8.0.1
+  - @backstage/plugin-entity-feedback@0.2.10
+  - @backstage/plugin-explore@0.4.13
+  - @backstage/plugin-github-actions@0.6.8
+  - @backstage/plugin-gocd@0.1.33
+  - @backstage/plugin-home@0.5.11
+  - @backstage/plugin-jenkins@0.9.2
+  - @backstage/plugin-kafka@0.3.27
+  - @backstage/plugin-kubernetes@0.11.2
+  - @backstage/plugin-lighthouse@0.4.12
+  - @backstage/plugin-linguist@0.1.12
+  - @backstage/plugin-newrelic-dashboard@0.3.2
+  - @backstage/plugin-octopus-deploy@0.2.9
+  - @backstage/plugin-org@0.6.17
+  - @backstage/plugin-pagerduty@0.6.8
+  - @backstage/plugin-playlist@0.2.1
+  - @backstage/plugin-puppetdb@0.1.10
+  - @backstage/plugin-rollbar@0.4.27
+  - @backstage/plugin-scaffolder-react@1.6.1
+  - @backstage/plugin-search@1.4.3
+  - @backstage/plugin-sentry@0.5.12
+  - @backstage/plugin-tech-insights@0.3.19
+  - @backstage/plugin-techdocs@1.9.1
+  - @backstage/plugin-todo@0.2.31
+  - @backstage/plugin-user-settings@0.7.13
+  - @backstage/cli@0.24.0
+  - @backstage/integration-react@1.1.21
+  - @backstage/plugin-apache-airflow@0.2.17
+  - @backstage/plugin-catalog-unprocessed-entities@0.1.5
+  - @backstage/plugin-devtools@0.1.6
+  - @backstage/plugin-gcalendar@0.3.20
+  - @backstage/plugin-gcp-projects@0.3.43
+  - @backstage/plugin-graphiql@0.3.0
+  - @backstage/plugin-microsoft-calendar@0.1.9
+  - @backstage/plugin-newrelic@0.3.42
+  - @backstage/plugin-shortcuts@0.3.16
+  - @backstage/plugin-stackstorm@0.1.8
+  - @backstage/plugin-tech-radar@0.6.10
+  - @backstage/core-compat-api@0.0.1
+
 ## 0.0.3
 
 ### Patch Changes

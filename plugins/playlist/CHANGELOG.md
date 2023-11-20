@@ -1,5 +1,12 @@
 # @backstage/plugin-playlist
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.1
+
 ## 0.2.0
 
 ### Minor Changes

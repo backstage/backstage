@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.24
+
+### Patch Changes
+
+- 06afb51aa1ef: Move `@testing-library/react` to be a `peerDependency`
+- Updated dependencies
+  - @backstage/plugin-catalog@1.15.1
+  - @backstage/plugin-techdocs@1.9.1
+  - @backstage/integration-react@1.1.21
+
 ## 1.0.23
 
 ### Patch Changes

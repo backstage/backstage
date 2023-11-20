@@ -1,5 +1,13 @@
 # @backstage/plugin-adr
 
+## 0.6.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.1
+  - @backstage/integration-react@1.1.21
+
 ## 0.6.9
 
 ### Patch Changes

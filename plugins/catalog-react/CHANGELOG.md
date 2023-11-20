@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-react
 
+## 1.9.1
+
+### Patch Changes
+
+- ceebf2ca4ba7: Fixed a issue where `CatalogPage` wasn't using the chosen `initiallySelectedFilter` as intended.
+- Updated dependencies
+  - @backstage/integration-react@1.1.21
+
 ## 1.9.0
 
 ### Minor Changes

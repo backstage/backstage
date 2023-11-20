@@ -1,5 +1,12 @@
 # @backstage/plugin-azure-devops
 
+## 0.3.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.1
+
 ## 0.3.8
 
 ### Patch Changes

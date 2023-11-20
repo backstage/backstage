@@ -1,5 +1,12 @@
 # @backstage/plugin-sonarqube
 
+## 0.7.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.1
+
 ## 0.7.8
 
 ### Patch Changes

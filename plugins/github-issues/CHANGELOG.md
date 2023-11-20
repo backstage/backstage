@@ -1,5 +1,12 @@
 # @backstage/plugin-github-issues
 
+## 0.2.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.1
+
 ## 0.2.15
 
 ### Patch Changes
