@@ -16,8 +16,6 @@
 
 export { coreComponentsRefs, type ComponentRef } from './ComponentRef';
 
-export { ExtensionError } from './ExtensionError';
-
 export {
   ExtensionBoundary,
   type ExtensionBoundaryProps,
