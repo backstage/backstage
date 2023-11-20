@@ -44987,11 +44987,11 @@ __metadata:
   linkType: hard
 
 "zod-to-json-schema@npm:^3.20.4, zod-to-json-schema@npm:^3.21.4":
-  version: 3.21.4
-  resolution: "zod-to-json-schema@npm:3.21.4"
+  version: 3.22.0
+  resolution: "zod-to-json-schema@npm:3.22.0"
   peerDependencies:
-    zod: ^3.21.4
-  checksum: 899c1f461fb6547c0b08a265c82040c250be9b88d3f408f2f3ff77a418fdfad7549077e589d418fccb312c1f6d555c3c7217b199cc9072762e1fab20716dd2a6
+    zod: ^3.22.4
+  checksum: 79ba2f120e16bb38a44b6c20a3afa5e61c40f2d48749b08be68692005af1aed897c808f59be1fe722c2c40c5c3e9c38cd8ca4bfefdae089822de5948fe7d7cc5
   languageName: node
   linkType: hard
 
