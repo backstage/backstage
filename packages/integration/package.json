@@ -33,7 +33,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@azure/identity": "^3.2.1",
+    "@azure/identity": "^4.0.0",
     "@backstage/config": "workspace:^",
     "@octokit/auth-app": "^4.0.0",
     "@octokit/rest": "^19.0.3",
