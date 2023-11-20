@@ -37,6 +37,7 @@ import express from 'express';
 import session from 'express-session';
 import request from 'supertest';
 
+import { Config } from '../config';
 import { authModuleVmwareCloudProvider } from './module';
 
 function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
@@ -186,14 +187,14 @@ describe('authModuleVmwareCloudProvider', () => {
             },
             auth: {
               providers: {
-                vmwareCloud: {
+                vmwareCloudServices: {
                   development: {
                     clientId: 'placeholderClientId',
                     organizationId: 'orgId',
                   },
                 },
               },
-            },
+            } as Config['auth'],
           },
         }),
       ],
@@ -203,13 +204,15 @@ describe('authModuleVmwareCloudProvider', () => {
 
     const agent = request.agent(server);
 
-    const res = await agent.get('/api/auth/vmwareCloud/start?env=development');
+    const res = await agent.get(
+      '/api/auth/vmwareCloudServices/start?env=development',
+    );
 
     expect(res.status).toEqual(302);
 
-    const nonceCookie = agent.jar.getCookie('vmwareCloud-nonce', {
+    const nonceCookie = agent.jar.getCookie('vmwareCloudServices-nonce', {
       domain: 'localhost',
-      path: '/api/auth/vmwareCloud/handler',
+      path: '/api/auth/vmwareCloudServices/handler',
       script: false,
       secure: false,
     });
@@ -221,7 +224,7 @@ describe('authModuleVmwareCloudProvider', () => {
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
       response_type: 'code',
       client_id: 'placeholderClientId',
-      redirect_uri: `http://localhost:${server.port()}/api/auth/vmwareCloud/handler/frame`,
+      redirect_uri: `http://localhost:${server.port()}/api/auth/vmwareCloudServices/handler/frame`,
       code_challenge: expect.any(String),
       state: expect.any(String),
       scope: 'openid offline_access',
