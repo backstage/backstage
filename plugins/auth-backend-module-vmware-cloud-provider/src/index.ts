@@ -15,11 +15,11 @@
  */
 
 /**
- * The vmware-csp-provider backend module for the auth plugin.
+ * The vmware-cloud-provider backend module for the auth plugin.
  *
  * @packageDocumentation
  */
 
-export { vmWareCSPAuthenticator } from './authenticator';
-export { authModuleVmwareCspProvider as default } from './module';
-export { vmwareCSPSignInResolvers } from './resolvers';
+export { vmwareCloudAuthenticator } from './authenticator';
+export { authModuleVmwareCloudProvider as default } from './module';
+export { vmwareCloudSignInResolvers } from './resolvers';

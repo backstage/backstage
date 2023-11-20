@@ -37,9 +37,7 @@ import express from 'express';
 import session from 'express-session';
 import request from 'supertest';
 
-import { authModuleVmwareCspProvider } from './module';
-
-const secret = 'secret';
+import { authModuleVmwareCloudProvider } from './module';
 
 function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
   return (
@@ -104,6 +102,7 @@ async function createBackendWithSession<TExtensionPoints extends any[]>(
       const app = express();
 
       const middleware = MiddlewareFactory.create({ config, logger });
+      const secret = 'secret';
 
       app.use(
         session({
@@ -174,12 +173,12 @@ async function createBackendWithSession<TExtensionPoints extends any[]>(
   });
 }
 
-describe('authModuleVmwareCspProvider', () => {
+describe('authModuleVmwareCloudProvider', () => {
   it('should start', async () => {
     const backend = await createBackendWithSession({
       features: [
         import('@backstage/plugin-auth-backend'),
-        authModuleVmwareCspProvider,
+        authModuleVmwareCloudProvider,
         mockServices.rootConfig.factory({
           data: {
             app: {
