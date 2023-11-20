@@ -40,24 +40,29 @@ export function createComponentRef<T>(options: {
   };
 }
 
-/** @public */
-export const coreProgressComponentRef =
-  createComponentRef<CoreProgressComponent>({ id: 'core.components.progress' });
+const coreProgressComponentRef = createComponentRef<CoreProgressComponent>({
+  id: 'core.components.progress',
+});
 
-/** @public */
-export const coreBootErrorPageComponentRef =
+const coreBootErrorPageComponentRef =
   createComponentRef<CoreBootErrorPageComponent>({
     id: 'core.components.bootErrorPage',
   });
 
-/** @public */
-export const coreNotFoundErrorPageComponentRef =
+const coreNotFoundErrorPageComponentRef =
   createComponentRef<CoreNotFoundErrorPageComponent>({
     id: 'core.components.notFoundErrorPage',
   });
 
-/** @public */
-export const coreErrorBoundaryFallbackComponentRef =
+const coreErrorBoundaryFallbackComponentRef =
   createComponentRef<CoreErrorBoundaryFallbackComponent>({
     id: 'core.components.errorBoundaryFallback',
   });
+
+/** @public */
+export const coreComponentsRefs = {
+  progress: coreProgressComponentRef,
+  bootErrorPage: coreBootErrorPageComponentRef,
+  notFoundErrorPage: coreNotFoundErrorPageComponentRef,
+  errorBoundaryFallback: coreErrorBoundaryFallbackComponentRef,
+};

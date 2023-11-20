@@ -16,31 +16,28 @@
 
 import {
   createComponentExtension,
-  coreProgressComponentRef,
-  coreBootErrorPageComponentRef,
-  coreNotFoundErrorPageComponentRef,
-  coreErrorBoundaryFallbackComponentRef,
+  coreComponentsRefs,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { components as defaultComponents } from '../../../app-defaults/src/defaults';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 
 export const DefaultProgressComponent = createComponentExtension({
-  ref: coreProgressComponentRef,
+  ref: coreComponentsRefs.progress,
   component: async () => defaultComponents.Progress,
 });
 
 export const DefaultBootErrorPageComponent = createComponentExtension({
-  ref: coreBootErrorPageComponentRef,
+  ref: coreComponentsRefs.bootErrorPage,
   component: async () => defaultComponents.BootErrorPage,
 });
 
 export const DefaultNotFoundErrorPageComponent = createComponentExtension({
-  ref: coreNotFoundErrorPageComponentRef,
+  ref: coreComponentsRefs.notFoundErrorPage,
   component: async () => defaultComponents.NotFoundErrorPage,
 });
 
 export const DefaultErrorBoundaryComponent = createComponentExtension({
-  ref: coreErrorBoundaryFallbackComponentRef,
+  ref: coreComponentsRefs.errorBoundaryFallback,
   component: async () => defaultComponents.ErrorBoundaryFallback,
 });

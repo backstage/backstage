@@ -331,7 +331,12 @@ export type CoreBootErrorPageComponent = ComponentType<
 >;
 
 // @public (undocumented)
-export const coreBootErrorPageComponentRef: ComponentRef<CoreBootErrorPageComponent>;
+export const coreComponentsRefs: {
+  progress: ComponentRef<CoreProgressComponent>;
+  bootErrorPage: ComponentRef<CoreBootErrorPageComponent>;
+  notFoundErrorPage: ComponentRef<CoreNotFoundErrorPageComponent>;
+  errorBoundaryFallback: ComponentRef<CoreErrorBoundaryFallbackComponent>;
+};
 
 // @public (undocumented)
 export type CoreErrorBoundaryFallbackComponent = ComponentType<
@@ -341,9 +346,6 @@ export type CoreErrorBoundaryFallbackComponent = ComponentType<
     resetError: () => void;
   }>
 >;
-
-// @public (undocumented)
-export const coreErrorBoundaryFallbackComponentRef: ComponentRef<CoreErrorBoundaryFallbackComponent>;
 
 // @public (undocumented)
 export const coreExtensionData: {
@@ -369,13 +371,7 @@ export type CoreNotFoundErrorPageComponent = ComponentType<
 >;
 
 // @public (undocumented)
-export const coreNotFoundErrorPageComponentRef: ComponentRef<CoreNotFoundErrorPageComponent>;
-
-// @public (undocumented)
 export type CoreProgressComponent = ComponentType<PropsWithChildren<{}>>;
-
-// @public (undocumented)
-export const coreProgressComponentRef: ComponentRef<CoreProgressComponent>;
 
 // @public (undocumented)
 export function createApiExtension<
