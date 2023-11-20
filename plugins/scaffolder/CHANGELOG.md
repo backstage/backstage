@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder
 
+## 1.16.1
+
+### Patch Changes
+
+- 2c4d57a3ac15: Added `headerOptions` to `TemplateListPage` to optionally override default values.
+  Changed `themeId` of TemplateListPage from `website` to `home`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.1
+  - @backstage/plugin-scaffolder-react@1.6.1
+  - @backstage/integration-react@1.1.21
+
 ## 1.16.0
 
 ### Minor Changes

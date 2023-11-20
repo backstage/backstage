@@ -1,5 +1,12 @@
 # @backstage/plugin-gocd
 
+## 0.1.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.1
+
 ## 0.1.32
 
 ### Patch Changes

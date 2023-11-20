@@ -1,5 +1,12 @@
 # @backstage/plugin-nomad
 
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.1
+
 ## 0.1.7
 
 ### Patch Changes

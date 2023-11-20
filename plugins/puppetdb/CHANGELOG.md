@@ -1,5 +1,12 @@
 # @backstage/plugin-puppetdb
 
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.1
+
 ## 0.1.9
 
 ### Patch Changes

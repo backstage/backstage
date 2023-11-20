@@ -1,5 +1,12 @@
 # @backstage/plugin-fossa
 
+## 0.2.59
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.1
+
 ## 0.2.58
 
 ### Patch Changes
