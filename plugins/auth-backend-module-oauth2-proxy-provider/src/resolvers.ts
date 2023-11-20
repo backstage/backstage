@@ -24,7 +24,7 @@ import { OAuth2ProxyResult } from '@backstage/plugin-auth-backend';
  * @public
  */
 export namespace oauth2ProxySignInResolvers {
-  export const forwardedUserMarchingUserEntityName =
+  export const forwardedUserMatchingUserEntityName =
     createSignInResolverFactory({
       create() {
         return async (info: SignInInfo<OAuth2ProxyResult>, ctx) => {
