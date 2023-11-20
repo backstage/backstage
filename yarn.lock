@@ -28230,7 +28230,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphiql@npm:3.0.9, graphiql@npm:^3.0.6":
+"graphiql@npm:3.0.9":
   version: 3.0.9
   resolution: "graphiql@npm:3.0.9"
   dependencies:
@@ -28243,6 +28243,22 @@ __metadata:
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
   checksum: 4431842ddcee548bb0aacbe6c8d2eaf3a8cd34fcdb584d98e0983dec21bdeeeaee4550c80a34debd290aebbd8535dae488d2d0beb85e1cb59b89ba4ed08ef32c
+  languageName: node
+  linkType: hard
+
+"graphiql@npm:^3.0.6":
+  version: 3.0.10
+  resolution: "graphiql@npm:3.0.10"
+  dependencies:
+    "@graphiql/react": ^0.20.2
+    "@graphiql/toolkit": ^0.9.1
+    graphql-language-service: ^5.2.0
+    markdown-it: ^12.2.0
+  peerDependencies:
+    graphql: ^15.5.0 || ^16.0.0
+    react: ^16.8.0 || ^17 || ^18
+    react-dom: ^16.8.0 || ^17 || ^18
+  checksum: f85b5e82cd2280325dedb28d42580119df46b6724a913a571b7a8183c2bf23d4832edf45570d6c8a0af18ba576f50c9b39219a8537277cba626f0411e6ed55bb
   languageName: node
   linkType: hard
 
