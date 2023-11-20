@@ -128,7 +128,7 @@ import {
 import {
   EntityPagerDutyCard,
   isPagerDutyAvailable,
-} from '@backstage/plugin-pagerduty';
+} from '@pagerduty/backstage-plugin';
 import { EntityPlaylistDialog } from '@backstage/plugin-playlist';
 import {
   EntityRollbarContent,
