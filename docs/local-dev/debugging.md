@@ -56,12 +56,8 @@ In your `launch.json`, add a new entry with the following,
 
 ```jsonc
 {
-    // Can't get normal logs
     "name": "Start Backend",
     "request": "launch",
-    "env": {
-        "LOG_LEVEL": "DEBUG"
-    },
     "args": [
         "package",
         "start"
