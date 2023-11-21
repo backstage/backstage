@@ -1,5 +1,12 @@
 # @backstage/plugin-techdocs
 
+## 1.9.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.1-next.0
+
 ## 1.9.2-next.0
 
 ### Patch Changes

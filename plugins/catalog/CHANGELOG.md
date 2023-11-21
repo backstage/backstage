@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog
 
+## 1.16.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.1-next.0
+
 ## 1.16.0-next.0
 
 ### Minor Changes
