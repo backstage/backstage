@@ -16,3 +16,5 @@ To activate the pagination mode, simply update your `App.tsx` as follows:
 +     <Route path="/catalog" element={<CatalogIndexPage pagination />} />
       ...
 ```
+
+In case you have a custom catalog page and you want to enable pagination, you need to pass the `pagination` prop to `EntityListProvider` instead.
