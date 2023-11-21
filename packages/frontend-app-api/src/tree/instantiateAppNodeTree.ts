@@ -103,7 +103,7 @@ export function createAppNodeInstance(options: {
   attachments: ReadonlyMap<string, { id: string; instance: AppNodeInstance }[]>;
 }): AppNodeInstance {
   const { spec, attachments } = options;
-  const { id, extension, config, source } = spec;
+  const { id, extension, config } = spec;
   const extensionData = new Map<string, unknown>();
   const extensionDataRefs = new Set<ExtensionDataRef<unknown>>();
 
@@ -118,7 +118,7 @@ export function createAppNodeInstance(options: {
 
   try {
     const namedOutputs = extension.factory({
-      source,
+      spec,
       config: parsedConfig,
       inputs: resolveInputs(extension.inputs, attachments),
     });
