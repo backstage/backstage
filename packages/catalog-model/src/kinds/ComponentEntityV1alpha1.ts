@@ -39,6 +39,17 @@ export interface ComponentEntityV1alpha1 extends Entity {
     consumesApis?: string[];
     dependsOn?: string[];
     system?: string;
+    /**
+     * A list of entity refs with kind=Environment, that this component is deployed to.
+     */
+    deploysToEnvironment?: string[];
+
+    /**
+     * A map of Environment entity ref to annotation key/value pair that denotes overrides based on the
+     *  configured environment. By default, metadata.annotations refers to productions.
+     * Could also be a set of json ref per environment instead of baking that into the name?
+     */
+    environmentAnnotationOverrides: Record<string, Record<string, string>>;
   };
 }
 

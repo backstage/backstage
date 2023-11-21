@@ -636,6 +636,15 @@ field is optional.
 | [`Component`](#kind-component)          | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
 | [`Resource`](#kind-resource)            | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
 
+### `spec.deployedToEnvironments` [optional]
+
+An array of [entity references](references.md#string-references) to the Environments
+that this component is deployed to, for example, `prod`, `uat`, and `dev`. This field is optional.
+
+| [`kind`](#apiversion-and-kind-required)      | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                                   |
+| -------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| [`Environment`](#kind-environment) (default) | Same as this entity, typically `default`   | [`deploysToEnvironment`, and reverse `environmentDeployedTo`](well-known-relations.md#consumesapi-and-apiconsumedby) |
+
 ## Kind: Template
 
 The following describes the following entity kind:
@@ -1327,3 +1336,50 @@ which are resolved relative to the location of this Location entity itself.
 ### `spec.presence` [optional]
 
 Describes whether the target of a location is required to exist or not. It defaults to `'required'` if not specified, can also be `'optional'`.
+
+## Kind: Environment
+
+Describes the following entity kind:
+
+| Field        | Value                   |
+| ------------ | ----------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` |
+| `kind`       | `Environment`           |
+
+An Environment holds a single static location that Components are deployed to,
+
+Descriptor files for this kind may look as follows.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Environment
+metadata:
+  name: production
+  description: Main environment, Components deployed here will be accessible by end users.
+```
+
+In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
+shape, this kind has the following structure.
+
+### `apiVersion` and `kind` [required]
+
+Exactly equal to `backstage.io/v1alpha1` and `Environment`, respectively.
+
+### `spec.owner` [required]
+
+An [entity reference](references.md#string-references) to the owner of the
+domain, e.g. `artist-relations-team`. This field is required.
+
+In Backstage, the owner of a domain is the singular entity (commonly a team)
+that bears ultimate responsibility for the domain, and has the authority and
+capability to develop and maintain it. They will be the point of contact if
+something goes wrong, or if features are to be requested. The main purpose of
+this field is for display purposes in Backstage, so that people looking at
+catalog items can get an understanding of to whom this domain belongs. It is not
+to be used by automated processes to for example assign authorization in runtime
+systems. There may be others that also develop or otherwise touch the domain,
+but there will always be one ultimate owner.
+
+| [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
+| ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
