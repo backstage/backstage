@@ -3767,6 +3767,7 @@ __metadata:
     "@backstage/plugin-stackstorm": "workspace:^"
     "@oriflame/backstage-plugin-score-card": ^0.7.0
     "@testing-library/jest-dom": ^6.0.0
+    "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
