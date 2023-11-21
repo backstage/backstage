@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-import
 
+## 0.10.4-next.0
+
+### Patch Changes
+
+- 03d0b6dcdc: The `convertLegacyRouteRef` utility used by the alpha exports is now imported from `@backstage/core-compat-api`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.2-next.0
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-react@1.9.2-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/integration-react@1.1.22-next.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.18
+
 ## 0.10.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-graphiql
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 03d0b6dcdc: The `convertLegacyRouteRef` utility used by the alpha exports is now imported from `@backstage/core-compat-api`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.2-next.0
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+
 ## 0.3.0
 
 ### Minor Changes

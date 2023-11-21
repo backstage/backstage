@@ -1,5 +1,22 @@
 # @backstage/frontend-app-api
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 60d6eb544e: Removed `@backstage/plugin-graphiql` dependency.
+- 9ad4039efa: Bringing over apis from core-plugin-api
+- b8cb7804c8: Added `createSpecializedApp`, which is a synchronous version of `createApp` where config and features already need to be loaded.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/core-app-api@1.11.2-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 0.3.0
 
 ### Minor Changes

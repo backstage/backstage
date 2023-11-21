@@ -1,5 +1,30 @@
 # @backstage/backend-common
 
+## 0.20.0-next.0
+
+### Minor Changes
+
+- 870db76a45: Implemented `readTree` for Gitea provider to support TechDocs functionality
+
+### Patch Changes
+
+- 7f04128bbc: Allow a default cache TTL to be set through the app config
+- 1ad8906a9e: Use `Readable.from` to fix some of the stream issues
+- 706fc3a7e1: Updated dependency `@kubernetes/client-node` to `0.20.0`.
+- d15d483a49: Add command `--runAsDefaultUser` for `@techdocs/cli generate` to bypass running the docker builds as host user for macOS and Linux.
+- d1e00aa17a: Expose an `onAuth` handler for `git` actions to provide custom credentials
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/backend-app-api@0.5.9-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.5.3
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
 ## 0.19.9
 
 ### Patch Changes

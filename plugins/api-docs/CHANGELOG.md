@@ -1,5 +1,20 @@
 # @backstage/plugin-api-docs
 
+## 0.10.2-next.0
+
+### Patch Changes
+
+- 816d331d16: Add dependency on `graphql-config` to compensate for `graphql-language-service` needing it but not shipping the dep properly
+- 615159e536: Updated dependency `graphiql` to `3.0.10`.
+- 53e2c06f41: Updated dependency `@asyncapi/react-component` to `1.1.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-react@1.9.2-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/plugin-catalog@1.16.0-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/catalog-model@1.4.3
+
 ## 0.10.0
 
 ### Minor Changes

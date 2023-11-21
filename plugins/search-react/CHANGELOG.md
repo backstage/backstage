@@ -1,5 +1,19 @@
 # @backstage/plugin-search-react
 
+## 1.7.4-next.0
+
+### Patch Changes
+
+- 84dabc5363: Removed `@backstage/frontend-app-api` dependency.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-search-common@1.2.8
+
 ## 1.7.2
 
 ### Patch Changes

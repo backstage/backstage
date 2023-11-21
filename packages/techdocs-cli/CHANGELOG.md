@@ -1,5 +1,20 @@
 # @techdocs/cli
 
+## 1.8.0-next.0
+
+### Minor Changes
+
+- d15d483a49: Add command `--runAsDefaultUser` for `@techdocs/cli generate` to bypass running the docker builds as host user for macOS and Linux.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/plugin-techdocs-node@1.11.0-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+
 ## 1.7.0
 
 ### Minor Changes

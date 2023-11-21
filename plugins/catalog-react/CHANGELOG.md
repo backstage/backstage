@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog-react
 
+## 1.9.2-next.0
+
+### Patch Changes
+
+- 8587f067d2: Added pagination support to `EntityListProvider`.
+- aaa6fb3bc9: Minor updates for TypeScript 5.2.2+ compatibility
+- 4d9e3b39e4: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- eee0ff2946: Fixed a issue where `CatalogPage` wasn't using the chosen `initiallySelectedFilter` as intended.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/integration-react@1.1.22-next.0
+  - @backstage/plugin-permission-react@0.4.18-next.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+
 ## 1.9.0
 
 ### Minor Changes

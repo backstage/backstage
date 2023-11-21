@@ -1,5 +1,19 @@
 # @backstage/core-components
 
+## 0.13.9-next.0
+
+### Patch Changes
+
+- 381ed86d5e: Add missing export for IconLinkVertical
+- 5c8a3e3960: Minor improvements to `Table` component.
+- 4d9e3b39e4: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/version-bridge@1.0.7
+
 ## 0.13.8
 
 ### Patch Changes
