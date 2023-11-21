@@ -39,6 +39,7 @@
   "dependencies": {
     "@backstage/core-app-api": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^",
+    "@types/react": "^16.13.1 || ^17.0.0"
   }
 }
