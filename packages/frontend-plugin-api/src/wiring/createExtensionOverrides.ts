@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { Extension } from './createExtension';
+import { Extension, ExtensionDefinition } from './createExtension';
+import { resolveExtensionDefinition } from './resolveExtensionDefinition';
 
 /** @public */
 export interface ExtensionOverridesOptions {
-  extensions: Extension<unknown>[];
+  extensions: ExtensionDefinition<unknown>[];
 }
 
 /** @public */
@@ -39,7 +40,7 @@ export function createExtensionOverrides(
   return {
     $$type: '@backstage/ExtensionOverrides',
     version: 'v1',
-    extensions: options.extensions,
+    extensions: options.extensions.map(def => resolveExtensionDefinition(def)),
   } as InternalExtensionOverrides;
 }
 

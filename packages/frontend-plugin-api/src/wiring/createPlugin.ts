@@ -16,6 +16,7 @@
 
 import { Extension, ExtensionDefinition } from './createExtension';
 import { ExternalRouteRef, RouteRef } from '../routing';
+import { resolveExtensionDefinition } from './resolveExtensionDefinition';
 
 /** @public */
 export type AnyRoutes = { [name in string]: RouteRef };
@@ -57,22 +58,9 @@ export function createPlugin<
     ...options,
     routes: options.routes ?? ({} as Routes),
     externalRoutes: options.externalRoutes ?? ({} as ExternalRoutes),
-    extensions: (options.extensions ?? []).map(definition => {
-      const { name, namespace: _, kind, ...rest } = definition;
-
-      let id;
-      if (kind && name) {
-        id = `${kind}:${options.id}/${name}`;
-      } else if (kind) {
-        id = `${kind}:${options.id}`;
-      } else if (name) {
-        id = `${options.id}/${name}`;
-      } else {
-        id = options.id;
-      }
-
-      return { id, ...rest, $$type: '@backstage/Extension' };
-    }),
+    extensions: (options.extensions ?? []).map(def =>
+      resolveExtensionDefinition(def, { namespace: options.id }),
+    ),
     $$type: '@backstage/BackstagePlugin',
   };
 }
