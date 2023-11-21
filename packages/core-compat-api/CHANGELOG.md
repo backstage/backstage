@@ -1,5 +1,11 @@
 # @backstage/core-compat-api
 
+## 0.0.1-next.0
+
+### Patch Changes
+
+- c219b168aa: Made package public so it can be published
+
 ## 0.0.2-next.0
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @backstage/plugin-user-settings
 
+## 0.7.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.1-next.0
+
 ## 0.7.14-next.0
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # example-app-next
 
+## 0.0.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.1-next.0
+  - @backstage/plugin-catalog@1.16.0-next.1
+  - @backstage/plugin-catalog-import@0.10.4-next.1
+  - @backstage/plugin-graphiql@0.3.1-next.1
+  - @backstage/plugin-search@1.4.4-next.1
+  - @backstage/plugin-tech-radar@0.6.11-next.1
+  - @backstage/plugin-techdocs@1.9.2-next.1
+  - @backstage/plugin-user-settings@0.7.14-next.1
+  - @backstage/plugin-api-docs@0.10.2-next.1
+  - @backstage/plugin-catalog-graph@0.3.2-next.0
+  - @backstage/plugin-explore@0.4.14-next.0
+  - @backstage/plugin-org@0.6.18-next.0
+  - @backstage/plugin-scaffolder@1.16.2-next.0
+  - @backstage/plugin-scaffolder-react@1.6.2-next.0
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.3-next.0
+
 ## 0.0.4-next.0
 
 ### Patch Changes

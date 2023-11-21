@@ -1,5 +1,12 @@
 # @backstage/plugin-search
 
+## 1.4.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.1-next.0
+
 ## 1.4.4-next.0
 
 ### Patch Changes
