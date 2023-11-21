@@ -1,5 +1,52 @@
 # @backstage/plugin-catalog
 
+## 1.16.0-next.0
+
+### Minor Changes
+
+- b8e1eb2c0f: The `columns` prop can be an array or a function that returns an array in order to override the default columns of the `CatalogIndexPage`.
+
+### Patch Changes
+
+- bc7e6d3eb9: Fix copy entity url function in http contexts.
+- cd910c4fa5: - Fixes bug where after unregistering an entity you are redirected to `/`.
+  - Adds an optional external route `unregisterRedirect` to override this behaviour to another route.
+- 03d0b6dcdc: The `convertLegacyRouteRef` utility used by the alpha exports is now imported from `@backstage/core-compat-api`.
+- 4d9e3b39e4: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- 8587f067d2: Added pagination support to `CatalogIndexPage`
+
+  `CatalogIndexPage` now offers an optional pagination feature, designed to accommodate adopters managing extensive catalogs. This new capability allows for better handling of large amounts of data.
+
+  To activate the pagination mode, simply update your `App.tsx` as follows:
+
+  ```diff
+    const routes = (
+      <FlatRoutes>
+        ...
+  -     <Route path="/catalog" element={<CatalogIndexPage />} />
+  +     <Route path="/catalog" element={<CatalogIndexPage pagination />} />
+        ...
+  ```
+
+  In case you have a custom catalog page and you want to enable pagination, you need to pass the `pagination` prop to `EntityListProvider` instead.
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.2-next.0
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-react@1.9.2-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/plugin-search-react@1.7.4-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/integration-react@1.1.22-next.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-scaffolder-common@1.4.3
+  - @backstage/plugin-search-common@1.2.8
+
 ## 1.15.0
 
 ### Minor Changes

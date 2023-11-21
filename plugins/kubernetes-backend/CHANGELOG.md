@@ -1,5 +1,45 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.14.0-next.0
+
+### Minor Changes
+
+- 52050ada6e: You can now select `single` kubernetes cluster that the entity is part-of from all your defined kubernetes clusters, by passing `backstage.io/kubernetes-cluster` annotation with the defined cluster name.
+
+  If you do not specify the annotation by `default it fetches all` defined kubernetes cluster.
+
+  To apply
+
+  catalog-info.yaml
+
+  ```diff
+  annotations:
+    'backstage.io/kubernetes-id': dice-roller
+    'backstage.io/kubernetes-namespace': dice-space
+  + 'backstage.io/kubernetes-cluster': dice-cluster
+    'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end'
+  ```
+
+### Patch Changes
+
+- 706fc3a7e1: Updated dependency `@kubernetes/client-node` to `0.20.0`.
+- 42c1aee741: Updated dependency `@google-cloud/container` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/plugin-kubernetes-common@0.7.2-next.0
+  - @backstage/plugin-auth-node@0.4.2-next.0
+  - @backstage/plugin-catalog-node@1.5.1-next.0
+  - @backstage/plugin-permission-node@0.7.19-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-node@0.1.2-next.0
+  - @backstage/plugin-permission-common@0.7.10
+
 ## 0.13.1
 
 ### Patch Changes
