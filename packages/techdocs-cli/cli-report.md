@@ -108,7 +108,7 @@ Options:
   --preview-app-port <PORT>
   -c, --mkdocs-config-file-name <FILENAME>
   --mkdocs-parameter-clean
-  --mkdocs-parameter-dirty
+  --mkdocs-parameter-dirtyreload
   --mkdocs-parameter-strict
   -h, --help
 ```
