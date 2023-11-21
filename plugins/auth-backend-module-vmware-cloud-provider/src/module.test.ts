@@ -13,170 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createHttpServer,
-  createSpecializedBackend,
-  DefaultRootHttpRouter,
-  ExtendedHttpServer,
-  HostDiscovery,
-  MiddlewareFactory,
-} from '@backstage/backend-app-api';
-import {
-  BackendFeature,
-  coreServices,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
-import {
-  mockServices,
-  TestBackend,
-  TestBackendOptions,
-} from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
-import express from 'express';
-import session from 'express-session';
 import request from 'supertest';
 
 import { Config } from '../config';
 import { authModuleVmwareCloudProvider } from './module';
 
-function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'then' in value &&
-    typeof value.then === 'function'
-  );
-}
-
-function unwrapFeature(
-  feature: BackendFeature | (() => BackendFeature),
-): BackendFeature {
-  return typeof feature === 'function' ? feature() : feature;
-}
-
-const defaultServiceFactories = [
-  mockServices.cache.factory(),
-  mockServices.rootConfig.factory(),
-  mockServices.database.factory(),
-  mockServices.httpRouter.factory(),
-  mockServices.identity.factory(),
-  mockServices.lifecycle.factory(),
-  mockServices.logger.factory(),
-  mockServices.permissions.factory(),
-  mockServices.rootLifecycle.factory(),
-  mockServices.rootLogger.factory(),
-  mockServices.scheduler.factory(),
-  mockServices.tokenManager.factory(),
-  mockServices.urlReader.factory(),
-];
-
-async function createBackendWithSession<TExtensionPoints extends any[]>(
-  options: TestBackendOptions<TExtensionPoints>,
-): Promise<TestBackend> {
-  const { extensionPoints, ...otherOptions } = options;
-
-  // Unpack input into awaited plain BackendFeatures
-  const features: BackendFeature[] = await Promise.all(
-    options.features?.map(async val => {
-      if (isPromise(val)) {
-        const { default: feature } = await val;
-        return unwrapFeature(feature);
-      }
-      return unwrapFeature(val);
-    }) ?? [],
-  );
-
-  let server: ExtendedHttpServer;
-
-  const rootHttpRouterFactory = createServiceFactory({
-    service: coreServices.rootHttpRouter,
-    deps: {
-      config: coreServices.rootConfig,
-      lifecycle: coreServices.rootLifecycle,
-      rootLogger: coreServices.rootLogger,
-    },
-    async factory({ config, lifecycle, rootLogger }) {
-      const router = DefaultRootHttpRouter.create();
-      const logger = rootLogger.child({ service: 'rootHttpRouter' });
-
-      const app = express();
-
-      const middleware = MiddlewareFactory.create({ config, logger });
-      const testSecret = 'secret';
-
-      app.use(
-        session({
-          secret: testSecret,
-          resave: false,
-          saveUninitialized: false,
-        }),
-      );
-      app.use(router.handler());
-      app.use(middleware.notFound());
-      app.use(middleware.error());
-
-      server = await createHttpServer(
-        app,
-        { listen: { host: '', port: 0 } },
-        { logger },
-      );
-
-      lifecycle.addShutdownHook(() => server.stop(), { logger });
-
-      await server.start();
-
-      return router;
-    },
-  });
-
-  const discoveryFactory = createServiceFactory({
-    service: coreServices.discovery,
-    deps: {
-      rootHttpRouter: coreServices.rootHttpRouter,
-    },
-    async factory() {
-      if (!server) {
-        throw new Error('Test server not started yet');
-      }
-      const port = server.port();
-      const discovery = HostDiscovery.fromConfig(
-        new ConfigReader({
-          backend: { baseUrl: `http://localhost:${port}`, listen: { port } },
-        }),
-      );
-      return discovery;
-    },
-  });
-
-  const backend = createSpecializedBackend({
-    ...otherOptions,
-    defaultServiceFactories: [
-      ...defaultServiceFactories,
-      rootHttpRouterFactory,
-      discoveryFactory,
-    ],
-  });
-
-  for (const feature of features) {
-    backend.add(feature);
-  }
-
-  await backend.start();
-
-  return Object.assign(backend, {
-    get server() {
-      if (!server) {
-        throw new Error('TestBackend server is not available');
-      }
-      return server;
-    },
-  });
-}
-
 describe('authModuleVmwareCloudProvider', () => {
   it('should start', async () => {
-    const backend = await createBackendWithSession({
+    const backend = await startTestBackend({
       features: [
         import('@backstage/plugin-auth-backend'),
         authModuleVmwareCloudProvider,
@@ -186,6 +32,7 @@ describe('authModuleVmwareCloudProvider', () => {
               baseUrl: 'http://localhost:3000',
             },
             auth: {
+              session: { secret: 'test' },
               providers: {
                 vmwareCloudServices: {
                   development: {
