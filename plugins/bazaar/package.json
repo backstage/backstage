@@ -34,7 +34,6 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/plugin-catalog": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@date-io/luxon": "1.x",
