@@ -155,7 +155,7 @@ export class ServerTokenManager implements TokenManager {
         .setExpirationTime(
           DateTime.now().plus(TOKEN_EXPIRY_AFTER).toUnixInteger(),
         )
-        .sign(this.signingKey.toString());
+        .sign(this.signingKey);
       return { token: jwt };
     });
 
