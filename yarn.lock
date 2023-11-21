@@ -17640,11 +17640,11 @@ __metadata:
   linkType: hard
 
 "@types/concat-stream@npm:^2.0.0":
-  version: 2.0.2
-  resolution: "@types/concat-stream@npm:2.0.2"
+  version: 2.0.3
+  resolution: "@types/concat-stream@npm:2.0.3"
   dependencies:
     "@types/node": "*"
-  checksum: 7340b17f073356d4b06e611b343cae5bcb348f40916785705632495807d3c88b110a329e049618eed32e8d605636235604cac3929ba691599f7c7dd56c2a4b21
+  checksum: e829fde246528665b31a9b8f64c369ffc66aa2a1337d2bab1d38f4d4145701480af7c67e877dd09a7fa97fcbaa0f3baa816ed1b3e71c3ad430930acd37f4eb1f
   languageName: node
   linkType: hard
 
