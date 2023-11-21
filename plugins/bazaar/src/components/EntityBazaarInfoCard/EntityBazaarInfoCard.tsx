@@ -25,7 +25,7 @@ import { Card } from '@material-ui/core';
 import { parseBazaarResponse } from '../../util/parseMethods';
 
 /** @public */
-export const EntityBazaarInfoCard = () => {
+export const EntityBazaarInfoCard = (props: { codename?: string }) => {
   const { entity } = useEntity();
   const bazaarApi = useApi(bazaarApiRef);
 
@@ -49,13 +49,14 @@ export const EntityBazaarInfoCard = () => {
     setIsBazaar(isBazaarProject);
   }, [bazaarProject.value]);
 
+  const { codename } = props;
   if (isBazaar) {
     return (
       <Card>
         <EntityBazaarInfoContent
           bazaarProject={bazaarProject.value}
           fetchBazaarProject={fetchBazaarProject}
-          codename="Bazaar"
+          codename={codename || 'Bazaar'}
         />
       </Card>
     );
