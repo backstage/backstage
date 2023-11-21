@@ -77,7 +77,7 @@ export class ServerTokenManager implements TokenManager {
     const keys = config.getOptionalConfigArray('backend.auth.keys');
     if (keys?.length) {
       return new ServerTokenManager(
-        keys.map(key => key.getString('secret')),
+        keys.map(key => encodeURIComponent(key.getString('secret'))),
         options,
       );
     }
@@ -155,7 +155,7 @@ export class ServerTokenManager implements TokenManager {
         .setExpirationTime(
           DateTime.now().plus(TOKEN_EXPIRY_AFTER).toUnixInteger(),
         )
-        .sign(new TextEncoder().encode(this.signingKey.toString()));
+        .sign(this.signingKey.toString());
       return { token: jwt };
     });
 
