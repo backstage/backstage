@@ -73,7 +73,9 @@ export interface CreateExtensionOptions<
   TInputs extends AnyExtensionInputMap,
   TConfig,
 > {
-  id: string;
+  namespace?: string;
+  name?: string;
+  kind?: string;
   attachTo: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
@@ -84,6 +86,27 @@ export interface CreateExtensionOptions<
     config: TConfig;
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
+}
+
+/** @public */
+export interface ExtensionDefinition<TConfig> {
+  $$type: '@backstage/ExtensionDefinition';
+  namespace?: string;
+  name?: string;
+  kind?: string;
+  attachTo: { id: string; input: string };
+  disabled: boolean;
+  inputs: AnyExtensionInputMap;
+  output: AnyExtensionDataMap;
+  configSchema?: PortableSchema<TConfig>;
+  factory(options: {
+    node: AppNode;
+    config: TConfig;
+    inputs: Record<
+      string,
+      undefined | Record<string, unknown> | Array<Record<string, unknown>>
+    >;
+  }): ExtensionDataValues<any>;
 }
 
 /** @public */
@@ -112,11 +135,11 @@ export function createExtension<
   TConfig = never,
 >(
   options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
-): Extension<TConfig> {
+): ExtensionDefinition<TConfig> {
   return {
     ...options,
     disabled: options.disabled ?? false,
-    $$type: '@backstage/Extension',
+    $$type: '@backstage/ExtensionDefinition',
     inputs: options.inputs ?? {},
     factory({ inputs, ...rest }) {
       // TODO: Simplify this, but TS wouldn't infer the input type for some reason
