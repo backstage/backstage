@@ -50,11 +50,13 @@ const useStyles = makeStyles({
 type Props = {
   bazaarProject: BazaarProject | null | undefined;
   fetchBazaarProject: () => Promise<BazaarProject | null>;
+  codename: string;
 };
 
 export const EntityBazaarInfoContent = ({
   bazaarProject,
   fetchBazaarProject,
+  codename,
 }: Props) => {
   const classes = useStyles();
   const bazaarApi = useApi(bazaarApiRef);
@@ -169,6 +171,7 @@ export const EntityBazaarInfoContent = ({
           openEdit={openEdit}
           handleEditClose={handleEditClose}
           fetchBazaarProject={fetchBazaarProject}
+          codename={codename}
         />
 
         {openUnlink && (

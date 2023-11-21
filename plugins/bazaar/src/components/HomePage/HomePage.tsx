@@ -34,12 +34,18 @@ export const HomePage = (props: HomePageProps) => {
     {
       path: '/',
       title: 'Home',
-      children: <SortView fullWidth={fullWidth} fullHeight={fullHeight} />,
+      children: (
+        <SortView
+          fullWidth={fullWidth}
+          fullHeight={fullHeight}
+          codename={title || 'Bazaar'}
+        />
+      ),
     },
     {
       path: '/about',
       title: 'About',
-      children: <About />,
+      children: <About codename={title || 'Bazaar'} />,
     },
   ];
 
