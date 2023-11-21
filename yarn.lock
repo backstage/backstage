@@ -3313,7 +3313,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/integration-aws-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@google-cloud/storage": ^6.0.0
+    "@google-cloud/storage": ^7.0.0
     "@keyv/memcache": ^1.3.5
     "@keyv/redis": ^2.5.3
     "@kubernetes/client-node": 0.20.0
@@ -9704,7 +9704,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/integration-aws-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    "@google-cloud/storage": ^6.0.0
+    "@google-cloud/storage": ^7.0.0
     "@smithy/node-http-handler": ^2.1.7
     "@trendyol-js/openstack-swift-sdk": ^0.0.6
     "@types/express": ^4.17.6
@@ -11580,53 +11580,52 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@google-cloud/paginator@npm:^3.0.7":
-  version: 3.0.7
-  resolution: "@google-cloud/paginator@npm:3.0.7"
+"@google-cloud/paginator@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@google-cloud/paginator@npm:5.0.0"
   dependencies:
     arrify: ^2.0.0
     extend: ^3.0.2
-  checksum: bdecce8a894a0c7f47f13d0e42b2fa142098e1dd34ce571b7216ad624057214baf9066ecf091501b3770da9d7be20b983eda30185c8c6596192cb748f8a0090c
+  checksum: 7b8236ce610bef5c5de62a0ec267b0e4368480397621a692d213c56ffe66b20a8e6d4de0fe0606fd165672c873467ea313493f035a582e674df72c29dd20b7ef
   languageName: node
   linkType: hard
 
-"@google-cloud/projectify@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@google-cloud/projectify@npm:3.0.0"
-  checksum: 4fa7ad689422b0b9c152fb00260e54e39d81678f9c51518bdb34bc57ee00604524fcdd5837fa97eb2f8ff4811afee3f345b1b0993bc4a2fa1b803bdd6554839a
+"@google-cloud/projectify@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@google-cloud/projectify@npm:4.0.0"
+  checksum: 973d28414ae200433333a3c315aebb881ced42ea4afe6f3f8520d2fecded75e76c913f5189fea8fb29ce6ca36117c4f44001b3c503eecdd3ac7f02597a98354a
   languageName: node
   linkType: hard
 
-"@google-cloud/promisify@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@google-cloud/promisify@npm:3.0.0"
-  checksum: 5339e36bd5bc7957ae72b959e21c5d50fe028ad8eae9affb6e8e172aab715f3bf6a7b3c01720d6b4b67ea080d91dd30ac00f0dc88d455620c8bb10df263385a2
+"@google-cloud/promisify@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@google-cloud/promisify@npm:4.0.0"
+  checksum: edd189398c5ed5b7b64a373177d77c87d076a248c31b8ae878bb91e2411d89860108bcb948c349f32628973a823bd131beb53ec008fd613a8cb466ef1d89de49
   languageName: node
   linkType: hard
 
-"@google-cloud/storage@npm:^6.0.0":
-  version: 6.12.0
-  resolution: "@google-cloud/storage@npm:6.12.0"
+"@google-cloud/storage@npm:^7.0.0":
+  version: 7.6.0
+  resolution: "@google-cloud/storage@npm:7.6.0"
   dependencies:
-    "@google-cloud/paginator": ^3.0.7
-    "@google-cloud/projectify": ^3.0.0
-    "@google-cloud/promisify": ^3.0.0
+    "@google-cloud/paginator": ^5.0.0
+    "@google-cloud/projectify": ^4.0.0
+    "@google-cloud/promisify": ^4.0.0
     abort-controller: ^3.0.0
     async-retry: ^1.3.3
     compressible: ^2.0.12
     duplexify: ^4.0.0
     ent: ^2.2.0
-    extend: ^3.0.2
-    fast-xml-parser: ^4.2.2
-    gaxios: ^5.0.0
-    google-auth-library: ^8.0.1
+    fast-xml-parser: ^4.3.0
+    gaxios: ^6.0.2
+    google-auth-library: ^9.0.0
     mime: ^3.0.0
     mime-types: ^2.0.8
     p-limit: ^3.0.1
-    retry-request: ^5.0.0
-    teeny-request: ^8.0.0
+    retry-request: ^7.0.0
+    teeny-request: ^9.0.0
     uuid: ^8.0.0
-  checksum: cfe44e3f4d1bacd8eeefa7885d261f421c4ff84e82abe50200b5b77e28322baf9cb67497872b9868b25b43b14197b1a155d5eb7b70afb39d3476fa4bdead3338
+  checksum: 0ab71792ddafef3ce3634e2428fe3508572611caa436c4e6315f5f8657f48fa5714f0410383f8b006b469d7e71b7ef2dd2c0d68323753bcd0b381b06bdd3e1f4
   languageName: node
   linkType: hard
 
@@ -27263,14 +27262,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^4.2.2":
-  version: 4.2.7
-  resolution: "fast-xml-parser@npm:4.2.7"
+"fast-xml-parser@npm:^4.3.0":
+  version: 4.3.2
+  resolution: "fast-xml-parser@npm:4.3.2"
   dependencies:
     strnum: ^1.0.5
   bin:
     fxparser: src/cli/cli.js
-  checksum: d8b0c9e04756f6c43fa0399428f30149acadae21350e42e26e8fe98e24e6afa6b9b00aa554453795036b00e9fee974a1b556fe2ba18be391d51a9bf1ab790e7c
+  checksum: d507ce2efa5fd13d0a5ba28bd76dd68f2fc30ad8748357c37b70f360d19417866d79e35a688af067d5bceaaa796033fa985206aef9692f7a421e1326b6e73309
   languageName: node
   linkType: hard
 
@@ -28094,7 +28093,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gaxios@npm:^6.0.0":
+"gaxios@npm:^6.0.0, gaxios@npm:^6.0.2":
   version: 6.1.1
   resolution: "gaxios@npm:6.1.1"
   dependencies:
@@ -28498,7 +28497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^8.0.0, google-auth-library@npm:^8.0.1":
+"google-auth-library@npm:^8.0.0":
   version: 8.9.0
   resolution: "google-auth-library@npm:8.9.0"
   dependencies:
@@ -39840,16 +39839,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"retry-request@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "retry-request@npm:5.0.0"
-  dependencies:
-    debug: ^4.1.1
-    extend: ^3.0.2
-  checksum: f1c6eba3a380e994f2693d1734320e1291de16c11d25b3c4ac2f636b60dff02d8b6a977388a60c5a7d269a3ce5f9a72eb65734e0a614ce91e927fba549ed390e
-  languageName: node
-  linkType: hard
-
 "retry-request@npm:^7.0.0":
   version: 7.0.1
   resolution: "retry-request@npm:7.0.1"
@@ -42257,19 +42246,6 @@ __metadata:
     react-use: ^17.2.4
   languageName: unknown
   linkType: soft
-
-"teeny-request@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "teeny-request@npm:8.0.0"
-  dependencies:
-    http-proxy-agent: ^5.0.0
-    https-proxy-agent: ^5.0.0
-    node-fetch: ^2.6.1
-    stream-events: ^1.0.5
-    uuid: ^8.0.0
-  checksum: a867fb58406308e3ee8415f6b6612471a78af136971575bb51eb3ecf4b76d2ea363936da5eb68bbc28ef3d3af59e24dcf0803f1e80c8eb658c73cc9a53881c52
-  languageName: node
-  linkType: hard
 
 "teeny-request@npm:^9.0.0":
   version: 9.0.0
