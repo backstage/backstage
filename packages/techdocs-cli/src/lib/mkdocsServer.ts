@@ -27,7 +27,7 @@ export const runMkdocsServer = async (options: {
   stderrLogFunc?: LogFunc;
   mkdocsConfigFileName?: string;
   mkdocsParameterClean?: boolean;
-  mkdocsParameterDirty?: boolean;
+  mkdocsParameterDirtyReload?: boolean;
   mkdocsParameterStrict?: boolean;
 }): Promise<ChildProcess> => {
   const port = options.port ?? '8000';
@@ -58,9 +58,9 @@ export const runMkdocsServer = async (options: {
         ...(options.mkdocsConfigFileName
           ? ['--config-file', options.mkdocsConfigFileName]
           : []),
-        ...(options.mkdocsParameterClean ? '--clean' : []),
-        ...(options.mkdocsParameterDirty ? '--dirty' : []),
-        ...(options.mkdocsParameterStrict ? '--strict' : []),
+        ...(options.mkdocsParameterClean ? ['--clean'] : []),
+        ...(options.mkdocsParameterDirtyReload ? ['--dirty'] : []),
+        ...(options.mkdocsParameterStrict ? ['--strict'] : []),
       ],
       {
         stdoutLogFunc: options.stdoutLogFunc,
@@ -78,9 +78,9 @@ export const runMkdocsServer = async (options: {
       ...(options.mkdocsConfigFileName
         ? ['--config-file', options.mkdocsConfigFileName]
         : []),
-      ...(options.mkdocsParameterClean ? '--clean' : []),
-      ...(options.mkdocsParameterDirty ? '--dirty' : []),
-      ...(options.mkdocsParameterStrict ? '--strict' : []),
+      ...(options.mkdocsParameterClean ? ['--clean'] : []),
+      ...(options.mkdocsParameterDirtyReload ? ['--dirtyreload'] : []),
+      ...(options.mkdocsParameterStrict ? ['--strict'] : []),
     ],
     {
       stdoutLogFunc: options.stdoutLogFunc,

@@ -300,8 +300,8 @@ export function registerCommands(program: Command) {
       false,
     )
     .option(
-      '--mkdocs-parameter-dirty',
-      'Pass "--dirty" parameter to mkdocs server running in containerized environment',
+      '--mkdocs-parameter-dirtyreload',
+      'Pass "--dirtyreload" parameter to mkdocs server running in containerized environment',
       false,
     )
     .option(

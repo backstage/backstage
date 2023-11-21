@@ -92,7 +92,7 @@ Options:
                                               (can be added multiple times).
   --no-docker                                 Do not use Docker, use MkDocs executable in current user environment.
   --mkdocs-parameter-clean                    Pass "--clean" parameter to mkdocs server running in containerized environment.
-  --mkdocs-parameter-dirty                    Pass "--dirty" parameter to mkdocs server running in containerized environment.
+  --mkdocs-parameter-dirtyreload              Pass "--dirtyreload" parameter to mkdocs server running in containerized environment.
   --mkdocs-parameter-strict                   Pass "--strict" parameter to mkdocs server running in containerized environment.
   --mkdocs-port <PORT>                        Port for MkDocs server to use (default: "8000")
   --preview-app-bundle-path <PATH_TO_BUNDLE>  Preview documentation using a web app other than the included one.
