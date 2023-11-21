@@ -59,7 +59,7 @@ export const runMkdocsServer = async (options: {
           ? ['--config-file', options.mkdocsConfigFileName]
           : []),
         ...(options.mkdocsParameterClean ? ['--clean'] : []),
-        ...(options.mkdocsParameterDirtyReload ? ['--dirty'] : []),
+        ...(options.mkdocsParameterDirtyReload ? ['--dirtyreload'] : []),
         ...(options.mkdocsParameterStrict ? ['--strict'] : []),
       ],
       {
