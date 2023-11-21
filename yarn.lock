@@ -17717,11 +17717,11 @@ __metadata:
   linkType: hard
 
 "@types/cross-spawn@npm:^6.0.2":
-  version: 6.0.5
-  resolution: "@types/cross-spawn@npm:6.0.5"
+  version: 6.0.6
+  resolution: "@types/cross-spawn@npm:6.0.6"
   dependencies:
     "@types/node": "*"
-  checksum: 9b9cf332e49319903df3abeeb91882730f26ef80eed2e5d5ab1feb432f3f0804f72a07296c305daf5a310e771d5e3bbfc5395f993ba17e35d399bf6996860771
+  checksum: b4172927cd1387cf037c3ade785ef46c87537b7bc2803d7f6663b4904d0c5d6f726415d1adb2fee4fecb21746738f11336076449265d46be4ce110cc3a8c8436
   languageName: node
   linkType: hard
 
