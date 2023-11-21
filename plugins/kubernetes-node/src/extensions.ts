@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { KubernetesClustersSupplier } from '@backstage/plugin-kubernetes-node';
 import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
 
 /**
@@ -33,4 +34,23 @@ export interface KubernetesObjectsProviderExtensionPoint {
 export const kubernetesObjectsProviderExtensionPoint =
   createExtensionPoint<KubernetesObjectsProviderExtensionPoint>({
     id: 'kubernetes.objects-provider',
+  });
+
+/**
+ * The interface for {@link kubernetesClusterSupplierExtensionPoint}.
+ *
+ * @public
+ */
+export interface KubernetesClusterSupplierExtensionPoint {
+  addClusterSupplier(clusterSupplier: KubernetesClustersSupplier): void;
+}
+
+/**
+ * An extension point the exposes the ability to configure a cluster supplier.
+ *
+ * @public
+ */
+export const kubernetesClusterSupplierExtensionPoint =
+  createExtensionPoint<KubernetesClusterSupplierExtensionPoint>({
+    id: 'kubernetes.cluster-supplier',
   });
