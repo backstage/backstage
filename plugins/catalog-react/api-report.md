@@ -297,11 +297,7 @@ export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
 
 // @public (undocumented)
 export type EntityListProviderProps = PropsWithChildren<{
-  enablePagination?:
-    | boolean
-    | {
-        limit?: number;
-      };
+  pagination?: Pagination;
 }>;
 
 // @public (undocumented)
@@ -656,6 +652,13 @@ export class MockStarredEntitiesApi implements StarredEntitiesApi {
   // (undocumented)
   toggleStarred(entityRef: string): Promise<void>;
 }
+
+// @public (undocumented)
+export type Pagination =
+  | boolean
+  | {
+      limit?: number;
+    };
 
 // @public
 export interface StarredEntitiesApi {

@@ -87,7 +87,7 @@ const mockCatalogApi: Partial<jest.Mocked<CatalogApi>> = {
 };
 
 const createWrapper =
-  (options: { location?: string; enablePagination: boolean }) =>
+  (options: { location?: string; pagination: boolean }) =>
   (props: PropsWithChildren) => {
     const InitialFiltersWrapper = ({ children }: PropsWithChildren) => {
       const { updateFilters } = useEntityList();
@@ -111,7 +111,7 @@ const createWrapper =
             [alertApiRef, { post: jest.fn() }],
           ]}
         >
-          <EntityListProvider enablePagination={options.enablePagination}>
+          <EntityListProvider pagination={options.pagination}>
             <InitialFiltersWrapper>{props.children}</InitialFiltersWrapper>
           </EntityListProvider>
         </TestApiProvider>
@@ -121,7 +121,7 @@ const createWrapper =
 
 describe('<EntityListProvider />', () => {
   const origReplaceState = window.history.replaceState;
-  const enablePagination = false;
+  const pagination = false;
 
   beforeEach(() => {
     window.history.replaceState = jest.fn();
@@ -136,7 +136,7 @@ describe('<EntityListProvider />', () => {
 
   it('should send backend filters', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ enablePagination }),
+      wrapper: createWrapper({ pagination }),
     });
 
     await waitFor(() => {
@@ -152,7 +152,7 @@ describe('<EntityListProvider />', () => {
 
   it('resolves frontend filters', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ enablePagination }),
+      wrapper: createWrapper({ pagination }),
       initialProps: {
         userFilter: 'all',
       },
@@ -178,7 +178,7 @@ describe('<EntityListProvider />', () => {
     const { result } = renderHook(() => useEntityList(), {
       wrapper: createWrapper({
         location: `/catalog?${query}`,
-        enablePagination,
+        pagination,
       }),
     });
 
@@ -193,7 +193,7 @@ describe('<EntityListProvider />', () => {
 
   it('does not fetch when only frontend filters change', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ enablePagination }),
+      wrapper: createWrapper({ pagination }),
     });
 
     await waitFor(() => {
@@ -220,7 +220,7 @@ describe('<EntityListProvider />', () => {
 
   it('debounces multiple filter changes', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ enablePagination }),
+      wrapper: createWrapper({ pagination }),
     });
 
     await waitFor(() => {
@@ -243,7 +243,7 @@ describe('<EntityListProvider />', () => {
 
   it('returns an error on catalogApi failure', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ enablePagination }),
+      wrapper: createWrapper({ pagination }),
     });
 
     await waitFor(() => {
@@ -262,7 +262,7 @@ describe('<EntityListProvider />', () => {
 
   it('returns an empty pageInfo', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ enablePagination }),
+      wrapper: createWrapper({ pagination }),
     });
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenCalled();
@@ -272,9 +272,9 @@ describe('<EntityListProvider />', () => {
   });
 });
 
-describe('<EntityListProvider enablePagination />', () => {
+describe('<EntityListProvider pagination />', () => {
   const origReplaceState = window.history.replaceState;
-  const enablePagination = true;
+  const pagination = true;
   const limit = 20;
   const orderFields = [{ field: 'metadata.name', order: 'asc' }];
 
@@ -291,7 +291,7 @@ describe('<EntityListProvider enablePagination />', () => {
 
   it('should send backend filters', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ enablePagination }),
+      wrapper: createWrapper({ pagination }),
     });
 
     await waitFor(() => {
@@ -309,7 +309,7 @@ describe('<EntityListProvider enablePagination />', () => {
 
   it('resolves frontend filters', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ enablePagination }),
+      wrapper: createWrapper({ pagination }),
       initialProps: {
         userFilter: 'all',
       },
@@ -335,7 +335,7 @@ describe('<EntityListProvider enablePagination />', () => {
     const { result } = renderHook(() => useEntityList(), {
       wrapper: createWrapper({
         location: `/catalog?${query}`,
-        enablePagination,
+        pagination,
       }),
     });
 
@@ -350,7 +350,7 @@ describe('<EntityListProvider enablePagination />', () => {
 
   it('fetch when frontend filters change', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ enablePagination }),
+      wrapper: createWrapper({ pagination }),
     });
 
     await waitFor(() => {
@@ -375,7 +375,7 @@ describe('<EntityListProvider enablePagination />', () => {
 
   it('debounces multiple filter changes', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ enablePagination }),
+      wrapper: createWrapper({ pagination }),
     });
 
     await waitFor(() => {
@@ -400,7 +400,7 @@ describe('<EntityListProvider enablePagination />', () => {
 
   it('returns an error on catalogApi failure', async () => {
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ enablePagination }),
+      wrapper: createWrapper({ pagination }),
     });
 
     await waitFor(() => {
@@ -425,7 +425,7 @@ describe('<EntityListProvider enablePagination />', () => {
         totalItems: 10,
       });
       const { result } = renderHook(() => useEntityList(), {
-        wrapper: createWrapper({ enablePagination }),
+        wrapper: createWrapper({ pagination }),
       });
       await waitFor(() => {
         expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
@@ -439,7 +439,7 @@ describe('<EntityListProvider enablePagination />', () => {
 
     it('returns pageInfo with next function and properly fetch next batch', async () => {
       const { result } = renderHook(() => useEntityList(), {
-        wrapper: createWrapper({ enablePagination }),
+        wrapper: createWrapper({ pagination }),
       });
       await waitFor(() => {
         expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
@@ -463,7 +463,7 @@ describe('<EntityListProvider enablePagination />', () => {
 
     it('returns pageInfo with prev function and properly fetch prev batch', async () => {
       const { result } = renderHook(() => useEntityList(), {
-        wrapper: createWrapper({ enablePagination }),
+        wrapper: createWrapper({ pagination }),
       });
       await waitFor(() => {
         expect(mockCatalogApi.queryEntities).toHaveBeenCalled();

@@ -2,13 +2,17 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Added experimental pagination support to `CatalogIndexPage`
+Added pagination support to `CatalogIndexPage`
 
-CatalogIndexPage now offers an optional pagination feature, designed to accommodate adopters managing extensive catalogs. This new capability allows for better handling of large amounts of data.
+`CatalogIndexPage` now offers an optional pagination feature, designed to accommodate adopters managing extensive catalogs. This new capability allows for better handling of large amounts of data.
 
-To activate the pagination mode, simply update your configuration as follows:
+To activate the pagination mode, simply update your `App.tsx` as follows:
 
 ```diff
-  catalog:
-+   experimentalPagination: true
+  const routes = (
+    <FlatRoutes>
+      ...
+-     <Route path="/catalog" element={<CatalogIndexPage />} />
++     <Route path="/catalog" element={<CatalogIndexPage pagination />} />
+      ...
 ```
