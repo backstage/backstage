@@ -130,8 +130,13 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
  * @public
  */
 export type EntityListProviderProps = PropsWithChildren<{
-  enablePagination?: boolean | { limit?: number };
+  pagination?: Pagination;
 }>;
+
+/**
+ * @public
+ */
+export type Pagination = boolean | { limit?: number };
 
 /**
  * Provides entities and filters for a catalog listing.
@@ -153,14 +158,13 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   const location = useLocation();
 
   const enablePagination =
-    props.enablePagination === true ||
-    typeof props.enablePagination === 'object';
+    props.pagination === true || typeof props.pagination === 'object';
 
   const limit =
-    props.enablePagination &&
-    typeof props.enablePagination === 'object' &&
-    typeof props.enablePagination.limit === 'number'
-      ? props.enablePagination.limit
+    props.pagination &&
+    typeof props.pagination === 'object' &&
+    typeof props.pagination.limit === 'number'
+      ? props.pagination.limit
       : 20;
 
   const { queryParameters, cursor: initialCursor } = useMemo(() => {
