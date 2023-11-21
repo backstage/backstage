@@ -32,6 +32,8 @@
 export {
   kubernetesObjectsProviderExtensionPoint,
   type KubernetesObjectsProviderExtensionPoint,
+  kubernetesClusterSupplierExtensionPoint,
+  type KubernetesClusterSupplierExtensionPoint,
 } from './extensions';
 
 export * from './types';

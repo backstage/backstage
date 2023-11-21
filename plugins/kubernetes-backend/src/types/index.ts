@@ -17,7 +17,10 @@
 export * from './types';
 
 export type {
+  AuthMetadata,
+  ClusterDetails,
   CustomResourcesByEntity,
+  KubernetesClustersSupplier,
   KubernetesObjectsByEntity,
   KubernetesObjectsProvider,
 } from '@backstage/plugin-kubernetes-node';

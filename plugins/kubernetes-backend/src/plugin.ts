@@ -26,6 +26,9 @@ import {
   KubernetesObjectsProviderExtensionPoint,
   kubernetesObjectsProviderExtensionPoint,
   KubernetesObjectsProvider,
+  KubernetesClusterSupplierExtensionPoint,
+  kubernetesClusterSupplierExtensionPoint,
+  KubernetesClustersSupplier,
 } from '@backstage/plugin-kubernetes-node';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
@@ -45,6 +48,23 @@ class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
   }
 }
 
+class ClusterSuplier implements KubernetesClusterSupplierExtensionPoint {
+  private clusterSupplier: KubernetesClustersSupplier | undefined;
+
+  getClusterSupplier() {
+    return this.clusterSupplier;
+  }
+
+  addClusterSupplier(clusterSupplier: KubernetesClustersSupplier) {
+    if (this.clusterSupplier) {
+      throw new Error(
+        'Multiple Kubernetes Cluster Suppliers is not supported at this time',
+      );
+    }
+    this.clusterSupplier = clusterSupplier;
+  }
+}
+
 /**
  * This is the backend plugin that provides the Kubernetes integration.
  * @alpha
@@ -53,10 +73,15 @@ class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
 export const kubernetesPlugin = createBackendPlugin({
   pluginId: 'kubernetes',
   register(env) {
-    const extensionPoint = new ObjectsProvider();
+    const extPointObjectsProvider = new ObjectsProvider();
+    const extPointClusterSuplier = new ClusterSuplier();
     env.registerExtensionPoint(
       kubernetesObjectsProviderExtensionPoint,
-      extensionPoint,
+      extPointObjectsProvider,
+    );
+    env.registerExtensionPoint(
+      kubernetesClusterSupplierExtensionPoint,
+      extPointClusterSuplier,
     );
 
     env.registerInit({
@@ -76,7 +101,8 @@ export const kubernetesPlugin = createBackendPlugin({
           catalogApi,
           permissions,
         })
-          .setObjectsProvider(extensionPoint.getObjectsProvider())
+          .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
+          .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())
           .build();
         http.use(router);
       },
