@@ -16,11 +16,11 @@
 
 import React, { PropsWithChildren, ReactNode, useEffect } from 'react';
 import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
-import { BackstagePlugin } from '../wiring';
 import { ErrorBoundary } from './ErrorBoundary';
 import { ExtensionSuspense } from './ExtensionSuspense';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
+import { AppNodeSpec } from '../apis';
 
 type RouteTrackerProps = PropsWithChildren<{
   disableTracking?: boolean;
@@ -44,25 +44,24 @@ const RouteTracker = (props: RouteTrackerProps) => {
 
 /** @public */
 export interface ExtensionBoundaryProps {
-  id: string;
-  source?: BackstagePlugin;
+  spec: AppNodeSpec;
   routable?: boolean;
   children: ReactNode;
 }
 
 /** @public */
 export function ExtensionBoundary(props: ExtensionBoundaryProps) {
-  const { id, source, routable, children } = props;
+  const { spec, routable, children } = props;
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
-    extension: id,
-    pluginId: source?.id,
+    extension: spec.id,
+    pluginId: spec.source?.id,
   };
 
   return (
     <ExtensionSuspense>
-      <ErrorBoundary plugin={source}>
+      <ErrorBoundary plugin={spec.source}>
         <AnalyticsContext attributes={attributes}>
           <RouteTracker disableTracking={!routable}>{children}</RouteTracker>
         </AnalyticsContext>
