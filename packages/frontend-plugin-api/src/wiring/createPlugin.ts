@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Extension } from './createExtension';
+import { Extension, ExtensionDefinition } from './createExtension';
 import { ExternalRouteRef, RouteRef } from '../routing';
 
 /** @public */
@@ -31,7 +31,7 @@ export interface PluginOptions<
   id: string;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
-  extensions?: Extension<unknown>[];
+  extensions?: ExtensionDefinition<unknown>[];
 }
 
 /** @public */
@@ -57,7 +57,22 @@ export function createPlugin<
     ...options,
     routes: options.routes ?? ({} as Routes),
     externalRoutes: options.externalRoutes ?? ({} as ExternalRoutes),
-    extensions: options.extensions ?? [],
+    extensions: (options.extensions ?? []).map(definition => {
+      const { name, namespace: _, kind, ...rest } = definition;
+
+      let id;
+      if (kind && name) {
+        id = `${kind}:${options.id}/${name}`;
+      } else if (kind) {
+        id = `${kind}:${options.id}`;
+      } else if (name) {
+        id = `${options.id}/${name}`;
+      } else {
+        id = options.id;
+      }
+
+      return { id, ...rest, $$type: '@backstage/Extension' };
+    }),
     $$type: '@backstage/BackstagePlugin',
   };
 }
