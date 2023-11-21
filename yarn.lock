@@ -3532,7 +3532,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@^1.1.5, @backstage/catalog-model@^1.4.1, @backstage/catalog-model@^1.4.3, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@^1.1.5, @backstage/catalog-model@^1.4.3, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -3849,7 +3849,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-components@^0.13.4, @backstage/core-components@^0.13.7, @backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
+"@backstage/core-components@^0.13.7, @backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
   version: 0.0.0-use.local
   resolution: "@backstage/core-components@workspace:packages/core-components"
   dependencies:
@@ -8008,7 +8008,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-pagerduty@workspace:plugins/pagerduty":
+"@backstage/plugin-pagerduty@workspace:^, @backstage/plugin-pagerduty@workspace:plugins/pagerduty":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-pagerduty@workspace:plugins/pagerduty"
   dependencies:
@@ -14176,31 +14176,6 @@ __metadata:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
   checksum: 72ce56c8df0cc4611a0a66c7d22659f911ac8d265b3b2802cd4c35b7b0415a70d6c448eb681fd77bd4ab9167ffa560e8facc0b06301fc55ac933bdaf0d9e336d
-  languageName: node
-  linkType: hard
-
-"@pagerduty/backstage-plugin@npm:^0.7.2-next.1":
-  version: 0.7.2-next.1
-  resolution: "@pagerduty/backstage-plugin@npm:0.7.2-next.1"
-  dependencies:
-    "@backstage/catalog-model": ^1.4.1
-    "@backstage/core-components": ^0.13.4
-    "@backstage/core-plugin-api": ^1.5.3
-    "@backstage/errors": ^1.2.1
-    "@backstage/plugin-catalog-react": ^1.8.3
-    "@backstage/plugin-home-react": ^0.1.2
-    "@backstage/theme": ^0.4.1
-    "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
-    "@material-ui/lab": 4.0.0-alpha.61
-    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
-    classnames: ^2.2.6
-    luxon: ^3.4.1
-    react: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-router-dom: 6.0.0-beta.0 || ^6.3.0
-    react-use: ^17.2.4
-  checksum: da1c06472a32fcd611066c9ec153d6195ae1ebb767b420cf00c0de74705ce2e0aea6cc34bce0cae01281c1138ce965bd4d428bf854c273558c145ba686a47f3b
   languageName: node
   linkType: hard
 
@@ -26380,6 +26355,7 @@ __metadata:
     "@backstage/plugin-newrelic-dashboard": "workspace:^"
     "@backstage/plugin-octopus-deploy": "workspace:^"
     "@backstage/plugin-org": "workspace:^"
+    "@backstage/plugin-pagerduty": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/plugin-playlist": "workspace:^"
     "@backstage/plugin-puppetdb": "workspace:^"
@@ -26406,7 +26382,6 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
     "@oriflame/backstage-plugin-score-card": ^0.7.0
-    "@pagerduty/backstage-plugin": ^0.7.2-next.1
     "@roadiehq/backstage-plugin-buildkite": ^2.0.8
     "@roadiehq/backstage-plugin-github-insights": ^2.0.5
     "@roadiehq/backstage-plugin-github-pull-requests": ^2.2.7
@@ -26491,6 +26466,7 @@ __metadata:
     "@backstage/plugin-nomad": "workspace:^"
     "@backstage/plugin-octopus-deploy": "workspace:^"
     "@backstage/plugin-org": "workspace:^"
+    "@backstage/plugin-pagerduty": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/plugin-playlist": "workspace:^"
     "@backstage/plugin-puppetdb": "workspace:^"
@@ -26518,7 +26494,6 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@octokit/rest": ^19.0.3
     "@oriflame/backstage-plugin-score-card": ^0.7.0
-    "@pagerduty/backstage-plugin": ^0.7.2-next.1
     "@playwright/test": ^1.32.3
     "@roadiehq/backstage-plugin-buildkite": ^2.0.8
     "@roadiehq/backstage-plugin-github-insights": ^2.0.5
@@ -38291,7 +38266,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^16.13.1 || ^17.0.0 || ^18.0.0, react-dom@npm:^18.0.2":
+"react-dom@npm:^18.0.2":
   version: 18.2.0
   resolution: "react-dom@npm:18.2.0"
   dependencies:
@@ -38675,7 +38650,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:6.0.0-beta.0 || ^6.3.0, react-router-dom@npm:^6.3.0":
+"react-router-dom@npm:^6.3.0":
   version: 6.19.0
   resolution: "react-router-dom@npm:6.19.0"
   dependencies:
@@ -38904,7 +38879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^16.13.1 || ^17.0.0 || ^18.0.0, react@npm:^18.0.2":
+"react@npm:^18.0.2":
   version: 18.2.0
   resolution: "react@npm:18.2.0"
   dependencies:
