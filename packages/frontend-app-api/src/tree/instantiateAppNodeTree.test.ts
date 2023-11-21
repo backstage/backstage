@@ -15,6 +15,7 @@
  */
 
 import {
+  AppNode,
   Extension,
   createExtension,
   createExtensionDataRef,
@@ -52,15 +53,27 @@ const simpleExtension = createExtension({
 
 function makeSpec<TConfig>(
   extension: Extension<TConfig>,
-  config?: TConfig,
+  spec?: Partial<AppNodeSpec>,
 ): AppNodeSpec {
   return {
     id: extension.id,
     attachTo: extension.attachTo,
     disabled: extension.disabled,
     extension,
-    config,
     source: undefined,
+    ...spec,
+  };
+}
+
+function makeNode<TConfig>(
+  extension: Extension<TConfig>,
+  spec?: Partial<AppNodeSpec>,
+): AppNode {
+  return {
+    spec: makeSpec(extension, spec),
+    edges: {
+      attachments: new Map(),
+    },
   };
 }
 
@@ -71,7 +84,7 @@ function makeInstanceWithId<TConfig>(
   return {
     id: extension.id,
     instance: createAppNodeInstance({
-      spec: makeSpec(extension, config),
+      node: makeNode(extension, { config }),
       attachments: new Map(),
     }),
   };
@@ -80,7 +93,7 @@ function makeInstanceWithId<TConfig>(
 describe('instantiateAppNodeTree', () => {
   it('should instantiate a single node', () => {
     const tree = resolveAppTree('root-node', [
-      { ...makeSpec(simpleExtension), id: 'root-node' },
+      makeSpec(simpleExtension, { id: 'root-node' }),
     ]);
     expect(tree.root.instance).not.toBeDefined();
     instantiateAppNodeTree(tree.root);
@@ -94,7 +107,7 @@ describe('instantiateAppNodeTree', () => {
 
   it('should not instantiate disabled nodes', () => {
     const tree = resolveAppTree('root-node', [
-      { ...makeSpec(simpleExtension), id: 'root-node', disabled: true },
+      makeSpec(simpleExtension, { id: 'root-node', disabled: true }),
     ]);
     expect(tree.root.instance).not.toBeDefined();
     instantiateAppNodeTree(tree.root);
@@ -103,28 +116,25 @@ describe('instantiateAppNodeTree', () => {
 
   it('should instantiate a node with attachments', () => {
     const tree = resolveAppTree('root-node', [
-      {
-        ...makeSpec(
-          createExtension({
-            id: 'root-node',
-            attachTo: { id: 'ignored', input: 'ignored' },
-            inputs: {
-              test: createExtensionInput({ test: testDataRef }),
-            },
-            output: {
-              inputMirror: inputMirrorDataRef,
-            },
-            factory({ inputs }) {
-              return { inputMirror: inputs };
-            },
-          }),
-        ),
-      },
-      {
-        ...makeSpec(simpleExtension),
+      makeSpec(
+        createExtension({
+          id: 'root-node',
+          attachTo: { id: 'ignored', input: 'ignored' },
+          inputs: {
+            test: createExtensionInput({ test: testDataRef }),
+          },
+          output: {
+            inputMirror: inputMirrorDataRef,
+          },
+          factory({ inputs }) {
+            return { inputMirror: inputs };
+          },
+        }),
+      ),
+      makeSpec(simpleExtension, {
         id: 'child-node',
         attachTo: { id: 'root-node', input: 'test' },
-      },
+      }),
     ]);
 
     const childNode = tree.nodes.get('child-node');
@@ -191,7 +201,7 @@ describe('createAppNodeInstance', () => {
   it('should create a simple extension instance', () => {
     const attachments = new Map();
     const instance = createAppNodeInstance({
-      spec: makeSpec(simpleExtension),
+      node: makeNode(simpleExtension),
       attachments,
     });
 
@@ -231,7 +241,7 @@ describe('createAppNodeInstance', () => {
     ]);
     const instance = createAppNodeInstance({
       attachments,
-      spec: makeSpec(
+      node: makeNode(
         createExtension({
           id: 'core.test',
           attachTo: { id: 'ignored', input: 'ignored' },
@@ -283,10 +293,7 @@ describe('createAppNodeInstance', () => {
   it('should refuse to create an extension with invalid config', () => {
     expect(() =>
       createAppNodeInstance({
-        spec: {
-          ...makeSpec(simpleExtension),
-          config: { other: 'not-a-number' },
-        },
+        node: makeNode(simpleExtension, { config: { other: 'not-a-number' } }),
         attachments: new Map(),
       }),
     ).toThrow(
@@ -297,7 +304,7 @@ describe('createAppNodeInstance', () => {
   it('should forward extension factory errors', () => {
     expect(() =>
       createAppNodeInstance({
-        spec: makeSpec(
+        node: makeNode(
           createExtension({
             id: 'core.test',
             attachTo: { id: 'ignored', input: 'ignored' },
@@ -319,7 +326,7 @@ describe('createAppNodeInstance', () => {
   it('should refuse to create an instance with duplicate output', () => {
     expect(() =>
       createAppNodeInstance({
-        spec: makeSpec(
+        node: makeNode(
           createExtension({
             id: 'core.test',
             attachTo: { id: 'ignored', input: 'ignored' },
@@ -342,7 +349,7 @@ describe('createAppNodeInstance', () => {
   it('should refuse to create an instance with disconnected output data', () => {
     expect(() =>
       createAppNodeInstance({
-        spec: makeSpec(
+        node: makeNode(
           createExtension({
             id: 'core.test',
             attachTo: { id: 'ignored', input: 'ignored' },
@@ -364,7 +371,7 @@ describe('createAppNodeInstance', () => {
   it('should refuse to create an instance with missing required input', () => {
     expect(() =>
       createAppNodeInstance({
-        spec: makeSpec(
+        node: makeNode(
           createExtension({
             id: 'core.test',
             attachTo: { id: 'ignored', input: 'ignored' },
@@ -408,7 +415,7 @@ describe('createAppNodeInstance', () => {
             ],
           ],
         ]),
-        spec: makeSpec(
+        node: makeNode(
           createExtension({
             id: 'core.test',
             attachTo: { id: 'ignored', input: 'ignored' },
@@ -443,7 +450,7 @@ describe('createAppNodeInstance', () => {
             ],
           ],
         ]),
-        spec: makeSpec(
+        node: makeNode(
           createExtension({
             id: 'core.test',
             attachTo: { id: 'ignored', input: 'ignored' },
@@ -469,7 +476,7 @@ describe('createAppNodeInstance', () => {
             ],
           ],
         ]),
-        spec: makeSpec(
+        node: makeNode(
           createExtension({
             id: 'core.test',
             attachTo: { id: 'ignored', input: 'ignored' },
@@ -503,7 +510,7 @@ describe('createAppNodeInstance', () => {
             ],
           ],
         ]),
-        spec: makeSpec(
+        node: makeNode(
           createExtension({
             id: 'core.test',
             attachTo: { id: 'ignored', input: 'ignored' },
@@ -531,7 +538,7 @@ describe('createAppNodeInstance', () => {
         attachments: new Map([
           ['singleton', [makeInstanceWithId(simpleExtension, undefined)]],
         ]),
-        spec: makeSpec(
+        node: makeNode(
           createExtension({
             id: 'core.test',
             attachTo: { id: 'ignored', input: 'ignored' },

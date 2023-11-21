@@ -20,11 +20,7 @@ import {
   ExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
-import {
-  AppNode,
-  AppNodeInstance,
-  AppNodeSpec,
-} from '@backstage/frontend-plugin-api';
+import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
 
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
@@ -99,11 +95,11 @@ function resolveInputs(
 
 /** @internal */
 export function createAppNodeInstance(options: {
-  spec: AppNodeSpec;
+  node: AppNode;
   attachments: ReadonlyMap<string, { id: string; instance: AppNodeInstance }[]>;
 }): AppNodeInstance {
-  const { spec, attachments } = options;
-  const { id, extension, config } = spec;
+  const { node, attachments } = options;
+  const { id, extension, config } = node.spec;
   const extensionData = new Map<string, unknown>();
   const extensionDataRefs = new Set<ExtensionDataRef<unknown>>();
 
@@ -118,7 +114,7 @@ export function createAppNodeInstance(options: {
 
   try {
     const namedOutputs = extension.factory({
-      spec,
+      node,
       config: parsedConfig,
       inputs: resolveInputs(extension.inputs, attachments),
     });
@@ -186,7 +182,7 @@ export function instantiateAppNodeTree(rootNode: AppNode): void {
     }
 
     (node as Mutable<AppNode>).instance = createAppNodeInstance({
-      spec: node.spec,
+      node,
       attachments: instantiatedAttachments,
     });
 

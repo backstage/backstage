@@ -20,7 +20,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { ExtensionSuspense } from './ExtensionSuspense';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
-import { AppNodeSpec } from '../apis';
+import { AppNode } from '../apis';
 
 type RouteTrackerProps = PropsWithChildren<{
   disableTracking?: boolean;
@@ -44,24 +44,24 @@ const RouteTracker = (props: RouteTrackerProps) => {
 
 /** @public */
 export interface ExtensionBoundaryProps {
-  spec: AppNodeSpec;
+  node: AppNode;
   routable?: boolean;
   children: ReactNode;
 }
 
 /** @public */
 export function ExtensionBoundary(props: ExtensionBoundaryProps) {
-  const { spec, routable, children } = props;
+  const { node, routable, children } = props;
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
-    extension: spec.id,
-    pluginId: spec.source?.id,
+    extension: node.spec.id,
+    pluginId: node.spec.source?.id,
   };
 
   return (
     <ExtensionSuspense>
-      <ErrorBoundary plugin={spec.source}>
+      <ErrorBoundary plugin={node.spec.source}>
         <AnalyticsContext attributes={attributes}>
           <RouteTracker disableTracking={!routable}>{children}</RouteTracker>
         </AnalyticsContext>
