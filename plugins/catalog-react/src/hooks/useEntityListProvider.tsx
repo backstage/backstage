@@ -130,13 +130,8 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
  * @public
  */
 export type EntityListProviderProps = PropsWithChildren<{
-  pagination?: Pagination;
+  pagination?: boolean | { limit?: number };
 }>;
-
-/**
- * @public
- */
-export type Pagination = boolean | { limit?: number };
 
 /**
  * Provides entities and filters for a catalog listing.

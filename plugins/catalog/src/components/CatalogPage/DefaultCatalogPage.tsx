@@ -37,7 +37,6 @@ import {
   EntityKindPicker,
   EntityNamespacePicker,
   EntityOwnerPickerProps,
-  Pagination,
 } from '@backstage/plugin-catalog-react';
 import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
@@ -51,7 +50,7 @@ import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
-  pagination?: Pagination;
+  pagination?: boolean | { limit?: number };
 };
 
 /** @internal */
