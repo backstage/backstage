@@ -13,30 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import request from 'supertest';
-import { setupServer } from 'msw/node';
-import { rest } from 'msw';
-import { Server } from 'http';
-import express from 'express';
-import cookieParser from 'cookie-parser';
-import session from 'express-session';
-import passport from 'passport';
-import { AddressInfo } from 'net';
 import {
-  AuthProviderRouteHandlers,
-  createOAuthRouteHandlers,
-} from '@backstage/plugin-auth-node';
-import Router from 'express-promise-router';
-import { pinnipedAuthenticator } from './authenticator';
-import { ConfigReader } from '@backstage/config';
+  mockServices,
+  setupRequestMockHandlers,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
+import { Server } from 'http';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import request from 'supertest';
+import { authModulePinnipedProvider } from './module';
 
 describe('authModulePinnipedProvider', () => {
-  let app: express.Express;
-  let backstageServer: Server;
-  let appUrl: string;
-  let providerRouteHandler: AuthProviderRouteHandlers;
+  let server: Server;
+  let port: number;
   let idToken: string;
   let publicKey: JWK;
 
@@ -151,73 +142,38 @@ describe('authModulePinnipedProvider', () => {
       }),
     );
 
-    const secret = 'secret';
-    app = express()
-      .use(cookieParser(secret))
-      .use(
-        session({
-          secret,
-          saveUninitialized: false,
-          resave: false,
-          cookie: { secure: false },
-        }),
-      )
-      .use(passport.initialize())
-      .use(passport.session());
-    await new Promise(resolve => {
-      backstageServer = app.listen(0, '0.0.0.0', () => {
-        appUrl = `http://127.0.0.1:${
-          (backstageServer.address() as AddressInfo).port
-        }`;
-        resolve(null);
-      });
-    });
-
-    mswServer.use(rest.all(`${appUrl}/*`, req => req.passthrough()));
-
-    providerRouteHandler = createOAuthRouteHandlers({
-      authenticator: pinnipedAuthenticator,
-      appUrl,
-      baseUrl: `${appUrl}/api/auth`,
-      isOriginAllowed: _ => true,
-      providerId: 'pinniped',
-      config: new ConfigReader({
-        federationDomain: 'https://federationDomain.test',
-        clientId: 'clientId',
-        clientSecret: 'clientSecret',
-      }),
-      resolverContext: {
-        issueToken: async _ => ({ token: '' }),
-        findCatalogUser: async _ => ({
-          entity: {
-            apiVersion: '',
-            kind: '',
-            metadata: { name: '' },
+    const backend = await startTestBackend({
+      features: [
+        authModulePinnipedProvider,
+        import('@backstage/plugin-auth-backend'),
+        mockServices.rootConfig.factory({
+          data: {
+            app: { baseUrl: 'http://localhost' },
+            auth: {
+              session: { secret: 'test' },
+              providers: {
+                pinniped: {
+                  development: {
+                    federationDomain: 'https://federationDomain.test',
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                  },
+                },
+              },
+            },
           },
         }),
-        signInWithCatalogUser: async _ => ({ token: '' }),
-      },
+      ],
     });
 
-    const router = Router();
-    router
-      .use(
-        '/api/auth/pinniped/start',
-        providerRouteHandler.start.bind(providerRouteHandler),
-      )
-      .use(
-        '/api/auth/pinniped/handler/frame',
-        providerRouteHandler.frameHandler.bind(providerRouteHandler),
-      );
-    app.use(router);
-  });
+    server = backend.server;
+    port = backend.server.port();
 
-  afterEach(() => {
-    backstageServer.close();
+    mswServer.use(rest.all(`http://*:${port}/*`, req => req.passthrough()));
   });
 
   it('should start', async () => {
-    const agent = request.agent(backstageServer);
+    const agent = request.agent(server);
     const startResponse = await agent.get(
       `/api/auth/pinniped/start?env=development&audience=test_cluster`,
     );
@@ -230,15 +186,20 @@ describe('authModulePinnipedProvider', () => {
 
     // make /start request with audience parameter
     const startResponse = await agent.get(
-      `${appUrl}/api/auth/pinniped/start?env=development&audience=test_cluster`,
+      `http://localhost:${port}/api/auth/pinniped/start?env=development&audience=test_cluster`,
     );
-    // follow redirect to authorization endpoint
-    const authorizationResponse = await agent.get(
-      startResponse.header.location,
+
+    // Emulate user interaction with the Pinniped login page
+    const authResponse = await agent.get(startResponse.header.location);
+    expect(authResponse.status).toBe(302);
+    const callbackUrl = new URL(authResponse.header.location);
+
+    // follow redirect from the login page back to the callback URL to the Backstage auth backend
+    const relativeCallbackUrl = String(callbackUrl).slice(
+      callbackUrl.origin.length,
     );
-    // follow redirect to token_endpoint
     const handlerResponse = await agent.get(
-      authorizationResponse.header.location,
+      `http://localhost:${port}${relativeCallbackUrl}`,
     );
 
     expect(handlerResponse.text).toContain(
