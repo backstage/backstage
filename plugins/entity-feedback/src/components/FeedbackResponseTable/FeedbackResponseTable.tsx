@@ -18,7 +18,6 @@ import { ErrorPanel, Table } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { FeedbackResponse } from '@backstage/plugin-entity-feedback-common';
-import { BackstageTheme } from '@backstage/theme';
 import { Chip, makeStyles } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import React from 'react';
@@ -28,7 +27,7 @@ import { entityFeedbackApiRef } from '../../api';
 
 type ResponseRow = Omit<FeedbackResponse, 'entityRef'>;
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   consentCheck: {
     color: theme.palette.status.ok,
   },

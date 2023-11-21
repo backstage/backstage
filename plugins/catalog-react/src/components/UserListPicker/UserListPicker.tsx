@@ -27,7 +27,6 @@ import {
   ListItemText,
   makeStyles,
   MenuItem,
-  Theme,
   Typography,
 } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -48,7 +47,7 @@ export type CatalogReactUserListPickerClassKey =
   | 'menuItem'
   | 'groupWrapper';
 
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles(
   theme => ({
     root: {
       backgroundColor: 'rgba(0, 0, 0, .11)',

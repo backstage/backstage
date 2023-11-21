@@ -17,7 +17,6 @@
 import React from 'react';
 import { CodeSnippet } from '@backstage/core-components';
 import { useTheme } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
 
 /** @public */
 export type GrpcApiDefinitionWidgetProps = {
@@ -28,7 +27,7 @@ export type GrpcApiDefinitionWidgetProps = {
 export const GrpcApiDefinitionWidget = (
   props: GrpcApiDefinitionWidgetProps,
 ) => {
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
   return (
     <CodeSnippet
       customStyle={{ backgroundColor: theme.palette.background.default }}

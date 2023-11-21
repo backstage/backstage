@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -37,7 +37,7 @@ export type OAuthRequestDialogClassKey =
   | 'contentList'
   | 'actionButtons';
 
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles(
   theme => ({
     dialog: {
       paddingTop: theme.spacing(1),

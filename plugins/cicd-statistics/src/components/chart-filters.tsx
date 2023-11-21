@@ -27,7 +27,6 @@ import {
   Switch,
   Tooltip,
   Typography,
-  Theme,
   makeStyles,
 } from '@material-ui/core';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
@@ -54,7 +53,7 @@ import { Toggle } from './toggle';
 import { DurationSlider } from './duration-slider';
 import { Label } from './label';
 
-export const useStyles = makeStyles<Theme>(
+export const useStyles = makeStyles(
   theme => ({
     rootCard: {
       padding: theme.spacing(0, 0, 0, 0),

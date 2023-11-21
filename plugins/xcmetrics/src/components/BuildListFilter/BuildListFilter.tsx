@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles, IconButton, Grid, Button } from '@material-ui/core';
 import FilterList from '@material-ui/icons/FilterList';
 import { InfoCard, Select } from '@backstage/core-components';
-import { BackstageTheme } from '@backstage/theme';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { BuildFilters, BuildStatus, xcmetricsApiRef } from '../../api';
@@ -28,7 +27,7 @@ const toSelectItems = (strings: string[]) => {
   return strings.map(str => ({ label: str, value: str }));
 };
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   filtersContent: {
     padding: theme.spacing(2, 2, 2, 2.5),
   },

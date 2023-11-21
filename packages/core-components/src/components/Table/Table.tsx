@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
+
 import MTable, {
   Column,
   Icons,
@@ -25,7 +25,12 @@ import MTable, {
 } from '@material-table/core';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
+import {
+  makeStyles,
+  Theme,
+  useTheme,
+  withStyles,
+} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
@@ -136,7 +141,7 @@ const StyledMTableToolbar = withStyles(
 /** @public */
 export type FiltersContainerClassKey = 'root' | 'title';
 
-const useFilterStyles = makeStyles<BackstageTheme>(
+const useFilterStyles = makeStyles(
   theme => ({
     root: {
       display: 'flex',
@@ -154,7 +159,7 @@ const useFilterStyles = makeStyles<BackstageTheme>(
 
 export type TableClassKey = 'root';
 
-const useTableStyles = makeStyles<BackstageTheme>(
+const useTableStyles = makeStyles(
   () => ({
     root: {
       display: 'flex',
@@ -166,7 +171,7 @@ const useTableStyles = makeStyles<BackstageTheme>(
 
 function convertColumns<T extends object>(
   columns: TableColumn<T>[],
-  theme: BackstageTheme,
+  theme: Theme,
 ): TableColumn<T>[] {
   return columns.map(column => {
     const headerStyle: React.CSSProperties = column.headerStyle ?? {};
@@ -316,7 +321,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
   } = props;
   const tableClasses = useTableStyles();
 
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
 
   const calculatedInitialState = { ...defaultInitialState, ...initialState };
 
