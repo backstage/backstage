@@ -62,12 +62,6 @@ export type Branches = {
 };
 
 /** @public */
-export enum ViewEnum {
-  Table = 'table',
-  Card = 'cards',
-}
-
-/** @public */
 export interface RouterProps {
-  view?: ViewEnum;
+  view?: 'cards' | 'table';
 }

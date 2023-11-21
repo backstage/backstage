@@ -95,26 +95,9 @@ integrations:
 
 ## Optional Workflow Runs Card View
 
-Github WorkflowRuns optional UI to show in Card view instead of table, with branch selection option
-
-![Card view example](./docs/card-view.png)
-
-1. Install the plugin dependency in your Backstage app package:
-
-```bash
-# From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-github-actions
-```
-
-2. Add to the app `EntityPage` component:
+Github Workflow Runs optional UI to show in Card view instead of table, with branch selection option
 
 ```tsx
-// In packages/app/src/components/catalog/EntityPage.tsx
-import {
-  EntityGithubActionsContent,
-  isGithubActionsAvailable,
-  ViewEnum
-} from '@backstage/plugin-github-actions';
 
 // You can add the tab to any number of pages, the service page is shown as an
 // example here
@@ -122,6 +105,6 @@ const serviceEntityPage = (
   <EntityLayout>
     {/* other tabs... */}
     <EntityLayout.Route path="/github-actions" title="GitHub Actions">
-      <EntityGithubActionsContent view={ViewEnum.Card} />
+      <EntityGithubActionsContent view='cards' />
     </EntityLayout.Route>
 ```

@@ -26,14 +26,15 @@ import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowRunsCard } from './WorkflowRunsCard';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { GITHUB_ACTIONS_ANNOTATION } from './getProjectNameFromEntity';
-import { RouterProps, ViewEnum } from '../api/types';
+import { RouterProps } from '../api/types';
 
 /** @public */
 export const isGithubActionsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]);
 
 /** @public */
-export const Router = ({ view = ViewEnum.Table }: RouterProps) => {
+export const Router = (props: RouterProps) => {
+  const { view = 'table' } = props;
   const { entity } = useEntity();
 
   if (!isGithubActionsAvailable(entity)) {
@@ -43,7 +44,7 @@ export const Router = ({ view = ViewEnum.Table }: RouterProps) => {
   }
 
   const workflowRunsComponent =
-    view === ViewEnum.Card ? (
+    view === 'cards' ? (
       <WorkflowRunsCard entity={entity} />
     ) : (
       <WorkflowRunsTable entity={entity} />
