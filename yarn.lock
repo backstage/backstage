@@ -4921,19 +4921,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-vmware-cloud-provider@workspace:plugins/auth-backend-module-vmware-cloud-provider"
   dependencies:
-    "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
-    express: ^4.18.2
-    express-session: ^1.17.3
+    "@types/passport-oauth2": ^1.4.15
     jose: ^4.6.0
     msw: ^2.0.8
     passport-oauth2: ^1.6.1
@@ -18766,14 +18763,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport-oauth2@npm:*, @types/passport-oauth2@npm:^1.4.11":
-  version: 1.4.11
-  resolution: "@types/passport-oauth2@npm:1.4.11"
+"@types/passport-oauth2@npm:*, @types/passport-oauth2@npm:^1.4.11, @types/passport-oauth2@npm:^1.4.15":
+  version: 1.4.15
+  resolution: "@types/passport-oauth2@npm:1.4.15"
   dependencies:
     "@types/express": "*"
     "@types/oauth": "*"
     "@types/passport": "*"
-  checksum: 09d047a6c09a05c036f7db0cf8f8c09bf5878fdd15949bb1baa09a35f439929d471048fa6595f09ea4a4ea25396ce3918b362136579cf4a2b2ee29a92c0dd1ce
+  checksum: 352c4e2d09a86f8fc0dcf2c917c221f302a35a14e7467e2fa3a1653c0a9a1f842c910a4e52f799856536522e6359c20d1afc319579d9edf4b2ac7ea11b183b52
   languageName: node
   linkType: hard
 
