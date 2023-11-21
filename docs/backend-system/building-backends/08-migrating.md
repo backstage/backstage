@@ -294,7 +294,7 @@ catalog:
         /* highlight-add-end */
 ```
 
-#### Azure Devops
+#### Azure DevOps
 
 For `AzureDevOpsDiscoveryProcessor`, first migrate to `AzureDevOpsEntityProvider`.
 
