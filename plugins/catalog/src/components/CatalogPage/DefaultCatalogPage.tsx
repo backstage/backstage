@@ -47,14 +47,15 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 
 /** @internal */
-export interface BaseCatalogPageProps {
+export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
-}
+  pagination?: boolean | { limit?: number };
+};
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
-  const { filters, content = <CatalogTable /> } = props;
+  const { filters, content = <CatalogTable />, pagination } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -70,7 +71,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
           />
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
-        <EntityListProvider>
+        <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
@@ -94,6 +95,7 @@ export interface DefaultCatalogPageProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  pagination?: boolean | { limit?: number };
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -104,6 +106,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     initialKind = 'component',
     tableOptions = {},
     emptyContent,
+    pagination,
     ownerPickerMode,
   } = props;
 
@@ -129,6 +132,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
           emptyContent={emptyContent}
         />
       }
+      pagination={pagination}
     />
   );
 }

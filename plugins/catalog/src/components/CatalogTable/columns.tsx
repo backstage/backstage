@@ -100,11 +100,15 @@ export const columnFactories = Object.freeze({
       ),
     };
   },
-  createSpecTypeColumn(): TableColumn<CatalogTableRow> {
+  createSpecTypeColumn(
+    options: {
+      hidden: boolean;
+    } = { hidden: false },
+  ): TableColumn<CatalogTableRow> {
     return {
       title: 'Type',
       field: 'entity.spec.type',
-      hidden: true,
+      hidden: options.hidden,
       width: 'auto',
     };
   },

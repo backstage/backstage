@@ -44,8 +44,13 @@ import {
   EntityUserFilter,
 } from '../filters';
 import { EntityFilter } from '../types';
-import { reduceBackendCatalogFilters, reduceEntityFilters } from '../utils';
+import {
+  reduceBackendCatalogFilters,
+  reduceCatalogFilters,
+  reduceEntityFilters,
+} from '../utils';
 import { useApi } from '@backstage/core-plugin-api';
+import { QueryEntitiesResponse } from '@backstage/catalog-client';
 
 /** @public */
 export type DefaultEntityFilters = {
@@ -98,6 +103,11 @@ export type EntityListContextProps<
 
   loading: boolean;
   error?: Error;
+
+  pageInfo?: {
+    next?: () => void;
+    prev?: () => void;
+  };
 };
 
 /**
@@ -110,16 +120,25 @@ export const EntityListContext = createContext<
 
 type OutputState<EntityFilters extends DefaultEntityFilters> = {
   appliedFilters: EntityFilters;
+  appliedCursor?: string;
   entities: Entity[];
   backendEntities: Entity[];
+  pageInfo?: QueryEntitiesResponse['pageInfo'];
 };
+
+/**
+ * @public
+ */
+export type EntityListProviderProps = PropsWithChildren<{
+  pagination?: boolean | { limit?: number };
+}>;
 
 /**
  * Provides entities and filters for a catalog listing.
  * @public
  */
 export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
-  props: PropsWithChildren<{}>,
+  props: EntityListProviderProps,
 ) => {
   const isMounted = useMountedState();
   const catalogApi = useApi(catalogApiRef);
@@ -132,13 +151,32 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // trigger a useLocation change; this would instead come from an external source, such as a manual
   // update of the URL or two catalog sidebar links with different catalog filters.
   const location = useLocation();
-  const queryParameters = useMemo(
-    () =>
-      (qs.parse(location.search, {
-        ignoreQueryPrefix: true,
-      }).filters ?? {}) as Record<string, string | string[]>,
-    [location],
-  );
+
+  const enablePagination =
+    props.pagination === true || typeof props.pagination === 'object';
+
+  const limit =
+    props.pagination &&
+    typeof props.pagination === 'object' &&
+    typeof props.pagination.limit === 'number'
+      ? props.pagination.limit
+      : 20;
+
+  const { queryParameters, cursor: initialCursor } = useMemo(() => {
+    const parsed = qs.parse(location.search, {
+      ignoreQueryPrefix: true,
+    });
+
+    return {
+      queryParameters: (parsed.filters ?? {}) as Record<
+        string,
+        string | string[]
+      >,
+      cursor: typeof parsed.cursor === 'string' ? parsed.cursor : undefined,
+    };
+  }, [location]);
+
+  const [cursor, setCursor] = useState(initialCursor);
 
   const [outputState, setOutputState] = useState<OutputState<EntityFilters>>(
     () => {
@@ -146,6 +184,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         appliedFilters: {} as EntityFilters,
         entities: [],
         backendEntities: [],
+        pageInfo: enablePagination ? {} : undefined,
       };
     },
   );
@@ -156,11 +195,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   const [{ loading, error }, refresh] = useAsyncFn(
     async () => {
       const compacted = compact(Object.values(requestedFilters));
-      const entityFilter = reduceEntityFilters(compacted);
-      const backendFilter = reduceBackendCatalogFilters(compacted);
-      const previousBackendFilter = reduceBackendCatalogFilters(
-        compact(Object.values(outputState.appliedFilters)),
-      );
 
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {
@@ -175,26 +209,71 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         {} as Record<string, string | string[]>,
       );
 
-      // TODO(mtlewis): currently entities will never be requested unless
-      // there's at least one filter, we should allow an initial request
-      // to happen with no filters.
-      if (!isEqual(previousBackendFilter, backendFilter)) {
-        // TODO(timbonicus): should limit fields here, but would need filter
-        // fields + table columns
-        const response = await catalogApi.getEntities({
-          filter: backendFilter,
-        });
-        setOutputState({
-          appliedFilters: requestedFilters,
-          backendEntities: response.items,
-          entities: response.items.filter(entityFilter),
-        });
+      if (enablePagination) {
+        if (cursor) {
+          if (cursor !== outputState.appliedCursor) {
+            const entityFilter = reduceEntityFilters(compacted);
+            const response = await catalogApi.queryEntities({
+              cursor,
+              limit,
+            });
+            setOutputState({
+              appliedFilters: requestedFilters,
+              appliedCursor: cursor,
+              backendEntities: response.items,
+              entities: response.items.filter(entityFilter),
+              pageInfo: response.pageInfo,
+            });
+          }
+        } else {
+          const entityFilter = reduceEntityFilters(compacted);
+          const backendFilter = reduceCatalogFilters(compacted);
+          const previousBackendFilter = reduceCatalogFilters(
+            compact(Object.values(outputState.appliedFilters)),
+          );
+
+          if (!isEqual(previousBackendFilter, backendFilter)) {
+            const response = await catalogApi.queryEntities({
+              filter: backendFilter,
+              limit,
+              orderFields: [{ field: 'metadata.name', order: 'asc' }],
+            });
+            setOutputState({
+              appliedFilters: requestedFilters,
+              backendEntities: response.items,
+              entities: response.items.filter(entityFilter),
+              pageInfo: response.pageInfo,
+            });
+          }
+        }
       } else {
-        setOutputState({
-          appliedFilters: requestedFilters,
-          backendEntities: outputState.backendEntities,
-          entities: outputState.backendEntities.filter(entityFilter),
-        });
+        const entityFilter = reduceEntityFilters(compacted);
+        const backendFilter = reduceBackendCatalogFilters(compacted);
+        const previousBackendFilter = reduceBackendCatalogFilters(
+          compact(Object.values(outputState.appliedFilters)),
+        );
+
+        // TODO(mtlewis): currently entities will never be requested unless
+        // there's at least one filter, we should allow an initial request
+        // to happen with no filters.
+        if (!isEqual(previousBackendFilter, backendFilter)) {
+          // TODO(timbonicus): should limit fields here, but would need filter
+          // fields + table columns
+          const response = await catalogApi.getEntities({
+            filter: backendFilter,
+          });
+          setOutputState({
+            appliedFilters: requestedFilters,
+            backendEntities: response.items,
+            entities: response.items.filter(entityFilter),
+          });
+        } else {
+          setOutputState({
+            appliedFilters: requestedFilters,
+            backendEntities: outputState.backendEntities,
+            entities: outputState.backendEntities.filter(entityFilter),
+          });
+        }
       }
 
       if (isMounted()) {
@@ -202,7 +281,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           ignoreQueryPrefix: true,
         });
         const newParams = qs.stringify(
-          { ...oldParams, filters: queryParams },
+          { ...oldParams, filters: queryParams, cursor },
           { addQueryPrefix: true, arrayFormat: 'repeat' },
         );
         const newUrl = `${window.location.pathname}${newParams}`;
@@ -214,13 +293,20 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         window.history?.replaceState(null, document.title, newUrl);
       }
     },
-    [catalogApi, queryParameters, requestedFilters, outputState],
+    [
+      catalogApi,
+      queryParameters,
+      requestedFilters,
+      outputState,
+      cursor,
+      enablePagination,
+    ],
     { loading: true },
   );
 
   // Slight debounce on the refresh, since (especially on page load) several
   // filters will be calling this in rapid succession.
-  useDebounce(refresh, 10, [requestedFilters]);
+  useDebounce(refresh, 10, [requestedFilters, cursor]);
 
   const updateFilters = useCallback(
     (
@@ -228,6 +314,12 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         | Partial<EntityFilter>
         | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
     ) => {
+      // changing filters will affect pagination, so we need to reset
+      // the cursor and start from the first page.
+      // TODO(vinzscam): this is currently causing issues at page reload
+      // where the state is not kept. Unfortunately we need to rething
+      // the way filters work in order to fix this.
+      setCursor(undefined);
       setRequestedFilters(prevFilters => {
         const newFilters =
           typeof update === 'function' ? update(prevFilters) : update;
@@ -236,6 +328,19 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     },
     [],
   );
+
+  const pageInfo = useMemo(() => {
+    if (!enablePagination) {
+      return undefined;
+    }
+
+    const prevCursor = outputState.pageInfo?.prevCursor;
+    const nextCursor = outputState.pageInfo?.nextCursor;
+    return {
+      prev: prevCursor ? () => setCursor(prevCursor) : undefined,
+      next: nextCursor ? () => setCursor(nextCursor) : undefined,
+    };
+  }, [enablePagination, outputState.pageInfo]);
 
   const value = useMemo(
     () => ({
@@ -246,8 +351,9 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       queryParameters,
       loading,
       error,
+      pageInfo,
     }),
-    [outputState, updateFilters, queryParameters, loading, error],
+    [outputState, updateFilters, queryParameters, loading, error, pageInfo],
   );
 
   return (

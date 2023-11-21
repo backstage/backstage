@@ -158,7 +158,9 @@ export const CatalogTable: {
     createSystemColumn(): TableColumn<CatalogTableRow>;
     createOwnerColumn(): TableColumn<CatalogTableRow>;
     createSpecTargetsColumn(): TableColumn<CatalogTableRow>;
-    createSpecTypeColumn(): TableColumn<CatalogTableRow>;
+    createSpecTypeColumn(options?: {
+      hidden: boolean;
+    }): TableColumn<CatalogTableRow>;
     createSpecLifecycleColumn(): TableColumn<CatalogTableRow>;
     createMetadataDescriptionColumn(): TableColumn<CatalogTableRow>;
     createTagsColumn(): TableColumn<CatalogTableRow>;
@@ -233,6 +235,12 @@ export interface DefaultCatalogPageProps {
   initiallySelectedFilter?: UserListFilterKind;
   // (undocumented)
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  // (undocumented)
+  pagination?:
+    | boolean
+    | {
+        limit?: number;
+      };
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
 }
