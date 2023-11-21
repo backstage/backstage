@@ -590,15 +590,11 @@ For your productivity working with unit tests it's quite essential to have your 
 
 A complete launch configuration for VS Code debugging may look like this:
 
-```json
+```jsonc
 {
   "type": "node",
   "name": "vscode-jest-tests.v2",
   "request": "launch",
-  "env": {
-    // Needed to disable watch by default mode.
-    "ENV": "CI"
-  },
   "args": [
     "repo",
     "test",
