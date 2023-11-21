@@ -1,5 +1,15 @@
 # @backstage/core-plugin-api
 
+## 1.8.1-next.0
+
+### Patch Changes
+
+- 03d0b6dcdc: Removed the alpha `convertLegacyRouteRef` utility, which as been moved to `@backstage/core-compat-api`
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 1.8.0
 
 ### Minor Changes

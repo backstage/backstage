@@ -1,5 +1,16 @@
 # @backstage/integration
 
+## 1.8.0-next.0
+
+### Minor Changes
+
+- 870db76a45: Implemented `readTree` for Gitea provider to support TechDocs functionality
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.1
+
 ## 1.7.2
 
 ### Patch Changes

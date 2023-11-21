@@ -1,5 +1,15 @@
 # @backstage/core-compat-api
 
+## 0.0.2-next.0
+
+### Patch Changes
+
+- 03d0b6dcdc: Added `convertLegacyRouteRef` utility to convert existing route refs to be used with the new experimental packages.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/core-app-api@1.11.2-next.0
+
 ## 0.0.1
 
 ### Patch Changes

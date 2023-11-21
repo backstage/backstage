@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.7.2-next.0
+
+### Patch Changes
+
+- 706fc3a7e1: Updated dependency `@kubernetes/client-node` to `0.20.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.10
+
 ## 0.7.1
 
 ### Patch Changes
