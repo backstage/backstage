@@ -16,15 +16,17 @@
 
 import { createExtension } from '@backstage/frontend-plugin-api';
 import { resolveAppTree } from './resolveAppTree';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
-const extBaseConfig = {
-  id: 'test',
-  attachTo: { id: 'nonexistent', input: 'nonexistent' },
-  output: {},
-  factory: () => ({}),
-};
-
-const extension = createExtension(extBaseConfig);
+const extension = resolveExtensionDefinition(
+  createExtension({
+    name: 'test',
+    attachTo: { id: 'nonexistent', input: 'nonexistent' },
+    output: {},
+    factory: () => ({}),
+  }),
+);
 
 const baseSpec = {
   extension,

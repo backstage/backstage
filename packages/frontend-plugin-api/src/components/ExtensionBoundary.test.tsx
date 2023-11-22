@@ -24,11 +24,10 @@ import { createRouteRef } from '../routing';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 const wrapInBoundaryExtension = (element: JSX.Element) => {
-  const id = 'plugin.extension';
   const routeRef = createRouteRef();
   return createExtension({
-    id,
-    attachTo: { id: 'core.routes', input: 'routes' },
+    name: 'test',
+    attachTo: { id: 'core/routes', input: 'routes' },
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath,
@@ -89,7 +88,7 @@ describe('ExtensionBoundary', () => {
         action,
         subject,
         context: {
-          extension: 'plugin.extension',
+          extension: 'test',
           routeRef: 'unknown',
         },
       }),
