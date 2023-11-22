@@ -18002,9 +18002,9 @@ __metadata:
   linkType: hard
 
 "@types/event-source-polyfill@npm:^1.0.0":
-  version: 1.0.4
-  resolution: "@types/event-source-polyfill@npm:1.0.4"
-  checksum: fbb2197ccab6eec3a3b412b269ded3bc9617d5ce358c2d71d978dfb913dbca74d0ef66da3e9f0c4c6a8bcd5ab35237f36f3191ba3717bb3ca4314ccc6afc0e3d
+  version: 1.0.5
+  resolution: "@types/event-source-polyfill@npm:1.0.5"
+  checksum: f506b68710162f2ade1bccbc5691b8c67e5a703e565df2bc0b7b5be2637ba838ef81ec6c10b03248fe4d054386d95a6e827c7aace6e924986c2b9985f77b55de
   languageName: node
   linkType: hard
 
