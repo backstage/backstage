@@ -79,14 +79,20 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
       );
     }
 
-    if (identity.context_name !== input.fullProfile.organizationId) {
+    // These claims were checked for presence & type
+    const { email, given_name, family_name, context_name } = identity as Record<
+      string,
+      string
+    >;
+
+    if (context_name !== input.fullProfile.organizationId) {
       throw new Error(`ID token organizationId mismatch`);
     }
 
     return {
       profile: {
-        displayName: `${identity.given_name} ${identity.family_name}`,
-        email: identity.email as string,
+        displayName: `${given_name} ${family_name}`,
+        email,
       },
     };
   },
