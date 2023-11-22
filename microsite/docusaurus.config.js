@@ -140,6 +140,10 @@ module.exports = {
             from: '/docs/getting-started/running-backstage-locally',
             to: '/docs/getting-started/',
           },
+          {
+            from: '/docs/features/software-templates/testing-scaffolder-alpha',
+            to: '/docs/features/software-templates/migrating-to-rjsf-v5',
+          },
         ],
       },
     ],
