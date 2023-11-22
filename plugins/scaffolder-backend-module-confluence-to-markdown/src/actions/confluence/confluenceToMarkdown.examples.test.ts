@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { PassThrough } from 'stream';
 import { createConfluenceToMarkdownAction } from './confluenceToMarkdown';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -28,24 +29,15 @@ import yaml from 'yaml';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-jest.mock('fs-extra', () => ({
-  mkdirSync: jest.fn(),
-  readFile: jest.fn().mockResolvedValue('File contents'),
-  writeFile: jest.fn().mockImplementation(() => {
-    return Promise.resolve();
-  }),
-  outputFile: jest.fn(),
-  openSync: jest.fn(),
-  createWriteStream: jest.fn().mockReturnValue(new PassThrough()),
-  ensureDir: jest.fn(),
-}));
-
 describe('confluence:transform:markdown examples', () => {
   const baseUrl = `https://confluence.example.com`;
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
   const config = new ConfigReader({
+    integrations: {
+      github: [{ host: 'github.com', token: 'token' }],
+    },
     confluence: {
       baseUrl: baseUrl,
       auth: {
@@ -54,13 +46,7 @@ describe('confluence:transform:markdown examples', () => {
     },
   });
 
-  const integrations = ScmIntegrations.fromConfig(
-    new ConfigReader({
-      integrations: {
-        github: [{ host: 'github.com', token: 'token' }],
-      },
-    }),
-  );
+  const integrations = ScmIntegrations.fromConfig(config);
 
   let reader: UrlReader;
   let mockContext: ActionContext<{
@@ -72,7 +58,6 @@ describe('confluence:transform:markdown examples', () => {
   jest.spyOn(logger, 'info');
 
   const mockDir = createMockDirectory();
-  const workspacePath = mockDir.resolve('workspace');
 
   beforeEach(() => {
     reader = {
@@ -90,55 +75,55 @@ describe('confluence:transform:markdown examples', () => {
       output: jest.fn(),
       createTemporaryDirectory: jest.fn(),
     };
-    mockDir.setContent({ [`${workspacePath}/src/docs`]: {} });
+    mockDir.setContent({ workspace: { src: { docs: {} } } });
   });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should call confluence to markdown action successfully with results array', async () => {
-    const options = {
-      reader,
-      integrations,
-      config,
-    };
-    const responseBody = {
-      results: [
-        {
-          id: '4444444',
-          type: 'page',
-          title: 'Testing',
-          body: {
-            export_view: {
-              value: '<p>hello world</p>',
-            },
-          },
-        },
-      ],
-    };
-    const responseBodyTwo = {
-      results: [
-        {
-          id: '4444444',
-          type: 'attachment',
-          title: 'testing.pdf',
-          metadata: {
-            mediaType: 'application/pdf',
-          },
-          _links: {
-            download: '/download/attachments/4444444/testing.pdf',
-          },
-        },
-      ],
-    };
-
     worker.use(
       rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
-        res(ctx.status(200, 'OK'), ctx.json(responseBody)),
+        res(
+          ctx.status(200, 'OK'),
+          ctx.json({
+            results: [
+              {
+                id: '4444444',
+                type: 'page',
+                title: 'Testing',
+                body: {
+                  export_view: {
+                    value: '<p>hello world</p>',
+                  },
+                },
+              },
+            ],
+          }),
+        ),
       ),
       rest.get(
         `${baseUrl}/rest/api/content/4444444/child/attachment`,
-        (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.json(responseBodyTwo)),
+        (_, res, ctx) =>
+          res(
+            ctx.status(200, 'OK'),
+            ctx.json({
+              results: [
+                {
+                  id: '4444444',
+                  type: 'attachment',
+                  title: 'testing.pdf',
+                  metadata: {
+                    mediaType: 'application/pdf',
+                  },
+                  _links: {
+                    download: '/download/attachments/4444444/testing.pdf',
+                  },
+                },
+              ],
+            }),
+          ),
       ),
       rest.get(
         `${baseUrl}/download/attachments/4444444/testing.pdf`,
@@ -146,7 +131,11 @@ describe('confluence:transform:markdown examples', () => {
       ),
     );
 
-    const action = createConfluenceToMarkdownAction(options);
+    const action = createConfluenceToMarkdownAction({
+      reader,
+      integrations,
+      config,
+    });
 
     await action.handler(mockContext);
 

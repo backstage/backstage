@@ -26,24 +26,15 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-jest.mock('fs-extra', () => ({
-  mkdirSync: jest.fn(),
-  readFile: jest.fn().mockResolvedValue('File contents'),
-  writeFile: jest.fn().mockImplementation(() => {
-    return Promise.resolve();
-  }),
-  outputFile: jest.fn(),
-  openSync: jest.fn(),
-  createWriteStream: jest.fn().mockReturnValue(new PassThrough()),
-  ensureDir: jest.fn(),
-}));
-
 describe('confluence:transform:markdown', () => {
   const baseUrl = `https://nodomain.confluence.com`;
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
   const config = new ConfigReader({
+    integrations: {
+      github: [{ host: 'github.com', token: 'token' }],
+    },
     confluence: {
       baseUrl: baseUrl,
       auth: {
@@ -52,13 +43,7 @@ describe('confluence:transform:markdown', () => {
     },
   });
 
-  const integrations = ScmIntegrations.fromConfig(
-    new ConfigReader({
-      integrations: {
-        github: [{ host: 'github.com', token: 'token' }],
-      },
-    }),
-  );
+  const integrations = ScmIntegrations.fromConfig(config);
 
   let reader: UrlReader;
   let mockContext: ActionContext<{
@@ -70,7 +55,6 @@ describe('confluence:transform:markdown', () => {
   jest.spyOn(logger, 'info');
 
   const mockDir = createMockDirectory();
-  const workspacePath = mockDir.resolve('workspace');
 
   beforeEach(() => {
     reader = {
@@ -93,8 +77,9 @@ describe('confluence:transform:markdown', () => {
       output: jest.fn(),
       createTemporaryDirectory: jest.fn(),
     };
-    mockDir.setContent({ [`${workspacePath}/src/docs`]: {} });
+    mockDir.setContent({ workspace: { src: { docs: {} } } });
   });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
