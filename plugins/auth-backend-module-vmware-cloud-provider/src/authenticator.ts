@@ -58,17 +58,24 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
       );
     }
 
+    const vmwareClaims = ['email', 'given_name', 'family_name', 'context_name'];
+
     const identity = decodeJwt(input.session.idToken);
-    const missingClaims = [
-      'email',
-      'given_name',
-      'family_name',
-      'context_name',
-    ].filter(key => !(key in identity));
+    const missingClaims = vmwareClaims.filter(key => !(key in identity));
 
     if (missingClaims.length > 0) {
       throw new Error(
         `ID token missing required claims: ${missingClaims.join(', ')}`,
+      );
+    }
+
+    const typeMismatchClaims = vmwareClaims.filter(
+      key => typeof identity[key] !== 'string',
+    );
+
+    if (typeMismatchClaims.length > 0) {
+      throw new Error(
+        `ID token claims type mismatch: ${typeMismatchClaims.join(', ')}`,
       );
     }
 
