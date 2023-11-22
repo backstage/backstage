@@ -83,7 +83,7 @@ TODO:
 /* app.tsx */
 
 const homePageExtension = createExtension({
-  id: 'myhomepage',
+  name: 'myhomepage',
   attachTo: { id: 'home', input: 'props' },
   output: {
     children: coreExtensionData.reactElement,
@@ -101,10 +101,12 @@ const signInPage = createSignInPageExtension({
 });
 
 const scmAuthExtension = createApiExtension({
+  name: 'scm-auth',
   factory: ScmAuth.createDefaultApiFactory(),
 });
 
 const scmIntegrationApi = createApiExtension({
+  name: 'scm-integration',
   factory: createApiFactory({
     api: scmIntegrationsApiRef,
     deps: { configApi: configApiRef },
