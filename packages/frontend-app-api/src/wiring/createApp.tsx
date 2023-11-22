@@ -73,6 +73,8 @@ import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementati
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   apis as defaultApis,
   components as defaultComponents,
@@ -119,7 +121,7 @@ export const builtinExtensions = [
   DefaultNotFoundErrorPageComponent,
   LightTheme,
   DarkTheme,
-];
+].map(def => resolveExtensionDefinition(def));
 
 /** @public */
 export interface ExtensionTreeNode {
