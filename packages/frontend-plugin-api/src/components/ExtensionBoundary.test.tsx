@@ -34,15 +34,11 @@ const wrapInBoundaryExtension = (element: JSX.Element) => {
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
     },
-    factory({ source }) {
+    factory({ node }) {
       return {
         routeRef,
         path: '/',
-        element: (
-          <ExtensionBoundary id={id} source={source}>
-            {element}
-          </ExtensionBoundary>
-        ),
+        element: <ExtensionBoundary node={node}>{element}</ExtensionBoundary>,
       };
     },
   });

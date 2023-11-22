@@ -15,16 +15,12 @@
  */
 
 import React from 'react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { waitFor } from '@testing-library/react';
 import { PortableSchema } from '../schema';
-import {
-  coreExtensionData,
-  createExtensionInput,
-  createPlugin,
-} from '../wiring';
+import { coreExtensionData, createExtensionInput } from '../wiring';
 import { createPageExtension } from './createPageExtension';
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -120,19 +116,13 @@ describe('createPageExtension', () => {
       captureEvent,
     });
 
-    const extension = createPageExtension({
-      id: 'plugin.page',
-      defaultPath: '/',
-      loader: async () => <div>Component</div>,
-    });
-
-    const output = extension.factory({
-      source: createPlugin({ id: 'plugin ' }),
-      config: { path: '/' },
-      inputs: {},
-    });
-
-    renderWithEffects(wrapInTestApp(output.element as unknown as JSX.Element));
+    createExtensionTester(
+      createPageExtension({
+        id: 'plugin.page',
+        defaultPath: '/',
+        loader: async () => <div>Component</div>,
+      }),
+    ).render();
 
     await waitFor(() =>
       expect(captureEvent).toHaveBeenCalledWith(

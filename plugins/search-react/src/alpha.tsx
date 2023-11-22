@@ -107,7 +107,7 @@ export function createSearchResultListItemExtension<
     output: {
       item: searchResultItemExtensionData,
     },
-    factory({ config, source }) {
+    factory({ config, node }) {
       const ExtensionComponent = lazy(() =>
         options
           .component({ config })
@@ -118,7 +118,7 @@ export function createSearchResultListItemExtension<
         item: {
           predicate: options.predicate,
           component: props => (
-            <ExtensionBoundary id={id} source={source}>
+            <ExtensionBoundary node={node}>
               <SearchResultListItemExtension
                 rank={props.rank}
                 result={props.result}
