@@ -590,22 +590,25 @@ For your productivity working with unit tests it's quite essential to have your 
 
 A complete launch configuration for VS Code debugging may look like this:
 
-```json
+```jsonc
 {
   "type": "node",
-  "name": "vscode-jest-tests",
+  "name": "vscode-jest-tests.v2",
   "request": "launch",
+  "args": [
+    "repo",
+    "test",
+    "--runInBand",
+    "--watchAll=false",
+    "--testNamePattern",
+    "${jest.testNamePattern}",
+    "--runTestsByPath",
+    "${jest.testFile}"
+  ],
   "console": "integratedTerminal",
   "internalConsoleOptions": "neverOpen",
   "disableOptimisticBPs": true,
-  "program": "${workspaceFolder}/node_modules/.bin/jest",
-  "cwd": "${workspaceFolder}",
-  "args": [
-    "--config",
-    "node_modules/@backstage/cli/config/jest.js",
-    "--runInBand",
-    "--watchAll=false"
-  ]
+  "program": "${workspaceFolder}/node_modules/.bin/backstage-cli"
 }
 ```
 
