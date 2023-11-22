@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AnyApiFactory, AnyApiRef } from '@backstage/core-plugin-api';
+import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { PortableSchema } from '../schema';
 import {
   ExtensionInputValues,
@@ -28,30 +28,24 @@ import { Expand } from '../types';
 export function createApiExtension<
   TConfig extends {},
   TInputs extends AnyExtensionInputMap,
->(
-  options: (
-    | {
-        api: AnyApiRef;
-        factory: (options: {
-          config: TConfig;
-          inputs: Expand<ExtensionInputValues<TInputs>>;
-        }) => AnyApiFactory;
-      }
-    | {
-        factory: AnyApiFactory;
-      }
-  ) & {
-    configSchema?: PortableSchema<TConfig>;
-    inputs?: TInputs;
-  },
-) {
+>(options: {
+  factory:
+    | AnyApiFactory
+    | ((options: {
+        config: TConfig;
+        inputs: Expand<ExtensionInputValues<TInputs>>;
+      }) => AnyApiFactory);
+  namespace?: string;
+  name?: string;
+  configSchema?: PortableSchema<TConfig>;
+  inputs?: TInputs;
+}) {
   const { factory, configSchema, inputs: extensionInputs } = options;
 
-  const apiRef =
-    'api' in options ? options.api : (factory as { api: AnyApiRef }).api;
-
   return createExtension({
-    id: `apis.${apiRef.id}`,
+    kind: 'api',
+    namespace: options.namespace,
+    name: options.name,
     attachTo: { id: 'core', input: 'apis' },
     inputs: extensionInputs,
     configSchema,
