@@ -38,8 +38,6 @@ const useStyles = makeStyles(theme => ({
 
 /**
  * Props for {@link AboutField}.
- *
- * @public
  */
 export interface AboutFieldProps {
   label: string;
@@ -48,7 +46,6 @@ export interface AboutFieldProps {
   children?: React.ReactNode;
 }
 
-/** @public */
 export function AboutField(props: AboutFieldProps) {
   const { label, value, gridSizes, children } = props;
   const classes = useStyles();
