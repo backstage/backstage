@@ -30,7 +30,7 @@ import { setupServer } from 'msw/node';
 
 import {
   vmwareCloudAuthenticator,
-  vmwareCloudAuthenticatorContext,
+  VMwareCloudAuthenticatorContext,
 } from './authenticator';
 
 jest.mock('uid2', () => jest.fn().mockReturnValue('sessionid'));
@@ -60,7 +60,7 @@ describe('vmwareCloudAuthenticator', () => {
   };
 
   let fakeSession: Record<string, any>;
-  let authenticatorCtx: vmwareCloudAuthenticatorContext;
+  let authenticatorCtx: VMwareCloudAuthenticatorContext;
 
   beforeAll(async () => {
     idToken = await new SignJWT(signInInfo)

@@ -60,7 +60,7 @@ export namespace vmwareCloudSignInResolvers {
               },
             });
           } catch (e) {
-            if (!(e instanceof NotFoundError)) {
+            if (e.name !== NotFoundError.name) {
               throw e;
             }
             return ctx.issueToken({

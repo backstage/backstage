@@ -17,12 +17,12 @@ export default authModuleVmwareCloudProvider;
 
 // @public
 export const vmwareCloudAuthenticator: OAuthAuthenticator<
-  vmwareCloudAuthenticatorContext,
-  vmwarePassportProfile
+  VMwareCloudAuthenticatorContext,
+  VMwarePassportProfile
 >;
 
 // @public (undocumented)
-export interface vmwareCloudAuthenticatorContext {
+export interface VMwareCloudAuthenticatorContext {
   // (undocumented)
   helper: PassportOAuthAuthenticatorHelper;
   // (undocumented)
@@ -40,7 +40,7 @@ export namespace vmwareCloudSignInResolvers {
 }
 
 // @public (undocumented)
-export type vmwarePassportProfile = PassportProfile & {
+export type VMwarePassportProfile = PassportProfile & {
   organizationId?: string;
 };
 ```

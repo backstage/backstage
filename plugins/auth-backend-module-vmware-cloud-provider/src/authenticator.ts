@@ -31,14 +31,14 @@ import {
 } from 'passport-oauth2';
 
 /** @public */
-export interface vmwareCloudAuthenticatorContext {
+export interface VMwareCloudAuthenticatorContext {
   organizationId?: string;
   providerStrategy: OAuth2Strategy;
   helper: PassportOAuthAuthenticatorHelper;
 }
 
 /** @public */
-export type vmwarePassportProfile = PassportProfile & {
+export type VMwarePassportProfile = PassportProfile & {
   organizationId?: string;
 };
 
@@ -48,8 +48,8 @@ export type vmwarePassportProfile = PassportProfile & {
  * @public
  */
 export const vmwareCloudAuthenticator = createOAuthAuthenticator<
-  vmwareCloudAuthenticatorContext,
-  vmwarePassportProfile
+  VMwareCloudAuthenticatorContext,
+  VMwarePassportProfile
 >({
   defaultProfileTransform: async input => {
     if (!input.session.idToken) {
@@ -201,7 +201,7 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
       fullProfile: {
         ...result.fullProfile,
         organizationId: ctx.organizationId,
-      } as vmwarePassportProfile,
+      } as VMwarePassportProfile,
     }));
   },
 
@@ -211,7 +211,7 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
       fullProfile: {
         ...result.fullProfile,
         organizationId: ctx.organizationId,
-      } as vmwarePassportProfile,
+      } as VMwarePassportProfile,
     }));
   },
 });
