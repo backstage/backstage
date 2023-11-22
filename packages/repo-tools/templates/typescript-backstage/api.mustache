@@ -4,7 +4,6 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import {pluginId} from '../pluginId';
 import * as parser from 'uri-template';
-import {ResponseError} from '@backstage/errors';
 
 {{#imports}}
 import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
@@ -97,8 +96,7 @@ export class {{classname}}Client {
         {{/hasQueryParams}}
         })
 
-        const url = `${baseUrl}${uri}`;
-        const response = await this.fetchApi.fetch(url, {
+        return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
             headers: {
                 {{#hasHeaderParams}}
                 ...request.header,
@@ -109,10 +107,6 @@ export class {{classname}}Client {
             method: '{{httpMethod}}',
             {{#hasBodyParam}} body: JSON.stringify(request.body), {{/hasBodyParam}}
         });
-        if(response.ok){
-            return response;
-        };
-        throw await ResponseError.fromResponse(response);
     }
 
     {{/operation}}
