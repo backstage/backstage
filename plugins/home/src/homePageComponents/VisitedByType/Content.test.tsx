@@ -117,6 +117,25 @@ describe('<Content kind="recent"/>', () => {
     expect(container.querySelectorAll('li')[0]).toBeVisible();
     expect(container.querySelectorAll('li')[1]).not.toBeVisible();
   });
+
+  it('allows items to be filtered', async () => {
+    const { getByText, queryByText } = await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <ContextProvider>
+          <Content
+            kind="recent"
+            filterBy={[
+              { field: 'pathname', operator: '==', value: '/explore' },
+            ]}
+          />
+        </ContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(getByText('Explore Backstage')).toBeInTheDocument(),
+    );
+    await waitFor(() => expect(queryByText('Tech Radar')).toBeNull());
+  });
 });
 
 describe('<Content kind="top"/>', () => {
