@@ -24,17 +24,12 @@ export function createEntityCardExtension<
   };
   disabled?: boolean;
   inputs?: TInputs;
-  filter?: (ctx: { entity: Entity }) => boolean;
+  filter?: typeof entityFilterExtensionDataRef.T;
   loader: (options: {
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }) => Promise<JSX.Element>;
 }): Extension<{
-  filter?:
-    | {
-        isKind?: string | undefined;
-        isType?: string | undefined;
-      }[]
-    | undefined;
+  filter?: string | undefined;
 }>;
 
 // @alpha (undocumented)
@@ -51,19 +46,14 @@ export function createEntityContentExtension<
   routeRef?: RouteRef;
   defaultPath: string;
   defaultTitle: string;
-  filter?: (ctx: { entity: Entity }) => boolean;
+  filter?: typeof entityFilterExtensionDataRef.T;
   loader: (options: {
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }) => Promise<JSX.Element>;
 }): Extension<{
   title: string;
   path: string;
-  filter?:
-    | {
-        isKind?: string | undefined;
-        isType?: string | undefined;
-      }[]
-    | undefined;
+  filter?: string | undefined;
 }>;
 
 // @alpha (undocumented)
@@ -74,7 +64,7 @@ export const entityContentTitleExtensionDataRef: ConfigurableExtensionDataRef<
 
 // @alpha (undocumented)
 export const entityFilterExtensionDataRef: ConfigurableExtensionDataRef<
-  (ctx: { entity: Entity }) => boolean,
+  string | ((entity: Entity) => boolean),
   {}
 >;
 

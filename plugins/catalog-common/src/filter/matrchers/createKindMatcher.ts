@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-export {
-  RESOURCE_TYPE_CATALOG_ENTITY,
-  catalogEntityReadPermission,
-  catalogEntityCreatePermission,
-  catalogEntityDeletePermission,
-  catalogEntityRefreshPermission,
-  catalogLocationReadPermission,
-  catalogLocationCreatePermission,
-  catalogLocationDeletePermission,
-  catalogPermissions,
-} from './permissions';
-export type { CatalogEntityPermission } from './permissions';
-export { parseFilterExpression } from './filter';
+import { EntityMatcherFn } from './types';
+
+/**
+ * Matches on kind
+ */
+export function createKindMatcher(parameters: string[]): EntityMatcherFn {
+  const items = parameters.map(p => p.toLocaleLowerCase('en-US'));
+  return entity => items.includes(entity.kind.toLocaleLowerCase('en-US'));
+}

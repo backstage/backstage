@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^"
   },
