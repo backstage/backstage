@@ -32,7 +32,7 @@ export const OverviewEntityContent = createEntityContentExtension({
   inputs: {
     cards: createExtensionInput({
       element: coreExtensionData.reactElement,
-      filter: entityFilterExtensionDataRef,
+      filter: entityFilterExtensionDataRef.optional(),
     }),
   },
   loader: async ({ inputs }) =>

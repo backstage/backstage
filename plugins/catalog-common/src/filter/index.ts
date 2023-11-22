@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  RESOURCE_TYPE_CATALOG_ENTITY,
-  catalogEntityReadPermission,
-  catalogEntityCreatePermission,
-  catalogEntityDeletePermission,
-  catalogEntityRefreshPermission,
-  catalogLocationReadPermission,
-  catalogLocationCreatePermission,
-  catalogLocationDeletePermission,
-  catalogPermissions,
-} from './permissions';
-export type { CatalogEntityPermission } from './permissions';
-export { parseFilterExpression } from './filter';
+export { parseFilterExpression } from './parseFilterExpression';

@@ -27,7 +27,7 @@ export const EntityAboutCard = createEntityCardExtension({
 
 export const EntityLinksCard = createEntityCardExtension({
   id: 'links',
-  filter: ({ entity }) => Boolean(entity.metadata.links),
+  filter: 'has:links',
   loader: async () =>
     import('../components/EntityLinksCard').then(m => {
       return <m.EntityLinksCard variant="gridItem" />;
@@ -36,7 +36,7 @@ export const EntityLinksCard = createEntityCardExtension({
 
 export const EntityLabelsCard = createEntityCardExtension({
   id: 'labels',
-  filter: ({ entity }) => Boolean(entity.metadata.labels),
+  filter: 'has:labels',
   loader: async () =>
     import('../components/EntityLabelsCard').then(m => (
       <m.EntityLabelsCard variant="gridItem" />
