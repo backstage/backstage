@@ -35,7 +35,7 @@ import {
 
 jest.mock('uid2', () => jest.fn().mockReturnValue('sessionid'));
 
-describe('VMwareCloudServicesAuthenticator', () => {
+describe('vmwareCloudAuthenticator', () => {
   const server = setupServer();
   setupRequestMockHandlers(server);
 
