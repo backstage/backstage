@@ -36,7 +36,21 @@ describe('createExtensionOverrides', () => {
       createExtensionOverrides({
         extensions: [
           createExtension({
-            id: 'a',
+            name: 'a',
+            attachTo: { id: 'core', input: 'apis' },
+            output: {},
+            factory: () => ({}),
+          }),
+          createExtension({
+            namespace: 'b',
+            attachTo: { id: 'core', input: 'apis' },
+            output: {},
+            factory: () => ({}),
+          }),
+          createExtension({
+            kind: 'k',
+            namespace: 'c',
+            name: 'n',
             attachTo: { id: 'core', input: 'apis' },
             output: {},
             factory: () => ({}),
@@ -53,9 +67,36 @@ describe('createExtensionOverrides', () => {
               "id": "core",
               "input": "apis",
             },
+            "configSchema": undefined,
             "disabled": false,
             "factory": [Function],
             "id": "a",
+            "inputs": {},
+            "output": {},
+          },
+          {
+            "$$type": "@backstage/Extension",
+            "attachTo": {
+              "id": "core",
+              "input": "apis",
+            },
+            "configSchema": undefined,
+            "disabled": false,
+            "factory": [Function],
+            "id": "b",
+            "inputs": {},
+            "output": {},
+          },
+          {
+            "$$type": "@backstage/Extension",
+            "attachTo": {
+              "id": "core",
+              "input": "apis",
+            },
+            "configSchema": undefined,
+            "disabled": false,
+            "factory": [Function],
+            "id": "k:c/n",
             "inputs": {},
             "output": {},
           },
@@ -69,7 +110,7 @@ describe('createExtensionOverrides', () => {
     const overrides = createExtensionOverrides({
       extensions: [
         createExtension({
-          id: 'a',
+          namespace: 'a',
           attachTo: { id: 'core', input: 'apis' },
           output: {},
           factory: () => ({}),

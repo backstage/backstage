@@ -19,7 +19,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { extractRouteInfoFromAppNode } from './extractRouteInfoFromAppNode';
 import {
   AnyRouteRefParams,
-  Extension,
+  ExtensionDefinition,
   RouteRef,
   coreExtensionData,
   createExtension,
@@ -29,11 +29,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
 import { createAppTree } from '../tree';
-import { Core } from '../extensions/Core';
-import { CoreRoutes } from '../extensions/CoreRoutes';
-import { CoreNav } from '../extensions/CoreNav';
-import { CoreLayout } from '../extensions/CoreLayout';
-import { CoreRouter } from '../extensions/CoreRouter';
+import { builtinExtensions } from '../wiring/createApp';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -43,16 +39,16 @@ const ref5 = createRouteRef();
 const refOrder: RouteRef<AnyRouteRefParams>[] = [ref1, ref2, ref3, ref4, ref5];
 
 function createTestExtension(options: {
-  id: string;
+  name: string;
   parent?: string;
   path?: string;
   routeRef?: RouteRef;
 }) {
   return createExtension({
-    id: options.id,
+    name: options.name,
     attachTo: options.parent
-      ? { id: options.parent, input: 'children' }
-      : { id: 'core.routes', input: 'routes' },
+      ? { id: `test/${options.parent}`, input: 'children' }
+      : { id: 'core/routes', input: 'routes' },
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath.optional(),
@@ -73,14 +69,14 @@ function createTestExtension(options: {
   });
 }
 
-function routeInfoFromExtensions(extensions: Extension<unknown>[]) {
+function routeInfoFromExtensions(extensions: ExtensionDefinition<unknown>[]) {
   const plugin = createPlugin({
     id: 'test',
     extensions,
   });
   const tree = createAppTree({
     config: new MockConfigApi({}),
-    builtinExtensions: [Core, CoreRoutes, CoreNav, CoreLayout, CoreRouter],
+    builtinExtensions,
     features: [plugin],
   });
 
@@ -123,33 +119,33 @@ describe('discovery', () => {
   it('should collect routes', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'nothing',
+        name: 'nothing',
         path: 'nothing',
       }),
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         path: 'foo',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'page1',
         path: 'bar/:id',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         parent: 'page2',
         path: 'baz',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         path: 'divsoup',
         routeRef: ref4,
       }),
       createTestExtension({
-        id: 'page5',
+        name: 'page5',
         parent: 'page1',
         path: 'blop',
         routeRef: ref5,
@@ -195,29 +191,29 @@ describe('discovery', () => {
   it('should handle all react router Route patterns', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         path: 'foo',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'page1',
         path: 'bar/:id',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         path: 'baz',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         parent: 'page3',
         path: 'divsoup',
         routeRef: ref4,
       }),
       createTestExtension({
-        id: 'page5',
+        name: 'page5',
         parent: 'page3',
         path: 'blop',
         routeRef: ref5,
@@ -243,29 +239,29 @@ describe('discovery', () => {
   it('should strip leading slashes in route paths', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         path: '/foo',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'page1',
         path: '/bar/:id',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         path: '/baz',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         parent: 'page3',
         path: '/divsoup',
         routeRef: ref4,
       }),
       createTestExtension({
-        id: 'page5',
+        name: 'page5',
         parent: 'page3',
         path: '/blop',
         routeRef: ref5,
@@ -291,44 +287,44 @@ describe('discovery', () => {
   it('should use the route aggregator key to bind child routes to the same path', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'foo',
+        name: 'foo',
         path: 'foo',
       }),
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         parent: 'foo',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'fooChild',
+        name: 'fooChild',
         parent: 'foo',
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'fooChild',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'fooEmpty',
+        name: 'fooEmpty',
         parent: 'foo',
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         path: 'bar',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page3Child',
+        name: 'page3Child',
         parent: 'page3',
         path: '',
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         parent: 'page3Child',
         routeRef: ref4,
       }),
       createTestExtension({
-        id: 'page5',
+        name: 'page5',
         parent: 'page4',
         routeRef: ref5,
       }),
@@ -363,34 +359,34 @@ describe('discovery', () => {
   it('should use the route aggregator but stop when encountering explicit path', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         path: 'foo',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'page1Child',
+        name: 'page1Child',
         parent: 'page1',
         path: 'bar',
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'page1Child',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         parent: 'page2',
         path: 'baz',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         parent: 'page3',
         path: '/blop',
         routeRef: ref4,
       }),
       createTestExtension({
-        id: 'page5',
+        name: 'page5',
         parent: 'page2',
         routeRef: ref5,
       }),
@@ -448,34 +444,34 @@ describe('discovery', () => {
   it('should account for loose route paths', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'r',
+        name: 'r',
         path: 'r',
       }),
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         parent: 'r',
         path: 'x',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'y',
+        name: 'y',
         path: 'y',
         parent: 'r',
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'y',
         path: '1',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         parent: 'page2',
         path: 'a',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         parent: 'page2',
         path: 'b',
         routeRef: ref4,
