@@ -20,12 +20,12 @@ import { createSchemaFromZod, PortableSchema } from '../schema';
 import {
   coreExtensionData,
   createExtension,
-  Extension,
   ExtensionInputValues,
   AnyExtensionInputMap,
 } from '../wiring';
 import { RouteRef } from '../routing';
 import { Expand } from '../types';
+import { ExtensionDefinition } from '../wiring/createExtension';
 
 /**
  * Helper for creating extensions for a routable React page component.
@@ -44,7 +44,8 @@ export function createPageExtension<
         configSchema: PortableSchema<TConfig>;
       }
   ) & {
-    id: string;
+    namespace?: string;
+    name?: string;
     attachTo?: { id: string; input: string };
     disabled?: boolean;
     inputs?: TInputs;
@@ -54,9 +55,7 @@ export function createPageExtension<
       inputs: Expand<ExtensionInputValues<TInputs>>;
     }) => Promise<JSX.Element>;
   },
-): Extension<TConfig> {
-  const { id } = options;
-
+): ExtensionDefinition<TConfig> {
   const configSchema =
     'configSchema' in options
       ? options.configSchema
@@ -65,8 +64,10 @@ export function createPageExtension<
         ) as PortableSchema<TConfig>);
 
   return createExtension({
-    id,
-    attachTo: options.attachTo ?? { id: 'core.routes', input: 'routes' },
+    kind: 'page',
+    namespace: options.namespace,
+    name: options.name,
+    attachTo: options.attachTo ?? { id: 'core/routes', input: 'routes' },
     configSchema,
     inputs: options.inputs,
     disabled: options.disabled,

@@ -20,7 +20,9 @@ import { AppTheme } from '@backstage/core-plugin-api';
 /** @public */
 export function createThemeExtension(theme: AppTheme) {
   return createExtension({
-    id: `themes.${theme.id}`,
+    kind: 'theme',
+    namespace: 'app',
+    name: theme.id,
     attachTo: { id: 'core', input: 'themes' },
     output: {
       theme: coreExtensionData.theme,
