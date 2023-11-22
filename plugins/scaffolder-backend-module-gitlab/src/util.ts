@@ -48,11 +48,11 @@ export const getToken = (
   }
 
   const token = config.token || integrationConfig.config.token!;
-  const tokenType = config.token ? 'oauthToken' : 'token';
+  // const tokenType = config.token ? 'oauthToken' : 'token';
 
-  if (tokenType === 'oauthToken') {
-    throw new InputError(`OAuth Token is currently not supported`);
-  }
+  // if (tokenType === 'oauthToken') {
+  //   throw new InputError(`OAuth Token is currently not supported`);
+  // }
 
   return { token: token, integrationConfig: integrationConfig };
 };
