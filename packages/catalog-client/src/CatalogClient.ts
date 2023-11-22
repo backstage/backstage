@@ -120,11 +120,11 @@ export class CatalogClient implements CatalogApi {
       await this.apiClient.getEntities(
         {
           query: {
+            fields: fields.map(encodeURIComponent),
             limit,
+            filter: this.getFilterValue(filter),
             offset,
             after,
-            filter: this.getFilterValue(filter),
-            fields,
             order: order ? encodedOrder : undefined,
           },
         },
