@@ -44,7 +44,7 @@ export const EntityLabelsCard = createEntityCardExtension({
 });
 
 export const EntityDependsOnComponentsCard = createEntityCardExtension({
-  name: 'dependsOnComponents',
+  name: 'depends-on-components',
   loader: async () =>
     import('../components/DependsOnComponentsCard').then(m => (
       <m.DependsOnComponentsCard variant="gridItem" />
@@ -52,7 +52,7 @@ export const EntityDependsOnComponentsCard = createEntityCardExtension({
 });
 
 export const EntityDependsOnResourcesCard = createEntityCardExtension({
-  name: 'dependsOnResources',
+  name: 'depends-on-resources',
   loader: async () =>
     import('../components/DependsOnResourcesCard').then(m => (
       <m.DependsOnResourcesCard variant="gridItem" />
@@ -60,7 +60,7 @@ export const EntityDependsOnResourcesCard = createEntityCardExtension({
 });
 
 export const EntityHasComponentsCard = createEntityCardExtension({
-  name: 'hasComponents',
+  name: 'has-components',
   loader: async () =>
     import('../components/HasComponentsCard').then(m => (
       <m.HasComponentsCard variant="gridItem" />
@@ -68,7 +68,7 @@ export const EntityHasComponentsCard = createEntityCardExtension({
 });
 
 export const EntityHasResourcesCard = createEntityCardExtension({
-  name: 'hasResources',
+  name: 'has-resources',
   loader: async () =>
     import('../components/HasResourcesCard').then(m => (
       <m.HasResourcesCard variant="gridItem" />
@@ -76,7 +76,7 @@ export const EntityHasResourcesCard = createEntityCardExtension({
 });
 
 export const EntityHasSubcomponentsCard = createEntityCardExtension({
-  name: 'hasSubcomponents',
+  name: 'has-subcomponents',
   loader: async () =>
     import('../components/HasSubcomponentsCard').then(m => (
       <m.HasSubcomponentsCard variant="gridItem" />
@@ -84,7 +84,7 @@ export const EntityHasSubcomponentsCard = createEntityCardExtension({
 });
 
 export const EntityHasSystemsCard = createEntityCardExtension({
-  name: 'hasSystems',
+  name: 'has-systems',
   loader: async () =>
     import('../components/HasSystemsCard').then(m => (
       <m.HasSystemsCard variant="gridItem" />

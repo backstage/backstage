@@ -41,6 +41,7 @@ export const CatalogApi = createApiExtension({
 });
 
 export const StarredEntitiesApi = createApiExtension({
+  name: 'starred-entities',
   factory: createApiFactory({
     api: starredEntitiesApiRef,
     deps: { storageApi: storageApiRef },
