@@ -4,14 +4,14 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<{}, {}>;
 export default _default;
 
 // @alpha (undocumented)
-export const ExploreSearchResultListItemExtension: Extension<{
+export const ExploreSearchResultListItemExtension: ExtensionDefinition<{
   noTrack?: boolean | undefined;
 }>;
 

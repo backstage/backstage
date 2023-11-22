@@ -4,7 +4,7 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -17,7 +17,10 @@ const _default: BackstagePlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const TechRadarPage: Extension<{
+export const sampleTechRadarApi: ExtensionDefinition<{}>;
+
+// @alpha (undocumented)
+export const TechRadarPage: ExtensionDefinition<{
   height: number;
   width: number;
   title: string;

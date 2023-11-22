@@ -8,7 +8,7 @@
 import { AnyExtensionInputMap } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInputValues } from '@backstage/frontend-plugin-api';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -17,7 +17,8 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 export function createEntityCardExtension<
   TInputs extends AnyExtensionInputMap,
 >(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   attachTo?: {
     id: string;
     input: string;
@@ -30,7 +31,7 @@ export function createEntityCardExtension<
   loader: (options: {
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }) => Promise<JSX.Element>;
-}): Extension<{
+}): ExtensionDefinition<{
   filter?: string | undefined;
 }>;
 
@@ -38,7 +39,8 @@ export function createEntityCardExtension<
 export function createEntityContentExtension<
   TInputs extends AnyExtensionInputMap,
 >(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   attachTo?: {
     id: string;
     input: string;
@@ -54,7 +56,7 @@ export function createEntityContentExtension<
   loader: (options: {
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }) => Promise<JSX.Element>;
-}): Extension<{
+}): ExtensionDefinition<{
   title: string;
   path: string;
   filter?: string | undefined;

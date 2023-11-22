@@ -4,20 +4,21 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { GraphQLEndpoint } from '@backstage/plugin-graphiql';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
-export function createEndpointExtension<TConfig extends {}>(options: {
-  id: string;
+export function createGraphiQLEndpointExtension<TConfig extends {}>(options: {
+  namespace?: string;
+  name?: string;
   configSchema?: PortableSchema<TConfig>;
   disabled?: boolean;
   factory: (options: { config: TConfig }) => {
     endpoint: GraphQLEndpoint;
   };
-}): Extension<TConfig>;
+}): ExtensionDefinition<TConfig>;
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<
@@ -29,15 +30,15 @@ const _default: BackstagePlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const graphiqlBrowseApi: Extension<{}>;
+export const graphiqlBrowseApi: ExtensionDefinition<{}>;
 
 // @alpha (undocumented)
-export const GraphiqlPage: Extension<{
+export const GraphiqlPage: ExtensionDefinition<{
   path: string;
 }>;
 
 // @alpha (undocumented)
-export const graphiqlPageSidebarItem: Extension<{
+export const graphiqlPageSidebarItem: ExtensionDefinition<{
   title: string;
 }>;
 

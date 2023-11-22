@@ -4,7 +4,7 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -23,7 +23,7 @@ const _default: BackstagePlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const TechDocsSearchResultListItemExtension: Extension<{
+export const TechDocsSearchResultListItemExtension: ExtensionDefinition<{
   lineClamp: number;
   noTrack: boolean;
   asListItem: boolean;
