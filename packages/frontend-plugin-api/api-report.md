@@ -339,7 +339,7 @@ export interface CreateExtensionOptions<
   disabled?: boolean;
   // (undocumented)
   factory(options: {
-    source?: BackstagePlugin;
+    node: AppNode;
     config: TConfig;
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
@@ -493,7 +493,7 @@ export interface Extension<TConfig> {
   disabled: boolean;
   // (undocumented)
   factory(options: {
-    source?: BackstagePlugin;
+    node: AppNode;
     config: TConfig;
     inputs: Record<
       string,
@@ -518,11 +518,9 @@ export interface ExtensionBoundaryProps {
   // (undocumented)
   children: ReactNode;
   // (undocumented)
-  id: string;
+  node: AppNode;
   // (undocumented)
   routable?: boolean;
-  // (undocumented)
-  source?: BackstagePlugin;
 }
 
 // @public (undocumented)
