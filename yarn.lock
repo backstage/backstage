@@ -18257,11 +18257,11 @@ __metadata:
   linkType: hard
 
 "@types/json-schema-merge-allof@npm:^0.6.0":
-  version: 0.6.4
-  resolution: "@types/json-schema-merge-allof@npm:0.6.4"
+  version: 0.6.5
+  resolution: "@types/json-schema-merge-allof@npm:0.6.5"
   dependencies:
     "@types/json-schema": "*"
-  checksum: 7ac71a8b6cda3e1e48153c0c00939daab2ae56353fd2e41f59a3b69a2a26eafddb9e389b8096068eea5ac60e6619927a2d854f317c67940a35488ce52507b472
+  checksum: 704806bce36c830b971bcc26415d2a4c4102482808bf6aef343dd4c062678f7e69e537ffebf4fbb389e568e4056cab9259b2b6f06a988c8676d90da37bbbc4c4
   languageName: node
   linkType: hard
 
