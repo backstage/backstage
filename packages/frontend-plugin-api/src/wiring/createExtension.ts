@@ -137,10 +137,15 @@ export function createExtension<
   options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
 ): ExtensionDefinition<TConfig> {
   return {
-    ...options,
-    disabled: options.disabled ?? false,
     $$type: '@backstage/ExtensionDefinition',
+    kind: options.kind,
+    namespace: options.namespace,
+    name: options.name,
+    attachTo: options.attachTo,
+    disabled: options.disabled ?? false,
     inputs: options.inputs ?? {},
+    output: options.output,
+    configSchema: options.configSchema,
     factory({ inputs, ...rest }) {
       // TODO: Simplify this, but TS wouldn't infer the input type for some reason
       return options.factory({

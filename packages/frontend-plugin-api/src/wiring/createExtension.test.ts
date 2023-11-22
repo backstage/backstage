@@ -25,7 +25,7 @@ function unused(..._any: any[]) {}
 describe('createExtension', () => {
   it('should create an extension with a simple output', () => {
     const baseConfig = {
-      id: 'test',
+      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       output: {
         foo: stringData,
@@ -39,7 +39,7 @@ describe('createExtension', () => {
         };
       },
     });
-    expect(extension.id).toBe('test');
+    expect(extension.namespace).toBe('test');
 
     // When declared as an error function without a block the TypeScript errors
     // are a more specific and will point at the property that is problematic.
@@ -163,7 +163,7 @@ describe('createExtension', () => {
 
   it('should create an extension with a some optional output', () => {
     const baseConfig = {
-      id: 'test',
+      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       output: {
         foo: stringData,
@@ -176,7 +176,7 @@ describe('createExtension', () => {
         foo: 'bar',
       }),
     });
-    expect(extension.id).toBe('test');
+    expect(extension.namespace).toBe('test');
 
     createExtension({
       ...baseConfig,
@@ -233,7 +233,7 @@ describe('createExtension', () => {
 
   it('should create an extension with input', () => {
     const extension = createExtension({
-      id: 'test',
+      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       inputs: {
         mixed: createExtensionInput({
@@ -286,6 +286,6 @@ describe('createExtension', () => {
         };
       },
     });
-    expect(extension.id).toBe('test');
+    expect(extension.namespace).toBe('test');
   });
 });
