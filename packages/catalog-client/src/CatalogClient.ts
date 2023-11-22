@@ -166,10 +166,7 @@ export class CatalogClient implements CatalogApi {
   ): Promise<GetEntitiesByRefsResponse> {
     const response = await this.apiClient.getEntitiesByRefs(
       {
-        body: {
-          entityRefs: request.entityRefs,
-          fields: request.fields?.length ? request.fields : undefined,
-        },
+        body: request,
       },
       options,
     );
