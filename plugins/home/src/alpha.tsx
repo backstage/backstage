@@ -33,7 +33,6 @@ const rootRouteRef = createRouteRef();
 export const titleExtensionDataRef = createExtensionDataRef<string>('title');
 
 const HomepageCompositionRootExtension = createPageExtension({
-  id: 'home',
   defaultPath: '/home',
   routeRef: rootRouteRef,
   inputs: {

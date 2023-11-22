@@ -18,7 +18,6 @@ import { createSearchResultListItemExtension } from '@backstage/plugin-search-re
 
 export const CatalogSearchResultListItemExtension =
   createSearchResultListItemExtension({
-    id: 'catalog',
     predicate: result => result.type === 'software-catalog',
     component: () =>
       import('../components/CatalogSearchResultListItem').then(

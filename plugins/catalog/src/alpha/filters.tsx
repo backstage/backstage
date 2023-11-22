@@ -19,7 +19,7 @@ import { createCatalogFilterExtension } from './createCatalogFilterExtension';
 import { createSchemaFromZod } from '@backstage/frontend-plugin-api';
 
 const CatalogEntityTagFilter = createCatalogFilterExtension({
-  id: 'entity.tag',
+  name: 'tag',
   loader: async () => {
     const { EntityTagPicker } = await import('@backstage/plugin-catalog-react');
     return <EntityTagPicker />;
@@ -27,7 +27,7 @@ const CatalogEntityTagFilter = createCatalogFilterExtension({
 });
 
 const CatalogEntityKindFilter = createCatalogFilterExtension({
-  id: 'entity.kind',
+  name: 'kind',
   configSchema: createSchemaFromZod(z =>
     z.object({
       initialFilter: z.string().default('component'),
@@ -42,7 +42,7 @@ const CatalogEntityKindFilter = createCatalogFilterExtension({
 });
 
 const CatalogEntityTypeFilter = createCatalogFilterExtension({
-  id: 'entity.type',
+  name: 'type',
   loader: async () => {
     const { EntityTypePicker } = await import(
       '@backstage/plugin-catalog-react'
@@ -52,7 +52,7 @@ const CatalogEntityTypeFilter = createCatalogFilterExtension({
 });
 
 const CatalogEntityOwnerFilter = createCatalogFilterExtension({
-  id: 'entity.mode',
+  name: 'mode',
   configSchema: createSchemaFromZod(z =>
     z.object({
       mode: z.enum(['owners-only', 'all']).optional(),
@@ -67,7 +67,7 @@ const CatalogEntityOwnerFilter = createCatalogFilterExtension({
 });
 
 const CatalogEntityNamespaceFilter = createCatalogFilterExtension({
-  id: 'entity.namespace',
+  name: 'namespace',
   loader: async () => {
     const { EntityNamespacePicker } = await import(
       '@backstage/plugin-catalog-react'
@@ -77,7 +77,7 @@ const CatalogEntityNamespaceFilter = createCatalogFilterExtension({
 });
 
 const CatalogEntityLifecycleFilter = createCatalogFilterExtension({
-  id: 'entity.lifecycle',
+  name: 'lifecycle',
   loader: async () => {
     const { EntityLifecyclePicker } = await import(
       '@backstage/plugin-catalog-react'
@@ -87,7 +87,7 @@ const CatalogEntityLifecycleFilter = createCatalogFilterExtension({
 });
 
 const CatalogEntityProcessingStatusFilter = createCatalogFilterExtension({
-  id: 'entity.processing.status',
+  name: 'processing.status',
   loader: async () => {
     const { EntityProcessingStatusPicker } = await import(
       '@backstage/plugin-catalog-react'
@@ -97,7 +97,7 @@ const CatalogEntityProcessingStatusFilter = createCatalogFilterExtension({
 });
 
 const CatalogUserListFilter = createCatalogFilterExtension({
-  id: 'user.list',
+  name: 'list',
   configSchema: createSchemaFromZod(z =>
     z.object({
       initialFilter: z.enum(['owned', 'starred', 'all']).default('owned'),

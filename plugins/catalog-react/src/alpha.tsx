@@ -50,7 +50,8 @@ export const entityFilterExpressionExtensionDataRef =
 export function createEntityCardExtension<
   TInputs extends AnyExtensionInputMap,
 >(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   attachTo?: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
@@ -61,12 +62,12 @@ export function createEntityCardExtension<
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }) => Promise<JSX.Element>;
 }) {
-  const id = `entity.cards.${options.id}`;
-
   return createExtension({
-    id,
+    kind: 'entity-card',
+    namespace: options.namespace,
+    name: options.name,
     attachTo: options.attachTo ?? {
-      id: 'entity.content.overview',
+      id: 'entity-content:catalog/overview',
       input: 'cards',
     },
     disabled: options.disabled ?? true,
@@ -104,7 +105,8 @@ export function createEntityCardExtension<
 export function createEntityContentExtension<
   TInputs extends AnyExtensionInputMap,
 >(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   attachTo?: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
@@ -118,12 +120,12 @@ export function createEntityContentExtension<
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }) => Promise<JSX.Element>;
 }) {
-  const id = `entity.content.${options.id}`;
-
   return createExtension({
-    id,
+    kind: 'entity-content',
+    namespace: options.namespace,
+    name: options.name,
     attachTo: options.attachTo ?? {
-      id: 'plugin.catalog.page.entity',
+      id: 'page:catalog/entity',
       input: 'contents',
     },
     disabled: options.disabled ?? true,

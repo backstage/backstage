@@ -28,16 +28,17 @@ export function createCatalogFilterExtension<
   TInputs extends AnyExtensionInputMap,
   TConfig = never,
 >(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
   loader: (options: { config: TConfig }) => Promise<JSX.Element>;
 }) {
-  const id = `catalog.filter.${options.id}`;
-
   return createExtension({
-    id,
-    attachTo: { id: 'plugin.catalog.page.index', input: 'filters' },
+    kind: 'catalog-filter',
+    namespace: options.namespace,
+    name: options.name,
+    attachTo: { id: 'page:catalog', input: 'filters' },
     inputs: options.inputs ?? {},
     configSchema: options.configSchema,
     output: {

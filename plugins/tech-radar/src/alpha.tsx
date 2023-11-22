@@ -29,7 +29,6 @@ import { rootRouteRef } from './plugin';
 
 /** @alpha */
 export const TechRadarPage = createPageExtension({
-  id: 'plugin.techradar.page',
   defaultPath: '/tech-radar',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   configSchema: createSchemaFromZod(z =>
@@ -49,7 +48,6 @@ export const TechRadarPage = createPageExtension({
 });
 
 const sampleTechRadarApi = createApiExtension({
-  api: techRadarApiRef,
   factory() {
     return createApiFactory(techRadarApiRef, new SampleTechRadarApi());
   },
