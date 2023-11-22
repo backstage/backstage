@@ -34,7 +34,6 @@ export type ConsumedResponse = {
     values(): IterableIterator<string>;
     [Symbol.iterator](): Iterator<[string, string]>;
   };
-  readonly bodyUsed: boolean;
   readonly ok: boolean;
   readonly redirected: boolean;
   readonly status: number;

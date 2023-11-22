@@ -43,11 +43,6 @@ export class ResponseError extends Error {
   readonly body: ErrorResponseBody;
 
   /**
-   * The unparsed possibly JSON error body. Will be set even if the returned error doesn't match {@link ErrorResponseBody}.
-   */
-  readonly rawBody: string;
-
-  /**
    * The Error cause, as seen by the remote server. This is parsed out of the
    * JSON error body.
    *
@@ -66,20 +61,9 @@ export class ResponseError extends Error {
    * been consumed before.
    */
   static async fromResponse(
-    response: ConsumedResponse & { text(): Promise<string>; bodyUsed: boolean },
+    response: ConsumedResponse & { text(): Promise<string> },
   ): Promise<ResponseError> {
-    let rawBody = '';
-    try {
-      rawBody = await response.text();
-    } catch {
-      // ignore
-    }
-
-    const data = await parseErrorResponseBody(
-      // TS isn't smart enough to know that this is done under the hood,
-      response,
-      rawBody,
-    );
+    const data = await parseErrorResponseBody(response);
 
     const status = data.response.statusCode || response.status;
     const statusText = data.error.name || response.statusText;
@@ -91,7 +75,6 @@ export class ResponseError extends Error {
       response,
       data,
       cause,
-      rawBody,
     });
   }
 
@@ -99,7 +82,6 @@ export class ResponseError extends Error {
     message: string;
     response: ConsumedResponse;
     data: ErrorResponseBody;
-    rawBody: string;
     cause: Error;
   }) {
     super(props.message);
@@ -107,6 +89,5 @@ export class ResponseError extends Error {
     this.response = props.response;
     this.body = props.data;
     this.cause = props.cause;
-    this.rawBody = props.rawBody;
   }
 }
