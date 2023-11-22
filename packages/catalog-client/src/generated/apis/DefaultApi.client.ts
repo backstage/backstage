@@ -19,7 +19,6 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import { pluginId } from '../pluginId';
 import * as parser from 'uri-template';
-import { ResponseError } from '@backstage/errors';
 
 import { AnalyzeLocationRequest } from '../models/AnalyzeLocationRequest.model';
 import { AnalyzeLocationResponse } from '../models/AnalyzeLocationResponse.model';
@@ -81,8 +80,7 @@ export class DefaultApiClient {
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
@@ -90,10 +88,6 @@ export class DefaultApiClient {
       method: 'POST',
       body: JSON.stringify(request.body),
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -119,8 +113,7 @@ export class DefaultApiClient {
       ...request.query,
     });
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
@@ -128,10 +121,6 @@ export class DefaultApiClient {
       method: 'POST',
       body: JSON.stringify(request.body),
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -155,18 +144,13 @@ export class DefaultApiClient {
       uid: request.path.uid,
     });
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'DELETE',
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -190,18 +174,13 @@ export class DefaultApiClient {
       id: request.path.id,
     });
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'DELETE',
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -235,18 +214,13 @@ export class DefaultApiClient {
       ...request.query,
     });
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -282,18 +256,13 @@ export class DefaultApiClient {
       ...request.query,
     });
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -313,8 +282,7 @@ export class DefaultApiClient {
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
@@ -322,10 +290,6 @@ export class DefaultApiClient {
       method: 'POST',
       body: JSON.stringify(request.body),
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -355,18 +319,13 @@ export class DefaultApiClient {
       name: request.path.name,
     });
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -396,18 +355,13 @@ export class DefaultApiClient {
       name: request.path.name,
     });
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -431,18 +385,13 @@ export class DefaultApiClient {
       uid: request.path.uid,
     });
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -468,18 +417,13 @@ export class DefaultApiClient {
       ...request.query,
     });
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -503,18 +447,13 @@ export class DefaultApiClient {
       id: request.path.id,
     });
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -531,18 +470,13 @@ export class DefaultApiClient {
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -562,8 +496,7 @@ export class DefaultApiClient {
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
@@ -571,10 +504,6 @@ export class DefaultApiClient {
       method: 'POST',
       body: JSON.stringify(request.body),
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 
   /**
@@ -594,8 +523,7 @@ export class DefaultApiClient {
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    const url = `${baseUrl}${uri}`;
-    const response = await this.fetchApi.fetch(url, {
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
@@ -603,9 +531,5 @@ export class DefaultApiClient {
       method: 'POST',
       body: JSON.stringify(request.body),
     });
-    if (response.ok) {
-      return response;
-    }
-    throw await ResponseError.fromResponse(response);
   }
 }
