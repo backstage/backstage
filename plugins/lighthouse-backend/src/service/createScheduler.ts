@@ -56,14 +56,14 @@ export async function createScheduler(
 
   logger.info(
     `Running with Scheduler Config ${JSON.stringify(
-      lighthouseAuditConfig.getSchedule(),
+      lighthouseAuditConfig.getFrequency(),
     )} and timeout ${JSON.stringify(lighthouseAuditConfig.getTimeout())}`,
   );
 
   if (scheduler) {
     await scheduler.scheduleTask({
       id: 'lighthouse_audit',
-      frequency: lighthouseAuditConfig.getSchedule(),
+      frequency: lighthouseAuditConfig.getFrequency(),
       timeout: lighthouseAuditConfig.getTimeout(),
       initialDelay: { minutes: 15 },
       fn: async () => {

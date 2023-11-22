@@ -14,52 +14,48 @@
  * limitations under the License.
  */
 
+import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { HumanDuration as HumanDuration } from '@backstage/types';
 
 export interface LighthouseAuditScheduleConfig {
-  schedule: HumanDuration;
+  frequency: HumanDuration;
   timeout: HumanDuration;
   auditDetail: HumanDuration;
 }
 
 /** @public */
 export type LighthouseAuditSchedule = {
-  getSchedule: () => HumanDuration;
+  getFrequency: () => HumanDuration;
   getTimeout: () => HumanDuration;
 };
 
 /** @public */
 export class LighthouseAuditScheduleImpl implements LighthouseAuditSchedule {
-  static fromConfig(config: Config) {
-    const lighthouse = config.getOptionalConfig('lighthouse');
+  static fromConfig(config: Config): LighthouseAuditScheduleImpl {
+    // const lighthouse = config.getOptionalConfig('lighthouse');
+    const lighthouse = config.has('lighthouse.schedule')
+      ? readTaskScheduleDefinitionFromConfig(
+          config.getConfig('lighthouse.schedule'),
+        )
+      : {
+          frequency: { days: 1 },
+          timeout: {},
+        };
 
-    let schedule: HumanDuration = { days: 1 };
-    let timeout: HumanDuration = {};
+    const frequency = lighthouse.frequency as HumanDuration;
+    const timeout = lighthouse.timeout as HumanDuration;
 
-    if (lighthouse) {
-      const scheduleConfig = lighthouse.getOptionalConfig('schedule');
-      const timeoutConfig = lighthouse.getOptionalConfig('timeout');
-
-      if (scheduleConfig) {
-        schedule = scheduleConfig as HumanDuration;
-      }
-
-      if (timeoutConfig) {
-        timeout = timeoutConfig as HumanDuration;
-      }
-    }
-
-    return new LighthouseAuditScheduleImpl(schedule, timeout);
+    return new LighthouseAuditScheduleImpl(frequency, timeout);
   }
 
   constructor(
-    private schedule: HumanDuration,
+    private frequency: HumanDuration,
     private timeout: HumanDuration,
   ) {}
 
-  getSchedule(): HumanDuration {
-    return this.schedule;
+  getFrequency(): HumanDuration {
+    return this.frequency;
   }
 
   getTimeout(): HumanDuration {
