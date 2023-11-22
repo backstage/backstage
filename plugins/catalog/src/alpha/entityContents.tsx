@@ -25,7 +25,7 @@ import {
 } from '@backstage/plugin-catalog-react/alpha';
 
 export const OverviewEntityContent = createEntityContentExtension({
-  id: 'overview',
+  name: 'overview',
   defaultPath: '/',
   defaultTitle: 'Overview',
   disabled: false,

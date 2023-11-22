@@ -20,7 +20,6 @@ import { createNavItemExtension } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../routes';
 
 export const CatalogIndexNavItem = createNavItemExtension({
-  id: 'catalog.nav.index',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   title: 'Catalog',
   icon: HomeIcon,

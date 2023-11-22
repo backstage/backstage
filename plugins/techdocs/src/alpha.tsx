@@ -46,8 +46,7 @@ import { createEntityContentExtension } from '@backstage/plugin-catalog-react/al
 
 /** @alpha */
 const techDocsStorage = createApiExtension({
-  api: techdocsStorageApiRef,
-
+  name: 'storage',
   factory() {
     return createApiFactory({
       api: techdocsStorageApiRef,
@@ -70,7 +69,6 @@ const techDocsStorage = createApiExtension({
 
 /** @alpha */
 const techDocsClient = createApiExtension({
-  api: techdocsApiRef,
   factory() {
     return createApiFactory({
       api: techdocsApiRef,
@@ -92,7 +90,6 @@ const techDocsClient = createApiExtension({
 /** @alpha */
 export const TechDocsSearchResultListItemExtension =
   createSearchResultListItemExtension({
-    id: 'techdocs',
     configSchema: createSchemaFromZod(z =>
       z.object({
         // TODO: Define how the icon can be configurable
@@ -118,7 +115,6 @@ export const TechDocsSearchResultListItemExtension =
  * @alpha
  */
 const TechDocsIndexPage = createPageExtension({
-  id: 'plugin.techdocs.indexPage',
   defaultPath: '/docs',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   loader: () =>
@@ -133,7 +129,7 @@ const TechDocsIndexPage = createPageExtension({
  * @alpha
  */
 const TechDocsReaderPage = createPageExtension({
-  id: 'plugin.techdocs.readerPage',
+  name: 'reader',
   defaultPath: '/docs/:namespace/:kind/:name',
   routeRef: convertLegacyRouteRef(rootDocsRouteRef),
   loader: () =>
@@ -148,7 +144,6 @@ const TechDocsReaderPage = createPageExtension({
  * @alpha
  */
 const TechDocsEntityContent = createEntityContentExtension({
-  id: 'techdocs',
   defaultPath: 'docs',
   defaultTitle: 'TechDocs',
   loader: () => import('./Router').then(m => <m.EmbeddedDocsRouter />),
@@ -156,7 +151,6 @@ const TechDocsEntityContent = createEntityContentExtension({
 
 /** @alpha */
 const TechDocsNavItem = createNavItemExtension({
-  id: 'plugin.techdocs.nav.index',
   icon: LibraryBooks,
   title: 'Docs',
   routeRef: convertLegacyRouteRef(rootRouteRef),

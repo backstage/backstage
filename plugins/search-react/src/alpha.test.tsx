@@ -44,7 +44,6 @@ describe('createSearchResultListItemExtension', () => {
 
     const TechDocsSearchResultItemExtension =
       createSearchResultListItemExtension({
-        id: 'techdocs',
         attachTo: { id: 'plugin.search.page', input: 'items' },
         configSchema: createSchemaFromZod(z =>
           z
@@ -67,14 +66,12 @@ describe('createSearchResultListItemExtension', () => {
 
     const ExploreSearchResultItemExtension =
       createSearchResultListItemExtension({
-        id: 'explore',
         attachTo: { id: 'plugin.search.page', input: 'items' },
         predicate: result => result.type === 'explore',
         component: async () => ExploreSearchResultItemComponent,
       });
 
     const SearchPageExtension = createPageExtension({
-      id: 'plugin.search.page',
       defaultPath: '/',
       inputs: {
         items: createExtensionInput({

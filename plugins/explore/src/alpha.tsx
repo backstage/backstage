@@ -20,7 +20,6 @@ import { createSearchResultListItemExtension } from '@backstage/plugin-search-re
 /** @alpha */
 export const ExploreSearchResultListItemExtension =
   createSearchResultListItemExtension({
-    id: 'explore',
     predicate: result => result.type === 'tools',
     component: () =>
       import('./components/ToolSearchResultListItem').then(
