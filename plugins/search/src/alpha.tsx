@@ -98,7 +98,6 @@ const useSearchPageStyles = makeStyles((theme: Theme) => ({
 
 /** @alpha */
 export const SearchPage = createPageExtension({
-  id: 'plugin.search.page',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   configSchema: createSchemaFromZod(z =>
     z.object({
@@ -235,7 +234,6 @@ export const SearchPage = createPageExtension({
 
 /** @alpha */
 export const SearchNavItem = createNavItemExtension({
-  id: 'plugin.search.nav.index',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   title: 'Search',
   icon: SearchIcon,

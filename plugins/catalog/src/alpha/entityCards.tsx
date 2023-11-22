@@ -18,7 +18,7 @@ import React from 'react';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
 export const EntityAboutCard = createEntityCardExtension({
-  id: 'about',
+  name: 'about',
   loader: async () =>
     import('../components/AboutCard').then(m => (
       <m.AboutCard variant="gridItem" />
@@ -26,7 +26,7 @@ export const EntityAboutCard = createEntityCardExtension({
 });
 
 export const EntityLinksCard = createEntityCardExtension({
-  id: 'links',
+  name: 'links',
   filter: 'has:links',
   loader: async () =>
     import('../components/EntityLinksCard').then(m => {
@@ -35,7 +35,7 @@ export const EntityLinksCard = createEntityCardExtension({
 });
 
 export const EntityLabelsCard = createEntityCardExtension({
-  id: 'labels',
+  name: 'labels',
   filter: 'has:labels',
   loader: async () =>
     import('../components/EntityLabelsCard').then(m => (
@@ -44,7 +44,7 @@ export const EntityLabelsCard = createEntityCardExtension({
 });
 
 export const EntityDependsOnComponentsCard = createEntityCardExtension({
-  id: 'dependsOn.components',
+  name: 'dependsOnComponents',
   loader: async () =>
     import('../components/DependsOnComponentsCard').then(m => (
       <m.DependsOnComponentsCard variant="gridItem" />
@@ -52,7 +52,7 @@ export const EntityDependsOnComponentsCard = createEntityCardExtension({
 });
 
 export const EntityDependsOnResourcesCard = createEntityCardExtension({
-  id: 'dependsOn.resources',
+  name: 'dependsOnResources',
   loader: async () =>
     import('../components/DependsOnResourcesCard').then(m => (
       <m.DependsOnResourcesCard variant="gridItem" />
@@ -60,7 +60,7 @@ export const EntityDependsOnResourcesCard = createEntityCardExtension({
 });
 
 export const EntityHasComponentsCard = createEntityCardExtension({
-  id: 'has.components',
+  name: 'hasComponents',
   loader: async () =>
     import('../components/HasComponentsCard').then(m => (
       <m.HasComponentsCard variant="gridItem" />
@@ -68,7 +68,7 @@ export const EntityHasComponentsCard = createEntityCardExtension({
 });
 
 export const EntityHasResourcesCard = createEntityCardExtension({
-  id: 'has.resources',
+  name: 'hasResources',
   loader: async () =>
     import('../components/HasResourcesCard').then(m => (
       <m.HasResourcesCard variant="gridItem" />
@@ -76,7 +76,7 @@ export const EntityHasResourcesCard = createEntityCardExtension({
 });
 
 export const EntityHasSubcomponentsCard = createEntityCardExtension({
-  id: 'has.subcomponents',
+  name: 'hasSubcomponents',
   loader: async () =>
     import('../components/HasSubcomponentsCard').then(m => (
       <m.HasSubcomponentsCard variant="gridItem" />
@@ -84,7 +84,7 @@ export const EntityHasSubcomponentsCard = createEntityCardExtension({
 });
 
 export const EntityHasSystemsCard = createEntityCardExtension({
-  id: 'has.systems',
+  name: 'hasSystems',
   loader: async () =>
     import('../components/HasSystemsCard').then(m => (
       <m.HasSystemsCard variant="gridItem" />

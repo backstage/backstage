@@ -30,7 +30,6 @@ import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 
 export const CatalogIndexPage = createPageExtension({
-  id: 'plugin.catalog.page.index',
   defaultPath: '/catalog',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   inputs: {
@@ -46,7 +45,7 @@ export const CatalogIndexPage = createPageExtension({
 });
 
 export const CatalogEntityPage = createPageExtension({
-  id: 'plugin.catalog.page.entity',
+  name: 'entity',
   defaultPath: '/catalog/:namespace/:kind/:name',
   routeRef: convertLegacyRouteRef(entityRouteRef),
   inputs: {

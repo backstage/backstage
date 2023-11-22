@@ -58,9 +58,13 @@ export type SearchResultItemExtensionOptions<
   TConfig extends { noTrack?: boolean },
 > = {
   /**
-   * The extension id.
+   * The extension namespace.
    */
-  id: string;
+  namespace?: string;
+  /**
+   * The extension name.
+   */
+  name?: string;
   /**
    * The extension attachment point (e.g., search modal or page).
    */
@@ -86,8 +90,6 @@ export type SearchResultItemExtensionOptions<
 export function createSearchResultListItemExtension<
   TConfig extends { noTrack?: boolean },
 >(options: SearchResultItemExtensionOptions<TConfig>) {
-  const id = `plugin.search.result.item.${options.id}`;
-
   const configSchema =
     'configSchema' in options
       ? options.configSchema
@@ -98,9 +100,11 @@ export function createSearchResultListItemExtension<
         ) as PortableSchema<TConfig>);
 
   return createExtension({
-    id,
+    kind: 'search-result-list-item',
+    namespace: options.namespace,
+    name: options.name,
     attachTo: options.attachTo ?? {
-      id: 'plugin.search.page',
+      id: 'page:search',
       input: 'items',
     },
     configSchema,
