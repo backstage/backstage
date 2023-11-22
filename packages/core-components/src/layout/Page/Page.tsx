@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
+import { makeStyles, Theme as Mui4Theme } from '@material-ui/core/styles';
+import { Theme as Mui5Theme } from '@mui/material/styles';
+import { UnifiedThemeHolder, UnifiedThemeProvider } from '@backstage/theme';
 
 export type PageClassKey = 'root';
 
@@ -51,13 +53,25 @@ export function Page(props: Props) {
   const { themeId, children } = props;
   const classes = useStyles();
   return (
-    <ThemeProvider
-      theme={(baseTheme: Theme) => ({
-        ...baseTheme,
-        page: baseTheme.getPageTheme({ themeId }),
-      })}
+    <UnifiedThemeProvider
+      theme={theme => {
+        const v4Theme = theme.getTheme('v4') as Mui4Theme;
+        const v5Theme = theme.getTheme('v5') as Mui5Theme;
+
+        const newV4Theme = {
+          ...v4Theme,
+          page: v4Theme.getPageTheme({ themeId }),
+        };
+
+        const newV5Theme = {
+          ...v5Theme,
+          page: v5Theme.getPageTheme({ themeId }),
+        };
+
+        return new UnifiedThemeHolder(newV4Theme, newV5Theme);
+      }}
     >
       <main className={classes.root}>{children}</main>
-    </ThemeProvider>
+    </UnifiedThemeProvider>
   );
 }

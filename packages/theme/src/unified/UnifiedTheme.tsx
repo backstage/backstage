@@ -34,6 +34,11 @@ import { defaultComponentThemes } from '../v5';
 import { transformV5ComponentThemesToV4 } from './overrides';
 import { SupportedThemes, SupportedVersions, UnifiedTheme } from './types';
 
+/**
+ * Wrapper for Mui v4 and v5 themes
+ *
+ * @public
+ */
 export class UnifiedThemeHolder implements UnifiedTheme {
   #themes = new Map<SupportedVersions, SupportedThemes>();
 

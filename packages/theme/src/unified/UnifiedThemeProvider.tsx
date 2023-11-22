@@ -15,6 +15,7 @@
  */
 
 import React, { ReactNode } from 'react';
+import { isFunction } from 'lodash';
 import './MuiClassNameSetup';
 import { CssBaseline } from '@material-ui/core';
 import {
@@ -22,13 +23,16 @@ import {
   StylesProvider,
   createGenerateClassName,
   Theme as Mui4Theme,
+  useTheme,
 } from '@material-ui/core/styles';
 import {
   StyledEngineProvider,
   ThemeProvider as Mui5Provider,
   Theme as Mui5Theme,
+  useTheme as useV5Theme,
 } from '@mui/material/styles';
 import { UnifiedTheme } from './types';
+import { UnifiedThemeHolder } from './UnifiedTheme';
 
 /**
  * Props for {@link UnifiedThemeProvider}.
@@ -37,7 +41,7 @@ import { UnifiedTheme } from './types';
  */
 export interface UnifiedThemeProviderProps {
   children: ReactNode;
-  theme: UnifiedTheme;
+  theme: UnifiedTheme | ((outerTheme: UnifiedTheme) => UnifiedTheme);
   noCssBaseline?: boolean;
 }
 
@@ -59,8 +63,15 @@ export function UnifiedThemeProvider(
 ): JSX.Element {
   const { children, theme, noCssBaseline = false } = props;
 
-  const v4Theme = theme.getTheme('v4') as Mui4Theme;
-  const v5Theme = theme.getTheme('v5') as Mui5Theme;
+  const currentV4Theme = useTheme();
+  const currentV5Theme = useV5Theme();
+
+  const unifiedTheme = new UnifiedThemeHolder(currentV4Theme, currentV5Theme);
+
+  const themeToUse = isFunction(theme) ? theme(unifiedTheme) : theme;
+
+  const v4Theme = themeToUse.getTheme('v4') as Mui4Theme;
+  const v5Theme = themeToUse.getTheme('v5') as Mui5Theme;
 
   let cssBaseline: JSX.Element | undefined = undefined;
   if (!noCssBaseline) {

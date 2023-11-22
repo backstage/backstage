@@ -35,7 +35,8 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@mui/material": "^5.12.2"
+    "@mui/material": "^5.12.2",
+    "lodash": "^4.17.21"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.12.2",

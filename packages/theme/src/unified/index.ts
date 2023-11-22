@@ -15,7 +15,11 @@
  */
 
 export { transformV5ComponentThemesToV4 } from './overrides';
-export { createUnifiedTheme, createUnifiedThemeFromV4 } from './UnifiedTheme';
+export {
+  UnifiedThemeHolder,
+  createUnifiedTheme,
+  createUnifiedThemeFromV4,
+} from './UnifiedTheme';
 export type { UnifiedThemeOptions } from './UnifiedTheme';
 export { themes } from './themes';
 export { UnifiedThemeProvider } from './UnifiedThemeProvider';
