@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-bazaar': minor
+'@backstage/plugin-bazaar': patch
 ---
 
 Apply the title property to other components

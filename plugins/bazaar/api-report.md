@@ -64,7 +64,7 @@ export const SortView: (props: SortViewProps) => React_2.JSX.Element;
 export type SortViewProps = {
   fullWidth?: boolean;
   fullHeight?: boolean;
-  codename: string;
+  codename?: string;
 };
 
 // (No @packageDocumentation comment for this package)
