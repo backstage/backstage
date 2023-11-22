@@ -47,6 +47,7 @@ export const TechRadarPage = createPageExtension({
     import('./components').then(m => <m.RadarPage {...config} />),
 });
 
+/** @alpha */
 export const sampleTechRadarApi = createApiExtension({
   factory() {
     return createApiFactory(techRadarApiRef, new SampleTechRadarApi());
