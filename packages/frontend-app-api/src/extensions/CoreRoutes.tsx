@@ -26,8 +26,9 @@ import {
 import { useRoutes } from 'react-router-dom';
 
 export const CoreRoutes = createExtension({
-  id: 'core.routes',
-  attachTo: { id: 'core.layout', input: 'content' },
+  namespace: 'core',
+  name: 'routes',
+  attachTo: { id: 'core/layout', input: 'content' },
   inputs: {
     routes: createExtensionInput({
       path: coreExtensionData.routePath,
