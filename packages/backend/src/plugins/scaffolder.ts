@@ -15,14 +15,16 @@
  */
 
 import { CatalogClient } from '@backstage/catalog-client';
+import { ScmIntegrations } from '@backstage/integration';
 import {
   createBuiltinActions,
   createRouter,
 } from '@backstage/plugin-scaffolder-backend';
+import { createConfluenceToMarkdownAction } from '@backstage/plugin-scaffolder-backend-module-confluence-to-markdown';
 import { Router } from 'express';
 import type { PluginEnvironment } from '../types';
-import { ScmIntegrations } from '@backstage/integration';
-import { createConfluenceToMarkdownAction } from '@backstage/plugin-scaffolder-backend-module-confluence-to-markdown';
+
+import { createGitlabProjectAccessTokenAction } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -47,6 +49,7 @@ export default async function createPlugin(
       config: env.config,
       reader: env.reader,
     }),
+    createGitlabProjectAccessTokenAction({ integrations: integrations }),
   ];
 
   return await createRouter({

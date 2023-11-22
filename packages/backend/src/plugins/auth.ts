@@ -20,8 +20,8 @@ import {
 } from '@backstage/catalog-model';
 import {
   createRouter,
-  providers,
   defaultAuthProviderFactories,
+  providers,
 } from '@backstage/plugin-auth-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -69,10 +69,32 @@ export default async function createPlugin(
       }),
       gitlab: providers.gitlab.create({
         signIn: {
-          async resolver({ result: { fullProfile } }, ctx) {
-            return ctx.signInWithCatalogUser({
-              entityRef: {
-                name: fullProfile.id,
+          resolver: async (info, ctx) => {
+            const {
+              profile: { email },
+            } = info;
+            // Profiles are not always guaranteed to to have an email address.
+            // You can also find more provider-specific information in `info.result`.
+            // It typically contains a `fullProfile` object as well as ID and/or access
+            // tokens that you can use for additional lookups.
+            if (!info.result.fullProfile.username) {
+              throw new Error('Username does not exist');
+            }
+            if (!email) {
+              throw new Error('User profile contained no email');
+            }
+
+            // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
+            const userEntityRef = stringifyEntityRef({
+              kind: 'User',
+              name: info.result.fullProfile.username,
+              namespace: DEFAULT_NAMESPACE,
+            });
+
+            return ctx.issueToken({
+              claims: {
+                sub: userEntityRef,
+                ent: [userEntityRef],
               },
             });
           },

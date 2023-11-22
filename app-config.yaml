@@ -201,8 +201,10 @@ integrations:
   #   rawBaseUrl: https://ghe.example.net/raw
   #   token: ${GHE_TOKEN}
   gitlab:
-    - host: gitlab.com
-      token: ${GITLAB_TOKEN}
+      - host: git-test.tech.rz.db.de
+        token: glpat-x7zPiCdwseusvDttPG-T
+        apiBaseUrl: https://git-test.tech.rz.db.de/api/v4
+        baseUrl: https://git-test.tech.rz.db.de
   ### Example for how to add a bitbucket cloud integration
   # bitbucketCloud:
   #   - username: ${BITBUCKET_USERNAME}
@@ -235,12 +237,33 @@ catalog:
         - System
         - Domain
         - Location
+        - Template
   providers:
     openapi:
       plugins:
         - catalog
         - search
         - todo
+    gitlab:
+      development:
+          # Identifies one of the hosts set up in the integrations
+          host: git-test.tech.rz.db.de
+          orgEnabled: true
+          # Optional. Uses `master` as default
+          branch: main
+          # group: devex-core # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
+          # Optional. Defaults to `catalog-info.yaml`
+          entityFilename: catalog-info.yaml
+          # Optional. Filters found projects based on provided patter. Defaults to `[\s\S]*`, which means to not filter anything
+          projectPattern: '[\s\S]*'
+          # optional; same options as in TaskScheduleDefinition
+          schedule:
+              # supports cron, ISO duration, "human duration" as used in code
+              frequency:
+                  minutes: 1
+              # supports ISO duration, "human duration" as used in code
+              timeout:
+                  minutes: 15
 
   processors:
     ldapOrg:
@@ -278,6 +301,8 @@ catalog:
     # Backstage example entities
     - type: file
       target: ../catalog-model/examples/all.yaml
+    - type: file
+      target: /Users/thomastroschke/test-pat.yml
     # Backstage example groups and users
     - type: file
       target: ../catalog-model/examples/acme-corp.yaml
@@ -330,10 +355,11 @@ auth:
         clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
         enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
     gitlab:
-      development:
-        clientId: ${AUTH_GITLAB_CLIENT_ID}
-        clientSecret: ${AUTH_GITLAB_CLIENT_SECRET}
-        audience: ${GITLAB_BASE_URL}
+        development:
+            clientId: 34080fb18f698ab76d396b4efd08165b900a01c4d456bdd74fad57958e19c174
+            clientSecret: d564222bc7ad579ef86969c43ade83536b76ec87dcae577e6043879fe44a2798
+            audience: https://git-test.tech.rz.db.de/
+            callbackUrl: http://localhost:7007/api/auth/gitlab/handler/frame
     saml:
       entryPoint: 'http://localhost:7001/'
       issuer: 'passport-saml'
