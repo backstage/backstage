@@ -24,22 +24,17 @@ export function resolveExtensionDefinition<TConfig>(
   const { name, kind, namespace: _, ...rest } = definition;
   const namespace = context?.namespace ?? definition.namespace;
 
-  if (!namespace) {
+  const namePart =
+    name && namespace ? `${namespace}/${name}` : namespace || name;
+  if (!namePart) {
     throw new Error(
-      `Extension must declare an explicit namespace as it could not be resolved from context, name=${name} kind=${kind}`,
+      `Extension must declare an explicit namespace or name as it could not be resolved from context, kind=${kind} namespace=${namespace} name=${name}`,
     );
   }
 
-  let id;
-  if (kind && name) {
-    id = `${kind}:${namespace}/${name}`; // nav-item:catalog/index
-  } else if (kind) {
-    id = `${kind}:${namespace}`; // nav-item:search
-  } else if (name) {
-    id = `${namespace}/${name}`; // core/nav
-  } else {
-    id = namespace; // core
-  }
-
-  return { id, ...rest, $$type: '@backstage/Extension' };
+  return {
+    ...rest,
+    id: kind ? `${kind}:${namePart}` : namePart,
+    $$type: '@backstage/Extension',
+  };
 }

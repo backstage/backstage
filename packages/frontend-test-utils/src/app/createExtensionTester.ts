@@ -49,7 +49,7 @@ export class ExtensionTester {
   ): ExtensionTester {
     const withNamespace = {
       ...extension,
-      namespace: extension.namespace ?? 'test',
+      name: !extension.namespace && !extension.name ? 'test' : extension.name,
     };
     this.#extensions.push({
       id: resolveExtensionDefinition(withNamespace).id,
