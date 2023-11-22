@@ -17581,11 +17581,11 @@ __metadata:
   linkType: hard
 
 "@types/codemirror@npm:^5.0.0, @types/codemirror@npm:^5.60.8":
-  version: 5.60.13
-  resolution: "@types/codemirror@npm:5.60.13"
+  version: 5.60.15
+  resolution: "@types/codemirror@npm:5.60.15"
   dependencies:
     "@types/tern": "*"
-  checksum: 48d5ca1fa01f1e89f4c5ad4030e3d63780bebc3d3285b1a5beb0dc9038c306879c2fc089e39174b2b4bcd0b37ee858b38c7cc270ce9e5c71dd80dcd85eecc54d
+  checksum: cfad3f569de48fba3efa44fdfeba77933e231486a52cc80cff7ce6eeeed5b447a5bc2b11e2226bc00ccee332c661e53e35a15cf14eb835f434a6a402d9462f5f
   languageName: node
   linkType: hard
 
