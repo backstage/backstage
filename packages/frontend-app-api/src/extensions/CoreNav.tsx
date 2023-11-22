@@ -75,8 +75,9 @@ const SidebarNavItem = (props: NavTarget) => {
 };
 
 export const CoreNav = createExtension({
-  id: 'core.nav',
-  attachTo: { id: 'core.layout', input: 'nav' },
+  namespace: 'core',
+  name: 'nav',
+  attachTo: { id: 'core/layout', input: 'nav' },
   inputs: {
     items: createExtensionInput({
       target: coreExtensionData.navTarget,

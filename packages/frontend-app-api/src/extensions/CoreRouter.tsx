@@ -35,7 +35,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { signInPageComponentDataRef } from '../../../frontend-plugin-api/src/extensions/createSignInPageExtension';
 
 export const CoreRouter = createExtension({
-  id: 'core.router',
+  namespace: 'core',
+  name: 'router',
   attachTo: { id: 'core', input: 'root' },
   inputs: {
     signInPage: createExtensionInput(
