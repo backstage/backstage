@@ -51,13 +51,13 @@ describe('collectLegacyRoutes', () => {
         id: 'score-card',
         extensions: [
           {
-            id: 'plugin.score-card.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:score-card',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'score-board' },
           },
           {
-            id: 'apis.plugin.scoringdata.service',
+            id: 'api:score-card',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
@@ -67,13 +67,13 @@ describe('collectLegacyRoutes', () => {
         id: 'stackstorm',
         extensions: [
           {
-            id: 'plugin.stackstorm.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:stackstorm',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'stackstorm' },
           },
           {
-            id: 'apis.plugin.stackstorm.service',
+            id: 'api:stackstorm',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
@@ -83,19 +83,19 @@ describe('collectLegacyRoutes', () => {
         id: 'puppetDb',
         extensions: [
           {
-            id: 'plugin.puppetDb.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:puppetDb',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
-            id: 'plugin.puppetDb.page2',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:puppetDb/2',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
-            id: 'apis.plugin.puppetdb.service',
+            id: 'api:puppetDb',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
