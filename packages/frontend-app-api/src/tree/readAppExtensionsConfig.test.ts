@@ -105,7 +105,7 @@ describe('readAppExtensionsConfig', () => {
           app: {
             extensions: [
               {
-                'core.router/routes': {
+                '': {
                   extension: 'example-package#MyPage',
                   config: { foo: 'bar' },
                 },
@@ -115,7 +115,7 @@ describe('readAppExtensionsConfig', () => {
         }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[0], extension ID must not contain slashes; got 'core.router/routes', did you mean 'core.router'?"`,
+      `"Invalid extension configuration at app.extensions[0], extension ID must not be empty or contain whitespace"`,
     );
   });
 });
@@ -165,9 +165,6 @@ describe('expandShorthandExtensionParameters', () => {
     );
     expect(() => run(' a')).toThrowErrorMatchingInlineSnapshot(
       `"Invalid extension configuration at app.extensions[1], extension ID must not be empty or contain whitespace"`,
-    );
-    expect(() => run('core.router/routes')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], extension ID must not contain slashes; got 'core.router/routes', did you mean 'core.router'?"`,
     );
   });
 
