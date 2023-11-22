@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { NotFoundError } from '@backstage/errors';
 import {
   createSignInResolverFactory,
   OAuthAuthenticatorResult,
@@ -60,7 +59,7 @@ export namespace vmwareCloudSignInResolvers {
               },
             });
           } catch (e) {
-            if (e.name !== NotFoundError.name) {
+            if (e.name !== 'NotFoundError') {
               throw e;
             }
             return ctx.issueToken({
