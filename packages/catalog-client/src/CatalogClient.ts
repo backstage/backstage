@@ -40,6 +40,7 @@ import {
   GetEntitiesByRefsResponse,
   QueryEntitiesRequest,
   EntityFilterQuery,
+  QueryEntitiesResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest } from './utils';
 import { DefaultApiClient } from './generated';
@@ -190,7 +191,7 @@ export class CatalogClient implements CatalogApi {
   async queryEntities(
     request: QueryEntitiesRequest = {},
     options?: CatalogRequestOptions,
-  ) {
+  ): Promise<QueryEntitiesResponse> {
     const params: Partial<
       Parameters<typeof this.apiClient.getEntitiesByQuery>[0]['query']
     > = {};
