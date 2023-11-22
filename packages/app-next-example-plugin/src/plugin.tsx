@@ -21,7 +21,6 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 export const ExamplePage = createPageExtension({
-  id: 'example.page',
   defaultPath: '/example',
   loader: () => import('./Component').then(m => <m.Component />),
 });
