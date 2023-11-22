@@ -7,7 +7,7 @@
 
 import { AnyExtensionInputMap } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -17,11 +17,12 @@ export function createCatalogFilterExtension<
   TInputs extends AnyExtensionInputMap,
   TConfig = never,
 >(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
   loader: (options: { config: TConfig }) => Promise<JSX.Element>;
-}): Extension<TConfig>;
+}): ExtensionDefinition<TConfig>;
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<
