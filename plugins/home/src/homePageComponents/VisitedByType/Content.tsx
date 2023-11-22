@@ -31,6 +31,11 @@ export type VisitedByTypeProps = {
   numVisitsTotal?: number;
   loading?: boolean;
   kind: VisitedByTypeKind;
+  filterBy?: Array<{
+    field: keyof Visit;
+    operator: '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
+    value: string | number;
+  }>;
 };
 
 /**
@@ -43,6 +48,7 @@ export const Content = ({
   numVisitsTotal,
   loading,
   kind,
+  filterBy,
 }: VisitedByTypeProps) => {
   const { setContext, setVisits, setLoading } = useContext();
   // Allows behavior override from properties
@@ -65,18 +71,34 @@ export const Content = ({
   const { loading: reqLoading } = useAsync(async () => {
     if (!visits && !loading && kind === 'recent') {
       return await visitsApi
-        .list({
-          limit: numVisitsTotal ?? 8,
-          orderBy: [{ field: 'timestamp', direction: 'desc' }],
-        })
+        .list(
+          filterBy
+            ? {
+                limit: numVisitsTotal ?? 8,
+                orderBy: [{ field: 'timestamp', direction: 'desc' }],
+                filterBy,
+              }
+            : {
+                limit: numVisitsTotal ?? 8,
+                orderBy: [{ field: 'timestamp', direction: 'desc' }],
+              },
+        )
         .then(setVisits);
     }
     if (!visits && !loading && kind === 'top') {
       return await visitsApi
-        .list({
-          limit: numVisitsTotal ?? 8,
-          orderBy: [{ field: 'hits', direction: 'desc' }],
-        })
+        .list(
+          filterBy
+            ? {
+                limit: numVisitsTotal ?? 8,
+                orderBy: [{ field: 'hits', direction: 'desc' }],
+                filterBy,
+              }
+            : {
+                limit: numVisitsTotal ?? 8,
+                orderBy: [{ field: 'hits', direction: 'desc' }],
+              },
+        )
         .then(setVisits);
     }
     return undefined;
