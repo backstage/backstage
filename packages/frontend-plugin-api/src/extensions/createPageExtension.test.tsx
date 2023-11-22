@@ -36,14 +36,15 @@ describe('createPageExtension', () => {
 
     expect(
       createPageExtension({
-        id: 'test',
+        name: 'test',
         configSchema,
         loader: async () => <div />,
       }),
     ).toEqual({
-      $$type: '@backstage/Extension',
-      id: 'test',
-      attachTo: { id: 'core.routes', input: 'routes' },
+      $$type: '@backstage/ExtensionDefinition',
+      name: 'test',
+      kind: 'page',
+      attachTo: { id: 'core/routes', input: 'routes' },
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},
@@ -57,7 +58,7 @@ describe('createPageExtension', () => {
 
     expect(
       createPageExtension({
-        id: 'test',
+        name: 'test',
         attachTo: { id: 'other', input: 'place' },
         disabled: true,
         configSchema,
@@ -69,8 +70,9 @@ describe('createPageExtension', () => {
         loader: async () => <div />,
       }),
     ).toEqual({
-      $$type: '@backstage/Extension',
-      id: 'test',
+      $$type: '@backstage/ExtensionDefinition',
+      name: 'test',
+      kind: 'page',
       attachTo: { id: 'other', input: 'place' },
       configSchema: expect.anything(),
       disabled: true,
@@ -89,14 +91,15 @@ describe('createPageExtension', () => {
 
     expect(
       createPageExtension({
-        id: 'test',
+        name: 'test',
         defaultPath: '/here',
         loader: async () => <div />,
       }),
     ).toEqual({
-      $$type: '@backstage/Extension',
-      id: 'test',
-      attachTo: { id: 'core.routes', input: 'routes' },
+      $$type: '@backstage/ExtensionDefinition',
+      name: 'test',
+      kind: 'page',
+      attachTo: { id: 'core/routes', input: 'routes' },
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},
@@ -118,7 +121,6 @@ describe('createPageExtension', () => {
 
     createExtensionTester(
       createPageExtension({
-        id: 'plugin.page',
         defaultPath: '/',
         loader: async () => <div>Component</div>,
       }),
