@@ -20,6 +20,7 @@ import { resolveExtensionDefinition } from './resolveExtensionDefinition';
 describe('resolveExtensionDefinition', () => {
   it.each([
     [{ namespace: 'ns' }, 'ns'],
+    [{ namespace: 'n' }, 'n'],
     [{ namespace: 'ns', name: 'n' }, 'ns/n'],
     [{ kind: 'k', namespace: 'ns' }, 'k:ns'],
     [{ kind: 'k', namespace: 'ns', name: 'n' }, 'k:ns/n'],
@@ -34,15 +35,14 @@ describe('resolveExtensionDefinition', () => {
     expect(() =>
       resolveExtensionDefinition({
         kind: 'k',
-        name: 'n',
       } as ExtensionDefinition<unknown>),
     ).toThrow(
-      'Extension must declare an explicit namespace as it could not be resolved from context, name=n kind=k',
+      'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=k namespace=undefined name=undefined',
     );
     expect(() =>
       resolveExtensionDefinition({} as ExtensionDefinition<unknown>),
     ).toThrow(
-      'Extension must declare an explicit namespace as it could not be resolved from context, name=undefined kind=undefined',
+      'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
     );
   });
 });
