@@ -43,7 +43,7 @@ export function createCatalogFilterExtension<
     output: {
       element: coreExtensionData.reactElement,
     },
-    factory({ config, source }) {
+    factory({ config, node }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ config })
@@ -52,7 +52,7 @@ export function createCatalogFilterExtension<
 
       return {
         element: (
-          <ExtensionBoundary id={id} source={source}>
+          <ExtensionBoundary node={node}>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),
