@@ -15,7 +15,12 @@
  */
 
 import { createSpecializedApp } from '@backstage/frontend-app-api';
-import { Extension, createPlugin } from '@backstage/frontend-plugin-api';
+import {
+  ExtensionDefinition,
+  createExtensionOverrides,
+} from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { MockConfigApi } from '@backstage/test-utils';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 import { RenderResult, render } from '@testing-library/react';
@@ -24,7 +29,7 @@ import { RenderResult, render } from '@testing-library/react';
 export class ExtensionTester {
   /** @internal */
   static forSubject<TConfig>(
-    subject: Extension<TConfig>,
+    subject: ExtensionDefinition<TConfig>,
     options?: { config?: TConfig },
   ): ExtensionTester {
     const tester = new ExtensionTester();
@@ -33,16 +38,22 @@ export class ExtensionTester {
   }
 
   readonly #extensions = new Array<{
-    extension: Extension<any>;
+    id: string;
+    extension: ExtensionDefinition<any>;
     config?: JsonValue;
   }>();
 
   add<TConfig>(
-    extension: Extension<TConfig>,
+    extension: ExtensionDefinition<TConfig>,
     options?: { config?: TConfig },
   ): ExtensionTester {
+    const withNamespace = {
+      ...extension,
+      namespace: extension.namespace ?? 'test',
+    };
     this.#extensions.push({
-      extension,
+      id: resolveExtensionDefinition(withNamespace).id,
+      extension: withNamespace,
       config: options?.config as JsonValue,
     });
 
@@ -61,25 +72,25 @@ export class ExtensionTester {
 
     const extensionsConfig: JsonArray = [
       ...rest.map(entry => ({
-        [entry.extension.id]: {
+        [entry.id]: {
           config: entry.config,
         },
       })),
       {
-        [subject.extension.id]: {
-          attachTo: { id: 'core.router', input: 'children' },
+        [subject.id]: {
+          attachTo: { id: 'core/router', input: 'children' },
           config: subject.config,
           disabled: false,
         },
       },
       {
-        'core.layout': false,
+        'core/layout': false,
       },
       {
-        'core.nav': false,
+        'core/nav': false,
       },
       {
-        'core.routes': false,
+        'core/routes': false,
       },
     ];
 
@@ -93,8 +104,7 @@ export class ExtensionTester {
 
     const app = createSpecializedApp({
       features: [
-        createPlugin({
-          id: 'test',
+        createExtensionOverrides({
           extensions: this.#extensions.map(entry => entry.extension),
         }),
       ],
@@ -107,7 +117,7 @@ export class ExtensionTester {
 
 /** @public */
 export function createExtensionTester<TConfig>(
-  subject: Extension<TConfig>,
+  subject: ExtensionDefinition<TConfig>,
   options?: { config?: TConfig },
 ): ExtensionTester {
   return ExtensionTester.forSubject(subject, options);
