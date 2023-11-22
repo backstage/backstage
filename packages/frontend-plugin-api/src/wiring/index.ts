@@ -22,6 +22,7 @@ export {
 export {
   createExtension,
   type Extension,
+  type ExtensionDefinition,
   type CreateExtensionOptions,
   type ExtensionDataValues,
   type ExtensionInputValues,

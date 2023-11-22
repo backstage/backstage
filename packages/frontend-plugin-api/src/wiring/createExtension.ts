@@ -73,9 +73,9 @@ export interface CreateExtensionOptions<
   TInputs extends AnyExtensionInputMap,
   TConfig,
 > {
+  kind?: string;
   namespace?: string;
   name?: string;
-  kind?: string;
   attachTo: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
@@ -91,9 +91,9 @@ export interface CreateExtensionOptions<
 /** @public */
 export interface ExtensionDefinition<TConfig> {
   $$type: '@backstage/ExtensionDefinition';
+  kind?: string;
   namespace?: string;
   name?: string;
-  kind?: string;
   attachTo: { id: string; input: string };
   disabled: boolean;
   inputs: AnyExtensionInputMap;
