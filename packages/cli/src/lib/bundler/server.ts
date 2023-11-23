@@ -72,6 +72,20 @@ export async function serveBundle(options: ServeOptions) {
         ),
       );
     }
+
+    if (
+      targetPkg.dependencies?.['react-router']?.includes('beta') ||
+      targetPkg.dependencies?.['react-router-dom']?.includes('beta')
+    ) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        chalk.yellow(`
+DEPRECATION WARNING: React Router Beta is deprecated and support for it will be removed in a future release.
+                     Please migrate to use React Router v6 stable.
+                     See https://backstage.io/docs/tutorials/react-router-stable-migration
+`),
+      );
+    }
   }
 
   checkReactVersion();
