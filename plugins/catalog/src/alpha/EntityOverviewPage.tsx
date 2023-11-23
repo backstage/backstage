@@ -23,40 +23,71 @@ import { parseFilterExpression } from './filter/parseFilterExpression';
 interface EntityOverviewPageProps {
   cards: Array<{
     element: React.JSX.Element;
-    filter?: string | ((entity: Entity) => boolean);
+    filterFunction?: (entity: Entity) => boolean;
+    filterExpression?: string;
   }>;
 }
 
-// Keeps track of what filter expression strings that we've emitted warnings for so far
-const seenExpressionStrings = new Set<string>();
+// Keeps track of what filter expression strings that we've seen duplicates of
+// with functions, or which emitted parsing errors for so far
+const seenParseErrorExpressionStrings = new Set<string>();
+const seenDuplicateExpressionStrings = new Set<string>();
 
+// Given an optional filter function and an optional filter expression, make
+// sure that at most one of them was given, and return a filter function that
+// does the right thing.
+function buildFilterFn(
+  filterFunction?: (entity: Entity) => boolean,
+  filterExpression?: string,
+): (entity: Entity) => boolean {
+  if (
+    filterFunction &&
+    filterExpression &&
+    !seenDuplicateExpressionStrings.has(filterExpression)
+  ) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Duplicate entity filter methods found, both '${filterExpression}' as well as a callback function, which is not permitted - using the callback`,
+    );
+    seenDuplicateExpressionStrings.add(filterExpression);
+  }
+
+  const filter = filterFunction || filterExpression;
+  if (!filter) {
+    return () => true;
+  } else if (typeof filter === 'function') {
+    return subject => filter(subject);
+  }
+
+  const result = parseFilterExpression(filter);
+  if (
+    result.expressionParseErrors.length &&
+    !seenParseErrorExpressionStrings.has(filter)
+  ) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Error(s) in entity filter expression '${filter}'`,
+      result.expressionParseErrors,
+    );
+    seenParseErrorExpressionStrings.add(filter);
+  }
+
+  return result.filterFn;
+}
+
+// Handles the memoized parsing of filter expressions for each card
 function CardWrapper(props: {
   entity: Entity;
   element: React.JSX.Element;
-  filter?: string | ((entity: Entity) => boolean);
+  filterFunction?: (entity: Entity) => boolean;
+  filterExpression?: string;
 }) {
-  const { entity, element, filter } = props;
+  const { entity, element, filterFunction, filterExpression } = props;
 
-  const filterFn = useMemo<(subject: Entity) => boolean>(() => {
-    if (!filter) {
-      return () => true;
-    } else if (typeof filter === 'function') {
-      return subject => filter(subject);
-    }
-    const result = parseFilterExpression(filter);
-    if (
-      result.expressionParseErrors.length &&
-      !seenExpressionStrings.has(filter)
-    ) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `Error(s) in entity filter expression '${filter}'`,
-        result.expressionParseErrors,
-      );
-      seenExpressionStrings.add(filter);
-    }
-    return result.filterFn;
-  }, [filter]);
+  const filterFn = useMemo(
+    () => buildFilterFn(filterFunction, filterExpression),
+    [filterFunction, filterExpression],
+  );
 
   return filterFn(entity) ? (
     <Grid item md={6} xs={12}>
@@ -70,12 +101,7 @@ export function EntityOverviewPage(props: EntityOverviewPageProps) {
   return (
     <Grid container spacing={3} alignItems="stretch">
       {props.cards.map((card, index) => (
-        <CardWrapper
-          key={index}
-          entity={entity}
-          element={card.element}
-          filter={card.filter}
-        />
+        <CardWrapper key={index} entity={entity} {...card} />
       ))}
     </Grid>
   );
