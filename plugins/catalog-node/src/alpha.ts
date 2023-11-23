@@ -23,3 +23,5 @@ export type {
   EntitiesSearchFilter,
   CatalogPermissionRuleInput,
 } from './extensions';
+export type { CatalogPermissionExtensionPoint } from './extensions';
+export { catalogPermissionExtensionPoint } from './extensions';

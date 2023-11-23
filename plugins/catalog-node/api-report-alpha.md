@@ -24,6 +24,19 @@ export interface CatalogAnalysisExtensionPoint {
 export const catalogAnalysisExtensionPoint: ExtensionPoint<CatalogAnalysisExtensionPoint>;
 
 // @alpha (undocumented)
+export interface CatalogPermissionExtensionPoint {
+  // (undocumented)
+  addPermissionRules(
+    ...rules: Array<
+      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
+    >
+  ): void;
+}
+
+// @alpha (undocumented)
+export const catalogPermissionExtensionPoint: ExtensionPoint<CatalogPermissionExtensionPoint>;
+
+// @alpha (undocumented)
 export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
@@ -33,12 +46,6 @@ export interface CatalogProcessingExtensionPoint {
   // (undocumented)
   addEntityProvider(
     ...providers: Array<EntityProvider | Array<EntityProvider>>
-  ): void;
-  // (undocumented)
-  addPermissionRules(
-    ...rules: Array<
-      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
-    >
   ): void;
   // (undocumented)
   addPlaceholderResolver(key: string, resolver: PlaceholderResolver): void;
