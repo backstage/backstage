@@ -55,18 +55,22 @@ export function Page(props: Props) {
   return (
     <UnifiedThemeProvider
       theme={theme => {
-        const v4Theme = theme.getTheme('v4') as Mui4Theme;
-        const v5Theme = theme.getTheme('v5') as Mui5Theme;
+        const v4Theme = theme.getTheme('v4') as Mui4Theme | undefined;
+        const v5Theme = theme.getTheme('v5') as Mui5Theme | undefined;
 
-        const newV4Theme = {
-          ...v4Theme,
-          page: v4Theme.getPageTheme({ themeId }),
-        };
+        const newV4Theme = v4Theme
+          ? {
+              ...v4Theme,
+              page: v4Theme.getPageTheme({ themeId }),
+            }
+          : undefined;
 
-        const newV5Theme = {
-          ...v5Theme,
-          page: v5Theme.getPageTheme({ themeId }),
-        };
+        const newV5Theme = v5Theme
+          ? {
+              ...v5Theme,
+              page: v5Theme.getPageTheme({ themeId }),
+            }
+          : undefined;
 
         return new UnifiedThemeHolder(newV4Theme, newV5Theme);
       }}

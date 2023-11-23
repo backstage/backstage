@@ -425,6 +425,13 @@ export interface UnifiedTheme {
 }
 
 // @public
+export class UnifiedThemeHolder implements UnifiedTheme {
+  constructor(v4?: Theme_2, v5?: Theme);
+  // (undocumented)
+  getTheme(version: SupportedVersions): SupportedThemes | undefined;
+}
+
+// @public
 export interface UnifiedThemeOptions {
   // (undocumented)
   components?: ThemeOptions['components'];
@@ -454,6 +461,6 @@ export interface UnifiedThemeProviderProps {
   // (undocumented)
   noCssBaseline?: boolean;
   // (undocumented)
-  theme: UnifiedTheme;
+  theme: UnifiedTheme | ((outerTheme: UnifiedTheme) => UnifiedTheme);
 }
 ```
