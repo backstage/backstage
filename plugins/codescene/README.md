@@ -70,7 +70,7 @@ kind: Component
 metadata:
   name: backstage
   annotations:
-    codescene.io/project-id: <codescene project id>
+    codescene.io/project-id: <codescene-project-id>
 ```
 
 ```tsx
