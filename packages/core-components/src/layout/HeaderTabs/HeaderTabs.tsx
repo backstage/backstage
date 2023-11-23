@@ -81,11 +81,14 @@ export function HeaderTabs(props: HeaderTabsProps) {
   const styles = useStyles();
 
   const handleChange = useCallback(
-    (_: React.ChangeEvent<{}>, index: number) => {
+    (e: React.ChangeEvent<{}>, index: number) => {
       if (selectedIndex === undefined) {
         setSelectedTab(index);
       }
-      if (onChange) onChange(index);
+
+      if (e.type === 'focus') {
+        onChange?.(index);
+      }
     },
     [selectedIndex, onChange],
   );
