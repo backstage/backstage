@@ -17,6 +17,11 @@
 import { InputError } from '@backstage/errors';
 import { EntityMatcherFn } from './types';
 
+const allowedMatchers: Record<string, EntityMatcherFn> = {
+  orphan: entity =>
+    Boolean(entity.metadata.annotations?.['backstage.io/orphan']),
+};
+
 /**
  * Matches on different semantic properties of the entity
  */
@@ -24,11 +29,6 @@ export function createIsMatcher(
   parameters: string[],
   onParseError: (error: Error) => void,
 ): EntityMatcherFn {
-  const allowedMatchers: Record<string, EntityMatcherFn> = {
-    orphan: entity =>
-      Boolean(entity.metadata.annotations?.['backstage.io/orphan']),
-  };
-
   const matchers = parameters.flatMap(parameter => {
     const matcher = allowedMatchers[parameter.toLocaleLowerCase('en-US')];
     if (!matcher) {
