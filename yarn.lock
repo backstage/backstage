@@ -3894,7 +3894,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@mui/material": ^5.14.18
+    "@mui/material": ^5.12.2
     "@react-hookz/web": ^20.0.0
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
@@ -13133,7 +13133,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^5.12.2, @mui/material@npm:^5.14.18":
+"@mui/material@npm:^5.12.2":
   version: 5.14.18
   resolution: "@mui/material@npm:5.14.18"
   dependencies:
