@@ -17,6 +17,18 @@
 import { InputError } from '@backstage/errors';
 import { EntityMatcherFn } from './types';
 
+const allowedMatchers: Record<string, EntityMatcherFn> = {
+  labels: entity => {
+    return Object.keys(entity.metadata.labels ?? {}).length > 0;
+  },
+  annotations: entity => {
+    return Object.keys(entity.metadata.annotations ?? {}).length > 0;
+  },
+  links: entity => {
+    return (entity.metadata.links ?? []).length > 0;
+  },
+};
+
 /**
  * Matches on the non-empty presence of different parts of the entity
  */
@@ -24,18 +36,6 @@ export function createHasMatcher(
   parameters: string[],
   onParseError: (error: Error) => void,
 ): EntityMatcherFn {
-  const allowedMatchers: Record<string, EntityMatcherFn> = {
-    labels: entity => {
-      return Object.keys(entity.metadata.labels ?? {}).length > 0;
-    },
-    annotations: entity => {
-      return Object.keys(entity.metadata.annotations ?? {}).length > 0;
-    },
-    links: entity => {
-      return (entity.metadata.links ?? []).length > 0;
-    },
-  };
-
   const matchers = parameters.flatMap(parameter => {
     const matcher = allowedMatchers[parameter.toLocaleLowerCase('en-US')];
     if (!matcher) {
