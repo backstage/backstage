@@ -48,7 +48,7 @@ export async function createStandaloneApplication(
   const app = express();
 
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
   });
   const knex = await databases.init('SQLITE_3');
   const databaseManager: Partial<DatabaseManager> = {

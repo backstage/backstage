@@ -44,6 +44,7 @@ const LARGER_POOL_CONFIG = {
 export class TestDatabases {
   private readonly instanceById: Map<string, Instance>;
   private readonly supportedIds: TestDatabaseId[];
+  private static defaultIds?: TestDatabaseId[];
 
   /**
    * Creates an empty `TestDatabases` instance, and sets up Jest to clean up
@@ -60,18 +61,19 @@ export class TestDatabases {
     ids?: TestDatabaseId[];
     disableDocker?: boolean;
   }): TestDatabases {
-    const defaultOptions = {
-      ids: Object.keys(allDatabases) as TestDatabaseId[],
-      disableDocker: isDockerDisabledForTests(),
-    };
+    const ids = options?.ids;
+    const disableDocker = options?.disableDocker ?? isDockerDisabledForTests();
 
-    const { ids, disableDocker } = Object.assign(
-      {},
-      defaultOptions,
-      options ?? {},
-    );
+    let testDatabaseIds: TestDatabaseId[];
+    if (ids) {
+      testDatabaseIds = ids;
+    } else if (TestDatabases.defaultIds) {
+      testDatabaseIds = TestDatabases.defaultIds;
+    } else {
+      testDatabaseIds = Object.keys(allDatabases) as TestDatabaseId[];
+    }
 
-    const supportedIds = ids.filter(id => {
+    const supportedIds = testDatabaseIds.filter(id => {
       const properties = allDatabases[id];
       if (!properties) {
         return false;
@@ -105,6 +107,10 @@ export class TestDatabases {
     }
 
     return databases;
+  }
+
+  static setDefaults(options: { ids?: TestDatabaseId[] }) {
+    TestDatabases.defaultIds = options.ids;
   }
 
   private constructor(supportedIds: TestDatabaseId[]) {
