@@ -127,18 +127,22 @@ describe('createApp', () => {
     expect(String(tree.root)).toMatchInlineSnapshot(`
       "<core out=[core.reactElement]>
         root [
-          <core.layout out=[core.reactElement]>
-            content [
-              <core.routes out=[core.reactElement]>
-                routes [
-                  <plugin.my-plugin.page out=[core.routing.path, core.routing.ref, core.reactElement] />
+          <core.router out=[core.reactElement]>
+            children [
+              <core.layout out=[core.reactElement]>
+                content [
+                  <core.routes out=[core.reactElement]>
+                    routes [
+                      <plugin.my-plugin.page out=[core.routing.path, core.routing.ref, core.reactElement] />
+                    ]
+                  </core.routes>
                 ]
-              </core.routes>
+                nav [
+                  <core.nav out=[core.reactElement] />
+                ]
+              </core.layout>
             ]
-            nav [
-              <core.nav out=[core.reactElement] />
-            ]
-          </core.layout>
+          </core.router>
         ]
         themes [
           <themes.light out=[core.theme] />
