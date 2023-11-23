@@ -22,6 +22,7 @@ const { version } = require('../package.json');
 
 const envOptions = {
   oldTests: Boolean(process.env.BACKSTAGE_OLD_TESTS),
+  disableCache: Boolean(process.env.DISABLE_CACHE),
 };
 
 try {
@@ -193,9 +194,10 @@ async function getProjectConfig(targetPath, extraConfig) {
     // A bit more opinionated
     testMatch: ['**/*.test.{js,jsx,ts,tsx,mjs,cjs}'],
 
-    runtime: envOptions.oldTests
-      ? undefined
-      : require.resolve('./jestCachingModuleLoader'),
+    runtime:
+      envOptions.oldTests || envOptions.disableCache
+        ? undefined
+        : require.resolve('./jestCachingModuleLoader'),
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
     ...getRoleConfig(closestPkgJson?.backstage?.role),
