@@ -25,14 +25,15 @@ describe('createNavLogoExtension', () => {
   it('creates the extension properly', () => {
     expect(
       createNavLogoExtension({
-        id: 'test',
+        name: 'test',
         logoFull: <div>Logo Full</div>,
         logoIcon: <div>Logo Icon</div>,
       }),
     ).toEqual({
-      $$type: '@backstage/Extension',
-      id: 'test',
-      attachTo: { id: 'core.nav', input: 'logos' },
+      $$type: '@backstage/ExtensionDefinition',
+      kind: 'nav-logo',
+      name: 'test',
+      attachTo: { id: 'core/nav', input: 'logos' },
       disabled: false,
       inputs: {},
       output: {

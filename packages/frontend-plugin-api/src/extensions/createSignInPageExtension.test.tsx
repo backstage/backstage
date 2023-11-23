@@ -23,13 +23,13 @@ import { coreExtensionData, createExtension } from '../wiring';
 describe('createSignInPageExtension', () => {
   it('renders a sign-in page', async () => {
     const SignInPage = createSignInPageExtension({
-      id: 'test',
+      name: 'test',
       loader: async () => () => <div data-testid="sign-in-page" />,
     });
 
     createExtensionTester(
       createExtension({
-        id: 'dummy',
+        name: 'dummy',
         attachTo: { id: 'ignored', input: 'ignored' },
         output: {
           element: coreExtensionData.reactElement,
