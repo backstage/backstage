@@ -18,6 +18,7 @@ import {
   createRoutableExtension,
   createApiFactory,
   discoveryApiRef,
+  createComponentExtension,
 } from '@backstage/core-plugin-api';
 import { codesceneApiRef, CodeSceneClient } from './api/api';
 import { rootRouteRef, projectDetailsRouteRef } from './routes';
@@ -72,26 +73,28 @@ export const CodeSceneProjectDetailsPage = codescenePlugin.provide(
  * @public
  */
 export const CodeSceneEntityKPICard = codescenePlugin.provide(
-  createRoutableExtension({
+  createComponentExtension({
     name: 'CodeSceneEntityKPICard',
-    component: () =>
-      import('./components/CodeSceneEntityKPICard').then(
-        m => m.CodeSceneEntityKPICard,
-      ),
-    mountPoint: rootRouteRef,
+    component: {
+      lazy: () =>
+        import('./components/CodeSceneEntityKPICard').then(
+          m => m.CodeSceneEntityKPICard,
+        ),
+    },
   }),
 );
 
 /**
  * @public
  */
-export const CodeSceneEntityPage = codescenePlugin.provide(
-  createRoutableExtension({
-    name: 'CodeSceneEntityPage',
-    component: () =>
-      import('./components/CodeSceneEntityPage').then(
-        m => m.CodeSceneEntityPage,
-      ),
-    mountPoint: rootRouteRef,
+export const CodeSceneEntityFileSummary = codescenePlugin.provide(
+  createComponentExtension({
+    name: 'CodeSceneEntityFileSummary',
+    component: {
+      lazy: () =>
+        import('./components/CodeSceneEntityFileSummary').then(
+          m => m.CodeSceneEntityFileSummary,
+        ),
+    },
   }),
 );

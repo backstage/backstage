@@ -78,6 +78,7 @@ metadata:
 
 import {
   CodeSceneEntityPage,
+  CodeSceneEntityFileSummary,
   isCodeSceneAvailable,
 } from '@backstage/plugin-codescene';
 
@@ -88,6 +89,13 @@ import {
   title="codescene"
   if={isCodeSceneAvailable}
 >
-  <CodeSceneEntityPage />
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <CodeSceneEntityKPICard />
+    </Grid>
+    <Grid item md={6}>
+      <CodeSceneEntityFileSummary />
+    </Grid>
+  </Grid>
 </EntityLayout.Route>;
 ```

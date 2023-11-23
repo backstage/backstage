@@ -15,10 +15,10 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export const CODESCENE_PROJECT_ANNOTATION = 'codescene.io/project-id';
 
 // @public (undocumented)
-export const CodeSceneEntityKPICard: () => JSX_2.Element;
+export const CodeSceneEntityFileSummary: () => JSX_2.Element;
 
 // @public (undocumented)
-export const CodeSceneEntityPage: () => JSX_2.Element;
+export const CodeSceneEntityKPICard: () => JSX_2.Element;
 
 // @public (undocumented)
 export const CodeSceneIcon: IconComponent;

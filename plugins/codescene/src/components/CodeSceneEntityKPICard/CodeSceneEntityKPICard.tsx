@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Content,
-  EmptyState,
-  Progress,
-  ContentHeader,
-} from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { EmptyState, GaugeCard, InfoCard } from '@backstage/core-components';
+import { configApiRef, useApi, useApp } from '@backstage/core-plugin-api';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -34,6 +29,7 @@ import {
 } from '../../utils/commonUtil';
 import { DateTime } from 'luxon';
 import { MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
+import { Grid, Typography } from '@material-ui/core';
 
 export const CodeSceneEntityKPICard = () => {
   const { entity } = useEntity();
@@ -41,6 +37,7 @@ export const CodeSceneEntityKPICard = () => {
   const codesceneApi = useApi(codesceneApiRef);
   const config = useApi(configApiRef);
   const codesceneHost = config.getString('codescene.baseUrl');
+  const { Progress } = useApp().getComponents();
 
   const {
     value: analysis,
@@ -64,16 +61,68 @@ export const CodeSceneEntityKPICard = () => {
     );
   }
 
+  const analysisPath = `${codesceneHost}/${projectId}/analyses/${analysis.id}`;
+  const analysisLink = { title: 'Check the analysis', link: analysisPath };
+
+  const analysisBody = (
+    <>
+      <Typography variant="body1">
+        <b>Active authors</b>: {analysis.summary.active_authors_count}
+      </Typography>
+      <Typography variant="body1">
+        <b>Total authors</b>: {analysis.summary.authors_count}
+      </Typography>
+      <Typography variant="body1">
+        <b>Commits</b>: {analysis.summary.commits}
+      </Typography>
+    </>
+  );
+
   return isCodeSceneAvailable(entity) ? (
-    <Content>
-      <ContentHeader title="CodeScene Dashboard">
-        Last analyzed on{' '}
-        {DateTime.fromISO(analysis.readable_analysis_time).toLocaleString(
-          DateTime.DATETIME_MED,
-        )}
-      </ContentHeader>
-      <CodeHealthKpisCard codesceneHost={codesceneHost} analysis={analysis} />
-    </Content>
+    <>
+      <Grid
+        container
+        spacing={1}
+        direction="row"
+        justifyContent="center"
+        alignItems="stretch"
+      >
+        <Grid item xs={8}>
+          <Grid style={{ height: '100%' }}>
+            <CodeHealthKpisCard
+              codesceneHost={codesceneHost}
+              analysis={analysis}
+            />
+          </Grid>
+        </Grid>
+        <Grid item xs={4}>
+          <Grid container spacing={1}>
+            <Grid item xs={8}>
+              <GaugeCard
+                title="System Mastery"
+                progress={analysis.high_level_metrics.system_mastery / 100}
+              />
+            </Grid>
+            <Grid item xs={8} style={{ height: '100%' }}>
+              <GaugeCard
+                title="Current Score"
+                progress={analysis.high_level_metrics.current_score / 10}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <InfoCard title="Analysis" deepLink={analysisLink}>
+            {analysisBody}
+          </InfoCard>
+        </Grid>
+      </Grid>
+      <div style={{ textAlign: 'center' }}>
+        <Typography variant="caption">{`Last analyzed on ${DateTime.fromISO(
+          analysis.readable_analysis_time,
+        ).toLocaleString(DateTime.DATETIME_MED)}`}</Typography>
+      </div>
+    </>
   ) : (
     <MissingAnnotationEmptyState annotation={CODESCENE_PROJECT_ANNOTATION} />
   );
