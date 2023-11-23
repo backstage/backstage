@@ -16,7 +16,7 @@
 
 import React, { useEffect } from 'react';
 import { VisitedByType } from './VisitedByType';
-import { Visit, visitsApiRef } from '../../api/VisitsApi';
+import { Visit, VisitsApiQueryParams, visitsApiRef } from '../../api';
 import { ContextValueOnly, useContext } from './Context';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
@@ -31,11 +31,7 @@ export type VisitedByTypeProps = {
   numVisitsTotal?: number;
   loading?: boolean;
   kind: VisitedByTypeKind;
-  filterBy?: Array<{
-    field: keyof Visit;
-    operator: '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
-    value: string | number;
-  }>;
+  filterBy?: VisitsApiQueryParams['filterBy'];
 };
 
 /**
@@ -71,34 +67,20 @@ export const Content = ({
   const { loading: reqLoading } = useAsync(async () => {
     if (!visits && !loading && kind === 'recent') {
       return await visitsApi
-        .list(
-          filterBy
-            ? {
-                limit: numVisitsTotal ?? 8,
-                orderBy: [{ field: 'timestamp', direction: 'desc' }],
-                filterBy,
-              }
-            : {
-                limit: numVisitsTotal ?? 8,
-                orderBy: [{ field: 'timestamp', direction: 'desc' }],
-              },
-        )
+        .list({
+          limit: numVisitsTotal ?? 8,
+          orderBy: [{ field: 'timestamp', direction: 'desc' }],
+          ...(filterBy && { filterBy }),
+        })
         .then(setVisits);
     }
     if (!visits && !loading && kind === 'top') {
       return await visitsApi
-        .list(
-          filterBy
-            ? {
-                limit: numVisitsTotal ?? 8,
-                orderBy: [{ field: 'hits', direction: 'desc' }],
-                filterBy,
-              }
-            : {
-                limit: numVisitsTotal ?? 8,
-                orderBy: [{ field: 'hits', direction: 'desc' }],
-              },
-        )
+        .list({
+          limit: numVisitsTotal ?? 8,
+          orderBy: [{ field: 'hits', direction: 'desc' }],
+          ...(filterBy && { filterBy }),
+        })
         .then(setVisits);
     }
     return undefined;

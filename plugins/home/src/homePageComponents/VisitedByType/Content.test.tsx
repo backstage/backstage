@@ -131,10 +131,10 @@ describe('<Content kind="recent"/>', () => {
         </ContextProvider>
       </TestApiProvider>,
     );
-    await waitFor(() =>
-      expect(getByText('Explore Backstage')).toBeInTheDocument(),
-    );
-    await waitFor(() => expect(queryByText('Tech Radar')).toBeNull());
+    await waitFor(() => {
+      expect(getByText('Explore Backstage')).toBeInTheDocument();
+      expect(queryByText('Tech Radar')).toBeNull();
+    });
   });
 });
 
