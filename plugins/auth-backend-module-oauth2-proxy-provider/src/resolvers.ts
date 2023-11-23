@@ -18,7 +18,7 @@ import {
   createSignInResolverFactory,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
-import { OAuth2ProxyResult } from '@backstage/plugin-auth-backend';
+import { OAuth2ProxyResult } from './types';
 
 /**
  * @public
