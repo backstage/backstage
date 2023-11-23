@@ -19,10 +19,10 @@ import { ExtensionBoundary } from '../components';
 import { PortableSchema } from '../schema';
 import {
   createExtension,
-  Extension,
   ExtensionInputValues,
   AnyExtensionInputMap,
   createExtensionDataRef,
+  ExtensionDefinition,
 } from '../wiring';
 import { Expand } from '../types';
 import { SignInPageProps } from '@backstage/core-plugin-api';
@@ -39,7 +39,8 @@ export function createSignInPageExtension<
   TConfig extends {},
   TInputs extends AnyExtensionInputMap,
 >(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   attachTo?: { id: string; input: string };
   configSchema?: PortableSchema<TConfig>;
   disabled?: boolean;
@@ -48,12 +49,12 @@ export function createSignInPageExtension<
     config: TConfig;
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }) => Promise<ComponentType<SignInPageProps>>;
-}): Extension<TConfig> {
-  const { id } = options;
-
+}): ExtensionDefinition<TConfig> {
   return createExtension({
-    id,
-    attachTo: options.attachTo ?? { id: 'core.router', input: 'signInPage' },
+    kind: 'sign-in-page',
+    namespace: options?.namespace,
+    name: options?.name,
+    attachTo: options.attachTo ?? { id: 'core/router', input: 'signInPage' },
     configSchema: options.configSchema,
     inputs: options.inputs,
     disabled: options.disabled,
