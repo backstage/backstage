@@ -46,7 +46,6 @@ import { MultiTenantServiceLocator } from '../service-locator/MultiTenantService
 import { SingleTenantServiceLocator } from '../service-locator/SingleTenantServiceLocator';
 import {
   CustomResource,
-  KubernetesClustersSupplier,
   KubernetesFetcher,
   KubernetesObjectsProviderOptions,
   KubernetesObjectTypes,
@@ -54,7 +53,10 @@ import {
   ObjectsByEntityRequest,
   ServiceLocatorMethod,
 } from '../types/types';
-import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
+import {
+  KubernetesClustersSupplier,
+  KubernetesObjectsProvider,
+} from '@backstage/plugin-kubernetes-node';
 import {
   DEFAULT_OBJECTS,
   KubernetesFanOutHandler,

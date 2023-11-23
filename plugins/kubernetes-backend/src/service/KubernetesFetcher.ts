@@ -26,12 +26,10 @@ import {
 import lodash, { Dictionary } from 'lodash';
 import { Logger } from 'winston';
 import {
-  ClusterDetails,
   FetchResponseWrapper,
   KubernetesFetcher,
   ObjectFetchParams,
 } from '../types/types';
-import { KubernetesCredential } from '../auth/types';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   FetchResponse,
@@ -43,6 +41,10 @@ import fetch, { RequestInit, Response } from 'node-fetch';
 import * as https from 'https';
 import fs from 'fs-extra';
 import { JsonObject } from '@backstage/types';
+import {
+  ClusterDetails,
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 
 export interface KubernetesClientBasedFetcherOptions {
   logger: Logger;

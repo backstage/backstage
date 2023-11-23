@@ -29,6 +29,9 @@ import {
   KubernetesClusterSupplierExtensionPoint,
   kubernetesClusterSupplierExtensionPoint,
   KubernetesClustersSupplier,
+  KubernetesAuthStrategyExtensionPoint,
+  AuthenticationStrategy,
+  kubernetesAuthStrategyExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
@@ -65,6 +68,35 @@ class ClusterSuplier implements KubernetesClusterSupplierExtensionPoint {
   }
 }
 
+class AuthStrategy implements KubernetesAuthStrategyExtensionPoint {
+  private authStrategies: Array<{
+    key: string;
+    strategy: AuthenticationStrategy;
+  }>;
+
+  constructor() {
+    this.authStrategies = new Array<{
+      key: string;
+      strategy: AuthenticationStrategy;
+    }>();
+  }
+
+  static addAuthStrategiesFromArray(
+    authStrategies: Array<{ key: string; strategy: AuthenticationStrategy }>,
+    builder: KubernetesBuilder,
+  ) {
+    authStrategies.forEach(st => builder.addAuthStrategy(st.key, st.strategy));
+  }
+
+  getAuthenticationStrategies() {
+    return this.authStrategies;
+  }
+
+  addAuthStrategy(key: string, authStrategy: AuthenticationStrategy) {
+    this.authStrategies.push({ key, strategy: authStrategy });
+  }
+}
+
 /**
  * This is the backend plugin that provides the Kubernetes integration.
  * @alpha
@@ -75,6 +107,7 @@ export const kubernetesPlugin = createBackendPlugin({
   register(env) {
     const extPointObjectsProvider = new ObjectsProvider();
     const extPointClusterSuplier = new ClusterSuplier();
+    const extPointAuthStrategy = new AuthStrategy();
     env.registerExtensionPoint(
       kubernetesObjectsProviderExtensionPoint,
       extPointObjectsProvider,
@@ -82,6 +115,10 @@ export const kubernetesPlugin = createBackendPlugin({
     env.registerExtensionPoint(
       kubernetesClusterSupplierExtensionPoint,
       extPointClusterSuplier,
+    );
+    env.registerExtensionPoint(
+      kubernetesAuthStrategyExtensionPoint,
+      extPointAuthStrategy,
     );
 
     env.registerInit({
@@ -95,15 +132,19 @@ export const kubernetesPlugin = createBackendPlugin({
       async init({ http, logger, config, catalogApi, permissions }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         // TODO: expose all of the customization & extension points of the builder here
-        const { router } = await KubernetesBuilder.createBuilder({
+        const builder: KubernetesBuilder = KubernetesBuilder.createBuilder({
           logger: winstonLogger,
           config,
           catalogApi,
           permissions,
         })
           .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
-          .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())
-          .build();
+          .setClusterSupplier(extPointClusterSuplier.getClusterSupplier());
+        AuthStrategy.addAuthStrategiesFromArray(
+          extPointAuthStrategy.getAuthenticationStrategies(),
+          builder,
+        );
+        const { router } = await builder.build();
         http.use(router);
       },
     });

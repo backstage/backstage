@@ -130,3 +130,23 @@ export interface KubernetesClustersSupplier {
    */
   getClusters(): Promise<ClusterDetails[]>;
 }
+
+/**
+ * Authentication data used to make a request to Kubernetes
+ * @public
+ */
+export type KubernetesCredential =
+  | { type: 'bearer token'; token: string }
+  | { type: 'anonymous' };
+
+/**
+ *
+ * @public
+ */
+export interface AuthenticationStrategy {
+  getCredential(
+    clusterDetails: ClusterDetails,
+    authConfig: KubernetesRequestAuth,
+  ): Promise<KubernetesCredential>;
+  validateCluster(authMetadata: AuthMetadata): Error[];
+}

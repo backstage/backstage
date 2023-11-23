@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { AuthenticationStrategy } from '@backstage/plugin-kubernetes-node';
 import { KubernetesClustersSupplier } from '@backstage/plugin-kubernetes-node';
 import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
 
@@ -53,4 +54,23 @@ export interface KubernetesClusterSupplierExtensionPoint {
 export const kubernetesClusterSupplierExtensionPoint =
   createExtensionPoint<KubernetesClusterSupplierExtensionPoint>({
     id: 'kubernetes.cluster-supplier',
+  });
+
+/**
+ * The interface for {@link kubernetesAuthStrategyExtensionPoint}.
+ *
+ * @public
+ */
+export interface KubernetesAuthStrategyExtensionPoint {
+  addAuthStrategy(key: string, strategy: AuthenticationStrategy): void;
+}
+
+/**
+ * An extension point the exposes the ability to add an Auth Strategy.
+ *
+ * @public
+ */
+export const kubernetesAuthStrategyExtensionPoint =
+  createExtensionPoint<KubernetesAuthStrategyExtensionPoint>({
+    id: 'kubernetes.auth-strategy',
   });

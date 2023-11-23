@@ -23,8 +23,10 @@ import type {
   KubernetesRequestBody,
 } from '@backstage/plugin-kubernetes-common';
 import { Config } from '@backstage/config';
-import { KubernetesCredential } from '../auth/types';
-import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
+import {
+  ClusterDetails,
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 
 /**
  *
@@ -150,3 +152,9 @@ export interface KubernetesObjectsProviderOptions {
  * @public
  */
 export type ObjectsByEntityRequest = KubernetesRequestBody;
+
+export type {
+  AuthMetadata,
+  ClusterDetails,
+  KubernetesClustersSupplier,
+} from '@backstage/plugin-kubernetes-node';
