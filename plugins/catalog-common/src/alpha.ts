@@ -26,4 +26,3 @@ export {
   catalogPermissions,
 } from './permissions';
 export type { CatalogEntityPermission } from './permissions';
-export { parseFilterExpression } from './filter';

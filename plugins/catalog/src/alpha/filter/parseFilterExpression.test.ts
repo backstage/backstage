@@ -22,11 +22,11 @@ import {
 
 describe('parseFilterExpression', () => {
   function run(expression: string) {
-    return parseFilterExpression(expression, {
-      onParseError(e: Error) {
-        throw e;
-      },
-    });
+    const result = parseFilterExpression(expression);
+    if (result.expressionParseErrors.length) {
+      throw result.expressionParseErrors[0];
+    }
+    return result.filterFn;
   }
 
   it('supports "kind" expressions', () => {

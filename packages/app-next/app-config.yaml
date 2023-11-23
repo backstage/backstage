@@ -14,7 +14,7 @@ app:
     - entity.cards.labels
     - entity.cards.links:
         config:
-          filter: kind:component
+          filter: kind:component has:links
 
     # Entity page content
     - entity.content.techdocs
