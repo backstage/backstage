@@ -21,14 +21,17 @@ import { coreExtensionData, createExtension } from '../wiring';
  * @public
  */
 export function createNavLogoExtension(options: {
-  id: string;
+  name?: string;
+  namespace?: string;
   logoIcon: JSX.Element;
   logoFull: JSX.Element;
 }) {
-  const { id, logoIcon, logoFull } = options;
+  const { logoIcon, logoFull } = options;
   return createExtension({
-    id,
-    attachTo: { id: 'core.nav', input: 'logos' },
+    kind: 'nav-logo',
+    name: options?.name,
+    namespace: options?.namespace,
+    attachTo: { id: 'core/nav', input: 'logos' },
     output: {
       logos: coreExtensionData.logoElements,
     },
