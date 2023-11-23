@@ -40,10 +40,21 @@ function CardWrapper(props: {
     } else if (typeof filter === 'function') {
       return subject => filter(subject);
     }
-    return parseFilterExpression(filter);
+    return parseFilterExpression(filter, {
+      onParseError(_error) {
+        // ignore silently
+      },
+      onEvaluateError(_error) {
+        // ignore silently
+      },
+    });
   }, [filter]);
 
-  return filterFn(entity) ? <>{element}</> : null;
+  return filterFn(entity) ? (
+    <Grid item md={6} xs={12}>
+      {element}
+    </Grid>
+  ) : null;
 }
 
 export function EntityOverviewPage(props: EntityOverviewPageProps) {
@@ -51,13 +62,12 @@ export function EntityOverviewPage(props: EntityOverviewPageProps) {
   return (
     <Grid container spacing={3} alignItems="stretch">
       {props.cards.map((card, index) => (
-        <Grid key={index} item md={6} xs={12}>
-          <CardWrapper
-            entity={entity}
-            element={card.element}
-            filter={card.filter}
-          />
-        </Grid>
+        <CardWrapper
+          key={index}
+          entity={entity}
+          element={card.element}
+          filter={card.filter}
+        />
       ))}
     </Grid>
   );

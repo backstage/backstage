@@ -21,19 +21,34 @@ import {
 } from './parseFilterExpression';
 
 describe('parseFilterExpression', () => {
+  function run(expression: string) {
+    return parseFilterExpression(expression, {
+      onParseError(e: Error) {
+        throw e;
+      },
+    });
+  }
+
   it('supports "kind" expressions', () => {
     const component = { kind: 'Component' } as unknown as Entity;
     const user = { kind: 'User' } as unknown as Entity;
     const resource = { kind: 'Resource' } as unknown as Entity;
 
-    expect(parseFilterExpression('kind:component')(component)).toBe(true);
-    expect(parseFilterExpression('kind:componenT')(component)).toBe(true);
-    expect(parseFilterExpression('kind:user')(component)).toBe(false);
+    expect(run('kind:user,component')(user)).toBe(true);
+    expect(run('kind:user,component')(component)).toBe(true);
+    expect(run('kind:user,component')(resource)).toBe(false);
+  });
 
-    // match ANY of the parameters
-    expect(parseFilterExpression('kind:user,component')(user)).toBe(true);
-    expect(parseFilterExpression('kind:user,component')(component)).toBe(true);
-    expect(parseFilterExpression('kind:user,component')(resource)).toBe(false);
+  it('supports "type" expressions', () => {
+    const empty = {} as unknown as Entity;
+    const service = { spec: { type: 'service' } } as unknown as Entity;
+    const website = { spec: { type: 'website' } } as unknown as Entity;
+    const pipeline = { spec: { type: 'pipeline' } } as unknown as Entity;
+
+    expect(run('type:service,website')(empty)).toBe(false);
+    expect(run('type:service,website')(service)).toBe(true);
+    expect(run('type:service,website')(website)).toBe(true);
+    expect(run('type:service,website')(pipeline)).toBe(false);
   });
 
   it('supports "is" expressions', () => {
@@ -46,123 +61,90 @@ describe('parseFilterExpression', () => {
       },
     } as unknown as Entity;
 
-    expect(parseFilterExpression('is:orphan')(empty)).toBe(false);
-    expect(parseFilterExpression('is:orphan')(orphan)).toBe(true);
+    expect(run('is:orphan')(empty)).toBe(false);
+    expect(run('is:orphan')(orphan)).toBe(true);
 
-    expect(() =>
-      parseFilterExpression('is:orphan,bar'),
-    ).toThrowErrorMatchingInlineSnapshot(
+    expect(() => run('is:orphan,bar')).toThrowErrorMatchingInlineSnapshot(
       `"'bar' is not a valid parameter for 'is' filter expressions, expected one of 'orphan'"`,
     );
   });
 
   it('supports "has" expressions', () => {
-    const empty1 = {
+    const empty = {
       metadata: {},
     } as unknown as Entity;
-    const empty2 = {
-      metadata: {
-        labels: {},
-        annotations: {},
-        links: [],
-      },
-    } as unknown as Entity;
     const labels = {
-      metadata: {
-        labels: { a: 'b' },
-      },
+      metadata: { labels: { a: 'b' } },
     } as unknown as Entity;
     const annotations = {
-      metadata: {
-        annotations: { a: 'b' },
-      },
+      metadata: { annotations: { a: 'b' } },
     } as unknown as Entity;
     const links = {
       metadata: { links: [{}] },
     } as unknown as Entity;
 
-    expect(parseFilterExpression('has:labels')(empty1)).toBe(false);
-    expect(parseFilterExpression('has:labels')(empty2)).toBe(false);
-    expect(parseFilterExpression('has:labels')(labels)).toBe(true);
+    expect(run('has:labels,links')(empty)).toBe(false);
+    expect(run('has:labels,links')(labels)).toBe(true);
+    expect(run('has:labels,links')(links)).toBe(true);
+    expect(run('has:labels,links')(annotations)).toBe(false);
 
-    expect(parseFilterExpression('has:annotations')(empty1)).toBe(false);
-    expect(parseFilterExpression('has:annotations')(empty2)).toBe(false);
-    expect(parseFilterExpression('has:annotations')(annotations)).toBe(true);
-
-    expect(parseFilterExpression('has:links')(empty1)).toBe(false);
-    expect(parseFilterExpression('has:links')(empty2)).toBe(false);
-    expect(parseFilterExpression('has:links')(links)).toBe(true);
-
-    // match ANY of the parameters
-    expect(parseFilterExpression('has:labels,links')(empty1)).toBe(false);
-    expect(parseFilterExpression('has:labels,links')(empty2)).toBe(false);
-    expect(parseFilterExpression('has:labels,links')(labels)).toBe(true);
-    expect(parseFilterExpression('has:labels,links')(links)).toBe(true);
-    expect(parseFilterExpression('has:labels,links')(annotations)).toBe(false);
-
-    expect(() =>
-      parseFilterExpression('has:labels,bar'),
-    ).toThrowErrorMatchingInlineSnapshot(
+    expect(() => run('has:labels,bar')).toThrowErrorMatchingInlineSnapshot(
       `"'bar' is not a valid parameter for 'has' filter expressions, expected one of 'labels','annotations','links'"`,
     );
   });
 
   it('rejects unknown keys', () => {
-    expect(() =>
-      parseFilterExpression('unknown:foo'),
-    ).toThrowErrorMatchingInlineSnapshot(
+    expect(() => run('unknown:foo')).toThrowErrorMatchingInlineSnapshot(
       `"'unknown' is not a valid filter expression key, expected one of 'kind','type','is','has'"`,
     );
   });
 
   it('rejects malformed inputs', () => {
-    expect(() => parseFilterExpression(':')).toThrowErrorMatchingInlineSnapshot(
+    expect(() => run(':')).toThrowErrorMatchingInlineSnapshot(
       `"':' is not a valid filter expression, expected 'key:parameter' form"`,
     );
-    expect(() =>
-      parseFilterExpression(':a'),
-    ).toThrowErrorMatchingInlineSnapshot(
+    expect(() => run(':a')).toThrowErrorMatchingInlineSnapshot(
       `"':a' is not a valid filter expression, expected 'key:parameter' form"`,
     );
-    expect(() =>
-      parseFilterExpression('a:'),
-    ).toThrowErrorMatchingInlineSnapshot(
+    expect(() => run('a:')).toThrowErrorMatchingInlineSnapshot(
       `"'a:' is not a valid filter expression, expected 'key:parameter' form"`,
     );
   });
 });
 
 describe('splitFilterExpression', () => {
+  function run(expression: string) {
+    return splitFilterExpression(expression, e => {
+      throw e;
+    });
+  }
+
   it('properly splits into expression atoms', () => {
-    expect(splitFilterExpression('')).toEqual([]);
-    expect(splitFilterExpression('   ')).toEqual([]);
-    expect(splitFilterExpression('kind:component')).toEqual([
+    expect(run('')).toEqual([]);
+    expect(run('   ')).toEqual([]);
+    expect(run('kind:component')).toEqual([
       { key: 'kind', parameters: ['component'] },
     ]);
-    expect(splitFilterExpression('kind:component,user')).toEqual([
+    expect(run('kind:component,user')).toEqual([
       { key: 'kind', parameters: ['component', 'user'] },
     ]);
-    expect(splitFilterExpression('kind:component,user type:foo')).toEqual([
+    expect(run('kind:component,user type:foo')).toEqual([
       { key: 'kind', parameters: ['component', 'user'] },
       { key: 'type', parameters: ['foo'] },
     ]);
-    expect(splitFilterExpression('with:multiple:colons')).toEqual([
+    expect(run('with:multiple:colons')).toEqual([
       { key: 'with', parameters: ['multiple:colons'] },
     ]);
   });
 
   it('rejects malformed inputs', () => {
-    expect(() => splitFilterExpression(':')).toThrowErrorMatchingInlineSnapshot(
+    expect(() => run(':')).toThrowErrorMatchingInlineSnapshot(
       `"':' is not a valid filter expression, expected 'key:parameter' form"`,
     );
-    expect(() =>
-      splitFilterExpression(':a'),
-    ).toThrowErrorMatchingInlineSnapshot(
+    expect(() => run(':a')).toThrowErrorMatchingInlineSnapshot(
       `"':a' is not a valid filter expression, expected 'key:parameter' form"`,
     );
-    expect(() =>
-      splitFilterExpression('a:'),
-    ).toThrowErrorMatchingInlineSnapshot(
+    expect(() => run('a:')).toThrowErrorMatchingInlineSnapshot(
       `"'a:' is not a valid filter expression, expected 'key:parameter' form"`,
     );
   });

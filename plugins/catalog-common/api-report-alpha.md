@@ -42,6 +42,21 @@ export const catalogPermissions: (
 // @alpha
 export function parseFilterExpression(
   expression: string,
+  options?: {
+    onParseError?: (
+      error: Error,
+      context: {
+        expression: string;
+      },
+    ) => void;
+    onEvaluateError?: (
+      error: Error,
+      context: {
+        expression: string;
+        entity: Entity;
+      },
+    ) => void;
+  },
 ): (entity: Entity) => boolean;
 
 // @alpha

@@ -19,7 +19,10 @@ import { EntityMatcherFn } from './types';
 /**
  * Matches on kind
  */
-export function createKindMatcher(parameters: string[]): EntityMatcherFn {
+export function createKindMatcher(
+  parameters: string[],
+  _onParseError: (error: Error) => void,
+): EntityMatcherFn {
   const items = parameters.map(p => p.toLocaleLowerCase('en-US'));
   return entity => items.includes(entity.kind.toLocaleLowerCase('en-US'));
 }
