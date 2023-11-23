@@ -50,6 +50,7 @@ const _default: BackstagePlugin<
       },
       true
     >;
+    unregisterRedirect: ExternalRouteRef<undefined, true>;
   }
 >;
 export default _default;
