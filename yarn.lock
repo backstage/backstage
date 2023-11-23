@@ -18776,12 +18776,12 @@ __metadata:
   linkType: hard
 
 "@types/passport-saml@npm:^1.1.3":
-  version: 1.1.6
-  resolution: "@types/passport-saml@npm:1.1.6"
+  version: 1.1.7
+  resolution: "@types/passport-saml@npm:1.1.7"
   dependencies:
     "@types/express": "*"
     "@types/passport": "*"
-  checksum: 91609adca645d79d9248a7e21a77df37015a6ab9a051d9eded0beea983c36928ffa004f48d96c86182a34a30181e5dc204b983eabddf8cd2d91a7784a4ce6dc6
+  checksum: cc112ac43d8a9ed586cfa04342afefef45ec96b7125a554534fb763986e3426b0316ee3d9e4705240c9c3df3b2b19914dba48ef6abccbd6946e9ae634f790332
   languageName: node
   linkType: hard
 
