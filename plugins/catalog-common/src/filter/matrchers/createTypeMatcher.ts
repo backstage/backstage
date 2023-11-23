@@ -19,7 +19,10 @@ import { EntityMatcherFn } from './types';
 /**
  * Matches on spec.type
  */
-export function createTypeMatcher(parameters: string[]): EntityMatcherFn {
+export function createTypeMatcher(
+  parameters: string[],
+  _onParseError: (error: Error) => void,
+): EntityMatcherFn {
   const items = parameters.map(p => p.toLocaleLowerCase('en-US'));
   return entity => {
     const value = entity.spec?.type;

@@ -20,22 +20,29 @@ import { EntityMatcherFn } from './types';
 /**
  * Matches on different semantic properties of the entity
  */
-export function createIsMatcher(parameters: string[]): EntityMatcherFn {
+export function createIsMatcher(
+  parameters: string[],
+  onParseError: (error: Error) => void,
+): EntityMatcherFn {
   const allowedMatchers: Record<string, EntityMatcherFn> = {
     orphan: entity =>
       Boolean(entity.metadata.annotations?.['backstage.io/orphan']),
   };
 
-  const matchers = parameters.map(parameter => {
+  const matchers = parameters.flatMap(parameter => {
     const matcher = allowedMatchers[parameter.toLocaleLowerCase('en-US')];
     if (!matcher) {
       const known = Object.keys(allowedMatchers).map(m => `'${m}'`);
-      throw new InputError(
-        `'${parameter}' is not a valid parameter for 'is' filter expressions, expected one of ${known}`,
+      onParseError(
+        new InputError(
+          `'${parameter}' is not a valid parameter for 'is' filter expressions, expected one of ${known}`,
+        ),
       );
+      return [];
     }
-    return matcher;
+    return [matcher];
   });
 
-  return entity => matchers.some(matcher => matcher(entity));
+  return entity =>
+    matchers.length ? matchers.some(matcher => matcher(entity)) : true;
 }

@@ -24,7 +24,10 @@ import { createHasMatcher } from './matrchers/createHasMatcher';
 
 const rootMatcherFactories: Record<
   string,
-  (parameters: string[]) => EntityMatcherFn
+  (
+    parameters: string[],
+    onParseError: (error: Error) => void,
+  ) => EntityMatcherFn
 > = {
   kind: createKindMatcher,
   type: createTypeMatcher,
@@ -43,11 +46,39 @@ const rootMatcherFactories: Record<
  * effectively an AND between the space separated parts, and an OR between comma
  * separated parameters. So the example filter string semantically means
  * "entities that are of either User or Group kind, and also are orphans".
+ *
+ * The `onParseError` callback is called whenever an error was encountered
+ * during initial parsing of the expression. If the callback throws,
+ * `parseFilterExpression` throws that same error. If the callback does not
+ * throw, the part of the input expression that had an error is ignored entirely
+ * and parsing continues.
+ *
+ * The `onEvaluateError` callback is called whenever an error was encountered
+ * during evaluation of the returned function. If the callback throws, the
+ * evaluation call throws the same error. If the callback does not throw, the
+ * whole evaluation returns false.
  */
 export function parseFilterExpression(
   expression: string,
+  options?: {
+    onParseError?: (
+      error: Error,
+      context: {
+        expression: string;
+      },
+    ) => void;
+    onEvaluateError?: (
+      error: Error,
+      context: {
+        expression: string;
+        entity: Entity;
+      },
+    ) => void;
+  },
 ): (entity: Entity) => boolean {
-  const parts = splitFilterExpression(expression);
+  const parts = splitFilterExpression(expression, e =>
+    options?.onParseError?.(e, { expression }),
+  );
 
   const matchers = parts.map(part => {
     const factory = rootMatcherFactories[part.key];
@@ -57,14 +88,17 @@ export function parseFilterExpression(
         `'${part.key}' is not a valid filter expression key, expected one of ${known}`,
       );
     }
-    return factory(part.parameters);
+    return factory(part.parameters, e =>
+      options?.onParseError?.(e, { expression }),
+    );
   });
 
   return (entity: Entity) => {
     return matchers.every(matcher => {
       try {
         return matcher(entity);
-      } catch {
+      } catch (e) {
+        options?.onEvaluateError?.(e, { expression, entity });
         return false;
       }
     });
@@ -73,6 +107,7 @@ export function parseFilterExpression(
 
 export function splitFilterExpression(
   expression: string,
+  onParseError: (error: Error) => void,
 ): Array<{ key: string; parameters: string[] }> {
   const words = expression
     .split(' ')
@@ -84,13 +119,16 @@ export function splitFilterExpression(
   for (const word of words) {
     const match = word.match(/^([^:]+):(.+)$/);
     if (!match) {
-      throw new InputError(
-        `'${word}' is not a valid filter expression, expected 'key:parameter' form`,
+      onParseError(
+        new InputError(
+          `'${word}' is not a valid filter expression, expected 'key:parameter' form`,
+        ),
       );
+      continue;
     }
 
     const key = match[1];
-    const parameters = match[2].split(',');
+    const parameters = match[2].split(',').filter(Boolean); // silently ignore double commas
 
     result.push({ key, parameters });
   }
