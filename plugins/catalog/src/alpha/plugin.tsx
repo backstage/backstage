@@ -22,6 +22,7 @@ import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   createComponentRouteRef,
   createFromTemplateRouteRef,
+  unregisterRedirectRouteRef,
   rootRouteRef,
   viewTechDocRouteRef,
 } from '../routes';
@@ -45,6 +46,7 @@ export default createPlugin({
     viewTechDoc: convertLegacyRouteRef(viewTechDocRouteRef),
     createComponent: convertLegacyRouteRef(createComponentRouteRef),
     createFromTemplate: convertLegacyRouteRef(createFromTemplateRouteRef),
+    unregisterRedirect: convertLegacyRouteRef(unregisterRedirectRouteRef),
   },
   extensions: [
     ...apis,
