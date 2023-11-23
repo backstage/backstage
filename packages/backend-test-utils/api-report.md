@@ -307,6 +307,8 @@ export interface TestBackendOptions<TExtensionPoints extends any[]> {
 
 // @public
 export type TestDatabaseId =
+  | 'POSTGRES_16'
+  | 'POSTGRES_15'
   | 'POSTGRES_14'
   | 'POSTGRES_13'
   | 'POSTGRES_12'
@@ -324,6 +326,8 @@ export class TestDatabases {
   // (undocumented)
   eachSupportedId(): [TestDatabaseId][];
   init(id: TestDatabaseId): Promise<Knex>;
+  // (undocumented)
+  static setDefaults(options: { ids?: TestDatabaseId[] }): void;
   // (undocumented)
   supports(id: TestDatabaseId): boolean;
 }

@@ -44,9 +44,7 @@ describe('DefaultEntitiesCatalog', () => {
     await knex.destroy();
   });
 
-  const databases = TestDatabases.create({
-    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
-  });
+  const databases = TestDatabases.create();
   const stitch = jest.fn();
   const stitcher: Stitcher = { stitch } as any;
 
