@@ -95,7 +95,7 @@ const homePageExtension = createExtension({
 });
 
 const signInPage = createSignInPageExtension({
-  id: 'signInPage',
+  name: 'guest',
   loader: async () => (props: SignInPageProps) =>
     <SignInPage {...props} providers={['guest']} />,
 });
