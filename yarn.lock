@@ -18531,11 +18531,11 @@ __metadata:
   linkType: hard
 
 "@types/node-forge@npm:^1.3.0":
-  version: 1.3.9
-  resolution: "@types/node-forge@npm:1.3.9"
+  version: 1.3.10
+  resolution: "@types/node-forge@npm:1.3.10"
   dependencies:
     "@types/node": "*"
-  checksum: 4ffab54136960b0944af942a44206470e98766b89b867b6126ebc65c6f21463fd9ea20b26714216e153fbbee7ca5ce689db9067ea286a92b34368a5e2f77601f
+  checksum: 363af42c83956c7e2483a71e398a02101ef6a55b4d86386c276315ca98bad02d6050b99fdbe13debcd1bcda250086b4a5b5c15a6fb2953d32420d269865ca7f8
   languageName: node
   linkType: hard
 
