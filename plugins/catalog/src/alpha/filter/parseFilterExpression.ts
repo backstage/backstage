@@ -39,7 +39,6 @@ const rootMatcherFactories: Record<
  * Parses a filter expression that decides whether to render an entity component
  * or not. Returns a function that matches entities based on that expression.
  *
- * @alpha
  * @remarks
  *
  * Filter strings are on the form `kind:user,group is:orphan`. There's
@@ -47,61 +46,51 @@ const rootMatcherFactories: Record<
  * separated parameters. So the example filter string semantically means
  * "entities that are of either User or Group kind, and also are orphans".
  *
- * The `onParseError` callback is called whenever an error was encountered
- * during initial parsing of the expression. If the callback throws,
- * `parseFilterExpression` throws that same error. If the callback does not
- * throw, the part of the input expression that had an error is ignored entirely
- * and parsing continues.
- *
- * The `onEvaluateError` callback is called whenever an error was encountered
- * during evaluation of the returned function. If the callback throws, the
- * evaluation call throws the same error. If the callback does not throw, the
- * whole evaluation returns false.
+ * The `expressionParseErrors` array contains any errors that were encountered
+ * during initial parsing of the expression. Note that the parts of the input
+ * expression that had errors are ignored entirely and parsing continues as if
+ * they didn't exist.
  */
-export function parseFilterExpression(
-  expression: string,
-  options?: {
-    onParseError?: (
-      error: Error,
-      context: {
-        expression: string;
-      },
-    ) => void;
-    onEvaluateError?: (
-      error: Error,
-      context: {
-        expression: string;
-        entity: Entity;
-      },
-    ) => void;
-  },
-): (entity: Entity) => boolean {
+export function parseFilterExpression(expression: string): {
+  filterFn: (entity: Entity) => boolean;
+  expressionParseErrors: Error[];
+} {
+  const expressionParseErrors: Error[] = [];
+
   const parts = splitFilterExpression(expression, e =>
-    options?.onParseError?.(e, { expression }),
+    expressionParseErrors.push(e),
   );
 
-  const matchers = parts.map(part => {
+  const matchers = parts.flatMap(part => {
     const factory = rootMatcherFactories[part.key];
     if (!factory) {
       const known = Object.keys(rootMatcherFactories).map(m => `'${m}'`);
-      throw new InputError(
-        `'${part.key}' is not a valid filter expression key, expected one of ${known}`,
+      expressionParseErrors.push(
+        new InputError(
+          `'${part.key}' is not a valid filter expression key, expected one of ${known}`,
+        ),
       );
+      return [];
     }
-    return factory(part.parameters, e =>
-      options?.onParseError?.(e, { expression }),
+
+    const matcher = factory(part.parameters, e =>
+      expressionParseErrors.push(e),
     );
+    return [matcher];
   });
 
-  return (entity: Entity) => {
-    return matchers.every(matcher => {
+  const filterFn = (entity: Entity) =>
+    matchers.every(matcher => {
       try {
         return matcher(entity);
-      } catch (e) {
-        options?.onEvaluateError?.(e, { expression, entity });
+      } catch {
         return false;
       }
     });
+
+  return {
+    filterFn,
+    expressionParseErrors,
   };
 }
 

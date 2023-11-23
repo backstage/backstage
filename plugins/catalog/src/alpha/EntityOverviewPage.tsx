@@ -15,10 +15,10 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { parseFilterExpression } from '@backstage/plugin-catalog-common/alpha';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import Grid from '@material-ui/core/Grid';
 import React, { useMemo } from 'react';
+import { parseFilterExpression } from './filter/parseFilterExpression';
 
 interface EntityOverviewPageProps {
   cards: Array<{
@@ -26,6 +26,9 @@ interface EntityOverviewPageProps {
     filter?: string | ((entity: Entity) => boolean);
   }>;
 }
+
+// Keeps track of what filter expression strings that we've emitted warnings for so far
+const seenExpressionStrings = new Set<string>();
 
 function CardWrapper(props: {
   entity: Entity;
@@ -40,14 +43,19 @@ function CardWrapper(props: {
     } else if (typeof filter === 'function') {
       return subject => filter(subject);
     }
-    return parseFilterExpression(filter, {
-      onParseError(_error) {
-        // ignore silently
-      },
-      onEvaluateError(_error) {
-        // ignore silently
-      },
-    });
+    const result = parseFilterExpression(filter);
+    if (
+      result.expressionParseErrors.length &&
+      !seenExpressionStrings.has(filter)
+    ) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Error(s) in entity filter expression '${filter}'`,
+        result.expressionParseErrors,
+      );
+      seenExpressionStrings.add(filter);
+    }
+    return result.filterFn;
   }, [filter]);
 
   return filterFn(entity) ? (

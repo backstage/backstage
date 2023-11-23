@@ -4,7 +4,6 @@
 
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
-import { Entity } from '@backstage/catalog-model';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 
 // @alpha
@@ -38,26 +37,6 @@ export const catalogPermissions: (
   | BasicPermission
   | ResourcePermission<'catalog-entity'>
 )[];
-
-// @alpha
-export function parseFilterExpression(
-  expression: string,
-  options?: {
-    onParseError?: (
-      error: Error,
-      context: {
-        expression: string;
-      },
-    ) => void;
-    onEvaluateError?: (
-      error: Error,
-      context: {
-        expression: string;
-        entity: Entity;
-      },
-    ) => void;
-  },
-): (entity: Entity) => boolean;
 
 // @alpha
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
