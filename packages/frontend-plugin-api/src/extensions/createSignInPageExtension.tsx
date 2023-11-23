@@ -60,7 +60,7 @@ export function createSignInPageExtension<
     output: {
       component: signInPageComponentDataRef,
     },
-    factory({ config, inputs, source }) {
+    factory({ config, inputs, node }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ config, inputs })
@@ -69,7 +69,7 @@ export function createSignInPageExtension<
 
       return {
         component: props => (
-          <ExtensionBoundary id={id} source={source} routable>
+          <ExtensionBoundary node={node} routable>
             <ExtensionComponent {...props} />
           </ExtensionBoundary>
         ),
