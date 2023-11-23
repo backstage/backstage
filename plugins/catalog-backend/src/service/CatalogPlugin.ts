@@ -23,6 +23,8 @@ import {
   catalogAnalysisExtensionPoint,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtensionPoint,
+  CatalogPermissionExtensionPoint,
+  catalogPermissionExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
@@ -38,7 +40,6 @@ class CatalogProcessingExtensionPointImpl
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
   #placeholderResolvers: Record<string, PlaceholderResolver> = {};
-  #permissionRules = new Array<CatalogPermissionRuleInput>();
 
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
@@ -60,14 +61,6 @@ class CatalogProcessingExtensionPointImpl
     this.#placeholderResolvers[key] = resolver;
   }
 
-  addPermissionRules(
-    ...rules: Array<
-      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
-    >
-  ): void {
-    this.#permissionRules.push(...rules.flat());
-  }
-
   get processors() {
     return this.#processors;
   }
@@ -78,10 +71,6 @@ class CatalogProcessingExtensionPointImpl
 
   get placeholderResolvers() {
     return this.#placeholderResolvers;
-  }
-
-  get permissionRules() {
-    return this.#permissionRules;
   }
 }
 
@@ -96,6 +85,24 @@ class CatalogAnalysisExtensionPointImpl
 
   get locationAnalyzers() {
     return this.#locationAnalyzers;
+  }
+}
+
+class CatalogPermissionExtensionPointImpl
+  implements CatalogPermissionExtensionPoint
+{
+  #permissionRules = new Array<CatalogPermissionRuleInput>();
+
+  addPermissionRules(
+    ...rules: Array<
+      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
+    >
+  ): void {
+    this.#permissionRules.push(...rules.flat());
+  }
+
+  get permissionRules() {
+    return this.#permissionRules;
   }
 }
 
@@ -117,6 +124,12 @@ export const catalogPlugin = createBackendPlugin({
     env.registerExtensionPoint(
       catalogAnalysisExtensionPoint,
       analysisExtensions,
+    );
+
+    const permissionExtensions = new CatalogPermissionExtensionPointImpl();
+    env.registerExtensionPoint(
+      catalogPermissionExtensionPoint,
+      permissionExtensions,
     );
 
     env.registerInit({
@@ -155,7 +168,7 @@ export const catalogPlugin = createBackendPlugin({
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
         builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
-        builder.addPermissionRules(...processingExtensions.permissionRules);
+        builder.addPermissionRules(...permissionExtensions.permissionRules);
 
         const { processingEngine, router } = await builder.build();
 
