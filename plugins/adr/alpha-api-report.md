@@ -17,9 +17,9 @@ export const AdrSearchResultListItemExtension: Extension<{
 export const adrTranslationRef: TranslationRef<
   'adr',
   {
-    readonly content_header_title: 'Architecture Decision Records';
-    readonly failed_to_fetch: 'Failed to fetch ADRs';
-    readonly no_adrs: 'No ADRs found';
+    readonly contentHeaderTitle: 'Architecture Decision Records';
+    readonly failedToFetch: 'Failed to fetch ADRs';
+    readonly notFound: 'No ADRs found';
   }
 >;
 

@@ -19,8 +19,8 @@ import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const adrTranslationRef = createTranslationRef({
   id: 'adr',
   messages: {
-    content_header_title: 'Architecture Decision Records',
-    failed_to_fetch: 'Failed to fetch ADRs',
-    no_adrs: 'No ADRs found',
+    contentHeaderTitle: 'Architecture Decision Records',
+    failedToFetch: 'Failed to fetch ADRs',
+    notFound: 'No ADRs found',
   },
 });
