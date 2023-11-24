@@ -53,7 +53,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/integration-aws-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
-    "@google-cloud/storage": "^6.0.0",
+    "@google-cloud/storage": "^7.0.0",
     "@smithy/node-http-handler": "^2.1.7",
     "@trendyol-js/openstack-swift-sdk": "^0.0.6",
     "@types/express": "^4.17.6",
