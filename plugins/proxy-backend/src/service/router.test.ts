@@ -126,6 +126,24 @@ describe('createRouter', () => {
         mockCreateProxyMiddleware.mock.calls[0][1]?.onProxyReq,
       ).not.toBeDefined();
     });
+
+    it('sets proxyReqCallback as onProxyReq', async () => {
+      const proxyReqCallback = jest.fn();
+      const router = await createRouter({
+        config,
+        logger,
+        discovery,
+        proxyReqCallback,
+      });
+      expect(router).toBeDefined();
+
+      expect(
+        mockCreateProxyMiddleware.mock.calls[0][1]?.onProxyReq,
+      ).toBeDefined();
+      expect(mockCreateProxyMiddleware.mock.calls[0][1]?.onProxyReq).toEqual(
+        expect.any(Function),
+      );
+    });
   });
 
   describe('where buildMiddleware would fail', () => {

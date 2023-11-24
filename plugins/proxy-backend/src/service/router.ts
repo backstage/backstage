@@ -48,6 +48,13 @@ const safeForwardHeaders = [
   'user-agent',
 ];
 
+type ProxyReqCallback = (
+  proxyReq: http.ClientRequest,
+  req: http.IncomingMessage,
+  res: http.OutgoingMessage,
+  options: Options,
+) => void;
+
 /** @public */
 export interface RouterOptions {
   logger: Logger;
@@ -55,6 +62,7 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   skipInvalidProxies?: boolean;
   reviveConsumedRequestBodies?: boolean;
+  proxyReqCallback?: ProxyReqCallback;
 }
 
 export interface ProxyConfig extends Options {
@@ -71,6 +79,7 @@ export function buildMiddleware(
   route: string,
   config: string | ProxyConfig,
   reviveConsumedRequestBodies?: boolean,
+  proxyReqCallback?: ProxyReqCallback,
 ): RequestHandler {
   const fullConfig =
     typeof config === 'string' ? { target: config } : { ...config };
@@ -187,8 +196,15 @@ export function buildMiddleware(
     });
   };
 
-  if (reviveConsumedRequestBodies) {
+  if (reviveConsumedRequestBodies && !proxyReqCallback) {
     fullConfig.onProxyReq = fixRequestBody;
+  } else if (!reviveConsumedRequestBodies && proxyReqCallback) {
+    fullConfig.onProxyReq = proxyReqCallback;
+  } else if (reviveConsumedRequestBodies && proxyReqCallback) {
+    fullConfig.onProxyReq = (proxyReq, req, res, options) => {
+      fixRequestBody(proxyReq, req);
+      proxyReqCallback(proxyReq, req, res, options);
+    };
   }
 
   return createProxyMiddleware(filter, fullConfig);
@@ -255,6 +271,7 @@ export async function createRouter(
     skipInvalidProxies,
     reviveConsumedRequestBodies,
     logger: options.logger,
+    proxyReqCallback: options.proxyReqCallback,
   };
 
   const externalUrl = await options.discovery.getExternalBaseUrl('proxy');
@@ -292,6 +309,7 @@ function configureMiddlewares(
     reviveConsumedRequestBodies: boolean;
     skipInvalidProxies: boolean;
     logger: Logger;
+    proxyReqCallback?: ProxyReqCallback;
   },
   router: express.Router,
   pathPrefix: string,
@@ -307,6 +325,7 @@ function configureMiddlewares(
           route,
           proxyRouteConfig,
           options.reviveConsumedRequestBodies,
+          options.proxyReqCallback,
         ),
       );
     } catch (e) {
