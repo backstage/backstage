@@ -3969,7 +3969,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@react-hookz/web": ^20.0.0
+    "@react-hookz/web": ^23.0.0
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -6608,7 +6608,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@react-hookz/web": ^20.0.0
+    "@react-hookz/web": ^23.0.0
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -6970,7 +6970,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@react-hookz/web": ^20.0.0
+    "@react-hookz/web": ^23.0.0
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -8816,7 +8816,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@react-hookz/web": ^20.0.0
+    "@react-hookz/web": ^23.0.0
     "@rjsf/core": 5.14.2
     "@rjsf/material-ui": 5.14.2
     "@rjsf/utils": 5.14.2
@@ -8879,7 +8879,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@react-hookz/web": ^20.0.0
+    "@react-hookz/web": ^23.0.0
     "@rjsf/core": 5.14.2
     "@rjsf/material-ui": 5.14.2
     "@rjsf/utils": 5.14.2
@@ -9670,7 +9670,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@react-hookz/web": ^20.0.0
+    "@react-hookz/web": ^23.0.0
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
