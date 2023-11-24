@@ -4,6 +4,22 @@
 
 ```ts
 // @public (undocumented)
+export const AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION =
+  'dev.azure.com/build-definition';
+
+// @public (undocumented)
+export const AZURE_DEVOPS_DEFAULT_TOP: number;
+
+// @public (undocumented)
+export const AZURE_DEVOPS_HOST_ORG_ANNOTATION = 'dev.azure.com/host-org';
+
+// @public (undocumented)
+export const AZURE_DEVOPS_PROJECT_ANNOTATION = 'dev.azure.com/project';
+
+// @public (undocumented)
+export const AZURE_DEVOPS_REPO_ANNOTATION = 'dev.azure.com/project-repo';
+
+// @public (undocumented)
 export enum BuildResult {
   Canceled = 32,
   Failed = 8,

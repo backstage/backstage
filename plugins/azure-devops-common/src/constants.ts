@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * Azure DevOps backend plugin that contains the API for retrieving builds, pull requests, etc. which is used by the Azure DevOps frontend plugin.
- *
- * @packageDocumentation
- */
-
-export { AzureDevOpsApi } from './api';
-export * from './service/router';
-export { azureDevOpsPlugin as default } from './plugin';
-export { AzureDevOpsAnnotatorProcessor } from './processor';
+/** @public */
+export const AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION =
+  'dev.azure.com/build-definition';
+/** @public */
+export const AZURE_DEVOPS_HOST_ORG_ANNOTATION = 'dev.azure.com/host-org';
+/** @public */
+export const AZURE_DEVOPS_PROJECT_ANNOTATION = 'dev.azure.com/project';
+/** @public */
+export const AZURE_DEVOPS_REPO_ANNOTATION = 'dev.azure.com/project-repo';
+/** @public */
+export const AZURE_DEVOPS_DEFAULT_TOP: number = 10;
