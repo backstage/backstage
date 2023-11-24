@@ -46,45 +46,40 @@ import { createEntityContentExtension } from '@backstage/plugin-catalog-react/al
 
 /** @alpha */
 const techDocsStorage = createApiExtension({
-  name: 'storage',
-  factory() {
-    return createApiFactory({
-      api: techdocsStorageApiRef,
-      deps: {
-        configApi: configApiRef,
-        discoveryApi: discoveryApiRef,
-        identityApi: identityApiRef,
-        fetchApi: fetchApiRef,
-      },
-      factory: ({ configApi, discoveryApi, identityApi, fetchApi }) =>
-        new TechDocsStorageClient({
-          configApi,
-          discoveryApi,
-          identityApi,
-          fetchApi,
-        }),
-    });
-  },
+  factory: createApiFactory({
+    api: techdocsStorageApiRef,
+    deps: {
+      configApi: configApiRef,
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ configApi, discoveryApi, identityApi, fetchApi }) =>
+      new TechDocsStorageClient({
+        configApi,
+        discoveryApi,
+        identityApi,
+        fetchApi,
+      }),
+  }),
 });
 
 /** @alpha */
 const techDocsClient = createApiExtension({
-  factory() {
-    return createApiFactory({
-      api: techdocsApiRef,
-      deps: {
-        configApi: configApiRef,
-        discoveryApi: discoveryApiRef,
-        fetchApi: fetchApiRef,
-      },
-      factory: ({ configApi, discoveryApi, fetchApi }) =>
-        new TechDocsClient({
-          configApi,
-          discoveryApi,
-          fetchApi,
-        }),
-    });
-  },
+  factory: createApiFactory({
+    api: techdocsApiRef,
+    deps: {
+      configApi: configApiRef,
+      discoveryApi: discoveryApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ configApi, discoveryApi, fetchApi }) =>
+      new TechDocsClient({
+        configApi,
+        discoveryApi,
+        fetchApi,
+      }),
+  }),
 });
 
 /** @alpha */

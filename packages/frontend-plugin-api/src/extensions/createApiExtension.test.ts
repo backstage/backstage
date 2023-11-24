@@ -33,31 +33,7 @@ describe('createApiExtension', () => {
     ).toEqual({
       $$type: '@backstage/ExtensionDefinition',
       kind: 'api',
-      attachTo: { id: 'core', input: 'apis' },
-      disabled: false,
-      configSchema: undefined,
-      inputs: {},
-      output: {
-        api: expect.objectContaining({
-          $$type: '@backstage/ExtensionDataRef',
-          id: 'core.api.factory',
-          config: {},
-        }),
-      },
-      factory: expect.any(Function),
-    });
-
-    expect(
-      createApiExtension({
-        factory,
-        namespace: 'ns',
-        name: 'n',
-      }),
-    ).toEqual({
-      $$type: '@backstage/ExtensionDefinition',
-      kind: 'api',
-      namespace: 'ns',
-      name: 'n',
+      namespace: 'test',
       attachTo: { id: 'core', input: 'apis' },
       disabled: false,
       configSchema: undefined,
@@ -78,6 +54,7 @@ describe('createApiExtension', () => {
     const factory = jest.fn(() => ({ foo: 'bar' }));
 
     const extension = createApiExtension({
+      api,
       inputs: {},
       factory({ config: _config, inputs: _inputs }) {
         return createApiFactory({
@@ -91,6 +68,7 @@ describe('createApiExtension', () => {
     expect(extension).toEqual({
       $$type: '@backstage/ExtensionDefinition',
       kind: 'api',
+      namespace: 'test',
       attachTo: { id: 'core', input: 'apis' },
       disabled: false,
       configSchema: undefined,
