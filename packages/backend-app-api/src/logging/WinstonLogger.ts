@@ -82,6 +82,9 @@ export class WinstonLogger implements RootLoggerService {
         if (redactionPattern && typeof info.message === 'string') {
           info.message = info.message.replace(redactionPattern, '[REDACTED]');
         }
+        if (redactionPattern && typeof info.stack === 'string') {
+          info.stack = info.stack.replace(redactionPattern, '[REDACTED]');
+        }
         return info;
       })(),
       add(newRedactions) {
