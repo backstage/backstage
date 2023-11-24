@@ -57,7 +57,7 @@ const endpointDataRef = createExtensionDataRef<GraphQLEndpoint>(
 
 /** @alpha */
 export const graphiqlBrowseApi = createApiExtension({
-  name: 'browse',
+  api: graphQlBrowseApiRef,
   inputs: {
     endpoints: createExtensionInput({
       endpoint: endpointDataRef,

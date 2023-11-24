@@ -22,7 +22,7 @@ export function resolveExtensionDefinition<TConfig>(
   context?: { namespace?: string },
 ): Extension<TConfig> {
   const { name, kind, namespace: _, ...rest } = definition;
-  const namespace = context?.namespace ?? definition.namespace;
+  const namespace = definition.namespace ?? context?.namespace;
 
   const namePart =
     name && namespace ? `${namespace}/${name}` : namespace || name;

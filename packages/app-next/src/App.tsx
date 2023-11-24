@@ -97,12 +97,10 @@ const signInPage = createSignInPageExtension({
 });
 
 const scmAuthExtension = createApiExtension({
-  name: 'scm-auth',
   factory: ScmAuth.createDefaultApiFactory(),
 });
 
 const scmIntegrationApi = createApiExtension({
-  name: 'scm-integration',
   factory: createApiFactory({
     api: scmIntegrationsApiRef,
     deps: { configApi: configApiRef },
