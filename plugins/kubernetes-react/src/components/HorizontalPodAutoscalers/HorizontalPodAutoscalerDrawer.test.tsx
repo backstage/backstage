@@ -17,15 +17,18 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import * as hpas from './__fixtures__/horizontalpodautoscalers.json';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { HorizontalPodAutoscalerDrawer } from './HorizontalPodAutoscalerDrawer';
+import { kubernetesClusterLinkFormatterApiRef } from '../../api';
 
 describe('HorizontalPodAutoscalersDrawer', () => {
   it('should render hpa drawer', async () => {
     await renderInTestApp(
-      <HorizontalPodAutoscalerDrawer hpa={hpas[0] as any} expanded>
-        <h1>CHILD</h1>
-      </HorizontalPodAutoscalerDrawer>,
+      <TestApiProvider apis={[[kubernetesClusterLinkFormatterApiRef, {}]]}>
+        <HorizontalPodAutoscalerDrawer hpa={hpas[0] as any} expanded>
+          <h1>CHILD</h1>
+        </HorizontalPodAutoscalerDrawer>
+      </TestApiProvider>,
     );
 
     expect(screen.getByText('dice-roller')).toBeInTheDocument();

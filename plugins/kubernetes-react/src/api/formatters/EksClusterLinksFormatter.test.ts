@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { eksFormatter } from './eks';
+
+import { EksClusterLinksFormatter } from './EksClusterLinksFormatter';
 
 describe('clusterLinks - EKS formatter', () => {
-  it('should return an url on the workloads when there is a namespace only', () => {
-    expect(() =>
-      eksFormatter({
+  const formatter = new EksClusterLinksFormatter();
+  it('should return an url on the workloads when there is a namespace only', async () => {
+    await expect(
+      formatter.formatClusterLink({
         dashboardUrl: new URL('https://k8s.foo.com'),
         object: {
           metadata: {
@@ -28,6 +30,8 @@ describe('clusterLinks - EKS formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrow('EKS formatter is not yet implemented. Please, contribute!');
+    ).rejects.toThrow(
+      'EKS formatter is not yet implemented. Please, contribute!',
+    );
   });
 });
