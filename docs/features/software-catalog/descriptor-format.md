@@ -636,7 +636,7 @@ field is optional.
 | [`Component`](#kind-component)          | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
 | [`Resource`](#kind-resource)            | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
 
-### `spec.deployedToEnvironments` [optional]
+### `spec.deploysToEnvironments` [optional]
 
 An array of [entity references](references.md#string-references) to the Environments
 that this component is deployed to, for example, `prod`, `uat`, and `dev`. This field is optional.
