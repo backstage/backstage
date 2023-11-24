@@ -74,8 +74,8 @@ The new rule is now ready for use in a permission policy!
 Let's bring this all together by extending the example policy from the previous section.
 
 ```ts title="packages/backend/src/plugins/permission.ts"
-/* highlight-add-next-line */
 ...
+/* highlight-add-next-line */
 import { isInSystemRuleFactory } from '../customPermissionRules/isInSystem';
 
 class TestPermissionPolicy implements PermissionPolicy {
