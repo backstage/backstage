@@ -13,52 +13,66 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  TaskScheduleDefinition,
+  readTaskScheduleDefinitionFromConfig,
+} from '@backstage/backend-tasks';
+import { Config, readDurationFromConfig } from '@backstage/config';
+import { HumanDuration } from '@backstage/types';
 
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
-import { Config } from '@backstage/config';
-import { HumanDuration as HumanDuration } from '@backstage/types';
-
-export interface LighthouseAuditScheduleConfig {
-  frequency: HumanDuration;
-  timeout: HumanDuration;
-  auditDetail: HumanDuration;
-}
-
-/** @public */
-export type LighthouseAuditSchedule = {
-  getFrequency: () => HumanDuration;
-  getTimeout: () => HumanDuration;
+type Options = {
+  logger: LoggerService;
 };
 
 /** @public */
-export class LighthouseAuditScheduleImpl implements LighthouseAuditSchedule {
-  static fromConfig(config: Config): LighthouseAuditScheduleImpl {
-    // const lighthouse = config.getOptionalConfig('lighthouse');
-    const lighthouse = config.has('lighthouse.schedule')
-      ? readTaskScheduleDefinitionFromConfig(
-          config.getConfig('lighthouse.schedule'),
-        )
-      : {
-          frequency: { days: 1 },
-          timeout: {},
-        };
+export class LighthouseAuditScheduleImpl implements TaskScheduleDefinition {
+  /**
+   * Looks at the `lighthouse.schedule` section in the application configuration
+   * and returns a TaskScheduleDefinition.
+   * Defaults to `{ frequency: { days: 1 }, timeout: {}, initialDelay: { minutes; 15 } }`
+   *
+   * @returns a TaskScheduleDefinition
+   */
+  static fromConfig(config: Config, options: Options): TaskScheduleDefinition {
+    const { logger } = options;
 
-    const frequency = lighthouse.frequency as HumanDuration;
-    const timeout = lighthouse.timeout as HumanDuration;
+    let lighthouse: TaskScheduleDefinition = {
+      frequency: { days: 1 },
+      timeout: {},
+      initialDelay: { minutes: 15 },
+    };
 
-    return new LighthouseAuditScheduleImpl(frequency, timeout);
+    if (config.has('lighthouse.schedule.frequency')) {
+      lighthouse = readTaskScheduleDefinitionFromConfig(
+        config.getConfig('lighthouse.schedule'),
+      );
+    } else if (config.has('lighthouse.schedule')) {
+      logger.warn(
+        `[Deprecation] Please migrate the schedule configuration to 'lighthouse.schedule.frequency' in ${config.config.context}`,
+      );
+
+      lighthouse.frequency = readDurationFromConfig(
+        config.getConfig('lighthouse.schedule'),
+      );
+    }
+
+    if (config.has('lighthouse.timeout')) {
+      logger.warn(
+        `[Deprecation] Please migrate the timeout configuration to 'lighthouse.schedule.timeout' in ${config.config.context}`,
+      );
+
+      lighthouse.timeout = readDurationFromConfig(
+        config.getConfig('lighthouse.timeout'),
+      );
+    }
+
+    return lighthouse;
   }
 
   constructor(
-    private frequency: HumanDuration,
-    private timeout: HumanDuration,
+    public frequency: HumanDuration,
+    public timeout: HumanDuration,
+    public initialDelay: HumanDuration,
   ) {}
-
-  getFrequency(): HumanDuration {
-    return this.frequency;
-  }
-
-  getTimeout(): HumanDuration {
-    return this.timeout;
-  }
 }
