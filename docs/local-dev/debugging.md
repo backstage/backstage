@@ -57,6 +57,7 @@ In your `launch.json`, add a new entry with the following,
 ```jsonc
 {
     "name": "Start Backend",
+    "type": "node",
     "request": "launch",
     "args": [
         "package",
@@ -67,8 +68,6 @@ In your `launch.json`, add a new entry with the following,
     "skipFiles": [
         "<node_internals>/**"
     ],
-    "type": "node"
+    "console": "integratedTerminal"
 },
 ```
-
-You may notice that the normal logs mentioned above do not get logged, this is an issue with the logging library we're using, `winston`, and is not easily solved. See [this thread](https://github.com/winstonjs/winston/issues/1544) for more information.
