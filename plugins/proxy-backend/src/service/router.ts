@@ -48,7 +48,8 @@ const safeForwardHeaders = [
   'user-agent',
 ];
 
-type ProxyReqCallback = (
+/** @public */
+export type ProxyReqCallback = (
   proxyReq: http.ClientRequest,
   req: http.IncomingMessage,
   res: http.OutgoingMessage,
