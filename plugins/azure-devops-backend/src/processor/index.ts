@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,4 @@
  * limitations under the License.
  */
 
-export const AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION =
-  'dev.azure.com/build-definition';
-export const AZURE_DEVOPS_HOST_ORG_ANNOTATION = 'dev.azure.com/host-org';
-export const AZURE_DEVOPS_PROJECT_ANNOTATION = 'dev.azure.com/project';
-export const AZURE_DEVOPS_REPO_ANNOTATION = 'dev.azure.com/project-repo';
-export const AZURE_DEVOPS_DEFAULT_TOP: number = 10;
+export { AzureDevOpsAnnotatorProcessor } from './AzureDevOpsAnnotatorProcessor';
