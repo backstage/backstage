@@ -8,9 +8,9 @@ For some use cases, you may want to define custom [rules](./concepts.md#resource
 
 ## Define a custom rule
 
-Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule in `packages/backend/src/plugins/permission.ts`, but you can put it anywhere that's accessible by your `backend` package.
+Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule in `packages/backend/src/customPermissionRules/isInSystem`, but you can put it anywhere that's accessible by your `backend` package.
 
-```typescript title="packages/backend/src/plugins/permission.ts"
+```typescript title="packages/backend/src/customPermissionRules/isInSystem.ts"
 import type { Entity } from '@backstage/catalog-model';
 import { createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
 import { createConditionFactory } from '@backstage/plugin-permission-node';
@@ -40,7 +40,7 @@ export const isInSystemRule = createCatalogPermissionRule({
   }),
 });
 
-const isInSystem = createConditionFactory(isInSystemRule);
+export const isInSystemRuleFactory = createConditionFactory(isInSystemRule);
 ```
 
 For a more detailed explanation on defining rules, refer to the [documentation for plugin authors](./plugin-authors/03-adding-a-resource-permission-check.md#adding-support-for-conditional-decisions).
@@ -52,9 +52,8 @@ Now that we have a custom rule defined, we need provide it to the catalog plugin
 The api for providing custom rules may differ between plugins, but there should typically be some integration point during the creation of the backend router. For the catalog, this integration point is exposed via `CatalogBuilder.addPermissionRules`.
 
 ```typescript title="packages/backend/src/plugins/catalog.ts"
-import { isInSystemRule } from './permission';
-// The CatalogBuilder with the addPermissionRules function is in the alpha path
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend/alpha';
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+import { isInSystemRule } from '../customPermissionRules/isInSystem';
 
 ...
 
@@ -75,8 +74,9 @@ The new rule is now ready for use in a permission policy!
 Let's bring this all together by extending the example policy from the previous section.
 
 ```ts title="packages/backend/src/plugins/permission.ts"
+...
 /* highlight-add-next-line */
-import { isInSystem } from './catalog';
+import { isInSystemRuleFactory } from '../customPermissionRules/isInSystem';
 
 class TestPermissionPolicy implements PermissionPolicy {
   async handle(
@@ -97,7 +97,7 @@ class TestPermissionPolicy implements PermissionPolicy {
             catalogConditions.isEntityOwner({
               claims: user?.identity.ownershipEntityRefs ?? []
             }),
-            isInSystem('interviewing')
+            isInSystemRuleFactory({ systemRef: 'interviewing' }),
           ]
         }
         /* highlight-add-end */
@@ -106,6 +106,9 @@ class TestPermissionPolicy implements PermissionPolicy {
 
     return { result: AuthorizeResult.ALLOW };
   }
+}
+
+...
 ```
 
 The updated policy will allow catalog entity resource permissions if any of the following are true:
