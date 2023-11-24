@@ -33,18 +33,84 @@ const depTypes = [
   'optionalDependencies',
 ];
 
+const roleRules = [
+  {
+    sourceRole: ['frontend-plugin', 'web-library'],
+    targetRole: ['backend-plugin', 'node-library'],
+    message: `Package SOURCE_NAME with frontend role SOURCE_ROLE has a dependency on package TARGET_NAME with backend role TARGET_ROLE, which is not permitted`,
+  },
+  {
+    sourceRole: ['backend-plugin', 'node-library'],
+    targetRole: ['frontend-plugin', 'web-library'],
+    message: `Package SOURCE_NAME with backend role SOURCE_ROLE has a dependency on package TARGET_NAME with frontend role TARGET_ROLE, which is not permitted`,
+  },
+  {
+    sourceRole: ['common-library'],
+    targetRole: [
+      'frontend-plugin',
+      'web-library',
+      'backend-plugin',
+      'node-library',
+    ],
+    message: `Polymorphic package SOURCE_NAME has a dependency on package TARGET_NAME with role TARGET_ROLE, which is not permitted since it's not also polymorphic`,
+  },
+  {
+    sourceRole: ['frontend-plugin', 'web-library'],
+    targetRole: 'frontend-plugin',
+    except: [
+      // TODO(freben): Address these
+      '@backstage/plugin-api-docs',
+      '@backstage/plugin-techdocs-addons-test-utils',
+    ],
+    message: `Package SOURCE_NAME with role SOURCE_ROLE has a dependency on another plugin package TARGET_NAME, which is not permitted`,
+  },
+  {
+    sourceRole: ['frontend-plugin', 'web-library'],
+    targetName: ['@backstage/core-app-api', '@backstage/frontend-app-api'],
+    except: [
+      // These are legitimate
+      '@backstage/app-defaults',
+      '@backstage/core-compat-api',
+      '@backstage/dev-utils',
+      '@backstage/frontend-app-api',
+      '@backstage/frontend-test-utils',
+      '@backstage/test-utils',
+      // TODO(freben): Address these
+      '@backstage/plugin-home',
+      '@backstage/plugin-techdocs-addons-test-utils',
+      '@backstage/plugin-user-settings',
+    ],
+    message: `Plugin package SOURCE_NAME with role SOURCE_ROLE has a runtime dependency on package TARGET_NAME, which is not permitted. If you are using this dependency for dev server purposes, you can move it to devDependencies instead.`,
+  },
+  {
+    sourceRole: ['backend-plugin', 'node-library'],
+    targetName: ['@backstage/backend-app-api'],
+    except: [
+      // These are legitimate
+      '@backstage/backend-common',
+      '@backstage/backend-defaults',
+      '@backstage/backend-test-utils',
+    ],
+    message: `Plugin package SOURCE_NAME with role SOURCE_ROLE has a runtime dependency on package TARGET_NAME, which is not permitted. If you are using this dependency for dev server purposes, you can move it to devDependencies instead.`,
+  },
+];
+
 async function main(args) {
   const shouldFix = args.includes('--fix');
   const rootPath = resolvePath(__dirname, '..');
   const { packages } = await getPackages(rootPath);
 
-  let hadErrors = false;
+  let hadVersionRangeErrors = false;
+  let hadRoleErrors = false;
 
   const pkgMap = new Map(packages.map(pkg => [pkg.packageJson.name, pkg]));
 
   for (const pkg of packages) {
-    let fixed = false;
+    let versionRangeErrorsFixed = false;
 
+    /*
+     * Ensure that all internal deps have "workspace:^" version ranges
+     */
     for (const depType of depTypes) {
       const deps = pkg.packageJson[depType];
 
@@ -54,32 +120,93 @@ async function main(args) {
         }
         const localPackage = pkgMap.get(dep);
         if (localPackage && range !== 'workspace:^') {
-          hadErrors = true;
+          hadVersionRangeErrors = true;
           console.log(
             `Local dependency from ${pkg.packageJson.name} to ${dep} should have a workspace range`,
           );
 
-          fixed = true;
+          versionRangeErrorsFixed = true;
           pkg.packageJson[depType][dep] = 'workspace:^';
         }
       }
     }
 
-    if (shouldFix && fixed) {
+    /*
+     * Ensure that there are no forbidden runtime dependency role combinations
+     */
+    const sourceRole = pkg.packageJson.backstage?.role;
+    if (typeof sourceRole === 'string') {
+      for (const [targetName] of Object.entries(
+        pkg.packageJson.dependencies ?? {},
+      )) {
+        let targetPackageJson;
+        try {
+          const packageJsonPath = require.resolve(
+            `${targetName}/package.json`,
+            {
+              paths: [pkg.dir],
+            },
+          );
+          targetPackageJson = JSON.parse(await fs.readFile(packageJsonPath));
+        } catch {
+          // ignore
+          continue;
+        }
+
+        const sourceName = pkg.packageJson.name;
+        const targetRole = targetPackageJson.backstage?.role;
+        if (typeof targetRole === 'string') {
+          for (const rule of roleRules) {
+            const matchesSourceRole = [rule.sourceRole ?? []]
+              .flat()
+              .includes(sourceRole);
+            const matchesTargetRole = [rule.targetRole ?? []]
+              .flat()
+              .includes(targetRole);
+            const matchesTargetName = [rule.targetName ?? []]
+              .flat()
+              .includes(targetName);
+            const isExempt = [rule.except ?? []].flat().includes(sourceName);
+            if (
+              matchesSourceRole &&
+              (matchesTargetName || matchesTargetRole) &&
+              !isExempt
+            ) {
+              hadRoleErrors = true;
+              console.error(
+                rule.message
+                  .replace('SOURCE_NAME', `'${sourceName}'`)
+                  .replace('SOURCE_ROLE', `'${sourceRole}'`)
+                  .replace('TARGET_NAME', `'${targetName}'`)
+                  .replace('TARGET_ROLE', `'${targetRole}'`),
+              );
+            }
+          }
+        }
+      }
+    }
+
+    /*
+     * Fixup
+     */
+    if (shouldFix && versionRangeErrorsFixed) {
       await fs.writeJson(joinPath(pkg.dir, 'package.json'), pkg.packageJson, {
         spaces: 2,
       });
     }
   }
 
-  if (!shouldFix && hadErrors) {
+  if (!shouldFix && hadVersionRangeErrors) {
     console.error();
     console.error('At least one package has an invalid local dependency');
     console.error(
       'Run `node scripts/verify-local-dependencies.js --fix` to fix',
     );
-
     process.exit(2);
+  }
+
+  if (hadRoleErrors) {
+    process.exit(3);
   }
 }
 

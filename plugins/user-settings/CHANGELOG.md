@@ -1,5 +1,45 @@
 # @backstage/plugin-user-settings
 
+## 0.7.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.1-next.0
+
+## 0.7.14-next.0
+
+### Patch Changes
+
+- 03d0b6dcdc: The `convertLegacyRouteRef` utility used by the alpha exports is now imported from `@backstage/core-compat-api`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.2-next.0
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-react@1.9.2-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/core-app-api@1.11.2-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.7.12
+
+### Patch Changes
+
+- 68fc9dc60e: Updated alpha exports according to routing changes in `@backstage/frontend-plugin-api`.
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/core-app-api@1.11.1
+  - @backstage/theme@0.4.4
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.7.12-next.2
 
 ### Patch Changes

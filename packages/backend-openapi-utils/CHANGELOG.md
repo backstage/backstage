@@ -1,5 +1,29 @@
 # @backstage/backend-openapi-utils
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- aaa6fb3bc9: Minor updates for TypeScript 5.2.2+ compatibility
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.1.0
+
+### Minor Changes
+
+- 785fb1ea75: Adds a new route, `/openapi.json` to validated routers for displaying their full OpenAPI spec in a standard endpoint.
+
+### Patch Changes
+
+- 6694b369a3: Adds a new function `wrapInOpenApiTestServer` that allows for proxied requests at runtime. This will support the new `yarn backstage-repo-tools schema openapi test` command.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.0-next.2
 
 ### Patch Changes

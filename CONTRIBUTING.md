@@ -12,6 +12,21 @@ You can find out more about the types of contributions over at [getting involved
 
 If you need help, just jump into our [Discord chatroom](https://discord.gg/backstage-687207715902193673).
 
+## Table of Contents
+
+- [Code of Conduct](#code-of-conduct)
+- [Security Issues?](#security-issues)
+- [Accessibility](#accessibility)
+- [Get Started!](#get-started)
+- [Coding Guidelines](#coding-guidelines)
+- [Package Scripts](#package-scripts)
+- [Local configuration](#local-configuration)
+- [Creating Changesets](#creating-changesets)
+- [Developer Certificate of Origin](#developer-certificate-of-origin)
+- [API Reports](#api-reports)
+- [Submitting a Pull Request](#submitting-a-pull-request)
+- [Review Process](#review-process)
+
 ## Code of Conduct
 
 This project adheres to the [CNCF Code of Conduct][code-of-conduct]. By participating, you are expected to honor this code.
@@ -98,7 +113,7 @@ If you're contributing to the backend or CLI tooling, be mindful of cross-platfo
 
 Also be sure to skim through our [ADRs](docs/architecture-decisions) to see if they cover what you're working on. In particular [ADR006: Avoid React.FC and React.SFC](docs/architecture-decisions/adr006-avoid-react-fc.md) is one to look out for.
 
-If there are any updates in `markdown` file please make sure to run `yarn run lint:docs`. Though it is checked on `lint-staged`. It is required to install [vale](https://docs.errata.ai/vale/install) separately and make sure it is accessed by global command.
+If there are any updates in `markdown` file please make sure to run `yarn run lint:docs`. Though it is checked on `lint-staged`. It is required to install [vale](https://vale.sh/docs/vale-cli/installation/) separately and make sure it is accessed by global command.
 
 ### Editor
 
@@ -273,6 +288,13 @@ Awesome commit message
 Signed-off-by: Jane Smith <jane.smith@example.com>
 ```
 
+> Note: this assumes you have setup your git name and email, if you have not you can use these commands to set that up:
+>
+> ```shell
+> git config --global user.name "Your Name"
+> git config --global user.email "youremail@example.com"
+> ```
+
 - In case you forgot to add it to the most recent commit, use `git commit --amend --signoff`
 - In case you forgot to add it to the last N commits in your branch, use `git rebase --signoff HEAD~N` and replace N with the number of new commits you created in your branch.
 - If you have a very deep branch with a lot of commits, run `git rebase -i --signoff $(git merge-base -a master HEAD)`, double check to make sense of the commits (keep all lines as `pick`) and save and close the editor. This should bulk sign all the commits in your PR. Do be careful though. If you have a complex flow with a lot of branching and re-merging of work branches and stuff, merge-base may not be the right solution for you.
@@ -283,13 +305,23 @@ Note: If you have already pushed your branch to a remote, you might have to forc
 
 If you are using the GitHub Desktop client, you need to manually add the `Signed-off-by` line to the Description field on the Changes tab before committing:
 
-```
+```text
 Awesome description (commit message)
 
 Signed-off-by: Jane Smith <jane.smith@example.com>
 ```
 
 In case you forgot to add the line to your most recent commit, you can amend the commit message from the History tab before pushing your branch (GitHub Desktop 2.9 or later).
+
+### Using VS Code?
+
+If you are using VS Code you can enable always signing your commits by setting the following in your `settings.json` file:
+
+```json
+"git.alwaysSignOff": true,
+```
+
+Or from the Settings UI look for the "Git: Always Sign Off" setting and check the "Controls the signoff flag for all commits" box.
 
 ## API Reports
 

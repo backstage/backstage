@@ -1,5 +1,29 @@
 # @backstage/plugin-newrelic-dashboard
 
+## 0.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-react@1.9.2-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
+## 0.3.1
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- fdb5e23602: Import `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react` to remove the cyclical dependency
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
 ## 0.3.1-next.2
 
 ### Patch Changes

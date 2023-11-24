@@ -1,5 +1,24 @@
 # @backstage/plugin-periskop-backend
 
+## 0.2.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/config@1.1.1
+
+## 0.2.5
+
+### Patch Changes
+
+- 8613ba3928: Switched to using `"exports"` field for `/alpha` subpath export.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/config@1.1.1
+
 ## 0.2.5-next.2
 
 ### Patch Changes

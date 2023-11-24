@@ -1,5 +1,24 @@
 # @backstage/plugin-auth-backend-module-gitlab-provider
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/plugin-auth-node@0.4.2-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+
+## 0.1.4
+
+### Patch Changes
+
+- a3236ad0ca: Fix link to the repository in `README.md`.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/plugin-auth-node@0.4.1
+
 ## 0.1.4-next.2
 
 ### Patch Changes

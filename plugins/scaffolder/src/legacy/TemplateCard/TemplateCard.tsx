@@ -45,7 +45,6 @@ import {
   getEntitySourceLocation,
 } from '@backstage/plugin-catalog-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Card,
@@ -55,6 +54,7 @@ import {
   Chip,
   IconButton,
   makeStyles,
+  Theme,
   Tooltip,
   Typography,
   useTheme,
@@ -65,7 +65,7 @@ import React from 'react';
 import { selectedTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 
 const useStyles = makeStyles<
-  BackstageTheme,
+  Theme,
   { fontColor: string; backgroundImage: string }
 >(theme => ({
   cardHeader: {
@@ -179,7 +179,7 @@ const DeprecationWarning = () => {
 
 export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const app = useApp();
-  const backstageTheme = useTheme<BackstageTheme>();
+  const backstageTheme = useTheme();
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const templateProps = getTemplateCardProps(template);
   const ownedByRelations = getEntityRelations(
@@ -243,7 +243,11 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
           <Typography variant="body2" className={classes.label}>
             Owner
           </Typography>
-          <EntityRefLinks entityRefs={ownedByRelations} defaultKind="Group" />
+          <EntityRefLinks
+            entityRefs={ownedByRelations}
+            defaultKind="Group"
+            hideIcons
+          />
         </Box>
         <Box>
           <Typography

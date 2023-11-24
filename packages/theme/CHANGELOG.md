@@ -1,5 +1,17 @@
 # @backstage/theme
 
+## 0.5.0-next.0
+
+### Minor Changes
+
+- 4d9e3b39e4: Added a global `OverrideComponentNameToClassKeys` for other plugins and packages to populate using module augmentation. This will in turn will provide component style override types for `createUnifiedTheme`.
+
+## 0.4.4
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+
 ## 0.4.4-next.0
 
 ### Patch Changes

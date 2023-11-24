@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/backend-tasks@0.5.13-next.0
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/plugin-catalog-node@1.5.1-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+
+## 0.3.4
+
+### Patch Changes
+
+- d732f17610: Added try catch around fetching gitlab group users to prevent refresh from failing completely while only a select number of groups might not be able to load correctly.
+- 0873a43ac1: Resolved a bug affecting the retrieval of users from group members. By appending '/all' to the API call, we now include members from all inherited groups, as per Gitlab's API specifications. This change is reflected in the listSaaSUsers function.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.5.0
+  - @backstage/integration@1.7.2
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-tasks@0.5.12
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+
 ## 0.3.4-next.2
 
 ### Patch Changes

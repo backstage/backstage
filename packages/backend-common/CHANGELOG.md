@@ -1,5 +1,49 @@
 # @backstage/backend-common
 
+## 0.20.0-next.0
+
+### Minor Changes
+
+- 870db76a45: Implemented `readTree` for Gitea provider to support TechDocs functionality
+
+### Patch Changes
+
+- 7f04128bbc: Allow a default cache TTL to be set through the app config
+- 1ad8906a9e: Use `Readable.from` to fix some of the stream issues
+- 706fc3a7e1: Updated dependency `@kubernetes/client-node` to `0.20.0`.
+- d15d483a49: Add command `--runAsDefaultUser` for `@techdocs/cli generate` to bypass running the docker builds as host user for macOS and Linux.
+- d1e00aa17a: Expose an `onAuth` handler for `git` actions to provide custom credentials
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/backend-app-api@0.5.9-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.5.3
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
+## 0.19.9
+
+### Patch Changes
+
+- aa13482090: Limit the database creation concurrency to one, defensively
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- 3d043526f4: Updated dependency `aws-sdk-client-mock` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.5.3
+  - @backstage/integration@1.7.2
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/backend-app-api@0.5.8
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.19.9-next.2
 
 ### Patch Changes

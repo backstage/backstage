@@ -75,7 +75,7 @@ export function createPageExtension<
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
     },
-    factory({ config, inputs, source }) {
+    factory({ config, inputs, node }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ config, inputs })
@@ -86,7 +86,7 @@ export function createPageExtension<
         path: config.path,
         routeRef: options.routeRef,
         element: (
-          <ExtensionBoundary id={id} source={source} routable>
+          <ExtensionBoundary node={node} routable>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),

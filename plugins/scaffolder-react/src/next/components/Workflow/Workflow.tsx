@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useEffect } from 'react';
 import {
   Content,
@@ -22,14 +23,14 @@ import {
 } from '@backstage/core-components';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
+import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 
-const useStyles = makeStyles<BackstageTheme>(() => ({
+const useStyles = makeStyles({
   markdown: {
     /** to make the styles for React Markdown not leak into the description */
     '& :first-child': {
@@ -39,7 +40,7 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
       marginBottom: 0,
     },
   },
-}));
+});
 
 /**
  * @alpha
@@ -81,6 +82,8 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
   const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
 
+  const sortedManifest = useFilteredSchemaProperties(manifest);
+
   useEffect(() => {
     if (error) {
       errorApi.post(new Error(`Failed to load template, ${error}`));
@@ -94,19 +97,25 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   return (
     <Content>
       {loading && <Progress />}
-      {manifest && (
+      {sortedManifest && (
         <InfoCard
-          title={title ?? manifest.title}
+          title={title ?? sortedManifest.title}
           subheader={
             <MarkdownContent
               className={styles.markdown}
-              content={description ?? manifest.description ?? 'No description'}
+              content={
+                description ?? sortedManifest.description ?? 'No description'
+              }
             />
           }
           noPadding
           titleTypographyProps={{ component: 'h2' }}
         >
-          <Stepper manifest={manifest} templateName={templateName} {...props} />
+          <Stepper
+            manifest={sortedManifest}
+            templateName={templateName}
+            {...props}
+          />
         </InfoCard>
       )}
     </Content>

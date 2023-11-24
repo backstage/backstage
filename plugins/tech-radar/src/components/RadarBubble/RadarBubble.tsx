@@ -15,7 +15,7 @@
  */
 
 import React, { useRef, useLayoutEffect } from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 
 export type Props = {
   visible: boolean;
@@ -24,7 +24,7 @@ export type Props = {
   y: number;
 };
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   bubble: {
     pointerEvents: 'none',
     userSelect: 'none',

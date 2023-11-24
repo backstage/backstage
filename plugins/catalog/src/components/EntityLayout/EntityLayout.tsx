@@ -33,6 +33,7 @@ import {
   attachComponentData,
   IconComponent,
   useElementFilter,
+  useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import {
@@ -50,6 +51,7 @@ import { Alert } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
+import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
 
 /** @public */
 export type EntityLayoutRouteProps = {
@@ -79,7 +81,7 @@ function EntityLayoutTitle(props: {
         whiteSpace="nowrap"
         overflow="hidden"
       >
-        {entity ? <EntityDisplayName entityRef={entity} noIcon /> : title}
+        {entity ? <EntityDisplayName entityRef={entity} hideIcon /> : title}
       </Box>
       {entity && <FavoriteEntity entity={entity} />}
     </Box>
@@ -229,10 +231,15 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const [inspectionDialogOpen, setInspectionDialogOpen] = useState(false);
   const navigate = useNavigate();
+  const catalogRoute = useRouteRef(rootRouteRef);
+  const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
+
   const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
     setInspectionDialogOpen(false);
-    navigate('/');
+    navigate(
+      unregisterRedirectRoute ? unregisterRedirectRoute() : catalogRoute(),
+    );
   };
 
   // Make sure to close the dialog if the user clicks links in it that navigate

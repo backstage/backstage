@@ -1,5 +1,52 @@
 # @backstage/frontend-app-api
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 60d6eb544e: Removed `@backstage/plugin-graphiql` dependency.
+- 9ad4039efa: Bringing over apis from core-plugin-api
+- b8cb7804c8: Added `createSpecializedApp`, which is a synchronous version of `createApp` where config and features already need to be loaded.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/core-app-api@1.11.2-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.3.0
+
+### Minor Changes
+
+- 68fc9dc60e: Added the ability to configure bound routes through `app.routes.bindings`. The routing system used by `createApp` has been replaced by one that only supports route refs of the new format from `@backstage/frontend-plugin-api`. The requirement for route refs to have the same ID as their associated extension has been removed.
+
+### Patch Changes
+
+- e28d379e32: Refactor internal extension instance system into an app graph.
+- fdc348d5d3: The options parameter of `createApp` is now optional.
+- 6c2b872153: Add official support for React 18.
+- dc613f9bcf: Updated `app.extensions` configuration schema.
+- 733bd95746: Implement new `AppTreeApi`
+- 685a4c8901: Installed features are now deduplicated both by reference and ID when available. Features passed to `createApp` now override both discovered and loaded features.
+- fa28d4e6df: No longer throw error on invalid input if the child is disabled.
+- bb98953cb9: Register default implementation for the `Translation API` on the new `createApp`.
+- fe6d09953d: Fix for app node output IDs not being serialized correctly.
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- 4d6fa921db: Internal refactor to rename the app graph to app tree
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/plugin-graphiql@0.3.0
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/version-bridge@1.0.7
+  - @backstage/core-app-api@1.11.1
+  - @backstage/theme@0.4.4
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 0.3.0-next.2
 
 ### Patch Changes

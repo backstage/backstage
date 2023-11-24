@@ -41,6 +41,15 @@ export function createApp(options?: {
 // @public (undocumented)
 export function createExtensionTree(options: { config: Config }): ExtensionTree;
 
+// @public
+export function createSpecializedApp(options?: {
+  features?: (BackstagePlugin | ExtensionOverrides)[];
+  config?: ConfigApi;
+  bindRoutes?(context: { bind: AppRouteBinder }): void;
+}): {
+  createRoot(): JSX_2.Element;
+};
+
 // @public (undocumented)
 export interface ExtensionTree {
   // (undocumented)

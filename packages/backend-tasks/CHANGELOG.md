@@ -1,5 +1,27 @@
 # @backstage/backend-tasks
 
+## 0.5.13-next.0
+
+### Patch Changes
+
+- d8f488aaa8: Allow tasks to run more often that the default work check interval, which is 5 seconds.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.5.12
+
+### Patch Changes
+
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.5.12-next.2
 
 ### Patch Changes

@@ -21,9 +21,9 @@ import {
   getLuminance,
   lighten,
   makeStyles,
+  Theme,
 } from '@material-ui/core';
 import { CostInsightsTheme, CostInsightsThemeOptions } from '../types';
-import { BackstageTheme } from '@backstage/theme';
 
 export const costInsightsLightTheme = {
   palette: {
@@ -231,7 +231,7 @@ export const useCostInsightsStyles = makeStyles(theme => ({
   },
 }));
 
-export const useCostInsightsTabsStyles = makeStyles<BackstageTheme>(theme => ({
+export const useCostInsightsTabsStyles = makeStyles<Theme>(theme => ({
   tabs: {
     borderBottom: `1px solid ${theme.palette.textVerySubtle}`,
     backgroundColor: brighten(theme.palette.background.default),

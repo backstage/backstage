@@ -24,6 +24,7 @@ import { LogFunc, waitForSignal } from '../../lib/run';
 import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
+import { checkIfDockerIsOperational } from './utils';
 
 function findPreviewBundlePath(): string {
   try {
@@ -72,6 +73,14 @@ export default async function serve(opts: OptionValues) {
     name: siteName,
     mkdocsConfigFileName,
   });
+
+  // Validate that Docker is up and running
+  if (opts.docker) {
+    const isDockerOperational = await checkIfDockerIsOperational(logger);
+    if (!isDockerOperational) {
+      return;
+    }
+  }
 
   let mkdocsServerHasStarted = false;
   const mkdocsLogFunc: LogFunc = data => {

@@ -1,5 +1,52 @@
 # @backstage/plugin-catalog-import
 
+## 0.10.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.1-next.0
+
+## 0.10.4-next.0
+
+### Patch Changes
+
+- 03d0b6dcdc: The `convertLegacyRouteRef` utility used by the alpha exports is now imported from `@backstage/core-compat-api`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.0.2-next.0
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-react@1.9.2-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/integration-react@1.1.22-next.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.18
+
+## 0.10.2
+
+### Patch Changes
+
+- 6db75b900a: Create an experimental plugin that is compatible with the declarative integration system, it is exported from the `/alpha` subpath.
+- 6c2b872153: Add official support for React 18.
+- dee1f39fcc: Fix missing children key warning on the default catalog import page.
+- 71c97e7d73: The `app.title` configuration is now properly required to be a string.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/integration@1.7.2
+  - @backstage/integration-react@1.1.21
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.18
+
 ## 0.10.2-next.2
 
 ### Patch Changes

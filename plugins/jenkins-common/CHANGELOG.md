@@ -1,5 +1,13 @@
 # @backstage/plugin-jenkins-common
 
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-catalog-common@1.0.18
+
 ## 0.1.20
 
 ### Patch Changes

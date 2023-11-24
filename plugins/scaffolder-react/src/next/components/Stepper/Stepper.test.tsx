@@ -112,6 +112,54 @@ describe('Stepper', () => {
     );
   });
 
+  it('should remember the state of the form when cycling through the pages by directly clicking on the step labels', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+          },
+        },
+        {
+          title: 'Step 2',
+          schema: {
+            properties: {
+              description: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      ],
+      title: 'React JSON Schema Form Test',
+    };
+
+    const { getByRole, getByLabelText } = await renderInTestApp(
+      <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
+    );
+
+    await fireEvent.change(getByRole('textbox', { name: 'name' }), {
+      target: { value: 'im a test value' },
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByLabelText('Step 1'));
+    });
+
+    expect(getByRole('textbox', { name: 'name' })).toHaveValue(
+      'im a test value',
+    );
+  });
+
   it('should merge nested formData correctly in multiple steps', async () => {
     const Repo = ({
       onChange,

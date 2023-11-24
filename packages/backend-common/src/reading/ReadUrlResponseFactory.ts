@@ -72,7 +72,7 @@ export class ReadUrlResponseFactory {
     oldStyleStream: NodeJS.ReadableStream,
     options?: ReadUrlResponseFactoryFromStreamOptions,
   ): Promise<ReadUrlResponse> {
-    const readable = new Readable().wrap(oldStyleStream);
+    const readable = Readable.from(oldStyleStream);
     return ReadUrlResponseFactory.fromReadable(readable, options);
   }
 }

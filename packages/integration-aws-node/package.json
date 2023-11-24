@@ -1,7 +1,7 @@
 {
   "name": "@backstage/integration-aws-node",
   "description": "Helpers for fetching AWS account credentials",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -44,8 +44,8 @@
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "aws-sdk-client-mock": "^2.0.0",
-    "aws-sdk-client-mock-jest": "^2.0.0"
+    "aws-sdk-client-mock": "^3.0.0",
+    "aws-sdk-client-mock-jest": "^3.0.0"
   },
   "files": [
     "dist",

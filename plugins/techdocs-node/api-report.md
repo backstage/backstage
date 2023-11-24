@@ -62,6 +62,7 @@ export type GeneratorRunOptions = {
   siteOptions?: {
     name?: string;
   };
+  runAsDefaultUser?: boolean;
 };
 
 // @public

@@ -1,5 +1,29 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/plugin-auth-node@0.4.2-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.3.5
+
+### Patch Changes
+
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- 8613ba3928: Switched to using `"exports"` field for `/alpha` subpath export.
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-auth-node@0.4.1
+
 ## 0.3.5-next.2
 
 ### Patch Changes

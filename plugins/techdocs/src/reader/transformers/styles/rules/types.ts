@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
+import { Theme } from '@material-ui/core';
 
 /**
  * A Backstage sidebar object that contains properties such as its pin state.
@@ -31,7 +31,7 @@ export type RuleOptions = {
   /**
    * A Backstage theme object that contains the application's design tokens.
    */
-  theme: BackstageTheme;
+  theme: Theme;
   /**
    * A Backstage sidebar, see {@link BackstageSidebar} for more details.
    */

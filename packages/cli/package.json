@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.24.0-next.1",
+  "version": "0.24.1-next.0",
   "publishConfig": {
     "access": "public"
   },
@@ -64,7 +64,7 @@
     "@swc/jest": "^0.2.22",
     "@types/jest": "^29.0.0",
     "@types/webpack-env": "^1.15.2",
-    "@typescript-eslint/eslint-plugin": "6.7.5",
+    "@typescript-eslint/eslint-plugin": "6.11.0",
     "@typescript-eslint/parser": "^6.7.2",
     "@yarnpkg/lockfile": "^1.1.0",
     "@yarnpkg/parsers": "^3.0.0-rc.4",
@@ -73,7 +73,7 @@
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
     "commander": "^9.1.0",
-    "cross-fetch": "^3.1.5",
+    "cross-fetch": "^4.0.0",
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
     "ctrlc-windows": "^2.1.0",
@@ -170,8 +170,7 @@
     "del": "^7.0.0",
     "msw": "^1.0.0",
     "nodemon": "^3.0.1",
-    "ts-node": "^10.0.0",
-    "type-fest": "^2.19.0"
+    "ts-node": "^10.0.0"
   },
   "peerDependencies": {
     "@vitejs/plugin-react": "^4.0.4",

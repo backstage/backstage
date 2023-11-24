@@ -7,6 +7,7 @@
 /// <reference types="webpack-env" />
 
 import { AppConfig } from '@backstage/config';
+import { AuthCallback } from 'isomorphic-git';
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
@@ -67,6 +68,12 @@ import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
+
+// @public
+export type AuthCallbackOptions = {
+  onAuth: AuthCallback;
+  logger?: LoggerService;
+};
 
 // @public
 export class AwsS3UrlReader implements UrlReader {
@@ -385,12 +392,7 @@ export class Git {
     tags?: boolean;
   }): Promise<void>;
   // (undocumented)
-  static fromAuth: (options: {
-    username?: string;
-    password?: string;
-    token?: string;
-    logger?: LoggerService;
-  }) => Git;
+  static fromAuth: (options: StaticAuthOptions | AuthCallbackOptions) => Git;
   // (undocumented)
   init(options: { dir: string; defaultBranch?: string }): Promise<void>;
   log(options: { dir: string; ref?: string }): Promise<ReadCommitResult[]>;
@@ -420,13 +422,18 @@ export class Git {
 
 // @public
 export class GiteaUrlReader implements UrlReader {
-  constructor(integration: GiteaIntegration);
+  constructor(
+    integration: GiteaIntegration,
+    deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  );
   // (undocumented)
   static factory: ReaderFactory;
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(): Promise<ReadTreeResponse>;
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   // (undocumented)
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)
@@ -684,6 +691,7 @@ export type RunContainerOptions = {
   workingDir?: string;
   envVars?: Record<string, string>;
   pullImage?: boolean;
+  defaultUser?: boolean;
 };
 
 export { SearchOptions };
@@ -744,6 +752,14 @@ export function setRootLogger(newLogger: winston.Logger): void;
 
 // @public @deprecated
 export const SingleHostDiscovery: typeof HostDiscovery_2;
+
+// @public
+export type StaticAuthOptions = {
+  username?: string;
+  password?: string;
+  token?: string;
+  logger?: LoggerService;
+};
 
 // @public
 export type StatusCheck = () => Promise<any>;

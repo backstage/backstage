@@ -44,13 +44,22 @@ export const catalogModuleInternalOpenApiSpec = createBackendModule({
         discovery: coreServices.discovery,
         scheduler: coreServices.scheduler,
         logger: coreServices.logger,
+        tokenManager: coreServices.tokenManager,
       },
-      async init({ catalog, config, discovery, scheduler, logger }) {
+      async init({
+        catalog,
+        config,
+        discovery,
+        scheduler,
+        logger,
+        tokenManager,
+      }) {
         catalog.addEntityProvider(
           InternalOpenApiDocumentationProvider.fromConfig(config, {
             discovery,
             schedule: scheduler,
             logger,
+            tokenManager,
           }),
         );
       },

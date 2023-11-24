@@ -1,5 +1,28 @@
 # @backstage/core-app-api
 
+## 1.11.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.1
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 89d13e5618: Add current and default scopes when refreshing session
+- 9ab0572217: Add component data `core.type` marker for `AppRouter` and `FlatRoutes`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/version-bridge@1.0.7
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 1.11.1-next.0
 
 ### Patch Changes

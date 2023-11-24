@@ -15,7 +15,6 @@
  */
 
 import { ExploreTool } from '@backstage/plugin-explore-react';
-import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Card,
@@ -24,6 +23,7 @@ import {
   CardMedia,
   Chip,
   makeStyles,
+  Theme,
   Typography,
 } from '@material-ui/core';
 import { LinkButton } from '@backstage/core-components';
@@ -32,7 +32,7 @@ import React from 'react';
 
 // TODO: Align styling between Domain and ToolCard
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles<Theme>(
   theme => ({
     media: {
       height: 128,

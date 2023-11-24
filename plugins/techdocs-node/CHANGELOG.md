@@ -1,5 +1,43 @@
 # @backstage/plugin-techdocs-node
 
+## 1.11.0-next.0
+
+### Minor Changes
+
+- d15d483a49: Add command `--runAsDefaultUser` for `@techdocs/cli generate` to bypass running the docker builds as host user for macOS and Linux.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.10.0
+
+### Minor Changes
+
+- 67cff7b06f: Expose an extension point to set a custom build strategy. Also move `DocsBuildStrategy` type to `@backstage/plugin-techdocs-node` and deprecate `ShouldBuildParameters` type.
+
+### Patch Changes
+
+- e61a975f61: Switch to `@smithy/node-http-handler` instead of the `@aws-sdk/node-http-handler`
+- 3d043526f4: Updated dependency `aws-sdk-client-mock` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.7.2
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-common@1.2.8
+
 ## 1.10.0-next.2
 
 ### Patch Changes

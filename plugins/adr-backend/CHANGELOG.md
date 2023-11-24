@@ -1,5 +1,36 @@
 # @backstage/plugin-adr-backend
 
+## 0.4.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-adr-common@0.2.18-next.0
+  - @backstage/plugin-search-common@1.2.8
+
+## 0.4.4
+
+### Patch Changes
+
+- 68f8a55622: Updated dependency `@types/marked` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.7.2
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-adr-common@0.2.17
+  - @backstage/plugin-search-common@1.2.8
+
 ## 0.4.4-next.2
 
 ### Patch Changes

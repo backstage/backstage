@@ -1,5 +1,27 @@
 # @backstage/plugin-analytics-module-ga4
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/config@1.1.1
+
+## 0.1.6
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 504614d313: Updated dependency `@types/jest` to `^29.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/config@1.1.1
+
 ## 0.1.6-next.2
 
 ### Patch Changes

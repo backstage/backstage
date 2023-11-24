@@ -76,11 +76,10 @@ import {
   components as defaultComponents,
   icons as defaultIcons,
 } from '../../../app-defaults/src/defaults';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
-import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 import {
   appLanguageApiRef,
   translationApiRef,
@@ -91,9 +90,13 @@ import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import { createAppTree } from '../tree';
 import { AppNode } from '@backstage/frontend-plugin-api';
+import { toLegacyPlugin } from '../routing/toLegacyPlugin';
+import { InternalAppContext } from './InternalAppContext';
+import { CoreRouter } from '../extensions/CoreRouter';
 
 const builtinExtensions = [
   Core,
+  CoreRouter,
   CoreRoutes,
   CoreNav,
   CoreLayout,
@@ -244,49 +247,18 @@ export function createApp(options?: {
 
     const discoveredFeatures = getAvailableFeatures(config);
     const loadedFeatures = (await options?.featureLoader?.({ config })) ?? [];
-    const allFeatures = deduplicateFeatures([
-      ...discoveredFeatures,
-      ...loadedFeatures,
-      ...(options?.features ?? []),
-    ]);
 
-    const tree = createAppTree({
-      features: allFeatures,
-      builtinExtensions,
+    const app = createSpecializedApp({
       config,
-    });
+      features: [
+        ...discoveredFeatures,
+        ...loadedFeatures,
+        ...(options?.features ?? []),
+      ],
+      bindRoutes: options?.bindRoutes,
+    }).createRoot();
 
-    const appContext = createLegacyAppContext(
-      allFeatures.filter(
-        (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
-      ),
-    );
-
-    const routeIds = collectRouteIds(allFeatures);
-
-    const App = () => (
-      <ApiProvider apis={createApiHolder(tree, config)}>
-        <AppContextProvider appContext={appContext}>
-          <AppThemeProvider>
-            <RoutingProvider
-              {...extractRouteInfoFromAppNode(tree.root)}
-              routeBindings={resolveRouteBindings(
-                options?.bindRoutes,
-                config,
-                routeIds,
-              )}
-            >
-              {/* TODO: set base path using the logic from AppRouter */}
-              <BrowserRouter>
-                {tree.root.instance!.getData(coreExtensionData.reactElement)}
-              </BrowserRouter>
-            </RoutingProvider>
-          </AppThemeProvider>
-        </AppContextProvider>
-      </ApiProvider>
-    );
-
-    return { default: App };
+    return { default: () => app };
   }
 
   return {
@@ -301,40 +273,64 @@ export function createApp(options?: {
   };
 }
 
-// Make sure that we only convert each new plugin instance to its legacy equivalent once
-const legacyPluginStore = getOrCreateGlobalSingleton(
-  'legacy-plugin-compatibility-store',
-  () => new WeakMap<BackstagePlugin, LegacyBackstagePlugin>(),
-);
+/**
+ * Synchronous version of {@link createApp}, expecting all features and
+ * config to have been loaded already.
+ * @public
+ */
+export function createSpecializedApp(options?: {
+  features?: (BackstagePlugin | ExtensionOverrides)[];
+  config?: ConfigApi;
+  bindRoutes?(context: { bind: AppRouteBinder }): void;
+}): { createRoot(): JSX.Element } {
+  const {
+    features: duplicatedFeatures = [],
+    config = new ConfigReader({}, 'empty-config'),
+  } = options ?? {};
 
-export function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
-  let legacy = legacyPluginStore.get(plugin);
-  if (legacy) {
-    return legacy;
-  }
+  const features = deduplicateFeatures(duplicatedFeatures);
 
-  const errorMsg = 'Not implemented in legacy plugin compatibility layer';
-  const notImplemented = () => {
-    throw new Error(errorMsg);
+  const tree = createAppTree({
+    features,
+    builtinExtensions,
+    config,
+  });
+
+  const appContext = createLegacyAppContext(
+    features.filter(
+      (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
+    ),
+  );
+
+  const appIdentityProxy = new AppIdentityProxy();
+  const apiHolder = createApiHolder(tree, config, appIdentityProxy);
+  const routeInfo = extractRouteInfoFromAppNode(tree.root);
+  const routeBindings = resolveRouteBindings(
+    options?.bindRoutes,
+    config,
+    collectRouteIds(features),
+  );
+  const rootEl = tree.root.instance!.getData(coreExtensionData.reactElement);
+
+  const App = () => (
+    <ApiProvider apis={apiHolder}>
+      <AppContextProvider appContext={appContext}>
+        <AppThemeProvider>
+          <RoutingProvider {...routeInfo} routeBindings={routeBindings}>
+            <InternalAppContext.Provider value={{ appIdentityProxy }}>
+              {rootEl}
+            </InternalAppContext.Provider>
+          </RoutingProvider>
+        </AppThemeProvider>
+      </AppContextProvider>
+    </ApiProvider>
+  );
+
+  return {
+    createRoot() {
+      return <App />;
+    },
   };
-
-  legacy = {
-    getId(): string {
-      return plugin.id;
-    },
-    get routes() {
-      return {};
-    },
-    get externalRoutes() {
-      return {};
-    },
-    getApis: notImplemented,
-    getFeatureFlags: notImplemented,
-    provide: notImplemented,
-  };
-
-  legacyPluginStore.set(plugin, legacy);
-  return legacy;
 }
 
 function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
@@ -359,7 +355,11 @@ function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
   };
 }
 
-function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
+function createApiHolder(
+  tree: AppTree,
+  configApi: ConfigApi,
+  appIdentityProxy: AppIdentityProxy,
+): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
   const pluginApis =
@@ -388,33 +388,7 @@ function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
   factoryRegistry.register('static', {
     api: identityApiRef,
     deps: {},
-    factory: () => {
-      const appIdentityProxy = new AppIdentityProxy();
-      // TODO: Remove this when sign-in page is migrated
-      appIdentityProxy.setTarget(
-        {
-          getUserId: () => 'guest',
-          getIdToken: async () => undefined,
-          getProfile: () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getProfileInfo: async () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getBackstageIdentity: async () => ({
-            type: 'user',
-            userEntityRef: 'user:default/guest',
-            ownershipEntityRefs: ['user:default/guest'],
-          }),
-          getCredentials: async () => ({}),
-          signOut: async () => {},
-        },
-        { signOutTargetUrl: '/' },
-      );
-      return appIdentityProxy;
-    },
+    factory: () => appIdentityProxy,
   });
 
   factoryRegistry.register('static', {

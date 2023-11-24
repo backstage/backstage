@@ -14,156 +14,18 @@
  * limitations under the License.
  */
 
-import AtlassianStrategy from './strategy';
-import {
-  encodeState,
-  OAuthAdapter,
-  OAuthEnvironmentHandler,
-  OAuthHandlers,
-  OAuthProviderOptions,
-  OAuthRefreshRequest,
-  OAuthResponse,
-  OAuthResult,
-  OAuthStartRequest,
-} from '../../lib/oauth';
-import passport from 'passport';
-import {
-  executeFetchUserProfileStrategy,
-  executeFrameHandlerStrategy,
-  executeRedirectStrategy,
-  executeRefreshTokenStrategy,
-  makeProfileInfo,
-  PassportDoneCallback,
-} from '../../lib/passport';
-import {
-  AuthHandler,
-  AuthResolverContext,
-  OAuthStartResponse,
-  SignInResolver,
-} from '../types';
-import express from 'express';
+import { SignInResolver, AuthHandler } from '../types';
+import { OAuthResult } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-
-/** @public */
-export type AtlassianAuthProviderOptions = OAuthProviderOptions & {
-  scopes: string;
-  signInResolver?: SignInResolver<OAuthResult>;
-  authHandler: AuthHandler<OAuthResult>;
-  resolverContext: AuthResolverContext;
-};
-
-export const atlassianDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
-  fullProfile,
-  params,
-}) => ({
-  profile: makeProfileInfo(fullProfile, params.id_token),
-});
-
-export class AtlassianAuthProvider implements OAuthHandlers {
-  private readonly _strategy: AtlassianStrategy;
-  private readonly signInResolver?: SignInResolver<OAuthResult>;
-  private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly resolverContext: AuthResolverContext;
-
-  constructor(options: AtlassianAuthProviderOptions) {
-    this.resolverContext = options.resolverContext;
-    this.authHandler = options.authHandler;
-    this.signInResolver = options.signInResolver;
-
-    this._strategy = new AtlassianStrategy(
-      {
-        clientID: options.clientId,
-        clientSecret: options.clientSecret,
-        callbackURL: options.callbackUrl,
-        scope: options.scopes,
-      },
-      (
-        accessToken: any,
-        refreshToken: any,
-        params: any,
-        fullProfile: passport.Profile,
-        done: PassportDoneCallback<OAuthResult>,
-      ) => {
-        done(undefined, {
-          fullProfile,
-          accessToken,
-          refreshToken,
-          params,
-        });
-      },
-    );
-  }
-
-  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
-    return await executeRedirectStrategy(req, this._strategy, {
-      state: encodeState(req.state),
-    });
-  }
-
-  async handler(req: express.Request) {
-    const { result } = await executeFrameHandlerStrategy<OAuthResult>(
-      req,
-      this._strategy,
-    );
-
-    return {
-      response: await this.handleResult(result),
-      refreshToken: result.refreshToken,
-    };
-  }
-
-  private async handleResult(result: OAuthResult): Promise<OAuthResponse> {
-    const { profile } = await this.authHandler(result, this.resolverContext);
-
-    const response: OAuthResponse = {
-      providerInfo: {
-        idToken: result.params.id_token,
-        accessToken: result.accessToken,
-        scope: result.params.scope,
-        expiresInSeconds: result.params.expires_in,
-      },
-      profile,
-    };
-
-    if (this.signInResolver) {
-      response.backstageIdentity = await this.signInResolver(
-        {
-          result,
-          profile,
-        },
-        this.resolverContext,
-      );
-    }
-
-    return response;
-  }
-
-  async refresh(req: OAuthRefreshRequest) {
-    const { accessToken, params, refreshToken } =
-      await executeRefreshTokenStrategy(
-        this._strategy,
-        req.refreshToken,
-        req.scope,
-      );
-
-    const fullProfile = await executeFetchUserProfileStrategy(
-      this._strategy,
-      accessToken,
-    );
-
-    return {
-      response: await this.handleResult({
-        fullProfile,
-        params,
-        accessToken,
-      }),
-      refreshToken,
-    };
-  }
-}
+import { createOAuthProviderFactory } from '@backstage/plugin-auth-node';
+import {
+  adaptLegacyOAuthHandler,
+  adaptLegacyOAuthSignInResolver,
+} from '../../lib/legacy';
+import { atlassianAuthenticator } from '@backstage/plugin-auth-backend-module-atlassian-provider';
 
 /**
- * Auth provider integration for atlassian auth
+ * Auth provider integration for Atlassian auth
  *
  * @public
  */
@@ -182,33 +44,10 @@ export const atlassian = createAuthProviderIntegration({
       resolver: SignInResolver<OAuthResult>;
     };
   }) {
-    return ({ providerId, globalConfig, config, resolverContext }) =>
-      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-        const clientId = envConfig.getString('clientId');
-        const clientSecret = envConfig.getString('clientSecret');
-        const scopes = envConfig.getString('scopes');
-        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-        const callbackUrl =
-          customCallbackUrl ||
-          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-
-        const authHandler: AuthHandler<OAuthResult> =
-          options?.authHandler ?? atlassianDefaultAuthHandler;
-
-        const provider = new AtlassianAuthProvider({
-          clientId,
-          clientSecret,
-          scopes,
-          callbackUrl,
-          authHandler,
-          signInResolver: options?.signIn?.resolver,
-          resolverContext,
-        });
-
-        return OAuthAdapter.fromConfig(globalConfig, provider, {
-          providerId,
-          callbackUrl,
-        });
-      });
+    return createOAuthProviderFactory({
+      authenticator: atlassianAuthenticator,
+      profileTransform: adaptLegacyOAuthHandler(options?.authHandler),
+      signInResolver: adaptLegacyOAuthSignInResolver(options?.signIn?.resolver),
+    });
   },
 });
