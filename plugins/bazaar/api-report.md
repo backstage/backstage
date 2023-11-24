@@ -11,6 +11,7 @@ import { Entity } from '@backstage/catalog-model';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @public (undocumented)
 export const BazaarOverviewCard: (
@@ -42,6 +43,33 @@ export const bazaarPlugin: BackstagePlugin<
     root: RouteRef<undefined>;
   },
   {}
+>;
+
+// @alpha (undocumented)
+export const bazaarTranslationRef: TranslationRef<
+  'bazaar',
+  {
+    readonly about_title: 'About Bazaar';
+    readonly about_subheader_1: 'What is the Bazaar?';
+    readonly about_paragraph_1: 'The Bazaar is a place where teams can propose projects for\n    cross-functional team development. Essentially a marketplace for\n    internal projects suitable for Inner Sourcing. With "Inner Sourcing", we mean projects that are developed\n    internally within a company, but with Open Source best practices.';
+    readonly about_subheader_2: 'Why?';
+    readonly about_paragraph_2: 'Many companies today are of high need to increase the ease of\n    cross-team cooperation. In large organizations, engineers often have\n    limited ways of discovering or announcing the projects which could\n    benefit from a wider development effort in terms of different\n    expertise, experiences, and teams spread across the organization.\n    With no good way to find these existing internal projects to join,\n    the possibility of working with Inner Sourcing practices suffers.';
+    readonly about_subheader_3: 'How?';
+    readonly about_paragraph_3: 'The Bazaar allows engineers and teams to open up and announce\n    their new and exciting projects for transparent cooperation in other\n    parts of larger organizations. The Bazaar ensures that new Inner\n    Sourcing friendly projects gain visibility through Backstage and a\n    way for interested engineers to show their interest and in the\n    future contribute with their specific skill set. The Bazaar also\n    provides an easy way to manage, catalog, and browse these Inner\n    Sourcing friendly projects and components.';
+    readonly empty_projects: 'Please add projects to the Bazaar.';
+    readonly deleted_project: "Deleted project '{0}' from the Bazaar list";
+    readonly updated_project: "Updated project '{0}' in the Bazaar list";
+    readonly added_project: "Added project '{0}' to the Bazaar list";
+    readonly confirmation_1: 'Are you sure you want to delete ';
+    readonly confirmation_2: ' from the Bazaar?';
+    readonly delete_project_button: 'Delete project';
+    readonly bazaar_link: 'Go to Bazaar';
+    readonly latest_projects: 'Bazaar Latest Projects';
+    readonly random_projects: 'Bazaar Random Projects';
+    readonly add_project: 'Add project';
+    readonly select_project: 'Select a project';
+    readonly edit_project: 'Edit project';
+  }
 >;
 
 // @public (undocumented)
