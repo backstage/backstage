@@ -49,10 +49,16 @@ export async function startBackend(options: StartBackendOptions) {
 
 export async function startBackendPlugin(options: StartBackendOptions) {
   if (!process.env.LEGACY_BACKEND_START) {
-    const hasEntry = await fs.pathExists(paths.resolveTarget('dev'));
-    if (!hasEntry) {
+    const hasDevEntry = await fs.pathExists(paths.resolveTarget('dev'));
+    const hasSrcIndexEntry = await fs.pathExists(
+      paths.resolveTarget('src', 'run.ts'),
+    );
+
+    if (!hasDevEntry && !hasSrcIndexEntry) {
       console.warn(
-        `The 'dev' directory is missing. This plugin might not be updated for the new backend system. To run, use "LEGACY_BACKEND_START=1 yarn start".`,
+        hasSrcIndexEntry
+          ? `The 'dev' directory is missing. The plugin might not be updated for the new backend system. To run, use "LEGACY_BACKEND_START=1 yarn start".`
+          : `The 'dev' directory is missing. Please create a proper dev/index.ts in order to start the plugin.`,
       );
       return;
     }
@@ -68,7 +74,9 @@ export async function startBackendPlugin(options: StartBackendOptions) {
   } else {
     const hasEntry = await fs.pathExists(paths.resolveTarget('src', 'run.ts'));
     if (!hasEntry) {
-      console.log(`src/run.ts is missing.`);
+      console.warn(
+        `src/run.ts is missing. Please create the file or run the command without LEGACY_BACKEND_START`,
+      );
       return;
     }
 
