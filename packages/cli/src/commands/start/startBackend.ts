@@ -52,9 +52,7 @@ export async function startBackendPlugin(options: StartBackendOptions) {
     const hasEntry = await fs.pathExists(paths.resolveTarget('dev'));
     if (!hasEntry) {
       console.warn(
-        `dev directory doesn't exist. \
-It looks like this plugin hasn't been migrated to the new backend system. \
-Please run "LEGACY_BACKEND_START=1 yarn start" instead.`,
+        `The 'dev' directory is missing. This plugin might not be updated for the new backend system. To run, use "LEGACY_BACKEND_START=1 yarn start".`,
       );
       return;
     }
