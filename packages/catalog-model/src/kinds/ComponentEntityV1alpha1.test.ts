@@ -39,7 +39,9 @@ describe('ComponentV1alpha1Validator', () => {
         dependsOn: ['resource:resource-0', 'component:component-0'],
         system: 'system',
         environmentOverrides: {
-          prod: {},
+          prod: {
+            annotations: {},
+          },
         },
         deploysToEnvironments: ['prod'],
       },

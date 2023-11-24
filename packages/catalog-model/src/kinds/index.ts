@@ -60,3 +60,4 @@ export type {
   EnvironmentEntityV1alpha1 as EnvironmentEntity,
   EnvironmentEntityV1alpha1,
 } from './EnvironmentEntityV1alpha1';
+export { environmentEntityV1alpha1Validator } from './EnvironmentEntityV1alpha1';

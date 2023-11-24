@@ -37,5 +37,5 @@ export interface EnvironmentEntityV1alpha1 extends Entity {
  *
  * @public
  */
-export const componentEntityV1alpha1Validator =
+export const environmentEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);

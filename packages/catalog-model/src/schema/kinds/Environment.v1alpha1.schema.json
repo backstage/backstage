@@ -21,7 +21,6 @@
     },
     {
       "type": "object",
-      "required": ["spec"],
       "properties": {
         "apiVersion": {
           "enum": ["backstage.io/v1alpha1"]
