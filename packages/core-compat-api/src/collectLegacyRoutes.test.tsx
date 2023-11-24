@@ -22,6 +22,8 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 
 import { collectLegacyRoutes } from './collectLegacyRoutes';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalBackstagePlugin } from '../../frontend-plugin-api/src/wiring/createPlugin';
 
 describe('collectLegacyRoutes', () => {
   it('should collect legacy routes', () => {
@@ -37,7 +39,7 @@ describe('collectLegacyRoutes', () => {
     expect(
       collected.map(p => ({
         id: p.id,
-        extensions: p.extensions.map(e => ({
+        extensions: toInternalBackstagePlugin(p).extensions.map(e => ({
           id: e.id,
           attachTo: e.attachTo,
           disabled: e.disabled,

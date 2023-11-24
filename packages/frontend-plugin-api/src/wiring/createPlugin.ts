@@ -16,6 +16,7 @@
 
 import { Extension } from './createExtension';
 import { ExternalRouteRef, RouteRef } from '../routing';
+import { FeatureFlagConfig } from './types';
 
 /** @public */
 export type AnyRoutes = { [name in string]: RouteRef };
@@ -32,6 +33,7 @@ export interface PluginOptions<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   extensions?: Extension<unknown>[];
+  featureFlags?: FeatureFlagConfig[];
 }
 
 /** @public */
@@ -39,11 +41,20 @@ export interface BackstagePlugin<
   Routes extends AnyRoutes = AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
 > {
-  $$type: '@backstage/BackstagePlugin';
-  id: string;
-  extensions: Extension<unknown>[];
-  routes: Routes;
-  externalRoutes: ExternalRoutes;
+  readonly $$type: '@backstage/BackstagePlugin';
+  readonly id: string;
+  readonly routes: Routes;
+  readonly externalRoutes: ExternalRoutes;
+}
+
+/** @public */
+export interface InternalBackstagePlugin<
+  Routes extends AnyRoutes = AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+> extends BackstagePlugin<Routes, ExternalRoutes> {
+  readonly version: 'v1';
+  readonly extensions: Extension<unknown>[];
+  readonly featureFlags: FeatureFlagConfig[];
 }
 
 /** @public */
@@ -54,10 +65,28 @@ export function createPlugin<
   options: PluginOptions<Routes, ExternalRoutes>,
 ): BackstagePlugin<Routes, ExternalRoutes> {
   return {
-    ...options,
+    $$type: '@backstage/BackstagePlugin',
+    version: 'v1',
+    id: options.id,
     routes: options.routes ?? ({} as Routes),
     externalRoutes: options.externalRoutes ?? ({} as ExternalRoutes),
     extensions: options.extensions ?? [],
-    $$type: '@backstage/BackstagePlugin',
-  };
+    featureFlags: options.featureFlags ?? [],
+  } as InternalBackstagePlugin<Routes, ExternalRoutes>;
+}
+
+/** @internal */
+export function toInternalBackstagePlugin(
+  plugin: BackstagePlugin,
+): InternalBackstagePlugin {
+  const internal = plugin as InternalBackstagePlugin;
+  if (internal.$$type !== '@backstage/BackstagePlugin') {
+    throw new Error(`Invalid plugin instance, bad type '${internal.$$type}'`);
+  }
+  if (internal.version !== 'v1') {
+    throw new Error(
+      `Invalid plugin instance, bad version '${internal.version}'`,
+    );
+  }
+  return internal;
 }

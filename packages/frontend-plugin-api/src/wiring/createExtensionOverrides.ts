@@ -15,21 +15,24 @@
  */
 
 import { Extension } from './createExtension';
+import { FeatureFlagConfig } from './types';
 
 /** @public */
 export interface ExtensionOverridesOptions {
   extensions: Extension<unknown>[];
+  featureFlags?: FeatureFlagConfig[];
 }
 
 /** @public */
 export interface ExtensionOverrides {
-  $$type: '@backstage/ExtensionOverrides';
+  readonly $$type: '@backstage/ExtensionOverrides';
 }
 
 /** @internal */
 export interface InternalExtensionOverrides extends ExtensionOverrides {
-  version: string;
-  extensions: Extension<unknown>[];
+  readonly version: 'v1';
+  readonly extensions: Extension<unknown>[];
+  readonly featureFlags: FeatureFlagConfig[];
 }
 
 /** @public */
@@ -40,6 +43,7 @@ export function createExtensionOverrides(
     $$type: '@backstage/ExtensionOverrides',
     version: 'v1',
     extensions: options.extensions,
+    featureFlags: options.featureFlags ?? [],
   } as InternalExtensionOverrides;
 }
 
@@ -50,12 +54,12 @@ export function toInternalExtensionOverrides(
   const internal = overrides as InternalExtensionOverrides;
   if (internal.$$type !== '@backstage/ExtensionOverrides') {
     throw new Error(
-      `Invalid translation resource, bad type '${internal.$$type}'`,
+      `Invalid extension overrides instance, bad type '${internal.$$type}'`,
     );
   }
   if (internal.version !== 'v1') {
     throw new Error(
-      `Invalid translation resource, bad version '${internal.version}'`,
+      `Invalid extension overrides instance, bad version '${internal.version}'`,
     );
   }
   return internal;
