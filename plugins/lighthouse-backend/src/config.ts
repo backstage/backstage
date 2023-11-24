@@ -49,7 +49,7 @@ export class LighthouseAuditScheduleImpl implements TaskScheduleDefinition {
       );
     } else if (config.has('lighthouse.schedule')) {
       logger.warn(
-        `[Deprecation] Please migrate the schedule configuration to 'lighthouse.schedule.frequency' in ${config.config.context}`,
+        `[Deprecation] Please migrate the schedule configuration to 'lighthouse.schedule.frequency'`,
       );
 
       lighthouse.frequency = readDurationFromConfig(
@@ -59,7 +59,7 @@ export class LighthouseAuditScheduleImpl implements TaskScheduleDefinition {
 
     if (config.has('lighthouse.timeout')) {
       logger.warn(
-        `[Deprecation] Please migrate the timeout configuration to 'lighthouse.schedule.timeout' in ${config.config.context}`,
+        `[Deprecation] Please migrate the timeout configuration to 'lighthouse.schedule.timeout'`,
       );
 
       lighthouse.timeout = readDurationFromConfig(
