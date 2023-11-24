@@ -104,8 +104,8 @@ describe('createRouter', () => {
       '',
       'term=foo',
       'term=foo&extra=param',
-      'types[0]=first-type',
-      'types[0]=first-type&types[1]=second-type',
+      'types=first-type',
+      'types=first-type&types=second-type',
       'filters[prop]=value',
       'pageCursor=foo',
     ])('accepts valid query string "%s"', async queryString => {
@@ -118,13 +118,13 @@ describe('createRouter', () => {
     });
 
     it.each([
-      'term[0]=foo',
+      'term[prop]=foo',
       'term[prop]=value',
       'types=foo',
-      'types[0]=unknown-type',
-      'types[length]=10000&types[0]=first-type',
+      'types[props]=unknown-type',
+      'types[length]=10000&types[zero]=first-type',
       'filters=stringValue',
-      'pageCursor[0]=1',
+      'pageCursor[props]=1',
     ])('rejects invalid query string "%s"', async queryString => {
       const response = await request(app).get(`/query?${queryString}`);
 
