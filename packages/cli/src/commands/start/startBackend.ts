@@ -49,12 +49,14 @@ export async function startBackend(options: StartBackendOptions) {
 
 export async function startBackendPlugin(options: StartBackendOptions) {
   if (!process.env.LEGACY_BACKEND_START) {
-    const hasDevEntry = await fs.pathExists(paths.resolveTarget('dev'));
+    const hasDevIndexEntry = await fs.pathExists(
+      paths.resolveTarget('dev', 'index.ts'),
+    );
     const hasSrcIndexEntry = await fs.pathExists(
       paths.resolveTarget('src', 'run.ts'),
     );
 
-    if (!hasDevEntry && !hasSrcIndexEntry) {
+    if (!hasDevIndexEntry && !hasSrcIndexEntry) {
       console.warn(
         hasSrcIndexEntry
           ? `The 'dev' directory is missing. The plugin might not be updated for the new backend system. To run, use "LEGACY_BACKEND_START=1 yarn start".`
