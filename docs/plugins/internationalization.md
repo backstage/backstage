@@ -10,7 +10,7 @@ The Backstage core function provides internationalization for plugins
 
 ## For a plugin developer
 
-When you are creating your plugin, you have the possibility to use `createTranslationRef` to define all messages for your plugin. For example
+When you are creating your plugin, you have the possibility to use `createTranslationRef` to define all messages for your plugin. For example:
 
 ```ts
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -19,8 +19,13 @@ import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const myPluginTranslationRef = createTranslationRef({
   id: 'plugin.my-plugin',
   messages: {
-    index_page_title: 'All your components',
-    create_component_button_label: 'Create new component',
+    indexPage: {
+      title: 'All your components',
+      createButtonTitle: 'Create new component',
+    },
+    entityPage: {
+      notFound: 'Entity not found',
+    },
   },
 });
 ```
@@ -33,9 +38,9 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 const { t } = useTranslationRef(myPluginTranslationRef);
 
 return (
-  <PageHeader title={t('index_page_title')}>
+  <PageHeader title={t('indexPage.title')}>
     <Button onClick={handleCreateComponent}>
-      {t('create_component_button_label')}
+      {t('indexPage.createButtonTitle')}
     </Button>
   </PageHeader>
 );
@@ -53,7 +58,7 @@ In an app you can both override the default messages, as well as register transl
 +      createTranslationMessages({
 +        ref: myPluginTranslationRef,
 +        messages: {
-+          create_component_button_label: 'Create new entity',
++          'indexPage.createButtonTitle': 'Create new entity',
 +        },
 +      }),
 +      createTranslationResource({
