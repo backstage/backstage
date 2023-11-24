@@ -35,7 +35,6 @@ type Props = {
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   catalogEntities: Entity[];
   height: 'large' | 'small';
-  codename: string;
 };
 
 type StyleProps = {
@@ -70,7 +69,6 @@ export const ProjectCard = ({
   fetchBazaarProjects,
   catalogEntities,
   height,
-  codename,
 }: Props) => {
   const classes = useStyles({ height });
   const [openCard, setOpenCard] = useState(false);
@@ -88,7 +86,6 @@ export const ProjectCard = ({
           initProject={project}
           handleClose={handleClose}
           initEntity={catalogEntities[0] || null}
-          codename={codename}
         />
       </Dialog>
 

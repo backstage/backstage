@@ -2,4 +2,4 @@
 '@backstage/plugin-bazaar': patch
 ---
 
-Apply the title property to other components
+Apply [Internationalization](https://backstage.io/docs/plugins/internationalization) feature.

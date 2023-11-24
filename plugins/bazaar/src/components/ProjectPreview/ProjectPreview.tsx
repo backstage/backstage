@@ -25,6 +25,8 @@ import {
 } from '@material-ui/core';
 import { BazaarProject } from '../../types';
 import { Entity } from '@backstage/catalog-model';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { bazaarTranslationRef } from '../../translations';
 
 type Props = {
   bazaarProjects: BazaarProject[];
@@ -33,7 +35,6 @@ type Props = {
   useTablePagination?: boolean;
   gridSize?: GridSize;
   height: 'large' | 'small';
-  codename: string;
 };
 
 const useStyles = makeStyles({
@@ -63,11 +64,11 @@ export const ProjectPreview = ({
   useTablePagination = true,
   gridSize = 2,
   height = 'large',
-  codename,
 }: Props) => {
   const classes = useStyles();
   const [page, setPage] = useState(1);
   const [rows, setRows] = useState(12);
+  const { t } = useTranslationRef(bazaarTranslationRef);
 
   const handlePageChange = (_: any, newPage: number) => {
     setPage(newPage + 1);
@@ -81,11 +82,7 @@ export const ProjectPreview = ({
   };
 
   if (!bazaarProjects.length) {
-    return (
-      <div className={classes.empty}>
-        Please add projects to the {codename}.
-      </div>
-    );
+    return <div className={classes.empty}>{t('empty_projects')}</div>;
   }
 
   return (
@@ -102,7 +99,6 @@ export const ProjectPreview = ({
                   fetchBazaarProjects={fetchBazaarProjects}
                   catalogEntities={catalogEntities}
                   height={height}
-                  codename={codename}
                 />
               </Grid>
             );

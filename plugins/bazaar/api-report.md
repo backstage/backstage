@@ -45,9 +45,7 @@ export const bazaarPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export const EntityBazaarInfoCard: (props: {
-  codename?: string;
-}) => React_2.JSX.Element | null;
+export const EntityBazaarInfoCard: () => React_2.JSX.Element | null;
 
 // @public (undocumented)
 export const isBazaarAvailable: (
@@ -64,7 +62,6 @@ export const SortView: (props: SortViewProps) => React_2.JSX.Element;
 export type SortViewProps = {
   fullWidth?: boolean;
   fullHeight?: boolean;
-  codename?: string;
 };
 
 // (No @packageDocumentation comment for this package)

@@ -22,6 +22,8 @@ import { bazaarApiRef } from '../../api';
 import { UseFormGetValues } from 'react-hook-form';
 import { ConfirmationDialog } from '../ConfirmationDialog';
 import { Button, makeStyles } from '@material-ui/core';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { bazaarTranslationRef } from '../../translations';
 
 type Props = {
   bazaarProject: BazaarProject;
@@ -29,7 +31,6 @@ type Props = {
   handleEditClose: () => void;
   handleCardClose?: () => void;
   fetchBazaarProject: () => Promise<BazaarProject | null>;
-  codename: string;
 };
 
 const useStyles = makeStyles({
@@ -50,7 +51,6 @@ export const EditProjectDialog = ({
   handleEditClose,
   handleCardClose,
   fetchBazaarProject,
-  codename,
 }: Props) => {
   const classes = useStyles();
   const bazaarApi = useApi(bazaarApiRef);
@@ -61,6 +61,7 @@ export const EditProjectDialog = ({
     startDate: bazaarProject.startDate ?? null,
     endDate: bazaarProject.endDate ?? null,
   });
+  const { t } = useTranslationRef(bazaarTranslationRef);
 
   const handleDeleteClose = () => {
     setOpenDelete(false);
@@ -75,7 +76,7 @@ export const EditProjectDialog = ({
     handleDeleteClose();
     fetchBazaarProject();
     alertApi.post({
-      message: `Deleted project '${bazaarProject.title}' from the ${codename} list`,
+      message: t('deleted_project').replace('{0}', bazaarProject.title),
       severity: 'success',
       display: 'transient',
     });
@@ -106,7 +107,7 @@ export const EditProjectDialog = ({
     if (updateResponse.status === 'ok') fetchBazaarProject();
     handleEditClose();
     alertApi.post({
-      message: `Updated project '${formValues.title}' in the ${codename} list`,
+      message: t('updated_project').replace('{0}', formValues.title),
       severity: 'success',
       display: 'transient',
     });
@@ -118,18 +119,18 @@ export const EditProjectDialog = ({
         open={openDelete}
         handleClose={handleDeleteClose}
         message={[
-          'Are you sure you want to delete ',
+          t('confirmation_1'),
           <b key={bazaarProject.id} className={classes.wordBreak}>
             {bazaarProject.title}
           </b>,
-          ` from the ${codename}?`,
+          t('confirmation_2'),
         ]}
         type="delete"
         handleSubmit={handleDeleteSubmit}
       />
 
       <ProjectDialog
-        title="Edit project"
+        title={t('edit_project')}
         handleSave={handleEditSubmit}
         isAddForm={false}
         defaultValues={defaultValues}
@@ -144,7 +145,7 @@ export const EditProjectDialog = ({
               setOpenDelete(true);
             }}
           >
-            Delete project
+            {t('delete_project_button')}
           </Button>
         }
       />

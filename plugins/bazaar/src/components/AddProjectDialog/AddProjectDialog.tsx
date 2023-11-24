@@ -22,6 +22,8 @@ import { ProjectDialog } from '../ProjectDialog';
 import { ProjectSelector } from '../ProjectSelector';
 import { BazaarProject, FormValues, Size, Status } from '../../types';
 import { bazaarApiRef } from '../../api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { bazaarTranslationRef } from '../../translations';
 
 type Props = {
   catalogEntities: Entity[];
@@ -29,7 +31,6 @@ type Props = {
   handleClose: () => void;
   fetchBazaarProjects: () => Promise<BazaarProject[]>;
   fetchCatalogEntities: () => Promise<Entity[]>;
-  codename: string;
 };
 
 export const AddProjectDialog = ({
@@ -38,11 +39,11 @@ export const AddProjectDialog = ({
   handleClose,
   fetchBazaarProjects,
   fetchCatalogEntities,
-  codename,
 }: Props) => {
   const bazaarApi = useApi(bazaarApiRef);
   const alertApi = useApi(alertApiRef);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
+  const { t } = useTranslationRef(bazaarTranslationRef);
 
   const defaultValues = {
     title: '',
@@ -80,7 +81,7 @@ export const AddProjectDialog = ({
       fetchBazaarProjects();
       fetchCatalogEntities();
       alertApi.post({
-        message: `Added project '${formValues.title}' to the ${codename} list`,
+        message: t('added_project'),
         severity: 'success',
         display: 'transient',
       });
@@ -93,7 +94,7 @@ export const AddProjectDialog = ({
   return (
     <ProjectDialog
       handleSave={handleSubmit}
-      title="Add project"
+      title={t('add_project')}
       isAddForm
       defaultValues={defaultValues}
       open={open}
@@ -103,7 +104,7 @@ export const AddProjectDialog = ({
           catalogEntities={catalogEntities || []}
           disableClearable={false}
           defaultValue={null}
-          label="Select a project"
+          label={t('select_project')}
         />
       }
       handleClose={handleClose}

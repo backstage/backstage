@@ -28,6 +28,8 @@ import { ErrorPanel, InfoCard, Link } from '@backstage/core-components';
 import { bazaarPlugin } from '../../plugin';
 import { IconButton } from '@material-ui/core';
 import StorefrontIcon from '@material-ui/icons/Storefront';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { bazaarTranslationRef } from '../../translations';
 
 /** @public */
 export type BazaarOverviewCardProps = {
@@ -52,23 +54,17 @@ const getUnlinkedCatalogEntities = (
 
 /** @public */
 export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
-  const {
-    title = 'Bazaar',
-    order,
-    fullWidth = false,
-    fullHeight = false,
-  } = props;
+  const { title, order, fullWidth = false, fullHeight = false } = props;
   const bazaarApi = useApi(bazaarApiRef);
   const catalogApi = useApi(catalogApiRef);
   const root = useRouteRef(bazaarPlugin.routes.root);
+  const { t } = useTranslationRef(bazaarTranslationRef);
 
   const defaultTitle =
-    order === 'latest'
-      ? `${title} Latest Projects`
-      : `${title} Random Projects`;
+    order === 'latest' ? t('latest_projects') : t('random_projects');
 
   const bazaarLink = {
-    title: `Go to ${title}`,
+    title: t('bazaar_link'),
     link: `${root()}`,
   };
 
@@ -138,7 +134,7 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
 
   return (
     <InfoCard
-      title={title === 'Bazaar' ? defaultTitle : title}
+      title={title ?? defaultTitle}
       action={
         <IconButton>
           <Link to={bazaarLink.link} title={bazaarLink.title}>
@@ -154,7 +150,6 @@ export const BazaarOverviewCard = (props: BazaarOverviewCardProps) => {
         useTablePagination={false}
         gridSize={fullWidth ? 2 : 4}
         height={fullHeight ? 'large' : 'small'}
-        codename={title}
       />
     </InfoCard>
   );

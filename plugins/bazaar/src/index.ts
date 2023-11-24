@@ -22,3 +22,4 @@ export { EntityBazaarInfoCard } from './components/EntityBazaarInfoCard';
 export { SortView } from './components/SortView';
 export type { SortViewProps } from './components/SortView';
 export type { HomePageProps as BazaarPageProps } from './components/HomePage';
+export { bazaarTranslationRef } from './translations';

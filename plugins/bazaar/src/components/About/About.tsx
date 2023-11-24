@@ -16,7 +16,9 @@
 
 import React from 'react';
 import { Grid, Typography, makeStyles } from '@material-ui/core';
-import { InfoCard, Link } from '@backstage/core-components';
+import { InfoCard } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { bazaarTranslationRef } from '../../translations';
 
 const useStyles = makeStyles({
   subheader: {
@@ -24,54 +26,25 @@ const useStyles = makeStyles({
   },
 });
 
-export const About = (props: { codename: string }) => {
-  const { codename } = props;
+export const About = () => {
   const classes = useStyles();
+  const { t } = useTranslationRef(bazaarTranslationRef);
   return (
     <Grid container spacing={4}>
       <Grid item xs={5}>
-        <InfoCard title={`About ${codename}`}>
+        <InfoCard title={t('about_title')}>
           <Typography className={classes.subheader} variant="body1">
-            What is the {codename}?
+            {t('about_subheader_1')}
           </Typography>
-          <Typography paragraph>
-            The {codename} is a place where teams can propose projects for
-            cross-functional team development. Essentially a marketplace for
-            internal projects suitable for{' '}
-            <Link
-              target="_blank"
-              to="https://en.wikipedia.org/wiki/Inner_source"
-            >
-              Inner Sourcing
-            </Link>
-            . With "Inner Sourcing", we mean projects that are developed
-            internally within a company, but with Open Source best practices.
-          </Typography>
+          <Typography paragraph>{t('about_paragraph_1')}</Typography>
           <Typography className={classes.subheader} variant="body1">
-            Why?
+            {t('about_subheader_2')}
           </Typography>
-          <Typography paragraph>
-            Many companies today are of high need to increase the ease of
-            cross-team cooperation. In large organizations, engineers often have
-            limited ways of discovering or announcing the projects which could
-            benefit from a wider development effort in terms of different
-            expertise, experiences, and teams spread across the organization.
-            With no good way to find these existing internal projects to join,
-            the possibility of working with Inner Sourcing practices suffers.
-          </Typography>
+          <Typography paragraph>{t('about_paragraph_2')}</Typography>
           <Typography className={classes.subheader} variant="body1">
-            How?
+            {t('about_subheader_3')}
           </Typography>
-          <Typography paragraph>
-            The {codename} allows engineers and teams to open up and announce
-            their new and exciting projects for transparent cooperation in other
-            parts of larger organizations. The {codename} ensures that new Inner
-            Sourcing friendly projects gain visibility through Backstage and a
-            way for interested engineers to show their interest and in the
-            future contribute with their specific skill set. The {codename} also
-            provides an easy way to manage, catalog, and browse these Inner
-            Sourcing friendly projects and components.
-          </Typography>
+          <Typography paragraph>{t('about_paragraph_3')}</Typography>
         </InfoCard>
       </Grid>
     </Grid>
