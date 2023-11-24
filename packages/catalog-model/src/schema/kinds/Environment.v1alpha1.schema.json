@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "EnvironmentV1alpha1",
+  "description": "An Environment represents a single static location that software is deployed to",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha1",
+      "kind": "Environment",
+      "metadata": {
+        "name": "artists",
+        "description": "Everything about artists"
+      },
+      "spec": {
+        "owner": "artist-relations-team"
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1alpha1"]
+        },
+        "kind": {
+          "enum": ["Environment"]
+        }
+      }
+    }
+  ]
+}

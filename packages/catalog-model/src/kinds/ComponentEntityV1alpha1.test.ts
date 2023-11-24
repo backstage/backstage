@@ -38,6 +38,10 @@ describe('ComponentV1alpha1Validator', () => {
         consumesApis: ['api-0'],
         dependsOn: ['resource:resource-0', 'component:component-0'],
         system: 'system',
+        environmentOverrides: {
+          prod: {},
+        },
+        deploysToEnvironments: ['prod'],
       },
     };
   });
@@ -194,5 +198,34 @@ describe('ComponentV1alpha1Validator', () => {
   it('rejects empty system', async () => {
     (entity as any).spec.system = '';
     await expect(validator.check(entity)).rejects.toThrow(/system/);
+  });
+
+  it('accepts missing environmentOverrides', async () => {
+    delete (entity as any).spec.environmentOverrides;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects wrong environmentOverrides', async () => {
+    (entity as any).spec.environmentOverrides = 7;
+    await expect(validator.check(entity)).rejects.toThrow(
+      /environmentOverrides/,
+    );
+  });
+
+  it('accepts empty environmentOverrides', async () => {
+    (entity as any).spec.environmentOverrides = {};
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts missing deploysToEnvironments', async () => {
+    delete (entity as any).spec.deploysToEnvironments;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects wrong deploysToEnvironments', async () => {
+    (entity as any).spec.deploysToEnvironments = 7;
+    await expect(validator.check(entity)).rejects.toThrow(
+      /deploysToEnvironments/,
+    );
   });
 });

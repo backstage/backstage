@@ -56,3 +56,7 @@ export type {
   UserEntityV1alpha1 as UserEntity,
   UserEntityV1alpha1,
 } from './UserEntityV1alpha1';
+export type {
+  EnvironmentEntityV1alpha1 as EnvironmentEntity,
+  EnvironmentEntityV1alpha1,
+} from './EnvironmentEntityV1alpha1';

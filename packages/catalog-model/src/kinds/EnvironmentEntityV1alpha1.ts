@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import { Entity } from '../entity';
+import schema from '../schema/kinds/Environment.v1alpha1.schema.json';
+import { ajvCompiledJsonSchemaValidator } from './util';
 
 /**
  * Backstage catalog Environment kind Entity. Represents a single static location that software is deployed to.
@@ -29,3 +31,11 @@ export interface EnvironmentEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1';
   kind: 'Environment';
 }
+
+/**
+ * {@link KindValidator} for {@link ComponentEntityV1alpha1}.
+ *
+ * @public
+ */
+export const componentEntityV1alpha1Validator =
+  ajvCompiledJsonSchemaValidator(schema);
