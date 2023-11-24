@@ -57,7 +57,7 @@
   "version": "1.21.0-next.1",
   "dependencies": {
     "@backstage/errors": "workspace:^",
-    "@manypkg/get-packages": "^1.1.3",
+    "@manypkg/get-packages": "^2.0.0",
     "@useoptic/optic": "^0.50.10"
   },
   "devDependencies": {
