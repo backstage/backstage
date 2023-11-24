@@ -19077,11 +19077,11 @@ __metadata:
   linkType: hard
 
 "@types/sanitize-html@npm:^2.6.2":
-  version: 2.9.4
-  resolution: "@types/sanitize-html@npm:2.9.4"
+  version: 2.9.5
+  resolution: "@types/sanitize-html@npm:2.9.5"
   dependencies:
     htmlparser2: ^8.0.0
-  checksum: 196c6b0a307b6e0482cbad4d28c5f3f7bf03001bdc30ad1a18b61a5074ddbf9c1f32adee539ecd83370fceea2ef501955a2c3f27f820c229974a265d31832c95
+  checksum: fd0afee5dac91aa2c42391f0c8c9254204f4ee1f10b902aa04e8f7809043d785e28af2732f75277ef09e46838013ad60abedb02ba1424b6218264f3333437fb5
   languageName: node
   linkType: hard
 
