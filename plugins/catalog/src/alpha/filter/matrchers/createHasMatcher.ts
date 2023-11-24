@@ -21,9 +21,6 @@ const allowedMatchers: Record<string, EntityMatcherFn> = {
   labels: entity => {
     return Object.keys(entity.metadata.labels ?? {}).length > 0;
   },
-  annotations: entity => {
-    return Object.keys(entity.metadata.annotations ?? {}).length > 0;
-  },
   links: entity => {
     return (entity.metadata.links ?? []).length > 0;
   },
