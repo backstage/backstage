@@ -130,8 +130,8 @@ export const UserSettingsThemeToggle = () => {
     >
       <ListItemText
         className={classes.listItemText}
-        primary={t('theme')}
-        secondary={t('change_the_theme_mode')}
+        primary={t('themeToggle.title')}
+        secondary={t('themeToggle.description')}
       />
       <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
         <ToggleButtonGroup
@@ -146,12 +146,12 @@ export const UserSettingsThemeToggle = () => {
             const themeTitle =
               theme.title ||
               (themeId === 'light' || themeId === 'dark'
-                ? t(`theme_${themeId}`)
+                ? t(`themeToggle.names.${themeId}`)
                 : themeId);
             return (
               <TooltipToggleButton
                 key={themeId}
-                title={t('select_theme', { theme: themeTitle })}
+                title={t('themeToggle.select', { theme: themeTitle })}
                 value={themeId}
               >
                 <>
@@ -165,9 +165,9 @@ export const UserSettingsThemeToggle = () => {
               </TooltipToggleButton>
             );
           })}
-          <Tooltip placement="top" arrow title={t('select_theme_auto')}>
+          <Tooltip placement="top" arrow title={t('themeToggle.selectAuto')}>
             <ToggleButton value="auto" selected={activeThemeId === undefined}>
-              {t('theme_auto')}&nbsp;
+              {t('themeToggle.names.auto')}&nbsp;
               <AutoIcon
                 color={activeThemeId === undefined ? 'primary' : undefined}
               />
