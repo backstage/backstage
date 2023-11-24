@@ -34,6 +34,7 @@ import {
   DEFAULT_BATCH_DELAY,
   DEFAULT_CACHE_TTL,
   DEFAULT_ICONS,
+  UNKNOWN_KIND_ICON,
   createDefaultRenderer,
 } from './defaults';
 
@@ -134,10 +135,7 @@ export interface DefaultEntityPresentationApiOptions {
    * @remarks
    *
    * The keys are kinds (case insensitive) that map to icon values to represent
-   * kinds by.
-   *
-   * If you do not supply a set of icons here, a set of fallback icons will be
-   * used. If you supply the empty object, no fallback icons will be used.
+   * kinds by. These are merged with the default set of icons.
    */
   kindIcons?: Record<string, IconComponent>;
 
@@ -194,11 +192,12 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
     const renderer = options.renderer ?? createDefaultRenderer({ async: true });
 
     const kindIcons: Record<string, IconComponent> = {};
-    Object.entries(options.kindIcons ?? DEFAULT_ICONS).forEach(
-      ([kind, icon]) => {
-        kindIcons[kind.toLocaleLowerCase('en-US')] = icon;
-      },
-    );
+    Object.entries(DEFAULT_ICONS).forEach(([kind, icon]) => {
+      kindIcons[kind.toLocaleLowerCase('en-US')] = icon;
+    });
+    Object.entries(options.kindIcons ?? {}).forEach(([kind, icon]) => {
+      kindIcons[kind.toLocaleLowerCase('en-US')] = icon;
+    });
 
     if (renderer.async) {
       if (!options.catalogApi) {
@@ -396,6 +395,8 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
       return false;
     }
 
-    return this.#kindIcons[kind.toLocaleLowerCase('en-US')];
+    return (
+      this.#kindIcons[kind.toLocaleLowerCase('en-US')] ?? UNKNOWN_KIND_ICON
+    );
   }
 }
