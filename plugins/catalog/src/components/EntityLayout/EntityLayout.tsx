@@ -45,6 +45,7 @@ import {
   InspectEntityDialog,
   UnregisterEntityDialog,
   useAsyncEntity,
+  EntityEnvironmentProvider,
 } from '@backstage/plugin-catalog-react';
 import { Box, TabProps } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -252,61 +253,63 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
   return (
     <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
-      <Header
-        title={<EntityLayoutTitle title={headerTitle} entity={entity!} />}
-        pageTitleOverride={headerTitle}
-        type={headerType}
-      >
-        {entity && (
-          <>
-            <EntityLabels entity={entity} />
-            <EntityContextMenu
-              UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
-              UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
-              onUnregisterEntity={() => setConfirmationDialogOpen(true)}
-              onInspectEntity={() => setInspectionDialogOpen(true)}
-            />
-          </>
-        )}
-      </Header>
-
-      {loading && <Progress />}
-
-      {entity && <RoutedTabs routes={routes} />}
-
-      {error && (
-        <Content>
-          <Alert severity="error">{error.toString()}</Alert>
-        </Content>
-      )}
-
-      {!loading && !error && !entity && (
-        <Content>
-          {NotFoundComponent ? (
-            NotFoundComponent
-          ) : (
-            <WarningPanel title="Entity not found">
-              There is no {kind} with the requested{' '}
-              <Link to="https://backstage.io/docs/features/software-catalog/references">
-                kind, namespace, and name
-              </Link>
-              .
-            </WarningPanel>
+      <EntityEnvironmentProvider>
+        <Header
+          title={<EntityLayoutTitle title={headerTitle} entity={entity!} />}
+          pageTitleOverride={headerTitle}
+          type={headerType}
+        >
+          {entity && (
+            <>
+              <EntityLabels entity={entity} />
+              <EntityContextMenu
+                UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+                UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
+                onUnregisterEntity={() => setConfirmationDialogOpen(true)}
+                onInspectEntity={() => setInspectionDialogOpen(true)}
+              />
+            </>
           )}
-        </Content>
-      )}
+        </Header>
 
-      <UnregisterEntityDialog
-        open={confirmationDialogOpen}
-        entity={entity!}
-        onConfirm={cleanUpAfterRemoval}
-        onClose={() => setConfirmationDialogOpen(false)}
-      />
-      <InspectEntityDialog
-        open={inspectionDialogOpen}
-        entity={entity!}
-        onClose={() => setInspectionDialogOpen(false)}
-      />
+        {loading && <Progress />}
+
+        {entity && <RoutedTabs routes={routes} />}
+
+        {error && (
+          <Content>
+            <Alert severity="error">{error.toString()}</Alert>
+          </Content>
+        )}
+
+        {!loading && !error && !entity && (
+          <Content>
+            {NotFoundComponent ? (
+              NotFoundComponent
+            ) : (
+              <WarningPanel title="Entity not found">
+                There is no {kind} with the requested{' '}
+                <Link to="https://backstage.io/docs/features/software-catalog/references">
+                  kind, namespace, and name
+                </Link>
+                .
+              </WarningPanel>
+            )}
+          </Content>
+        )}
+
+        <UnregisterEntityDialog
+          open={confirmationDialogOpen}
+          entity={entity!}
+          onConfirm={cleanUpAfterRemoval}
+          onClose={() => setConfirmationDialogOpen(false)}
+        />
+        <InspectEntityDialog
+          open={inspectionDialogOpen}
+          entity={entity!}
+          onClose={() => setInspectionDialogOpen(false)}
+        />
+      </EntityEnvironmentProvider>
     </Page>
   );
 };

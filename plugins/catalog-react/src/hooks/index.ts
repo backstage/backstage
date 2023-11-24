@@ -39,3 +39,8 @@ export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';
 export { useStarredEntity } from './useStarredEntity';
 export { useEntityOwnership } from './useEntityOwnership';
+export {
+  EntityEnvironmentContext,
+  EntityEnvironmentProvider,
+  useEntityEnvironment,
+} from './useEntityEnvironment';
