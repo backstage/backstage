@@ -46,6 +46,7 @@ import {
   RELATION_PROVIDES_API,
   ResourceEntity,
   resourceEntityV1alpha1Validator,
+  stringifyEntityRef,
   SystemEntity,
   systemEntityV1alpha1Validator,
   UserEntity,
@@ -182,6 +183,19 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_DEPLOYS_TO_ENVIRONMENT,
         RELATION_ENVIRONMENT_HAS_DEPLOYMENT,
       );
+      if (component.spec.environmentOverrides) {
+        const resolvedOverrides: Record<string, any> = {};
+        for (const [key, value] of Object.entries(
+          component.spec.environmentOverrides,
+        )) {
+          resolvedOverrides[
+            stringifyEntityRef(
+              parseEntityRef(key, { defaultKind: 'Environment' }),
+            )
+          ] = value;
+        }
+        component.spec.environmentOverrides = resolvedOverrides;
+      }
     }
 
     /*

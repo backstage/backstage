@@ -11,6 +11,6 @@ spec:
   owner: team-b
   system: podcast
   environmentOverrides:
-    environment:default/prod:
+    prod:
       annotations:
         sentry.io/project-slug: test
