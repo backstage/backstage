@@ -36,12 +36,7 @@ export async function startBackend(options: StartBackendOptions) {
 
     await waitForExit();
   } else {
-    // Cleaning dist/ before we start the dev process helps work around an issue
-    // where we end up with the entrypoint executing multiple times, causing
-    // a port bind conflict among other things.
-    await fs.remove(paths.resolveTarget('dist'));
-
-    const waitForExit = await serveBackend({
+    const waitForExit = await cleanDistAndServeBackend({
       entry: 'src/index',
       checksEnabled: options.checksEnabled,
       inspectEnabled: options.inspectEnabled,
@@ -78,12 +73,8 @@ Please run "LEGACY_BACKEND_START=1 yarn start" instead.`,
       console.log(`src/run.ts is missing.`);
       return;
     }
-    // Cleaning dist/ before we start the dev process helps work around an issue
-    // where we end up with the entrypoint executing multiple times, causing
-    // a port bind conflict among other things.
-    await fs.remove(paths.resolveTarget('dist'));
 
-    const waitForExit = await serveBackend({
+    const waitForExit = await cleanDistAndServeBackend({
       entry: 'src/run',
       checksEnabled: options.checksEnabled,
       inspectEnabled: options.inspectEnabled,
@@ -92,4 +83,18 @@ Please run "LEGACY_BACKEND_START=1 yarn start" instead.`,
 
     await waitForExit();
   }
+}
+
+async function cleanDistAndServeBackend(options: {
+  entry: string;
+  checksEnabled: boolean;
+  inspectEnabled: boolean;
+  inspectBrkEnabled: boolean;
+}) {
+  // Cleaning dist/ before we start the dev process helps work around an issue
+  // where we end up with the entrypoint executing multiple times, causing
+  // a port bind conflict among other things.
+  await fs.remove(paths.resolveTarget('dist'));
+
+  return serveBackend(options);
 }
