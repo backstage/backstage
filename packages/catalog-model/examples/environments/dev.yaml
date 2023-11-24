@@ -1,0 +1,7 @@
+apiVersion: backstage.io/v1alpha1
+kind: Environment
+metadata:
+  name: dev
+  description: Development SDLC environment.
+spec:
+  lifecycle: dev

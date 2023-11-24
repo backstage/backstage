@@ -28,6 +28,9 @@ describe('EnvironmentV1alpha1Validator', () => {
       metadata: {
         name: 'prod',
       },
+      spec: {
+        lifecycle: 'production',
+      },
     };
   });
 
@@ -43,5 +46,20 @@ describe('EnvironmentV1alpha1Validator', () => {
   it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
     await expect(validator.check(entity)).resolves.toBe(false);
+  });
+
+  it('rejects missing lifecycle', async () => {
+    delete (entity as any).spec.lifecycle;
+    await expect(validator.check(entity)).rejects.toThrow(/lifecycle/);
+  });
+
+  it('rejects wrong lifecycle', async () => {
+    (entity as any).spec.lifecycle = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/lifecycle/);
+  });
+
+  it('rejects empty lifecycle', async () => {
+    (entity as any).spec.lifecycle = '';
+    await expect(validator.check(entity)).rejects.toThrow(/lifecycle/);
   });
 });

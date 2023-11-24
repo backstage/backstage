@@ -53,6 +53,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
+import { EntityEnvironmentPicker } from '../EntityEnvironmentPicker/EntityEnvironmentPicker';
 
 /** @public */
 export type EntityLayoutRouteProps = {
@@ -261,6 +262,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         >
           {entity && (
             <>
+              <EntityEnvironmentPicker />
               <EntityLabels entity={entity} />
               <EntityContextMenu
                 UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}

@@ -235,6 +235,7 @@ catalog:
         - System
         - Domain
         - Location
+        - Environment
   providers:
     openapi:
       plugins:

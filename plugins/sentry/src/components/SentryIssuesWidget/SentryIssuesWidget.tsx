@@ -19,8 +19,11 @@ import React, { useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { sentryApiRef } from '../../api';
 import SentryIssuesTable from '../SentryIssuesTable/SentryIssuesTable';
-import { SENTRY_PROJECT_SLUG_ANNOTATION, useProjectSlug } from '../hooks';
-import { MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
+import { SENTRY_PROJECT_SLUG_ANNOTATION, useSentryAnnotation } from '../hooks';
+import {
+  MissingAnnotationEmptyState,
+  useEntityAnnotation,
+} from '@backstage/plugin-catalog-react';
 
 import {
   EmptyState,
@@ -49,8 +52,8 @@ export const SentryIssuesWidget = (props: {
   } = props;
   const errorApi = useApi<ErrorApi>(errorApiRef);
   const sentryApi = useApi(sentryApiRef);
-
-  const projectId = useProjectSlug(entity);
+  const annotation = useEntityAnnotation(SENTRY_PROJECT_SLUG_ANNOTATION);
+  const { projectSlug: projectId } = useSentryAnnotation(annotation);
 
   const { loading, value, error } = useAsync(
     () => sentryApi.fetchIssues(entity, { statsFor, query }),

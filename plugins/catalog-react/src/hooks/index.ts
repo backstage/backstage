@@ -43,4 +43,5 @@ export {
   EntityEnvironmentContext,
   EntityEnvironmentProvider,
   useEntityEnvironment,
+  useEntityAnnotation,
 } from './useEntityEnvironment';

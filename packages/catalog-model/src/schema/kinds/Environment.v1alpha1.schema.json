@@ -27,6 +27,17 @@
         },
         "kind": {
           "enum": ["Environment"]
+        },
+        "spec": {
+          "required": ["lifecycle"],
+          "properties": {
+            "lifecycle": {
+              "type": "string",
+              "description": "The lifecycle state of the component.",
+              "examples": ["experimental", "production", "deprecated"],
+              "minLength": 1
+            }
+          }
         }
       }
     }

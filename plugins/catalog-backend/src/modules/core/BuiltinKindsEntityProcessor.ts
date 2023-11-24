@@ -22,6 +22,7 @@ import {
   DomainEntity,
   domainEntityV1alpha1Validator,
   Entity,
+  environmentEntityV1alpha1Validator,
   getCompoundEntityRef,
   GroupEntity,
   groupEntityV1alpha1Validator,
@@ -33,6 +34,8 @@ import {
   RELATION_CONSUMES_API,
   RELATION_DEPENDENCY_OF,
   RELATION_DEPENDS_ON,
+  RELATION_DEPLOYS_TO_ENVIRONMENT,
+  RELATION_ENVIRONMENT_HAS_DEPLOYMENT,
   RELATION_HAS_MEMBER,
   RELATION_HAS_PART,
   RELATION_MEMBER_OF,
@@ -66,6 +69,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     userEntityV1alpha1Validator,
     systemEntityV1alpha1Validator,
     domainEntityV1alpha1Validator,
+    environmentEntityV1alpha1Validator,
   ];
 
   getProcessorName(): string {
@@ -171,6 +175,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         { defaultKind: 'System', defaultNamespace: selfRef.namespace },
         RELATION_PART_OF,
         RELATION_HAS_PART,
+      );
+      doEmit(
+        component.spec.deploysToEnvironments,
+        { defaultKind: 'Environment', defaultNamespace: selfRef.namespace },
+        RELATION_DEPLOYS_TO_ENVIRONMENT,
+        RELATION_ENVIRONMENT_HAS_DEPLOYMENT,
       );
     }
 
