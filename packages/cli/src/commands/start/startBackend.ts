@@ -26,17 +26,7 @@ interface StartBackendOptions {
 }
 
 export async function startBackend(options: StartBackendOptions) {
-  const hasDev = await fs.pathExists(paths.resolveTarget('dev'));
-  if (hasDev) {
-    const waitForExit = await startBackendExperimental({
-      entry: 'dev/index',
-      checksEnabled: false, // not supported
-      inspectEnabled: options.inspectEnabled,
-      inspectBrkEnabled: options.inspectBrkEnabled,
-    });
-
-    await waitForExit();
-  } else if (!process.env.LEGACY_BACKEND_START) {
+  if (!process.env.LEGACY_BACKEND_START) {
     const waitForExit = await startBackendExperimental({
       entry: 'src/index',
       checksEnabled: false, // not supported
@@ -53,6 +43,48 @@ export async function startBackend(options: StartBackendOptions) {
 
     const waitForExit = await serveBackend({
       entry: 'src/index',
+      checksEnabled: options.checksEnabled,
+      inspectEnabled: options.inspectEnabled,
+      inspectBrkEnabled: options.inspectBrkEnabled,
+    });
+
+    await waitForExit();
+  }
+}
+
+export async function startBackendPlugin(options: StartBackendOptions) {
+  if (!process.env.LEGACY_BACKEND_START) {
+    const hasEntry = await fs.pathExists(paths.resolveTarget('dev'));
+    if (!hasEntry) {
+      console.warn(
+        `dev directory doesn't exist. \
+It looks like this plugin hasn't been migrated to the new backend system. \
+Please run "LEGACY_BACKEND_START=1 yarn start" instead.`,
+      );
+      return;
+    }
+
+    const waitForExit = await startBackendExperimental({
+      entry: 'dev/index',
+      checksEnabled: false, // not supported
+      inspectEnabled: options.inspectEnabled,
+      inspectBrkEnabled: options.inspectBrkEnabled,
+    });
+
+    await waitForExit();
+  } else {
+    const hasEntry = await fs.pathExists(paths.resolveTarget('src', 'run.ts'));
+    if (!hasEntry) {
+      console.log(`src/run.ts is missing.`);
+      return;
+    }
+    // Cleaning dist/ before we start the dev process helps work around an issue
+    // where we end up with the entrypoint executing multiple times, causing
+    // a port bind conflict among other things.
+    await fs.remove(paths.resolveTarget('dist'));
+
+    const waitForExit = await serveBackend({
+      entry: 'src/run',
       checksEnabled: options.checksEnabled,
       inspectEnabled: options.inspectEnabled,
       inspectBrkEnabled: options.inspectBrkEnabled,
