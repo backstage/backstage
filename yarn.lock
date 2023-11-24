@@ -1434,17 +1434,17 @@ __metadata:
   linkType: hard
 
 "@azure/arm-appservice@npm:^14.0.0":
-  version: 14.0.0
-  resolution: "@azure/arm-appservice@npm:14.0.0"
+  version: 14.1.0
+  resolution: "@azure/arm-appservice@npm:14.1.0"
   dependencies:
     "@azure/abort-controller": ^1.0.0
     "@azure/core-auth": ^1.3.0
     "@azure/core-client": ^1.7.0
-    "@azure/core-lro": ^2.5.0
+    "@azure/core-lro": ^2.5.4
     "@azure/core-paging": ^1.2.0
-    "@azure/core-rest-pipeline": ^1.8.0
+    "@azure/core-rest-pipeline": ^1.12.0
     tslib: ^2.2.0
-  checksum: a34776202f28808237a00958e6498f74547ed61cb284b681ac69fbd62fc9c174b12570ac8a02224162d4c9a2f066736ca40c4e31d12098fa630f9a9eef87d8ab
+  checksum: b989bc26d94056e0f02d2ede9981ebbf90ebefdc8b35c8f66531d3220c4ce52484d49c0a15b7056b79898a76533b0de0edf141b7736aadfabf2c33305804b884
   languageName: node
   linkType: hard
 
@@ -1508,7 +1508,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-lro@npm:^2.2.0, @azure/core-lro@npm:^2.5.0":
+"@azure/core-lro@npm:^2.2.0, @azure/core-lro@npm:^2.5.4":
   version: 2.5.4
   resolution: "@azure/core-lro@npm:2.5.4"
   dependencies:
@@ -1529,21 +1529,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-rest-pipeline@npm:^1.1.0, @azure/core-rest-pipeline@npm:^1.8.0, @azure/core-rest-pipeline@npm:^1.9.1":
-  version: 1.9.2
-  resolution: "@azure/core-rest-pipeline@npm:1.9.2"
+"@azure/core-rest-pipeline@npm:^1.1.0, @azure/core-rest-pipeline@npm:^1.12.0, @azure/core-rest-pipeline@npm:^1.9.1":
+  version: 1.12.2
+  resolution: "@azure/core-rest-pipeline@npm:1.12.2"
   dependencies:
     "@azure/abort-controller": ^1.0.0
     "@azure/core-auth": ^1.4.0
     "@azure/core-tracing": ^1.0.1
-    "@azure/core-util": ^1.0.0
+    "@azure/core-util": ^1.3.0
     "@azure/logger": ^1.0.0
     form-data: ^4.0.0
     http-proxy-agent: ^5.0.0
     https-proxy-agent: ^5.0.0
     tslib: ^2.2.0
-    uuid: ^8.3.0
-  checksum: cdfdaf8bdb0778f40ecfeb8b5da0b4f8643d641b75bb5869485afd38f7c3127ab088ac2fe2980df03d28fb6715928e04560343ee6416246aebe75443c4dd2906
+  checksum: a774ab2e87ff56d7f3ef1844a814bbd76264ea1c33534081d38ce6df1098d803d0b13b15912f9053d0695ca2669b0dd104c8feec8dbf24df80a3608ea784fc9e
   languageName: node
   linkType: hard
 
@@ -1566,7 +1565,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-util@npm:^1.0.0, @azure/core-util@npm:^1.1.0, @azure/core-util@npm:^1.1.1, @azure/core-util@npm:^1.2.0, @azure/core-util@npm:^1.6.1":
+"@azure/core-util@npm:^1.0.0, @azure/core-util@npm:^1.1.0, @azure/core-util@npm:^1.1.1, @azure/core-util@npm:^1.2.0, @azure/core-util@npm:^1.3.0, @azure/core-util@npm:^1.6.1":
   version: 1.6.1
   resolution: "@azure/core-util@npm:1.6.1"
   dependencies:
