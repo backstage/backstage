@@ -89,7 +89,7 @@ describe('parseFilterExpression', () => {
     expect(run('has:labels,links')(annotations)).toBe(false);
 
     expect(() => run('has:labels,bar')).toThrowErrorMatchingInlineSnapshot(
-      `"'bar' is not a valid parameter for 'has' filter expressions, expected one of 'labels','annotations','links'"`,
+      `"'bar' is not a valid parameter for 'has' filter expressions, expected one of 'labels','links'"`,
     );
   });
 

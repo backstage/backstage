@@ -24,18 +24,12 @@ describe('createHasMatcher', () => {
   const empty2 = {
     metadata: {
       labels: {},
-      annotations: {},
       links: [],
     },
   } as unknown as Entity;
   const labels = {
     metadata: {
       labels: { a: 'b' },
-    },
-  } as unknown as Entity;
-  const annotations = {
-    metadata: {
-      annotations: { a: 'b' },
     },
   } as unknown as Entity;
   const links = {
@@ -53,10 +47,6 @@ describe('createHasMatcher', () => {
     expect(createHasMatcher(['labels'], err)(empty2)).toBe(false);
     expect(createHasMatcher(['labels'], err)(labels)).toBe(true);
 
-    expect(createHasMatcher(['annotations'], err)(empty1)).toBe(false);
-    expect(createHasMatcher(['annotations'], err)(empty2)).toBe(false);
-    expect(createHasMatcher(['annotations'], err)(annotations)).toBe(true);
-
     expect(createHasMatcher(['links'], err)(empty1)).toBe(false);
     expect(createHasMatcher(['links'], err)(empty2)).toBe(false);
     expect(createHasMatcher(['links'], err)(links)).toBe(true);
@@ -69,7 +59,6 @@ describe('createHasMatcher', () => {
     expect(createHasMatcher(['labels', 'links'], err)(empty2)).toBe(false);
     expect(createHasMatcher(['labels', 'links'], err)(labels)).toBe(true);
     expect(createHasMatcher(['labels', 'links'], err)(links)).toBe(true);
-    expect(createHasMatcher(['labels', 'links'], err)(annotations)).toBe(false);
 
     expect(err).not.toHaveBeenCalled();
   });
@@ -81,7 +70,7 @@ describe('createHasMatcher', () => {
         throw e;
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"'bar' is not a valid parameter for 'has' filter expressions, expected one of 'labels','annotations','links'"`,
+      `"'bar' is not a valid parameter for 'has' filter expressions, expected one of 'labels','links'"`,
     );
     expect(err).not.toHaveBeenCalled();
 
@@ -90,12 +79,12 @@ describe('createHasMatcher', () => {
     expect(err).toHaveBeenCalledTimes(2);
     expect(err).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: `'foo' is not a valid parameter for 'has' filter expressions, expected one of 'labels','annotations','links'`,
+        message: `'foo' is not a valid parameter for 'has' filter expressions, expected one of 'labels','links'`,
       }),
     );
     expect(err).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: `'bar' is not a valid parameter for 'has' filter expressions, expected one of 'labels','annotations','links'`,
+        message: `'bar' is not a valid parameter for 'has' filter expressions, expected one of 'labels','links'`,
       }),
     );
     expect(matcher(empty1)).toBe(false);
