@@ -25,7 +25,13 @@ export default async function createPlugin(env: PluginEnvironment) {
     discoveryApi: env.discovery,
   });
 
-  await createScheduler({ logger, scheduler, config, catalogClient, tokenManager });
+  await createScheduler({
+    logger,
+    scheduler,
+    config,
+    catalogClient,
+    tokenManager,
+  });
 }
 ```
 
