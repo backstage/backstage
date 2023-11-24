@@ -8667,7 +8667,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    msw: ^1.0.0
+    msw: ^2.0.0
     yaml: ^2.3.3
   languageName: unknown
   linkType: soft
@@ -34819,7 +34819,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^2.0.8":
+"msw@npm:^2.0.0, msw@npm:^2.0.8":
   version: 2.0.9
   resolution: "msw@npm:2.0.9"
   dependencies:

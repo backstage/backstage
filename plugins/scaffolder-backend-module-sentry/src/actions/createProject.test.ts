@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
 import { randomBytes } from 'crypto';
-import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { HttpResponse, http } from 'msw';
 import { createSentryCreateProjectAction } from './createProject';
 
 describe('sentry:project:create action', () => {
@@ -62,21 +63,19 @@ describe('sentry:project:create action', () => {
     const actionContext = getActionContext();
 
     worker.use(
-      rest.post(
+      http.post(
         `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
-        async (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${actionContext.input.authToken}`,
           );
-          expect(req.headers.get('Content-Type')).toBe(`application/json`);
-          await expect(req.json()).resolves.toEqual({
+          expect(request.headers.get('Content-Type')).toBe(`application/json`);
+          await expect(request.json()).resolves.toEqual({
             name: actionContext.input.name,
           });
-          return res(
-            ctx.status(201),
-            ctx.json({
-              detail: 'project creation mocked result',
-            }),
+          return HttpResponse.json(
+            { detail: 'project creation mocked result' },
+            { status: 201 },
           );
         },
       ),
@@ -93,22 +92,20 @@ describe('sentry:project:create action', () => {
     actionContext.input = { ...actionContext.input, slug: 'project-slug' };
 
     worker.use(
-      rest.post(
+      http.post(
         `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
-        async (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${actionContext.input.authToken}`,
           );
-          expect(req.headers.get('Content-Type')).toBe(`application/json`);
-          await expect(req.json()).resolves.toEqual({
+          expect(request.headers.get('Content-Type')).toBe(`application/json`);
+          await expect(request.json()).resolves.toEqual({
             name: actionContext.input.name,
             slug: actionContext.input.slug,
           });
-          return res(
-            ctx.status(201),
-            ctx.json({
-              detail: 'project creation mocked result',
-            }),
+          return HttpResponse.json(
+            { detail: 'project creation mocked result' },
+            { status: 201 },
           );
         },
       ),
@@ -132,21 +129,19 @@ describe('sentry:project:create action', () => {
     actionContext.input.authToken = undefined;
 
     worker.use(
-      rest.post(
+      http.post(
         `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
-        async (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${sentryScaffolderConfigToken}`,
           );
-          expect(req.headers.get('Content-Type')).toBe(`application/json`);
-          await expect(req.json()).resolves.toEqual({
+          expect(request.headers.get('Content-Type')).toBe(`application/json`);
+          await expect(request.json()).resolves.toEqual({
             name: actionContext.input.name,
           });
-          return res(
-            ctx.status(201),
-            ctx.json({
-              detail: 'project creation mocked result',
-            }),
+          return HttpResponse.json(
+            { detail: 'project creation mocked result' },
+            { status: 201 },
           );
         },
       ),
@@ -161,21 +156,19 @@ describe('sentry:project:create action', () => {
     actionContext.input.authToken = undefined;
 
     worker.use(
-      rest.post(
+      http.post(
         `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
-        async (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${actionContext.input.authToken}`,
           );
-          expect(req.headers.get('Content-Type')).toBe(`application/json`);
-          await expect(req.json()).resolves.toEqual({
+          expect(request.headers.get('Content-Type')).toBe(`application/json`);
+          await expect(request.json()).resolves.toEqual({
             name: actionContext.input.name,
           });
-          return res(
-            ctx.status(201),
-            ctx.json({
-              detail: 'project creation mocked result',
-            }),
+          return HttpResponse.json(
+            { detail: 'project creation mocked result' },
+            { status: 201 },
           );
         },
       ),
@@ -191,10 +184,10 @@ describe('sentry:project:create action', () => {
     const actionContext = getActionContext();
 
     worker.use(
-      rest.post(
+      http.post(
         `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
-        async (_, res, ctx) => {
-          return res(ctx.status(201), ctx.text('Bad response'));
+        async () => {
+          return HttpResponse.text('Bad response', { status: 201 });
         },
       ),
     );
@@ -209,10 +202,10 @@ describe('sentry:project:create action', () => {
     const actionContext = getActionContext();
 
     worker.use(
-      rest.post(
+      http.post(
         `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
-        async (_, res, ctx) => {
-          return res(ctx.status(400), ctx.json({ detail: 'OUCH' }));
+        async () => {
+          return HttpResponse.json({ detail: 'OUCH' }, { status: 400 });
         },
       ),
     );
