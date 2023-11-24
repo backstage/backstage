@@ -645,6 +645,15 @@ that this component is deployed to, for example, `prod`, `uat`, and `dev`. This 
 | -------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | [`Environment`](#kind-environment) (default) | Same as this entity, typically `default`   | [`deploysToEnvironment`, and reverse `environmentDeployedTo`](well-known-relations.md#consumesapi-and-apiconsumedby) |
 
+### `spec.environmentOverrides` [optional]
+
+A map of [entity references](references.md#string-references) of Environments
+that this component is deployed to, for example, `prod`, `uat`, and `dev`, to an object with property `annotations`. Adding values to this `annotations` object will override the default `metadata.annotations` values when contextually relevant. This field is optional.
+
+| [`kind`](#apiversion-and-kind-required)      | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                                                   |
+| -------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| [`Environment`](#kind-environment) (default) | Same as this entity, typically `default`   | [`deploysToEnvironment`, and reverse `environmentDeployedTo`](well-known-relations.md#consumesapi-and-apiconsumedby) |
+
 ## Kind: Template
 
 The following describes the following entity kind:
