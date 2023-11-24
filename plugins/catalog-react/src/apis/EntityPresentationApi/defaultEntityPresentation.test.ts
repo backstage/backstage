@@ -37,7 +37,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'component:default/test',
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test | type | desc',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
 
       expect(
@@ -58,7 +58,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'component:default/test',
         primaryTitle: 'title',
         secondaryTitle: 'component:default/test | type | desc',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
 
       expect(
@@ -82,7 +82,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'component:default/test',
         primaryTitle: 'displayName',
         secondaryTitle: 'component:default/test | type | desc',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
     });
 
@@ -96,7 +96,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'component:default/test',
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
     });
 
@@ -107,7 +107,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'unknown:default/unknown',
         primaryTitle: 'unknown',
         secondaryTitle: 'unknown:default/unknown',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
     });
   });
@@ -118,7 +118,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'component:default/test',
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
 
       expect(
@@ -129,7 +129,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'component:default/test',
         primaryTitle: 'component:test',
         secondaryTitle: 'component:default/test',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
 
       expect(
@@ -140,7 +140,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'component:default/test',
         primaryTitle: 'default/test',
         secondaryTitle: 'component:default/test',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
     });
 
@@ -149,14 +149,14 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'unknown:default/unknown',
         primaryTitle: 'unknown',
         secondaryTitle: 'unknown:default/unknown',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
 
       expect(defaultEntityPresentation('name')).toEqual({
         entityRef: 'unknown:default/name',
         primaryTitle: 'name',
         secondaryTitle: 'unknown:default/name',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
     });
   });
@@ -173,7 +173,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'component:default/test',
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
 
       expect(
@@ -187,7 +187,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'component:default/test',
         primaryTitle: 'component:test',
         secondaryTitle: 'component:default/test',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
 
       expect(
@@ -201,7 +201,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'component:default/test',
         primaryTitle: 'default/test',
         secondaryTitle: 'component:default/test',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
     });
 
@@ -217,14 +217,14 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'component:default/test',
         primaryTitle: 'default/test',
         secondaryTitle: 'component:default/test',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
 
       expect(defaultEntityPresentation('')).toEqual({
         entityRef: 'unknown:default/unknown',
         primaryTitle: 'unknown',
         secondaryTitle: 'unknown:default/unknown',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
     });
   });
@@ -235,7 +235,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'unknown:default/unknown',
         primaryTitle: 'unknown',
         secondaryTitle: 'unknown:default/unknown',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
 
       expect(defaultEntityPresentation(undefined as unknown as Entity)).toEqual(
@@ -243,7 +243,7 @@ describe('defaultEntityPresentation', () => {
           entityRef: 'unknown:default/unknown',
           primaryTitle: 'unknown',
           secondaryTitle: 'unknown:default/unknown',
-          Icon: expect.anything(),
+          Icon: undefined,
         },
       );
 
@@ -253,7 +253,7 @@ describe('defaultEntityPresentation', () => {
         entityRef: 'unknown:default/unknown',
         primaryTitle: 'unknown',
         secondaryTitle: 'unknown:default/unknown',
-        Icon: expect.anything(),
+        Icon: undefined,
       });
     });
   });
