@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AnyApiFactory } from '@backstage/core-plugin-api';
+import { AnyApiFactory, AnyApiRef } from '@backstage/core-plugin-api';
 import { PortableSchema } from '../schema';
 import {
   ExtensionInputValues,
@@ -28,24 +28,33 @@ import { Expand } from '../types';
 export function createApiExtension<
   TConfig extends {},
   TInputs extends AnyExtensionInputMap,
->(options: {
-  factory:
-    | AnyApiFactory
-    | ((options: {
-        config: TConfig;
-        inputs: Expand<ExtensionInputValues<TInputs>>;
-      }) => AnyApiFactory);
-  namespace?: string;
-  name?: string;
-  configSchema?: PortableSchema<TConfig>;
-  inputs?: TInputs;
-}) {
+>(
+  options: (
+    | {
+        api: AnyApiRef;
+        factory: (options: {
+          config: TConfig;
+          inputs: Expand<ExtensionInputValues<TInputs>>;
+        }) => AnyApiFactory;
+      }
+    | {
+        factory: AnyApiFactory;
+      }
+  ) & {
+    configSchema?: PortableSchema<TConfig>;
+    inputs?: TInputs;
+  },
+) {
   const { factory, configSchema, inputs: extensionInputs } = options;
+
+  const apiRef =
+    'api' in options ? options.api : (factory as { api: AnyApiRef }).api;
 
   return createExtension({
     kind: 'api',
-    namespace: options.namespace,
-    name: options.name,
+    // Since ApiRef IDs use a global namespace we use the namespace here in order to override
+    // potential plugin IDs and always end up with the format `api:<api-ref-id>`
+    namespace: apiRef.id,
     attachTo: { id: 'core', input: 'apis' },
     inputs: extensionInputs,
     configSchema,

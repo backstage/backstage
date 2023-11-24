@@ -57,7 +57,7 @@ describe('collectLegacyRoutes', () => {
             defaultConfig: { path: 'score-board' },
           },
           {
-            id: 'api:score-card',
+            id: 'api:plugin.scoringdata.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
@@ -73,7 +73,7 @@ describe('collectLegacyRoutes', () => {
             defaultConfig: { path: 'stackstorm' },
           },
           {
-            id: 'api:stackstorm',
+            id: 'api:plugin.stackstorm.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
@@ -95,7 +95,7 @@ describe('collectLegacyRoutes', () => {
             defaultConfig: { path: 'puppetdb' },
           },
           {
-            id: 'api:puppetDb',
+            id: 'api:plugin.puppetdb.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },

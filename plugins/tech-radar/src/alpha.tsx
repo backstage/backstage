@@ -49,9 +49,7 @@ export const TechRadarPage = createPageExtension({
 
 /** @alpha */
 export const sampleTechRadarApi = createApiExtension({
-  factory() {
-    return createApiFactory(techRadarApiRef, new SampleTechRadarApi());
-  },
+  factory: createApiFactory(techRadarApiRef, new SampleTechRadarApi()),
 });
 
 /** @alpha */

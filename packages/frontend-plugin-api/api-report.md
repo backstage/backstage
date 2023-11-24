@@ -376,18 +376,23 @@ export type CoreProgressComponent = ComponentType<PropsWithChildren<{}>>;
 export function createApiExtension<
   TConfig extends {},
   TInputs extends AnyExtensionInputMap,
->(options: {
-  factory:
-    | AnyApiFactory
-    | ((options: {
-        config: TConfig;
-        inputs: Expand<ExtensionInputValues<TInputs>>;
-      }) => AnyApiFactory);
-  namespace?: string;
-  name?: string;
-  configSchema?: PortableSchema<TConfig>;
-  inputs?: TInputs;
-}): ExtensionDefinition<TConfig>;
+>(
+  options: (
+    | {
+        api: AnyApiRef;
+        factory: (options: {
+          config: TConfig;
+          inputs: Expand<ExtensionInputValues<TInputs>>;
+        }) => AnyApiFactory;
+      }
+    | {
+        factory: AnyApiFactory;
+      }
+  ) & {
+    configSchema?: PortableSchema<TConfig>;
+    inputs?: TInputs;
+  },
+): ExtensionDefinition<TConfig>;
 
 export { createApiFactory };
 

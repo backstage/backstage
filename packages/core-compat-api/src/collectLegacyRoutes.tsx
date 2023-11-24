@@ -130,11 +130,8 @@ export function collectLegacyRoutes(
       id: plugin.getId(),
       extensions: [
         ...extensions,
-        ...Array.from(plugin.getApis()).map((factory, index) =>
-          createApiExtension({
-            factory,
-            name: index > 0 ? String(index + 1) : undefined,
-          }),
+        ...Array.from(plugin.getApis()).map(factory =>
+          createApiExtension({ factory }),
         ),
       ],
     }),
