@@ -81,7 +81,7 @@ export const AddProjectDialog = ({
       fetchBazaarProjects();
       fetchCatalogEntities();
       alertApi.post({
-        message: t('added_project'),
+        message: t('added_project').replace('{0}', formValues.title),
         severity: 'success',
         display: 'transient',
       });

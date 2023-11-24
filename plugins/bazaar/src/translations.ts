@@ -45,7 +45,7 @@ export const bazaarTranslationRef = createTranslationRef({
     empty_projects: 'Please add projects to the Bazaar.',
     deleted_project: "Deleted project '{0}' from the Bazaar list",
     updated_project: "Updated project '{0}' in the Bazaar list",
-    added_project: 'Added project "${formValues.title}" to the Bazaar list',
+    added_project: "Added project '{0}' to the Bazaar list",
     confirmation_1: 'Are you sure you want to delete ',
     confirmation_2: ' from the Bazaar?',
     delete_project_button: 'Delete project',
