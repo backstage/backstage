@@ -542,7 +542,7 @@ export class IncrementalIngestionDatabaseManager {
         .where('ingestion_id', ingestionId)
         .orderBy('sequence', 'desc')
         .first();
-      return mark;
+      return this.#decodeMark(this.client, mark);
     });
   }
 
@@ -557,7 +557,7 @@ export class IncrementalIngestionDatabaseManager {
         .where('ingestion_id', ingestionId)
         .orderBy('sequence', 'asc')
         .first();
-      return mark;
+      return this.#decodeMark(this.client, mark);
     });
   }
 
@@ -566,7 +566,7 @@ export class IncrementalIngestionDatabaseManager {
       const marks = await tx<MarkRecord>('ingestion_marks')
         .where('ingestion_id', ingestionId)
         .orderBy('sequence', 'desc');
-      return marks;
+      return marks.map(m => this.#decodeMark(this.client, m));
     });
   }
 
@@ -580,6 +580,19 @@ export class IncrementalIngestionDatabaseManager {
       await tx('ingestion_marks').insert(record);
     });
   }
+
+  // Handles the fact that sqlite does not support json columns; they just
+  // persist the stringified data instead
+  #decodeMark<T extends MarkRecord | undefined>(knex: Knex, record: T): T {
+    if (record && knex.client.config.client.includes('sqlite3')) {
+      return {
+        ...record,
+        cursor: JSON.parse(record.cursor as string),
+      };
+    }
+    return record;
+  }
+
   /**
    * Performs an upsert to the `ingestion_mark_entities` table for all deferred entities.
    * @param markId - string
