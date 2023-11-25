@@ -24,7 +24,8 @@
     "lighthouse"
   ],
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",
