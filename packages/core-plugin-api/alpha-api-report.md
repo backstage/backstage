@@ -39,19 +39,17 @@ export function createTranslationMessages<
 // @alpha (undocumented)
 export function createTranslationRef<
   TId extends string,
-  const TMessages extends {
-    [key in string]: string;
-  },
+  const TNestedMessages extends AnyNestedMessages,
   TTranslations extends {
     [language in string]: () => Promise<{
       default: {
-        [key in keyof TMessages]: string | null;
+        [key in keyof FlattenedMessages<TNestedMessages>]: string | null;
       };
     }>;
   },
 >(
-  config: TranslationRefOptions<TId, TMessages, TTranslations>,
-): TranslationRef<TId, TMessages>;
+  config: TranslationRefOptions<TId, TNestedMessages, TTranslations>,
+): TranslationRef<TId, FlattenedMessages<TNestedMessages>>;
 
 // @alpha (undocumented)
 export function createTranslationResource<
@@ -169,13 +167,11 @@ export interface TranslationRef<
 // @alpha (undocumented)
 export interface TranslationRefOptions<
   TId extends string,
-  TMessages extends {
-    [key in string]: string;
-  },
+  TNestedMessages extends AnyNestedMessages,
   TTranslations extends {
     [language in string]: () => Promise<{
       default: {
-        [key in keyof TMessages]: string | null;
+        [key in keyof FlattenedMessages<TNestedMessages>]: string | null;
       };
     }>;
   },
@@ -183,7 +179,7 @@ export interface TranslationRefOptions<
   // (undocumented)
   id: TId;
   // (undocumented)
-  messages: TMessages;
+  messages: TNestedMessages;
   // (undocumented)
   translations?: TTranslations;
 }
