@@ -74,6 +74,8 @@ import { SignInPageProps } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { storageApiRef } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { TranslationMessages } from '@backstage/core-plugin-api/alpha';
+import { TranslationResource } from '@backstage/core-plugin-api/alpha';
 import { TypesToApiRefs } from '@backstage/core-plugin-api';
 import { useApi } from '@backstage/core-plugin-api';
 import { useApiHolder } from '@backstage/core-plugin-api';
@@ -627,6 +629,28 @@ export function createSubRouteRef<
 export function createThemeExtension(
   theme: AppTheme,
 ): ExtensionDefinition<never>;
+
+// @public (undocumented)
+export function createTranslationExtension(options: {
+  name?: string;
+  resource: TranslationResource | TranslationMessages;
+}): ExtensionDefinition<never>;
+
+// @public (undocumented)
+export namespace createTranslationExtension {
+  const // (undocumented)
+    translationDataRef: ConfigurableExtensionDataRef<
+      | TranslationResource<string>
+      | TranslationMessages<
+          string,
+          {
+            [x: string]: string;
+          },
+          boolean
+        >,
+      {}
+    >;
+}
 
 export { DiscoveryApi };
 
