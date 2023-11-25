@@ -40,7 +40,7 @@ import {
 
 import { IdentityRef } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
 
-describe('AzureDevOpsApi', () => {
+describe('mappers', () => {
   describe('mappedRepoBuild', () => {
     describe('mappedRepoBuild happy path', () => {
       it('should return RepoBuild from Build', () => {
