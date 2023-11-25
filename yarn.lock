@@ -8658,10 +8658,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-sentry@workspace:plugins/scaffolder-backend-module-sentry"
   dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    msw: ^2.0.0
+    yaml: ^2.3.3
   languageName: unknown
   linkType: soft
 
@@ -34764,7 +34768,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^2.0.8":
+"msw@npm:^2.0.0, msw@npm:^2.0.8":
   version: 2.0.9
   resolution: "msw@npm:2.0.9"
   dependencies:
@@ -45031,7 +45035,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:2.3.4, yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2":
+"yaml@npm:2.3.4, yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2, yaml@npm:^2.3.3":
   version: 2.3.4
   resolution: "yaml@npm:2.3.4"
   checksum: e6d1dae1c6383bcc8ba11796eef3b8c02d5082911c6723efeeb5ba50fc8e881df18d645e64de68e421b577296000bea9c75d6d9097c2f6699da3ae0406c030d8
