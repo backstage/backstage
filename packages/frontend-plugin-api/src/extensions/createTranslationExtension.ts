@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
+import { TranslationMessages, TranslationResource } from '../translation';
 import { createExtension, createExtensionDataRef } from '../wiring';
-import {
-  TranslationResource,
-  TranslationMessages,
-} from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export function createTranslationExtension(options: {
