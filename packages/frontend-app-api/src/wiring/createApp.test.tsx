@@ -107,7 +107,7 @@ describe('createApp', () => {
           featureFlags: [{ name: 'test-1' }],
           extensions: [
             createExtension({
-              id: 'test.page.first',
+              name: 'first',
               attachTo: { id: 'core', input: 'root' },
               output: { element: coreExtensionData.reactElement },
               factory() {
@@ -132,7 +132,8 @@ describe('createApp', () => {
           featureFlags: [{ name: 'test-2' }],
           extensions: [
             createExtension({
-              id: 'core.router',
+              namespace: 'core',
+              name: 'router',
               attachTo: { id: 'core', input: 'root' },
               disabled: true,
               output: {},
