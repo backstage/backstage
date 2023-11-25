@@ -45,3 +45,4 @@ export {
   useEntityEnvironment,
   useEntityAnnotation,
 } from './useEntityEnvironment';
+export type { EntityEnvironmentContextProps } from './useEntityEnvironment';

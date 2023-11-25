@@ -30,7 +30,10 @@ import {
 } from '@backstage/catalog-model';
 import { useEntity } from './useEntity';
 
-type EntityEnvironmentContextProps = {
+/**
+ * @public
+ */
+export type EntityEnvironmentContextProps = {
   environments?: EnvironmentEntityV1alpha1[];
   environment?: EnvironmentEntityV1alpha1;
   setEnvironment: (environment: EnvironmentEntityV1alpha1 | undefined) => void;
@@ -102,6 +105,10 @@ export function useEntityEnvironment(): EntityEnvironmentContextProps {
   return context;
 }
 
+/**
+ * @param annotation - the annotation key to retrieve by context
+ * @public
+ */
 export const useEntityAnnotation = (annotation: string) => {
   const { entity } = useEntity();
   const { environment } = useEntityEnvironment();

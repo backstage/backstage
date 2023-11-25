@@ -12,6 +12,7 @@ import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { EnvironmentEntityV1alpha1 } from '@backstage/catalog-model';
 import { IconButton } from '@material-ui/core';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
@@ -201,6 +202,25 @@ export type EntityDisplayNameProps = {
   defaultKind?: string;
   defaultNamespace?: string;
 };
+
+// @public
+export const EntityEnvironmentContext: React_2.Context<
+  EntityEnvironmentContextProps | undefined
+>;
+
+// @public (undocumented)
+export type EntityEnvironmentContextProps = {
+  environments?: EnvironmentEntityV1alpha1[];
+  environment?: EnvironmentEntityV1alpha1;
+  setEnvironment: (environment: EnvironmentEntityV1alpha1 | undefined) => void;
+  loading: boolean;
+  error?: Error;
+};
+
+// @public
+export const EntityEnvironmentProvider: (
+  props: PropsWithChildren<{}>,
+) => React_2.JSX.Element;
 
 // @public
 export class EntityErrorFilter implements EntityFilter {
@@ -688,6 +708,12 @@ export function useAsyncEntity<
 export function useEntity<TEntity extends Entity = Entity>(): {
   entity: TEntity;
 };
+
+// @public (undocumented)
+export const useEntityAnnotation: (annotation: string) => string;
+
+// @public
+export function useEntityEnvironment(): EntityEnvironmentContextProps;
 
 // @public
 export function useEntityList<
