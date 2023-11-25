@@ -29,6 +29,7 @@
           "enum": ["Environment"]
         },
         "spec": {
+          "type": "object",
           "required": ["lifecycle"],
           "properties": {
             "lifecycle": {
