@@ -39,7 +39,7 @@ export class LighthouseAuditScheduleImpl implements TaskScheduleDefinition {
 
     let lighthouse: TaskScheduleDefinition = {
       frequency: { days: 1 },
-      timeout: {},
+      timeout: { minutes: 10 },
       initialDelay: { minutes: 15 },
     };
 
