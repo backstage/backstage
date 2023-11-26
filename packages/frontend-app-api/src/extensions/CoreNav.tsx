@@ -99,10 +99,10 @@ export const CoreNav = createExtension({
     return {
       element: (
         <Sidebar>
-          <SidebarLogo {...inputs.logos?.elements} />
+          <SidebarLogo {...inputs.logos?.output.elements} />
           <SidebarDivider />
           {inputs.items.map((item, index) => (
-            <SidebarNavItem {...item.target} key={index} />
+            <SidebarNavItem {...item.output.target} key={index} />
           ))}
         </Sidebar>
       ),

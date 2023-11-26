@@ -59,8 +59,8 @@ export const CoreRouter = createExtension({
   factory({ inputs }) {
     return {
       element: (
-        <AppRouter SignInPageComponent={inputs.signInPage?.component}>
-          {inputs.children.element}
+        <AppRouter SignInPageComponent={inputs.signInPage?.output.component}>
+          {inputs.children.output.element}
         </AppRouter>
       ),
     };

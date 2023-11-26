@@ -65,7 +65,9 @@ const Extension3 = createExtension({
     name: nameExtensionDataRef,
   },
   factory({ inputs }) {
-    return { name: `extension-3:${inputs.addons.map(n => n.name).join('-')}` };
+    return {
+      name: `extension-3:${inputs.addons.map(n => n.output.name).join('-')}`,
+    };
   },
 });
 
@@ -111,7 +113,7 @@ const outputExtension = createExtension({
   factory({ inputs }) {
     return {
       element: React.createElement('span', {}, [
-        `Names: ${inputs.names.map(n => n.name).join(', ')}`,
+        `Names: ${inputs.names.map(n => n.output.name).join(', ')}`,
       ]),
     };
   },

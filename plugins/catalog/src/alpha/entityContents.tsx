@@ -39,7 +39,7 @@ export const OverviewEntityContent = createEntityContentExtension({
   },
   loader: async ({ inputs }) =>
     import('./EntityOverviewPage').then(m => (
-      <m.EntityOverviewPage cards={inputs.cards} />
+      <m.EntityOverviewPage cards={inputs.cards.map(c => c.output)} />
     )),
 });
 

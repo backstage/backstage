@@ -112,8 +112,10 @@ export const SearchPage = createPageExtension({
   },
   loader: async ({ config, inputs }) => {
     const getResultItemComponent = (result: SearchResult) => {
-      const value = inputs.items.find(({ item }) => item?.predicate?.(result));
-      return value?.item.component ?? DefaultResultListItem;
+      const value = inputs.items.find(item =>
+        item?.output.item.predicate?.(result),
+      );
+      return value?.output.item.component ?? DefaultResultListItem;
     };
 
     const Component = () => {
