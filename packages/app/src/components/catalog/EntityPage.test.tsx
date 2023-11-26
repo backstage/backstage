@@ -19,6 +19,8 @@ import {
   EntityProvider,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
+  catalogApiRef,
+  CatalogApi,
 } from '@backstage/plugin-catalog-react';
 import { githubActionsApiRef } from '@backstage/plugin-github-actions';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
@@ -29,6 +31,12 @@ import {
 } from '@backstage/test-utils';
 import React from 'react';
 import { cicdContent } from './EntityPage';
+
+const mockedGetEntities: jest.MockedFn<CatalogApi['getEntities']> = jest.fn();
+
+const mockCatalogApi: Partial<CatalogApi> = {
+  getEntities: mockedGetEntities,
+};
 
 describe('EntityPage Test', () => {
   const entity = {
@@ -61,6 +69,7 @@ describe('EntityPage Test', () => {
             [githubActionsApiRef, mockedApi],
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
             [permissionApiRef, mockPermissionApi],
+            [catalogApiRef, mockCatalogApi],
           ]}
         >
           <EntityProvider entity={entity}>
