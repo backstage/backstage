@@ -9,7 +9,7 @@ import { AnyExtensionInputMap } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { ExtensionInputValues } from '@backstage/frontend-plugin-api';
+import { ResolvedExtensionInputs } from '@backstage/frontend-plugin-api';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
@@ -29,7 +29,7 @@ export function createEntityCardExtension<
     | typeof entityFilterFunctionExtensionDataRef.T
     | typeof entityFilterExpressionExtensionDataRef.T;
   loader: (options: {
-    inputs: Expand<ExtensionInputValues<TInputs>>;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
 }): ExtensionDefinition<{
   filter?: string | undefined;
@@ -54,7 +54,7 @@ export function createEntityContentExtension<
     | typeof entityFilterFunctionExtensionDataRef.T
     | typeof entityFilterExpressionExtensionDataRef.T;
   loader: (options: {
-    inputs: Expand<ExtensionInputValues<TInputs>>;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
 }): ExtensionDefinition<{
   title: string;

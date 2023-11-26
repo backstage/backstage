@@ -115,10 +115,10 @@ describe('createSearchResultListItemExtension', () => {
         );
 
         const getResultItemComponent = (result: SearchResult) => {
-          const value = inputs.items.find(({ item }) =>
-            item?.predicate?.(result),
+          const value = inputs.items.find(item =>
+            item?.output.item.predicate?.(result),
           );
-          return value?.item.component ?? DefaultResultItem;
+          return value?.output.item.component ?? DefaultResultItem;
         };
 
         const Component = () => {

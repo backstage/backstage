@@ -47,8 +47,8 @@ export const CoreLayout = createExtension({
     return {
       element: (
         <SidebarPage>
-          {inputs.nav.element}
-          {inputs.content.element}
+          {inputs.nav.output.element}
+          {inputs.content.output.element}
         </SidebarPage>
       ),
     };

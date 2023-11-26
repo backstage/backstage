@@ -39,7 +39,7 @@ export const CatalogIndexPage = createPageExtension({
   },
   loader: async ({ inputs }) => {
     const { BaseCatalogPage } = await import('../components/CatalogPage');
-    const filters = inputs.filters.map(filter => filter.element);
+    const filters = inputs.filters.map(filter => filter.output.element);
     return <BaseCatalogPage filters={<>{filters}</>} />;
   },
 });
@@ -64,11 +64,11 @@ export const CatalogEntityPage = createPageExtension({
           <EntityLayout>
             {inputs.contents.map(content => (
               <EntityLayout.Route
-                key={content.path}
-                path={content.path}
-                title={content.title}
+                key={content.output.path}
+                path={content.output.path}
+                title={content.output.title}
               >
-                {content.element}
+                {content.output.element}
               </EntityLayout.Route>
             ))}
           </EntityLayout>

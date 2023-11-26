@@ -39,7 +39,9 @@ const UserSettingsPage = createPageExtension({
   },
   loader: ({ inputs }) =>
     import('./components/SettingsPage').then(m => (
-      <m.SettingsPage providerSettings={inputs.providerSettings?.element} />
+      <m.SettingsPage
+        providerSettings={inputs.providerSettings?.output.element}
+      />
     )),
 });
 

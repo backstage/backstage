@@ -153,7 +153,7 @@ describe('instantiateAppNodeTree', () => {
     expect(tree.root.instance).toBeDefined();
     expect(childNode?.instance).toBeDefined();
     expect(tree.root.instance?.getData(inputMirrorDataRef)).toEqual({
-      test: [{ test: 'test' }],
+      test: [{ extensionId: 'child-node', output: { test: 'test' } }],
     });
 
     // Multiple calls should have no effect
@@ -296,9 +296,18 @@ describe('createAppNodeInstance', () => {
 
     expect(Array.from(instance.getDataRefs())).toEqual([inputMirrorDataRef]);
     expect(instance.getData(inputMirrorDataRef)).toEqual({
-      optionalSingletonPresent: { test: 'optionalSingletonPresent' },
-      singleton: { test: 'singleton', other: 2 },
-      many: [{ test: 'many1' }, { test: 'many2', other: 3 }],
+      optionalSingletonPresent: {
+        extensionId: 'core/test',
+        output: { test: 'optionalSingletonPresent' },
+      },
+      singleton: {
+        extensionId: 'core/test',
+        output: { test: 'singleton', other: 2 },
+      },
+      many: [
+        { extensionId: 'core/test', output: { test: 'many1' } },
+        { extensionId: 'core/test', output: { test: 'many2', other: 3 } },
+      ],
     });
   });
 

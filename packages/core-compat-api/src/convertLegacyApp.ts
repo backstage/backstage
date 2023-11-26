@@ -117,7 +117,11 @@ export function convertLegacyApp(
     factory({ inputs }) {
       // Clone the root element, this replaces the FlatRoutes declared in the app with out content input
       return {
-        element: React.cloneElement(rootEl, undefined, inputs.content.element),
+        element: React.cloneElement(
+          rootEl,
+          undefined,
+          inputs.content.output.element,
+        ),
       };
     },
   });

@@ -17,7 +17,7 @@
 import { AnyApiFactory, AnyApiRef } from '@backstage/core-plugin-api';
 import { PortableSchema } from '../schema';
 import {
-  ExtensionInputValues,
+  ResolvedExtensionInputs,
   createExtension,
   coreExtensionData,
 } from '../wiring';
@@ -34,7 +34,7 @@ export function createApiExtension<
         api: AnyApiRef;
         factory: (options: {
           config: TConfig;
-          inputs: Expand<ExtensionInputValues<TInputs>>;
+          inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         }) => AnyApiFactory;
       }
     | {

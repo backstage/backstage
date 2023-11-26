@@ -19,7 +19,7 @@ import { ExtensionBoundary } from '../components';
 import { PortableSchema } from '../schema';
 import {
   createExtension,
-  ExtensionInputValues,
+  ResolvedExtensionInputs,
   AnyExtensionInputMap,
   createExtensionDataRef,
   ExtensionDefinition,
@@ -47,7 +47,7 @@ export function createSignInPageExtension<
   inputs?: TInputs;
   loader: (options: {
     config: TConfig;
-    inputs: Expand<ExtensionInputValues<TInputs>>;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<ComponentType<SignInPageProps>>;
 }): ExtensionDefinition<TConfig> {
   return createExtension({

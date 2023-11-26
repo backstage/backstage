@@ -45,7 +45,7 @@ export const Core = createExtension({
   },
   factory({ inputs }) {
     return {
-      root: inputs.root.element,
+      root: inputs.root.output.element,
     };
   },
 });

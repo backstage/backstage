@@ -20,7 +20,7 @@ import { createSchemaFromZod, PortableSchema } from '../schema';
 import {
   coreExtensionData,
   createExtension,
-  ExtensionInputValues,
+  ResolvedExtensionInputs,
   AnyExtensionInputMap,
 } from '../wiring';
 import { RouteRef } from '../routing';
@@ -52,7 +52,7 @@ export function createPageExtension<
     routeRef?: RouteRef;
     loader: (options: {
       config: TConfig;
-      inputs: Expand<ExtensionInputValues<TInputs>>;
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     }) => Promise<JSX.Element>;
   },
 ): ExtensionDefinition<TConfig> {

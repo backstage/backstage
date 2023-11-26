@@ -51,8 +51,8 @@ const HomepageCompositionRootExtension = createPageExtension({
   loader: ({ inputs }) =>
     import('./components/').then(m => (
       <m.HomepageCompositionRoot
-        children={inputs.props?.children}
-        title={inputs.props?.title}
+        children={inputs.props?.output.children}
+        title={inputs.props?.output.title}
       />
     )),
 });
