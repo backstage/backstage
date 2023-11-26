@@ -61,13 +61,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: '1',
       minWidth: '0px',
     },
-    cardGrid: {
-      display: 'grid',
-      gap: theme.spacing(1.5),
-      gridTemplateColumns: `repeat(auto-fit, minmax(auto, ${theme.spacing(
-        34,
-      )}px))`,
-    },
   }),
 );
 
@@ -124,12 +117,19 @@ const MemberComponent = (props: { member: UserEntity }) => {
   );
 };
 
-const useListStyles = makeStyles(() => ({
+const useListStyles = makeStyles(theme => ({
   root: {
     height: '100%',
   },
   cardContent: {
     overflow: 'auto',
+  },
+  memberList: {
+    display: 'grid',
+    gap: theme.spacing(1.5),
+    gridTemplateColumns: `repeat(auto-fit, minmax(auto, ${theme.spacing(
+      34,
+    )}px))`,
   },
 }));
 
@@ -139,7 +139,6 @@ export const MembersListCard = (props: {
   pageSize?: number;
   showAggregateMembersToggle?: boolean;
 }) => {
-  const classes = useStyles();
   const {
     memberDisplayTitle = 'Members',
     pageSize = 50,
@@ -228,7 +227,7 @@ export const MembersListCard = (props: {
   let memberList: React.JSX.Element;
   if (members && members.length > 0) {
     memberList = (
-      <Box className={classes.cardGrid}>
+      <Box className={classes.memberList}>
         {members.slice(pageSize * (page - 1), pageSize * page).map(member => (
           <MemberComponent member={member} key={member.metadata.uid} />
         ))}
