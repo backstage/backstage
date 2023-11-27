@@ -29,13 +29,5 @@
  * @packageDocumentation
  */
 
-export {
-  kubernetesObjectsProviderExtensionPoint,
-  type KubernetesObjectsProviderExtensionPoint,
-  kubernetesClusterSupplierExtensionPoint,
-  type KubernetesClusterSupplierExtensionPoint,
-  kubernetesAuthStrategyExtensionPoint,
-  type KubernetesAuthStrategyExtensionPoint,
-} from './extensions';
-
+export * from './extensions';
 export * from './types';
