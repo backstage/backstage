@@ -100,7 +100,7 @@ Github Workflow Runs optional UI to show in Card view instead of table, with bra
 ```tsx
 
 // You can add the tab to any number of pages, the service page is shown as an
-// example here
+// example given here
 const serviceEntityPage = (
   <EntityLayout>
     {/* other tabs... */}
