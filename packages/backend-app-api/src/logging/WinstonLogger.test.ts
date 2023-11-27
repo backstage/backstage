@@ -30,7 +30,7 @@ describe('WinstonLogger', () => {
       stack: 'hello (world) from this file',
     };
     expect(redacter.format.transform(msg(log))).toEqual(msg(log));
-    redacter.add(['hello']);
+    redacter.add(['hello\n']);
     expect(redacter.format.transform(msg(log))).toEqual(
       msg({
         ...log,
