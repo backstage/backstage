@@ -35,6 +35,7 @@ import { useProjectName } from '../useProjectName';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { Breadcrumbs, Link, WarningPanel } from '@backstage/core-components';
+import { getLocation } from '../useLocation';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -64,8 +65,9 @@ const useStyles = makeStyles<Theme>(theme => ({
 export const WorkflowRunDetails = (props: { entity: Entity }) => {
   const { value: projectName, loading, error } = useProjectName(props.entity);
   const [projectId] = (projectName ?? '/').split('/');
+  const location = getLocation(props.entity);
 
-  const details = useWorkflowRunsDetails(projectId);
+  const details = useWorkflowRunsDetails(projectId, location);
 
   const classes = useStyles();
   if (error) {

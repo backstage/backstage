@@ -35,9 +35,10 @@ export type WorkflowRun = {
 
 export function useWorkflowRuns(options: {
   projectId: string;
+  location: string;
   cloudBuildFilter: string;
 }) {
-  const { projectId, cloudBuildFilter } = options;
+  const { projectId, location, cloudBuildFilter } = options;
   const api = useApi(cloudbuildApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -54,6 +55,7 @@ export function useWorkflowRuns(options: {
     return api
       .listWorkflowRuns({
         projectId,
+        location,
         cloudBuildFilter,
       })
       .then(
@@ -69,6 +71,7 @@ export function useWorkflowRuns(options: {
               try {
                 await api.reRunWorkflow({
                   projectId,
+                  location,
                   runId: run.id,
                 });
               } catch (e) {

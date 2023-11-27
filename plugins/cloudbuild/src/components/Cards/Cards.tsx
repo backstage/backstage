@@ -22,6 +22,7 @@ import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { Theme, makeStyles, LinearProgress } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { CLOUDBUILD_ANNOTATION } from '../useProjectName';
+import { getLocation } from '../useLocation';
 import { getCloudbuildFilter } from '../useCloudBuildFilter';
 
 import {
@@ -80,10 +81,12 @@ export const LatestWorkflowRunCard = (props: { branch: string }) => {
   const { entity } = useEntity();
   const errorApi = useApi(errorApiRef);
   const projectId = entity?.metadata.annotations?.[CLOUDBUILD_ANNOTATION] || '';
+  const location = getLocation(entity);
   const cloudBuildFilter = getCloudbuildFilter(entity);
 
   const [{ runs, loading, error }] = useWorkflowRuns({
     projectId,
+    location,
     cloudBuildFilter,
   });
   const lastRun = runs?.[0] ?? ({} as WorkflowRun);
