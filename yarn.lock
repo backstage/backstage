@@ -3855,10 +3855,13 @@ __metadata:
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/plugin-puppetdb": "workspace:^"
     "@backstage/plugin-stackstorm": "workspace:^"
+    "@backstage/version-bridge": "workspace:^"
     "@oriflame/backstage-plugin-score-card": ^0.7.0
     "@testing-library/jest-dom": ^6.0.0
+    "@testing-library/react": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0

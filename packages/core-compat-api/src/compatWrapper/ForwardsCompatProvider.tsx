@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './compatWrapper';
 
-export { collectLegacyRoutes } from './collectLegacyRoutes';
-export { collectLegacyComponents } from './collectLegacyComponents';
-export { convertLegacyApp } from './convertLegacyApp';
-export { convertLegacyRouteRef } from './convertLegacyRouteRef';
+import React from 'react';
+import { ReactNode } from 'react';
+
+export function ForwardsCompatProvider(props: { children: ReactNode }) {
+  // TODO(Rugvip): Implement
+  return <>{props.children}</>;
+}
