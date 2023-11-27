@@ -9944,7 +9944,7 @@ __metadata:
     "@stoplight/spectral-parsers": ^1.0.2
     "@stoplight/spectral-rulesets": ^1.18.0
     "@stoplight/spectral-runtime": ^1.1.2
-    "@stoplight/types": ^13.14.0
+    "@stoplight/types": ^14.0.0
     "@types/is-glob": ^4.0.2
     "@types/mock-fs": ^4.13.0
     "@types/node": ^18.17.8
@@ -16346,13 +16346,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/types@npm:^12.3.0 || ^13.0.0, @stoplight/types@npm:^13.0.0, @stoplight/types@npm:^13.12.0, @stoplight/types@npm:^13.14.0, @stoplight/types@npm:^13.15.0, @stoplight/types@npm:^13.6.0":
+"@stoplight/types@npm:^12.3.0 || ^13.0.0, @stoplight/types@npm:^13.0.0, @stoplight/types@npm:^13.12.0, @stoplight/types@npm:^13.15.0, @stoplight/types@npm:^13.6.0":
   version: 13.20.0
   resolution: "@stoplight/types@npm:13.20.0"
   dependencies:
     "@types/json-schema": ^7.0.4
     utility-types: ^3.10.0
   checksum: b4c7ee22a8d4377aa9b2f901887c17b4a27d1009b2b9348962b2c6a72100ca954d11293a6dd2de01920e8fdc589e31b20ad84421eb0bf5edd9aeef5b5810f04b
+  languageName: node
+  linkType: hard
+
+"@stoplight/types@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "@stoplight/types@npm:14.0.0"
+  dependencies:
+    "@types/json-schema": ^7.0.4
+    utility-types: ^3.10.0
+  checksum: 462fb6c718a2679927421ca1fffb5e31be2d150130e95a2771ffba04f68fc0e0f8ef3d4ae050e63fd4044bc4103e2ea82c98e1f5c7ff192a78914838eb250e5e
   languageName: node
   linkType: hard
 
