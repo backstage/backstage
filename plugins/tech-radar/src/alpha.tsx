@@ -24,7 +24,10 @@ import {
 import React from 'react';
 import { techRadarApiRef } from './api';
 import { SampleTechRadarApi } from './sample';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
 import { rootRouteRef } from './plugin';
 
 /** @alpha */
@@ -44,7 +47,9 @@ export const TechRadarPage = createPageExtension({
     }),
   ),
   loader: ({ config }) =>
-    import('./components').then(m => <m.RadarPage {...config} />),
+    import('./components').then(m =>
+      compatWrapper(<m.RadarPage {...config} />),
+    ),
 });
 
 /** @alpha */
