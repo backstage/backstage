@@ -239,4 +239,11 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
       underline: 'hover',
     },
   },
+  MuiStepper: {
+    styleOverrides: {
+      root: {
+        overflowX: 'auto',
+      },
+    },
+  },
 };

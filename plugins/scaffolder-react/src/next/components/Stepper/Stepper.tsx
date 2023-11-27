@@ -190,12 +190,7 @@ export const Stepper = (stepperProps: StepperProps) => {
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
-      <MuiStepper
-        activeStep={activeStep}
-        alternativeLabel
-        variant="elevation"
-        style={{ overflowX: 'auto' }}
-      >
+      <MuiStepper activeStep={activeStep} alternativeLabel variant="elevation">
         {steps.map((step, index) => {
           const isAllowedLabelClick = activeStep > index;
           return (
