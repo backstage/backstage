@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-kubernetes-node': minor
+'@backstage/plugin-kubernetes-node': patch
 '@backstage/plugin-kubernetes-backend': patch
 ---
 
