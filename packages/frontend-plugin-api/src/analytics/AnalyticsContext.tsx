@@ -37,9 +37,8 @@ export const useAnalyticsContext = (): AnalyticsContextValue => {
   // Provide a default value if no value exists.
   if (theContext === undefined) {
     return {
-      routeRef: 'unknown',
       pluginId: 'root',
-      extension: 'App',
+      extensionId: 'App',
     };
   }
 

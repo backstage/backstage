@@ -97,7 +97,6 @@ import { CoreRouter } from '../extensions/CoreRouter';
 import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
-import { RouteTracker } from '../routing/RouteTracker';
 
 const builtinExtensions = [
   Core,
@@ -342,8 +341,9 @@ export function createSpecializedApp(options?: {
       <AppContextProvider appContext={appContext}>
         <AppThemeProvider>
           <RoutingProvider {...routeInfo} routeBindings={routeBindings}>
-            <InternalAppContext.Provider value={{ appIdentityProxy }}>
-              <RouteTracker routeObjects={routeInfo.routeObjects} />
+            <InternalAppContext.Provider
+              value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
+            >
               {rootEl}
             </InternalAppContext.Provider>
           </RoutingProvider>

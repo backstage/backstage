@@ -16,7 +16,6 @@
 
 import React, { useEffect } from 'react';
 import { matchRoutes, useLocation } from 'react-router-dom';
-import { RouteRef, BackstagePlugin } from '@backstage/core-plugin-api';
 import {
   useAnalytics,
   AnalyticsContext,
@@ -55,18 +54,6 @@ const getExtensionContext = (
       return undefined;
     }
 
-    // If there is a single route ref, use it.
-    let routeRef: RouteRef | undefined;
-    if (routeObject.routeRefs.size === 1) {
-      routeRef = routeObject.routeRefs.values().next().value;
-    }
-
-    // If there is a single plugin, use it.
-    let plugin: BackstagePlugin | undefined;
-    if (routeObject.plugins.size === 1) {
-      plugin = routeObject.plugins.values().next().value;
-    }
-
     const params = Object.entries(
       routeMatch?.params || {},
     ).reduce<AnalyticsEventAttributes>((acc, [key, value]) => {
@@ -76,12 +63,13 @@ const getExtensionContext = (
       return acc;
     }, {});
 
+    const plugin = routeObject.appNode?.spec.source;
+    const extension = routeObject.appNode?.spec.extension;
+
     return {
-      extension: 'App',
-      pluginId: plugin?.getId() || 'root',
-      ...(routeRef ? { routeRef: (routeRef as { id?: string }).id } : {}),
-      _routeNodeType: routeObject.element as string,
       params,
+      pluginId: plugin?.id || 'root',
+      extensionId: extension?.id || 'App',
     };
   } catch {
     return undefined;
