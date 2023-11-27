@@ -9,31 +9,46 @@ Backstage supports developing new plugins or components using Material UI v5. At
 By default, the `UnifiedThemeProvider` is already used. If you add a custom theme in your `createApp` function, you would need to replace the Material UI `ThemeProvider` with the `UnifiedThemeProvider`:
 
 ```diff ts
-const app = createApp({
-  // ...
-  themes: [
-    {
-      // ...
-      provider: ({ children }) => (
--       <ThemeProvider theme={lightTheme}>.
--         <CssBaseline>{children}</CssBaseline>.
--       </ThemeProvider
-+       <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
-      ),
-    }
-  ]
-});
++ import import {
++   UnifiedThemeProvider,
++   themes as builtinThemes,
++ } from '@backstage/theme';
+
+  const app = createApp({
+    // ...
+    themes: [
+      {
+        // ...
+        provider: ({ children }) => (
+-         <ThemeProvider theme={lightTheme}>.
+-           <CssBaseline>{children}</CssBaseline>.
+-         </ThemeProvider
++         <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
+        ),
+      }
+    ]
+  });
 ```
 
 Before making specific changes to your Backstage instance, it might be helpful to take a look at the [Migration Guide provided by Material UI](https://mui.com/material-ui/migration/migration-v4/) first. It breaks down the differences between v4 and v5, and will make it easier to understand the impact on your Backstage instance & plugins.
 
 It is worth noting that we are still using `@mui/styles` & `jss`. You may stumble upon documentation for migrating to `emotion` when using `makeStyles` or `withStyles`. It is not necessary to switch to `emotion`.
 
+Important to keep in mind is that Material UI v5 is meant to be used with React Version 17 or higher. This means if you intend to use the Material UI v5 components in your plugins, you have to enforce React Version to be at least 17 for these plugins:
+
+```json
+...
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+...
+```
+
 To comply with Material UI recommendations, we are enforcing a new linting rule that favors standard imports over named imports and also restricts 3rd-level imports as they are considered private ([Guide: Minimizing Bundle Size](https://mui.com/material-ui/guides/minimizing-bundle-size)).
 
-Important to keep in mind is that Material UI v5 is meant to be used with React Version 17 or higher. This means if you intend to use the Material UI v5 components in your plugins, you have to enforce React Version to be at least 17 for these plugins as well.
-
-There are `core-components` as well as components exported from `*-react` plugins written in Material UI v4, which expect Material UI components as props. In these cases you will still be forced to import Material UI v4 components.
+There are `core-components` as well as components exported from Backstage `*-react` plugins written in Material UI v4, which expect Material UI components as props. In these cases you will still be forced to use Material UI v4.
 
 For current known issues with the Material UI v5 migration, follow our [Milestone on GitHub](https://github.com/backstage/backstage/milestone/40). Please open a new issue if you run into different problems.
 
