@@ -48,7 +48,7 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@rollup/plugin-commonjs": "^23.0.0",
     "@rollup/plugin-json": "^5.0.0",
-    "@rollup/plugin-node-resolve": "^13.0.6",
+    "@rollup/plugin-node-resolve": "^15.0.0",
     "@rollup/plugin-yaml": "^4.0.0",
     "@spotify/eslint-config-base": "^14.0.0",
     "@spotify/eslint-config-react": "^14.0.0",
