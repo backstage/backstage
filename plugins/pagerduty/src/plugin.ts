@@ -32,7 +32,7 @@ export const rootRouteRef = createRouteRef({
 
 /**
  * @public
- * @deprecated This plugin will be removed in a future release. Please use @pagerduty/backstage-plugin plugin instead (https://www.npmjs.com/package/@pagerduty/backstage-plugin).
+ * @deprecated This plugin will be removed in a future release. Please use \@pagerduty/backstage-plugin plugin instead (https://www.npmjs.com/package/\@pagerduty/backstage-plugin).
  */
 export const pagerDutyPlugin = createPlugin({
   id: 'pagerduty',
@@ -52,7 +52,7 @@ export const pagerDutyPlugin = createPlugin({
 
 /**
  * @public
- * @deprecated This plugin and it's cards will be removed in a future release. Please use @pagerduty/backstage-plugin plugin instead (https://www.npmjs.com/package/@pagerduty/backstage-plugin).
+ * @deprecated This plugin and it's cards will be removed in a future release. Please use \@pagerduty/backstage-plugin plugin instead (https://www.npmjs.com/package/\@pagerduty/backstage-plugin).
  */
 export const EntityPagerDutyCard = pagerDutyPlugin.provide(
   createComponentExtension({
@@ -68,7 +68,7 @@ export const EntityPagerDutyCard = pagerDutyPlugin.provide(
 
 /**
  * @public
- * @deprecated This plugin and it's cards will be removed in a future release. Please use @pagerduty/backstage-plugin plugin instead (https://www.npmjs.com/package/@pagerduty/backstage-plugin).
+ * @deprecated This plugin and it's cards will be removed in a future release. Please use \@pagerduty/backstage-plugin plugin instead (https://www.npmjs.com/package/\@pagerduty/backstage-plugin).
  */
 export const HomePagePagerDutyCard = pagerDutyPlugin.provide(
   createCardExtension<HomePagePagerDutyCardProps>({
