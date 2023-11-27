@@ -46,7 +46,7 @@
     "@stoplight/spectral-parsers": "^1.0.2",
     "@stoplight/spectral-rulesets": "^1.18.0",
     "@stoplight/spectral-runtime": "^1.1.2",
-    "@stoplight/types": "^13.14.0",
+    "@stoplight/types": "^14.0.0",
     "chalk": "^4.0.0",
     "codeowners-utils": "^1.0.2",
     "commander": "^9.1.0",
