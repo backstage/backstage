@@ -35,13 +35,10 @@ import { CoreNav } from '../extensions/CoreNav';
 import {
   AnyApiFactory,
   ApiHolder,
-  AppComponents,
-  AppContext,
   appThemeApiRef,
   ConfigApi,
   configApiRef,
   IconComponent,
-  BackstagePlugin as LegacyBackstagePlugin,
   featureFlagsApiRef,
   attachComponentData,
   identityApiRef,
@@ -61,8 +58,6 @@ import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { LocalStorageFeatureFlags } from '../../../core-app-api/src/apis/implementations/FeatureFlagsApi/LocalStorageFeatureFlags';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultConfigLoader';
@@ -75,11 +70,7 @@ import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementa
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  apis as defaultApis,
-  components as defaultComponents,
-  icons as defaultIcons,
-} from '../../../app-defaults/src/defaults';
+import { apis as defaultApis } from '../../../app-defaults/src/defaults';
 import { Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
@@ -100,7 +91,6 @@ import {
   DefaultNotFoundErrorPageComponent,
 } from '../extensions/components';
 import { AppNode } from '@backstage/frontend-plugin-api';
-import { toLegacyPlugin } from '../routing/toLegacyPlugin';
 import { InternalAppContext } from './InternalAppContext';
 import { CoreRouter } from '../extensions/CoreRouter';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -315,12 +305,6 @@ export function createSpecializedApp(options?: {
     config,
   });
 
-  const appContext = createLegacyAppContext(
-    features.filter(
-      (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
-    ),
-  );
-
   const appIdentityProxy = new AppIdentityProxy();
   const apiHolder = createApiHolder(tree, config, appIdentityProxy);
 
@@ -353,45 +337,21 @@ export function createSpecializedApp(options?: {
 
   const App = () => (
     <ApiProvider apis={apiHolder}>
-      <AppContextProvider appContext={appContext}>
-        <AppThemeProvider>
-          <RoutingProvider {...routeInfo} routeBindings={routeBindings}>
-            <InternalAppContext.Provider
-              value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
-            >
-              {rootEl}
-            </InternalAppContext.Provider>
-          </RoutingProvider>
-        </AppThemeProvider>
-      </AppContextProvider>
+      <AppThemeProvider>
+        <RoutingProvider {...routeInfo} routeBindings={routeBindings}>
+          <InternalAppContext.Provider
+            value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
+          >
+            {rootEl}
+          </InternalAppContext.Provider>
+        </RoutingProvider>
+      </AppThemeProvider>
     </ApiProvider>
   );
 
   return {
     createRoot() {
       return <App />;
-    },
-  };
-}
-
-function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
-  return {
-    getPlugins(): LegacyBackstagePlugin[] {
-      return plugins.map(toLegacyPlugin);
-    },
-
-    getSystemIcon(key: string): IconComponent | undefined {
-      return key in defaultIcons
-        ? defaultIcons[key as keyof typeof defaultIcons]
-        : undefined;
-    },
-
-    getSystemIcons(): Record<string, IconComponent> {
-      return defaultIcons;
-    },
-
-    getComponents(): AppComponents {
-      return defaultComponents;
     },
   };
 }
