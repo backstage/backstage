@@ -281,8 +281,7 @@ export { bitbucketServerAuthApiRef };
 // @public
 export type CommonAnalyticsContext = {
   pluginId: string;
-  routeRef: string;
-  extension: string;
+  extensionId: string;
 };
 
 export { ConfigApi };
