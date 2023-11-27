@@ -19,9 +19,8 @@ import { Tracker, routableExtensionRenderedEvent } from './Tracker';
 
 describe('Tracker', () => {
   const defaultContext = {
-    routeRef: 'unknown',
     pluginId: 'root',
-    extension: 'App',
+    extensionId: 'App',
   };
   const globalEvents = getOrCreateGlobalSingleton<any>(
     'core-plugin-api:analytics-tracker-events',
@@ -56,9 +55,8 @@ describe('Tracker', () => {
 
   it('captures simple event with set context', () => {
     trackerUnderTest.setContext({
-      routeRef: 'catalog:entity',
       pluginId: 'catalog',
-      extension: 'App',
+      extensionId: 'App',
     });
     trackerUnderTest.captureEvent('click', 'test 2', {
       value: 2,
@@ -72,9 +70,8 @@ describe('Tracker', () => {
         value: 2,
         attributes: { to: '/page-2' },
         context: {
-          routeRef: 'catalog:entity',
           pluginId: 'catalog',
-          extension: 'App',
+          extensionId: 'App',
         },
       }),
     );
@@ -83,10 +80,8 @@ describe('Tracker', () => {
   describe('accurate navigate events', () => {
     it('never captures _routeNodeType context key on navigate event', () => {
       trackerUnderTest.setContext({
-        routeRef: 'catalog:entity',
         pluginId: 'catalog',
-        extension: 'App',
-        _routeNodeType: 'mounted',
+        extensionId: 'App',
       });
       trackerUnderTest.captureEvent('navigate', '/page-3');
 
@@ -99,7 +94,6 @@ describe('Tracker', () => {
     it('never immediately captures navigate event with _routeNodeType "gathered"', () => {
       trackerUnderTest.setContext({
         ...defaultContext,
-        _routeNodeType: 'gathered',
       });
       trackerUnderTest.captureEvent('navigate', '/page-4');
 
@@ -116,15 +110,13 @@ describe('Tracker', () => {
       // User navigates to a gathered mountpoint with multiple plugins
       trackerUnderTest.setContext({
         ...defaultContext,
-        _routeNodeType: 'gathered',
       });
       trackerUnderTest.captureEvent('navigate', '/page-5');
 
       // A routable extension is rendered with specific plugin context
       trackerUnderTest.setContext({
-        routeRef: 'some:ref',
         pluginId: 'some-plugin',
-        extension: 'App',
+        extensionId: 'App',
       });
       trackerUnderTest.captureEvent(routableExtensionRenderedEvent, '');
 
@@ -138,9 +130,8 @@ describe('Tracker', () => {
           action: 'navigate',
           subject: '/page-5',
           context: {
-            routeRef: 'some:ref',
             pluginId: 'some-plugin',
-            extension: 'App',
+            extensionId: 'App',
           },
         }),
       );
@@ -150,9 +141,8 @@ describe('Tracker', () => {
           action: 'click',
           subject: 'test 5',
           context: {
-            routeRef: 'some:ref',
             pluginId: 'some-plugin',
-            extension: 'App',
+            extensionId: 'App',
           },
         }),
       );
@@ -162,22 +152,19 @@ describe('Tracker', () => {
       // User navigates to a gathered mountpoint with multiple plugins
       trackerUnderTest.setContext({
         ...defaultContext,
-        _routeNodeType: 'gathered',
       });
       trackerUnderTest.captureEvent('navigate', '/page-6');
 
       // A routable extension is rendered with specific plugin context
       trackerUnderTest.setContext({
-        routeRef: 'another:ref',
         pluginId: 'another-plugin',
-        extension: 'App',
+        extensionId: 'App',
       });
       trackerUnderTest.captureEvent(routableExtensionRenderedEvent, '');
 
       // User navigates to another gathered mountpoint with multiple plugins
       trackerUnderTest.setContext({
         ...defaultContext,
-        _routeNodeType: 'gathered',
       });
       trackerUnderTest.captureEvent('navigate', '/page-6-2');
 
@@ -188,9 +175,8 @@ describe('Tracker', () => {
           action: 'navigate',
           subject: '/page-6',
           context: {
-            routeRef: 'another:ref',
             pluginId: 'another-plugin',
-            extension: 'App',
+            extensionId: 'App',
           },
         }),
       );
@@ -200,7 +186,6 @@ describe('Tracker', () => {
       // User navigates to a gathered mountpoint with multiple plugins
       trackerUnderTest.setContext({
         ...defaultContext,
-        _routeNodeType: 'gathered',
       });
       trackerUnderTest.captureEvent('navigate', '/page-7');
 
@@ -230,16 +215,14 @@ describe('Tracker', () => {
       // User navigates to a gathered mountpoint with multiple plugins
       trackerUnderTest.setContext({
         ...defaultContext,
-        _routeNodeType: 'gathered',
       });
       trackerUnderTest.captureEvent('navigate', '/page-8');
 
       // A routable extension is rendered with specific plugin context and
       // captured via a separate tracker instance.
       const anotherTracker = new Tracker(analyticsApiSpy, {
-        routeRef: 'the:ref',
         pluginId: 'the-plugin',
-        extension: 'App',
+        extensionId: 'App',
       });
       anotherTracker.captureEvent(routableExtensionRenderedEvent, '');
 
@@ -254,9 +237,8 @@ describe('Tracker', () => {
           action: 'navigate',
           subject: '/page-8',
           context: {
-            routeRef: 'the:ref',
             pluginId: 'the-plugin',
-            extension: 'App',
+            extensionId: 'App',
           },
         }),
       );
@@ -273,15 +255,13 @@ describe('Tracker', () => {
       // User navigates to a gathered mountpoint with multiple plugins
       trackerUnderTest.setContext({
         ...defaultContext,
-        _routeNodeType: 'gathered',
       });
       trackerUnderTest.captureEvent('navigate', '/page-9');
 
       // A routable extension is rendered with specific plugin context
       trackerUnderTest.setContext({
-        routeRef: 'very:ref',
         pluginId: 'very-plugin',
-        extension: 'ShouldBeReplaced',
+        extensionId: 'ShouldBeReplaced',
       });
       trackerUnderTest.captureEvent(routableExtensionRenderedEvent, '');
 
@@ -295,9 +275,8 @@ describe('Tracker', () => {
           action: 'navigate',
           subject: '/page-9',
           context: {
-            routeRef: 'very:ref',
             pluginId: 'very-plugin',
-            extension: 'App',
+            extensionId: 'App',
           },
         }),
       );

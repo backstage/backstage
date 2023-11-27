@@ -23,9 +23,8 @@ const AnalyticsSpy = () => {
   const context = useAnalyticsContext();
   return (
     <>
-      <div data-testid="route-ref">{context.routeRef}</div>
       <div data-testid="plugin-id">{context.pluginId}</div>
-      <div data-testid="extension">{context.extension}</div>
+      <div data-testid="extension-id">{context.extensionId}</div>
       <div data-testid="custom">{context.custom}</div>
     </>
   );
@@ -36,9 +35,8 @@ describe('AnalyticsContext', () => {
     it('returns default values', () => {
       const { result } = renderHook(() => useAnalyticsContext());
       expect(result.current).toEqual({
-        extension: 'App',
+        extensionId: 'App',
         pluginId: 'root',
-        routeRef: 'unknown',
       });
     });
   });
@@ -51,9 +49,8 @@ describe('AnalyticsContext', () => {
         </AnalyticsContext>,
       );
 
-      expect(result.getByTestId('extension')).toHaveTextContent('App');
+      expect(result.getByTestId('extension-id')).toHaveTextContent('App');
       expect(result.getByTestId('plugin-id')).toHaveTextContent('root');
-      expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
     });
 
     it('uses provided analytics context', () => {
@@ -63,23 +60,23 @@ describe('AnalyticsContext', () => {
         </AnalyticsContext>,
       );
 
-      expect(result.getByTestId('extension')).toHaveTextContent('App');
+      expect(result.getByTestId('extension-id')).toHaveTextContent('App');
       expect(result.getByTestId('plugin-id')).toHaveTextContent('custom');
-      expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
     });
 
     it('uses nested analytics context', () => {
       const result = render(
         <AnalyticsContext attributes={{ pluginId: 'custom' }}>
-          <AnalyticsContext attributes={{ extension: 'AnalyticsSpy' }}>
+          <AnalyticsContext attributes={{ extensionId: 'AnalyticsSpy' }}>
             <AnalyticsSpy />
           </AnalyticsContext>
         </AnalyticsContext>,
       );
 
-      expect(result.getByTestId('extension')).toHaveTextContent('AnalyticsSpy');
+      expect(result.getByTestId('extension-id')).toHaveTextContent(
+        'AnalyticsSpy',
+      );
       expect(result.getByTestId('plugin-id')).toHaveTextContent('custom');
-      expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
     });
   });
 });

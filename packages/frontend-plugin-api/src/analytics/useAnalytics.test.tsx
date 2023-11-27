@@ -58,9 +58,8 @@ describe('useAnalytics', () => {
         some: 'value',
       },
       context: {
-        extension: 'App',
+        extensionId: 'App',
         pluginId: 'root',
-        routeRef: 'unknown',
       },
     });
   });

@@ -84,6 +84,7 @@ export function extractRouteInfoFromAppNode(node: AppNode): {
         caseSensitive: false,
         children: [MATCH_ALL_ROUTE],
         plugins: new Set(),
+        appNode: current,
       };
       parentChildren.push(currentObj);
 

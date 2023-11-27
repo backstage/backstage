@@ -26,14 +26,12 @@ export type CommonAnalyticsContext = {
   pluginId: string;
 
   /**
-   * The ID of the routeRef that was active when the event was captured.
+   * The nearest known parent extension where the event was captured.
    */
-  routeRef: string;
-
   /**
    * The nearest known parent extension where the event was captured.
    */
-  extension: string;
+  extensionId: string;
 };
 
 /**

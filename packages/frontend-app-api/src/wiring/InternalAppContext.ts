@@ -17,10 +17,12 @@
 import { createContext } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
+import { BackstageRouteObject } from '../routing/types';
 
 export const InternalAppContext = createContext<
   | undefined
   | {
       appIdentityProxy: AppIdentityProxy;
+      routeObjects: BackstageRouteObject[];
     }
 >(undefined);

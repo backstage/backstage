@@ -68,9 +68,8 @@ export class Tracker implements AnalyticsTracker {
   constructor(
     private readonly analyticsApi: AnalyticsApi,
     private context: AnalyticsContextValue = {
-      routeRef: 'unknown',
       pluginId: 'root',
-      extension: 'App',
+      extensionId: 'App',
     },
   ) {
     // Only register a single beforeunload event across all trackers.
@@ -110,7 +109,7 @@ export class Tracker implements AnalyticsTracker {
     }: { value?: number; attributes?: AnalyticsEventAttributes } = {},
   ) {
     // Never pass internal "_routeNodeType" context value.
-    const { _routeNodeType, ...context } = this.context;
+    const context = this.context;
 
     // Never fire the special "_routable-extension-rendered" internal event.
     if (action === routableExtensionRenderedEvent) {
@@ -120,7 +119,7 @@ export class Tracker implements AnalyticsTracker {
         globalEvents.mostRecentRoutableExtensionRender = {
           context: {
             ...context,
-            extension: 'App',
+            extensionId: 'App',
           },
         };
       }
@@ -148,11 +147,7 @@ export class Tracker implements AnalyticsTracker {
 
     // Never directly fire a navigation event on a gathered route with default
     // contextual details.
-    if (
-      action === 'navigate' &&
-      _routeNodeType === 'gathered' &&
-      context.pluginId === 'root'
-    ) {
+    if (action === 'navigate' && context.pluginId === 'root') {
       // Instead, set it on the global store.
       globalEvents.mostRecentGatheredNavigation = {
         action,
