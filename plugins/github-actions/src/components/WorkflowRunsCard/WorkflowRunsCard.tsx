@@ -26,11 +26,11 @@ import {
   makeStyles,
   createStyles,
   Theme,
-  CircularProgress,
   TablePagination,
   Select,
   MenuItem,
   TextField,
+  CircularProgress,
 } from '@material-ui/core';
 import {
   EmptyState,
@@ -38,7 +38,6 @@ import {
   MarkdownContent,
   InfoCard,
 } from '@backstage/core-components';
-import { Link as RouterLink } from 'react-router-dom';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import RetryIcon from '@material-ui/icons/Replay';
 import SyncIcon from '@material-ui/icons/Sync';
@@ -154,10 +153,7 @@ export const WorkflowRunsCardView = ({
                       style={{ alignItems: 'center' }}
                     >
                       <Typography variant="h6">
-                        <Link
-                          component={RouterLink}
-                          to={routeLink({ id: run.id })}
-                        >
+                        <Link to={routeLink({ id: run.id })}>
                           <Typography color="primary" variant="h6">
                             {run.workflowName}
                           </Typography>
@@ -257,7 +253,7 @@ const WorkflowRunsCardSearch = ({
 }: {
   searchTerm: string;
   handleSearch: (event: ChangeEvent<HTMLInputElement>) => void;
-  retry: (() => void) | (() => void) | (() => void) | (() => void);
+  retry: () => void;
 }) => {
   return (
     <>
