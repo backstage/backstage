@@ -67,7 +67,10 @@ import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
 import { SearchType } from './components/SearchType';
 import { UrlUpdater } from './components/SearchPage/SearchPage';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
 
 /** @alpha */
 export const SearchApi = createApiExtension({
@@ -225,11 +228,11 @@ export const SearchPage = createPageExtension({
       );
     };
 
-    return (
+    return compatWrapper(
       <SearchContextProvider>
         <UrlUpdater />
         <Component />
-      </SearchContextProvider>
+      </SearchContextProvider>,
     );
   },
 });

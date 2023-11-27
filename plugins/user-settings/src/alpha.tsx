@@ -19,7 +19,10 @@ import {
   createPageExtension,
   createPlugin,
 } from '@backstage/frontend-plugin-api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  convertLegacyRouteRef,
+  compatWrapper,
+} from '@backstage/core-compat-api';
 import { settingsRouteRef } from './plugin';
 
 import React from 'react';
@@ -38,11 +41,13 @@ const UserSettingsPage = createPageExtension({
     ),
   },
   loader: ({ inputs }) =>
-    import('./components/SettingsPage').then(m => (
-      <m.SettingsPage
-        providerSettings={inputs.providerSettings?.output.element}
-      />
-    )),
+    import('./components/SettingsPage').then(m =>
+      compatWrapper(
+        <m.SettingsPage
+          providerSettings={inputs.providerSettings?.output.element}
+        />,
+      ),
+    ),
 });
 
 /**

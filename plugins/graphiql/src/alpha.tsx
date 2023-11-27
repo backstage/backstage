@@ -34,13 +34,17 @@ import {
 } from '@backstage/plugin-graphiql';
 import { createApiFactory, IconComponent } from '@backstage/core-plugin-api';
 import { graphiQLRouteRef } from './route-refs';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
 
 /** @alpha */
 export const GraphiqlPage = createPageExtension({
   defaultPath: '/graphiql',
   routeRef: convertLegacyRouteRef(graphiQLRouteRef),
-  loader: () => import('./components').then(m => <m.GraphiQLPage />),
+  loader: () =>
+    import('./components').then(m => compatWrapper(<m.GraphiQLPage />)),
 });
 
 /** @alpha */

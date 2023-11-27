@@ -15,7 +15,10 @@
  */
 
 import React from 'react';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
 import {
   createPageExtension,
   coreExtensionData,
@@ -40,7 +43,7 @@ export const CatalogIndexPage = createPageExtension({
   loader: async ({ inputs }) => {
     const { BaseCatalogPage } = await import('../components/CatalogPage');
     const filters = inputs.filters.map(filter => filter.output.element);
-    return <BaseCatalogPage filters={<>{filters}</>} />;
+    return compatWrapper(<BaseCatalogPage filters={<>{filters}</>} />);
   },
 });
 
@@ -75,7 +78,7 @@ export const CatalogEntityPage = createPageExtension({
         </AsyncEntityProvider>
       );
     };
-    return <Component />;
+    return compatWrapper(<Component />);
   },
 });
 
