@@ -36,10 +36,7 @@ describe('createApp', () => {
       configLoader: async () =>
         new MockConfigApi({
           app: {
-            extensions: [
-              { 'theme:app/light': false },
-              { 'theme:app/dark': false },
-            ],
+            extensions: [{ 'theme:light': false }, { 'theme:dark': false }],
           },
         }),
       features: [
@@ -47,10 +44,12 @@ describe('createApp', () => {
           id: 'test',
           extensions: [
             createThemeExtension({
-              id: 'derp',
-              title: 'Derp',
-              variant: 'dark',
-              Provider: () => <div>Derp</div>,
+              theme: {
+                id: 'derp',
+                title: 'Derp',
+                variant: 'dark',
+                Provider: () => <div>Derp</div>,
+              },
             }),
           ],
         }),
@@ -207,8 +206,8 @@ describe('createApp', () => {
           <component:core.components.notFoundErrorPage out=[component.ref] />
         ]
         themes [
-          <theme:app/light out=[core.theme] />
-          <theme:app/dark out=[core.theme] />
+          <theme:light out=[core.theme] />
+          <theme:dark out=[core.theme] />
         ]
       </core>"
     `);

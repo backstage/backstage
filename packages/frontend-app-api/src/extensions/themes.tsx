@@ -24,21 +24,25 @@ import LightIcon from '@material-ui/icons/WbSunny';
 import { createThemeExtension } from '@backstage/frontend-plugin-api';
 
 export const LightTheme = createThemeExtension({
-  id: 'light',
-  title: 'Light Theme',
-  variant: 'light',
-  icon: <LightIcon />,
-  Provider: ({ children }) => (
-    <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
-  ),
+  theme: {
+    id: 'light',
+    title: 'Light Theme',
+    variant: 'light',
+    icon: <LightIcon />,
+    Provider: ({ children }) => (
+      <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
+    ),
+  },
 });
 
 export const DarkTheme = createThemeExtension({
-  id: 'dark',
-  title: 'Dark Theme',
-  variant: 'dark',
-  icon: <DarkIcon />,
-  Provider: ({ children }) => (
-    <UnifiedThemeProvider theme={builtinThemes.dark} children={children} />
-  ),
+  theme: {
+    id: 'dark',
+    title: 'Dark Theme',
+    variant: 'dark',
+    icon: <DarkIcon />,
+    Provider: ({ children }) => (
+      <UnifiedThemeProvider theme={builtinThemes.dark} children={children} />
+    ),
+  },
 });

@@ -624,9 +624,10 @@ export function createSubRouteRef<
 }): MakeSubRouteRef<PathParams<Path>, ParentParams>;
 
 // @public (undocumented)
-export function createThemeExtension(
-  theme: AppTheme,
-): ExtensionDefinition<never>;
+export function createThemeExtension(options: {
+  name?: string;
+  theme: AppTheme;
+}): ExtensionDefinition<never>;
 
 export { DiscoveryApi };
 

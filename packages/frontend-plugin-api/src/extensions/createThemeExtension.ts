@@ -18,11 +18,15 @@ import { createExtension, coreExtensionData } from '../wiring';
 import { AppTheme } from '@backstage/core-plugin-api';
 
 /** @public */
-export function createThemeExtension(theme: AppTheme) {
+export function createThemeExtension(options: {
+  name?: string;
+  theme: AppTheme;
+}) {
+  const { theme } = options;
   return createExtension({
     kind: 'theme',
-    namespace: 'app',
-    name: theme.id,
+    namespace: theme.id,
+    name: options?.name,
     attachTo: { id: 'core', input: 'themes' },
     output: {
       theme: coreExtensionData.theme,
