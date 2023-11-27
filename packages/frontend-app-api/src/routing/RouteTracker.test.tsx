@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { TestApiProvider } from '@backstage/test-utils';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BackstageRouteObject } from './types';
 import { fireEvent, render } from '@testing-library/react';
 import { RouteTracker } from './RouteTracker';
@@ -25,6 +25,7 @@ import {
   AnalyticsApi,
   analyticsApiRef,
   AppNode,
+  useAnalytics,
 } from '@backstage/frontend-plugin-api';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 
@@ -186,29 +187,44 @@ describe('RouteTracker', () => {
     });
   });
 
-  it.skip('should return default context when it would have otherwise matched on the root path', async () => {
+  it('should return default context when it would have otherwise matched on the root path', async () => {
+    const Dummy = () => {
+      const analytics = useAnalytics();
+      useEffect(() => {
+        analytics.captureEvent('click', 'test', {});
+      }, [analytics]);
+      return <div>dummy</div>;
+    };
+
     render(
       <MemoryRouter initialEntries={['/not-routable-extension']}>
         <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
           <RouteTracker routeObjects={routeObjects} />
           <Routes>
-            <Route
-              path="/not-routable-extension"
-              element={<>Non-extension</>}
-            />
+            <Route path="/not-routable-extension" element={<Dummy />} />
           </Routes>
         </TestApiProvider>
       </MemoryRouter>,
     );
 
-    expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
+    expect(mockedAnalytics.captureEvent).toHaveBeenNthCalledWith(1, {
       action: 'navigate',
       attributes: {},
       context: {
-        extension: 'App',
+        extensionId: 'App',
         pluginId: 'root',
       },
       subject: '/not-routable-extension',
+      value: undefined,
+    });
+    expect(mockedAnalytics.captureEvent).toHaveBeenNthCalledWith(2, {
+      action: 'click',
+      attributes: undefined,
+      context: {
+        extensionId: 'App',
+        pluginId: 'root',
+      },
+      subject: 'test',
       value: undefined,
     });
   });
