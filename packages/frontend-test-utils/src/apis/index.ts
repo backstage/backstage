@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-/**
- * @packageDocumentation
- *
- * Contains utilities that can be used when testing frontend features such as extensions.
- */
-
-export * from './apis';
-export * from './app';
-
-export { TestApiProvider, TestApiRegistry } from '@backstage/test-utils';
-export type { TestApiProviderProps } from '@backstage/test-utils';
-
-export { withLogCollector } from '@backstage/test-utils';
-
-export { setupRequestMockHandlers } from '@backstage/test-utils';
+export {
+  MockAnalyticsApi,
+  MockConfigApi,
+  type ErrorWithContext,
+  MockErrorApi,
+  type MockErrorApiOptions,
+  MockFetchApi,
+  type MockFetchApiOptions,
+  MockPermissionApi,
+  MockStorageApi,
+  type MockStorageBucket,
+} from '@backstage/test-utils';
