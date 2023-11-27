@@ -148,7 +148,7 @@ export const HomePageRecentlyVisited: (
 
 // @public
 export const HomePageStarredEntities: (
-  props: CardExtensionProps_2<unknown>,
+  props: CardExtensionProps_2<Partial<StarredEntitiesProps>>,
 ) => JSX_2.Element;
 
 // @public
@@ -191,6 +191,12 @@ export const SettingsModal: (props: {
   componentName?: string | undefined;
   children: JSX.Element;
 }) => JSX_2.Element;
+
+// @public
+export type StarredEntitiesProps = {
+  noStarredEntitiesMessage?: React_2.ReactNode | undefined;
+  groupByKind?: boolean;
+};
 
 // @public (undocumented)
 export const TemplateBackstageLogo: (props: {

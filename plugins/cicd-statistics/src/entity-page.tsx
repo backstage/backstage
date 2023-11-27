@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
-import { Grid, makeStyles, Theme } from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
@@ -57,7 +57,7 @@ export function EntityPageCicdCharts() {
   ));
 }
 
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles(
   theme => ({
     pane: {
       padding: theme.spacing(1, 1, 1, 1),

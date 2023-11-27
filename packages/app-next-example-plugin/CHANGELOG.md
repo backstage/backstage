@@ -1,5 +1,13 @@
 # app-next-example-plugin
 
+## 0.0.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+
 ## 0.0.3
 
 ### Patch Changes

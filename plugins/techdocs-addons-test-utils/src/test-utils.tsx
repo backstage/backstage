@@ -34,7 +34,7 @@ import {
   techdocsStorageApiRef,
 } from '@backstage/plugin-techdocs-react';
 import { TechDocsReaderPage, techdocsPlugin } from '@backstage/plugin-techdocs';
-import { catalogPlugin } from '@backstage/plugin-catalog';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
@@ -259,7 +259,7 @@ export class TechDocsAddonTester {
       mountedRoutes: {
         '/docs': techdocsPlugin.routes.root,
         '/docs/:namespace/:kind/:name/*': techdocsPlugin.routes.docRoot,
-        '/catalog/:namespace/:kind/:name': catalogPlugin.routes.catalogEntity,
+        '/catalog/:namespace/:kind/:name': entityRouteRef,
       },
     });
   }

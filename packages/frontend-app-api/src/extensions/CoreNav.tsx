@@ -19,6 +19,7 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
+  LogoElements,
   NavTarget,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
@@ -51,14 +52,16 @@ const useSidebarLogoStyles = makeStyles({
   },
 });
 
-const SidebarLogo = () => {
+const SidebarLogo = (props: LogoElements) => {
   const classes = useSidebarLogoStyles();
   const { isOpen } = useSidebarOpenState();
 
   return (
     <div className={classes.root}>
       <Link to="/" underline="none" className={classes.link} aria-label="Home">
-        {isOpen ? <LogoFull /> : <LogoIcon />}
+        {isOpen
+          ? props?.logoFull ?? <LogoFull />
+          : props?.logoIcon ?? <LogoIcon />}
       </Link>
     </div>
   );
@@ -78,6 +81,15 @@ export const CoreNav = createExtension({
     items: createExtensionInput({
       target: coreExtensionData.navTarget,
     }),
+    logos: createExtensionInput(
+      {
+        elements: coreExtensionData.logoElements,
+      },
+      {
+        singleton: true,
+        optional: true,
+      },
+    ),
   },
   output: {
     element: coreExtensionData.reactElement,
@@ -86,7 +98,7 @@ export const CoreNav = createExtension({
     return {
       element: (
         <Sidebar>
-          <SidebarLogo />
+          <SidebarLogo {...inputs.logos?.elements} />
           <SidebarDivider />
           {inputs.items.map((item, index) => (
             <SidebarNavItem {...item.target} key={index} />

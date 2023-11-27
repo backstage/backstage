@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { WithLink } from '../../utils/components';
 import { RadarDescription } from '../RadarDescription';
 import type { EntrySnapshot } from '../../utils/types';
@@ -37,7 +37,7 @@ export type Props = {
   onClick?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
 };
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   text: {
     pointerEvents: 'none',
     userSelect: 'none',

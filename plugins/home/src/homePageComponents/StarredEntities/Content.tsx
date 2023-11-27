@@ -17,24 +17,18 @@
 import {
   catalogApiRef,
   useStarredEntities,
-  entityRouteParams,
-  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { Link, Progress, ResponseErrorPanel } from '@backstage/core-components';
 import {
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  IconButton,
-  ListItemText,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
-import StarIcon from '@material-ui/icons/Star';
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { useApi } from '@backstage/core-plugin-api';
+import { Progress, ResponseErrorPanel } from '@backstage/core-components';
+import { List, Typography, Tabs, Tab } from '@material-ui/core';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
+import { StarredEntityListItem } from '../../components/StarredEntityListItem/StarredEntityListItem';
 
 /**
  * A component to display a list of starred entities for the user.
@@ -42,12 +36,18 @@ import useAsync from 'react-use/lib/useAsync';
  * @public
  */
 
-export const Content = (props: {
+export type StarredEntitiesProps = {
   noStarredEntitiesMessage?: React.ReactNode | undefined;
-}) => {
+  groupByKind?: boolean;
+};
+
+export const Content = ({
+  noStarredEntitiesMessage,
+  groupByKind,
+}: StarredEntitiesProps) => {
   const catalogApi = useApi(catalogApiRef);
-  const catalogEntityRoute = useRouteRef(entityRouteRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
+  const [activeTab, setActiveTab] = React.useState(0);
 
   // Grab starred entities from catalog to ensure they still exist and also retrieve display titles
   const entities = useAsync(async () => {
@@ -79,7 +79,7 @@ export const Content = (props: {
   if (starredEntities.size === 0)
     return (
       <Typography variant="body1">
-        {props.noStarredEntitiesMessage ||
+        {noStarredEntitiesMessage ||
           'Click the star beside an entity name to add it to this list!'}
       </Typography>
     );
@@ -88,36 +88,73 @@ export const Content = (props: {
     return <Progress />;
   }
 
+  const groupedEntities: { [kind: string]: Entity[] } = {};
+  entities.value?.forEach(entity => {
+    const kind = entity.kind;
+    if (!groupedEntities[kind]) {
+      groupedEntities[kind] = [];
+    }
+    groupedEntities[kind].push(entity);
+  });
+
+  const groupByKindEntries = Object.entries(groupedEntities);
+
   return entities.error ? (
     <ResponseErrorPanel error={entities.error} />
   ) : (
-    <List>
-      {entities.value
-        ?.sort((a, b) =>
-          (a.metadata.title ?? a.metadata.name).localeCompare(
-            b.metadata.title ?? b.metadata.name,
-          ),
-        )
-        .map(entity => (
-          <ListItem key={stringifyEntityRef(entity)}>
-            <Link to={catalogEntityRoute(entityRouteParams(entity))}>
-              <ListItemText
-                primary={entity.metadata.title ?? entity.metadata.name}
+    <div>
+      {!groupByKind && (
+        <List>
+          {entities.value
+            ?.sort((a, b) =>
+              (a.metadata.title ?? a.metadata.name).localeCompare(
+                b.metadata.title ?? b.metadata.name,
+              ),
+            )
+            .map(entity => (
+              <StarredEntityListItem
+                key={stringifyEntityRef(entity)}
+                entity={entity}
+                onToggleStarredEntity={toggleStarredEntity}
               />
-            </Link>
-            <ListItemSecondaryAction>
-              <Tooltip title="Remove from starred">
-                <IconButton
-                  edge="end"
-                  aria-label="unstar"
-                  onClick={() => toggleStarredEntity(entity)}
-                >
-                  <StarIcon style={{ color: '#f3ba37' }} />
-                </IconButton>
-              </Tooltip>
-            </ListItemSecondaryAction>
-          </ListItem>
+            ))}
+        </List>
+      )}
+
+      {groupByKind && (
+        <Tabs
+          value={activeTab}
+          onChange={(_, newValue) => setActiveTab(newValue)}
+          variant="scrollable"
+          scrollButtons="auto"
+          aria-label="entity-tabs"
+        >
+          {groupByKindEntries.map(([kind]) => (
+            <Tab key={kind} label={kind} />
+          ))}
+        </Tabs>
+      )}
+
+      {groupByKind &&
+        groupByKindEntries.map(([kind, entitiesByKind], index) => (
+          <div key={kind} hidden={groupByKind && activeTab !== index}>
+            <List>
+              {entitiesByKind
+                ?.sort((a, b) =>
+                  (a.metadata.title ?? a.metadata.name).localeCompare(
+                    b.metadata.title ?? b.metadata.name,
+                  ),
+                )
+                .map(entity => (
+                  <StarredEntityListItem
+                    key={stringifyEntityRef(entity)}
+                    entity={entity}
+                    onToggleStarredEntity={toggleStarredEntity}
+                  />
+                ))}
+            </List>
+          </div>
         ))}
-    </List>
+    </div>
   );
 };

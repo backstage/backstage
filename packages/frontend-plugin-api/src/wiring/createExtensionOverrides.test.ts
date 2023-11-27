@@ -26,6 +26,7 @@ describe('createExtensionOverrides', () => {
       {
         "$$type": "@backstage/ExtensionOverrides",
         "extensions": [],
+        "featureFlags": [],
         "version": "v1",
       }
     `);
@@ -60,6 +61,7 @@ describe('createExtensionOverrides', () => {
             "output": {},
           },
         ],
+        "featureFlags": [],
         "version": "v1",
       }
     `);

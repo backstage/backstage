@@ -113,7 +113,7 @@ export function createEntityCardExtension<
           .optional(),
       }),
     ),
-    factory({ config, inputs, source }) {
+    factory({ config, inputs, node }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ inputs })
@@ -122,7 +122,7 @@ export function createEntityCardExtension<
 
       return {
         element: (
-          <ExtensionBoundary id={id} source={source}>
+          <ExtensionBoundary node={node}>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),
@@ -179,7 +179,7 @@ export function createEntityContentExtension<
           .optional(),
       }),
     ),
-    factory({ config, inputs, source }) {
+    factory({ config, inputs, node }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ inputs })
@@ -191,7 +191,7 @@ export function createEntityContentExtension<
         title: config.title,
         routeRef: options.routeRef,
         element: (
-          <ExtensionBoundary id={id} source={source} routable>
+          <ExtensionBoundary node={node} routable>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),

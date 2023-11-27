@@ -20,16 +20,16 @@ export default _default;
 export const userSettingsTranslationRef: TranslationRef<
   'user-settings',
   {
-    readonly language: 'Language';
-    readonly change_the_language: 'Change the language';
-    readonly theme: 'Theme';
-    readonly theme_light: 'Light';
-    readonly theme_dark: 'Dark';
-    readonly theme_auto: 'Auto';
-    readonly change_the_theme_mode: 'Change the theme mode';
-    readonly select_theme: 'Select {{theme}}';
-    readonly select_theme_auto: 'Select Auto Theme';
-    readonly select_lng: 'Select language {{language}}';
+    readonly 'languageToggle.select': 'Select language {{language}}';
+    readonly 'languageToggle.title': 'Language';
+    readonly 'languageToggle.description': 'Change the language';
+    readonly 'themeToggle.select': 'Select theme {{theme}}';
+    readonly 'themeToggle.title': 'Theme';
+    readonly 'themeToggle.description': 'Change the theme mode';
+    readonly 'themeToggle.names.auto': 'Auto';
+    readonly 'themeToggle.names.dark': 'Dark';
+    readonly 'themeToggle.names.light': 'Light';
+    readonly 'themeToggle.selectAuto': 'Select Auto Theme';
   }
 >;
 

@@ -68,6 +68,7 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SessionState } from '@backstage/core-plugin-api';
+import { SignInPageProps } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { storageApiRef } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
@@ -217,15 +218,13 @@ export interface BackstagePlugin<
   ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
 > {
   // (undocumented)
-  $$type: '@backstage/BackstagePlugin';
+  readonly $$type: '@backstage/BackstagePlugin';
   // (undocumented)
-  extensions: Extension<unknown>[];
+  readonly externalRoutes: ExternalRoutes;
   // (undocumented)
-  externalRoutes: ExternalRoutes;
+  readonly id: string;
   // (undocumented)
-  id: string;
-  // (undocumented)
-  routes: Routes;
+  readonly routes: Routes;
 }
 
 export { BackstageUserIdentity };
@@ -262,6 +261,7 @@ export const coreExtensionData: {
   routeRef: ConfigurableExtensionDataRef<RouteRef<AnyRouteRefParams>, {}>;
   navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
   theme: ConfigurableExtensionDataRef<AppTheme, {}>;
+  logoElements: ConfigurableExtensionDataRef<LogoElements, {}>;
 };
 
 // @public (undocumented)
@@ -339,7 +339,7 @@ export interface CreateExtensionOptions<
   disabled?: boolean;
   // (undocumented)
   factory(options: {
-    source?: BackstagePlugin;
+    node: AppNode;
     config: TConfig;
     inputs: Expand<ExtensionInputValues<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
@@ -454,6 +454,25 @@ export function createSchemaFromZod<TOutput, TInput>(
   schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,
 ): PortableSchema<TOutput>;
 
+// @public (undocumented)
+export function createSignInPageExtension<
+  TConfig extends {},
+  TInputs extends AnyExtensionInputMap,
+>(options: {
+  id: string;
+  attachTo?: {
+    id: string;
+    input: string;
+  };
+  configSchema?: PortableSchema<TConfig>;
+  disabled?: boolean;
+  inputs?: TInputs;
+  loader: (options: {
+    config: TConfig;
+    inputs: Expand<ExtensionInputValues<TInputs>>;
+  }) => Promise<ComponentType<SignInPageProps>>;
+}): Extension<TConfig>;
+
 // @public
 export function createSubRouteRef<
   Path extends string,
@@ -493,7 +512,7 @@ export interface Extension<TConfig> {
   disabled: boolean;
   // (undocumented)
   factory(options: {
-    source?: BackstagePlugin;
+    node: AppNode;
     config: TConfig;
     inputs: Record<
       string,
@@ -518,11 +537,9 @@ export interface ExtensionBoundaryProps {
   // (undocumented)
   children: ReactNode;
   // (undocumented)
-  id: string;
+  node: AppNode;
   // (undocumented)
   routable?: boolean;
-  // (undocumented)
-  source?: BackstagePlugin;
 }
 
 // @public (undocumented)
@@ -587,13 +604,15 @@ export type ExtensionInputValues<
 // @public (undocumented)
 export interface ExtensionOverrides {
   // (undocumented)
-  $$type: '@backstage/ExtensionOverrides';
+  readonly $$type: '@backstage/ExtensionOverrides';
 }
 
 // @public (undocumented)
 export interface ExtensionOverridesOptions {
   // (undocumented)
   extensions: Extension<unknown>[];
+  // (undocumented)
+  featureFlags?: FeatureFlagConfig[];
 }
 
 // @public
@@ -610,6 +629,11 @@ export interface ExternalRouteRef<
 }
 
 export { FeatureFlag };
+
+// @public
+export type FeatureFlagConfig = {
+  name: string;
+};
 
 export { FeatureFlagsApi };
 
@@ -642,6 +666,12 @@ export type IconComponent = ComponentType<
 export { IdentityApi };
 
 export { identityApiRef };
+
+// @public (undocumented)
+export type LogoElements = {
+  logoIcon?: JSX_2.Element;
+  logoFull?: JSX_2.Element;
+};
 
 export { microsoftAuthApiRef };
 
@@ -681,6 +711,8 @@ export interface PluginOptions<
   extensions?: Extension<unknown>[];
   // (undocumented)
   externalRoutes?: ExternalRoutes;
+  // (undocumented)
+  featureFlags?: FeatureFlagConfig[];
   // (undocumented)
   id: string;
   // (undocumented)

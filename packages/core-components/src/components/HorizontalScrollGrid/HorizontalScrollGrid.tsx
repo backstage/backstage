@@ -16,7 +16,7 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import classNames from 'classnames';
@@ -68,7 +68,7 @@ export type HorizontalScrollGridClassKey =
   | 'buttonLeft'
   | 'buttonRight';
 
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles(
   theme => ({
     root: {
       position: 'relative',

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
+
 import Box from '@material-ui/core/Box';
 import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import { useLocalStorageValue } from '@react-hookz/web';
@@ -39,7 +39,7 @@ export type SidebarIntroClassKey =
   | 'introDismissText'
   | 'introDismissIcon';
 
-const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
+const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
   theme => ({
     introCard: props => ({
       color: '#b5b5b5',

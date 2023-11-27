@@ -19,7 +19,7 @@ import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 
 /**
- * Creates the `sentry:craete-project` Scaffolder action.
+ * Creates the `sentry:project:create` Scaffolder action.
  *
  * @remarks
  *

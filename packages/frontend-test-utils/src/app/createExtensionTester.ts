@@ -67,7 +67,7 @@ export class ExtensionTester {
       })),
       {
         [subject.extension.id]: {
-          attachTo: { id: 'core', input: 'root' },
+          attachTo: { id: 'core.router', input: 'children' },
           config: subject.config,
           disabled: false,
         },

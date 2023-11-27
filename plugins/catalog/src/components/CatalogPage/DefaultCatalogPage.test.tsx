@@ -45,6 +45,8 @@ import { createComponentRouteRef } from '../../routes';
 import { CatalogTableRow } from '../CatalogTable';
 import { DefaultCatalogPage } from './DefaultCatalogPage';
 
+import { CatalogTableColumnsFunc } from '../CatalogTable/types';
+
 describe('DefaultCatalogPage', () => {
   const origReplaceState = window.history.replaceState;
   beforeEach(() => {
@@ -208,6 +210,25 @@ describe('DefaultCatalogPage', () => {
       { title: 'Bar', field: 'entity.bar' },
       { title: 'Baz', field: 'entity.spec.lifecycle' },
     ];
+    await renderWrapped(<DefaultCatalogPage columns={columns} />);
+
+    const columnHeader = screen
+      .getAllByRole('button')
+      .filter(c => c.tagName === 'SPAN');
+    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+  }, 20_000);
+
+  it('should render the custom column function passed as prop', async () => {
+    const columns: CatalogTableColumnsFunc = ({ filters, entities }) => {
+      return filters.kind?.value === 'component' && entities.length
+        ? [
+            { title: 'Foo', field: 'entity.foo' },
+            { title: 'Bar', field: 'entity.bar' },
+            { title: 'Baz', field: 'entity.spec.lifecycle' },
+          ]
+        : [];
+    };
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
     const columnHeader = screen

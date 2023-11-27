@@ -33,6 +33,7 @@ import { Core } from '../extensions/Core';
 import { CoreRoutes } from '../extensions/CoreRoutes';
 import { CoreNav } from '../extensions/CoreNav';
 import { CoreLayout } from '../extensions/CoreLayout';
+import { CoreRouter } from '../extensions/CoreRouter';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -79,7 +80,7 @@ function routeInfoFromExtensions(extensions: Extension<unknown>[]) {
   });
   const tree = createAppTree({
     config: new MockConfigApi({}),
-    builtinExtensions: [Core, CoreRoutes, CoreNav, CoreLayout],
+    builtinExtensions: [Core, CoreRoutes, CoreNav, CoreLayout, CoreRouter],
     features: [plugin],
   });
 

@@ -19,7 +19,6 @@ import {
   PullRequestOptions,
   PullRequestStatus,
 } from '@backstage/plugin-azure-devops-common';
-import { WebApi, getPersonalAccessTokenHandler } from 'azure-devops-node-api';
 
 import { AzureDevOpsApi } from '../api';
 import { Config } from '@backstage/config';
@@ -43,18 +42,11 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, reader } = options;
-  const config = options.config.getConfig('azureDevOps');
-
-  const token = config.getString('token');
-  const host = config.getString('host');
-  const organization = config.getString('organization');
-
-  const authHandler = getPersonalAccessTokenHandler(token);
-  const webApi = new WebApi(`https://${host}/${organization}`, authHandler);
+  const { logger, reader, config } = options;
 
   const azureDevOpsApi =
-    options.azureDevOpsApi || new AzureDevOpsApi(logger, webApi, reader);
+    options.azureDevOpsApi ||
+    AzureDevOpsApi.fromConfig(config, { logger, urlReader: reader });
 
   const pullRequestsDashboardProvider =
     await PullRequestsDashboardProvider.create(logger, azureDevOpsApi);
@@ -195,6 +187,8 @@ export async function createRouter(
   });
 
   router.get('/readme/:projectName/:repoName', async (req, res) => {
+    const host = config.getString('azureDevOps.host');
+    const organization = config.getString('azureDevOps.organization');
     const { projectName, repoName } = req.params;
     const readme = await azureDevOpsApi.getReadme(
       host,

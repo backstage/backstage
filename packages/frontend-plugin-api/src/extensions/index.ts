@@ -17,4 +17,5 @@
 export { createApiExtension } from './createApiExtension';
 export { createPageExtension } from './createPageExtension';
 export { createNavItemExtension } from './createNavItemExtension';
+export { createSignInPageExtension } from './createSignInPageExtension';
 export { createThemeExtension } from './createThemeExtension';

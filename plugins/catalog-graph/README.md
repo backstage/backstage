@@ -90,7 +90,7 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
 Copy the default implementation `DefaultRenderNode.tsx` and add more classes to the styles:
 
 ```typescript
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles(
     theme => ({
         node: {
             …
