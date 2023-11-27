@@ -58,7 +58,6 @@ export const TaskSteps = (props: TaskStepsProps) => {
           activeStep={props.activeStep}
           alternativeLabel
           variant="elevation"
-          style={{ overflowX: 'auto' }}
         >
           {props.steps.map(step => {
             const isCompleted = step.status === 'completed';
