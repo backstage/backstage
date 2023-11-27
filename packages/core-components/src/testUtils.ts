@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,8 @@
  *  https://mui.com/material-ui/react-use-media-query/#testing
  *
  * @public
- * @deprecated Import from `@backstage/core-components/testUtils` instead.
  */
-export default function mockBreakpoint(options: { matches: boolean }) {
+export function mockBreakpoint(options: { matches: boolean }) {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: jest.fn().mockImplementation(query => ({
