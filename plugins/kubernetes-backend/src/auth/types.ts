@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// TODO remove this re-export as a breaking change after a couple of releases
+
 export type {
   AuthenticationStrategy,
   KubernetesCredential,

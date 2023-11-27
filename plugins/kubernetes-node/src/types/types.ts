@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { KubernetesObjectTypes } from '@backstage/plugin-kubernetes-backend';
 import {
   CustomResourceMatcher,
   FetchResponse,
@@ -153,6 +152,28 @@ export interface AuthenticationStrategy {
   ): Promise<KubernetesCredential>;
   validateCluster(authMetadata: AuthMetadata): Error[];
 }
+
+/**
+ *
+ * @public
+ */
+export type KubernetesObjectTypes =
+  | 'pods'
+  | 'services'
+  | 'configmaps'
+  | 'deployments'
+  | 'limitranges'
+  | 'resourcequotas'
+  | 'replicasets'
+  | 'horizontalpodautoscalers'
+  | 'jobs'
+  | 'cronjobs'
+  | 'ingresses'
+  | 'customresources'
+  | 'statefulsets'
+  | 'daemonsets';
+// If updating this list, also make sure to update
+// `objectTypes` and `apiVersionOverrides` in config.d.ts on @backstage/plugin-kubernetes-backend!
 
 /**
  *
