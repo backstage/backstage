@@ -212,3 +212,21 @@ export interface KubernetesFetcher {
     labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
 }
+/**
+ * @public
+ */
+export interface ServiceLocatorRequestContext {
+  objectTypesToFetch: Set<ObjectToFetch>;
+  customResources: CustomResourceMatcher[];
+}
+
+/**
+ * Used to locate which cluster(s) a service is running on
+ * @public
+ */
+export interface KubernetesServiceLocator {
+  getClustersByEntity(
+    entity: Entity,
+    requestContext: ServiceLocatorRequestContext,
+  ): Promise<{ clusters: ClusterDetails[] }>;
+}

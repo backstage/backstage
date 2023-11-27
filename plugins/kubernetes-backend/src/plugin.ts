@@ -33,6 +33,9 @@ import {
   AuthenticationStrategy,
   kubernetesAuthStrategyExtensionPoint,
   KubernetesFetcher,
+  KubernetesServiceLocatorExtensionPoint,
+  KubernetesServiceLocator,
+  kubernetesServiceLocatorExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 import {
   KubernetesFetcherExtensionPoint,
@@ -90,6 +93,23 @@ class Fetcher implements KubernetesFetcherExtensionPoint {
   }
 }
 
+class ServiceLocator implements KubernetesServiceLocatorExtensionPoint {
+  private serviceLocator: KubernetesServiceLocator | undefined;
+
+  getServiceLocator() {
+    return this.serviceLocator;
+  }
+
+  addServiceLocator(serviceLocator: KubernetesServiceLocator) {
+    if (this.serviceLocator) {
+      throw new Error(
+        'Multiple Kubernetes Service Locators is not supported at this time',
+      );
+    }
+    this.serviceLocator = serviceLocator;
+  }
+}
+
 class AuthStrategy implements KubernetesAuthStrategyExtensionPoint {
   private authStrategies: Array<{
     key: string;
@@ -131,6 +151,8 @@ export const kubernetesPlugin = createBackendPlugin({
     const extPointClusterSuplier = new ClusterSuplier();
     const extPointAuthStrategy = new AuthStrategy();
     const extPointFetcher = new Fetcher();
+    const extPointServiceLocator = new ServiceLocator();
+
     env.registerExtensionPoint(
       kubernetesObjectsProviderExtensionPoint,
       extPointObjectsProvider,
@@ -146,6 +168,10 @@ export const kubernetesPlugin = createBackendPlugin({
     env.registerExtensionPoint(
       kubernetesFetcherExtensionPoint,
       extPointFetcher,
+    );
+    env.registerExtensionPoint(
+      kubernetesServiceLocatorExtensionPoint,
+      extPointServiceLocator,
     );
 
     env.registerInit({
@@ -167,7 +193,9 @@ export const kubernetesPlugin = createBackendPlugin({
         })
           .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
           .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())
-          .setFetcher(extPointFetcher.getFetcher());
+          .setFetcher(extPointFetcher.getFetcher())
+          .setServiceLocator(extPointServiceLocator.getServiceLocator());
+
         AuthStrategy.addAuthStrategiesFromArray(
           extPointAuthStrategy.getAuthenticationStrategies(),
           builder,
