@@ -32,6 +32,11 @@ import {
   KubernetesAuthStrategyExtensionPoint,
   AuthenticationStrategy,
   kubernetesAuthStrategyExtensionPoint,
+  KubernetesFetcher,
+} from '@backstage/plugin-kubernetes-node';
+import {
+  KubernetesFetcherExtensionPoint,
+  kubernetesFetcherExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
@@ -65,6 +70,23 @@ class ClusterSuplier implements KubernetesClusterSupplierExtensionPoint {
       );
     }
     this.clusterSupplier = clusterSupplier;
+  }
+}
+
+class Fetcher implements KubernetesFetcherExtensionPoint {
+  private fetcher: KubernetesFetcher | undefined;
+
+  getFetcher() {
+    return this.fetcher;
+  }
+
+  addFetcher(fetcher: KubernetesFetcher) {
+    if (this.fetcher) {
+      throw new Error(
+        'Multiple Kubernetes Fetchers is not supported at this time',
+      );
+    }
+    this.fetcher = fetcher;
   }
 }
 
@@ -108,6 +130,7 @@ export const kubernetesPlugin = createBackendPlugin({
     const extPointObjectsProvider = new ObjectsProvider();
     const extPointClusterSuplier = new ClusterSuplier();
     const extPointAuthStrategy = new AuthStrategy();
+    const extPointFetcher = new Fetcher();
     env.registerExtensionPoint(
       kubernetesObjectsProviderExtensionPoint,
       extPointObjectsProvider,
@@ -119,6 +142,10 @@ export const kubernetesPlugin = createBackendPlugin({
     env.registerExtensionPoint(
       kubernetesAuthStrategyExtensionPoint,
       extPointAuthStrategy,
+    );
+    env.registerExtensionPoint(
+      kubernetesFetcherExtensionPoint,
+      extPointFetcher,
     );
 
     env.registerInit({
@@ -139,7 +166,8 @@ export const kubernetesPlugin = createBackendPlugin({
           permissions,
         })
           .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
-          .setClusterSupplier(extPointClusterSuplier.getClusterSupplier());
+          .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())
+          .setFetcher(extPointFetcher.getFetcher());
         AuthStrategy.addAuthStrategiesFromArray(
           extPointAuthStrategy.getAuthenticationStrategies(),
           builder,

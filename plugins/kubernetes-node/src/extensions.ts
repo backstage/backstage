@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { KubernetesFetcher } from '@backstage/plugin-kubernetes-backend';
 import { AuthenticationStrategy } from '@backstage/plugin-kubernetes-node';
 import { KubernetesClustersSupplier } from '@backstage/plugin-kubernetes-node';
 import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
@@ -73,4 +74,23 @@ export interface KubernetesAuthStrategyExtensionPoint {
 export const kubernetesAuthStrategyExtensionPoint =
   createExtensionPoint<KubernetesAuthStrategyExtensionPoint>({
     id: 'kubernetes.auth-strategy',
+  });
+
+/**
+ * The interface for {@link kubernetesFetcherExtensionPoint}.
+ *
+ * @public
+ */
+export interface KubernetesFetcherExtensionPoint {
+  addFetcher(fetcher: KubernetesFetcher): void;
+}
+
+/**
+ * An extension point the exposes the ability to configure a kubernetes fetcher.
+ *
+ * @public
+ */
+export const kubernetesFetcherExtensionPoint =
+  createExtensionPoint<KubernetesFetcherExtensionPoint>({
+    id: 'kubernetes.fetcher',
   });

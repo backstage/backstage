@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
+import { KubernetesObjectTypes } from '@backstage/plugin-kubernetes-backend';
 import {
   CustomResourceMatcher,
+  FetchResponse,
+  KubernetesFetchError,
   KubernetesRequestAuth,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
@@ -149,4 +152,63 @@ export interface AuthenticationStrategy {
     authConfig: KubernetesRequestAuth,
   ): Promise<KubernetesCredential>;
   validateCluster(authMetadata: AuthMetadata): Error[];
+}
+
+/**
+ *
+ * @public
+ */
+export interface ObjectToFetch {
+  objectType: KubernetesObjectTypes; // TODO - Review
+  group: string;
+  apiVersion: string;
+  plural: string;
+}
+
+/**
+ *
+ * @public
+ */
+export interface CustomResource extends ObjectToFetch {
+  objectType: 'customresources';
+}
+
+/**
+ *
+ * @public
+ */
+export interface ObjectFetchParams {
+  serviceId: string;
+  clusterDetails: ClusterDetails;
+  credential: KubernetesCredential;
+  objectTypesToFetch: Set<ObjectToFetch>;
+  labelSelector?: string;
+  customResources: CustomResource[];
+  namespace?: string;
+}
+
+/**
+ *
+ * @public
+ */
+export interface FetchResponseWrapper {
+  errors: KubernetesFetchError[];
+  responses: FetchResponse[];
+}
+
+/**
+ * Fetches information from a kubernetes cluster using the cluster details object to target a specific cluster
+ *
+ * @public
+ */
+export interface KubernetesFetcher {
+  fetchObjectsForService(
+    params: ObjectFetchParams,
+  ): Promise<FetchResponseWrapper>;
+  fetchPodMetricsByNamespaces(
+    clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
+    namespaces: Set<string>,
+    labelSelector?: string,
+  ): Promise<FetchResponseWrapper>;
 }

@@ -18,74 +18,15 @@ import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import type {
   CustomResourceMatcher,
-  FetchResponse,
-  KubernetesFetchError,
   KubernetesRequestBody,
 } from '@backstage/plugin-kubernetes-common';
 import { Config } from '@backstage/config';
 import {
   ClusterDetails,
-  KubernetesCredential,
+  CustomResource,
+  KubernetesFetcher,
+  ObjectToFetch,
 } from '@backstage/plugin-kubernetes-node';
-
-/**
- *
- * @public
- */
-export interface ObjectFetchParams {
-  serviceId: string;
-  clusterDetails: ClusterDetails;
-  credential: KubernetesCredential;
-  objectTypesToFetch: Set<ObjectToFetch>;
-  labelSelector?: string;
-  customResources: CustomResource[];
-  namespace?: string;
-}
-
-/**
- * Fetches information from a kubernetes cluster using the cluster details object to target a specific cluster
- *
- * @public
- */
-export interface KubernetesFetcher {
-  fetchObjectsForService(
-    params: ObjectFetchParams,
-  ): Promise<FetchResponseWrapper>;
-  fetchPodMetricsByNamespaces(
-    clusterDetails: ClusterDetails,
-    credential: KubernetesCredential,
-    namespaces: Set<string>,
-    labelSelector?: string,
-  ): Promise<FetchResponseWrapper>;
-}
-
-/**
- *
- * @public
- */
-export interface FetchResponseWrapper {
-  errors: KubernetesFetchError[];
-  responses: FetchResponse[];
-}
-
-/**
- *
- * @public
- */
-export interface ObjectToFetch {
-  objectType: KubernetesObjectTypes;
-  group: string;
-  apiVersion: string;
-  plural: string;
-}
-
-/**
- *
- * @public
- */
-export interface CustomResource extends ObjectToFetch {
-  objectType: 'customresources';
-}
 
 /**
  *
@@ -157,4 +98,9 @@ export type {
   AuthMetadata,
   ClusterDetails,
   KubernetesClustersSupplier,
+  ObjectToFetch,
+  CustomResource,
+  ObjectFetchParams,
+  FetchResponseWrapper,
+  KubernetesFetcher,
 } from '@backstage/plugin-kubernetes-node';
