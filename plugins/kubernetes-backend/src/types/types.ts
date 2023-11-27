@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
-import type {
-  CustomResourceMatcher,
-  KubernetesRequestBody,
-} from '@backstage/plugin-kubernetes-common';
+import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Config } from '@backstage/config';
 import {
-  ClusterDetails,
   CustomResource,
   KubernetesFetcher,
+  KubernetesServiceLocator,
   ObjectToFetch,
 } from '@backstage/plugin-kubernetes-node';
 
@@ -51,25 +47,6 @@ export type KubernetesObjectTypes =
 // `objectTypes` and `apiVersionOverrides` in config.d.ts!
 
 /**
- * @public
- */
-export interface ServiceLocatorRequestContext {
-  objectTypesToFetch: Set<ObjectToFetch>;
-  customResources: CustomResourceMatcher[];
-}
-
-/**
- * Used to locate which cluster(s) a service is running on
- * @public
- */
-export interface KubernetesServiceLocator {
-  getClustersByEntity(
-    entity: Entity,
-    requestContext: ServiceLocatorRequestContext,
-  ): Promise<{ clusters: ClusterDetails[] }>;
-}
-
-/**
  *
  * @public
  */
@@ -94,13 +71,4 @@ export interface KubernetesObjectsProviderOptions {
  */
 export type ObjectsByEntityRequest = KubernetesRequestBody;
 
-export type {
-  AuthMetadata,
-  ClusterDetails,
-  KubernetesClustersSupplier,
-  ObjectToFetch,
-  CustomResource,
-  ObjectFetchParams,
-  FetchResponseWrapper,
-  KubernetesFetcher,
-} from '@backstage/plugin-kubernetes-node';
+export type * from '@backstage/plugin-kubernetes-node';

@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { KubernetesFetcher } from '@backstage/plugin-kubernetes-backend';
-import { AuthenticationStrategy } from '@backstage/plugin-kubernetes-node';
-import { KubernetesClustersSupplier } from '@backstage/plugin-kubernetes-node';
-import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
+import {
+  AuthenticationStrategy,
+  KubernetesClustersSupplier,
+  KubernetesFetcher,
+  KubernetesObjectsProvider,
+  KubernetesServiceLocator,
+} from '@backstage/plugin-kubernetes-node';
 
 /**
  * The interface for {@link kubernetesObjectsProviderExtensionPoint}.
@@ -93,4 +96,23 @@ export interface KubernetesFetcherExtensionPoint {
 export const kubernetesFetcherExtensionPoint =
   createExtensionPoint<KubernetesFetcherExtensionPoint>({
     id: 'kubernetes.fetcher',
+  });
+
+/**
+ * The interface for {@link kubernetesServiceLocatorExtensionPoint}.
+ *
+ * @public
+ */
+export interface KubernetesServiceLocatorExtensionPoint {
+  addServiceLocator(serviceLocator: KubernetesServiceLocator): void;
+}
+
+/**
+ * An extension point the exposes the ability to configure a kubernetes service locator.
+ *
+ * @public
+ */
+export const kubernetesServiceLocatorExtensionPoint =
+  createExtensionPoint<KubernetesServiceLocatorExtensionPoint>({
+    id: 'kubernetes.service-locator',
   });
