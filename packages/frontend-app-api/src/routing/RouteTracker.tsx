@@ -20,7 +20,7 @@ import {
   useAnalytics,
   AnalyticsContext,
   AnalyticsEventAttributes,
-} from '@backstage/core-plugin-api';
+} from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from './types';
 
 /**
