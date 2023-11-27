@@ -28,28 +28,6 @@ import {
  *
  * @public
  */
-export type KubernetesObjectTypes =
-  | 'pods'
-  | 'services'
-  | 'configmaps'
-  | 'deployments'
-  | 'limitranges'
-  | 'resourcequotas'
-  | 'replicasets'
-  | 'horizontalpodautoscalers'
-  | 'jobs'
-  | 'cronjobs'
-  | 'ingresses'
-  | 'customresources'
-  | 'statefulsets'
-  | 'daemonsets';
-// If updating this list, also make sure to update
-// `objectTypes` and `apiVersionOverrides` in config.d.ts!
-
-/**
- *
- * @public
- */
 export type ServiceLocatorMethod = 'multiTenant' | 'singleTenant' | 'http'; // TODO implement http
 
 /**
@@ -71,4 +49,5 @@ export interface KubernetesObjectsProviderOptions {
  */
 export type ObjectsByEntityRequest = KubernetesRequestBody;
 
+// TODO remove this re-export as a breaking change after a couple of releases
 export type * from '@backstage/plugin-kubernetes-node';
