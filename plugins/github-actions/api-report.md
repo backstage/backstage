@@ -17,6 +17,17 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmAuthApi } from '@backstage/integration-react';
 
 // @public (undocumented)
+export type Branch = {
+  name: string;
+};
+
+// @public (undocumented)
+export type Branches = {
+  default_branch: string;
+  branches: Branch[];
+};
+
+// @public (undocumented)
 export enum BuildStatus {
   // (undocumented)
   'failure' = 1,
@@ -29,7 +40,7 @@ export enum BuildStatus {
 }
 
 // @public (undocumented)
-export const EntityGithubActionsContent: () => JSX_2.Element;
+export const EntityGithubActionsContent: (props: RouterProps) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityLatestGithubActionRunCard: (props: {
@@ -106,6 +117,21 @@ export type GithubActionsApi = {
   }) => Promise<
     RestEndpointMethodTypes['actions']['downloadJobLogsForWorkflowRun']['response']['data']
   >;
+  listBranches: (options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+    page: number;
+  }) => Promise<
+    RestEndpointMethodTypes['repos']['listBranches']['response']['data']
+  >;
+  getDefaultBranch: (options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+  }) => Promise<
+    RestEndpointMethodTypes['repos']['get']['response']['data']['default_branch']
+  >;
 };
 
 // @public (undocumented)
@@ -124,6 +150,14 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['downloadJobLogsForWorkflowRun']['response']['data']
   >;
   // (undocumented)
+  getDefaultBranch(options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+  }): Promise<
+    RestEndpointMethodTypes['repos']['get']['response']['data']['default_branch']
+  >;
+  // (undocumented)
   getWorkflow(options: {
     hostname?: string;
     owner: string;
@@ -140,6 +174,15 @@ export class GithubActionsClient implements GithubActionsApi {
     id: number;
   }): Promise<
     RestEndpointMethodTypes['actions']['getWorkflowRun']['response']['data']
+  >;
+  // (undocumented)
+  listBranches(options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+    page?: number;
+  }): Promise<
+    RestEndpointMethodTypes['repos']['listBranches']['response']['data']
   >;
   // (undocumented)
   listJobsForWorkflowRun(options: {
@@ -226,7 +269,13 @@ export const RecentWorkflowRunsCard: (props: {
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const Router: () => React_2.JSX.Element;
+export const Router: (props: RouterProps) => React_2.JSX.Element;
+
+// @public (undocumented)
+export interface RouterProps {
+  // (undocumented)
+  view?: 'cards' | 'table';
+}
 
 // @public (undocumented)
 export type Step = {
