@@ -20,7 +20,10 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
 import {
   createApiExtension,
   createPageExtension,
@@ -40,7 +43,10 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 const CatalogImportPageExtension = createPageExtension({
   defaultPath: '/catalog-import',
   routeRef: convertLegacyRouteRef(rootRouteRef),
-  loader: () => import('./components/ImportPage').then(m => <m.ImportPage />),
+  loader: () =>
+    import('./components/ImportPage').then(m =>
+      compatWrapper(<m.ImportPage />),
+    ),
 });
 
 const CatalogImportService = createApiExtension({
