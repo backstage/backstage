@@ -19,6 +19,9 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
+  coreComponentsRefs,
+  useApi,
+  componentsApiRef,
 } from '@backstage/frontend-plugin-api';
 import { useRoutes } from 'react-router-dom';
 
@@ -37,12 +40,21 @@ export const CoreRoutes = createExtension({
   },
   factory({ inputs }) {
     const Routes = () => {
-      const element = useRoutes(
-        inputs.routes.map(route => ({
+      const componentsApi = useApi(componentsApiRef);
+      const NotFoundErrorPage = componentsApi.getComponent(
+        coreComponentsRefs.notFoundErrorPage,
+      );
+
+      const element = useRoutes([
+        ...inputs.routes.map(route => ({
           path: `${route.path}/*`,
           element: route.element,
         })),
-      );
+        {
+          path: '*',
+          element: <NotFoundErrorPage />,
+        },
+      ]);
 
       return element;
     };

@@ -30,6 +30,9 @@ export const Core = createExtension({
     themes: createExtensionInput({
       theme: coreExtensionData.theme,
     }),
+    components: createExtensionInput({
+      component: coreExtensionData.component,
+    }),
     root: createExtensionInput(
       {
         element: coreExtensionData.reactElement,

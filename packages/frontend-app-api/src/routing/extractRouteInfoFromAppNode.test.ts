@@ -30,11 +30,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
 import { createAppTree } from '../tree';
-import { Core } from '../extensions/Core';
-import { CoreRoutes } from '../extensions/CoreRoutes';
-import { CoreNav } from '../extensions/CoreNav';
-import { CoreLayout } from '../extensions/CoreLayout';
-import { CoreRouter } from '../extensions/CoreRouter';
+import { builtinExtensions } from '../wiring/createApp';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -80,8 +76,8 @@ function routeInfoFromExtensions(extensions: Extension<unknown>[]) {
     extensions,
   });
   const tree = createAppTree({
+    builtinExtensions,
     config: new MockConfigApi({}),
-    builtinExtensions: [Core, CoreRoutes, CoreNav, CoreLayout, CoreRouter],
     features: [plugin],
   });
 

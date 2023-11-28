@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
+import { ComponentRef, ComponentsApi } from '@backstage/frontend-plugin-api';
+
 /**
- * Core API used by Backstage frontend plugins.
+ * Implementation for the {@linkComponentApi}
  *
- * @packageDocumentation
+ * @internal
  */
+export class DefaultComponentsApi implements ComponentsApi {
+  #components: Map<ComponentRef<any>, any>;
 
-export * from './analytics';
-export * from './apis';
-export * from './components';
-export * from './extensions';
-export * from './icons';
-export * from './routing';
-export * from './schema';
-export * from './apis/system';
-export * from './wiring';
+  constructor(components: Map<ComponentRef<any>, any>) {
+    this.#components = components;
+  }
 
-export type {
-  CoreProgressComponent,
-  CoreBootErrorPageComponent,
-  CoreNotFoundErrorPageComponent,
-  CoreErrorBoundaryFallbackComponent,
-} from './types';
+  getComponent<T>(ref: ComponentRef<T>): T {
+    const impl = this.#components.get(ref);
+    if (!impl) {
+      throw new Error(`No implementation found for component ref ${ref}`);
+    }
+    return impl;
+  }
+}

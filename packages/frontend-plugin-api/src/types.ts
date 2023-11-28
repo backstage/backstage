@@ -14,9 +14,37 @@
  * limitations under the License.
  */
 
+import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { ComponentType, PropsWithChildren } from 'react';
+
 // TODO(Rugvip): This might be a quite useful utility type, maybe add to @backstage/types?
 /**
  * Utility type to expand type aliases into their equivalent type.
  * @ignore
  */
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+/** @public */
+export type CoreProgressComponent = ComponentType<PropsWithChildren<{}>>;
+
+/** @public */
+export type CoreBootErrorPageComponent = ComponentType<
+  PropsWithChildren<{
+    step: 'load-config' | 'load-chunk';
+    error: Error;
+  }>
+>;
+
+/** @public */
+export type CoreNotFoundErrorPageComponent = ComponentType<
+  PropsWithChildren<{}>
+>;
+
+/** @public */
+export type CoreErrorBoundaryFallbackComponent = ComponentType<
+  PropsWithChildren<{
+    plugin?: BackstagePlugin;
+    error: Error;
+    resetError: () => void;
+  }>
+>;

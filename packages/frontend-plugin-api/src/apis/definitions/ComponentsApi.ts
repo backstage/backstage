@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
+import { createApiRef } from '@backstage/core-plugin-api';
+import { ComponentRef } from '../../components';
+
 /**
- * Core API used by Backstage frontend plugins.
+ * API for looking up components based on component refs.
  *
- * @packageDocumentation
+ * @public
  */
+export interface ComponentsApi {
+  // TODO: Should component refs also provide the default implementation so that we're guaranteed to get a component?
+  getComponent<T>(ref: ComponentRef<T>): T;
+}
 
-export * from './analytics';
-export * from './apis';
-export * from './components';
-export * from './extensions';
-export * from './icons';
-export * from './routing';
-export * from './schema';
-export * from './apis/system';
-export * from './wiring';
-
-export type {
-  CoreProgressComponent,
-  CoreBootErrorPageComponent,
-  CoreNotFoundErrorPageComponent,
-  CoreErrorBoundaryFallbackComponent,
-} from './types';
+/**
+ * The `ApiRef` of {@link ComponentsApi}.
+ *
+ * @public
+ */
+export const componentsApiRef = createApiRef<ComponentsApi>({
+  id: 'core.components',
+});
