@@ -49,6 +49,6 @@ export class CommonJSModuleLoader implements ModuleLoader {
   }
 
   async load(packagePath: string): Promise<any> {
-    return await import(/* webpackIgnore: true */ packagePath);
+    return await require(/* webpackIgnore: true */ packagePath);
   }
 }
