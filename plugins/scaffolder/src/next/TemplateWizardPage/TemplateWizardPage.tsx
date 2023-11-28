@@ -50,6 +50,11 @@ export type TemplateWizardPageProps = {
   };
   layouts?: LayoutOptions[];
   formProps?: FormProps;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
 };
 
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
@@ -87,6 +92,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           pageTitleOverride="Create a new component"
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
+          {...props.headerOptions}
         />
         <Workflow
           namespace={namespace}

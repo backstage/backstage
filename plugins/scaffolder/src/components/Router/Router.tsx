@@ -142,6 +142,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
         element={
           <SecretsContextProvider>
             <TemplateWizardPageComponent
+              headerOptions={props.headerOptions}
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
               components={{ ReviewStepComponent }}
