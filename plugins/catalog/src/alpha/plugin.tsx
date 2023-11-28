@@ -22,8 +22,8 @@ import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   createComponentRouteRef,
   createFromTemplateRouteRef,
-  unregisterRedirectRouteRef,
   rootRouteRef,
+  unregisterRedirectRouteRef,
   viewTechDocRouteRef,
 } from '../routes';
 
