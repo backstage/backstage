@@ -290,6 +290,11 @@ otherwise something went terribly wrong.
 
 ## Create a new component using a software template
 
+> Note: if you're running Backstage with Node 20 or later, you'll need to pass the flag `--no-node-snapshot` to Node in order to
+> use the templates feature.
+> One way to do this is to specify the `NODE_OPTIONS` environment variable before starting Backstage:
+> `export NODE_OPTIONS=--no-node-snapshot`
+
 - Go to `create` and choose to create a website with the `Example Node.js Template`
 - Type in a name, let's use `tutorial` and click `Next Step`
 
