@@ -114,6 +114,94 @@ describe('backend-plugin-manager', () => {
         },
       },
       {
+        name: 'should successfully load a new backend plugin by the default BackendFeature',
+        packageManifest: {
+          name: 'backend-dynamic-plugin-test',
+          version: '0.0.0',
+          backstage: {
+            role: 'backend-plugin',
+          },
+          main: 'dist/index.cjs.js',
+        },
+        indexFile: {
+          retativePath: ['dist', 'index.cjs.js'],
+          content: `const alpha = { $$type: '@backstage/BackendFeature' }; exports["default"] = alpha;`,
+        },
+        expectedLogs(location) {
+          return {
+            infos: [
+              {
+                message: `loaded dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
+              },
+            ],
+          };
+        },
+        checkLoadedPlugins(plugins) {
+          expect(plugins).toMatchObject([
+            {
+              name: 'backend-dynamic-plugin-test',
+              version: '0.0.0',
+              role: 'backend-plugin',
+              platform: 'node',
+              installer: {
+                kind: 'new',
+              },
+            },
+          ]);
+          const installer: NewBackendPluginInstaller = (
+            plugins[0] as BackendDynamicPlugin
+          ).installer as NewBackendPluginInstaller;
+          expect(installer.install()).toEqual<
+            BackendFeature | BackendFeature[]
+          >({ $$type: '@backstage/BackendFeature' });
+        },
+      },
+      {
+        name: 'should successfully load a new backend plugin by the default BackendFeatureFactory',
+        packageManifest: {
+          name: 'backend-dynamic-plugin-test',
+          version: '0.0.0',
+          backstage: {
+            role: 'backend-plugin',
+          },
+          main: 'dist/index.cjs.js',
+        },
+        indexFile: {
+          retativePath: ['dist', 'index.cjs.js'],
+          content: `const alpha = () => { return { $$type: '@backstage/BackendFeature' } };
+             alpha.$$type = '@backstage/BackendFeatureFactory';
+             exports["default"] = alpha;`,
+        },
+        expectedLogs(location) {
+          return {
+            infos: [
+              {
+                message: `loaded dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
+              },
+            ],
+          };
+        },
+        checkLoadedPlugins(plugins) {
+          expect(plugins).toMatchObject([
+            {
+              name: 'backend-dynamic-plugin-test',
+              version: '0.0.0',
+              role: 'backend-plugin',
+              platform: 'node',
+              installer: {
+                kind: 'new',
+              },
+            },
+          ]);
+          const installer: NewBackendPluginInstaller = (
+            plugins[0] as BackendDynamicPlugin
+          ).installer as NewBackendPluginInstaller;
+          expect(installer.install()).toEqual<
+            BackendFeature | BackendFeature[]
+          >({ $$type: '@backstage/BackendFeature' });
+        },
+      },
+      {
         name: 'should successfully load a new backend plugin module',
         packageManifest: {
           name: 'backend-dynamic-plugin-test',
@@ -221,7 +309,7 @@ describe('backend-plugin-manager', () => {
           return {
             errors: [
               {
-                message: `dynamic backend plugin 'backend-dynamic-plugin-test' could not be loaded from '${location}': the module should export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field.`,
+                message: `dynamic backend plugin 'backend-dynamic-plugin-test' could not be loaded from '${location}': the module should either export a 'BackendFeature' or 'BackendFeatureFactory' as default export, or export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field as dynamic loading entrypoint.`,
               },
             ],
           };
@@ -249,7 +337,7 @@ describe('backend-plugin-manager', () => {
           return {
             errors: [
               {
-                message: `dynamic backend plugin 'backend-dynamic-plugin-test' could not be loaded from '${location}': the module should export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field.`,
+                message: `dynamic backend plugin 'backend-dynamic-plugin-test' could not be loaded from '${location}': the module should either export a 'BackendFeature' or 'BackendFeatureFactory' as default export, or export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field as dynamic loading entrypoint.`,
               },
             ],
           };
@@ -378,7 +466,7 @@ describe('backend-plugin-manager', () => {
         logger,
         async bootstrap(_: string, __: string[]): Promise<void> {},
         load: async (packagePath: string) =>
-          await import(/* webpackIgnore: true */ packagePath),
+          await require(/* webpackIgnore: true */ packagePath),
       });
 
       const loadedPlugins: DynamicPlugin[] = await pluginManager.loadPlugins();

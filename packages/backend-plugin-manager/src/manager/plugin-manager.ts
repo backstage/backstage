@@ -140,12 +140,25 @@ export class PluginManager implements BackendPluginProvider {
       `${plugin.location}/${plugin.manifest.main}`,
     );
     try {
-      const { dynamicPluginInstaller } = await this.moduleLoader.load(
-        packagePath,
-      );
+      const pluginModule = await this.moduleLoader.load(packagePath);
+
+      let dynamicPluginInstaller;
+      if (isBackendFeature(pluginModule.default)) {
+        dynamicPluginInstaller = {
+          kind: 'new',
+          install: () => pluginModule.default,
+        };
+      } else if (isBackendFeatureFactory(pluginModule.default)) {
+        dynamicPluginInstaller = {
+          kind: 'new',
+          install: pluginModule.default,
+        };
+      } else {
+        dynamicPluginInstaller = pluginModule.dynamicPluginInstaller;
+      }
       if (!isBackendDynamicPluginInstaller(dynamicPluginInstaller)) {
         this.logger.error(
-          `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${plugin.location}': the module should export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field.`,
+          `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${plugin.location}': the module should either export a 'BackendFeature' or 'BackendFeatureFactory' as default export, or export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field as dynamic loading entrypoint.`,
         );
         return undefined;
       }
@@ -263,3 +276,21 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory =
       return new DynamicPluginsEnabledFeatureDiscoveryService(dynamicPlugins);
     },
   });
+
+function isBackendFeature(value: unknown): value is BackendFeature {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    (value as BackendFeature).$$type === '@backstage/BackendFeature'
+  );
+}
+
+function isBackendFeatureFactory(
+  value: unknown,
+): value is () => BackendFeature {
+  return (
+    !!value &&
+    typeof value === 'function' &&
+    (value as any).$$type === '@backstage/BackendFeatureFactory'
+  );
+}
