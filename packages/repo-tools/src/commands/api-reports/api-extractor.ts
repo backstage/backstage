@@ -375,8 +375,8 @@ export async function runApiExtraction({
       packageDir,
     );
 
-    const prefix = name === 'index' ? '' : `${name}-`;
-    const reportFileName = `${prefix}api-report.md`;
+    const suffix = name === 'index' ? '' : `-${name}`;
+    const reportFileName = `api-report${suffix}.md`;
     const reportPath = resolvePath(projectFolder, reportFileName);
 
     const warningCountBefore = await countApiReportWarnings(reportPath);
@@ -396,7 +396,7 @@ export async function runApiExtraction({
           reportFolder: projectFolder,
           reportTempFolder: resolvePath(
             outputDir,
-            `${prefix}<unscopedPackageName>`,
+            `<unscopedPackageName>${suffix}`,
           ),
         },
 
@@ -406,7 +406,7 @@ export async function runApiExtraction({
           enabled: name === 'index',
           apiJsonFilePath: resolvePath(
             outputDir,
-            `${prefix}<unscopedPackageName>.api.json`,
+            `<unscopedPackageName>${suffix}.api.json`,
           ),
         },
 
