@@ -55,18 +55,24 @@ export function resolveBaseUrl(config: Config): URL {
 async function readBuildInfo() {
   const timestamp = Date.now();
 
-  let commit = 'unknown';
+  let commit: string | undefined;
   try {
     commit = await runPlain('git', 'rev-parse', 'HEAD');
   } catch (error) {
-    console.warn(`WARNING: Failed to read git commit, ${error}`);
+    // ignore, see below
   }
 
-  let gitVersion = 'unknown';
+  let gitVersion: string | undefined;
   try {
     gitVersion = await runPlain('git', 'describe', '--always');
   } catch (error) {
-    console.warn(`WARNING: Failed to describe git version, ${error}`);
+    // ignore, see below
+  }
+
+  if (commit === undefined || gitVersion === undefined) {
+    console.info(
+      'NOTE: Did not compute git version or commit hash, could not execute the git command line utility',
+    );
   }
 
   const { version: packageVersion } = await fs.readJson(
@@ -75,10 +81,10 @@ async function readBuildInfo() {
 
   return {
     cliVersion: version,
-    gitVersion,
+    gitVersion: gitVersion ?? 'unknown',
     packageVersion,
     timestamp,
-    commit,
+    commit: commit ?? 'unknown',
   };
 }
 
