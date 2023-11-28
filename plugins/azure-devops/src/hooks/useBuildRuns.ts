@@ -42,8 +42,9 @@ export function useBuildRuns(
   const api = useApi(azureDevOpsApiRef);
 
   const { value, loading, error } = useAsync(() => {
-    const { project, repo, definition } = getAnnotationValuesFromEntity(entity);
-    return api.getBuildRuns(project, repo, definition, options);
+    const { project, repo, definition, host, org } =
+      getAnnotationValuesFromEntity(entity);
+    return api.getBuildRuns(project, repo, definition, host, org, options);
   }, [api]);
 
   return {
