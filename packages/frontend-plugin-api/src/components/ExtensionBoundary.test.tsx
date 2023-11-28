@@ -83,15 +83,18 @@ describe('ExtensionBoundary', () => {
       ),
     ).render();
 
-    await waitFor(() =>
-      expect(analyticsApiMock.getEvents()[0]).toMatchObject({
+    await waitFor(() => {
+      const event = analyticsApiMock
+        .getEvents()
+        .find(e => e.subject === subject);
+
+      expect(event).toMatchObject({
         action,
         subject,
         context: {
-          extension: 'test',
-          routeRef: 'unknown',
+          extensionId: 'test',
         },
-      }),
-    );
+      });
+    });
   });
 });
