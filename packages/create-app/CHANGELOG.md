@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.5.8-next.2
+
+### Patch Changes
+
+- 375b6f7d68: CircelCI plugin moved permanently
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.5.8-next.1
 
 ### Patch Changes

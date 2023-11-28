@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.7.2-next.1
+
+### Patch Changes
+
+- 5d796829bb: Remove unused dependency
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.10
+
 ## 0.7.2-next.0
 
 ### Patch Changes

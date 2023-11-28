@@ -1,5 +1,35 @@
 # @backstage/plugin-catalog
 
+## 1.16.0-next.2
+
+### Minor Changes
+
+- e223f2264d: Properly support both function- and string-form visibility filter expressions in the new extensions exported via `/alpha`.
+
+### Patch Changes
+
+- 53600976bb: Ensure that passed-in icons are taken advantage of in the presentation API
+- a5a04739e1: Internal refactor of alpha exports due to a change in how extension factories are defined.
+- 78a10bb085: Adding in spec.type chip to search results for clarity
+- fb8f3bdbc2: Updated alpha translation message keys to use nested format and camel case.
+- 531e1a2a79: Updated alpha plugin to include the `unregisterRedirect` external route.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.1
+  - @backstage/catalog-client@1.5.0-next.0
+  - @backstage/plugin-search-react@1.7.4-next.1
+  - @backstage/core-compat-api@0.0.1-next.1
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-scaffolder-common@1.4.3
+  - @backstage/plugin-search-common@1.2.8
+
 ## 1.16.0-next.1
 
 ### Patch Changes

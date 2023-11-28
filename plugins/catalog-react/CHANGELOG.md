@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-react
 
+## 1.9.2-next.1
+
+### Patch Changes
+
+- 53600976bb: Ensure that passed-in icons are taken advantage of in the presentation API
+- 08d9e67199: Add default icon for kind resource.
+- a5a04739e1: Internal refactor of alpha exports due to a change in how extension factories are defined.
+- e223f2264d: Breaking alpha-API change to entity visibility filter functions to accept a bare entity as their first argument, instead of an object with an entity property.
+
+  Functions that accept such filters now also support the string expression form of filters.
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/catalog-client@1.5.0-next.0
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/plugin-permission-react@0.4.18-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+
 ## 1.9.2-next.0
 
 ### Patch Changes

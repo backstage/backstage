@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.4.12-next.1
+
+### Patch Changes
+
+- 43b2eb8f70: Ensure that cursors always come back as JSON on sqlite too
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.15.1-next.1
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/backend-tasks@0.5.13-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-node@1.5.1-next.1
+  - @backstage/plugin-events-node@0.2.17-next.1
+  - @backstage/plugin-permission-common@0.7.10
+
 ## 0.4.12-next.0
 
 ### Patch Changes

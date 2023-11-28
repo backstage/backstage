@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-node
 
+## 1.11.0-next.1
+
+### Patch Changes
+
+- 99fb54183b: Updated dependency `@azure/identity` to `^4.0.0`.
+- 2666675457: Updated dependency `@google-cloud/storage` to `^7.0.0`.
+- 4f773c15f6: Bumped the default TechDocs docker image version to the latest which was released several month ago
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.8
+
 ## 1.11.0-next.0
 
 ### Minor Changes
