@@ -55,14 +55,14 @@ export function resolveBaseUrl(config: Config): URL {
 async function readBuildInfo() {
   const timestamp = Date.now();
 
-  let commit: string | unknown;
+  let commit: string | undefined;
   try {
     commit = await runPlain('git', 'rev-parse', 'HEAD');
   } catch (error) {
     // ignore, see below
   }
 
-  let gitVersion: string | unknown;
+  let gitVersion: string | undefined;
   try {
     gitVersion = await runPlain('git', 'describe', '--always');
   } catch (error) {
