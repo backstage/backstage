@@ -405,6 +405,7 @@ export function createComponentExtension<
   TInputs extends AnyExtensionInputMap,
 >(options: {
   ref: TRef;
+  name?: string;
   disabled?: boolean;
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
@@ -421,7 +422,7 @@ export function createComponentExtension<
           inputs: Expand<ExtensionInputValues<TInputs>>;
         }) => TRef['T'];
       };
-}): Extension<TConfig>;
+}): ExtensionDefinition<TConfig>;
 
 // @public (undocumented)
 export function createExtension<
