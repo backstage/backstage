@@ -341,7 +341,9 @@ export function createSpecializedApp(options?: {
       <AppContextProvider appContext={appContext}>
         <AppThemeProvider>
           <RoutingProvider {...routeInfo} routeBindings={routeBindings}>
-            <InternalAppContext.Provider value={{ appIdentityProxy }}>
+            <InternalAppContext.Provider
+              value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
+            >
               {rootEl}
             </InternalAppContext.Provider>
           </RoutingProvider>
