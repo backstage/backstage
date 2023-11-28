@@ -1,5 +1,21 @@
 # @backstage/plugin-user-settings
 
+## 0.7.14-next.2
+
+### Patch Changes
+
+- fb8f3bdbc2: Updated alpha translation message keys to use nested format and camel case.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/core-compat-api@0.0.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+
 ## 0.7.14-next.1
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-search-react
 
+## 1.7.4-next.1
+
+### Patch Changes
+
+- a5a04739e1: Internal refactor of alpha exports due to a change in how extension factories are defined.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-search-common@1.2.8
+
 ## 1.7.4-next.0
 
 ### Patch Changes

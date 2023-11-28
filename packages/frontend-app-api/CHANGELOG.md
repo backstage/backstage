@@ -1,5 +1,28 @@
 # @backstage/frontend-app-api
 
+## 0.4.0-next.1
+
+### Minor Changes
+
+- e539735435: Updated core extension structure to make space for the sign-in page by adding `core.router`.
+
+### Patch Changes
+
+- 5eb6b8a7bc: Added the nav logo extension for customization of sidebar logo
+- 1f12fb762c: Create a core components extension that allows adopters to override core app components such as `Progress`, `BootErrorPage`, `NotFoundErrorPage` and `ErrorBoundaryFallback`.
+- 59709286b3: Collect and register feature flags from plugins and extension overrides.
+- f27ee7d937: Migrate analytics route tracker component.
+- a5a04739e1: Updates to provide `node` to extension factories instead of `id` and `source`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/config@1.1.1
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 0.3.1-next.0
 
 ### Patch Changes

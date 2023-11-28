@@ -1,5 +1,17 @@
 # @backstage/catalog-client
 
+## 1.5.0-next.0
+
+### Minor Changes
+
+- 38340678c3: The internals of `CatalogClient` are now auto-generated using the `backstage-repo-tools schema openapi generate-client` command.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
 ## 1.4.6
 
 ### Patch Changes
