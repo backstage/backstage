@@ -85,6 +85,11 @@ export type TemplateWizardPageProps = {
   };
   layouts?: LayoutOptions[];
   formProps?: FormProps_3;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
 };
 
 // (No @packageDocumentation comment for this package)
