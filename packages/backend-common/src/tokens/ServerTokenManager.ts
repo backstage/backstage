@@ -25,6 +25,7 @@ const TOKEN_ALG = 'HS256';
 const TOKEN_SUB = 'backstage-server';
 const TOKEN_EXPIRY_AFTER = Duration.fromObject({ hours: 1 });
 const TOKEN_REISSUE_AFTER = Duration.fromObject({ minutes: 10 });
+const TEXT_ENCODER = new TextEncoder();
 
 /**
  * A token manager that issues static fake tokens and never fails
@@ -77,7 +78,7 @@ export class ServerTokenManager implements TokenManager {
     const keys = config.getOptionalConfigArray('backend.auth.keys');
     if (keys?.length) {
       return new ServerTokenManager(
-        keys.map(key => encodeURIComponent(key.getString('secret'))),
+        keys.map(key => key.getString('secret')),
         options,
       );
     }
@@ -103,7 +104,7 @@ export class ServerTokenManager implements TokenManager {
     }
     this.options = options;
     this.verificationKeys = secrets.map(s => base64url.decode(s));
-    this.signingKey = this.verificationKeys[0];
+    this.signingKey = new TextEncoder().encode(secrets[0]);
   }
 
   // Called when no keys have been generated yet in the dev environment
