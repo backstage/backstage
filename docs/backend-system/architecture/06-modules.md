@@ -25,8 +25,8 @@ import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node'
 import { MyCustomProcessor } from './MyCustomProcessor';
 
 export const catalogModuleExampleCustomProcessor = createBackendModule({
-  moduleId: 'exampleCustomProcessor',
   pluginId: 'catalog',
+  moduleId: 'example-custom-processor',
   register(env) {
     env.registerInit({
       deps: {

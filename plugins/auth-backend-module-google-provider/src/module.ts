@@ -26,7 +26,7 @@ import { googleSignInResolvers } from './resolvers';
 /** @public */
 export const authModuleGoogleProvider = createBackendModule({
   pluginId: 'auth',
-  moduleId: 'googleProvider',
+  moduleId: 'google-provider',
   register(reg) {
     reg.registerInit({
       deps: {

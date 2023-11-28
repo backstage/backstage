@@ -61,7 +61,7 @@ backend.add(searchModuleCatalogCollator());
 backend.add(
   createBackendModule({
     pluginId: 'search',
-    moduleId: 'myCatalogCollatorOptions',
+    moduleId: 'my-catalog-collator-options',
     register(reg) {
       reg.registerInit({
         deps: { collator: catalogCollatorExtensionPoint },

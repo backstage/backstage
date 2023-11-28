@@ -26,7 +26,7 @@ import { oauth2ProxySignInResolvers } from './resolvers';
 /** @public */
 export const authModuleOauth2ProxyProvider = createBackendModule({
   pluginId: 'auth',
-  moduleId: 'oauth2ProxyProvider',
+  moduleId: 'oauth2-proxy-provider',
   register(reg) {
     reg.registerInit({
       deps: {

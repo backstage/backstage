@@ -27,7 +27,7 @@ import { UnprocessedEntitiesModule } from './UnprocessedEntitiesModule';
  */
 export const catalogModuleUnprocessedEntities = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'catalogModuleUnprocessedEntities',
+  moduleId: 'catalog-module-unprocessed-entities',
   register(env) {
     env.registerInit({
       deps: {

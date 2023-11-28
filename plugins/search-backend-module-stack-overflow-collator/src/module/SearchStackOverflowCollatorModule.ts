@@ -28,8 +28,8 @@ import { StackOverflowQuestionsCollatorFactory } from '../collators';
  * Search backend module for the Stack Overflow index.
  */
 export const searchStackOverflowCollatorModule = createBackendModule({
-  moduleId: 'stackOverflowCollator',
   pluginId: 'search',
+  moduleId: 'stack-overflow-collator',
   register(env) {
     env.registerInit({
       deps: {
