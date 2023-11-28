@@ -77,7 +77,7 @@ export async function createRouter(
 
       if (entity) {
         const annotationName =
-          entity.metadata?.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
+          entity.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION];
         if (
           annotationName &&
           !(await azureSitesApi.validateSite(annotationName, name))
@@ -141,7 +141,7 @@ export async function createRouter(
           annotationName &&
           !(await azureSitesApi.validateSite(annotationName, name))
         ) {
-          throw new NotFoundError();
+          throw new NotFoundError('annotation mismatched!');
         }
 
         const decision = permissions

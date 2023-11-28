@@ -45,5 +45,12 @@ export type AzureSiteStartStopRequest = {
   subscription: string;
   resourceGroup: string;
   name: string;
-  entityRef?: string;
+};
+
+/** @public */
+export type AzureSiteBackendRequest = {
+  subscription: string;
+  resourceGroup: string;
+  name: string;
+  entityRef: string;
 };

@@ -18,7 +18,7 @@ import { AzureSitesApi } from './AzureSitesApi';
 import {
   AzureSiteListRequest,
   AzureSiteListResponse,
-  AzureSiteStartStopRequest,
+  AzureSiteBackendRequest,
 } from '@backstage/plugin-azure-sites-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
@@ -34,7 +34,7 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
     this.identityApi = options.identityApi;
   }
 
-  async stop(request: AzureSiteStartStopRequest): Promise<void> {
+  async stop(request: AzureSiteBackendRequest): Promise<void> {
     const url = `${await this.discoveryApi.getBaseUrl('azure-sites')}/${
       request.subscription
     }/${request.resourceGroup}/${request.name}/stop`;
@@ -51,7 +51,7 @@ export class AzureSitesApiBackendClient implements AzureSitesApi {
       }),
     });
   }
-  async start(request: AzureSiteStartStopRequest): Promise<void> {
+  async start(request: AzureSiteBackendRequest): Promise<void> {
     const url = `${await this.discoveryApi.getBaseUrl('azure-sites')}/${
       request.subscription
     }/${request.resourceGroup}/${request.name}/start`;

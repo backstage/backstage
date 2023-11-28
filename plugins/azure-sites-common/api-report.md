@@ -25,6 +25,14 @@ export type AzureSite = {
 };
 
 // @public (undocumented)
+export type AzureSiteBackendRequest = {
+  subscription: string;
+  resourceGroup: string;
+  name: string;
+  entityRef: string;
+};
+
+// @public (undocumented)
 export type AzureSiteListRequest = {
   name: string;
 };
@@ -45,7 +53,6 @@ export type AzureSiteStartStopRequest = {
   subscription: string;
   resourceGroup: string;
   name: string;
-  entityRef?: string;
 };
 
 // (No @packageDocumentation comment for this package)
