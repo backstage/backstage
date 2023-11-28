@@ -6,7 +6,7 @@
 /// <reference types="react" />
 
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ListItemProps } from '@material-ui/core';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { SearchDocument } from '@backstage/plugin-search-common';
@@ -23,7 +23,9 @@ export function createSearchResultListItemExtension<
   TConfig extends {
     noTrack?: boolean;
   },
->(options: SearchResultItemExtensionOptions<TConfig>): Extension<TConfig>;
+>(
+  options: SearchResultItemExtensionOptions<TConfig>,
+): ExtensionDefinition<TConfig>;
 
 // @alpha (undocumented)
 export type SearchResultItemExtensionComponent = <
@@ -47,7 +49,8 @@ export type SearchResultItemExtensionOptions<
     noTrack?: boolean;
   },
 > = {
-  id: string;
+  namespace?: string;
+  name?: string;
   attachTo?: {
     id: string;
     input: string;

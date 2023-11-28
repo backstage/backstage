@@ -26,7 +26,7 @@ describe('createExtensionTester', () => {
   it('should render a simple extension', async () => {
     createExtensionTester(
       createExtension({
-        id: 'test',
+        namespace: 'test',
         attachTo: { id: 'ignored', input: 'ignored' },
         output: { element: coreExtensionData.reactElement },
         factory: () => ({ element: <div>test</div> }),
@@ -39,7 +39,7 @@ describe('createExtensionTester', () => {
   it('should render an extension even if disabled by default', async () => {
     createExtensionTester(
       createExtension({
-        id: 'test',
+        namespace: 'test',
         attachTo: { id: 'ignored', input: 'ignored' },
         disabled: true,
         output: { element: coreExtensionData.reactElement },
@@ -54,7 +54,7 @@ describe('createExtensionTester', () => {
     expect(() =>
       createExtensionTester(
         createExtension({
-          id: 'test',
+          namespace: 'test',
           attachTo: { id: 'ignored', input: 'ignored' },
           disabled: true,
           output: { path: coreExtensionData.routePath },
@@ -62,7 +62,7 @@ describe('createExtensionTester', () => {
         }),
       ).render(),
     ).toThrow(
-      "Failed to instantiate extension 'core.router', input 'children' did not receive required extension data 'core.reactElement' from extension 'test'",
+      "Failed to instantiate extension 'core/router', input 'children' did not receive required extension data 'core.reactElement' from extension 'test'",
     );
   });
 });

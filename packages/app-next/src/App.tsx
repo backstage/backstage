@@ -83,7 +83,7 @@ TODO:
 /* app.tsx */
 
 const homePageExtension = createExtension({
-  id: 'myhomepage',
+  name: 'myhomepage',
   attachTo: { id: 'home', input: 'props' },
   output: {
     children: coreExtensionData.reactElement,
@@ -95,7 +95,7 @@ const homePageExtension = createExtension({
 });
 
 const signInPage = createSignInPageExtension({
-  id: 'signInPage',
+  name: 'guest',
   loader: async () => (props: SignInPageProps) =>
     <SignInPage {...props} providers={['guest']} />,
 });

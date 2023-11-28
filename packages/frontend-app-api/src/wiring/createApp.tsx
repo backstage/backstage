@@ -73,6 +73,8 @@ import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementati
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   apis as defaultApis,
   components as defaultComponents,
@@ -119,7 +121,7 @@ export const builtinExtensions = [
   DefaultNotFoundErrorPageComponent,
   LightTheme,
   DarkTheme,
-];
+].map(def => resolveExtensionDefinition(def));
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -174,7 +176,7 @@ export function createExtensionTree(options: {
       );
     },
     getRootRoutes(): JSX.Element[] {
-      return this.getExtensionAttachments('core.routes', 'routes').map(node => {
+      return this.getExtensionAttachments('core/routes', 'routes').map(node => {
         const path = node.getData(coreExtensionData.routePath);
         const element = node.getData(coreExtensionData.reactElement);
         const routeRef = node.getData(coreExtensionData.routeRef);
@@ -201,7 +203,7 @@ export function createExtensionTree(options: {
         );
       };
 
-      return this.getExtensionAttachments('core.nav', 'items')
+      return this.getExtensionAttachments('core/nav', 'items')
         .map((node, index) => {
           const target = node.getData(coreExtensionData.navTarget);
           if (!target) {

@@ -4,11 +4,11 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-export const AdrSearchResultListItemExtension: Extension<{
+export const AdrSearchResultListItemExtension: ExtensionDefinition<{
   lineClamp: number;
   noTrack: boolean;
 }>;

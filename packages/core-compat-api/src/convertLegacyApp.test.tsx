@@ -59,13 +59,13 @@ describe('convertLegacyApp', () => {
         id: 'score-card',
         extensions: [
           {
-            id: 'plugin.score-card.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:score-card',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'score-board' },
           },
           {
-            id: 'apis.plugin.scoringdata.service',
+            id: 'api:plugin.scoringdata.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
@@ -75,13 +75,13 @@ describe('convertLegacyApp', () => {
         id: 'stackstorm',
         extensions: [
           {
-            id: 'plugin.stackstorm.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:stackstorm',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'stackstorm' },
           },
           {
-            id: 'apis.plugin.stackstorm.service',
+            id: 'api:plugin.stackstorm.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
@@ -91,19 +91,19 @@ describe('convertLegacyApp', () => {
         id: 'puppetDb',
         extensions: [
           {
-            id: 'plugin.puppetDb.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:puppetDb',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
-            id: 'plugin.puppetDb.page2',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:puppetDb/2',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
-            id: 'apis.plugin.puppetdb.service',
+            id: 'api:plugin.puppetdb.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
@@ -113,13 +113,13 @@ describe('convertLegacyApp', () => {
         id: undefined,
         extensions: [
           {
-            id: 'core.layout',
+            id: 'core/layout',
             attachTo: { id: 'core', input: 'root' },
             disabled: false,
           },
           {
-            id: 'core.nav',
-            attachTo: { id: 'core.layout', input: 'nav' },
+            id: 'core/nav',
+            attachTo: { id: 'core/layout', input: 'nav' },
             disabled: true,
           },
         ],

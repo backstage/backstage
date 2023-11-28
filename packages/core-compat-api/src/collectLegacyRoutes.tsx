@@ -16,11 +16,11 @@
 
 import React, { ReactNode } from 'react';
 import {
-  Extension,
   createApiExtension,
   createPageExtension,
   createPlugin,
   BackstagePlugin,
+  ExtensionDefinition,
 } from '@backstage/frontend-plugin-api';
 import { Route, Routes } from 'react-router-dom';
 import {
@@ -64,7 +64,7 @@ export function collectLegacyRoutes(
 ): BackstagePlugin[] {
   const createdPluginIds = new Map<
     LegacyBackstagePlugin,
-    Extension<unknown>[]
+    ExtensionDefinition<unknown>[]
   >();
 
   React.Children.forEach(
@@ -95,19 +95,18 @@ export function collectLegacyRoutes(
         'core.mountPoint',
       );
 
-      const pluginId = plugin.getId();
-
       const detectedExtensions =
-        createdPluginIds.get(plugin) ?? new Array<Extension<unknown>>();
+        createdPluginIds.get(plugin) ??
+        new Array<ExtensionDefinition<unknown>>();
       createdPluginIds.set(plugin, detectedExtensions);
 
       const path: string = route.props.path;
 
       detectedExtensions.push(
         createPageExtension({
-          id: `plugin.${pluginId}.page${
-            detectedExtensions.length ? detectedExtensions.length + 1 : ''
-          }`,
+          name: detectedExtensions.length
+            ? String(detectedExtensions.length + 1)
+            : undefined,
           defaultPath: path[0] === '/' ? path.slice(1) : path,
           routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
 
@@ -132,9 +131,7 @@ export function collectLegacyRoutes(
       extensions: [
         ...extensions,
         ...Array.from(plugin.getApis()).map(factory =>
-          createApiExtension({
-            factory,
-          }),
+          createApiExtension({ factory }),
         ),
       ],
     }),

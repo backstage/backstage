@@ -32,6 +32,7 @@ export function createComponentExtension<
   TInputs extends AnyExtensionInputMap,
 >(options: {
   ref: TRef;
+  name?: string;
   disabled?: boolean;
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
@@ -49,9 +50,10 @@ export function createComponentExtension<
         }) => TRef['T'];
       };
 }) {
-  const id = options.ref.id;
   return createExtension({
-    id,
+    kind: 'component',
+    namespace: options.ref.id,
+    name: options.name,
     attachTo: { id: 'core', input: 'components' },
     inputs: options.inputs,
     disabled: options.disabled,

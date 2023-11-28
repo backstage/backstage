@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import { createExtension, coreExtensionData } from '../wiring';
-import { AppTheme } from '@backstage/core-plugin-api';
+import { createExtensionTester } from '@backstage/frontend-test-utils';
+import { screen } from '@testing-library/react';
+import { TechRadarPage, sampleTechRadarApi } from './alpha';
 
-/** @public */
-export function createThemeExtension(theme: AppTheme) {
-  return createExtension({
-    kind: 'theme',
-    namespace: 'app',
-    name: theme.id,
-    attachTo: { id: 'core', input: 'themes' },
-    output: {
-      theme: coreExtensionData.theme,
-    },
-    factory: () => ({ theme }),
+describe('TechRadarPage', () => {
+  beforeAll(() => {
+    Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
+      value: () => ({ width: 100, height: 100 }),
+      configurable: true,
+    });
   });
-}
+
+  it('renders without exploding', async () => {
+    createExtensionTester(TechRadarPage).add(sampleTechRadarApi).render();
+
+    await expect(screen.findByText('Tech Radar')).resolves.toBeInTheDocument();
+  });
+});

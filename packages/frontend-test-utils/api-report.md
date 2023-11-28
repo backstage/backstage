@@ -4,7 +4,7 @@
 
 ```ts
 import { ErrorWithContext } from '@backstage/test-utils';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { MockAnalyticsApi } from '@backstage/test-utils';
 import { MockConfigApi } from '@backstage/test-utils';
@@ -24,7 +24,7 @@ import { withLogCollector } from '@backstage/test-utils';
 
 // @public (undocumented)
 export function createExtensionTester<TConfig>(
-  subject: Extension<TConfig>,
+  subject: ExtensionDefinition<TConfig>,
   options?: {
     config?: TConfig;
   },
@@ -36,7 +36,7 @@ export { ErrorWithContext };
 export class ExtensionTester {
   // (undocumented)
   add<TConfig>(
-    extension: Extension<TConfig>,
+    extension: ExtensionDefinition<TConfig>,
     options?: {
       config?: TConfig;
     },

@@ -46,53 +46,45 @@ import { createEntityContentExtension } from '@backstage/plugin-catalog-react/al
 
 /** @alpha */
 const techDocsStorage = createApiExtension({
-  api: techdocsStorageApiRef,
-
-  factory() {
-    return createApiFactory({
-      api: techdocsStorageApiRef,
-      deps: {
-        configApi: configApiRef,
-        discoveryApi: discoveryApiRef,
-        identityApi: identityApiRef,
-        fetchApi: fetchApiRef,
-      },
-      factory: ({ configApi, discoveryApi, identityApi, fetchApi }) =>
-        new TechDocsStorageClient({
-          configApi,
-          discoveryApi,
-          identityApi,
-          fetchApi,
-        }),
-    });
-  },
+  factory: createApiFactory({
+    api: techdocsStorageApiRef,
+    deps: {
+      configApi: configApiRef,
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ configApi, discoveryApi, identityApi, fetchApi }) =>
+      new TechDocsStorageClient({
+        configApi,
+        discoveryApi,
+        identityApi,
+        fetchApi,
+      }),
+  }),
 });
 
 /** @alpha */
 const techDocsClient = createApiExtension({
-  api: techdocsApiRef,
-  factory() {
-    return createApiFactory({
-      api: techdocsApiRef,
-      deps: {
-        configApi: configApiRef,
-        discoveryApi: discoveryApiRef,
-        fetchApi: fetchApiRef,
-      },
-      factory: ({ configApi, discoveryApi, fetchApi }) =>
-        new TechDocsClient({
-          configApi,
-          discoveryApi,
-          fetchApi,
-        }),
-    });
-  },
+  factory: createApiFactory({
+    api: techdocsApiRef,
+    deps: {
+      configApi: configApiRef,
+      discoveryApi: discoveryApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ configApi, discoveryApi, fetchApi }) =>
+      new TechDocsClient({
+        configApi,
+        discoveryApi,
+        fetchApi,
+      }),
+  }),
 });
 
 /** @alpha */
 export const TechDocsSearchResultListItemExtension =
   createSearchResultListItemExtension({
-    id: 'techdocs',
     configSchema: createSchemaFromZod(z =>
       z.object({
         // TODO: Define how the icon can be configurable
@@ -118,7 +110,6 @@ export const TechDocsSearchResultListItemExtension =
  * @alpha
  */
 const TechDocsIndexPage = createPageExtension({
-  id: 'plugin.techdocs.indexPage',
   defaultPath: '/docs',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   loader: () =>
@@ -133,7 +124,7 @@ const TechDocsIndexPage = createPageExtension({
  * @alpha
  */
 const TechDocsReaderPage = createPageExtension({
-  id: 'plugin.techdocs.readerPage',
+  name: 'reader',
   defaultPath: '/docs/:namespace/:kind/:name',
   routeRef: convertLegacyRouteRef(rootDocsRouteRef),
   loader: () =>
@@ -148,7 +139,6 @@ const TechDocsReaderPage = createPageExtension({
  * @alpha
  */
 const TechDocsEntityContent = createEntityContentExtension({
-  id: 'techdocs',
   defaultPath: 'docs',
   defaultTitle: 'TechDocs',
   loader: () => import('./Router').then(m => <m.EmbeddedDocsRouter />),
@@ -156,7 +146,6 @@ const TechDocsEntityContent = createEntityContentExtension({
 
 /** @alpha */
 const TechDocsNavItem = createNavItemExtension({
-  id: 'plugin.techdocs.nav.index',
   icon: LibraryBooks,
   title: 'Docs',
   routeRef: convertLegacyRouteRef(rootRouteRef),

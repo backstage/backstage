@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Extension } from './createExtension';
+import { Extension, ExtensionDefinition } from './createExtension';
 import { ExternalRouteRef, RouteRef } from '../routing';
 import { FeatureFlagConfig } from './types';
+import { resolveExtensionDefinition } from './resolveExtensionDefinition';
 
 /** @public */
 export type AnyRoutes = { [name in string]: RouteRef };
@@ -32,7 +33,7 @@ export interface PluginOptions<
   id: string;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
-  extensions?: Extension<unknown>[];
+  extensions?: ExtensionDefinition<unknown>[];
   featureFlags?: FeatureFlagConfig[];
 }
 
@@ -64,14 +65,33 @@ export function createPlugin<
 >(
   options: PluginOptions<Routes, ExternalRoutes>,
 ): BackstagePlugin<Routes, ExternalRoutes> {
+  const extensions = (options.extensions ?? []).map(def =>
+    resolveExtensionDefinition(def, { namespace: options.id }),
+  );
+
+  const extensionIds = extensions.map(e => e.id);
+  if (extensionIds.length !== new Set(extensionIds).size) {
+    const duplicates = Array.from(
+      new Set(
+        extensionIds.filter((id, index) => extensionIds.indexOf(id) !== index),
+      ),
+    );
+    // TODO(Rugvip): This could provide some more information about the kind + name of the extensions
+    throw new Error(
+      `Plugin '${options.id}' provided duplicate extensions: ${duplicates.join(
+        ', ',
+      )}`,
+    );
+  }
+
   return {
     $$type: '@backstage/BackstagePlugin',
     version: 'v1',
     id: options.id,
     routes: options.routes ?? ({} as Routes),
     externalRoutes: options.externalRoutes ?? ({} as ExternalRoutes),
-    extensions: options.extensions ?? [],
     featureFlags: options.featureFlags ?? [],
+    extensions,
   } as InternalBackstagePlugin<Routes, ExternalRoutes>;
 }
 

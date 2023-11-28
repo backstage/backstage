@@ -4,7 +4,7 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { Extension } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -17,15 +17,15 @@ const _default: BackstagePlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const SearchApi: Extension<{}>;
+export const SearchApi: ExtensionDefinition<{}>;
 
 // @alpha (undocumented)
-export const SearchNavItem: Extension<{
+export const SearchNavItem: ExtensionDefinition<{
   title: string;
 }>;
 
 // @alpha (undocumented)
-export const SearchPage: Extension<{
+export const SearchPage: ExtensionDefinition<{
   path: string;
   noTrack: boolean;
 }>;

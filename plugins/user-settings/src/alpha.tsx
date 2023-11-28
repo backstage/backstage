@@ -27,7 +27,6 @@ import React from 'react';
 export * from './translation';
 
 const UserSettingsPage = createPageExtension({
-  id: 'plugin.user-settings.page',
   defaultPath: '/settings',
   routeRef: convertLegacyRouteRef(settingsRouteRef),
   inputs: {

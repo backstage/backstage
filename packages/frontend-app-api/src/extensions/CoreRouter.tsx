@@ -36,7 +36,8 @@ import { signInPageComponentDataRef } from '../../../frontend-plugin-api/src/ext
 import { RouteTracker } from '../routing/RouteTracker';
 
 export const CoreRouter = createExtension({
-  id: 'core.router',
+  namespace: 'core',
+  name: 'router',
   attachTo: { id: 'core', input: 'root' },
   inputs: {
     signInPage: createExtensionInput(

@@ -59,7 +59,7 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
-    extension: node.spec.id,
+    extensionId: node.spec.id,
     pluginId: node.spec.source?.id,
   };
 

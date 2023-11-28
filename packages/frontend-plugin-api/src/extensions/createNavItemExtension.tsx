@@ -24,15 +24,18 @@ import { RouteRef } from '../routing';
  * @public
  */
 export function createNavItemExtension(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   routeRef: RouteRef<undefined>;
   title: string;
   icon: IconComponent;
 }) {
-  const { id, routeRef, title, icon } = options;
+  const { routeRef, title, icon, namespace, name } = options;
   return createExtension({
-    id,
-    attachTo: { id: 'core.nav', input: 'items' },
+    namespace,
+    name,
+    kind: 'nav-item',
+    attachTo: { id: 'core/nav', input: 'items' },
     configSchema: createSchemaFromZod(z =>
       z.object({
         title: z.string().default(title),
