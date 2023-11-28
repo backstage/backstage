@@ -15,10 +15,10 @@
  */
 
 import {
-  Extension,
   ComponentRef,
   createComponentExtension,
   coreComponentsRefs,
+  ExtensionDefinition,
 } from '@backstage/frontend-plugin-api';
 import { AppComponents } from '@backstage/core-plugin-api';
 
@@ -33,7 +33,7 @@ const refs: Record<string, ComponentRef<ComponentTypes>> = {
 
 /** @public */
 export function collectLegacyComponents(components: Partial<AppComponents>) {
-  return Object.entries(components).reduce<Extension<unknown>[]>(
+  return Object.entries(components).reduce<ExtensionDefinition<unknown>[]>(
     (extensions, [name, component]) => {
       const ref = refs[name];
       return ref

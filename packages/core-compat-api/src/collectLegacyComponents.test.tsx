@@ -31,28 +31,33 @@ describe('collectLegacyComponents', () => {
 
     expect(
       collected.map(p => ({
-        id: p.id,
+        kind: p.kind,
+        namespace: p.namespace,
         attachTo: p.attachTo,
         disabled: p.disabled,
       })),
     ).toEqual([
       {
-        id: 'core.components.progress',
+        kind: 'component',
+        namespace: 'core.components.progress',
         attachTo: { id: 'core', input: 'components' },
         disabled: false,
       },
       {
-        id: 'core.components.bootErrorPage',
+        kind: 'component',
+        namespace: 'core.components.bootErrorPage',
         attachTo: { id: 'core', input: 'components' },
         disabled: false,
       },
       {
-        id: 'core.components.notFoundErrorPage',
+        kind: 'component',
+        namespace: 'core.components.notFoundErrorPage',
         attachTo: { id: 'core', input: 'components' },
         disabled: false,
       },
       {
-        id: 'core.components.errorBoundaryFallback',
+        kind: 'component',
+        namespace: 'core.components.errorBoundaryFallback',
         attachTo: { id: 'core', input: 'components' },
         disabled: false,
       },
