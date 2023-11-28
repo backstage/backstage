@@ -104,7 +104,7 @@ export class ServerTokenManager implements TokenManager {
     }
     this.options = options;
     this.verificationKeys = secrets.map(s => base64url.decode(s));
-    this.signingKey = new TextEncoder().encode(secrets[0]);
+    this.signingKey = TEXT_ENCODER.encode(secrets[0]);
   }
 
   // Called when no keys have been generated yet in the dev environment
