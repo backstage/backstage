@@ -24,20 +24,20 @@ import { components as defaultComponents } from '../../../app-defaults/src/defau
 
 export const DefaultProgressComponent = createComponentExtension({
   ref: coreComponentsRefs.progress,
-  component: async () => defaultComponents.Progress,
+  component: { sync: () => defaultComponents.Progress },
 });
 
 export const DefaultBootErrorPageComponent = createComponentExtension({
   ref: coreComponentsRefs.bootErrorPage,
-  component: async () => defaultComponents.BootErrorPage,
+  component: { sync: () => defaultComponents.BootErrorPage },
 });
 
 export const DefaultNotFoundErrorPageComponent = createComponentExtension({
   ref: coreComponentsRefs.notFoundErrorPage,
-  component: async () => defaultComponents.NotFoundErrorPage,
+  component: { sync: () => defaultComponents.NotFoundErrorPage },
 });
 
 export const DefaultErrorBoundaryComponent = createComponentExtension({
   ref: coreComponentsRefs.errorBoundaryFallback,
-  component: async () => defaultComponents.ErrorBoundaryFallback,
+  component: { sync: () => defaultComponents.ErrorBoundaryFallback },
 });

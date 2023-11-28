@@ -58,5 +58,5 @@ export function CustomNotFoundErrorPage() {
 
 export default createComponentExtension({
   ref: coreComponentsRefs.notFoundErrorPage,
-  component: async () => CustomNotFoundErrorPage,
+  component: { sync: () => CustomNotFoundErrorPage },
 });

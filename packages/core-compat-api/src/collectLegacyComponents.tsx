@@ -34,13 +34,13 @@ const refs: Record<string, ComponentRef<ComponentTypes>> = {
 /** @public */
 export function collectLegacyComponents(components: Partial<AppComponents>) {
   return Object.entries(components).reduce<Extension<unknown>[]>(
-    (extensions, [componentName, componentFunction]) => {
-      const ref = refs[componentName];
+    (extensions, [name, component]) => {
+      const ref = refs[name];
       return ref
         ? extensions.concat(
             createComponentExtension({
               ref,
-              component: async () => componentFunction,
+              component: { sync: () => component },
             }),
           )
         : extensions;
