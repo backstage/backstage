@@ -35,10 +35,19 @@ export function createComponentExtension<
   disabled?: boolean;
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
-  component: (values: {
-    config: TConfig;
-    inputs: Expand<ExtensionInputValues<TInputs>>;
-  }) => Promise<TRef['T']>;
+  component:
+    | {
+        lazy: (values: {
+          config: TConfig;
+          inputs: Expand<ExtensionInputValues<TInputs>>;
+        }) => Promise<TRef['T']>;
+      }
+    | {
+        sync: (values: {
+          config: TConfig;
+          inputs: Expand<ExtensionInputValues<TInputs>>;
+        }) => TRef['T'];
+      };
 }) {
   const id = options.ref.id;
   return createExtension({
@@ -51,11 +60,16 @@ export function createComponentExtension<
       component: coreExtensionData.component,
     },
     factory({ config, inputs, node }) {
-      const ExtensionComponent = lazy(() =>
-        options
-          .component({ config, inputs })
-          .then(component => ({ default: component })),
-      );
+      let ExtensionComponent: TRef['T'];
+
+      if ('sync' in options.component) {
+        ExtensionComponent = options.component.sync({ config, inputs });
+      } else {
+        const loader = options.component.lazy({ config, inputs });
+        ExtensionComponent = lazy(() =>
+          loader.then(component => ({ default: component })),
+        );
+      }
 
       return {
         component: {
