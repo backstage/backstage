@@ -1,5 +1,17 @@
 # @backstage/frontend-test-utils
 
+## 0.1.0-next.1
+
+### Patch Changes
+
+- e539735435: Updates for `core.router` addition.
+- c21c9cf07b: Re-export mock API implementations as well as `TestApiProvider`, `TestApiRegistry`, `withLogCollector`, and `setupRequestMockHandlers` from `@backstage/test-utils`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/frontend-app-api@0.4.0-next.1
+  - @backstage/test-utils@1.4.6-next.1
+  - @backstage/types@1.1.1
+
 ## 0.1.0-next.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @backstage/integration
 
+## 1.8.0-next.1
+
+### Patch Changes
+
+- 99fb54183b: Updated dependency `@azure/identity` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/config@1.1.1
+
 ## 1.8.0-next.0
 
 ### Minor Changes

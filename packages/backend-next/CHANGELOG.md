@@ -1,5 +1,46 @@
 # example-backend-next
 
+## 0.0.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.1.1-next.1
+  - @backstage/plugin-catalog-backend@1.15.1-next.1
+  - @backstage/plugin-azure-devops-backend@0.5.0-next.1
+  - @backstage/plugin-kubernetes-backend@0.14.0-next.1
+  - @backstage/backend-defaults@0.2.8-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/backend-tasks@0.5.13-next.1
+  - @backstage/plugin-adr-backend@0.4.5-next.1
+  - @backstage/plugin-app-backend@0.3.56-next.1
+  - @backstage/plugin-auth-node@0.4.2-next.1
+  - @backstage/plugin-badges-backend@0.3.5-next.1
+  - @backstage/plugin-catalog-backend-module-openapi@0.1.25-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.5-next.1
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.3.5-next.1
+  - @backstage/plugin-devtools-backend@0.2.5-next.1
+  - @backstage/plugin-entity-feedback-backend@0.2.5-next.1
+  - @backstage/plugin-jenkins-backend@0.3.2-next.1
+  - @backstage/plugin-lighthouse-backend@0.3.5-next.1
+  - @backstage/plugin-linguist-backend@0.5.5-next.1
+  - @backstage/plugin-nomad-backend@0.1.10-next.1
+  - @backstage/plugin-permission-backend@0.5.31-next.1
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.1.5-next.1
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-node@0.7.19-next.1
+  - @backstage/plugin-playlist-backend@0.3.12-next.1
+  - @backstage/plugin-proxy-backend@0.4.6-next.1
+  - @backstage/plugin-scaffolder-backend@1.19.2-next.1
+  - @backstage/plugin-search-backend@1.4.8-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.12-next.1
+  - @backstage/plugin-search-backend-module-explore@0.1.12-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.12-next.1
+  - @backstage/plugin-search-backend-node@1.2.12-next.1
+  - @backstage/plugin-sonarqube-backend@0.2.10-next.1
+  - @backstage/plugin-techdocs-backend@1.9.1-next.1
+  - @backstage/plugin-todo-backend@0.3.6-next.1
+
 ## 0.0.18-next.0
 
 ### Patch Changes

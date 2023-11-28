@@ -1,5 +1,15 @@
 # @backstage/core-plugin-api
 
+## 1.8.1-next.1
+
+### Patch Changes
+
+- 0c93dc37b2: The `createTranslationRef` function from the `/alpha` subpath can now also accept a nested object structure of default translation messages, which will be flatted using `.` separators.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 1.8.1-next.0
 
 ### Patch Changes
