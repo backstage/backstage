@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-export { oauth2Proxy } from './provider';
-import { OAuth2ProxyResult as _OAuth2ProxyResult } from '@backstage/plugin-auth-backend-module-oauth2-proxy-provider';
-
 /**
- * @public
- * @deprecated import from `@backstage/plugin-auth-backend-module-oauth2-proxy-provider` instead
+ * The oauth2-proxy-provider backend module for the auth plugin.
+ *
+ * @packageDocumentation
  */
-export type OAuth2ProxyResult = _OAuth2ProxyResult;
+export { authModuleOauth2ProxyProvider } from './module';
+export {
+  oauth2ProxyAuthenticator,
+  OAUTH2_PROXY_JWT_HEADER,
+} from './authenticator';
+export type { OAuth2ProxyResult } from './types';
