@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { createApiRef } from '@backstage/core-plugin-api';
 import { ComponentRef } from '../../components';
-import { createApiRef } from '../system';
 
 /**
  * API for looking up components based on component refs.
