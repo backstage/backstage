@@ -45,8 +45,8 @@ export const elasticsearchTranslatorExtensionPoint =
  * @alpha
  */
 export default createBackendModule({
-  moduleId: 'elasticsearchEngine',
   pluginId: 'search',
+  moduleId: 'elasticsearch-engine',
   register(env) {
     let translator: ElasticSearchQueryTranslator | undefined;
 

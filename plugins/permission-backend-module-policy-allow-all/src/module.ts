@@ -23,8 +23,8 @@ import { AllowAllPermissionPolicy } from './policy';
  * @public
  */
 export const permissionModuleAllowAllPolicy = createBackendModule({
-  moduleId: 'allowAllPolicy',
   pluginId: 'permission',
+  moduleId: 'allow-all-policy',
   register(reg) {
     reg.registerInit({
       deps: { policy: policyExtensionPoint },

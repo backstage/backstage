@@ -102,7 +102,7 @@ describe('BackendInitializer', () => {
     init.add(
       createBackendModule({
         pluginId: 'test',
-        moduleId: 'modA',
+        moduleId: 'mod-a',
         register(reg) {
           reg.registerInit({
             deps: { extension: extensionPoint },
@@ -118,7 +118,7 @@ describe('BackendInitializer', () => {
     init.add(
       createBackendModule({
         pluginId: 'test',
-        moduleId: 'modB',
+        moduleId: 'mod-b',
         register(reg) {
           const values = ['b'];
           reg.registerExtensionPoint(extensionPoint, { values });
@@ -135,7 +135,7 @@ describe('BackendInitializer', () => {
     init.add(
       createBackendModule({
         pluginId: 'test',
-        moduleId: 'modC',
+        moduleId: 'mod-c',
         register(reg) {
           reg.registerInit({
             deps: { extension: extensionPoint },
@@ -265,7 +265,7 @@ describe('BackendInitializer', () => {
     init.add(
       createBackendModule({
         pluginId: 'test',
-        moduleId: 'modA',
+        moduleId: 'mod-a',
         register(reg) {
           reg.registerExtensionPoint(extA, 'a');
           reg.registerInit({
@@ -278,7 +278,7 @@ describe('BackendInitializer', () => {
     init.add(
       createBackendModule({
         pluginId: 'test',
-        moduleId: 'modB',
+        moduleId: 'mod-b',
         register(reg) {
           reg.registerExtensionPoint(extB, 'b');
           reg.registerInit({
@@ -289,7 +289,7 @@ describe('BackendInitializer', () => {
       })(),
     );
     await expect(init.start()).rejects.toThrow(
-      "Circular dependency detected for modules of plugin 'test', 'modA' -> 'modB' -> 'modA'",
+      "Circular dependency detected for modules of plugin 'test', 'mod-a' -> 'mod-b' -> 'mod-a'",
     );
   });
 
@@ -298,7 +298,7 @@ describe('BackendInitializer', () => {
     const extA = createExtensionPoint<string>({ id: 'a' });
     init.add(
       createBackendPlugin({
-        pluginId: 'testA',
+        pluginId: 'test-a',
         register(reg) {
           reg.registerExtensionPoint(extA, 'a');
           reg.registerInit({
@@ -310,7 +310,7 @@ describe('BackendInitializer', () => {
     );
     init.add(
       createBackendModule({
-        pluginId: 'testB',
+        pluginId: 'test-b',
         moduleId: 'mod',
         register(reg) {
           reg.registerInit({
@@ -321,7 +321,7 @@ describe('BackendInitializer', () => {
       })(),
     );
     await expect(init.start()).rejects.toThrow(
-      "Extension point registered for plugin 'testA' may not be used by module for plugin 'testB'",
+      "Extension point registered for plugin 'test-a' may not be used by module for plugin 'test-b'",
     );
   });
 });

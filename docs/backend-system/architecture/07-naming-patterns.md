@@ -10,18 +10,20 @@ description: Naming patterns in the backend system
 
 These are the naming patterns to adhere to within the backend system. They help us keep exports consistent across packages and make it easier to understand the usage and intent of exports.
 
+As a rule, all names should be camel case, with the exceptions of plugin and module IDs, which should be kebab case.
+
 ### Plugins
 
-| Description | Pattern      | Examples                            |
-| ----------- | ------------ | ----------------------------------- |
-| export      | `<id>Plugin` | `catalogPlugin`, `scaffolderPlugin` |
-| ID          | `'<id>'`     | `'catalog'`, `'scaffolder'`         |
+| Description | Pattern           | Examples                              |
+| ----------- | ----------------- | ------------------------------------- |
+| export      | `<camelId>Plugin` | `catalogPlugin`, `userSettingsPlugin` |
+| ID          | `'<kebab-id>'`    | `'catalog'`, `'user-settings'`        |
 
 Example:
 
 ```ts
-export const catalogPlugin = createBackendPlugin({
-  pluginId: 'catalog',
+export const userSettingsPlugin = createBackendPlugin({
+  pluginId: 'user-settings',
   ...
 })
 ```
@@ -31,14 +33,14 @@ export const catalogPlugin = createBackendPlugin({
 | Description | Pattern                      | Examples                            |
 | ----------- | ---------------------------- | ----------------------------------- |
 | export      | `<pluginId>Module<ModuleId>` | `catalogModuleGithubEntityProvider` |
-| ID          | `'<moduleId>'`               | `'githubEntityProvider'`            |
+| ID          | `'<module-id>'`              | `'github-entity-provider'`          |
 
 Example:
 
 ```ts
 export const catalogModuleGithubEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'githubEntityProvider',
+  moduleId: 'github-entity-provider',
   ...
 })
 ```

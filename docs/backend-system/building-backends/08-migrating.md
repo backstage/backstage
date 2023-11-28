@@ -297,7 +297,7 @@ import { microsoftGraphOrgEntityProviderTransformExtensionPoint } from '@backsta
 backend.add(
   createBackendModule({
     pluginId: 'catalog',
-    moduleId: 'microsoftGraphExtensions',
+    moduleId: 'microsoft-graph-extensions',
     register(env) {
       env.registerInit({
         deps: {
@@ -337,7 +337,7 @@ import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-start */
 const catalogModuleCustomExtensions = createBackendModule({
   pluginId: 'catalog', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {
@@ -406,7 +406,7 @@ import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-start */
 const eventsModuleCustomExtensions = createBackendModule({
   pluginId: 'events', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {
@@ -471,7 +471,7 @@ import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-start */
 const scaffolderModuleCustomExtensions = createBackendModule({
   pluginId: 'scaffolder', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {

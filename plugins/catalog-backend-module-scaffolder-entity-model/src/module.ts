@@ -26,7 +26,7 @@ import { ScaffolderEntitiesProcessor } from '@backstage/plugin-catalog-backend-m
  */
 export const catalogModuleScaffolderEntityModel = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'scaffolderEntityModel',
+  moduleId: 'scaffolder-entity-model',
   register(env) {
     env.registerInit({
       deps: {

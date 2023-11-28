@@ -188,8 +188,8 @@ describePerformanceTest('stitchingPerformance', () => {
             factory: () => ({ getClient: async () => knex }),
           }),
           createBackendModule({
-            moduleId: 'syntheticLoadEntities',
             pluginId: 'catalog',
+            moduleId: 'synthetic-load-entities',
             register(reg) {
               reg.registerInit({
                 deps: {
@@ -245,8 +245,8 @@ describePerformanceTest('stitchingPerformance', () => {
             factory: () => ({ getClient: async () => knex }),
           }),
           createBackendModule({
-            moduleId: 'syntheticLoadEntities',
             pluginId: 'catalog',
+            moduleId: 'synthetic-load-entities',
             register(reg) {
               reg.registerInit({
                 deps: {
