@@ -6,6 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
+import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -89,12 +90,6 @@ export const createCatalogPermissionRule: <
 >(
   rule: PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>,
 ) => PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
-
-// @public
-export type EntitiesSearchFilter = {
-  key: string;
-  values?: string[];
-};
 
 // @alpha
 export const permissionRules: {
