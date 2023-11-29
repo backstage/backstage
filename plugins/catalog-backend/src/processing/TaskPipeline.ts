@@ -89,11 +89,11 @@ export function startTaskPipeline<T>(options: Options<T>) {
 
   async function pipelineLoop() {
     while (!abortSignal.aborted) {
-      await withActiveSpan(tracer, 'TaskPipelineLoop', async span => {
-        if (state.inFlightCount <= lowWatermark) {
+      if (state.inFlightCount <= lowWatermark) {
+        await withActiveSpan(tracer, 'TaskPipelineLoop', async span => {
           const loadCount = highWatermark - state.inFlightCount;
-          const loadedItems = await Promise.resolve(loadCount)
-            .then(loadTasks)
+          const loadedItems = await Promise.resolve()
+            .then(() => loadTasks(loadCount))
             .catch(() => {
               // Silently swallow errors and go back to sleep to try again; we
               // delegate to the loadTasks function itself to catch errors and log
@@ -104,8 +104,8 @@ export function startTaskPipeline<T>(options: Options<T>) {
           if (loadedItems.length && !abortSignal.aborted) {
             state.inFlightCount += loadedItems.length;
             for (const item of loadedItems) {
-              Promise.resolve(item)
-                .then(processTask)
+              Promise.resolve()
+                .then(() => processTask(item))
                 .catch(() => {
                   // Silently swallow errors and go back to sleep to try again; we
                   // delegate to the processTask function itself to catch errors
@@ -117,8 +117,8 @@ export function startTaskPipeline<T>(options: Options<T>) {
                 });
             }
           }
-        }
-      });
+        });
+      }
       await barrier.wait();
     }
   }
