@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { EntitiesSearchFilter, EntityFilter } from '../../catalog';
+import {
+  EntitiesSearchFilter,
+  EntityFilter,
+} from '@backstage/plugin-catalog-node';
 
 /**
  * Forms a full EntityFilter based on a single key-value(s) object.

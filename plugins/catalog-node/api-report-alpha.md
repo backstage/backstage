@@ -5,6 +5,7 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
@@ -60,12 +61,6 @@ export const catalogProcessingExtensionPoint: ExtensionPoint<CatalogProcessingEx
 
 // @alpha
 export const catalogServiceRef: ServiceRef<CatalogApi, 'plugin'>;
-
-// @alpha (undocumented)
-export type EntitiesSearchFilter = {
-  key: string;
-  values?: string[];
-};
 
 // (No @packageDocumentation comment for this package)
 ```
