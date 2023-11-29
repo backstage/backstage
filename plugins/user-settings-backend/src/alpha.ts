@@ -26,7 +26,7 @@ import { createRouter } from './service/router';
  * @alpha
  */
 export default createBackendPlugin({
-  pluginId: 'userSettings',
+  pluginId: 'user-settings',
   register(env) {
     env.registerInit({
       deps: {
