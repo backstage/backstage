@@ -29,7 +29,7 @@
     "express": "^4.18.2",
     "jose": "^4.6.0",
     "node-fetch": "^2.6.7",
-    "passport": "^0.6.0",
+    "passport": "^0.7.0",
     "passport-microsoft": "^1.0.0"
   },
   "devDependencies": {
