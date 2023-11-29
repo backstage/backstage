@@ -1,0 +1,347 @@
+{
+  "/radar/languages/c": {
+    "id": "c",
+    "category": "languages",
+    "lifecycle": "use",
+    "title": "C",
+    "discipline": ["client"],
+    "lastModified": 1695214837,
+    "ordinal": 0
+  },
+  "/radar/languages/cpp": {
+    "id": "cpp",
+    "category": "languages",
+    "lifecycle": "use",
+    "title": "C++",
+    "discipline": ["client"],
+    "lastModified": 1693400920,
+    "ordinal": 1
+  },
+  "/radar/languages/protobuf": {
+    "id": "protobuf",
+    "category": "languages",
+    "lifecycle": "use",
+    "title": "Google Protobuf",
+    "discipline": ["backend", "data", "data-science"],
+    "lastModified": 1659533044,
+    "ordinal": 2
+  },
+  "/radar/languages/java": {
+    "id": "java",
+    "category": "languages",
+    "lifecycle": "trial",
+    "title": "Java",
+    "goldenTech": true,
+    "discipline": ["backend"],
+    "lastModified": 1691686659,
+    "ordinal": 3
+  },
+  "/radar/languages/kotlin": {
+    "id": "kotlin",
+    "category": "languages",
+    "lifecycle": "use",
+    "title": "Kotlin",
+    "goldenTech": true,
+    "discipline": ["client"],
+    "lastModified": 1659533044,
+    "ordinal": 4
+  },
+  "/radar/languages/python": {
+    "id": "python",
+    "category": "languages",
+    "lifecycle": "use",
+    "title": "Python",
+    "discipline": ["data", "data-science", "machine-learning"],
+    "lastModified": 1659533044,
+    "ordinal": 5
+  },
+  "/radar/languages/scala": {
+    "id": "scala",
+    "category": "languages",
+    "lifecycle": "assess",
+    "title": "Scala",
+    "discipline": ["data", "data-science"],
+    "lastModified": 1692092593,
+    "ordinal": 6
+  },
+  "/radar/languages/swift": {
+    "id": "swift",
+    "category": "languages",
+    "lifecycle": "hold",
+    "title": "Swift",
+    "goldenTech": true,
+    "discipline": ["client"],
+    "lastModified": 1659533044,
+    "ordinal": 7
+  },
+  "/radar/languages/typescript": {
+    "id": "typescript",
+    "category": "languages",
+    "lifecycle": "use",
+    "title": "TypeScript",
+    "goldenTech": true,
+    "owner": "maintainers",
+    "discipline": ["web"],
+    "lastModified": 1675414896,
+    "ordinal": 8
+  },
+  "/radar/languages/rust": {
+    "id": "rust",
+    "category": "languages",
+    "lifecycle": "hold",
+    "title": "Rust",
+    "owner": "maintainers",
+    "discipline": ["client"],
+    "lastModified": 1674640892,
+    "ordinal": 9
+  },
+  "/radar/languages/erlang": {
+    "id": "erlang",
+    "category": "languages",
+    "lifecycle": "hold",
+    "title": "Erlang",
+    "discipline": ["backend"],
+    "lastModified": 1661503996,
+    "ordinal": 10
+  },
+  "/radar/languages/go": {
+    "id": "go",
+    "category": "languages",
+    "lifecycle": "hold",
+    "title": "Go",
+    "discipline": ["backend"],
+    "lastModified": 1659533044,
+    "ordinal": 11
+  },
+  "/radar/languages/javascript": {
+    "id": "javascript",
+    "category": "languages",
+    "lifecycle": "hold",
+    "title": "JavaScript",
+    "discipline": ["web"],
+    "lastModified": 1659533044,
+    "ordinal": 12
+  },
+  "/radar/languages/objective-c": {
+    "id": "objective-c",
+    "category": "languages",
+    "lifecycle": "use",
+    "title": "Objective-C",
+    "discipline": ["client"],
+    "lastModified": 1675414896,
+    "ordinal": 13
+  },
+  "/radar/languages/php": {
+    "id": "php",
+    "category": "languages",
+    "lifecycle": "use",
+    "title": "PHP",
+    "discipline": ["backend"],
+    "lastModified": 1700126797,
+    "ordinal": 14
+  },
+  "/radar/frameworks/jest": {
+    "id": "jest",
+    "category": "frameworks",
+    "lifecycle": "use",
+    "title": "Jest",
+    "goldenTech": true,
+    "discipline": ["web"],
+    "lastModified": 1659533044,
+    "ordinal": 46
+  },
+  "/radar/frameworks/luigi": {
+    "id": "luigi",
+    "category": "frameworks",
+    "lifecycle": "use",
+    "title": "Luigi",
+    "discipline": ["data"],
+    "lastModified": 1659533044,
+    "ordinal": 49
+  },
+  "/radar/frameworks/nextjs": {
+    "id": "nextjs",
+    "category": "frameworks",
+    "lifecycle": "use",
+    "title": "Next.js",
+    "goldenTech": true,
+    "discipline": ["web"],
+    "lastModified": 1693216228,
+    "ordinal": 51
+  },
+  "/radar/frameworks/openapi": {
+    "id": "openapi",
+    "category": "frameworks",
+    "lifecycle": "use",
+    "title": "OpenAPI",
+    "owner": "maintainers",
+    "discipline": ["backend", "web"],
+    "lastModified": 1659533044,
+    "ordinal": 53
+  },
+  "/radar/frameworks/react": {
+    "id": "react",
+    "category": "frameworks",
+    "lifecycle": "use",
+    "title": "React",
+    "goldenTech": true,
+    "discipline": ["web"],
+    "lastModified": 1674640892,
+    "ordinal": 54
+  },
+  "/radar/frameworks/react-testing-library": {
+    "id": "react-testing-library",
+    "category": "frameworks",
+    "lifecycle": "use",
+    "title": "React Testing Library",
+    "goldenTech": true,
+    "discipline": ["web"],
+    "lastModified": 1683542110,
+    "ordinal": 55
+  },
+  "/radar/frameworks/scio": {
+    "id": "scio",
+    "category": "frameworks",
+    "lifecycle": "use",
+    "title": "Scio",
+    "owner": "maintainers",
+    "discipline": ["data"],
+    "lastModified": 1659533044,
+    "ordinal": 58
+  },
+  "/radar/frameworks/webpack": {
+    "id": "webpack",
+    "category": "frameworks",
+    "lifecycle": "use",
+    "title": "Webpack",
+    "discipline": ["web"],
+    "lastModified": 1674640892,
+    "ordinal": 62
+  },
+  "/radar/frameworks/grpc": {
+    "id": "grpc",
+    "category": "frameworks",
+    "lifecycle": "hold",
+    "title": "gRPC",
+    "owner": "maintainers",
+    "discipline": ["backend"],
+    "lastModified": 1674582886,
+    "ordinal": 63
+  },
+  "/radar/frameworks/hermes": {
+    "id": "hermes",
+    "category": "frameworks",
+    "lifecycle": "hold",
+    "title": "Hermes",
+    "owner": "maintainers",
+    "discipline": ["backend", "web"],
+    "lastModified": 1662022685,
+    "ordinal": 87
+  },
+  "/radar/frameworks/jekyll": {
+    "id": "jekyll",
+    "category": "frameworks",
+    "lifecycle": "hold",
+    "title": "Jekyll",
+    "discipline": ["web"],
+    "lastModified": 1659533044,
+    "ordinal": 88
+  },
+  "/radar/infrastructure/bigquery": {
+    "id": "bigquery",
+    "category": "infrastructure",
+    "lifecycle": "use",
+    "title": "BigQuery",
+    "vendor": "gcp",
+    "owner": "maintainers",
+    "discipline": ["data", "data-science"],
+    "lastModified": 1692101808,
+    "ordinal": 95
+  },
+  "/radar/infrastructure/cmake": {
+    "id": "cmake",
+    "category": "infrastructure",
+    "lifecycle": "use",
+    "title": "CMake",
+    "discipline": ["client"],
+    "lastModified": 1675414896,
+    "ordinal": 96
+  },
+  "/radar/infrastructure/prometheus": {
+    "id": "prometheus",
+    "category": "infrastructure",
+    "lifecycle": "use",
+    "title": "Prometheus",
+    "owner": "maintainers",
+    "discipline": ["backend", "client", "data", "web"],
+    "lastModified": 1678208880,
+    "ordinal": 139
+  },
+  "/radar/infrastructure/terraform": {
+    "id": "terraform",
+    "category": "infrastructure",
+    "lifecycle": "hold",
+    "title": "Terraform",
+    "discipline": ["backend", "data", "data-science"],
+    "lastModified": 1659533044,
+    "ordinal": 145
+  },
+  "/radar/infrastructure/yarn": {
+    "id": "yarn",
+    "category": "infrastructure",
+    "lifecycle": "hold",
+    "title": "Yarn",
+    "goldenTech": true,
+    "owner": "maintainers",
+    "discipline": ["web"],
+    "lastModified": 1659533044,
+    "ordinal": 148
+  },
+  "/radar/infrastructure/nginx": {
+    "id": "nginx",
+    "category": "infrastructure",
+    "lifecycle": "use",
+    "title": "nginx",
+    "discipline": ["backend"],
+    "lastModified": 1675342207,
+    "ordinal": 149
+  },
+  "/radar/infrastructure/pnpm": {
+    "id": "pnpm",
+    "category": "infrastructure",
+    "lifecycle": "use",
+    "title": "pnpm",
+    "owner": "maintainers",
+    "discipline": ["web"],
+    "lastModified": 1659533044,
+    "ordinal": 162
+  },
+  "/radar/infrastructure/kafka": {
+    "id": "kafka",
+    "category": "infrastructure",
+    "lifecycle": "use",
+    "title": "Kafka",
+    "discipline": ["backend", "data", "data-science"],
+    "lastModified": 1675414896,
+    "ordinal": 243
+  },
+  "/radar/infrastructure/puppet": {
+    "id": "puppet",
+    "category": "infrastructure",
+    "lifecycle": "use",
+    "title": "Puppet",
+    "owner": "maintainers",
+    "discipline": [],
+    "lastModified": 1659533044,
+    "ordinal": 250
+  },
+  "/radar/infrastructure/redis": {
+    "id": "redis",
+    "category": "infrastructure",
+    "lifecycle": "use",
+    "title": "Redis",
+    "discipline": ["backend", "data", "data-science"],
+    "lastModified": 1693400920,
+    "ordinal": 251
+  }
+}
