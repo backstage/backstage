@@ -47,6 +47,10 @@ const routes = (
 Then configure the `lighthouse-audit-service` URL in your [`app-config.yaml`](https://github.com/backstage/backstage/blob/master/app-config.yaml).
 
 ```yaml
+backend:
+  csp:
+    frame-src:
+      - http://your-service-url
 lighthouse:
   baseUrl: http://your-service-url
 ```
