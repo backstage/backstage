@@ -6971,7 +6971,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@maxim_mazurok/gapi.client.calendar": ^3.0.20220408
-    "@tanstack/react-query": ^4.1.3
+    "@tanstack/react-query": ^5.0.0
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -7941,7 +7941,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@microsoft/microsoft-graph-types": ^2.25.0
-    "@tanstack/react-query": ^4.1.3
+    "@tanstack/react-query": ^5.0.0
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -17332,29 +17332,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:4.36.1":
-  version: 4.36.1
-  resolution: "@tanstack/query-core@npm:4.36.1"
-  checksum: 47672094da20d89402d9fe03bb7b0462be73a76ff9ca715169738bc600a719d064d106d083a8eedae22a2c22de22f87d5eb5d31ef447aba771d9190f2117ed10
+"@tanstack/query-core@npm:5.10.0":
+  version: 5.10.0
+  resolution: "@tanstack/query-core@npm:5.10.0"
+  checksum: dbda02d0ebf165a2d3fd84c3d94de4d2fc037bbe36220a9848b47d9b6f35440ee00303cf3c643844240eefc53f33527530382b257b62ca97970c38fd77cc5b65
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^4.1.3":
-  version: 4.36.1
-  resolution: "@tanstack/react-query@npm:4.36.1"
+"@tanstack/react-query@npm:^5.0.0":
+  version: 5.10.0
+  resolution: "@tanstack/react-query@npm:5.10.0"
   dependencies:
-    "@tanstack/query-core": 4.36.1
-    use-sync-external-store: ^1.2.0
+    "@tanstack/query-core": 5.10.0
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-native: "*"
-  peerDependenciesMeta:
-    react-dom:
-      optional: true
-    react-native:
-      optional: true
-  checksum: 1aff0a476859386f8d32253fa0d0bde7b81769a6d4d4d9cbd78778f0f955459a3bdb7ee27a0d2ee7373090f12998b45df80db0b5b313bd0a7a39d36c6e8e51c5
+    react: ^18.0.0
+  checksum: 0a92fc8465d3aca4fb8bbf17f03b664b67148a4bc933d1beca5464bfbe4dbbd3f78bbdfe0524b6518e744a30570d0e25b71e1aab3e233c5ec06bd8b0b2f9f921
   languageName: node
   linkType: hard
 
