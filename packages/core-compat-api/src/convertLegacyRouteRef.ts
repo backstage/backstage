@@ -91,6 +91,7 @@ export function convertLegacyRouteRef(
 
   if (type === 'absolute') {
     const legacyRef = ref as LegacyRouteRef;
+    const legacyRefStr = String(legacyRef);
     const newRef = toInternalRouteRef(
       createRouteRef<{ [key in string]: string }>({
         params: legacyRef.params as string[],
@@ -104,18 +105,19 @@ export function convertLegacyRouteRef(
         return newRef.getParams();
       },
       getDescription() {
-        return newRef.getDescription();
+        return legacyRefStr;
       },
       setId(id: string) {
         newRef.setId(id);
       },
       toString() {
-        return newRef.toString();
+        return legacyRefStr;
       },
     });
   }
   if (type === 'sub') {
     const legacyRef = ref as LegacySubRouteRef;
+    const legacyRefStr = String(legacyRef);
     const newRef = toInternalSubRouteRef(
       createSubRouteRef({
         path: legacyRef.path,
@@ -133,15 +135,16 @@ export function convertLegacyRouteRef(
         return newRef.getParent();
       },
       getDescription() {
-        return newRef.getDescription();
+        return legacyRefStr;
       },
       toString() {
-        return newRef.toString();
+        return legacyRefStr;
       },
     });
   }
   if (type === 'external') {
     const legacyRef = ref as LegacyExternalRouteRef;
+    const legacyRefStr = String(legacyRef);
     const newRef = toInternalExternalRouteRef(
       createExternalRouteRef<{ [key in string]: string }>({
         params: legacyRef.params as string[],
@@ -157,13 +160,13 @@ export function convertLegacyRouteRef(
         return newRef.getParams();
       },
       getDescription() {
-        return newRef.getDescription();
+        return legacyRefStr;
       },
       setId(id: string) {
         newRef.setId(id);
       },
       toString() {
-        return newRef.toString();
+        return legacyRefStr;
       },
     });
   }
