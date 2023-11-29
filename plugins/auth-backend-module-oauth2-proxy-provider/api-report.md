@@ -10,7 +10,8 @@ import { IncomingHttpHeaders } from 'http';
 import { ProxyAuthenticator } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
-export const authModuleOauth2ProxyProvider: () => BackendFeature;
+const authModuleOauth2ProxyProvider: () => BackendFeature;
+export default authModuleOauth2ProxyProvider;
 
 // @public
 export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
