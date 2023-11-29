@@ -27,6 +27,7 @@
     "dist",
     "config.d.ts"
   ],
+  "configSchema": "config.d.ts",
   "scripts": {
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
