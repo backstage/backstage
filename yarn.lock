@@ -3395,6 +3395,7 @@ __metadata:
     "@types/express": ^4.17.6
     chokidar: ^3.5.3
     express: ^4.17.1
+    fs-extra: ^7.0.1
     lodash: ^4.17.21
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
@@ -3428,6 +3429,7 @@ __metadata:
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/config-loader": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/types": "workspace:^"

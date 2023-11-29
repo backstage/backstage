@@ -22,4 +22,5 @@ export type {
   ConfigVisibility,
   ConfigSchemaProcessingOptions,
   TransformFunc,
+  ConfigSchemaPackageEntry,
 } from './types';

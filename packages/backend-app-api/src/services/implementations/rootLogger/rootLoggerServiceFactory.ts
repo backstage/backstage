@@ -18,6 +18,7 @@ import {
   createServiceFactory,
   coreServices,
 } from '@backstage/backend-plugin-api';
+import { schemaDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { WinstonLogger } from '../../../logging';
 import { transports, format } from 'winston';
 import { createConfigSecretEnumerator } from '../../../config';
@@ -27,8 +28,9 @@ export const rootLoggerServiceFactory = createServiceFactory({
   service: coreServices.rootLogger,
   deps: {
     config: coreServices.rootConfig,
+    schemaDiscovery: schemaDiscoveryServiceRef,
   },
-  async factory({ config }) {
+  async factory({ config, schemaDiscovery }) {
     const logger = WinstonLogger.create({
       meta: {
         service: 'backstage',
@@ -41,7 +43,12 @@ export const rootLoggerServiceFactory = createServiceFactory({
       transports: [new transports.Console()],
     });
 
-    const secretEnumerator = await createConfigSecretEnumerator({ logger });
+    const secretEnumerator = await createConfigSecretEnumerator({
+      logger,
+      additionalSchemas: (
+        await schemaDiscovery?.getAdditionalSchemas()
+      )?.schemas,
+    });
     logger.addRedactions(secretEnumerator(config));
     config.subscribe?.(() => logger.addRedactions(secretEnumerator(config)));
 

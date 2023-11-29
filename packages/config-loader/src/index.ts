@@ -27,6 +27,7 @@ export type {
   ConfigVisibility,
   LoadConfigSchemaOptions,
   TransformFunc,
+  ConfigSchemaPackageEntry,
 } from './schema';
 export { loadConfig } from './loader';
 export type {

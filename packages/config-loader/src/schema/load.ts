@@ -43,6 +43,7 @@ export type LoadConfigSchemaOptions =
         }
     ) & {
       noUndeclaredProperties?: boolean;
+      additionalSchemas?: ConfigSchemaPackageEntry[];
     };
 
 function errorsToError(errors: ValidationError[]): Error {
@@ -83,6 +84,7 @@ export async function loadConfigSchema(
     }
     schemas = serialized.schemas as ConfigSchemaPackageEntry[];
   }
+  schemas.push(...(options.additionalSchemas || []));
 
   const validate = compileConfigSchemas(schemas, {
     noUndeclaredProperties: options.noUndeclaredProperties,

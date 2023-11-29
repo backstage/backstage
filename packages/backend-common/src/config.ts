@@ -20,7 +20,10 @@ import {
 } from '@backstage/backend-app-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { AppConfig, Config } from '@backstage/config';
-import { LoadConfigOptionsRemote } from '@backstage/config-loader';
+import {
+  ConfigSchemaPackageEntry,
+  LoadConfigOptionsRemote,
+} from '@backstage/config-loader';
 import { setRootLoggerRedactionList } from './logging/createRootLogger';
 
 /**
@@ -35,11 +38,13 @@ export async function loadBackendConfig(options: {
   // process.argv or any other overrides
   remote?: LoadConfigOptionsRemote;
   additionalConfigs?: AppConfig[];
+  additionalSchemas?: ConfigSchemaPackageEntry[];
   argv: string[];
   watch?: boolean;
 }): Promise<Config> {
   const secretEnumerator = await createConfigSecretEnumerator({
     logger: options.logger,
+    additionalSchemas: options.additionalSchemas,
   });
   const { config } = await newLoadBackendConfig(options);
 

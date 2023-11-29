@@ -24,6 +24,7 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Router } from 'express';
+import { SchemaDiscoveryService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TaskRunner } from '@backstage/backend-tasks';
@@ -114,6 +115,11 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory: () => ServiceFactory<
   FeatureDiscoveryService,
   'root'
 >;
+
+// @public (undocumented)
+export interface DynamicPluginsSchemaDiscoveryOptions {
+  schemaLocator?: (platform: PackagePlatform) => string;
+}
 
 // @public (undocumented)
 export const dynamicPluginsServiceFactory: (
@@ -219,6 +225,11 @@ export interface ScannedPluginPackage {
   // (undocumented)
   manifest: ScannedPluginManifest;
 }
+
+// @public (undocumented)
+export const schemaDiscoveryServiceFactory: (
+  options?: DynamicPluginsSchemaDiscoveryOptions | undefined,
+) => ServiceFactory<SchemaDiscoveryService, 'root'>;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -19,6 +19,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { schemaDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createRouter } from './router';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { staticFallbackHandlerExtensionPoint } from '@backstage/plugin-app-node';
@@ -49,8 +50,9 @@ export const appPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
+        schemaDiscovery: schemaDiscoveryServiceRef,
       },
-      async init({ logger, config, database, httpRouter }) {
+      async init({ logger, config, database, httpRouter, schemaDiscovery }) {
         const appPackageName =
           config.getOptionalString('app.packageName') ?? 'app';
         const winstonLogger = loggerToWinstonLogger(logger);
@@ -61,6 +63,9 @@ export const appPlugin = createBackendPlugin({
           database,
           appPackageName,
           staticFallbackHandler,
+          additionalSchemas: (
+            await schemaDiscovery?.getAdditionalSchemas()
+          )?.schemas,
         });
         httpRouter.use(router);
       },

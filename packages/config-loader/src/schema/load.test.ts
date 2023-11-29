@@ -126,6 +126,60 @@ describe('loadConfigSchema', () => {
     );
   });
 
+  it('should include additional schemas', async () => {
+    const schema = await loadConfigSchema({
+      serialized: {
+        backstageConfigSchemaVersion: 1,
+        schemas: [
+          {
+            path: 'mainSchema',
+            value: {
+              type: 'object',
+              properties: {
+                key1: { type: 'string', visibility: 'frontend' },
+              },
+            },
+          },
+        ],
+      },
+      additionalSchemas: [
+        {
+          path: 'additionalSchema',
+          value: {
+            type: 'object',
+            properties: {
+              additionalKey: { type: 'string', visibility: 'frontend' },
+            },
+          },
+        },
+      ],
+    });
+
+    expect(schema.serialize()).toEqual({
+      backstageConfigSchemaVersion: 1,
+      schemas: [
+        {
+          path: 'mainSchema',
+          value: {
+            type: 'object',
+            properties: {
+              key1: { type: 'string', visibility: 'frontend' },
+            },
+          },
+        },
+        {
+          path: 'additionalSchema',
+          value: {
+            type: 'object',
+            properties: {
+              additionalKey: { type: 'string', visibility: 'frontend' },
+            },
+          },
+        },
+      ],
+    });
+  });
+
   describe('should consider schema', () => {
     it('when filtering simple config', async () => {
       mockDir.setContent({

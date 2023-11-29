@@ -22,7 +22,15 @@ import * as path from 'path';
 import * as url from 'url';
 import debounce from 'lodash/debounce';
 import { PackagePlatform, PackageRoles } from '@backstage/cli-node';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { schemaDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
+import { findPaths } from '@backstage/cli-common';
+import { gatherDynamicPluginsSchemas } from './schemas';
 
 export interface DynamicPluginScannerOptions {
   config: Config;
@@ -315,3 +323,70 @@ export class PluginScanner {
     this.untrackChanges();
   }
 }
+
+/**
+ * @public
+ */
+export interface DynamicPluginsSchemaDiscoveryOptions {
+  /**
+   * Function that returns the plugin-relative path to the Json schema file for a given platform.
+   * Default behavior is to look for the `configSchema.json` file in the package `dist` sub-directory.
+   *
+   * @param platform - The platform of the plugin.
+   * @returns the plugin-relative path to the Json schema file.
+   */
+  schemaLocator?: (platform: PackagePlatform) => string;
+}
+
+/**
+ * @public
+ */
+export const schemaDiscoveryServiceFactory = createServiceFactory(
+  (options?: DynamicPluginsSchemaDiscoveryOptions) => ({
+    service: schemaDiscoveryServiceRef,
+    deps: {
+      config: coreServices.rootConfig,
+    },
+    factory({ config }) {
+      let schemas: ConfigSchemaPackageEntry[] | undefined;
+
+      return {
+        async getAdditionalSchemas(): Promise<{
+          schemas: Array<ConfigSchemaPackageEntry>;
+        }> {
+          if (schemas) {
+            return {
+              schemas,
+            };
+          }
+
+          const logger = {
+            ...console,
+            child() {
+              return this;
+            },
+          };
+
+          const scanner = PluginScanner.create({
+            config,
+            logger,
+            // eslint-disable-next-line no-restricted-syntax
+            backstageRoot: findPaths(__dirname).targetRoot,
+            preferAlpha: true,
+          });
+
+          const { packages } = await scanner.scanRoot();
+
+          schemas = await gatherDynamicPluginsSchemas(
+            packages,
+            logger,
+            options?.schemaLocator,
+          );
+          return {
+            schemas,
+          };
+        },
+      };
+    },
+  }),
+);

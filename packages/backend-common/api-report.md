@@ -20,6 +20,7 @@ import { CacheService as CacheClient } from '@backstage/backend-plugin-api';
 import { CacheServiceOptions as CacheClientOptions } from '@backstage/backend-plugin-api';
 import { CacheServiceSetOptions as CacheClientSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
 import cors from 'cors';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
@@ -560,6 +561,7 @@ export function loadBackendConfig(options: {
   logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
   additionalConfigs?: AppConfig[];
+  additionalSchemas?: ConfigSchemaPackageEntry[];
   argv: string[];
   watch?: boolean;
 }): Promise<Config>;

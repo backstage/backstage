@@ -20,6 +20,7 @@ import { Logger } from 'winston';
 import { AppConfig, Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { loadConfigSchema, readEnvConfig } from '@backstage/config-loader';
+import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
 
 type InjectOptions = {
   appConfigs: AppConfig[];
@@ -74,6 +75,7 @@ type ReadOptions = {
   env: { [name: string]: string | undefined };
   appDistDir: string;
   config: Config;
+  additionalSchemas?: ConfigSchemaPackageEntry[];
 };
 
 /**
@@ -90,7 +92,10 @@ export async function readConfigs(options: ReadOptions): Promise<AppConfig[]> {
     const serializedSchema = await fs.readJson(schemaPath);
 
     try {
-      const schema = await loadConfigSchema({ serialized: serializedSchema });
+      const schema = await loadConfigSchema({
+        serialized: serializedSchema,
+        additionalSchemas: options.additionalSchemas,
+      });
 
       const frontendConfigs = await schema.process(
         [{ data: config.get() as JsonObject, context: 'app' }],

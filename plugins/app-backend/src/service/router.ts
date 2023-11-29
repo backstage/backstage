@@ -37,6 +37,7 @@ import {
   CACHE_CONTROL_NO_CACHE,
   CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
+import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
@@ -85,6 +86,17 @@ export interface RouterOptions {
    * This also disables configuration injection though `APP_CONFIG_` environment variables.
    */
   disableConfigInjection?: boolean;
+
+  /**
+   *
+   * Provides a list of additional config schemas, in addition to the serialized schemas
+   * generated during the application build.
+   * This is useful when additional plugins are dynamically loaded in the application at start,
+   * which were not part of the application build. This option allows feeding the corresponding
+   * JSON schemas.
+   *
+   */
+  additionalSchemas?: ConfigSchemaPackageEntry[];
 }
 
 /** @public */
@@ -121,6 +133,7 @@ export async function createRouter(
       config,
       appDistDir,
       env: process.env,
+      additionalSchemas: options.additionalSchemas,
     });
 
     injectedConfigPath = await injectConfig({ appConfigs, logger, staticDir });
