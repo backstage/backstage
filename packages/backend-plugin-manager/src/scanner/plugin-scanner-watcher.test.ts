@@ -229,6 +229,7 @@ describe('plugin-scanner', () => {
       logger.logs = {};
 
       const debug = jest.spyOn(logger, 'debug');
+      const info = jest.spyOn(logger, 'info');
 
       // Check that not all file changes trigger a new scan of plugins
       await mkdir(
@@ -240,8 +241,11 @@ describe('plugin-scanner', () => {
         ),
       );
       await waitForExpect(() => {
-        expect(debug).toHaveBeenCalledTimes(1);
+        expect(debug).toHaveBeenCalled();
       });
+      expect(info).toHaveBeenCalledTimes(0);
+      debug.mockClear();
+
       await writeFile(
         join(
           backstageRootDirectory,
@@ -252,8 +256,11 @@ describe('plugin-scanner', () => {
         'content',
       );
       await waitForExpect(() => {
-        expect(debug).toHaveBeenCalledTimes(2);
+        expect(debug).toHaveBeenCalled();
       });
+      expect(info).toHaveBeenCalledTimes(0);
+      debug.mockClear();
+
       await rm(
         join(
           backstageRootDirectory,
@@ -263,8 +270,11 @@ describe('plugin-scanner', () => {
         ),
       );
       await waitForExpect(() => {
-        expect(debug).toHaveBeenCalledTimes(3);
+        expect(debug).toHaveBeenCalled();
       });
+      expect(info).toHaveBeenCalledTimes(0);
+      debug.mockClear();
+
       await rm(
         join(
           backstageRootDirectory,
@@ -275,8 +285,10 @@ describe('plugin-scanner', () => {
         { recursive: true },
       );
       await waitForExpect(() => {
-        expect(debug).toHaveBeenCalledTimes(4);
+        expect(debug).toHaveBeenCalled();
       });
+      expect(info).toHaveBeenCalledTimes(0);
+      debug.mockClear();
 
       const onWindows = path.sep === '\\';
       // Order of events is not fixed on Windows.
