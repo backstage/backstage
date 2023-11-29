@@ -45201,11 +45201,11 @@ __metadata:
   linkType: hard
 
 "zod-to-json-schema@npm:^3.20.4, zod-to-json-schema@npm:^3.21.4":
-  version: 3.22.0
-  resolution: "zod-to-json-schema@npm:3.22.0"
+  version: 3.22.1
+  resolution: "zod-to-json-schema@npm:3.22.1"
   peerDependencies:
     zod: ^3.22.4
-  checksum: 79ba2f120e16bb38a44b6c20a3afa5e61c40f2d48749b08be68692005af1aed897c808f59be1fe722c2c40c5c3e9c38cd8ca4bfefdae089822de5948fe7d7cc5
+  checksum: 7c0cdcf0acac81a9b69b26e44bc45e43aefacd5759e12f89856f0a4b957b66be27560671473ef7ab4a5883a871b6990a7f61fce3cee96ecad3823c5b7e524fa5
   languageName: node
   linkType: hard
 
