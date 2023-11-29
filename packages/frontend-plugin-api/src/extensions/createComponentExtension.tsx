@@ -17,7 +17,7 @@
 import React, { lazy } from 'react';
 import {
   AnyExtensionInputMap,
-  ExtensionInputValues,
+  ResolvedExtensionInputs,
   coreExtensionData,
   createExtension,
 } from '../wiring';
@@ -40,13 +40,13 @@ export function createComponentExtension<
     | {
         lazy: (values: {
           config: TConfig;
-          inputs: Expand<ExtensionInputValues<TInputs>>;
+          inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         }) => Promise<TRef['T']>;
       }
     | {
         sync: (values: {
           config: TConfig;
-          inputs: Expand<ExtensionInputValues<TInputs>>;
+          inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         }) => TRef['T'];
       };
 }) {

@@ -66,7 +66,7 @@ export const graphiqlBrowseApi = createApiExtension({
   factory({ inputs }) {
     return createApiFactory(
       graphQlBrowseApiRef,
-      GraphQLEndpoints.from(inputs.endpoints.map(i => i.endpoint)),
+      GraphQLEndpoints.from(inputs.endpoints.map(i => i.output.endpoint)),
     );
   },
 });

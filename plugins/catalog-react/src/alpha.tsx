@@ -17,7 +17,7 @@
 import {
   AnyExtensionInputMap,
   ExtensionBoundary,
-  ExtensionInputValues,
+  ResolvedExtensionInputs,
   RouteRef,
   coreExtensionData,
   createExtension,
@@ -59,7 +59,7 @@ export function createEntityCardExtension<
     | typeof entityFilterFunctionExtensionDataRef.T
     | typeof entityFilterExpressionExtensionDataRef.T;
   loader: (options: {
-    inputs: Expand<ExtensionInputValues<TInputs>>;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
 }) {
   return createExtension({
@@ -117,7 +117,7 @@ export function createEntityContentExtension<
     | typeof entityFilterFunctionExtensionDataRef.T
     | typeof entityFilterExpressionExtensionDataRef.T;
   loader: (options: {
-    inputs: Expand<ExtensionInputValues<TInputs>>;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
 }) {
   return createExtension({
