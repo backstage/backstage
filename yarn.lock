@@ -3856,6 +3856,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
+    "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-puppetdb": "workspace:^"
     "@backstage/plugin-stackstorm": "workspace:^"
     "@backstage/version-bridge": "workspace:^"

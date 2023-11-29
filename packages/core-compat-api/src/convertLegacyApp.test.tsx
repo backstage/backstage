@@ -97,7 +97,7 @@ describe('convertLegacyApp', () => {
             defaultConfig: { path: 'puppetdb' },
           },
           {
-            id: 'page:puppetDb/2',
+            id: 'page:puppetDb/1',
             attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
