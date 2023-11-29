@@ -3736,7 +3736,7 @@ __metadata:
     "@vitejs/plugin-react": ^4.0.4
     vite: ^4.4.9
     vite-plugin-html: ^3.2.0
-    vite-plugin-node-polyfills: ^0.16.0
+    vite-plugin-node-polyfills: ^0.17.0
   peerDependenciesMeta:
     "@vitejs/plugin-react":
       optional: true
@@ -26565,7 +26565,7 @@ __metadata:
     react-use: ^17.2.4
     vite: ^4.4.9
     vite-plugin-html: ^3.2.0
-    vite-plugin-node-polyfills: ^0.16.0
+    vite-plugin-node-polyfills: ^0.17.0
     zen-observable: ^0.10.0
   languageName: unknown
   linkType: soft
@@ -43971,17 +43971,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-node-polyfills@npm:^0.16.0":
-  version: 0.16.0
-  resolution: "vite-plugin-node-polyfills@npm:0.16.0"
+"vite-plugin-node-polyfills@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "vite-plugin-node-polyfills@npm:0.17.0"
   dependencies:
     "@rollup/plugin-inject": ^5.0.5
     buffer-polyfill: "npm:buffer@^6.0.3"
     node-stdlib-browser: ^1.2.0
     process: ^0.11.10
   peerDependencies:
-    vite: ^2.0.0 || ^3.0.0 || ^4.0.0
-  checksum: c4b3767e29a7c95efccde7d8adeac7963fb9b30677d88e348eda1c1d407c0d821d58c9ea651cb5db0aa010c93fd1971d8b671fea2417edd15a707861be772861
+    vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
+  checksum: 760d29c25adfa72b5fc731c1bb0826f9c6cc495afc856d38f634ac811566b158a11b1ea968e5d9d536889072470666e9b933ca38ea0c533854375806503b1729
   languageName: node
   linkType: hard
 
