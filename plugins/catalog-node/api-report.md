@@ -106,6 +106,25 @@ export type DeferredEntity = {
 };
 
 // @public
+export type EntitiesSearchFilter = {
+  key: string;
+  values?: string[];
+};
+
+// @public
+export type EntityFilter =
+  | {
+      allOf: EntityFilter[];
+    }
+  | {
+      anyOf: EntityFilter[];
+    }
+  | {
+      not: EntityFilter;
+    }
+  | EntitiesSearchFilter;
+
+// @public
 export interface EntityProvider {
   connect(connection: EntityProviderConnection): Promise<void>;
   getProviderName(): string;
