@@ -34,10 +34,7 @@ export function createComponentRef<T>(options: {
   const { id } = options;
   return {
     id,
-    get T(): T {
-      throw new Error(`tried to read ComponentRef.T of ${id}`);
-    },
-  };
+  } as ComponentRef<T>;
 }
 
 const coreProgressComponentRef = createComponentRef<CoreProgressComponent>({
