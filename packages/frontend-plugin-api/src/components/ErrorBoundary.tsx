@@ -15,34 +15,13 @@
  */
 
 import React, { Component, PropsWithChildren } from 'react';
-// TODO: Dependency on MUI should be removed from core packages
-import { Button } from '@material-ui/core';
-import { ErrorPanel } from '@backstage/core-components';
 import { BackstagePlugin } from '../wiring';
+import { CoreErrorBoundaryFallbackComponent } from '../types';
 
-type DefaultErrorBoundaryFallbackProps = PropsWithChildren<{
+type ErrorBoundaryProps = PropsWithChildren<{
   plugin?: BackstagePlugin;
-  error: Error;
-  resetError: () => void;
+  fallback: CoreErrorBoundaryFallbackComponent;
 }>;
-
-const DefaultErrorBoundaryFallback = ({
-  plugin,
-  error,
-  resetError,
-}: DefaultErrorBoundaryFallbackProps) => {
-  const title = `Error in ${plugin?.id}`;
-
-  return (
-    <ErrorPanel title={title} error={error} defaultExpanded>
-      <Button variant="outlined" onClick={resetError}>
-        Retry
-      </Button>
-    </ErrorPanel>
-  );
-};
-
-type ErrorBoundaryProps = PropsWithChildren<{ plugin?: BackstagePlugin }>;
 type ErrorBoundaryState = { error?: Error };
 
 /** @internal */
@@ -62,12 +41,11 @@ export class ErrorBoundary extends Component<
 
   render() {
     const { error } = this.state;
-    const { plugin, children } = this.props;
+    const { plugin, children, fallback: Fallback } = this.props;
 
     if (error) {
-      // TODO: use a configurable error boundary fallback
       return (
-        <DefaultErrorBoundaryFallback
+        <Fallback
           plugin={plugin}
           error={error}
           resetError={this.handleErrorReset}

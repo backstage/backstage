@@ -22,7 +22,6 @@ import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
-import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/core-plugin-api';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
@@ -350,7 +349,7 @@ export const coreComponentsRefs: {
 // @public (undocumented)
 export type CoreErrorBoundaryFallbackComponent = ComponentType<
   PropsWithChildren<{
-    plugin?: BackstagePlugin_2;
+    plugin?: BackstagePlugin;
     error: Error;
     resetError: () => void;
   }>
