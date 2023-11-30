@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType, PropsWithChildren } from 'react';
+import { BackstagePlugin } from './wiring';
 
 // TODO(Rugvip): This might be a quite useful utility type, maybe add to @backstage/types?
 /**
