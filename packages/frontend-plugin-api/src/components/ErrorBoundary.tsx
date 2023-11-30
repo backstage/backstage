@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { Component, PropsWithChildren } from 'react';
+import React, { Component, ComponentType, PropsWithChildren } from 'react';
 import { BackstagePlugin } from '../wiring';
-import { CoreErrorBoundaryFallbackComponent } from '../types';
+import { CoreErrorBoundaryFallbackProps } from '../types';
 
 type ErrorBoundaryProps = PropsWithChildren<{
   plugin?: BackstagePlugin;
-  fallback: CoreErrorBoundaryFallbackComponent;
+  fallback: ComponentType<CoreErrorBoundaryFallbackProps>;
 }>;
 type ErrorBoundaryState = { error?: Error };
 

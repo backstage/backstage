@@ -47,7 +47,7 @@ export const coreExtensionData = {
   theme: createExtensionDataRef<AppTheme>('core.theme'),
   logoElements: createExtensionDataRef<LogoElements>('core.logos'),
   component: createExtensionDataRef<{
-    ref: ComponentRef<ComponentType<any>>;
-    impl: ComponentType<any>;
+    ref: ComponentRef;
+    impl: ComponentType;
   }>('component.ref'),
 };

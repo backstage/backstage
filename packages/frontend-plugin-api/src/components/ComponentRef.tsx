@@ -15,20 +15,20 @@
  */
 
 import {
-  CoreBootErrorPageComponent,
-  CoreErrorBoundaryFallbackComponent,
-  CoreNotFoundErrorPageComponent,
-  CoreProgressComponent,
+  CoreBootErrorPageProps,
+  CoreErrorBoundaryFallbackProps,
+  CoreNotFoundErrorPageProps,
+  CoreProgressProps,
 } from '../types';
 
 /** @public */
-export type ComponentRef<T> = {
+export type ComponentRef<T extends {} = {}> = {
   id: string;
   T: T;
 };
 
 /** @public */
-export function createComponentRef<T>(options: {
+export function createComponentRef<T extends {} = {}>(options: {
   id: string;
 }): ComponentRef<T> {
   const { id } = options;
@@ -37,22 +37,22 @@ export function createComponentRef<T>(options: {
   } as ComponentRef<T>;
 }
 
-const coreProgressComponentRef = createComponentRef<CoreProgressComponent>({
+const coreProgressComponentRef = createComponentRef<CoreProgressProps>({
   id: 'core.components.progress',
 });
 
 const coreBootErrorPageComponentRef =
-  createComponentRef<CoreBootErrorPageComponent>({
+  createComponentRef<CoreBootErrorPageProps>({
     id: 'core.components.bootErrorPage',
   });
 
 const coreNotFoundErrorPageComponentRef =
-  createComponentRef<CoreNotFoundErrorPageComponent>({
+  createComponentRef<CoreNotFoundErrorPageProps>({
     id: 'core.components.notFoundErrorPage',
   });
 
 const coreErrorBoundaryFallbackComponentRef =
-  createComponentRef<CoreErrorBoundaryFallbackComponent>({
+  createComponentRef<CoreErrorBoundaryFallbackProps>({
     id: 'core.components.errorBoundaryFallback',
   });
 

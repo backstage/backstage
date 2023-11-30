@@ -296,7 +296,7 @@ export type CommonAnalyticsContext = {
 };
 
 // @public (undocumented)
-export type ComponentRef<T> = {
+export type ComponentRef<T extends {} = {}> = {
   id: string;
   T: T;
 };
@@ -304,7 +304,7 @@ export type ComponentRef<T> = {
 // @public
 export interface ComponentsApi {
   // (undocumented)
-  getComponent<T>(ref: ComponentRef<T>): T;
+  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T>;
 }
 
 // @public
@@ -331,29 +331,29 @@ export interface ConfigurableExtensionDataRef<
 }
 
 // @public (undocumented)
-export type CoreBootErrorPageComponent = ComponentType<
-  PropsWithChildren<{
-    step: 'load-config' | 'load-chunk';
-    error: Error;
-  }>
->;
+export type CoreBootErrorPageProps = PropsWithChildren<{
+  step: 'load-config' | 'load-chunk';
+  error: Error;
+}>;
 
 // @public (undocumented)
 export const coreComponentsRefs: {
-  progress: ComponentRef<CoreProgressComponent>;
-  bootErrorPage: ComponentRef<CoreBootErrorPageComponent>;
-  notFoundErrorPage: ComponentRef<CoreNotFoundErrorPageComponent>;
-  errorBoundaryFallback: ComponentRef<CoreErrorBoundaryFallbackComponent>;
+  progress: ComponentRef<{
+    children?: ReactNode;
+  }>;
+  bootErrorPage: ComponentRef<CoreBootErrorPageProps>;
+  notFoundErrorPage: ComponentRef<{
+    children?: ReactNode;
+  }>;
+  errorBoundaryFallback: ComponentRef<CoreErrorBoundaryFallbackProps>;
 };
 
 // @public (undocumented)
-export type CoreErrorBoundaryFallbackComponent = ComponentType<
-  PropsWithChildren<{
-    plugin?: BackstagePlugin;
-    error: Error;
-    resetError: () => void;
-  }>
->;
+export type CoreErrorBoundaryFallbackProps = PropsWithChildren<{
+  plugin?: BackstagePlugin;
+  error: Error;
+  resetError: () => void;
+}>;
 
 // @public (undocumented)
 export const coreExtensionData: {
@@ -366,20 +366,18 @@ export const coreExtensionData: {
   logoElements: ConfigurableExtensionDataRef<LogoElements, {}>;
   component: ConfigurableExtensionDataRef<
     {
-      ref: ComponentRef<ComponentType<any>>;
-      impl: ComponentType<any>;
+      ref: ComponentRef;
+      impl: ComponentType;
     },
     {}
   >;
 };
 
 // @public (undocumented)
-export type CoreNotFoundErrorPageComponent = ComponentType<
-  PropsWithChildren<{}>
->;
+export type CoreNotFoundErrorPageProps = PropsWithChildren<{}>;
 
 // @public (undocumented)
-export type CoreProgressComponent = ComponentType<PropsWithChildren<{}>>;
+export type CoreProgressProps = PropsWithChildren<{}>;
 
 // @public (undocumented)
 export function createApiExtension<
@@ -409,11 +407,11 @@ export { createApiRef };
 
 // @public (undocumented)
 export function createComponentExtension<
-  TRef extends ComponentRef<any>,
+  TProps extends {},
   TConfig extends {},
   TInputs extends AnyExtensionInputMap,
 >(options: {
-  ref: TRef;
+  ref: ComponentRef<TProps>;
   name?: string;
   disabled?: boolean;
   inputs?: TInputs;
@@ -423,13 +421,13 @@ export function createComponentExtension<
         lazy: (values: {
           config: TConfig;
           inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-        }) => Promise<TRef['T']>;
+        }) => Promise<ComponentType<TProps>>;
       }
     | {
         sync: (values: {
           config: TConfig;
           inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-        }) => TRef['T'];
+        }) => ComponentType<TProps>;
       };
 }): ExtensionDefinition<TConfig>;
 

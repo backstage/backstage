@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType, PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { BackstagePlugin } from './wiring';
 
 // TODO(Rugvip): This might be a quite useful utility type, maybe add to @backstage/types?
@@ -25,26 +25,20 @@ import { BackstagePlugin } from './wiring';
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 /** @public */
-export type CoreProgressComponent = ComponentType<PropsWithChildren<{}>>;
+export type CoreProgressProps = PropsWithChildren<{}>;
 
 /** @public */
-export type CoreBootErrorPageComponent = ComponentType<
-  PropsWithChildren<{
-    step: 'load-config' | 'load-chunk';
-    error: Error;
-  }>
->;
+export type CoreBootErrorPageProps = PropsWithChildren<{
+  step: 'load-config' | 'load-chunk';
+  error: Error;
+}>;
 
 /** @public */
-export type CoreNotFoundErrorPageComponent = ComponentType<
-  PropsWithChildren<{}>
->;
+export type CoreNotFoundErrorPageProps = PropsWithChildren<{}>;
 
 /** @public */
-export type CoreErrorBoundaryFallbackComponent = ComponentType<
-  PropsWithChildren<{
-    plugin?: BackstagePlugin;
-    error: Error;
-    resetError: () => void;
-  }>
->;
+export type CoreErrorBoundaryFallbackProps = PropsWithChildren<{
+  plugin?: BackstagePlugin;
+  error: Error;
+  resetError: () => void;
+}>;
