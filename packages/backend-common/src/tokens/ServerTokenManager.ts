@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
-import { base64url, exportJWK, generateSecret, jwtVerify, SignJWT } from 'jose';
+import { exportJWK, generateSecret, jwtVerify, SignJWT } from 'jose';
 import { DateTime, Duration } from 'luxon';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { TokenManager } from './types';
