@@ -103,8 +103,8 @@ export class ServerTokenManager implements TokenManager {
       );
     }
     this.options = options;
-    this.verificationKeys = secrets.map(s => base64url.decode(s));
-    this.signingKey = TEXT_ENCODER.encode(secrets[0]);
+    this.verificationKeys = secrets.map(s => TEXT_ENCODER.encode(s));
+    this.signingKey = this.verificationKeys[0];
   }
 
   // Called when no keys have been generated yet in the dev environment
@@ -122,7 +122,7 @@ export class ServerTokenManager implements TokenManager {
     const promise = (async () => {
       const secret = await generateSecret(TOKEN_ALG);
       const jwk = await exportJWK(secret);
-      this.verificationKeys.push(base64url.decode(jwk.k ?? ''));
+      this.verificationKeys.push(TEXT_ENCODER.encode(jwk.k ?? ''));
       this.signingKey = this.verificationKeys[0];
       return;
     })();
