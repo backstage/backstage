@@ -87,7 +87,7 @@ You can define how often and when the scheduler should run the audits:
 lighthouse:
   schedule:
     frequency:
-      hours: 12 # Default: days 1
+      hours: 12 # Default: 1 day
     timeout:
-      minutes: 30 # Default: null
+      minutes: 30 # Default: 10 minutes
 ```
