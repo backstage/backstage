@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { standardFormatter } from './standard';
+
+import { StandardClusterLinksFormatter } from './StandardClusterLinksFormatter';
 
 function formatUrl(url: URL) {
   // Note that we can't rely on 'url.href' since it will put the search before the hash
@@ -23,9 +24,10 @@ function formatUrl(url: URL) {
 }
 
 describe('clusterLinks - standard formatter', () => {
-  it('should provide a dashboardUrl in the options', () => {
-    expect(() =>
-      standardFormatter({
+  const formatter = new StandardClusterLinksFormatter();
+  it('should provide a dashboardUrl in the options', async () => {
+    await expect(() =>
+      formatter.formatClusterLink({
         object: {
           metadata: {
             name: 'foobar',
@@ -34,10 +36,10 @@ describe('clusterLinks - standard formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrow('standard dashboard requires a dashboardUrl option');
+    ).rejects.toThrow('standard dashboard requires a dashboardUrl option');
   });
-  it('should return an url on the workloads when there is a namespace only', () => {
-    const url = standardFormatter({
+  it('should return an url on the workloads when there is a namespace only', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com'),
       object: {
         metadata: {
@@ -50,8 +52,8 @@ describe('clusterLinks - standard formatter', () => {
       'https://k8s.foo.com/#/workloads?namespace=bar',
     );
   });
-  it('should return an url on the workloads when the kind is not recognizeed', () => {
-    const url = standardFormatter({
+  it('should return an url on the workloads when the kind is not recognizeed', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com'),
       object: {
         metadata: {
@@ -65,8 +67,8 @@ describe('clusterLinks - standard formatter', () => {
       'https://k8s.foo.com/#/workloads?namespace=bar',
     );
   });
-  it('should return an url on the deployment', () => {
-    const url = standardFormatter({
+  it('should return an url on the deployment', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/'),
       object: {
         metadata: {
@@ -80,8 +82,8 @@ describe('clusterLinks - standard formatter', () => {
       'https://k8s.foo.com/#/deployment/bar/foobar?namespace=bar',
     );
   });
-  it('should return an url on the pod', () => {
-    const url = standardFormatter({
+  it('should return an url on the pod', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/'),
       object: {
         metadata: {
@@ -95,8 +97,8 @@ describe('clusterLinks - standard formatter', () => {
       'https://k8s.foo.com/#/pod/bar/foobar?namespace=bar',
     );
   });
-  it('should return an url on the deployment with a prefix 1', () => {
-    const url = standardFormatter({
+  it('should return an url on the deployment with a prefix 1', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/some/prefix'),
       object: {
         metadata: {
@@ -110,8 +112,8 @@ describe('clusterLinks - standard formatter', () => {
       'https://k8s.foo.com/some/prefix/#/deployment/bar/foobar?namespace=bar',
     );
   });
-  it('should return an url on the deployment with a prefix 2', () => {
-    const url = standardFormatter({
+  it('should return an url on the deployment with a prefix 2', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/some/prefix/'),
       object: {
         metadata: {
@@ -125,8 +127,8 @@ describe('clusterLinks - standard formatter', () => {
       'https://k8s.foo.com/some/prefix/#/deployment/bar/foobar?namespace=bar',
     );
   });
-  it('should return an url on the deployment properly url encoded', () => {
-    const url = standardFormatter({
+  it('should return an url on the deployment properly url encoded', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/'),
       object: {
         metadata: {
@@ -140,8 +142,8 @@ describe('clusterLinks - standard formatter', () => {
       'https://k8s.foo.com/#/deployment/bar%20bar/foobar?namespace=bar%20bar',
     );
   });
-  it('should return an url on the service', () => {
-    const url = standardFormatter({
+  it('should return an url on the service', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/'),
       object: {
         metadata: {
@@ -155,8 +157,8 @@ describe('clusterLinks - standard formatter', () => {
       'https://k8s.foo.com/#/service/bar/foobar?namespace=bar',
     );
   });
-  it('should return an url on the ingress', () => {
-    const url = standardFormatter({
+  it('should return an url on the ingress', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/'),
       object: {
         metadata: {
@@ -170,8 +172,8 @@ describe('clusterLinks - standard formatter', () => {
       'https://k8s.foo.com/#/ingress/bar/foobar?namespace=bar',
     );
   });
-  it('should return an url on the deployment for a hpa', () => {
-    const url = standardFormatter({
+  it('should return an url on the deployment for a hpa', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/'),
       object: {
         metadata: {

@@ -13,9 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  ClusterLinksFormatter,
+  ClusterLinksFormatterOptions,
+} from '../../types';
 
-export {
-  formatClusterLink,
-  type FormatClusterLinkOptions,
-} from './formatClusterLink';
-export { clusterLinksFormatters } from './formatters';
+/** @public */
+export class EksClusterLinksFormatter implements ClusterLinksFormatter {
+  async formatClusterLink(
+    _options: ClusterLinksFormatterOptions,
+  ): Promise<URL> {
+    throw new Error(
+      'EKS formatter is not yet implemented. Please, contribute!',
+    );
+  }
+}

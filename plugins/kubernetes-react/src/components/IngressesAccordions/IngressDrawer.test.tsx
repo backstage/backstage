@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-import { renderInTestApp, textContentMatcher } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  TestApiProvider,
+  textContentMatcher,
+} from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { IngressDrawer } from './IngressDrawer';
 import * as ingresses from './__fixtures__/2-ingresses.json';
+import { kubernetesClusterLinkFormatterApiRef } from '../../api';
 
 describe('IngressDrawer', () => {
   it('should render ingress drawer', async () => {
     await renderInTestApp(
-      <IngressDrawer ingress={(ingresses as any).ingresses[0]} expanded />,
+      <TestApiProvider apis={[[kubernetesClusterLinkFormatterApiRef, {}]]}>
+        <IngressDrawer ingress={(ingresses as any).ingresses[0]} expanded />
+      </TestApiProvider>,
     );
 
     expect(screen.getAllByText('awesome-service')).toHaveLength(4);
