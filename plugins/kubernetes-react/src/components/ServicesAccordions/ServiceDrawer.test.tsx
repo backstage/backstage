@@ -17,13 +17,20 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import * as services from './__fixtures__/2-services.json';
-import { textContentMatcher, renderInTestApp } from '@backstage/test-utils';
+import {
+  textContentMatcher,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import { ServiceDrawer } from './ServiceDrawer';
+import { kubernetesClusterLinkFormatterApiRef } from '../../api';
 
 describe('ServiceDrawer', () => {
   it('should render deployment drawer', async () => {
     await renderInTestApp(
-      <ServiceDrawer service={(services as any).services[0]} expanded />,
+      <TestApiProvider apis={[[kubernetesClusterLinkFormatterApiRef, {}]]}>
+        <ServiceDrawer service={(services as any).services[0]} expanded />,
+      </TestApiProvider>,
     );
 
     expect(screen.getAllByText('awesome-service-grpc')).toHaveLength(2);

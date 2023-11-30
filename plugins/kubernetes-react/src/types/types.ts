@@ -29,6 +29,6 @@ export interface ClusterLinksFormatterOptions {
 /**
  * @public
  */
-export type ClusterLinksFormatter = (
-  options: ClusterLinksFormatterOptions,
-) => URL;
+export interface ClusterLinksFormatter {
+  formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL>;
+}

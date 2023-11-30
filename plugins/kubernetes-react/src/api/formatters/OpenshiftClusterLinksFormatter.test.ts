@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { openshiftFormatter } from './openshift';
+
+import { OpenshiftClusterLinksFormatter } from './OpenshiftClusterLinksFormatter';
 
 describe('clusterLinks - OpenShift formatter', () => {
-  it('should provide a dashboardUrl in the options', () => {
-    expect(() =>
-      openshiftFormatter({
+  const formatter = new OpenshiftClusterLinksFormatter();
+  it('should provide a dashboardUrl in the options', async () => {
+    await expect(() =>
+      formatter.formatClusterLink({
         object: {
           metadata: {
             name: 'foobar',
@@ -27,10 +29,10 @@ describe('clusterLinks - OpenShift formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrow('OpenShift dashboard requires a dashboardUrl option');
+    ).rejects.toThrow('OpenShift dashboard requires a dashboardUrl option');
   });
-  it('should return an url on the workloads when there is a namespace only', () => {
-    const url = openshiftFormatter({
+  it('should return an url on the workloads when there is a namespace only', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com'),
       object: {
         metadata: {
@@ -41,8 +43,8 @@ describe('clusterLinks - OpenShift formatter', () => {
     });
     expect(url.href).toBe('https://k8s.foo.com/k8s/cluster/projects/bar');
   });
-  it('should return an url on the workloads when the kind is not recognizeed', () => {
-    const url = openshiftFormatter({
+  it('should return an url on the workloads when the kind is not recognizeed', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com'),
       object: {
         metadata: {
@@ -54,8 +56,8 @@ describe('clusterLinks - OpenShift formatter', () => {
     });
     expect(url.href).toBe('https://k8s.foo.com/k8s/cluster/projects/bar');
   });
-  it('should return an url on the deployment', () => {
-    const url = openshiftFormatter({
+  it('should return an url on the deployment', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/'),
       object: {
         metadata: {
@@ -67,8 +69,8 @@ describe('clusterLinks - OpenShift formatter', () => {
     });
     expect(url.href).toBe('https://k8s.foo.com/k8s/ns/bar/deployments/foobar');
   });
-  it('should return an url on the deployment and keep the path prefix 1', () => {
-    const url = openshiftFormatter({
+  it('should return an url on the deployment and keep the path prefix 1', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/some/prefix/'),
       object: {
         metadata: {
@@ -82,8 +84,8 @@ describe('clusterLinks - OpenShift formatter', () => {
       'https://k8s.foo.com/some/prefix/k8s/ns/bar/deployments/foobar',
     );
   });
-  it('should return an url on the deployment and keep the path prefix 2', () => {
-    const url = openshiftFormatter({
+  it('should return an url on the deployment and keep the path prefix 2', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/some/prefix'),
       object: {
         metadata: {
@@ -97,8 +99,8 @@ describe('clusterLinks - OpenShift formatter', () => {
       'https://k8s.foo.com/some/prefix/k8s/ns/bar/deployments/foobar',
     );
   });
-  it('should return an url on the service', () => {
-    const url = openshiftFormatter({
+  it('should return an url on the service', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/'),
       object: {
         metadata: {
@@ -110,8 +112,8 @@ describe('clusterLinks - OpenShift formatter', () => {
     });
     expect(url.href).toBe('https://k8s.foo.com/k8s/ns/bar/services/foobar');
   });
-  it('should return an url on the ingress', () => {
-    const url = openshiftFormatter({
+  it('should return an url on the ingress', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/'),
       object: {
         metadata: {
@@ -123,8 +125,8 @@ describe('clusterLinks - OpenShift formatter', () => {
     });
     expect(url.href).toBe('https://k8s.foo.com/k8s/ns/bar/ingresses/foobar');
   });
-  it('should return an url on the deployment for a hpa', () => {
-    const url = openshiftFormatter({
+  it('should return an url on the deployment for a hpa', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/'),
       object: {
         metadata: {
@@ -138,8 +140,8 @@ describe('clusterLinks - OpenShift formatter', () => {
       'https://k8s.foo.com/k8s/ns/bar/horizontalpodautoscalers/foobar',
     );
   });
-  it('should return an url on the PV', () => {
-    const url = openshiftFormatter({
+  it('should return an url on the PV', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardUrl: new URL('https://k8s.foo.com/'),
       object: {
         metadata: {

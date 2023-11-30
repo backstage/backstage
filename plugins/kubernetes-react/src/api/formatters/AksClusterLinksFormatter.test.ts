@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { aksFormatter } from './aks';
+import { AksClusterLinksFormatter } from './AksClusterLinksFormatter';
 
 describe('clusterLinks - AKS formatter', () => {
-  it('should provide a dashboardParameters in the options', () => {
-    expect(() =>
-      aksFormatter({
+  const formatter = new AksClusterLinksFormatter();
+  it('should provide a dashboardParameters in the options', async () => {
+    await expect(() =>
+      formatter.formatClusterLink({
         object: {
           metadata: {
             name: 'foobar',
@@ -27,11 +28,11 @@ describe('clusterLinks - AKS formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrow('AKS dashboard requires a dashboardParameters option');
+    ).rejects.toThrow('AKS dashboard requires a dashboardParameters option');
   });
-  it('should provide a subscriptionId in the dashboardParameters options', () => {
-    expect(() =>
-      aksFormatter({
+  it('should provide a subscriptionId in the dashboardParameters options', async () => {
+    await expect(
+      formatter.formatClusterLink({
         dashboardParameters: {
           resourceGroup: 'rg-1',
           clusterName: 'cluster-1',
@@ -44,13 +45,13 @@ describe('clusterLinks - AKS formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrow(
+    ).rejects.toThrow(
       'AKS dashboard requires a "subscriptionId" of type string in the dashboardParameters option',
     );
   });
-  it('should provide a resourceGroup in the dashboardParameters options', () => {
-    expect(() =>
-      aksFormatter({
+  it('should provide a resourceGroup in the dashboardParameters options', async () => {
+    await expect(
+      formatter.formatClusterLink({
         dashboardParameters: {
           subscriptionId: '1234-GUID-5678',
           clusterName: 'cluster-1',
@@ -63,13 +64,13 @@ describe('clusterLinks - AKS formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrow(
+    ).rejects.toThrow(
       'AKS dashboard requires a "resourceGroup" of type string in the dashboardParameters option',
     );
   });
-  it('should provide a clusterName in the dashboardParameters options', () => {
-    expect(() =>
-      aksFormatter({
+  it('should provide a clusterName in the dashboardParameters options', async () => {
+    await expect(
+      formatter.formatClusterLink({
         dashboardParameters: {
           subscriptionId: '1234-GUID-5678',
           resourceGroup: 'us-east1-c',
@@ -82,12 +83,12 @@ describe('clusterLinks - AKS formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrow(
+    ).rejects.toThrow(
       'AKS dashboard requires a "clusterName" of type string in the dashboardParameters option',
     );
   });
-  it('should return an url on the cluster with object details', () => {
-    const url = aksFormatter({
+  it('should return an url on the cluster with object details', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardParameters: {
         subscriptionId: '1234-GUID-5678',
         resourceGroup: 'rg-1',
