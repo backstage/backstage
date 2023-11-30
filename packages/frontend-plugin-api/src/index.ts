@@ -32,8 +32,8 @@ export * from './translation';
 export * from './wiring';
 
 export type {
-  CoreProgressComponent,
-  CoreBootErrorPageComponent,
-  CoreNotFoundErrorPageComponent,
-  CoreErrorBoundaryFallbackComponent,
+  CoreProgressProps,
+  CoreBootErrorPageProps,
+  CoreNotFoundErrorPageProps,
+  CoreErrorBoundaryFallbackProps,
 } from './types';
