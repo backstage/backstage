@@ -7,11 +7,11 @@
       "apiVersion": "backstage.io/v1alpha1",
       "kind": "Environment",
       "metadata": {
-        "name": "artists",
-        "description": "Everything about artists"
+        "name": "qa",
+        "description": "Production environment"
       },
       "spec": {
-        "owner": "artist-relations-team"
+        "lifecycle": "production"
       }
     }
   ],
