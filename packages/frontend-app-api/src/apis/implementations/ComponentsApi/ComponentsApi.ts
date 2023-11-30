@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ComponentType } from 'react';
 import { ComponentRef, ComponentsApi } from '@backstage/frontend-plugin-api';
 
 /**
@@ -22,13 +23,13 @@ import { ComponentRef, ComponentsApi } from '@backstage/frontend-plugin-api';
  * @internal
  */
 export class DefaultComponentsApi implements ComponentsApi {
-  #components: Map<ComponentRef<any>, any>;
+  #components: Map<ComponentRef<any>, ComponentType<any>>;
 
   constructor(components: Map<ComponentRef<any>, any>) {
     this.#components = components;
   }
 
-  getComponent<T>(ref: ComponentRef<T>): T {
+  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T> {
     const impl = this.#components.get(ref);
     if (!impl) {
       throw new Error(`No implementation found for component ref ${ref}`);

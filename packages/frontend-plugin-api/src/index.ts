@@ -31,8 +31,8 @@ export * from './apis/system';
 export * from './wiring';
 
 export type {
-  CoreProgressComponent,
-  CoreBootErrorPageComponent,
-  CoreNotFoundErrorPageComponent,
-  CoreErrorBoundaryFallbackComponent,
+  CoreProgressProps,
+  CoreBootErrorPageProps,
+  CoreNotFoundErrorPageProps,
+  CoreErrorBoundaryFallbackProps,
 } from './types';

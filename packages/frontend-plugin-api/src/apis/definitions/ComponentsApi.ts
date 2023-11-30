@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ComponentType } from 'react';
 import { createApiRef } from '@backstage/core-plugin-api';
 import { ComponentRef } from '../../components';
 
@@ -24,7 +25,7 @@ import { ComponentRef } from '../../components';
  */
 export interface ComponentsApi {
   // TODO: Should component refs also provide the default implementation so that we're guaranteed to get a component?
-  getComponent<T>(ref: ComponentRef<T>): T;
+  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T>;
 }
 
 /**
