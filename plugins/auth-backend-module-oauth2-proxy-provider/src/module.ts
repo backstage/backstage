@@ -34,7 +34,7 @@ export const authModuleOauth2ProxyProvider = createBackendModule({
       },
       async init({ providers }) {
         providers.registerProvider({
-          providerId: 'oauth2ProxyProvider',
+          providerId: 'oauth2Proxy',
           factory: createProxyAuthProviderFactory({
             authenticator: oauth2ProxyAuthenticator,
             signInResolverFactories: {
