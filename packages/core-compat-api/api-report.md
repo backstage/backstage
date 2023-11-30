@@ -6,9 +6,7 @@
 /// <reference types="react" />
 
 import { AnyRouteRefParams } from '@backstage/core-plugin-api';
-import { AppComponents } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionOverrides } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { ExternalRouteRef as ExternalRouteRef_2 } from '@backstage/frontend-plugin-api';
@@ -18,11 +16,6 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { SubRouteRef as SubRouteRef_2 } from '@backstage/frontend-plugin-api';
-
-// @public (undocumented)
-export function collectLegacyComponents(
-  components: Partial<AppComponents>,
-): ExtensionDefinition<unknown>[];
 
 // @public (undocumented)
 export function collectLegacyRoutes(
