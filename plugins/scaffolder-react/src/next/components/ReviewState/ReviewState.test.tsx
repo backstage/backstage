@@ -94,10 +94,10 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { queryByRole } = render(
+    const { queryByRole, getAllByRole } = render(
       <ReviewState formState={formState} schemas={schemas} />,
     );
-
+    expect(getAllByRole('row').length).toEqual(1);
     expect(queryByRole('row', { name: 'Name ******' })).not.toBeInTheDocument();
   });
 
