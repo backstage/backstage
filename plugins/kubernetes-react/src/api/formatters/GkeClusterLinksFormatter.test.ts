@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { gkeFormatter } from './gke';
+
+import { GkeClusterLinksFormatter } from './GkeClusterLinksFormatter';
 
 describe('clusterLinks - GKE formatter', () => {
-  it('should provide a dashboardParameters in the options', () => {
-    expect(() =>
-      gkeFormatter({
+  const formatter = new GkeClusterLinksFormatter();
+
+  it('should provide a dashboardParameters in the options', async () => {
+    await expect(
+      formatter.formatClusterLink({
         object: {
           metadata: {
             name: 'foobar',
@@ -27,11 +30,11 @@ describe('clusterLinks - GKE formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrow('GKE dashboard requires a dashboardParameters option');
+    ).rejects.toThrow('GKE dashboard requires a dashboardParameters option');
   });
-  it('should provide a projectId in the dashboardParameters options', () => {
-    expect(() =>
-      gkeFormatter({
+  it('should provide a projectId in the dashboardParameters options', async () => {
+    await expect(
+      formatter.formatClusterLink({
         dashboardParameters: {
           region: 'us-east1-c',
           clusterName: 'cluster-1',
@@ -44,13 +47,13 @@ describe('clusterLinks - GKE formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrow(
+    ).rejects.toThrow(
       'GKE dashboard requires a "projectId" of type string in the dashboardParameters option',
     );
   });
-  it('should provide a region in the dashboardParameters options', () => {
-    expect(() =>
-      gkeFormatter({
+  it('should provide a region in the dashboardParameters options', async () => {
+    await expect(
+      formatter.formatClusterLink({
         dashboardParameters: {
           projectId: 'foobar-333614',
           clusterName: 'cluster-1',
@@ -63,13 +66,13 @@ describe('clusterLinks - GKE formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrow(
+    ).rejects.toThrow(
       'GKE dashboard requires a "region" of type string in the dashboardParameters option',
     );
   });
-  it('should provide a clusterName in the dashboardParameters options', () => {
-    expect(() =>
-      gkeFormatter({
+  it('should provide a clusterName in the dashboardParameters options', async () => {
+    await expect(() =>
+      formatter.formatClusterLink({
         dashboardParameters: {
           projectId: 'foobar-333614',
           region: 'us-east1-c',
@@ -82,12 +85,12 @@ describe('clusterLinks - GKE formatter', () => {
         },
         kind: 'Deployment',
       }),
-    ).toThrow(
+    ).rejects.toThrow(
       'GKE dashboard requires a "clusterName" of type string in the dashboardParameters option',
     );
   });
-  it('should return an url on the cluster when there is a namespace only', () => {
-    const url = gkeFormatter({
+  it('should return an url on the cluster when there is a namespace only', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardParameters: {
         projectId: 'foobar-333614',
         region: 'us-east1-c',
@@ -104,8 +107,8 @@ describe('clusterLinks - GKE formatter', () => {
       'https://console.cloud.google.com/kubernetes/clusters/details/us-east1-c/cluster-1/details?project=foobar-333614',
     );
   });
-  it('should return an url on the cluster when the kind is not recognizeed', () => {
-    const url = gkeFormatter({
+  it('should return an url on the cluster when the kind is not recognizeed', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardParameters: {
         projectId: 'foobar-333614',
         region: 'us-east1-c',
@@ -123,8 +126,8 @@ describe('clusterLinks - GKE formatter', () => {
       'https://console.cloud.google.com/kubernetes/clusters/details/us-east1-c/cluster-1/details?project=foobar-333614',
     );
   });
-  it('should return an url on the deployment', () => {
-    const url = gkeFormatter({
+  it('should return an url on the deployment', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardParameters: {
         projectId: 'foobar-333614',
         region: 'us-east1-c',
@@ -143,8 +146,8 @@ describe('clusterLinks - GKE formatter', () => {
     );
   });
 
-  it('should return an url on the service', () => {
-    const url = gkeFormatter({
+  it('should return an url on the service', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardParameters: {
         projectId: 'foobar-333614',
         region: 'us-east1-c',
@@ -162,8 +165,8 @@ describe('clusterLinks - GKE formatter', () => {
       'https://console.cloud.google.com/kubernetes/service/us-east1-c/cluster-1/bar/foobar/overview?project=foobar-333614',
     );
   });
-  it('should return an url on the pod', () => {
-    const url = gkeFormatter({
+  it('should return an url on the pod', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardParameters: {
         projectId: 'foobar-333614',
         region: 'us-east1-c',
@@ -181,8 +184,8 @@ describe('clusterLinks - GKE formatter', () => {
       'https://console.cloud.google.com/kubernetes/pod/us-east1-c/cluster-1/bar/foobar/details?project=foobar-333614',
     );
   });
-  it('should return an url on the ingress', () => {
-    const url = gkeFormatter({
+  it('should return an url on the ingress', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardParameters: {
         projectId: 'foobar-333614',
         region: 'us-east1-c',
@@ -200,8 +203,8 @@ describe('clusterLinks - GKE formatter', () => {
       'https://console.cloud.google.com/kubernetes/ingress/us-east1-c/cluster-1/bar/foobar/details?project=foobar-333614',
     );
   });
-  it('should return an url on the deployment for a hpa', () => {
-    const url = gkeFormatter({
+  it('should return an url on the deployment for a hpa', async () => {
+    const url = await formatter.formatClusterLink({
       dashboardParameters: {
         projectId: 'foobar-333614',
         region: 'us-east1-c',

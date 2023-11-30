@@ -37,10 +37,11 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { ClusterContext } from '../../hooks';
-import { formatClusterLink } from '../../utils/clusterLinks';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
-import { FormatClusterLinkOptions } from '../../utils/clusterLinks/formatClusterLink';
 import { ManifestYaml } from './ManifestYaml';
+import { useApi } from '@backstage/core-plugin-api';
+import { kubernetesClusterLinkFormatterApiRef } from '../../api';
+import useAsync from 'react-use/lib/useAsync';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -147,20 +148,6 @@ function replaceNullsWithUndefined(someObj: any) {
   return JSON.parse(JSON.stringify(someObj, replacer));
 }
 
-function tryFormatClusterLink(options: FormatClusterLinkOptions) {
-  try {
-    return {
-      clusterLink: formatClusterLink(options),
-      errorMessage: '',
-    };
-  } catch (err) {
-    return {
-      clusterLink: '',
-      errorMessage: err.message || err.toString(),
-    };
-  }
-}
-
 const KubernetesStructuredMetadataTableDrawerContent = <
   T extends KubernetesDrawerable,
 >({
@@ -171,15 +158,20 @@ const KubernetesStructuredMetadataTableDrawerContent = <
 }: KubernetesStructuredMetadataTableDrawerContentProps<T>) => {
   const [isYaml, setIsYaml] = useState<boolean>(false);
 
+  const formatter = useApi(kubernetesClusterLinkFormatterApiRef);
   const classes = useDrawerContentStyles();
   const cluster = useContext(ClusterContext);
-  const { clusterLink, errorMessage } = tryFormatClusterLink({
-    dashboardUrl: cluster.dashboardUrl,
-    dashboardApp: cluster.dashboardApp,
-    dashboardParameters: cluster.dashboardParameters,
-    object,
-    kind,
-  });
+  const { value: clusterLink, error } = useAsync(
+    async () =>
+      formatter.formatClusterLink({
+        dashboardUrl: cluster.dashboardUrl,
+        dashboardApp: cluster.dashboardApp,
+        dashboardParameters: cluster.dashboardParameters,
+        object,
+        kind,
+      }),
+    [cluster, object, kind, formatter],
+  );
 
   return (
     <>
@@ -221,9 +213,12 @@ const KubernetesStructuredMetadataTableDrawerContent = <
           </Grid>
         </Grid>
       </div>
-      {errorMessage && (
+      {error && (
         <div className={classes.errorMessage}>
-          <LinkErrorPanel cluster={cluster} errorMessage={errorMessage} />
+          <LinkErrorPanel
+            cluster={cluster}
+            errorMessage={error.message || error.toString()}
+          />
         </div>
       )}
       <div className={classes.options}>
