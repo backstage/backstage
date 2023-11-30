@@ -70,6 +70,7 @@ export class GoogleAnalytics4 implements AnalyticsApi {
       },
       gtagOptions: {
         debug_mode: debug,
+        send_page_view: false,
       },
     });
 
