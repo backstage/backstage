@@ -64,6 +64,7 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   const componentsApi = useApi(componentsApiRef);
 
   const plugin = node.spec.source;
+  const Progress = componentsApi.getComponent(coreComponentsRefs.progress);
   const fallback = componentsApi.getComponent(
     coreComponentsRefs.errorBoundaryFallback,
   );
@@ -75,7 +76,7 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   };
 
   return (
-    <Suspense fallback="Loading...">
+    <Suspense fallback={<Progress />}>
       <ErrorBoundary plugin={plugin} fallback={fallback}>
         <AnalyticsContext attributes={attributes}>
           <RouteTracker disableTracking={!routable}>{children}</RouteTracker>
