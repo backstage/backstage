@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 export { collectLegacyRoutes } from './collectLegacyRoutes';
-export { collectLegacyComponents } from './collectLegacyComponents';
 export { convertLegacyApp } from './convertLegacyApp';
 export { convertLegacyRouteRef } from './convertLegacyRouteRef';
