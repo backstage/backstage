@@ -14,9 +14,25 @@
  * limitations under the License.
  */
 
-export {
-  createExtensionTester,
-  type ExtensionTester,
-} from './createExtensionTester';
+import {
+  coreExtensionData,
+  createExtension,
+} from '@backstage/frontend-plugin-api';
+import { createExtensionTester } from './createExtensionTester';
 
-export { renderInTestApp } from './renderInTestApp';
+/**
+ * @public
+ * Renders the given element in a test app, for use in unit tests.
+ */
+export function renderInTestApp(element: JSX.Element) {
+  const extension = createExtension({
+    namespace: 'test',
+    attachTo: { id: 'core', input: 'root' },
+    output: {
+      element: coreExtensionData.reactElement,
+    },
+    factory: () => ({ element }),
+  });
+  const tester = createExtensionTester(extension);
+  return tester.render();
+}
