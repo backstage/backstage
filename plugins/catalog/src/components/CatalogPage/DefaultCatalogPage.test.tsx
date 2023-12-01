@@ -34,6 +34,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { mockBreakpoint } from '@backstage/core-components/testUtils';
 import {
+  MockPermissionApi,
   MockStorageApi,
   TestApiProvider,
   renderInTestApp,
@@ -46,6 +47,7 @@ import { CatalogTableRow } from '../CatalogTable';
 import { DefaultCatalogPage } from './DefaultCatalogPage';
 
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 
 describe('DefaultCatalogPage', () => {
   const origReplaceState = window.history.replaceState;
@@ -168,6 +170,7 @@ describe('DefaultCatalogPage', () => {
           [identityApiRef, identityApi],
           [storageApiRef, storageApi],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+          [permissionApiRef, new MockPermissionApi()],
         ]}
       >
         {children}
