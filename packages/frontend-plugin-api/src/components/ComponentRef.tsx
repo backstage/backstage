@@ -15,7 +15,6 @@
  */
 
 import {
-  CoreBootErrorPageProps,
   CoreErrorBoundaryFallbackProps,
   CoreNotFoundErrorPageProps,
   CoreProgressProps,
@@ -41,11 +40,6 @@ const coreProgressComponentRef = createComponentRef<CoreProgressProps>({
   id: 'core.components.progress',
 });
 
-const coreBootErrorPageComponentRef =
-  createComponentRef<CoreBootErrorPageProps>({
-    id: 'core.components.bootErrorPage',
-  });
-
 const coreNotFoundErrorPageComponentRef =
   createComponentRef<CoreNotFoundErrorPageProps>({
     id: 'core.components.notFoundErrorPage',
@@ -57,9 +51,8 @@ const coreErrorBoundaryFallbackComponentRef =
   });
 
 /** @public */
-export const coreComponentsRefs = {
+export const coreComponentRefs = {
   progress: coreProgressComponentRef,
-  bootErrorPage: coreBootErrorPageComponentRef,
   notFoundErrorPage: coreNotFoundErrorPageComponentRef,
   errorBoundaryFallback: coreErrorBoundaryFallbackComponentRef,
 };

@@ -17,7 +17,7 @@
 import React from 'react';
 import {
   createComponentExtension,
-  coreComponentsRefs,
+  coreComponentRefs,
 } from '@backstage/frontend-plugin-api';
 import { Box, Typography } from '@material-ui/core';
 import { Button } from '@backstage/core-components';
@@ -51,6 +51,6 @@ export function CustomNotFoundErrorPage() {
 }
 
 export default createComponentExtension({
-  ref: coreComponentsRefs.notFoundErrorPage,
+  ref: coreComponentRefs.notFoundErrorPage,
   component: { sync: () => CustomNotFoundErrorPage },
 });

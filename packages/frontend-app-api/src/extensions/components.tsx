@@ -20,7 +20,7 @@ import { Button } from '@material-ui/core';
 
 import {
   createComponentExtension,
-  coreComponentsRefs,
+  coreComponentRefs,
 } from '@backstage/frontend-plugin-api';
 import { ErrorPanel } from '@backstage/core-components';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -28,22 +28,17 @@ import { components as defaultComponents } from '../../../app-defaults/src/defau
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 
 export const DefaultProgressComponent = createComponentExtension({
-  ref: coreComponentsRefs.progress,
+  ref: coreComponentRefs.progress,
   component: { sync: () => defaultComponents.Progress },
 });
 
-export const DefaultBootErrorPageComponent = createComponentExtension({
-  ref: coreComponentsRefs.bootErrorPage,
-  component: { sync: () => defaultComponents.BootErrorPage },
-});
-
 export const DefaultNotFoundErrorPageComponent = createComponentExtension({
-  ref: coreComponentsRefs.notFoundErrorPage,
+  ref: coreComponentRefs.notFoundErrorPage,
   component: { sync: () => defaultComponents.NotFoundErrorPage },
 });
 
 export const DefaultErrorBoundaryComponent = createComponentExtension({
-  ref: coreComponentsRefs.errorBoundaryFallback,
+  ref: coreComponentRefs.errorBoundaryFallback,
   component: {
     sync: () => props => {
       const { plugin, error, resetError } = props;
