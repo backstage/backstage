@@ -7,7 +7,7 @@
       "apiVersion": "backstage.io/v1alpha1",
       "kind": "Environment",
       "metadata": {
-        "name": "qa",
+        "name": "prod",
         "description": "Production environment"
       },
       "spec": {
