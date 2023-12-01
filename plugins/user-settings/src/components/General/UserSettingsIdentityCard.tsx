@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { InfoCard } from '@backstage/core-components';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Card from '@mui/material/Card';
 import React from 'react';
 import { useUserProfile } from '../useUserProfileInfo';
 
@@ -48,7 +48,7 @@ const Contents = () => {
 
 /** @public */
 export const UserSettingsIdentityCard = () => (
-  <InfoCard title="Backstage Identity">
+  <Card title="Backstage Identity">
     <Contents />
-  </InfoCard>
+  </Card>
 );
