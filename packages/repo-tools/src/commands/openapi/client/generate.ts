@@ -21,6 +21,7 @@ import { paths as cliPaths } from '../../../lib/paths';
 import { mkdirpSync } from 'fs-extra';
 import fs from 'fs-extra';
 import { exec } from '../../../lib/exec';
+import { resolvePackagePath } from '@backstage/backend-common';
 
 async function generate(spec: string, outputDirectory: string) {
   const resolvedOpenapiPath = resolve(spec);
@@ -47,7 +48,15 @@ async function generate(spec: string, outputDirectory: string) {
       '-g',
       'typescript',
       '-c',
-      'templates/typescript-backstage.yaml',
+      resolvePackagePath(
+        '@backstage/repo-tools',
+        'templates/typescript-backstage.yaml',
+      ),
+      '-t',
+      resolvePackagePath(
+        '@backstage/repo-tools',
+        'templates/typescript-backstage',
+      ),
       '--generator-key',
       'v3.0',
     ],
