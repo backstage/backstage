@@ -204,7 +204,7 @@ describe('ServerTokenManager', () => {
         .setProtectedHeader({ alg: 'HS256' })
         .setSubject('backstage-server')
         .setExpirationTime(Date.now() + 1000 * 60 * 60)
-        .sign(jose.base64url.decode(secret));
+        .sign(new TextEncoder().encode(secret));
 
       const tokenManager = ServerTokenManager.fromConfig(
         new ConfigReader({
@@ -220,7 +220,7 @@ describe('ServerTokenManager', () => {
       const token = await new jose.SignJWT({})
         .setProtectedHeader({ alg: 'HS256' })
         .setSubject('backstage-server')
-        .sign(jose.base64url.decode(secret));
+        .sign(new TextEncoder().encode(secret));
 
       const tokenManager = ServerTokenManager.fromConfig(
         new ConfigReader({
