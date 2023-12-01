@@ -33,7 +33,6 @@ export * from './wiring';
 
 export type {
   CoreProgressProps,
-  CoreBootErrorPageProps,
   CoreNotFoundErrorPageProps,
   CoreErrorBoundaryFallbackProps,
 } from './types';

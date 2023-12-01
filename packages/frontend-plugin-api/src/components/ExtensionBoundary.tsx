@@ -20,16 +20,12 @@ import React, {
   Suspense,
   useEffect,
 } from 'react';
-import {
-  AnalyticsContext,
-  useAnalytics,
-  useApi,
-} from '@backstage/core-plugin-api';
+import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
 import { ErrorBoundary } from './ErrorBoundary';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
-import { AppNode, componentsApiRef } from '../apis';
-import { coreComponentsRefs } from './ComponentRef';
+import { AppNode, useComponentRef } from '../apis';
+import { coreComponentRefs } from './ComponentRef';
 
 type RouteTrackerProps = PropsWithChildren<{
   disableTracking?: boolean;
@@ -61,13 +57,10 @@ export interface ExtensionBoundaryProps {
 /** @public */
 export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   const { node, routable, children } = props;
-  const componentsApi = useApi(componentsApiRef);
 
   const plugin = node.spec.source;
-  const Progress = componentsApi.getComponent(coreComponentsRefs.progress);
-  const fallback = componentsApi.getComponent(
-    coreComponentsRefs.errorBoundaryFallback,
-  );
+  const Progress = useComponentRef(coreComponentRefs.progress);
+  const fallback = useComponentRef(coreComponentRefs.errorBoundaryFallback);
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {

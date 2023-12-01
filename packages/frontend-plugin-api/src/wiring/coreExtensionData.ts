@@ -49,5 +49,5 @@ export const coreExtensionData = {
   component: createExtensionDataRef<{
     ref: ComponentRef;
     impl: ComponentType;
-  }>('component.ref'),
+  }>('core.component'),
 };

@@ -67,7 +67,6 @@ import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
-import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -331,29 +330,18 @@ export interface ConfigurableExtensionDataRef<
 }
 
 // @public (undocumented)
-export type CoreBootErrorPageProps = PropsWithChildren<{
-  step: 'load-config' | 'load-chunk';
-  error: Error;
-}>;
-
-// @public (undocumented)
-export const coreComponentsRefs: {
-  progress: ComponentRef<{
-    children?: ReactNode;
-  }>;
-  bootErrorPage: ComponentRef<CoreBootErrorPageProps>;
-  notFoundErrorPage: ComponentRef<{
-    children?: ReactNode;
-  }>;
+export const coreComponentRefs: {
+  progress: ComponentRef<CoreProgressProps>;
+  notFoundErrorPage: ComponentRef<CoreNotFoundErrorPageProps>;
   errorBoundaryFallback: ComponentRef<CoreErrorBoundaryFallbackProps>;
 };
 
 // @public (undocumented)
-export type CoreErrorBoundaryFallbackProps = PropsWithChildren<{
+export type CoreErrorBoundaryFallbackProps = {
   plugin?: BackstagePlugin;
   error: Error;
   resetError: () => void;
-}>;
+};
 
 // @public (undocumented)
 export const coreExtensionData: {
@@ -374,10 +362,12 @@ export const coreExtensionData: {
 };
 
 // @public (undocumented)
-export type CoreNotFoundErrorPageProps = PropsWithChildren<{}>;
+export type CoreNotFoundErrorPageProps = {
+  children?: ReactNode;
+};
 
 // @public (undocumented)
-export type CoreProgressProps = PropsWithChildren<{}>;
+export type CoreProgressProps = {};
 
 // @public (undocumented)
 export function createApiExtension<
@@ -1001,6 +991,11 @@ export function useAnalytics(): AnalyticsTracker;
 export { useApi };
 
 export { useApiHolder };
+
+// @public
+export function useComponentRef<T extends {}>(
+  ref: ComponentRef<T>,
+): ComponentType<T>;
 
 // @public
 export function useRouteRef<
