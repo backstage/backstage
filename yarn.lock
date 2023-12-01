@@ -7222,7 +7222,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-home-react@^0.1.4, @backstage/plugin-home-react@workspace:^, @backstage/plugin-home-react@workspace:plugins/home-react":
+"@backstage/plugin-home-react@npm:^0.1.5":
+  version: 0.1.5
+  resolution: "@backstage/plugin-home-react@npm:0.1.5"
+  dependencies:
+    "@backstage/core-components": ^0.13.8
+    "@backstage/core-plugin-api": ^1.8.0
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@rjsf/utils": 5.13.6
+    "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: 9ea922ec0ade7f12721552266a5e0513778a42594039a05819ca6ab7c253b84bd281c302c0a56e5c49f895dbba8ac404ab8521b8493b5908fe8af01cbbda31d6
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-home-react@workspace:^, @backstage/plugin-home-react@workspace:plugins/home-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-home-react@workspace:plugins/home-react"
   dependencies:
@@ -15152,14 +15170,14 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-github-pull-requests@npm:^2.2.7":
-  version: 2.5.19
-  resolution: "@roadiehq/backstage-plugin-github-pull-requests@npm:2.5.19"
+  version: 2.5.20
+  resolution: "@roadiehq/backstage-plugin-github-pull-requests@npm:2.5.20"
   dependencies:
     "@backstage/catalog-model": ^1.4.3
-    "@backstage/core-components": ^0.13.7
-    "@backstage/core-plugin-api": ^1.7.0
-    "@backstage/plugin-catalog-react": ^1.8.5
-    "@backstage/plugin-home-react": ^0.1.4
+    "@backstage/core-components": ^0.13.8
+    "@backstage/core-plugin-api": ^1.8.0
+    "@backstage/plugin-catalog-react": ^1.9.1
+    "@backstage/plugin-home-react": ^0.1.5
     "@material-ui/core": ^4.11.0
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.60
@@ -15176,7 +15194,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
-  checksum: 35d760d22626d6d76438db66e36610aff8f1b171ae4d60944edcd631427b55f2a0489339db761764d2d406c5d3480ec8786db16ffb803d28eb96544b8c8e75a7
+  checksum: f9ac5bbff5173eff98002f3f8bd7b7fe349723039481651b1e81b7aa5bbaaa799f4cd51d5425a5d74cebf3d0f5bb7340a0c4091b858addc45791881c3802f7a7
   languageName: node
   linkType: hard
 
