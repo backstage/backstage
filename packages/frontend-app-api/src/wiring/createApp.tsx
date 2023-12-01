@@ -96,7 +96,6 @@ import { createAppTree } from '../tree';
 import {
   DefaultProgressComponent,
   DefaultErrorBoundaryComponent,
-  DefaultBootErrorPageComponent,
   DefaultNotFoundErrorPageComponent,
 } from '../extensions/components';
 import { AppNode } from '@backstage/frontend-plugin-api';
@@ -117,7 +116,6 @@ export const builtinExtensions = [
   CoreLayout,
   DefaultProgressComponent,
   DefaultErrorBoundaryComponent,
-  DefaultBootErrorPageComponent,
   DefaultNotFoundErrorPageComponent,
   LightTheme,
   DarkTheme,

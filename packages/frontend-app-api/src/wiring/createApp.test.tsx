@@ -201,10 +201,9 @@ describe('createApp', () => {
           </core/router>
         ]
         components [
-          <component:core.components.progress out=[component.ref] />
-          <component:core.components.errorBoundaryFallback out=[component.ref] />
-          <component:core.components.bootErrorPage out=[component.ref] />
-          <component:core.components.notFoundErrorPage out=[component.ref] />
+          <component:core.components.progress out=[core.component] />
+          <component:core.components.errorBoundaryFallback out=[core.component] />
+          <component:core.components.notFoundErrorPage out=[core.component] />
         ]
         themes [
           <theme:app/light out=[core.theme] />
