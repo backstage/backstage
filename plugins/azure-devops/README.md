@@ -74,7 +74,7 @@ In this case `<project-name>` will be the name of your Team Project and `<build-
 
 #### Multiple Organizations
 
-If you you have multiple organizations you'll need to also add this annotation:
+If you have multiple organizations you'll need to also add this annotation:
 
 ```yaml
 dev.azure.com/host-org: <host>/<organization>
