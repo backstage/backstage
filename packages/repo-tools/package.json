@@ -32,6 +32,7 @@
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.0",
     "@apisyouwonthate/style-guide": "^1.4.0",
+    "@backstage/backend-common": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
@@ -85,7 +86,8 @@
   },
   "files": [
     "bin",
-    "dist/**/*.js"
+    "dist/**/*.js",
+    "templates"
   ],
   "nodemonConfig": {
     "watch": "./src",
