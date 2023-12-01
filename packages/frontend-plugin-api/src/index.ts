@@ -20,6 +20,7 @@
  * @packageDocumentation
  */
 
+export * from './analytics';
 export * from './apis';
 export * from './components';
 export * from './extensions';
@@ -28,3 +29,10 @@ export * from './routing';
 export * from './schema';
 export * from './apis/system';
 export * from './wiring';
+
+export type {
+  CoreProgressComponent,
+  CoreBootErrorPageComponent,
+  CoreNotFoundErrorPageComponent,
+  CoreErrorBoundaryFallbackComponent,
+} from './types';

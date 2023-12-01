@@ -58,7 +58,6 @@ import { version as pluginCatalogBackend } from '../../../../plugins/catalog-bac
 import { version as pluginCatalogBackendModuleScaffolderEntityModel } from '../../../../plugins/catalog-backend-module-scaffolder-entity-model/package.json';
 import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph/package.json';
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
-import { version as pluginCircleci } from '../../../../plugins/circleci/package.json';
 import { version as pluginExplore } from '../../../../plugins/explore/package.json';
 import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
 import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
@@ -111,7 +110,6 @@ export const packageVersions = {
     pluginCatalogBackendModuleScaffolderEntityModel,
   '@backstage/plugin-catalog-graph': pluginCatalogGraph,
   '@backstage/plugin-catalog-import': pluginCatalogImport,
-  '@backstage/plugin-circleci': pluginCircleci,
   '@backstage/plugin-explore': pluginExplore,
   '@backstage/plugin-github-actions': pluginGithubActions,
   '@backstage/plugin-lighthouse': pluginLighthouse,

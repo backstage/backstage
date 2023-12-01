@@ -22,9 +22,11 @@ export {
 export {
   createExtension,
   type Extension,
+  type ExtensionDefinition,
   type CreateExtensionOptions,
   type ExtensionDataValues,
-  type ExtensionInputValues,
+  type ResolvedExtensionInput,
+  type ResolvedExtensionInputs,
   type AnyExtensionInputMap,
   type AnyExtensionDataMap,
 } from './createExtension';
@@ -49,3 +51,4 @@ export {
   type ExtensionOverrides,
   type ExtensionOverridesOptions,
 } from './createExtensionOverrides';
+export type { FeatureFlagConfig } from './types';

@@ -22,6 +22,8 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 
 import { collectLegacyRoutes } from './collectLegacyRoutes';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalBackstagePlugin } from '../../frontend-plugin-api/src/wiring/createPlugin';
 
 describe('collectLegacyRoutes', () => {
   it('should collect legacy routes', () => {
@@ -37,7 +39,7 @@ describe('collectLegacyRoutes', () => {
     expect(
       collected.map(p => ({
         id: p.id,
-        extensions: p.extensions.map(e => ({
+        extensions: toInternalBackstagePlugin(p).extensions.map(e => ({
           id: e.id,
           attachTo: e.attachTo,
           disabled: e.disabled,
@@ -49,13 +51,13 @@ describe('collectLegacyRoutes', () => {
         id: 'score-card',
         extensions: [
           {
-            id: 'plugin.score-card.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:score-card',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'score-board' },
           },
           {
-            id: 'apis.plugin.scoringdata.service',
+            id: 'api:plugin.scoringdata.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
@@ -65,13 +67,13 @@ describe('collectLegacyRoutes', () => {
         id: 'stackstorm',
         extensions: [
           {
-            id: 'plugin.stackstorm.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:stackstorm',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'stackstorm' },
           },
           {
-            id: 'apis.plugin.stackstorm.service',
+            id: 'api:plugin.stackstorm.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
@@ -81,19 +83,19 @@ describe('collectLegacyRoutes', () => {
         id: 'puppetDb',
         extensions: [
           {
-            id: 'plugin.puppetDb.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:puppetDb',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
-            id: 'plugin.puppetDb.page2',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:puppetDb/2',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
-            id: 'apis.plugin.puppetdb.service',
+            id: 'api:plugin.puppetdb.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },

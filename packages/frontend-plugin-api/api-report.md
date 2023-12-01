@@ -22,6 +22,7 @@ import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
+import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/core-plugin-api';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
@@ -64,6 +65,7 @@ import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -85,6 +87,51 @@ export { AlertApi };
 export { alertApiRef };
 
 export { AlertMessage };
+
+// @public
+export type AnalyticsApi = {
+  captureEvent(event: AnalyticsEvent): void;
+};
+
+// @public
+export const analyticsApiRef: ApiRef<AnalyticsApi>;
+
+// @public
+export const AnalyticsContext: (options: {
+  attributes: Partial<AnalyticsContextValue>;
+  children: ReactNode;
+}) => React_2.JSX.Element;
+
+// @public
+export type AnalyticsContextValue = CommonAnalyticsContext & {
+  [param in string]: string | boolean | number | undefined;
+};
+
+// @public
+export type AnalyticsEvent = {
+  action: string;
+  subject: string;
+  value?: number;
+  attributes?: AnalyticsEventAttributes;
+  context: AnalyticsContextValue;
+};
+
+// @public
+export type AnalyticsEventAttributes = {
+  [attribute in string]: string | boolean | number;
+};
+
+// @public
+export type AnalyticsTracker = {
+  captureEvent: (
+    action: string,
+    subject: string,
+    options?: {
+      value?: number;
+      attributes?: AnalyticsEventAttributes;
+    },
+  ) => void;
+};
 
 export { AnyApiFactory };
 
@@ -218,15 +265,13 @@ export interface BackstagePlugin<
   ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
 > {
   // (undocumented)
-  $$type: '@backstage/BackstagePlugin';
+  readonly $$type: '@backstage/BackstagePlugin';
   // (undocumented)
-  extensions: Extension<unknown>[];
+  readonly externalRoutes: ExternalRoutes;
   // (undocumented)
-  externalRoutes: ExternalRoutes;
+  readonly id: string;
   // (undocumented)
-  id: string;
-  // (undocumented)
-  routes: Routes;
+  readonly routes: Routes;
 }
 
 export { BackstageUserIdentity };
@@ -234,6 +279,27 @@ export { BackstageUserIdentity };
 export { bitbucketAuthApiRef };
 
 export { bitbucketServerAuthApiRef };
+
+// @public
+export type CommonAnalyticsContext = {
+  pluginId: string;
+  extensionId: string;
+};
+
+// @public (undocumented)
+export type ComponentRef<T> = {
+  id: string;
+  T: T;
+};
+
+// @public
+export interface ComponentsApi {
+  // (undocumented)
+  getComponent<T>(ref: ComponentRef<T>): T;
+}
+
+// @public
+export const componentsApiRef: ApiRef<ComponentsApi>;
 
 export { ConfigApi };
 
@@ -256,6 +322,31 @@ export interface ConfigurableExtensionDataRef<
 }
 
 // @public (undocumented)
+export type CoreBootErrorPageComponent = ComponentType<
+  PropsWithChildren<{
+    step: 'load-config' | 'load-chunk';
+    error: Error;
+  }>
+>;
+
+// @public (undocumented)
+export const coreComponentsRefs: {
+  progress: ComponentRef<CoreProgressComponent>;
+  bootErrorPage: ComponentRef<CoreBootErrorPageComponent>;
+  notFoundErrorPage: ComponentRef<CoreNotFoundErrorPageComponent>;
+  errorBoundaryFallback: ComponentRef<CoreErrorBoundaryFallbackComponent>;
+};
+
+// @public (undocumented)
+export type CoreErrorBoundaryFallbackComponent = ComponentType<
+  PropsWithChildren<{
+    plugin?: BackstagePlugin_2;
+    error: Error;
+    resetError: () => void;
+  }>
+>;
+
+// @public (undocumented)
 export const coreExtensionData: {
   reactElement: ConfigurableExtensionDataRef<JSX_2.Element, {}>;
   routePath: ConfigurableExtensionDataRef<string, {}>;
@@ -264,7 +355,22 @@ export const coreExtensionData: {
   navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
   theme: ConfigurableExtensionDataRef<AppTheme, {}>;
   logoElements: ConfigurableExtensionDataRef<LogoElements, {}>;
+  component: ConfigurableExtensionDataRef<
+    {
+      ref: ComponentRef<ComponentType<any>>;
+      impl: ComponentType<any>;
+    },
+    {}
+  >;
 };
+
+// @public (undocumented)
+export type CoreNotFoundErrorPageComponent = ComponentType<
+  PropsWithChildren<{}>
+>;
+
+// @public (undocumented)
+export type CoreProgressComponent = ComponentType<PropsWithChildren<{}>>;
 
 // @public (undocumented)
 export function createApiExtension<
@@ -276,7 +382,7 @@ export function createApiExtension<
         api: AnyApiRef;
         factory: (options: {
           config: TConfig;
-          inputs: Expand<ExtensionInputValues<TInputs>>;
+          inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         }) => AnyApiFactory;
       }
     | {
@@ -286,11 +392,37 @@ export function createApiExtension<
     configSchema?: PortableSchema<TConfig>;
     inputs?: TInputs;
   },
-): Extension<TConfig>;
+): ExtensionDefinition<TConfig>;
 
 export { createApiFactory };
 
 export { createApiRef };
+
+// @public (undocumented)
+export function createComponentExtension<
+  TRef extends ComponentRef<any>,
+  TConfig extends {},
+  TInputs extends AnyExtensionInputMap,
+>(options: {
+  ref: TRef;
+  name?: string;
+  disabled?: boolean;
+  inputs?: TInputs;
+  configSchema?: PortableSchema<TConfig>;
+  component:
+    | {
+        lazy: (values: {
+          config: TConfig;
+          inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+        }) => Promise<TRef['T']>;
+      }
+    | {
+        sync: (values: {
+          config: TConfig;
+          inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+        }) => TRef['T'];
+      };
+}): ExtensionDefinition<TConfig>;
 
 // @public (undocumented)
 export function createExtension<
@@ -299,7 +431,7 @@ export function createExtension<
   TConfig = never,
 >(
   options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
-): Extension<TConfig>;
+): ExtensionDefinition<TConfig>;
 
 // @public (undocumented)
 export function createExtensionDataRef<TData>(
@@ -343,12 +475,16 @@ export interface CreateExtensionOptions<
   factory(options: {
     node: AppNode;
     config: TConfig;
-    inputs: Expand<ExtensionInputValues<TInputs>>;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
   // (undocumented)
-  id: string;
-  // (undocumented)
   inputs?: TInputs;
+  // (undocumented)
+  kind?: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  namespace?: string;
   // (undocumented)
   output: TOutput;
 }
@@ -385,11 +521,12 @@ export function createExternalRouteRef<
 
 // @public
 export function createNavItemExtension(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   routeRef: RouteRef<undefined>;
   title: string;
   icon: IconComponent_2;
-}): Extension<{
+}): ExtensionDefinition<{
   title: string;
 }>;
 
@@ -408,7 +545,8 @@ export function createPageExtension<
         configSchema: PortableSchema<TConfig>;
       }
   ) & {
-    id: string;
+    namespace?: string;
+    name?: string;
     attachTo?: {
       id: string;
       input: string;
@@ -418,10 +556,10 @@ export function createPageExtension<
     routeRef?: RouteRef;
     loader: (options: {
       config: TConfig;
-      inputs: Expand<ExtensionInputValues<TInputs>>;
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     }) => Promise<JSX.Element>;
   },
-): Extension<TConfig>;
+): ExtensionDefinition<TConfig>;
 
 // @public (undocumented)
 export function createPlugin<
@@ -461,7 +599,8 @@ export function createSignInPageExtension<
   TConfig extends {},
   TInputs extends AnyExtensionInputMap,
 >(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   attachTo?: {
     id: string;
     input: string;
@@ -471,9 +610,9 @@ export function createSignInPageExtension<
   inputs?: TInputs;
   loader: (options: {
     config: TConfig;
-    inputs: Expand<ExtensionInputValues<TInputs>>;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<ComponentType<SignInPageProps>>;
-}): Extension<TConfig>;
+}): ExtensionDefinition<TConfig>;
 
 // @public
 export function createSubRouteRef<
@@ -485,7 +624,9 @@ export function createSubRouteRef<
 }): MakeSubRouteRef<PathParams<Path>, ParentParams>;
 
 // @public (undocumented)
-export function createThemeExtension(theme: AppTheme): Extension<never>;
+export function createThemeExtension(
+  theme: AppTheme,
+): ExtensionDefinition<never>;
 
 export { DiscoveryApi };
 
@@ -516,10 +657,7 @@ export interface Extension<TConfig> {
   factory(options: {
     node: AppNode;
     config: TConfig;
-    inputs: Record<
-      string,
-      undefined | Record<string, unknown> | Array<Record<string, unknown>>
-    >;
+    inputs: ResolvedExtensionInputs<any>;
   }): ExtensionDataValues<any>;
   // (undocumented)
   id: string;
@@ -573,6 +711,37 @@ export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
 };
 
 // @public (undocumented)
+export interface ExtensionDefinition<TConfig> {
+  // (undocumented)
+  $$type: '@backstage/ExtensionDefinition';
+  // (undocumented)
+  attachTo: {
+    id: string;
+    input: string;
+  };
+  // (undocumented)
+  configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled: boolean;
+  // (undocumented)
+  factory(options: {
+    node: AppNode;
+    config: TConfig;
+    inputs: ResolvedExtensionInputs<any>;
+  }): ExtensionDataValues<any>;
+  // (undocumented)
+  inputs: AnyExtensionInputMap;
+  // (undocumented)
+  kind?: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  namespace?: string;
+  // (undocumented)
+  output: AnyExtensionDataMap;
+}
+
+// @public (undocumented)
 export interface ExtensionInput<
   TExtensionData extends AnyExtensionDataMap,
   TConfig extends {
@@ -588,31 +757,18 @@ export interface ExtensionInput<
   extensionData: TExtensionData;
 }
 
-// @public
-export type ExtensionInputValues<
-  TInputs extends {
-    [name in string]: ExtensionInput<any, any>;
-  },
-> = {
-  [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
-    ? Array<Expand<ExtensionDataValues<TInputs[InputName]['extensionData']>>>
-    : false extends TInputs[InputName]['config']['optional']
-    ? Expand<ExtensionDataValues<TInputs[InputName]['extensionData']>>
-    : Expand<
-        ExtensionDataValues<TInputs[InputName]['extensionData']> | undefined
-      >;
-};
-
 // @public (undocumented)
 export interface ExtensionOverrides {
   // (undocumented)
-  $$type: '@backstage/ExtensionOverrides';
+  readonly $$type: '@backstage/ExtensionOverrides';
 }
 
 // @public (undocumented)
 export interface ExtensionOverridesOptions {
   // (undocumented)
-  extensions: Extension<unknown>[];
+  extensions: ExtensionDefinition<unknown>[];
+  // (undocumented)
+  featureFlags?: FeatureFlagConfig[];
 }
 
 // @public
@@ -629,6 +785,11 @@ export interface ExternalRouteRef<
 }
 
 export { FeatureFlag };
+
+// @public
+export type FeatureFlagConfig = {
+  name: string;
+};
 
 export { FeatureFlagsApi };
 
@@ -703,9 +864,11 @@ export interface PluginOptions<
   ExternalRoutes extends AnyExternalRoutes,
 > {
   // (undocumented)
-  extensions?: Extension<unknown>[];
+  extensions?: ExtensionDefinition<unknown>[];
   // (undocumented)
   externalRoutes?: ExternalRoutes;
+  // (undocumented)
+  featureFlags?: FeatureFlagConfig[];
   // (undocumented)
   id: string;
   // (undocumented)
@@ -721,6 +884,28 @@ export type PortableSchema<TOutput> = {
 export { ProfileInfo };
 
 export { ProfileInfoApi };
+
+// @public
+export type ResolvedExtensionInput<TExtensionData extends AnyExtensionDataMap> =
+  {
+    extensionId: string;
+    output: ExtensionDataValues<TExtensionData>;
+  };
+
+// @public
+export type ResolvedExtensionInputs<
+  TInputs extends {
+    [name in string]: ExtensionInput<any, any>;
+  },
+> = {
+  [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
+    ? Array<Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>>
+    : false extends TInputs[InputName]['config']['optional']
+    ? Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>
+    : Expand<
+        ResolvedExtensionInput<TInputs[InputName]['extensionData']> | undefined
+      >;
+};
 
 // @public
 export type RouteFunc<TParams extends AnyRouteRefParams> = (
@@ -762,6 +947,9 @@ export interface SubRouteRef<
 }
 
 export { TypesToApiRefs };
+
+// @public
+export function useAnalytics(): AnalyticsTracker;
 
 export { useApi };
 

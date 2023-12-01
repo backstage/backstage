@@ -17,6 +17,7 @@
 import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
+import { CustomNotFoundErrorPage } from './examples/notFoundErrorPageExtension';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
@@ -32,7 +33,10 @@ import {
 } from '@backstage/frontend-plugin-api';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import { homePage } from './HomePage';
-import { collectLegacyRoutes } from '@backstage/core-compat-api';
+import {
+  collectLegacyComponents,
+  collectLegacyRoutes,
+} from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
@@ -79,7 +83,7 @@ TODO:
 /* app.tsx */
 
 const homePageExtension = createExtension({
-  id: 'myhomepage',
+  name: 'myhomepage',
   attachTo: { id: 'home', input: 'props' },
   output: {
     children: coreExtensionData.reactElement,
@@ -91,7 +95,7 @@ const homePageExtension = createExtension({
 });
 
 const signInPage = createSignInPageExtension({
-  id: 'signInPage',
+  name: 'guest',
   loader: async () => (props: SignInPageProps) =>
     <SignInPage {...props} providers={['guest']} />,
 });
@@ -114,6 +118,10 @@ const collectedLegacyPlugins = collectLegacyRoutes(
   </FlatRoutes>,
 );
 
+const legacyAppComponents = collectLegacyComponents({
+  NotFoundErrorPage: CustomNotFoundErrorPage,
+});
+
 const app = createApp({
   features: [
     graphiqlPlugin,
@@ -129,6 +137,7 @@ const app = createApp({
         scmAuthExtension,
         scmIntegrationApi,
         signInPage,
+        ...legacyAppComponents,
       ],
     }),
   ],

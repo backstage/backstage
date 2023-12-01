@@ -49,3 +49,19 @@ export enum BuildStatus {
   'pending',
   'running',
 }
+
+/** @public */
+export type Branch = {
+  name: string;
+};
+
+/** @public */
+export type Branches = {
+  default_branch: string;
+  branches: Branch[];
+};
+
+/** @public */
+export interface RouterProps {
+  view?: 'cards' | 'table';
+}

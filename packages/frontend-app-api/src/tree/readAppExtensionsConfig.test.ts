@@ -25,18 +25,18 @@ describe('readAppExtensionsConfig', () => {
   it('should disable extension with shorthand notation', () => {
     expect(
       readAppExtensionsConfig(
-        new ConfigReader({ app: { extensions: [{ 'core.router': false }] } }),
+        new ConfigReader({ app: { extensions: [{ 'core/router': false }] } }),
       ),
     ).toEqual([
       {
-        id: 'core.router',
+        id: 'core/router',
         disabled: true,
       },
     ]);
     expect(
       readAppExtensionsConfig(
         new ConfigReader({
-          app: { extensions: [{ 'core.router': { disabled: true } }] },
+          app: { extensions: [{ 'core/router': { disabled: true } }] },
         }),
       ),
     ).toEqual([
@@ -44,7 +44,7 @@ describe('readAppExtensionsConfig', () => {
         at: undefined,
         config: undefined,
         disabled: true,
-        id: 'core.router',
+        id: 'core/router',
       },
     ]);
   });
@@ -52,33 +52,33 @@ describe('readAppExtensionsConfig', () => {
   it('should enable extension with shorthand notation', () => {
     expect(
       readAppExtensionsConfig(
-        new ConfigReader({ app: { extensions: ['core.router'] } }),
+        new ConfigReader({ app: { extensions: ['core/router'] } }),
       ),
     ).toEqual([
       {
-        id: 'core.router',
+        id: 'core/router',
         disabled: false,
       },
     ]);
     expect(
       readAppExtensionsConfig(
-        new ConfigReader({ app: { extensions: [{ 'core.router': true }] } }),
+        new ConfigReader({ app: { extensions: [{ 'core/router': true }] } }),
       ),
     ).toEqual([
       {
-        id: 'core.router',
+        id: 'core/router',
         disabled: false,
       },
     ]);
     expect(
       readAppExtensionsConfig(
         new ConfigReader({
-          app: { extensions: [{ 'core.router': { disabled: false } }] },
+          app: { extensions: [{ 'core/router': { disabled: false } }] },
         }),
       ),
     ).toEqual([
       {
-        id: 'core.router',
+        id: 'core/router',
         disabled: false,
       },
     ]);
@@ -89,12 +89,12 @@ describe('readAppExtensionsConfig', () => {
       readAppExtensionsConfig(
         new ConfigReader({
           app: {
-            extensions: [{ 'core.router': 'some-string' }],
+            extensions: [{ 'core/router': 'some-string' }],
           },
         }),
       ),
     ).toThrow(
-      'Invalid extension configuration at app.extensions[0][core.router], value must be a boolean or object',
+      'Invalid extension configuration at app.extensions[0][core/router], value must be a boolean or object',
     );
   });
 
@@ -105,7 +105,7 @@ describe('readAppExtensionsConfig', () => {
           app: {
             extensions: [
               {
-                'core.router/routes': {
+                '': {
                   extension: 'example-package#MyPage',
                   config: { foo: 'bar' },
                 },
@@ -115,7 +115,7 @@ describe('readAppExtensionsConfig', () => {
         }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[0], extension ID must not contain slashes; got 'core.router/routes', did you mean 'core.router'?"`,
+      `"Invalid extension configuration at app.extensions[0], extension ID must not be empty or contain whitespace"`,
     );
   });
 });
@@ -156,8 +156,8 @@ describe('expandShorthandExtensionParameters', () => {
   });
 
   it('supports string key', () => {
-    expect(run('core.router')).toEqual({
-      id: 'core.router',
+    expect(run('core/router')).toEqual({
+      id: 'core/router',
       disabled: false,
     });
     expect(() => run('')).toThrowErrorMatchingInlineSnapshot(
@@ -166,103 +166,100 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() => run(' a')).toThrowErrorMatchingInlineSnapshot(
       `"Invalid extension configuration at app.extensions[1], extension ID must not be empty or contain whitespace"`,
     );
-    expect(() => run('core.router/routes')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], extension ID must not contain slashes; got 'core.router/routes', did you mean 'core.router'?"`,
-    );
   });
 
   it('supports null value', () => {
     // this is the result of typing:
-    // - core.router:
+    // - core/router:
     // The missing value is interpreted as null by the yaml parser so we deal with that
-    expect(run({ 'core.router': null })).toEqual({
-      id: 'core.router',
+    expect(run({ 'core/router': null })).toEqual({
+      id: 'core/router',
       disabled: false,
     });
   });
 
   it('supports boolean value', () => {
-    expect(run({ 'core.router': true })).toEqual({
-      id: 'core.router',
+    expect(run({ 'core/router': true })).toEqual({
+      id: 'core/router',
       disabled: false,
     });
-    expect(run({ 'core.router': false })).toEqual({
-      id: 'core.router',
+    expect(run({ 'core/router': false })).toEqual({
+      id: 'core/router',
       disabled: true,
     });
   });
 
   it('should not support string values', () => {
     expect(() =>
-      run({ 'core.router': 'example-package#MyRouter' }),
+      run({ 'core/router': 'example-package#MyRouter' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router], value must be a boolean or object"`,
+      `"Invalid extension configuration at app.extensions[1][core/router], value must be a boolean or object"`,
     );
   });
 
   it('supports object id only in the key', () => {
     expect(() =>
-      run({ 'core.router': { id: 'some.id' } }),
+      run({ 'core/router': { id: 'some.id' } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][core/router].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
     );
   });
 
   it('supports object attachTo', () => {
     expect(
       run({
-        'core.router': { attachTo: { id: 'other.root', input: 'inputs' } },
+        'core/router': { attachTo: { id: 'other.root', input: 'inputs' } },
       }),
     ).toEqual({
-      id: 'core.router',
+      id: 'core/router',
       attachTo: { id: 'other.root', input: 'inputs' },
     });
     expect(() =>
       run({
-        'core.router': {
+        'core/router': {
           id: 'other-id',
         },
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][core/router].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
     );
   });
 
   it('supports object disabled', () => {
-    expect(run({ 'core.router': { disabled: true } })).toEqual({
-      id: 'core.router',
+    expect(run({ 'core/router': { disabled: true } })).toEqual({
+      id: 'core/router',
       disabled: true,
     });
-    expect(run({ 'core.router': { disabled: false } })).toEqual({
-      id: 'core.router',
+    expect(run({ 'core/router': { disabled: false } })).toEqual({
+      id: 'core/router',
       disabled: false,
     });
     expect(() =>
-      run({ 'core.router': { disabled: 0 } }),
+      run({ 'core/router': { disabled: 0 } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].disabled, must be a boolean"`,
+      `"Invalid extension configuration at app.extensions[1][core/router].disabled, must be a boolean"`,
     );
   });
 
   it('supports object config', () => {
     expect(
-      run({ 'core.router': { config: { disableRedirects: true } } }),
+      run({ 'core/router': { config: { disableRedirects: true } } }),
     ).toEqual({
-      id: 'core.router',
+      id: 'core/router',
       config: { disableRedirects: true },
     });
     expect(() =>
-      run({ 'core.router': { config: 0 } }),
+      run({ 'core/router': { config: 0 } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].config, must be an object"`,
+      `"Invalid extension configuration at app.extensions[1][core/router].config, must be an object"`,
     );
   });
 
   it('rejects unknown object keys', () => {
     expect(() =>
-      run({ 'core.router': { foo: { settings: true } } }),
+      run({ 'core/router': { foo: { settings: true } } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][core.router].foo, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][core/router].foo, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
     );
   });
 });

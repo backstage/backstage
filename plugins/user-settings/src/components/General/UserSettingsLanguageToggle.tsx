@@ -118,8 +118,8 @@ export const UserSettingsLanguageToggle = () => {
     >
       <ListItemText
         className={classes.listItemText}
-        primary={t('language')}
-        secondary={t('change_the_language')}
+        primary={t('languageToggle.title')}
+        secondary={t('languageToggle.description')}
       />
       <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
         <ToggleButtonGroup
@@ -132,7 +132,7 @@ export const UserSettingsLanguageToggle = () => {
             return (
               <TooltipToggleButton
                 key={language}
-                title={t('select_lng', { language })}
+                title={t('languageToggle.select', { language })}
                 value={language}
               >
                 <>{language}</>

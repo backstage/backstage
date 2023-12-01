@@ -25,7 +25,7 @@ function unused(..._any: any[]) {}
 describe('createExtension', () => {
   it('should create an extension with a simple output', () => {
     const baseConfig = {
-      id: 'test',
+      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       output: {
         foo: stringData,
@@ -39,7 +39,7 @@ describe('createExtension', () => {
         };
       },
     });
-    expect(extension.id).toBe('test');
+    expect(extension.namespace).toBe('test');
 
     // When declared as an error function without a block the TypeScript errors
     // are a more specific and will point at the property that is problematic.
@@ -163,7 +163,7 @@ describe('createExtension', () => {
 
   it('should create an extension with a some optional output', () => {
     const baseConfig = {
-      id: 'test',
+      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       output: {
         foo: stringData,
@@ -176,7 +176,7 @@ describe('createExtension', () => {
         foo: 'bar',
       }),
     });
-    expect(extension.id).toBe('test');
+    expect(extension.namespace).toBe('test');
 
     createExtension({
       ...baseConfig,
@@ -233,7 +233,7 @@ describe('createExtension', () => {
 
   it('should create an extension with input', () => {
     const extension = createExtension({
-      id: 'test',
+      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       inputs: {
         mixed: createExtensionInput({
@@ -251,34 +251,34 @@ describe('createExtension', () => {
         foo: stringData,
       },
       factory({ inputs }) {
-        const a1: string = inputs.mixed?.[0].required;
+        const a1: string = inputs.mixed?.[0].output.required;
         // @ts-expect-error
-        const a2: number = inputs.mixed?.[0].required;
+        const a2: number = inputs.mixed?.[0].output.required;
         // @ts-expect-error
-        const a3: any = inputs.mixed?.[0].nonExistent;
+        const a3: any = inputs.mixed?.[0].output.nonExistent;
         unused(a1, a2, a3);
 
-        const b1: string | undefined = inputs.mixed?.[0].optional;
+        const b1: string | undefined = inputs.mixed?.[0].output.optional;
         // @ts-expect-error
-        const b2: string = inputs.mixed?.[0].optional;
+        const b2: string = inputs.mixed?.[0].output.optional;
         // @ts-expect-error
-        const b3: number = inputs.mixed?.[0].optional;
+        const b3: number = inputs.mixed?.[0].output.optional;
         // @ts-expect-error
-        const b4: number | undefined = inputs.mixed?.[0].optional;
+        const b4: number | undefined = inputs.mixed?.[0].output.optional;
         unused(b1, b2, b3, b4);
 
-        const c1: string = inputs.onlyRequired?.[0].required;
+        const c1: string = inputs.onlyRequired?.[0].output.required;
         // @ts-expect-error
-        const c2: number = inputs.onlyRequired?.[0].required;
+        const c2: number = inputs.onlyRequired?.[0].output.required;
         unused(c1, c2);
 
-        const d1: string | undefined = inputs.onlyOptional?.[0].optional;
+        const d1: string | undefined = inputs.onlyOptional?.[0].output.optional;
         // @ts-expect-error
-        const d2: string = inputs.onlyOptional?.[0].optional;
+        const d2: string = inputs.onlyOptional?.[0].output.optional;
         // @ts-expect-error
-        const d3: number = inputs.onlyOptional?.[0].optional;
+        const d3: number = inputs.onlyOptional?.[0].output.optional;
         // @ts-expect-error
-        const d4: number | undefined = inputs.onlyOptional?.[0].optional;
+        const d4: number | undefined = inputs.onlyOptional?.[0].output.optional;
         unused(d1, d2, d3, d4);
 
         return {
@@ -286,6 +286,6 @@ describe('createExtension', () => {
         };
       },
     });
-    expect(extension.id).toBe('test');
+    expect(extension.namespace).toBe('test');
   });
 });

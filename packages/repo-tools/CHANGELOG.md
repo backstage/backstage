@@ -1,5 +1,20 @@
 # @backstage/repo-tools
 
+## 0.5.0-next.0
+
+### Minor Changes
+
+- aea8f8d329: **BREAKING**: API Reports generated for sub-path exports now place the name as a suffix rather than prefix, for example `api-report-alpha.md` instead of `alpha-api-report.md`. When upgrading to this version you'll need to re-create any such API reports and delete the old ones.
+- 38340678c3: Adds a new command `schema openapi generate-client` that creates a Typescript client with Backstage flavor, including the discovery API and fetch API. This command doesn't currently generate a complete client and needs to be wrapped or exported manually by a separate Backstage plugin. See `@backstage/catalog-client/src/generated` for example output.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.0
+  - @backstage/errors@1.2.3
+
 ## 0.4.0
 
 ### Minor Changes

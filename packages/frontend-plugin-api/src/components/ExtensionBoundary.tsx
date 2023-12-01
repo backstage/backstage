@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, ReactNode, useEffect } from 'react';
+import React, {
+  PropsWithChildren,
+  ReactNode,
+  Suspense,
+  useEffect,
+} from 'react';
 import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
 import { ErrorBoundary } from './ErrorBoundary';
-import { ExtensionSuspense } from './ExtensionSuspense';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
 import { AppNode } from '../apis';
@@ -55,17 +59,17 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
-    extension: node.spec.id,
+    extensionId: node.spec.id,
     pluginId: node.spec.source?.id,
   };
 
   return (
-    <ExtensionSuspense>
+    <Suspense fallback="Loading...">
       <ErrorBoundary plugin={node.spec.source}>
         <AnalyticsContext attributes={attributes}>
           <RouteTracker disableTracking={!routable}>{children}</RouteTracker>
         </AnalyticsContext>
       </ErrorBoundary>
-    </ExtensionSuspense>
+    </Suspense>
   );
 }

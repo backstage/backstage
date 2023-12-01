@@ -34,6 +34,7 @@ export * from './auth';
 
 export * from './AlertApi';
 export * from './AppThemeApi';
+export * from './ComponentsApi';
 export * from './ConfigApi';
 export * from './DiscoveryApi';
 export * from './ErrorApi';
@@ -42,3 +43,4 @@ export * from './FetchApi';
 export * from './IdentityApi';
 export * from './OAuthRequestApi';
 export * from './StorageApi';
+export * from './AnalyticsApi';

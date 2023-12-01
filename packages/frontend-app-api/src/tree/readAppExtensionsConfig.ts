@@ -70,15 +70,6 @@ export function expandShorthandExtensionParameters(
         errorMsg('extension ID must not be empty or contain whitespace'),
       );
     }
-
-    if (id.includes('/')) {
-      let message = `extension ID must not contain slashes; got '${id}'`;
-      const good = id.split('/')[0];
-      if (good) {
-        message += `, did you mean '${good}'?`;
-      }
-      throw new Error(errorMsg(message));
-    }
   }
 
   // Example YAML:

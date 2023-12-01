@@ -31,7 +31,7 @@ import { BitbucketCloudEntityProvider } from '../providers/BitbucketCloudEntityP
  */
 export const catalogModuleBitbucketCloudEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'bitbucketCloudEntityProvider',
+  moduleId: 'bitbucket-cloud-entity-provider',
   register(env) {
     env.registerInit({
       deps: {

@@ -15,7 +15,9 @@
  */
 
 export interface Config {
-  /** Configuration options for the azure-devops-backend plugin */
+  /**
+   * Configuration options for the azure-devops-backend plugin
+   */
   azureDevOps: {
     /**
      * The hostname of the given Azure instance

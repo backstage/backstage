@@ -15,6 +15,7 @@
  */
 
 import {
+  AppNode,
   ExternalRouteRef,
   RouteRef,
   SubRouteRef,
@@ -35,4 +36,5 @@ export interface BackstageRouteObject {
   path: string;
   routeRefs: Set<RouteRef>;
   plugins: Set<LegacyBackstagePlugin>;
+  appNode?: AppNode;
 }

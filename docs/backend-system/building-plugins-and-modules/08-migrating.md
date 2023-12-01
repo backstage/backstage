@@ -196,7 +196,7 @@ import { GoogleContainerEngineSupplier } from './GoogleContainerEngineSupplier';
 
 export default createBackendModule({
   pluginId: 'kubernetes',
-  moduleId: 'gke.supplier',
+  moduleId: 'gke-supplier',
   register(env) {
     env.registerInit({
       deps: {

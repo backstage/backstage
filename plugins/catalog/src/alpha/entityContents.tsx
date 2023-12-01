@@ -21,23 +21,25 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   createEntityContentExtension,
-  entityFilterExtensionDataRef,
+  entityFilterFunctionExtensionDataRef,
+  entityFilterExpressionExtensionDataRef,
 } from '@backstage/plugin-catalog-react/alpha';
 
 export const OverviewEntityContent = createEntityContentExtension({
-  id: 'overview',
+  name: 'overview',
   defaultPath: '/',
   defaultTitle: 'Overview',
   disabled: false,
   inputs: {
     cards: createExtensionInput({
       element: coreExtensionData.reactElement,
-      filter: entityFilterExtensionDataRef,
+      filterFunction: entityFilterFunctionExtensionDataRef.optional(),
+      filterExpression: entityFilterExpressionExtensionDataRef.optional(),
     }),
   },
   loader: async ({ inputs }) =>
     import('./EntityOverviewPage').then(m => (
-      <m.EntityOverviewPage cards={inputs.cards} />
+      <m.EntityOverviewPage cards={inputs.cards.map(c => c.output)} />
     )),
 });
 

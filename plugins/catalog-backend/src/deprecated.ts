@@ -18,6 +18,8 @@ import {
   locationSpecToMetadataName as _locationSpecToMetadataName,
   locationSpecToLocationEntity as _locationSpecToLocationEntity,
   processingResult as _processingResult,
+  type EntitiesSearchFilter as _EntitiesSearchFilter,
+  type EntityFilter as _EntityFilter,
   type DeferredEntity as _DeferredEntity,
   type EntityRelationSpec as _EntityRelationSpec,
   type CatalogProcessor as _CatalogProcessor,
@@ -53,6 +55,16 @@ export const locationSpecToLocationEntity = _locationSpecToLocationEntity;
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export const processingResult = _processingResult;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type EntitiesSearchFilter = _EntitiesSearchFilter;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type EntityFilter = _EntityFilter;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead

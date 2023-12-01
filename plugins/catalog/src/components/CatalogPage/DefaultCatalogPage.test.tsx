@@ -32,8 +32,8 @@ import {
   MockStarredEntitiesApi,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
+import { mockBreakpoint } from '@backstage/core-components/testUtils';
 import {
-  mockBreakpoint,
   MockStorageApi,
   TestApiProvider,
   renderInTestApp,

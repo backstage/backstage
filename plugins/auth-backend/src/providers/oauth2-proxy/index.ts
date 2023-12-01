@@ -15,4 +15,10 @@
  */
 
 export { oauth2Proxy } from './provider';
-export type { OAuth2ProxyResult } from './provider';
+import { OAuth2ProxyResult as _OAuth2ProxyResult } from '@backstage/plugin-auth-backend-module-oauth2-proxy-provider';
+
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-auth-backend-module-oauth2-proxy-provider` instead
+ */
+export type OAuth2ProxyResult = _OAuth2ProxyResult;

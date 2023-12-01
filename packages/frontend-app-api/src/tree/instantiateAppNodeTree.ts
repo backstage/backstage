@@ -18,6 +18,7 @@ import {
   AnyExtensionDataMap,
   AnyExtensionInputMap,
   ExtensionDataRef,
+  ResolvedExtensionInputs,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
@@ -45,7 +46,7 @@ function resolveInputData(
 function resolveInputs(
   inputMap: AnyExtensionInputMap,
   attachments: ReadonlyMap<string, { id: string; instance: AppNodeInstance }[]>,
-) {
+): ResolvedExtensionInputs<AnyExtensionInputMap> {
   const undeclaredAttachments = Array.from(attachments.entries()).filter(
     ([inputName]) => inputMap[inputName] === undefined,
   );
@@ -84,13 +85,21 @@ function resolveInputs(
         }
         throw Error(`input '${inputName}' is required but was not received`);
       }
-      return resolveInputData(input.extensionData, attachedNodes[0], inputName);
+      return {
+        extensionId: attachedNodes[0].id,
+        output: resolveInputData(
+          input.extensionData,
+          attachedNodes[0],
+          inputName,
+        ),
+      };
     }
 
-    return attachedNodes.map(attachment =>
-      resolveInputData(input.extensionData, attachment, inputName),
-    );
-  });
+    return attachedNodes.map(attachment => ({
+      extensionId: attachment.id,
+      output: resolveInputData(input.extensionData, attachment, inputName),
+    }));
+  }) as ResolvedExtensionInputs<AnyExtensionInputMap>;
 }
 
 /** @internal */
@@ -135,7 +144,7 @@ export function createAppNodeInstance(options: {
   } catch (e) {
     throw new Error(
       `Failed to instantiate extension '${id}'${
-        e.name === 'Error' ? `, ${e.message}` : `; caused by ${e}`
+        e.name === 'Error' ? `, ${e.message}` : `; caused by ${e.stack}`
       }`,
     );
   }

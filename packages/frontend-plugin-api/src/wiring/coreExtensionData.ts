@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { JSX } from 'react';
+import { ComponentType, JSX } from 'react';
 import {
   AnyApiFactory,
   AppTheme,
   IconComponent,
 } from '@backstage/core-plugin-api';
-import { createExtensionDataRef } from './createExtensionDataRef';
 import { RouteRef } from '../routing';
+import { ComponentRef } from '../components';
+import { createExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export type NavTarget = {
@@ -45,4 +46,8 @@ export const coreExtensionData = {
   navTarget: createExtensionDataRef<NavTarget>('core.nav.target'),
   theme: createExtensionDataRef<AppTheme>('core.theme'),
   logoElements: createExtensionDataRef<LogoElements>('core.logos'),
+  component: createExtensionDataRef<{
+    ref: ComponentRef<ComponentType<any>>;
+    impl: ComponentType<any>;
+  }>('component.ref'),
 };

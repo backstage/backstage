@@ -62,11 +62,11 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
-    <PageWithHeader title={t('catalog_page_title', { orgName })} themeId="home">
+    <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
       <Content>
         <ContentHeader title="">
           <CreateButton
-            title={t('catalog_page_create_button_title')}
+            title={t('indexPage.createButtonTitle')}
             to={createComponentLink && createComponentLink()}
           />
           <SupportButton>All your software catalog entities</SupportButton>

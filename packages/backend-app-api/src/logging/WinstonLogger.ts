@@ -82,11 +82,18 @@ export class WinstonLogger implements RootLoggerService {
         if (redactionPattern && typeof info.message === 'string') {
           info.message = info.message.replace(redactionPattern, '[REDACTED]');
         }
+        if (redactionPattern && typeof info.stack === 'string') {
+          info.stack = info.stack.replace(redactionPattern, '[REDACTED]');
+        }
         return info;
       })(),
       add(newRedactions) {
         let added = 0;
-        for (const redaction of newRedactions) {
+        for (const redactionToTrim of newRedactions) {
+          // Trimming the string ensures that we don't accdentally get extra
+          // newlines or other whitespace interfering with the redaction; this
+          // can happen for example when using string literals in yaml
+          const redaction = redactionToTrim.trim();
           // Exclude secrets that are empty or just one character in length. These
           // typically mean that you are running local dev or tests, or using the
           // --lax flag which sets things to just 'x'.

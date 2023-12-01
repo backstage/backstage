@@ -33,9 +33,11 @@ import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations
 import { BrowserRouter } from 'react-router-dom';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { signInPageComponentDataRef } from '../../../frontend-plugin-api/src/extensions/createSignInPageExtension';
+import { RouteTracker } from '../routing/RouteTracker';
 
 export const CoreRouter = createExtension({
-  id: 'core.router',
+  namespace: 'core',
+  name: 'router',
   attachTo: { id: 'core', input: 'root' },
   inputs: {
     signInPage: createExtensionInput(
@@ -57,8 +59,8 @@ export const CoreRouter = createExtension({
   factory({ inputs }) {
     return {
       element: (
-        <AppRouter SignInPageComponent={inputs.signInPage?.component}>
-          {inputs.children.element}
+        <AppRouter SignInPageComponent={inputs.signInPage?.output.component}>
+          {inputs.children.output.element}
         </AppRouter>
       ),
     };
@@ -132,7 +134,7 @@ export function AppRouter(props: AppRouterProps) {
   if (!internalAppContext) {
     throw new Error('AppRouter must be rendered within the AppProvider');
   }
-  const { appIdentityProxy } = internalAppContext;
+  const { routeObjects, appIdentityProxy } = internalAppContext;
 
   // If the app hasn't configured a sign-in page, we just continue as guest.
   if (!SignInPageComponent) {
@@ -159,11 +161,17 @@ export function AppRouter(props: AppRouterProps) {
       { signOutTargetUrl: basePath || '/' },
     );
 
-    return <BrowserRouter basename={basePath}>{children}</BrowserRouter>;
+    return (
+      <BrowserRouter basename={basePath}>
+        <RouteTracker routeObjects={routeObjects} />
+        {children}
+      </BrowserRouter>
+    );
   }
 
   return (
     <BrowserRouter basename={basePath}>
+      <RouteTracker routeObjects={routeObjects} />
       <SignInPageWrapper
         component={SignInPageComponent}
         appIdentityProxy={appIdentityProxy}
