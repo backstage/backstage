@@ -115,6 +115,17 @@ value of the configured key as the secret. It must also have the following paylo
 > NOTE: The JWT must encode the `alg` header as a protected header, such as with
 > [setProtectedHeader](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md#setprotectedheader).
 
+For example:
+```ts
+const secret = new TextEncoder().encode('my-token-secret');
+
+const jwt = await new jose.SignJWT({})
+  .setProtectedHeader({ 'HS256' })
+  .setSubject('backstage-server')
+  .setExpirationTime('1h')
+  .sign(secret);
+```
+
 ## Granular Access Control
 
 We plan to build out the service-to-service auth to be much more powerful in the
