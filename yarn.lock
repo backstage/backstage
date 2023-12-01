@@ -10061,7 +10061,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/theme@^0.4.3, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
+"@backstage/theme@npm:^0.2.16, @backstage/theme@npm:^0.2.18":
+  version: 0.2.19
+  resolution: "@backstage/theme@npm:0.2.19"
+  dependencies:
+    "@material-ui/core": ^4.12.2
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+    react-dom: ^16.13.1 || ^17.0.0
+  checksum: 93ca110a3f953d6d98b4a5f2163beaa1bd1f95adb66a593e85eb523a7012acf654b6148db54008a6434805a4bd9016d67e5c6a317bc56940ee6800aecbb97d6f
+  languageName: node
+  linkType: hard
+
+"@backstage/theme@npm:^0.4.4":
+  version: 0.4.4
+  resolution: "@backstage/theme@npm:0.4.4"
+  dependencies:
+    "@emotion/react": ^11.10.5
+    "@emotion/styled": ^11.10.5
+    "@mui/material": ^5.12.2
+  peerDependencies:
+    "@material-ui/core": ^4.12.2
+    "@types/react": ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+  checksum: 562ce0f0fd07202b44971b55bba9c39cd13c91a65873034d2e68fb5833c0d9882c2fd967d6c779a8563618ce035ec159823c865b0163911b7004f1bfce3ce4a1
+  languageName: node
+  linkType: hard
+
+"@backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
   version: 0.0.0-use.local
   resolution: "@backstage/theme@workspace:packages/theme"
   dependencies:
@@ -15199,14 +15227,14 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-travis-ci@npm:^2.0.5":
-  version: 2.1.16
-  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.1.16"
+  version: 2.1.17
+  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.1.17"
   dependencies:
     "@backstage/catalog-model": ^1.4.3
-    "@backstage/core-components": ^0.13.7
-    "@backstage/core-plugin-api": ^1.7.0
-    "@backstage/plugin-catalog-react": ^1.8.5
-    "@backstage/theme": ^0.4.3
+    "@backstage/core-components": ^0.13.8
+    "@backstage/core-plugin-api": ^1.8.0
+    "@backstage/plugin-catalog-react": ^1.9.1
+    "@backstage/theme": ^0.4.4
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": 4.0.0-alpha.57
@@ -15220,7 +15248,7 @@ __metadata:
     react-dom: ^16.13.1 || ^17.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 175cbae49d6f990cdc0c0d75d27dfe36717f615fea1d4faf350d618bfa4420995c378e3735546ec403ad3c726d18c6ab2bdfc0f72edea26001eb4798e4093305
+  checksum: fcf0b788a2f004a6eff181ff9f9babd07aceb630333b1a3e8ce7fb37b6e9a303444ecc9521a920f6aced2c9a081fa3024ee9079d1bb9f453e2d322af04f57113
   languageName: node
   linkType: hard
 
