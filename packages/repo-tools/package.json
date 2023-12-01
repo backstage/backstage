@@ -47,7 +47,7 @@
     "@stoplight/spectral-rulesets": "^1.18.0",
     "@stoplight/spectral-runtime": "^1.1.2",
     "@stoplight/types": "^14.0.0",
-    "chalk": "^4.0.0",
+    "chalk": "^5.0.0",
     "codeowners-utils": "^1.0.2",
     "commander": "^9.1.0",
     "fs-extra": "10.1.0",
