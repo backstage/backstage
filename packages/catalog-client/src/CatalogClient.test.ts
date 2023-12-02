@@ -142,12 +142,47 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
+    it('builds search filters property even those with URL unsafe values', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities(
+        {
+          filter: [
+            {
+              '!@#$%': 't?i=1&a:2',
+              '^&*(){}[]': ['t%^url*encoded2', 'url'],
+            },
+          ],
+        },
+        { token },
+      );
+
+      expect(response).toEqual({ items: [], totalItems: 0 });
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+      // Validate that the URL is _actually_ encoded.
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+        '?filter=%21%40%23%24%25%3Dt%3Fi%3D1%26a%3A2%2C%5E%26%2A%28%29%7B%7D%5B%5D%3Dt%25%5Eurl%2Aencoded2%2C%5E%26%2A%28%29%7B%7D%5B%5D%3Durl',
+      );
+
+      // Validate that the URL matches the expected decoded value.
+      expect(
+        decodeURIComponent(mockedEndpoint.mock.calls[0][0].url.search),
+      ).toBe('?filter=!@#$%=t?i=1&a:2,^&*(){}[]=t%^url*encoded2,^&*(){}[]=url');
+    });
+
     it('builds entity field selectors properly', async () => {
-      expect.assertions(2);
+      expect.assertions(3);
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(decodeURIComponent(req.url.search)).toBe('?fields=a.b,%C3%B6');
+          expect(req.url.search).toBe('?fields=a.b,%C3%B6');
+          expect(decodeURIComponent(req.url.search)).toBe('?fields=a.b,ö');
           return res(ctx.json([]));
         }),
       );
@@ -387,10 +422,14 @@ describe('CatalogClient', () => {
           { field: 'metadata.uid', order: 'desc' },
         ],
       });
+      // Verify we actually encode the URI.
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+        '?fields=a,b&limit=100&orderField=metadata.name%2Casc&orderField=metadata.uid%2Cdesc&fullTextFilterTerm=query',
+      );
       expect(
         decodeURIComponent(mockedEndpoint.mock.calls[0][0].url.search),
       ).toBe(
-        '?fields=a,b&limit=100&orderField=metadata.name%2Casc&orderField=metadata.uid%2Cdesc&fullTextFilterTerm=query',
+        '?fields=a,b&limit=100&orderField=metadata.name,asc&orderField=metadata.uid,desc&fullTextFilterTerm=query',
       );
     });
 
