@@ -346,16 +346,8 @@ describe('CatalogClient', () => {
         {
           filter: [
             {
-              'metadata.annotation?test': 'backstage.io/test&test123?test=123',
-              a: '2',
-              b: ['1, 2', '3'],
-            },
-            {
-              'my-name test': 't%^url*encoded',
-              'my-name test2': ['t%^url*encoded2', 'url'],
-            },
-            {
-              c: CATALOG_FILTER_EXISTS,
+              '!@#$%': 't?i=1&a:2',
+              '^&*(){}[]': ['t%^url*encoded2', 'url'],
             },
           ],
         },
@@ -364,14 +356,15 @@ describe('CatalogClient', () => {
 
       expect(response).toEqual({ items: [], totalItems: 0 });
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+      // Validate that the URL is _actually_ encoded.
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
-        '?filter=metadata.annotation%3Ftest%3Dbackstage.io%2Ftest%26test123%3Ftest%3D123%2Ca%3D2%2Cb%3D1%2C%202%2Cb%3D3&filter=my-name%20test%3Dt%25%5Eurl%2Aencoded%2Cmy-name%20test2%3Dt%25%5Eurl%2Aencoded2%2Cmy-name%20test2%3Durl&filter=c',
+        '?filter=%21%40%23%24%25%3Dt%3Fi%3D1%26a%3A2%2C%5E%26%2A%28%29%7B%7D%5B%5D%3Dt%25%5Eurl%2Aencoded2%2C%5E%26%2A%28%29%7B%7D%5B%5D%3Durl',
       );
+
+      // Validate that the URL matches the expected decoded value.
       expect(
         decodeURIComponent(mockedEndpoint.mock.calls[0][0].url.search),
-      ).toBe(
-        '?filter=metadata.annotation?test=backstage.io/test&test123?test=123,a=2,b=1, 2,b=3&filter=my-name test=t%^url*encoded,my-name test2=t%^url*encoded2,my-name test2=url&filter=c',
-      );
+      ).toBe('?filter=!@#$%=t?i=1&a:2,^&*(){}[]=t%^url*encoded2,^&*(){}[]=url');
     });
 
     it('should send query params correctly on initial request', async () => {
