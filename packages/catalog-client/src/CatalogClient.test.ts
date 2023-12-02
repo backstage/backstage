@@ -333,6 +333,47 @@ describe('CatalogClient', () => {
       ).toBe('?filter=a=1,b=2,b=3,ö==&filter=a=2&filter=c');
     });
 
+    it('builds search filters property even those with URL unsafe values', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities(
+        {
+          filter: [
+            {
+              'metadata.annotation?test': 'backstage.io/test&test123?test=123',
+              a: '2',
+              b: ['1, 2', '3'],
+            },
+            {
+              'my-name test': 't%^url*encoded',
+              'my-name test2': ['t%^url*encoded2', 'url'],
+            },
+            {
+              c: CATALOG_FILTER_EXISTS,
+            },
+          ],
+        },
+        { token },
+      );
+
+      expect(response).toEqual({ items: [], totalItems: 0 });
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+        '?filter=metadata.annotation%3Ftest%3Dbackstage.io%2Ftest%26test123%3Ftest%3D123%2Ca%3D2%2Cb%3D1%2C%202%2Cb%3D3&filter=my-name%20test%3Dt%25%5Eurl%2Aencoded%2Cmy-name%20test2%3Dt%25%5Eurl%2Aencoded2%2Cmy-name%20test2%3Durl&filter=c',
+      );
+      expect(
+        decodeURIComponent(mockedEndpoint.mock.calls[0][0].url.search),
+      ).toBe(
+        '?filter=metadata.annotation?test=backstage.io/test&test123?test=123,a=2,b=1, 2,b=3&filter=my-name test=t%^url*encoded,my-name test2=t%^url*encoded2,my-name test2=url&filter=c',
+      );
+    });
+
     it('should send query params correctly on initial request', async () => {
       const mockedEndpoint = jest
         .fn()
