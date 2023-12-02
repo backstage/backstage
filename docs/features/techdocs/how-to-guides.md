@@ -508,7 +508,7 @@ Done! You now have support for TechDocs in your own software template!
 
 If your Backstage instance does not have internet access, the generation will fail. TechDocs tries to download the Roboto font from Google. You can disable it by adding the following lines to mkdocs.yaml:
 
-```markdown
+```yaml
 theme:
   name: material
   font: false
