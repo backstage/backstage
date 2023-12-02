@@ -452,11 +452,9 @@ export class CatalogClient implements CatalogApi {
       for (const [key, value] of Object.entries(filterItem)) {
         for (const v of [value].flat()) {
           if (v === CATALOG_FILTER_EXISTS) {
-            filterParts.push(encodeURIComponent(key));
+            filterParts.push(key);
           } else if (typeof v === 'string') {
-            filterParts.push(
-              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
-            );
+            filterParts.push(`${key}=${v}`);
           }
         }
       }
