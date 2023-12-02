@@ -87,7 +87,7 @@ describe('CatalogClient', () => {
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
           expect(decodeURIComponent(req.url.search)).toBe(
-            '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c',
+            '?filter=a=1,b=2,b=3,ö==&filter=a=2&filter=c',
           );
           return res(ctx.json([]));
         }),
@@ -121,7 +121,7 @@ describe('CatalogClient', () => {
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
           expect(decodeURIComponent(req.url.search)).toBe(
-            '?filter=a=1,b=2,b=3,%C3%B6=%3D,c',
+            '?filter=a=1,b=2,b=3,ö==,c',
           );
           return res(ctx.json([]));
         }),
@@ -330,7 +330,7 @@ describe('CatalogClient', () => {
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
       expect(
         decodeURIComponent(mockedEndpoint.mock.calls[0][0].url.search),
-      ).toBe('?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c');
+      ).toBe('?filter=a=1,b=2,b=3,ö==&filter=a=2&filter=c');
     });
 
     it('should send query params correctly on initial request', async () => {
