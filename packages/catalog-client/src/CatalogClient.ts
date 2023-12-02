@@ -116,7 +116,7 @@ export class CatalogClient implements CatalogApi {
       await this.apiClient.getEntities(
         {
           query: {
-            fields: fields,
+            fields,
             limit,
             filter: this.getFilterValue(filter),
             offset,
