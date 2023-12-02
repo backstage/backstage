@@ -82,10 +82,16 @@ describe('CatalogClient', () => {
     });
 
     it('builds multiple entity search filters properly', async () => {
-      expect.assertions(2);
+      expect.assertions(3);
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          // Validate that the URL is _actually_ encoded.
+          expect(req.url.search).toBe(
+            '?filter=a%3D1%2Cb%3D2%2Cb%3D3%2C%C3%B6%3D%3D&filter=a%3D2&filter=c',
+          );
+
+          // Validate that the decoded URL matches the expected value.
           expect(decodeURIComponent(req.url.search)).toBe(
             '?filter=a=1,b=2,b=3,ö==&filter=a=2&filter=c',
           );
@@ -116,10 +122,16 @@ describe('CatalogClient', () => {
     });
 
     it('builds single entity search filter properly', async () => {
-      expect.assertions(2);
+      expect.assertions(3);
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          // Validate that the URL is actually encoded.
+          expect(req.url.search).toBe(
+            '?filter=a%3D1%2Cb%3D2%2Cb%3D3%2C%C3%B6%3D%3D%2Cc',
+          );
+
+          // Validate that the decoded URL matches the expected value.
           expect(decodeURIComponent(req.url.search)).toBe(
             '?filter=a=1,b=2,b=3,ö==,c',
           );
@@ -181,7 +193,10 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          // Validate that the URL is _actually_ encoded.
           expect(req.url.search).toBe('?fields=a.b,%C3%B6');
+
+          // Validate that the URL matches the expected decoded value.
           expect(decodeURIComponent(req.url.search)).toBe('?fields=a.b,ö');
           return res(ctx.json([]));
         }),
@@ -236,10 +251,16 @@ describe('CatalogClient', () => {
     });
 
     it('handles ordering properly', async () => {
-      expect.assertions(2);
+      expect.assertions(3);
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          // Validate that the URL is _actually_ encoded.
+          expect(req.url.search).toBe(
+            '?order=asc%3Akind&order=desc%3Ametadata.name',
+          );
+
+          // Validate that the URL matches the expected value.
           expect(decodeURIComponent(req.url.search)).toBe(
             '?order=asc:kind&order=desc:metadata.name',
           );
@@ -363,6 +384,13 @@ describe('CatalogClient', () => {
 
       expect(response).toEqual({ items: [], totalItems: 0 });
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+
+      // Validate that the URL is _actually_ encoded.
+      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+        '?filter=a%3D1%2Cb%3D2%2Cb%3D3%2C%C3%B6%3D%3D&filter=a%3D2&filter=c',
+      );
+
+      // Validate that the decoded URL matches the expected value.
       expect(
         decodeURIComponent(mockedEndpoint.mock.calls[0][0].url.search),
       ).toBe('?filter=a=1,b=2,b=3,ö==&filter=a=2&filter=c');
