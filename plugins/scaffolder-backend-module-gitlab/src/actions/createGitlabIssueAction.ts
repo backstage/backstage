@@ -21,8 +21,7 @@ import {
   createTemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 import * as yaml from 'yaml';
-import {
-  commonGitlabConfig,
+import commonGitlabConfig, {
   commonGitlabConfigExample,
 } from '../commonGitlabConfig';
 import { z } from 'zod';
@@ -160,7 +159,7 @@ function getExamples(): TemplateExample[] {
             action: 'gitlab:issues:create',
             input: {
               ...commonGitlabConfigExample,
-              projectId: '12',
+              projectId: 12,
               title: 'Test Issue',
               description: 'This is the description of the issue',
             },
@@ -178,9 +177,9 @@ function getExamples(): TemplateExample[] {
             action: 'gitlab:issues:create',
             input: {
               ...commonGitlabConfigExample,
-              projectId: '12',
+              projectId: 12,
               title: 'Test Issue',
-              assignees: '18',
+              assignees: -18,
               description: 'This is the description of the issue',
               createdAt: '2022-09-27 18:00:00.000',
               dueDate: '2022-09-28 12:00:00.000',
@@ -196,19 +195,21 @@ function getExamples(): TemplateExample[] {
           {
             id: 'gitlabIssue',
             name: 'Issues',
-            action: 'dxc:gitlab:issues:create',
+            action: 'gitlab:issues:create',
             input: {
               ...commonGitlabConfigExample,
-              projectId: '12',
+              projectId: 12,
               title: 'Test Issue',
-              assignees: '18',
+              assignees: `
+                - 18
+                - 15 `,
               description: 'This is the description of the issue',
               confidential: false,
               createdAt: '2022-09-27 18:00:00.000',
               dueDate: '2022-09-28 12:00:00.000',
-              discussionToResolve: '1',
-              epicId: '1',
-              labels: 'test-label1,test-label2',
+              discussionToResolve: 1,
+              epicId: 1,
+              labels: 'phase1:label1,phase2:label2',
             },
           },
         ],
