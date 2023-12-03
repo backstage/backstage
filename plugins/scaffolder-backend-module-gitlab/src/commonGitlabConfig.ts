@@ -24,3 +24,8 @@ const commonGitlabConfig = z.object({
 });
 
 export default commonGitlabConfig;
+
+export const commonGitlabConfigExample = {
+  repoUrl: 'gitlab.com?owner=namespace-or-owner&repo=project-name',
+  token: '${{ secrets.USER_OAUTH_TOKEN }}',
+};
