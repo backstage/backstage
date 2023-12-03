@@ -23,6 +23,13 @@ import { Router } from 'express';
 import type { PluginEnvironment } from '../types';
 import { ScmIntegrations } from '@backstage/integration';
 import { createConfluenceToMarkdownAction } from '@backstage/plugin-scaffolder-backend-module-confluence-to-markdown';
+import {
+  createGitlabProjectAccessTokenAction,
+  createGitlabProjectDeployTokenAction,
+  createGitlabProjectVariableAction,
+  createGitlabGroupEnsureExistsAction,
+  createGitlabIssueAction,
+} from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -47,6 +54,11 @@ export default async function createPlugin(
       config: env.config,
       reader: env.reader,
     }),
+    createGitlabProjectAccessTokenAction({ integrations: integrations }),
+    createGitlabProjectDeployTokenAction({ integrations: integrations }),
+    createGitlabProjectVariableAction({ integrations: integrations }),
+    createGitlabGroupEnsureExistsAction({ integrations: integrations }),
+    createGitlabIssueAction({ integrations: integrations }),
   ];
 
   return await createRouter({

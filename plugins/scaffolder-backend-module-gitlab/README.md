@@ -24,6 +24,7 @@ import {
   createGitlabProjectDeployTokenAction,
   createGitlabProjectVariableAction,
   createGitlabGroupEnsureExistsAction,
+  createGitlabIssueAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 // Create BuiltIn Actions
@@ -41,6 +42,7 @@ const actions = [
   createGitlabProjectDeployTokenAction({ integrations: integrations }),
   createGitlabProjectVariableAction({ integrations: integrations }),
   createGitlabGroupEnsureExistsAction({ integrations: integrations }),
+  createGitlabIssueAction({ integrations: integrations }),
 ];
 
 // Create Scaffolder Router
@@ -53,6 +55,8 @@ return await createRouter({
   database: env.database,
   reader: env.reader,
 });
+
+// TODO: incorporate Issues creation in example
 ```
 
 After that you can use the action in your template:
