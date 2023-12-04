@@ -57,7 +57,7 @@ export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
  */
 export type ResolvedExtensionInput<TExtensionData extends AnyExtensionDataMap> =
   {
-    extensionId: string;
+    node: AppNode;
     output: ExtensionDataValues<TExtensionData>;
   };
 

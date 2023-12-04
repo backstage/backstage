@@ -29,14 +29,14 @@ type Mutable<T> = {
 
 function resolveInputData(
   dataMap: AnyExtensionDataMap,
-  attachment: { id: string; instance: AppNodeInstance },
+  attachment: AppNode,
   inputName: string,
 ) {
   return mapValues(dataMap, ref => {
-    const value = attachment.instance.getData(ref);
+    const value = attachment.instance?.getData(ref);
     if (value === undefined && !ref.config.optional) {
       throw new Error(
-        `input '${inputName}' did not receive required extension data '${ref.id}' from extension '${attachment.id}'`,
+        `input '${inputName}' did not receive required extension data '${ref.id}' from extension '${attachment.spec.id}'`,
       );
     }
     return value;
@@ -45,7 +45,7 @@ function resolveInputData(
 
 function resolveInputs(
   inputMap: AnyExtensionInputMap,
-  attachments: ReadonlyMap<string, { id: string; instance: AppNodeInstance }[]>,
+  attachments: ReadonlyMap<string, AppNode[]>,
 ): ResolvedExtensionInputs<AnyExtensionInputMap> {
   const undeclaredAttachments = Array.from(attachments.entries()).filter(
     ([inputName]) => inputMap[inputName] === undefined,
@@ -59,7 +59,7 @@ function resolveInputs(
         .map(
           ([k, exts]) =>
             `'${k}' from extension${exts.length > 1 ? 's' : ''} '${exts
-              .map(e => e.id)
+              .map(e => e.spec.id)
               .join("', '")}'`,
         )
         .join(' and ')}`,
@@ -71,7 +71,7 @@ function resolveInputs(
 
     if (input.config.singleton) {
       if (attachedNodes.length > 1) {
-        const attachedNodeIds = attachedNodes.map(e => e.id);
+        const attachedNodeIds = attachedNodes.map(e => e.spec.id);
         throw Error(
           `expected ${
             input.config.optional ? 'at most' : 'exactly'
@@ -86,7 +86,7 @@ function resolveInputs(
         throw Error(`input '${inputName}' is required but was not received`);
       }
       return {
-        extensionId: attachedNodes[0].id,
+        node: attachedNodes[0],
         output: resolveInputData(
           input.extensionData,
           attachedNodes[0],
@@ -96,7 +96,7 @@ function resolveInputs(
     }
 
     return attachedNodes.map(attachment => ({
-      extensionId: attachment.id,
+      node: attachment,
       output: resolveInputData(input.extensionData, attachment, inputName),
     }));
   }) as ResolvedExtensionInputs<AnyExtensionInputMap>;
@@ -105,7 +105,7 @@ function resolveInputs(
 /** @internal */
 export function createAppNodeInstance(options: {
   node: AppNode;
-  attachments: ReadonlyMap<string, { id: string; instance: AppNodeInstance }[]>;
+  attachments: ReadonlyMap<string, AppNode[]>;
 }): AppNodeInstance {
   const { node, attachments } = options;
   const { id, extension, config } = node.spec;
@@ -172,10 +172,7 @@ export function instantiateAppNodeTree(rootNode: AppNode): void {
       return undefined;
     }
 
-    const instantiatedAttachments = new Map<
-      string,
-      { id: string; instance: AppNodeInstance }[]
-    >();
+    const instantiatedAttachments = new Map<string, AppNode[]>();
 
     for (const [input, children] of node.edges.attachments) {
       const instantiatedChildren = children.flatMap(child => {
@@ -183,7 +180,7 @@ export function instantiateAppNodeTree(rootNode: AppNode): void {
         if (!childInstance) {
           return [];
         }
-        return [{ id: child.spec.id, instance: childInstance }];
+        return [child];
       });
       if (instantiatedChildren.length > 0) {
         instantiatedAttachments.set(input, instantiatedChildren);

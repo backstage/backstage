@@ -26,7 +26,7 @@ import {
   createAppNodeInstance,
   instantiateAppNodeTree,
 } from './instantiateAppNodeTree';
-import { AppNodeInstance, AppNodeSpec } from '@backstage/frontend-plugin-api';
+import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { resolveAppTree } from './resolveAppTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
@@ -85,11 +85,12 @@ function makeNode<TConfig>(
 function makeInstanceWithId<TConfig>(
   extension: Extension<TConfig>,
   config?: TConfig,
-): { id: string; instance: AppNodeInstance } {
+): AppNode {
+  const node = makeNode(extension, { config });
   return {
-    id: extension.id,
+    ...node,
     instance: createAppNodeInstance({
-      node: makeNode(extension, { config }),
+      node,
       attachments: new Map(),
     }),
   };
@@ -152,8 +153,10 @@ describe('instantiateAppNodeTree', () => {
     instantiateAppNodeTree(tree.root);
     expect(tree.root.instance).toBeDefined();
     expect(childNode?.instance).toBeDefined();
-    expect(tree.root.instance?.getData(inputMirrorDataRef)).toEqual({
-      test: [{ extensionId: 'child-node', output: { test: 'test' } }],
+    expect(tree.root.instance?.getData(inputMirrorDataRef)).toMatchObject({
+      test: [
+        { node: { spec: { id: 'child-node' } }, output: { test: 'test' } },
+      ],
     });
 
     // Multiple calls should have no effect
@@ -295,18 +298,21 @@ describe('createAppNodeInstance', () => {
     });
 
     expect(Array.from(instance.getDataRefs())).toEqual([inputMirrorDataRef]);
-    expect(instance.getData(inputMirrorDataRef)).toEqual({
+    expect(instance.getData(inputMirrorDataRef)).toMatchObject({
       optionalSingletonPresent: {
-        extensionId: 'core/test',
+        node: { spec: { id: 'core/test' } },
         output: { test: 'optionalSingletonPresent' },
       },
       singleton: {
-        extensionId: 'core/test',
+        node: { spec: { id: 'core/test' } },
         output: { test: 'singleton', other: 2 },
       },
       many: [
-        { extensionId: 'core/test', output: { test: 'many1' } },
-        { extensionId: 'core/test', output: { test: 'many2', other: 3 } },
+        { node: { spec: { id: 'core/test' } }, output: { test: 'many1' } },
+        {
+          node: { spec: { id: 'core/test' } },
+          output: { test: 'many2', other: 3 },
+        },
       ],
     });
   });
