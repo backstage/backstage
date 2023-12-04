@@ -22,8 +22,7 @@ export class SignalsClient implements SignalsApi {
   static instance: SignalsClient | null = null;
   private ws: WebSocket | null = null;
   private discoveryApi: DiscoveryApi;
-  private cbs: Map<string, (message: JsonObject, topic?: string) => void> =
-    new Map();
+  private cbs: Map<string, (message: JsonObject) => void> = new Map();
   private queue: JsonObject[] = [];
   private reconnectTimeout: any;
 
@@ -38,25 +37,20 @@ export class SignalsClient implements SignalsApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  subscribe(
-    onMessage: (message: JsonObject, topic?: string) => void,
-    topic?: string,
-  ): void {
-    const subscriptionTopic = topic ?? '*';
+  subscribe(onMessage: (message: JsonObject) => void, topic: string): void {
     // Do not allow to subscribe to same topic multiple times
-    if (this.cbs.has(subscriptionTopic)) {
+    if (this.cbs.has(topic)) {
       return;
     }
 
-    this.cbs.set(subscriptionTopic, onMessage);
+    this.cbs.set(topic, onMessage);
     this.connect().then(() => {
       this.send({ action: 'subscribe', topic });
     });
   }
 
-  unsubscribe(topic?: string): void {
-    const subscriptionTopic = topic ?? '*';
-    this.cbs.delete(subscriptionTopic);
+  unsubscribe(topic: string): void {
+    this.cbs.delete(topic);
     this.send({ action: 'unsubscribe', topic });
   }
 
@@ -91,12 +85,11 @@ export class SignalsClient implements SignalsApi {
     this.ws.onmessage = (data: MessageEvent) => {
       try {
         const json = JSON.parse(data.data) as JsonObject;
-        let cb = this.cbs.get('*');
         if (json.topic) {
-          cb = this.cbs.get(json.topic as string);
-        }
-        if (cb) {
-          cb(json.message as JsonObject, json.topic as string);
+          const cb = this.cbs.get(json.topic as string);
+          if (cb) {
+            cb(json.message as JsonObject);
+          }
         }
       } catch (e) {
         // NOOP
@@ -127,7 +120,12 @@ export class SignalsClient implements SignalsApi {
         this.ws.close();
       }
       this.ws = null;
-      this.connect();
+      this.connect().then(() => {
+        // Resubscribe to existing topics in case we lost connection
+        for (const topic of this.cbs.keys()) {
+          this.send({ action: 'subscribe', topic });
+        }
+      });
     }, 5000);
   }
 }

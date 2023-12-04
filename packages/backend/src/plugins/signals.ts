@@ -29,7 +29,7 @@ export default async function createPlugin(
 
   setInterval(() => {
     console.log('publishing');
-    service.publish('*', { hello: 'world' });
+    service.publish('*', 'devtools:info', { now: new Date().toISOString() });
   }, 5000);
 
   return await createRouter({

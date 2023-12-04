@@ -77,7 +77,7 @@ export const InfoContent = () => {
   const { about, loading, error } = useInfo();
   // Just testing for signals
   const [messages, setMessages] = React.useState<string[]>([]);
-  useSignalsApi(message => {
+  useSignalsApi('devtools:info', message => {
     messages.push(JSON.stringify(message));
     setMessages([...messages]);
   });

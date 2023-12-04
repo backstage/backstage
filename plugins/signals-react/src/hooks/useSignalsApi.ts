@@ -20,8 +20,8 @@ import { useEffect } from 'react';
 
 /** @public */
 export const useSignalsApi = (
+  topic: string,
   onMessage: (message: JSONObject) => void,
-  topic?: string,
 ) => {
   const discovery = useApi(discoveryApiRef);
   const signals = SignalsClient.create({ discoveryApi: discovery });

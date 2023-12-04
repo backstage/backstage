@@ -12,9 +12,9 @@ import { JsonObject } from '@backstage/types';
 export type SignalsApi = {
   subscribe(
     onMessage: (message: JsonObject, topic?: string) => void,
-    topic?: string,
+    topic: string,
   ): void;
-  unsubscribe(topic?: string): void;
+  unsubscribe(topic: string): void;
 };
 
 // @public (undocumented)
@@ -27,18 +27,15 @@ export class SignalsClient implements SignalsApi {
   // (undocumented)
   static instance: SignalsClient | null;
   // (undocumented)
-  subscribe(
-    onMessage: (message: JsonObject, topic?: string) => void,
-    topic?: string,
-  ): void;
+  subscribe(onMessage: (message: JsonObject) => void, topic: string): void;
   // (undocumented)
-  unsubscribe(topic?: string): void;
+  unsubscribe(topic: string): void;
 }
 
 // @public (undocumented)
 export const useSignalsApi: (
+  topic: string,
   onMessage: (message: JSONObject) => void,
-  topic?: string,
 ) => void;
 
 // (No @packageDocumentation comment for this package)

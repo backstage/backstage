@@ -29,15 +29,13 @@ export type SignalsEventBrokerPayload = {
 export class SignalsService implements EventSubscriber {
   // (undocumented)
   static create(options: ServiceOptions): SignalsService;
-  // (undocumented)
   handleUpgrade: (req: Request_2) => Promise<void>;
   // (undocumented)
   onEvent(params: EventParams<SignalsEventBrokerPayload>): Promise<void>;
-  // (undocumented)
   publish(
     to: string | string[],
+    topic: string,
     message: JsonObject,
-    topic?: string,
   ): Promise<void>;
   // (undocumented)
   supportsEventTopics(): string[];

@@ -76,6 +76,11 @@ export class SignalsService implements EventSubscriber {
     this.eventBroker?.subscribe(this);
   }
 
+  /**
+   * Handles request upgradce to websocket and adds the connection to internal
+   * list for publish/subscribe functionality
+   * @param req - Request
+   */
   handleUpgrade = async (req: Request) => {
     const identity = await this.identity.getIdentity({
       request: req,
@@ -157,23 +162,29 @@ export class SignalsService implements EventSubscriber {
     }
   }
 
-  async publish(to: string | string[], message: JsonObject, topic?: string) {
+  /**
+   * Publishes a message to user refs to specific topic
+   * @param to - string or array of user ref strings to publish message to
+   * @param topic - message topic
+   * @param message - message to publish
+   */
+  async publish(to: string | string[], topic: string, message: JsonObject) {
     await this.publishInternal(
       Array.isArray(to) ? to : [to],
+      topic,
       message,
       false,
-      topic,
     );
   }
 
   private async publishInternal(
     recipients: string[],
+    topic: string,
     message: JsonObject,
     brokedEvent: boolean,
-    topic?: string,
   ) {
     this.connections.forEach(conn => {
-      if (topic && !conn.subscriptions.has(topic)) {
+      if (!conn.subscriptions.has(topic)) {
         return;
       }
       // Sending to all users can be done with '*'
@@ -208,15 +219,19 @@ export class SignalsService implements EventSubscriber {
       return;
     }
 
-    if (!eventPayload?.recipients || !eventPayload.message) {
+    if (
+      !eventPayload?.recipients ||
+      !eventPayload.topic ||
+      !eventPayload.message
+    ) {
       return;
     }
 
     await this.publishInternal(
       eventPayload.recipients,
+      eventPayload.topic,
       eventPayload.message,
       true,
-      eventPayload.topic,
     );
   }
 
