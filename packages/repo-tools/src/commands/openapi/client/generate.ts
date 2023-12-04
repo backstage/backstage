@@ -36,10 +36,9 @@ async function generate(spec: string, outputDirectory: string) {
   );
 
   await exec(
-    // The actual main.js file for the binary isn't executable but yarn does _something_ to make it executable.
-    // TODO (sennyeya@): Make this use the actual binary
-    `yarn openapi-generator-cli`,
+    'node',
     [
+      resolvePackagePath('@openapitools/openapi-generator-cli', 'main.js'),
       'generate',
       '-i',
       resolvedOpenapiPath,
@@ -62,10 +61,8 @@ async function generate(spec: string, outputDirectory: string) {
     ],
     {
       maxBuffer: Number.MAX_VALUE,
-      cwd: cliPaths.ownDir,
       env: {
         ...process.env,
-        // PWD: outputDirectory,
       },
     },
   );
@@ -74,8 +71,9 @@ async function generate(spec: string, outputDirectory: string) {
     `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
   );
 
-  if (cliPaths.resolveTargetRoot('node_modules/.bin/prettier')) {
-    await exec(`yarn prettier --write ${resolvedOutputDirectory}`);
+  const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
+  if (prettier) {
+    await exec(`${prettier} --write ${resolvedOutputDirectory}`);
   }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
