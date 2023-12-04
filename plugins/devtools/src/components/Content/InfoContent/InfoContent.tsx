@@ -27,6 +27,7 @@ import {
   makeStyles,
   Paper,
   Theme,
+  Typography,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
@@ -38,6 +39,7 @@ import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
+import { useSignalsApi } from '@backstage/plugin-signals-react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -73,6 +75,12 @@ const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
 export const InfoContent = () => {
   const classes = useStyles();
   const { about, loading, error } = useInfo();
+  // Just testing for signals
+  const [messages, setMessages] = React.useState<string[]>([]);
+  useSignalsApi(message => {
+    messages.push(JSON.stringify(message));
+    setMessages([...messages]);
+  });
 
   if (loading) {
     return <Progress />;
@@ -81,6 +89,11 @@ export const InfoContent = () => {
   }
   return (
     <Box>
+      <Paper>
+        {messages.map((msg, i) => {
+          return <Typography key={i}>{msg}</Typography>;
+        })}
+      </Paper>
       <Paper className={classes.paperStyle}>
         <List className={classes.flexContainer}>
           <ListItem>
