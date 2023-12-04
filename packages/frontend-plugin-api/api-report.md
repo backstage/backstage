@@ -888,7 +888,7 @@ export { ProfileInfoApi };
 // @public
 export type ResolvedExtensionInput<TExtensionData extends AnyExtensionDataMap> =
   {
-    extensionId: string;
+    node: AppNode;
     output: ExtensionDataValues<TExtensionData>;
   };
 
