@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SignalsClient } from '../api';
-import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
-import { JSONObject } from '@apollo/explorer/src/helpers/types';
+import { signalsApiRef } from '../api';
+import { useApi } from '@backstage/core-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { useEffect } from 'react';
 
 /** @public */
 export const useSignalsApi = (
   topic: string,
-  onMessage: (message: JSONObject) => void,
+  onMessage: (message: JsonObject) => void,
 ) => {
-  const discovery = useApi(discoveryApiRef);
-  const signals = SignalsClient.create({ discoveryApi: discovery });
+  const signals = useApi(signalsApiRef);
   useEffect(() => {
     signals.subscribe(onMessage, topic);
   }, [signals, onMessage, topic]);

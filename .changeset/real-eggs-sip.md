@@ -1,5 +1,6 @@
 ---
 '@backstage/plugin-signals-backend': patch
+'@backstage/plugin-signals': patch
 '@backstage/plugin-signals-react': patch
 '@backstage/plugin-signals-node': patch
 ---

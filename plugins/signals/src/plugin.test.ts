@@ -13,4 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './SignalsApi';
+import { signalsPlugin } from './plugin';
+
+describe('signals', () => {
+  it('should export plugin', () => {
+    expect(signalsPlugin).toBeDefined();
+  });
+});

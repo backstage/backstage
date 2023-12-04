@@ -13,4 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './SignalsApi';
+import {
+  createApiFactory,
+  createPlugin,
+  discoveryApiRef,
+} from '@backstage/core-plugin-api';
+import { signalsApiRef } from '@backstage/plugin-signals-react';
+import { SignalsClient } from './api/SignalsClient';
+
+/** @public */
+export const signalsPlugin = createPlugin({
+  id: 'signals',
+  apis: [
+    createApiFactory({
+      api: signalsApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+      },
+      factory: ({ discoveryApi }) =>
+        SignalsClient.create({
+          discoveryApi,
+        }),
+    }),
+  ],
+});

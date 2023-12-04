@@ -13,4 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './SignalsApi';
+import React from 'react';
+import { createDevApp } from '@backstage/dev-utils';
+import { signalsPlugin } from '../src/plugin';
+import { Content, Header, Page } from '@backstage/core-components';
+import { Typography } from '@material-ui/core';
+
+createDevApp()
+  .registerPlugin(signalsPlugin)
+  .addPage({
+    title: 'Debug',
+    element: (
+      <Page themeId="home">
+        <Header title="Signals" />
+        <Content>
+          <Typography>TODO</Typography>
+        </Content>
+      </Page>
+    ),
+  })
+  .render();

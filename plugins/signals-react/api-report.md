@@ -4,8 +4,6 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { JSONObject } from '@apollo/explorer/src/helpers/types';
 import { JsonObject } from '@backstage/types';
 
 // @public (undocumented)
@@ -21,21 +19,9 @@ export type SignalsApi = {
 export const signalsApiRef: ApiRef<SignalsApi>;
 
 // @public (undocumented)
-export class SignalsClient implements SignalsApi {
-  // (undocumented)
-  static create(options: { discoveryApi: DiscoveryApi }): SignalsClient;
-  // (undocumented)
-  static instance: SignalsClient | null;
-  // (undocumented)
-  subscribe(onMessage: (message: JsonObject) => void, topic: string): void;
-  // (undocumented)
-  unsubscribe(topic: string): void;
-}
-
-// @public (undocumented)
 export const useSignalsApi: (
   topic: string,
-  onMessage: (message: JSONObject) => void,
+  onMessage: (message: JsonObject) => void,
 ) => void;
 
 // (No @packageDocumentation comment for this package)
