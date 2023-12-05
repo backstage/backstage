@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// import { InputError } from '@backstage/errors';
-import {
-  // parseRepoHost,
-  // getToken,
-  // convertDate,
-  getTopLevelParentGroup,
-} from './util';
+
+import * as util from './util';
 import { Gitlab, GroupSchema } from '@gitbeaker/rest';
-// import { ScmIntegrations } from '@backstage/integration';
-// import { ConfigReader } from '@backstage/config';
 
 // Mock the Gitlab client and its methods
 jest.mock('@gitbeaker/rest', () => {
-  const mockShow = jest.fn();
   return {
     Gitlab: jest.fn().mockImplementation(() => ({
       Groups: {
-        show: mockShow,
+        show: jest.fn(),
+        search: jest.fn(),
       },
     })),
   };
@@ -51,13 +44,84 @@ describe('getTopLevelParentGroup', () => {
     ],
   };
 
-  it('should return top-level parent group when parent_id is present', async () => {
-    const mockGroupId = 123;
-    const mockParentGroupId = 456;
+  it('should return the top-level parent group', async () => {
+    // Instance with token
+    const mockGitlabClient = new Gitlab({
+      host: config.gitlab[0].host,
+      token: config.gitlab[0].token!,
+    });
 
+    // Mocked nested groups
+    const mockGroups: GroupSchema[] = [
+      {
+        id: 789,
+        parent_id: 0,
+        path: '',
+        description: '',
+        visibility: '',
+        share_with_group_lock: false,
+        require_two_factor_authentication: false,
+        two_factor_grace_period: 0,
+        project_creation_level: '',
+        subgroup_creation_level: '',
+        lfs_enabled: false,
+        default_branch_protection: 0,
+        request_access_enabled: false,
+        created_at: '',
+        avatar_url: '',
+        full_name: '',
+        full_path: '',
+        web_url: '',
+        name: '',
+      },
+      {
+        id: 456,
+        parent_id: 789,
+        path: '',
+        description: '',
+        visibility: '',
+        share_with_group_lock: false,
+        require_two_factor_authentication: false,
+        two_factor_grace_period: 0,
+        project_creation_level: '',
+        subgroup_creation_level: '',
+        lfs_enabled: false,
+        default_branch_protection: 0,
+        request_access_enabled: false,
+        created_at: '',
+        avatar_url: '',
+        full_name: '',
+        full_path: '',
+        web_url: '',
+        name: '',
+      },
+      {
+        id: 123,
+        parent_id: 456,
+        path: '',
+        description: '',
+        visibility: '',
+        share_with_group_lock: false,
+        require_two_factor_authentication: false,
+        two_factor_grace_period: 0,
+        project_creation_level: '',
+        subgroup_creation_level: '',
+        lfs_enabled: false,
+        default_branch_protection: 0,
+        request_access_enabled: false,
+        created_at: '',
+        avatar_url: '',
+        full_name: '',
+        full_path: '',
+        web_url: '',
+        name: '',
+      },
+    ];
+
+    // Top level group
     const mockTopParentGroup: GroupSchema = {
-      id: mockGroupId,
-      parent_id: mockParentGroupId,
+      id: 789,
+      parent_id: 0,
       path: '',
       description: '',
       visibility: '',
@@ -77,16 +141,21 @@ describe('getTopLevelParentGroup', () => {
       name: '',
     };
 
-    // Instance with token
-    const mockGitlabClient = new Gitlab({
-      host: config.gitlab[0].host,
-      token: config.gitlab[0].token!,
-    });
+    const showSpy = jest.spyOn(mockGitlabClient.Groups, 'show');
 
-    const action = getTopLevelParentGroup(mockGitlabClient, mockGroupId);
+    // Mock implementation of Groups.show
+    showSpy.mockImplementation(
+      async (groupId: string | number): Promise<any> => {
+        const id =
+          typeof groupId === 'number' ? groupId : parseInt(groupId, 10);
+        const mockGroup = mockGroups.find(group => group.id === id) || null;
+        return mockGroup as GroupSchema;
+      },
+    );
 
-    const result = await action; // Await the result
+    const action = util.getTopLevelParentGroup(mockGitlabClient, 123);
 
+    const result = await action;
     expect(result).toEqual(mockTopParentGroup);
   });
 });

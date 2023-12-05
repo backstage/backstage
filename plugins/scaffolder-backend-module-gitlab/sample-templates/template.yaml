@@ -20,6 +20,31 @@ spec:
           ui:autofocus: true
           ui:options:
             rows: 5
+        projectId:
+          title: Project id
+          type: number  
+        weight:
+          title: Issue weight
+          type: number                          
+        title:
+          title: Issue title
+          type: string    
+        description:
+          title: Issue description
+          type: string                    
+        issueType:
+          title: Type
+          type: string
+          ui:help: 'issue, incident, test_case'
+        createdAt:
+            title: Creation date
+            type: string
+            format: date-time
+        dueDate:
+            title: Due date
+            type: string
+            format: date-time
+
     - title: Choose a location
       required:
         - repoUrl
@@ -39,16 +64,17 @@ spec:
       input:
         repoUrl: ${{ parameters.repoUrl }} # git.tech.rz.db.de?owner=devex-core&repo=test-repo
         token: ${{ secrets.USER_OAUTH_TOKEN }}
-        projectId: 52723821
-        title: Test Issue
+        projectId: ${{ parameters.projectId }} # 52723821
+        title: ${{ parameters.title }}
+        weight: ${{ parameters.weight }}
         assignees: 
           - 11013327
-        description: This is the description of the issue
+        description: ${{ parameters.description }}
         confidential: true
-        createdAt: 2022-09-27 18:00:00.000
-        dueDate: 2024-09-28 12:00:00.000
-        epicId: 1456
+        createdAt: ${{ parameters.createdAt }} # "2023-03-11T03:45:40Z"
+        dueDate: ${{ parameters.dueDate }} # "2024-03-11T03:45:40Z"
         labels: test-label1,test-label2
+        issueType: ${{ parameters.issueType }}
   output:
     links:
       - title: Link to new issue
