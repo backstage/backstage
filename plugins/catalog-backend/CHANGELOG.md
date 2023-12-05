@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog-backend
 
+## 1.16.0-next.2
+
+### Minor Changes
+
+- 7804597: Permission rules can now be added for the Catalog plugin through the `CatalogPermissionExtensionPoint` interface.
+
+### Patch Changes
+
+- 50ee804: Wrap single `pipelineLoop` of TaskPipeline in a span for better traces
+- a168507: Deprecated `EntitiesSearchFilter` and `EntityFilter`, which can now be imported from `@backstage/plugin-catalog-node` instead
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.6.0-next.2
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/plugin-auth-node@0.4.2-next.2
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.12-next.2
+  - @backstage/backend-openapi-utils@0.1.1-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/backend-tasks@0.5.13-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-events-node@0.2.17-next.2
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-node@0.7.19-next.2
+
 ## 1.15.1-next.1
 
 ### Patch Changes
