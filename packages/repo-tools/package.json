@@ -87,7 +87,8 @@
   "files": [
     "bin",
     "dist/**/*.js",
-    "templates"
+    "templates",
+    "openapitools.json"
   ],
   "nodemonConfig": {
     "watch": "./src",
