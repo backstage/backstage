@@ -330,12 +330,12 @@ this can be done by using the config file.
 Filtering is done by using 3 parameters:
 
 - `field` - define which field to filter. can be one of the following
-  - id: string;
-  - name: string;
-  - pathname: string;
-  - hits: number;
-  - timestamp: number;
-  - entityRef: string;
+  - id: string
+  - name: string
+  - pathname: string
+  - hits: number
+  - timestamp: number
+  - entityRef: string
 - `operator` - can be one of the following `'<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains'`
 - `value` - the value of the filter
 
