@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-gitlab-provider
 
+## 0.1.5-next.2
+
+### Patch Changes
+
+- a62764b: Updated dependency `passport` to `^0.7.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/plugin-auth-node@0.4.2-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+
 ## 0.1.5-next.1
 
 ### Patch Changes

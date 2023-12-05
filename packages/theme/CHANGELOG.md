@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.5.0-next.1
+
+### Patch Changes
+
+- cd0dd4c: Align Material UI v5 `Paper` component background color in dark mode to v4.
+
 ## 0.5.0-next.0
 
 ### Minor Changes
