@@ -17,6 +17,7 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 import { WebSocket } from 'ws';
+import { JsonObject } from '@backstage/types';
 
 /**
  * @public
@@ -25,6 +26,13 @@ export type ServiceOptions = {
   eventBroker?: EventBroker;
   logger: Logger;
   identity: IdentityApi;
+};
+
+/** @public */
+export type SignalsEventBrokerPayload = {
+  recipients?: string[];
+  topic?: string;
+  message?: JsonObject;
 };
 
 /**

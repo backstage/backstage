@@ -123,9 +123,11 @@ export class SignalsClient implements SignalsApi {
     }
 
     const apiUrl = `${await this.discoveryApi.getBaseUrl('signals')}`;
+    const { token } = await this.identity.getCredentials();
+
     const url = new URL(apiUrl);
     url.protocol = url.protocol === 'http:' ? 'ws' : 'wss';
-    this.ws = new WebSocket(url.toString());
+    this.ws = new WebSocket(url.toString(), token);
 
     this.ws.onmessage = (data: MessageEvent) => {
       this.handleMessage(data);
@@ -155,9 +157,6 @@ export class SignalsClient implements SignalsApi {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       throw new Error('Connect timeout');
     }
-
-    // Authenticate
-    await this.authenticate();
   }
 
   private handleMessage(data: MessageEvent) {
@@ -172,15 +171,6 @@ export class SignalsClient implements SignalsApi {
       }
     } catch (e) {
       // NOOP
-    }
-  }
-
-  private async authenticate() {
-    const { token } = await this.identity.getCredentials();
-    if (token) {
-      // Authentication is done with websocket message to server as the plain
-      // websocket does not allow sending headers during connection upgrade
-      this.send({ action: 'authenticate', token: token });
     }
   }
 

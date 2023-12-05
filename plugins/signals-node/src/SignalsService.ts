@@ -19,7 +19,11 @@ import {
   EventSubscriber,
 } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
-import { ServiceOptions, SignalConnection } from './types';
+import {
+  ServiceOptions,
+  SignalConnection,
+  SignalsEventBrokerPayload,
+} from './types';
 import { RawData, WebSocket, WebSocketServer } from 'ws';
 import { IncomingMessage } from 'http';
 import { v4 as uuid } from 'uuid';
@@ -30,13 +34,6 @@ import {
   IdentityApi,
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
-
-/** @public */
-export type SignalsEventBrokerPayload = {
-  recipients?: string[];
-  topic?: string;
-  message?: JsonObject;
-};
 
 /** @public */
 export class SignalsService implements EventSubscriber {
@@ -83,9 +80,18 @@ export class SignalsService implements EventSubscriber {
    * @param req - Request
    */
   handleUpgrade = async (req: Request) => {
-    const identity = await this.identity.getIdentity({
-      request: req,
-    });
+    let identity: BackstageIdentityResponse | undefined = undefined;
+
+    // Authentication token is passed in Sec-WebSocket-Protocol header as there
+    // is no other way to pass the token with plain websockets
+    const token = req.headers['sec-websocket-protocol'];
+    if (token) {
+      identity = await this.identity.getIdentity({
+        request: {
+          headers: { authorization: token },
+        },
+      } as IdentityApiGetIdentityRequest);
+    }
 
     this.server.handleUpgrade(
       req,
@@ -160,23 +166,6 @@ export class SignalsService implements EventSubscriber {
         `Connection ${connection.id} unsubscribed from ${message.topic}`,
       );
       connection.subscriptions.delete(message.topic as string);
-    }
-
-    if (message.action === 'authenticate' && message.token) {
-      this.logger.info(`Connection ${connection.id} authenticated`);
-      this.identity
-        .getIdentity({
-          request: {
-            headers: { authorization: message.token },
-          },
-        } as IdentityApiGetIdentityRequest)
-        .then(identity => {
-          if (identity) {
-            connection.user = identity.identity.userEntityRef;
-            connection.ownershipEntityRefs =
-              identity.identity.ownershipEntityRefs;
-          }
-        });
     }
   }
 
