@@ -379,17 +379,21 @@ export async function runApiExtraction({
     );
     const names = group.map(ep => ep.name);
 
-    const staleReportFiles = fs.readdirSync(projectFolder).filter(filename => {
-      const match =
-        filename.match(/^(.+)-api-report\.md$/) ||
-        filename.match(/^api-report-(.+)\.md$/);
-      return match && !names.includes(match[1]);
-    });
+    const remainingReportFiles = new Set(
+      fs
+        .readdirSync(projectFolder)
+        .filter(
+          filename =>
+            filename.match(/^(.+)-api-report\.md$/) ||
+            filename.match(/^api-report(-.+)?\.md$/),
+        ),
+    );
 
     for (const name of names) {
       const suffix = name === 'index' ? '' : `-${name}`;
       const reportFileName = `api-report${suffix}.md`;
       const reportPath = resolvePath(projectFolder, reportFileName);
+      remainingReportFiles.delete(reportFileName);
 
       const warningCountBefore = await countApiReportWarnings(reportPath);
 
@@ -593,20 +597,21 @@ export async function runApiExtraction({
             'Please fix these warnings in order to keep the API Reports tidy.',
         );
       }
-      if (staleReportFiles.length) {
-        if (noBail) {
-          for (const f of staleReportFiles) {
-            fs.rmSync(resolvePath(projectFolder, f));
-            console.log(`Deleted deprecated API report ${f}`);
-          }
-        } else {
-          const staleList = staleReportFiles
-            .map(f => join(packageDir, f))
-            .join(', ');
-          throw new Error(
-            `The API Report(s) ${staleList} are no longer relevant and should be deleted`,
-          );
+    }
+
+    if (remainingReportFiles.size > 0) {
+      if (isLocalBuild) {
+        for (const f of remainingReportFiles) {
+          fs.rmSync(resolvePath(projectFolder, f));
+          console.log(`Deleted deprecated API report ${f}`);
         }
+      } else {
+        const staleList = [...remainingReportFiles]
+          .map(f => join(packageDir, f))
+          .join(', ');
+        throw new Error(
+          `The API Report(s) ${staleList} are no longer relevant and should be deleted`,
+        );
       }
     }
   }
