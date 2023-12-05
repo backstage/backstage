@@ -138,35 +138,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/avro-schema-parser@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "@asyncapi/avro-schema-parser@npm:3.0.5"
+"@asyncapi/avro-schema-parser@npm:^3.0.7":
+  version: 3.0.7
+  resolution: "@asyncapi/avro-schema-parser@npm:3.0.7"
   dependencies:
-    "@asyncapi/parser": ^2.1.2
+    "@asyncapi/parser": ^3.0.1
     "@types/json-schema": ^7.0.11
     avsc: ^5.7.6
-  checksum: c8e0a5aac1a5793ab92af44f67416273a8c5a61336785a6d6963ea80402f4b6c6129e1deff6f4e1a09aa31b3e311203bf8c08fb9f3aa9f01114c1b558f3a74f3
+  checksum: c7755708161f41812ebee90c92fb721176230f0006ddd01683b72c7c1d484a6c5cbe7d7e59c54a5c7221f5f722388642ec26b19a67adc9d30059067cc4276d69
   languageName: node
   linkType: hard
 
-"@asyncapi/openapi-schema-parser@npm:^3.0.6":
-  version: 3.0.6
-  resolution: "@asyncapi/openapi-schema-parser@npm:3.0.6"
+"@asyncapi/openapi-schema-parser@npm:^3.0.8":
+  version: 3.0.8
+  resolution: "@asyncapi/openapi-schema-parser@npm:3.0.8"
   dependencies:
-    "@asyncapi/parser": ^2.1.2
+    "@asyncapi/parser": ^3.0.1
     "@openapi-contrib/openapi-schema-to-json-schema": ~3.2.0
     ajv: ^8.11.0
     ajv-errors: ^3.0.0
     ajv-formats: ^2.1.1
-  checksum: d02174ff44d9f863e54c80f96bc95f96f8eeb491843ecc89ba92222d3e77e6f1593c370d83208b70360a0843a56cc35d23ca559c196dba1eb14a8b62e25d6a55
+  checksum: 9c3f49d1a826818b864b2a0b16144d88eb2ecf7ca1d9c1e8554eac30d9875619638924892d093f0270b6b9a04efca1a8918dd5a7eb13fd88c14183d467af5ceb
   languageName: node
   linkType: hard
 
-"@asyncapi/parser@npm:^2.1.0, @asyncapi/parser@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "@asyncapi/parser@npm:2.1.2"
+"@asyncapi/parser@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@asyncapi/parser@npm:3.0.1"
   dependencies:
-    "@asyncapi/specs": ^5.1.0
+    "@asyncapi/specs": ^6.1.0
     "@openapi-contrib/openapi-schema-to-json-schema": ~3.2.0
     "@stoplight/json": ^3.20.2
     "@stoplight/json-ref-readers": ^1.2.2
@@ -185,54 +185,29 @@ __metadata:
     js-yaml: ^4.1.0
     jsonpath-plus: ^7.2.0
     node-fetch: 2.6.7
-  checksum: fb88d211455937bccd03a84addf546523c0ecd6f6564927227085f803d520e65915ae5aaf0e26dfad23d602f3444451abdb8d3001bc551f30d41e6b35986b307
+  checksum: 6dce457e58dcf9dab8bfb945a7cb9507a2fb686c143d04b77f2f1fe1c1247f9fa76134c872203c3e10398005155f4b9bb4b5e43edfb956c1e9ae4d3d95b6ceb3
   languageName: node
   linkType: hard
 
-"@asyncapi/parser@npm:^3.0.0-next-major-spec.10":
-  version: 3.0.0-next-major-spec.12
-  resolution: "@asyncapi/parser@npm:3.0.0-next-major-spec.12"
+"@asyncapi/protobuf-schema-parser@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "@asyncapi/protobuf-schema-parser@npm:3.0.4"
   dependencies:
-    "@asyncapi/specs": ^6.0.0-next-major-spec.9
-    "@openapi-contrib/openapi-schema-to-json-schema": ~3.2.0
-    "@stoplight/json-ref-resolver": ^3.1.5
-    "@stoplight/spectral-core": ^1.16.1
-    "@stoplight/spectral-functions": ^1.7.2
-    "@stoplight/spectral-parsers": ^1.0.2
-    "@types/json-schema": ^7.0.11
-    "@types/urijs": ^1.19.19
-    ajv: ^8.11.0
-    ajv-errors: ^3.0.0
-    ajv-formats: ^2.1.1
-    avsc: ^5.7.5
-    js-yaml: ^4.1.0
-    jsonpath-plus: ^7.2.0
-    node-fetch: 2.6.7
-    ramldt2jsonschema: ^1.2.3
-    webapi-parser: ^0.5.0
-  checksum: 960843cc3303fe6c2c2fe227edb66d396fa96100b5e1e7ed001bde70a341505db0e638e5a518f9d00c4daa707c77c4779aa36ea8d7cd264d1e66335587c30750
-  languageName: node
-  linkType: hard
-
-"@asyncapi/protobuf-schema-parser@npm:3.0.0":
-  version: 3.0.0
-  resolution: "@asyncapi/protobuf-schema-parser@npm:3.0.0"
-  dependencies:
-    "@asyncapi/parser": ^2.1.0
+    "@asyncapi/parser": ^3.0.1
     "@types/protocol-buffers-schema": ^3.4.1
     protocol-buffers-schema: ^3.6.0
-  checksum: a80bbc9bb5ef4e21d5eb0aa56f5aa1207afff482a72abcbf45faece6f295bdeaf81fff349aa1542ef4cf8674f1ff943e8bc29371b07154e615e097d80b15a7dd
+  checksum: c176e6d86e53f342ac91067279fb6e1ac3ed9d7f36de197fc723a2ceaf2a2588267c445203d67edcb3cd75308c0c0d6ea401ad69508bfe378c9194420702d3db
   languageName: node
   linkType: hard
 
-"@asyncapi/react-component@npm:1.2.2":
-  version: 1.2.2
-  resolution: "@asyncapi/react-component@npm:1.2.2"
+"@asyncapi/react-component@npm:1.2.6":
+  version: 1.2.6
+  resolution: "@asyncapi/react-component@npm:1.2.6"
   dependencies:
-    "@asyncapi/avro-schema-parser": ^3.0.5
-    "@asyncapi/openapi-schema-parser": ^3.0.6
-    "@asyncapi/parser": ^3.0.0-next-major-spec.10
-    "@asyncapi/protobuf-schema-parser": 3.0.0
+    "@asyncapi/avro-schema-parser": ^3.0.7
+    "@asyncapi/openapi-schema-parser": ^3.0.8
+    "@asyncapi/parser": ^3.0.1
+    "@asyncapi/protobuf-schema-parser": ^3.0.4
     highlight.js: ^10.7.2
     isomorphic-dompurify: ^0.13.0
     marked: ^4.0.14
@@ -241,7 +216,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: d8b4d692b6bc1c8a98c2cb61d72207e4faea9c03ce39f959131da43b21cbd4e7efb0e8d137a40eac6bdf3c389bf33ff534efd259f38f580ee7205aa702e803d1
+  checksum: 4afb34562767771048d0848323adea8d498dc555cc529947d4a45f3ec8d7f172bb454814bcf9c4419e105a743736368b56b3ed54d09b60addc06a287ca0e82b9
   languageName: node
   linkType: hard
 
@@ -254,21 +229,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/specs@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@asyncapi/specs@npm:5.1.0"
+"@asyncapi/specs@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@asyncapi/specs@npm:6.1.0"
   dependencies:
     "@types/json-schema": ^7.0.11
-  checksum: a4ca804d028c8ecb4d6484de84633854e64ba32fb995caa413cb1388da1e4f2bce3b8c635cd3a9217f6f0c202b566498d09301cd825d6485014a7b510a5d3faf
-  languageName: node
-  linkType: hard
-
-"@asyncapi/specs@npm:^6.0.0-next-major-spec.9":
-  version: 6.0.0-next-major-spec.13
-  resolution: "@asyncapi/specs@npm:6.0.0-next-major-spec.13"
-  dependencies:
-    "@types/json-schema": ^7.0.11
-  checksum: a66bedba036684fa7984d94d211fe5aaac28043d3a79c4fc6bf5ddabf3a384e1a9cb3b4224d1a937448d2a6e24e3ddf5c4e8c7a32804963994d84fa5e0285b7c
+  checksum: d4ad199ef58b8ef6be081e2e71fd172fdf6720479f3ae6f9b1e58037f833ca177c8af1dadeab4525c2c07e68ea0a4832e0d3dd67c3b033b988ca2435245f6aa6
   languageName: node
   linkType: hard
 
@@ -4659,7 +4625,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-api-docs@workspace:plugins/api-docs"
   dependencies:
-    "@asyncapi/react-component": 1.2.2
+    "@asyncapi/react-component": 1.2.6
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
@@ -20457,30 +20423,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:6.5.2":
-  version: 6.5.2
-  resolution: "ajv@npm:6.5.2"
-  dependencies:
-    fast-deep-equal: ^2.0.1
-    fast-json-stable-stringify: ^2.0.0
-    json-schema-traverse: ^0.4.1
-    uri-js: ^4.2.1
-  checksum: ac8590895952e6387f923cf7e130e2b4fac13e175caa2934c7792e8a54f2a619e805f769d6f1b5d26d75401fccbe69e5b1fe31ebae39f300c5660a78597ee2fb
-  languageName: node
-  linkType: hard
-
-"ajv@npm:^5.0.0":
-  version: 5.5.2
-  resolution: "ajv@npm:5.5.2"
-  dependencies:
-    co: ^4.6.0
-    fast-deep-equal: ^1.0.0
-    fast-json-stable-stringify: ^2.0.0
-    json-schema-traverse: ^0.3.0
-  checksum: a69645c843e1676b0ae1c5192786e546427f808f386d26127c6585479378066c64341ceec0b127b6789d79628e71d2a732d402f575b98f9262db230d7b715a94
-  languageName: node
-  linkType: hard
-
 "ajv@npm:^6.12.2, ajv@npm:^6.12.4, ajv@npm:^6.12.5, ajv@npm:^6.5.5, ajv@npm:~6.12.6":
   version: 6.12.6
   resolution: "ajv@npm:6.12.6"
@@ -23140,7 +23082,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^5.0.0, commander@npm:^5.1.0":
+"commander@npm:^5.1.0":
   version: 5.1.0
   resolution: "commander@npm:5.1.0"
   checksum: 0b7fec1712fbcc6230fcb161d8d73b4730fa91a21dc089515489402ad78810547683f058e2a9835929c212fead1d6a6ade70db28bbb03edbc2829a9ab7d69447
@@ -27250,20 +27192,6 @@ __metadata:
   version: 1.0.1
   resolution: "fast-decode-uri-component@npm:1.0.1"
   checksum: 427a48fe0907e76f0e9a2c228e253b4d8a8ab21d130ee9e4bb8339c5ba4086235cf9576831f7b20955a752eae4b525a177ff9d5825dd8d416e7726939194fbee
-  languageName: node
-  linkType: hard
-
-"fast-deep-equal@npm:^1.0.0":
-  version: 1.1.0
-  resolution: "fast-deep-equal@npm:1.1.0"
-  checksum: 69b4c9534d9805f13a341aa72f69641d0b9ae3cc8beb25c64e68a257241c7bb34370266db27ae4fc3c4da0518448c01a5f587a096a211471c86a38facd9a1486
-  languageName: node
-  linkType: hard
-
-"fast-deep-equal@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "fast-deep-equal@npm:2.0.1"
-  checksum: b701835a87985e0ec4925bdf1f0c1e7eb56309b5d12d534d5b4b69d95a54d65bb16861c081781ead55f73f12d6c60ba668713391ee7fbf6b0567026f579b7b0b
   languageName: node
   linkType: hard
 
@@ -31685,7 +31613,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^3.10.0, js-yaml@npm:^3.13.0, js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.0, js-yaml@npm:^3.6.1, js-yaml@npm:^3.8.3":
+"js-yaml@npm:^3.10.0, js-yaml@npm:^3.13.0, js-yaml@npm:^3.13.1, js-yaml@npm:^3.6.1, js-yaml@npm:^3.8.3":
   version: 3.14.1
   resolution: "js-yaml@npm:3.14.1"
   dependencies:
@@ -31962,15 +31890,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-schema-migrate@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "json-schema-migrate@npm:0.2.0"
-  dependencies:
-    ajv: ^5.0.0
-  checksum: fc5b3ed2cfc5d02059836120653b63f846a18037ec554b47267f9c104750f8fa3f3acb38d0129f116fd2db017c69cc90456cfae66930aa1d328fe12a422c0125
-  languageName: node
-  linkType: hard
-
 "json-schema-to-ts@npm:^2.6.2":
   version: 2.9.2
   resolution: "json-schema-to-ts@npm:2.9.2"
@@ -31979,13 +31898,6 @@ __metadata:
     "@types/json-schema": ^7.0.9
     ts-algebra: ^1.2.0
   checksum: 64bf7226511a3719075d28e715fbd203576088b6ebcf494d6c5ee2bcf5b24d6081fa0cfce22ce254ad8798b7044603db4e4d19779c6f5765285fb9ddaa0756ef
-  languageName: node
-  linkType: hard
-
-"json-schema-traverse@npm:^0.3.0":
-  version: 0.3.1
-  resolution: "json-schema-traverse@npm:0.3.1"
-  checksum: a685c36222023471c25c86cddcff506306ecb8f8941922fd356008419889c41c38e1c16d661d5499d0a561b34f417693e9bb9212ba2b2b2f8f8a345a49e4ec1a
   languageName: node
   linkType: hard
 
@@ -38337,21 +38249,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ramldt2jsonschema@npm:^1.2.3":
-  version: 1.2.3
-  resolution: "ramldt2jsonschema@npm:1.2.3"
-  dependencies:
-    commander: ^5.0.0
-    js-yaml: ^3.14.0
-    json-schema-migrate: ^0.2.0
-    webapi-parser: ^0.5.0
-  bin:
-    dt2js: bin/dt2js.js
-    js2dt: bin/js2dt.js
-  checksum: db6b89f4c088184290ea27448cfd64985e253543209e0b80bfb12b0b9640253b59418b671164af9055143018ef4be010c5f52ca853386636267269208f2f3512
-  languageName: node
-  linkType: hard
-
 "randexp@npm:0.4.6":
   version: 0.4.6
   resolution: "randexp@npm:0.4.6"
@@ -43756,7 +43653,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uri-js@npm:^4.2.1, uri-js@npm:^4.2.2, uri-js@npm:^4.4.1":
+"uri-js@npm:^4.2.2, uri-js@npm:^4.4.1":
   version: 4.4.1
   resolution: "uri-js@npm:4.4.1"
   dependencies:
@@ -44483,15 +44380,6 @@ __metadata:
   version: 3.3.2
   resolution: "web-vitals@npm:3.3.2"
   checksum: 76e832341d213d5de6f6767fef7f8c02163ab94326912a6355bbf6e194d930196ca5094b0d0d493b4c194acaaabcc96f0adc87870b913a7b9a51b225807abccf
-  languageName: node
-  linkType: hard
-
-"webapi-parser@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "webapi-parser@npm:0.5.0"
-  dependencies:
-    ajv: 6.5.2
-  checksum: bb9fb534b33939fcb420aa5c564e05595f72b543a84ccb71de642fb5852aa9481d1debcebbf4d7ca9bfd192c3d829848baa8c03e7b2ae81ee69171f012d32a60
   languageName: node
   linkType: hard
 
