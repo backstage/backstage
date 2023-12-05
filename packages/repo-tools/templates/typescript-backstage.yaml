@@ -1,3 +1,5 @@
+templateDir: templates/typescript-backstage
+
 files:
   api.mustache:
     templateType: API
