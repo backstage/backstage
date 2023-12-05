@@ -3723,7 +3723,7 @@ __metadata:
     tar: ^6.1.12
     terser-webpack-plugin: ^5.1.3
     ts-node: ^10.0.0
-    tsx: ^3.14.0
+    tsx: ^4.0.0
     util: ^0.12.3
     webpack: ^5.70.0
     webpack-dev-server: ^4.7.3
@@ -41171,7 +41171,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.5.16, source-map-support@npm:^0.5.21, source-map-support@npm:~0.5.20":
+"source-map-support@npm:^0.5.16, source-map-support@npm:~0.5.20":
   version: 0.5.21
   resolution: "source-map-support@npm:0.5.21"
   dependencies:
@@ -43024,20 +43024,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^3.14.0":
-  version: 3.14.0
-  resolution: "tsx@npm:3.14.0"
+"tsx@npm:^4.0.0":
+  version: 4.6.2
+  resolution: "tsx@npm:4.6.2"
   dependencies:
     esbuild: ~0.18.20
     fsevents: ~2.3.3
     get-tsconfig: ^4.7.2
-    source-map-support: ^0.5.21
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     tsx: dist/cli.mjs
-  checksum: afcef5d9b90b5800cf1ffb749e943f63042d78a4c0d9eef6e13e43f4ecab465d45e2c9812a2c515cbdc2ee913ff1cd01bf5c606a48013dd3ce2214a631b45557
+  checksum: a9f13bdb67bfb316bbfc92303d8464323ab1b673aa93ea97271c211a8ba7c59274d4b32eeec5ad8fbd0b04260a092a3ad2116abeb6913254ba456010ff685743
   languageName: node
   linkType: hard
 
