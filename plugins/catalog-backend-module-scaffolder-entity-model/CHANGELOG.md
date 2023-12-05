@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-scaffolder-entity-model
 
+## 0.1.5-next.2
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.6.0-next.2
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-scaffolder-common@1.4.3
+
 ## 0.1.5-next.1
 
 ### Patch Changes

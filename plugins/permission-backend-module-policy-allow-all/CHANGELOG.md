@@ -1,5 +1,17 @@
 # @backstage/plugin-permission-backend-module-allow-all-policy
 
+## 0.1.5-next.2
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/plugin-auth-node@0.4.2-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-node@0.7.19-next.2
+
 ## 0.1.5-next.1
 
 ### Patch Changes

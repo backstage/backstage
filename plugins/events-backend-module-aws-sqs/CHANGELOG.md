@@ -1,5 +1,18 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.2.11-next.2
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/backend-tasks@0.5.13-next.2
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.2.17-next.2
+
 ## 0.2.11-next.1
 
 ### Patch Changes
