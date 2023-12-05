@@ -1,5 +1,14 @@
 # @backstage/plugin-events-backend-module-bitbucket-cloud
 
+## 0.1.18-next.2
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/plugin-events-node@0.2.17-next.2
+
 ## 0.1.18-next.1
 
 ### Patch Changes

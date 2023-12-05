@@ -1,5 +1,24 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.2.0-next.2
+
+### Minor Changes
+
+- 899d71a: Change `formatClusterLink` to be an API and make it async for further customization possibilities.
+
+  **BREAKING**
+  If you have a custom k8s page and used `formatClusterLink` directly, you need to migrate to new `kubernetesClusterLinkFormatterApiRef`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.2-next.1
+
 ## 0.1.2-next.1
 
 ### Patch Changes
