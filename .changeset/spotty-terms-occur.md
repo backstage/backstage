@@ -2,4 +2,4 @@
 '@backstage/repo-tools': patch
 ---
 
-No longer using yarn to execute openapi-generator-cli and prettier in `repo-tools openapi generate-client`
+Execute `openapi-generator-cli` from `@backstage/repo-tools` directory to force it to use our openapitools.json config file.
