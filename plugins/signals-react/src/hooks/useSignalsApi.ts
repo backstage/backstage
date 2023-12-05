@@ -16,7 +16,7 @@
 import { signalsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 /** @public */
 export const useSignalsApi = (
@@ -24,13 +24,19 @@ export const useSignalsApi = (
   onMessage: (message: JsonObject) => void,
 ) => {
   const signals = useApi(signalsApiRef);
+  const [subscription, setSubscription] = useState<null | string>(null);
   useEffect(() => {
-    signals.subscribe(onMessage, topic);
-  }, [signals, onMessage, topic]);
+    if (!subscription) {
+      const sub = signals.subscribe(onMessage, topic);
+      setSubscription(sub);
+    }
+  }, [subscription, signals, onMessage, topic]);
 
   useEffect(() => {
     return () => {
-      signals.unsubscribe(topic);
+      if (subscription) {
+        signals.unsubscribe(subscription);
+      }
     };
-  }, [signals, topic]);
+  }, [subscription, signals, topic]);
 };

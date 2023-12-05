@@ -11,8 +11,8 @@ export type SignalsApi = {
   subscribe(
     onMessage: (message: JsonObject, topic?: string) => void,
     topic: string,
-  ): void;
-  unsubscribe(topic: string): void;
+  ): string;
+  unsubscribe(subscription: string): void;
 };
 
 // @public (undocumented)

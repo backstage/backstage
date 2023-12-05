@@ -8914,6 +8914,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
+    uuid: ^8.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
   languageName: unknown

@@ -5,19 +5,25 @@
 ```ts
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { SignalsApi } from '@backstage/plugin-signals-react';
 
 // @public (undocumented)
 export class SignalsClient implements SignalsApi {
   // (undocumented)
-  static create(options: { discoveryApi: DiscoveryApi }): SignalsClient;
+  static readonly CONNECT_TIMEOUT_MS: number;
   // (undocumented)
-  static instance: SignalsClient | null;
+  static create(options: {
+    identity: IdentityApi;
+    discoveryApi: DiscoveryApi;
+  }): SignalsClient;
   // (undocumented)
-  subscribe(onMessage: (message: JsonObject) => void, topic: string): void;
+  static readonly RECONNECT_TIMEOUT_MS: number;
   // (undocumented)
-  unsubscribe(topic: string): void;
+  subscribe(onMessage: (message: JsonObject) => void, topic: string): string;
+  // (undocumented)
+  unsubscribe(subscription: string): void;
 }
 
 // @public (undocumented)

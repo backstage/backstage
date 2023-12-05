@@ -28,6 +28,7 @@ import { JsonObject } from '@backstage/types';
 import {
   BackstageIdentityResponse,
   IdentityApi,
+  IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 
 /** @public */
@@ -160,6 +161,23 @@ export class SignalsService implements EventSubscriber {
       );
       connection.subscriptions.delete(message.topic as string);
     }
+
+    if (message.action === 'authenticate' && message.token) {
+      this.logger.info(`Connection ${connection.id} authenticated`);
+      this.identity
+        .getIdentity({
+          request: {
+            headers: { authorization: message.token },
+          },
+        } as IdentityApiGetIdentityRequest)
+        .then(identity => {
+          if (identity) {
+            connection.user = identity.identity.userEntityRef;
+            connection.ownershipEntityRefs =
+              identity.identity.ownershipEntityRefs;
+          }
+        });
+    }
   }
 
   /**
@@ -183,6 +201,11 @@ export class SignalsService implements EventSubscriber {
     message: JsonObject,
     brokedEvent: boolean,
   ) {
+    const jsonMessage = JSON.stringify({ topic, message });
+    if (jsonMessage.length === 0) {
+      return;
+    }
+
     this.connections.forEach(conn => {
       if (!conn.subscriptions.has(topic)) {
         return;
@@ -194,7 +217,7 @@ export class SignalsService implements EventSubscriber {
       ) {
         return;
       }
-      conn.ws.send(JSON.stringify({ topic, message }));
+      conn.ws.send(jsonMessage);
     });
 
     // If this event has not been broadcasted to all servers, then use

@@ -26,7 +26,7 @@ export type SignalsApi = {
   subscribe(
     onMessage: (message: JsonObject, topic?: string) => void,
     topic: string,
-  ): void;
+  ): string;
 
-  unsubscribe(topic: string): void;
+  unsubscribe(subscription: string): void;
 };
