@@ -16,10 +16,15 @@
 
 import React from 'react';
 import { Content } from './Content';
-import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
+import {
+  TestApiProvider,
+  renderInTestApp,
+  MockConfigApi,
+} from '@backstage/test-utils';
 import { visitsApiRef } from '../../api';
 import { ContextProvider } from './Context';
 import { waitFor } from '@testing-library/react';
+import { configApiRef } from '@backstage/core-plugin-api';
 
 const visits = [
   {
@@ -119,15 +124,29 @@ describe('<Content kind="recent"/>', () => {
   });
 
   it('allows items to be filtered', async () => {
+    const configApiMock = new MockConfigApi({
+      home: {
+        topVisits: {
+          filterBy: [
+            {
+              field: 'pathname',
+              operator: '==',
+              value: '/explore',
+            },
+          ],
+        },
+      },
+    });
+
     const { getByText, queryByText } = await renderInTestApp(
-      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [visitsApiRef, mockVisitsApi],
+        ]}
+      >
         <ContextProvider>
-          <Content
-            kind="recent"
-            filterBy={[
-              { field: 'pathname', operator: '==', value: '/explore' },
-            ]}
-          />
+          <Content kind="recent" />
         </ContextProvider>
       </TestApiProvider>,
     );

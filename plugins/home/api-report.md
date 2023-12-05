@@ -241,7 +241,6 @@ export type VisitedByTypeProps = {
   numVisitsTotal?: number;
   loading?: boolean;
   kind: VisitedByTypeKind;
-  filterBy?: VisitsApiQueryParams['filterBy'];
 };
 
 // @public

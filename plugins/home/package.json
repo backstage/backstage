@@ -36,6 +36,7 @@
       ]
     }
   },
+  "configSchema": "config.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
@@ -88,6 +89,7 @@
     "@types/react-grid-layout": "^1.3.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ]
 }
