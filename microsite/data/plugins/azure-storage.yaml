@@ -8,7 +8,7 @@ documentation: https://github.com/deepan10/backstage-plugins/tree/main/plugins/a
 iconUrl: /img/azure-storage-folder.png
 npmPackageName: 'backstage-plugin-azure-storage'
 tags:
-  - Azure 
+  - Azure
   - Azure Storage
   - Infrastructure
 addedDate: '2023-12-01'
