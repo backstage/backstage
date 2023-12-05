@@ -16,14 +16,9 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import {
-  TemplateExample,
-  createTemplateAction,
-} from '@backstage/plugin-scaffolder-node';
-import * as yaml from 'yaml';
-import commonGitlabConfig, {
-  commonGitlabConfigExample,
-} from '../commonGitlabConfig';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import commonGitlabConfig from '../commonGitlabConfig';
+import { examples } from './createGitlabIssueAction.examples';
 import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
 import { Gitlab, CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
@@ -35,6 +30,100 @@ import { Gitlab, CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
  * @public
  */
 
+const enumIssueType = {
+  ISSUE: 'issue',
+  INCIDENT: 'incident',
+  TEST: 'test_case',
+};
+
+const issueInputProperties = z.object({
+  projectId: z.number().describe('Project Id'),
+  title: z.string({ description: 'Title of the issue' }),
+  assignees: z
+    .array(z.number(), {
+      description: 'IDs of the users to assign the issue to.',
+    })
+    .optional(),
+  confidential: z.boolean({ description: 'Issue Confidentiality' }).optional(),
+  description: z.string().describe('Issue description').max(1048576).optional(),
+  createdAt: z
+    .string()
+    .describe('Creation date/time')
+    .regex(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/,
+      'Invalid date format. Use YYYY-MM-DDTHH:mm:ssZ or YYYY-MM-DDTHH:mm:ss.SSSZ',
+    )
+    .optional(),
+  dueDate: z
+    .string()
+    .describe('Due date/time')
+    .regex(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/,
+      'Invalid date format. Use YYYY-MM-DDTHH:mm:ssZ or YYYY-MM-DDTHH:mm:ss.SSSZ',
+    )
+    .optional(),
+  discussionToResolve: z
+    .string({
+      description:
+        'Id of a discussion to resolve. Use in combination with "merge_request_to_resolve_discussions_of"',
+    })
+    .optional(),
+  epicId: z
+    .number({ description: 'Id of the linked Epic' })
+    .min(0, 'Valid values should be equal or greater than zero')
+    .optional(),
+  labels: z.string({ description: 'Labels to apply' }).optional(),
+  issueType: z
+    .string({
+      description: 'Type of the issue',
+    })
+    .refine(issueType => {
+      const isValid = Object.values(enumIssueType).includes(issueType);
+      if (!isValid) {
+        throw new z.ZodError([
+          {
+            code: 'invalid_enum_value',
+            options: Object.values(enumIssueType),
+            path: ['issueType'],
+            message: `Invalid value for 'issueType'. Must be one of: ${Object.values(
+              enumIssueType,
+            ).join(', ')}`,
+            received: issueType,
+          },
+        ]);
+      }
+      return isValid;
+    })
+    .default(enumIssueType.ISSUE)
+    .optional(),
+  mergeRequestToResolveDiscussionsOf: z
+    .number({
+      description: 'IID of a merge request in which to resolve all issues',
+    })
+    .optional(),
+  milestoneId: z
+    .number({ description: 'Global ID of a milestone to assign the issue' })
+    .optional(),
+  weight: z
+    .number({ description: 'The issue weight' })
+    .min(0)
+    .refine(value => {
+      const isValid = value >= 0;
+      if (!isValid) {
+        return {
+          message: 'Valid values should be equal or greater than zero',
+        };
+      }
+      return isValid;
+    })
+    .optional(),
+});
+
+const issueOutputProperties = z.object({
+  issueUrl: z.string({ description: 'Issue Url' }),
+  issueId: z.number({ description: 'Issue Id' }),
+});
+
 export const createGitlabIssueAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
@@ -42,38 +131,10 @@ export const createGitlabIssueAction = (options: {
   return createTemplateAction({
     id: 'gitlab:issues:create',
     description: 'Creates a Gitlab issue.',
-    examples: getExamples(),
+    examples,
     schema: {
-      input: commonGitlabConfig.merge(
-        z.object({
-          projectId: z.number({ description: 'Project Id' }),
-          title: z.string({ description: 'Title of the issue' }),
-          assignees: z
-            .array(z.number(), {
-              description: 'IDs of the users to assign the issue to.',
-            })
-            .optional(),
-          confidential: z
-            .boolean({ description: 'Issue Confidentiality' })
-            .optional(),
-          description: z
-            .string({ description: 'Issue description' })
-            .optional(),
-          createdAt: z.string({ description: 'Creation date/time' }).optional(),
-          dueDate: z.string({ description: 'Due date/time' }).optional(),
-          discussionToResolve: z
-            .string({
-              description: 'Id of a discussion to resolve',
-            })
-            .optional(),
-          epicId: z.number({ description: 'Id of the linked Epic' }).optional(),
-          labels: z.string({ description: 'Labels to apply' }).optional(),
-        }),
-      ),
-      output: z.object({
-        issueUrl: z.string({ description: 'Issue Url' }),
-        issueId: z.number({ description: 'Issue Id' }),
-      }),
+      input: commonGitlabConfig.merge(issueInputProperties),
+      output: issueOutputProperties,
     },
     async handler(ctx) {
       try {
@@ -89,8 +150,12 @@ export const createGitlabIssueAction = (options: {
           discussionToResolve = '',
           epicId,
           labels = '',
+          issueType,
+          mergeRequestToResolveDiscussionsOf,
+          milestoneId,
+          weight,
           token,
-        } = ctx.input;
+        } = commonGitlabConfig.merge(issueInputProperties).parse(ctx.input);
 
         const { host } = parseRepoUrl(repoUrl, integrations);
 
@@ -113,6 +178,8 @@ export const createGitlabIssueAction = (options: {
             );
           }
         }
+
+        // TODO: do I really need the convertDate?
         const mappedCreatedAt = convertDate(
           String(createdAt),
           new Date().toISOString(),
@@ -130,6 +197,10 @@ export const createGitlabIssueAction = (options: {
           createdAt: mappedCreatedAt,
           dueDate: mappedDueDate,
           discussionToResolve,
+          issueType,
+          mergeRequestToResolveDiscussionsOf,
+          milestoneId,
+          weight,
         };
 
         const response = (await api.Issues.create(
@@ -141,79 +212,13 @@ export const createGitlabIssueAction = (options: {
         ctx.output('issueId', response.id);
         ctx.output('issueUrl', response.web_url);
       } catch (error: any) {
+        if (error instanceof z.ZodError) {
+          // Handling Zod validation errors
+          throw new InputError(`Validation error: ${error.message}`);
+        }
+        // Handling other errors
         throw new InputError(`Failed to create GitLab issue: ${error.message}`);
       }
     },
   });
 };
-
-function getExamples(): TemplateExample[] {
-  return [
-    {
-      description: 'Create a GitLab issue with minimal options',
-      example: yaml.stringify({
-        steps: [
-          {
-            id: 'gitlabIssue',
-            name: 'Issues',
-            action: 'gitlab:issues:create',
-            input: {
-              ...commonGitlabConfigExample,
-              projectId: 12,
-              title: 'Test Issue',
-              description: 'This is the description of the issue',
-            },
-          },
-        ],
-      }),
-    },
-    {
-      description: 'Create a GitLab issue with assignees and date options',
-      example: yaml.stringify({
-        steps: [
-          {
-            id: 'gitlabIssue',
-            name: 'Issues',
-            action: 'gitlab:issues:create',
-            input: {
-              ...commonGitlabConfigExample,
-              projectId: 12,
-              title: 'Test Issue',
-              assignees: -18,
-              description: 'This is the description of the issue',
-              createdAt: '2022-09-27 18:00:00.000',
-              dueDate: '2022-09-28 12:00:00.000',
-            },
-          },
-        ],
-      }),
-    },
-    {
-      description: 'Create a GitLab Issue with several options',
-      example: yaml.stringify({
-        steps: [
-          {
-            id: 'gitlabIssue',
-            name: 'Issues',
-            action: 'gitlab:issues:create',
-            input: {
-              ...commonGitlabConfigExample,
-              projectId: 12,
-              title: 'Test Issue',
-              assignees: `
-                - 18
-                - 15 `,
-              description: 'This is the description of the issue',
-              confidential: false,
-              createdAt: '2022-09-27 18:00:00.000',
-              dueDate: '2022-09-28 12:00:00.000',
-              discussionToResolve: 1,
-              epicId: 1,
-              labels: 'phase1:label1,phase2:label2',
-            },
-          },
-        ],
-      }),
-    },
-  ];
-}
