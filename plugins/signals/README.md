@@ -2,12 +2,40 @@
 
 Welcome to the signals plugin!
 
-_This plugin was created through the Backstage CLI_
+Signals plugin allows backend plugins to publish messages to frontend plugins.
 
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/signals](http://localhost:3000/signals).
+This plugin contains client that can receive messages from the backend. To get started,
+see installation instructions from `@backstage/plugin-signals-node`, `@backstage/plugin-signals-backend`.
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+To install the plugin, you have to add the following to your `packages/app/src/plugins.ts`:
+
+```ts
+export { signalsPlugin } from '@backstage/plugin-signals';
+```
+
+And make sure that your `packages/app/src/App.tsx` contains:
+
+```ts
+import * as plugins from './plugins';
+
+const app = createApp({
+  // ...
+  plugins: Object.values(plugins),
+  // ...
+});
+```
+
+Now you can utilize the API from other plugins using the `@backstage/plugin-signals-react` package or simply by:
+
+```ts
+import { signalsApiRef } from '@backstage/plugin-signals-react';
+
+const signals = useApi(signalsApiRef);
+signals.subscribe('myplugin:topic', (message: JsonObject) => {
+  console.log(message);
+});
+// Remember to unsubscribe
+signals.unsubscribe('myplugin:topic');
+```
