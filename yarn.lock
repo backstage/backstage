@@ -4994,6 +4994,7 @@ __metadata:
     "@types/passport-microsoft": ^1.0.0
     express: ^4.18.2
     jose: ^4.6.0
+    loadash: ^1.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     passport: ^0.6.0
@@ -33777,6 +33778,13 @@ __metadata:
     pify: ^4.0.1
     strip-bom: ^3.0.0
   checksum: d86d7ec7b15a1c35b40fb0d8abe710a7de83e0c1186c1d35a7eaaf8581611828089a3e706f64560c2939762bc73f18a7b85aed9335058c640e033933cf317f11
+  languageName: node
+  linkType: hard
+
+"loadash@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "loadash@npm:1.0.0"
+  checksum: 05a105fa9773a7c15963ea783507daa4d488a7a5b782ba77d84dbfaa40b01eb6a3a6cb1a160e67c4af339c7aa9209f9bfb8ef35eefffe98838930f05752ea550
   languageName: node
   linkType: hard
 
