@@ -335,7 +335,7 @@ Filtering is done by using 3 parameters:
   - pathname: string;
   - hits: number;
   - timestamp: number;
-  - entityRef?: string;
+  - entityRef: string;
 - `operator` - can be one of the following `'<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains'`
 - `value` - the value of the filter
 
