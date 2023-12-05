@@ -15,10 +15,11 @@
  */
 
 import React, { useEffect } from 'react';
+import { readFilterByConfigs } from '../../api/config';
 import { VisitedByType } from './VisitedByType';
-import { Visit, VisitsApiQueryParams, visitsApiRef } from '../../api';
+import { Visit, visitsApiRef } from '../../api';
 import { ContextValueOnly, useContext } from './Context';
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 
 /** @public */
@@ -31,7 +32,6 @@ export type VisitedByTypeProps = {
   numVisitsTotal?: number;
   loading?: boolean;
   kind: VisitedByTypeKind;
-  filterBy?: VisitsApiQueryParams['filterBy'];
 };
 
 /**
@@ -44,7 +44,6 @@ export const Content = ({
   numVisitsTotal,
   loading,
   kind,
-  filterBy,
 }: VisitedByTypeProps) => {
   const { setContext, setVisits, setLoading } = useContext();
   // Allows behavior override from properties
@@ -62,10 +61,14 @@ export const Content = ({
     setContext(state => ({ ...state, ...context }));
   }, [setContext, kind, visits, loading, numVisitsOpen, numVisitsTotal]);
 
+  const config = useApi(configApiRef);
   // Fetches data from visitsApi in case visits and loading are not provided
   const visitsApi = useApi(visitsApiRef);
   const { loading: reqLoading } = useAsync(async () => {
     if (!visits && !loading && kind === 'recent') {
+      const filterBy = readFilterByConfigs(
+        config.getOptionalConfigArray('home.recentVisits.filterBy') ?? [],
+      );
       return await visitsApi
         .list({
           limit: numVisitsTotal ?? 8,
@@ -75,6 +78,9 @@ export const Content = ({
         .then(setVisits);
     }
     if (!visits && !loading && kind === 'top') {
+      const filterBy = readFilterByConfigs(
+        config.getOptionalConfigArray('home.topVisits.filterBy') ?? [],
+      );
       return await visitsApi
         .list({
           limit: numVisitsTotal ?? 8,

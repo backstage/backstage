@@ -36,6 +36,7 @@
       ]
     }
   },
+  "configSchema": "config.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
@@ -90,6 +91,7 @@
     "msw": "^1.0.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ]
 }
