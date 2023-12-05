@@ -206,6 +206,11 @@ export class SignalsService implements EventSubscriber {
       ) {
         return;
       }
+
+      if (conn.ws.readyState !== WebSocket.OPEN) {
+        return;
+      }
+
       conn.ws.send(jsonMessage);
     });
 

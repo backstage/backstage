@@ -126,7 +126,7 @@ export class SignalsClient implements SignalsApi {
     const { token } = await this.identity.getCredentials();
 
     const url = new URL(apiUrl);
-    url.protocol = url.protocol === 'http:' ? 'ws' : 'wss';
+    url.protocol = url.protocol === 'http:' ? 'ws:' : 'wss:';
     this.ws = new WebSocket(url.toString(), token);
 
     this.ws.onmessage = (data: MessageEvent) => {
