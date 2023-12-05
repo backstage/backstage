@@ -15,25 +15,13 @@
  */
 import { Router } from 'express';
 import { createRouter } from '@backstage/plugin-signals-backend';
-import { SignalsService } from '@backstage/plugin-signals-node';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const service = SignalsService.create({
-    logger: env.logger,
-    identity: env.identity,
-    eventBroker: env.eventBroker,
-  });
-
-  setInterval(() => {
-    console.log('publishing');
-    service.publish('*', 'devtools:info', { now: new Date().toISOString() });
-  }, 5000);
-
   return await createRouter({
     logger: env.logger,
-    service,
+    service: env.signalService,
   });
 }

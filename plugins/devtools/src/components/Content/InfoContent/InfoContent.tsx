@@ -27,10 +27,9 @@ import {
   makeStyles,
   Paper,
   Theme,
-  Typography,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
 import DescriptionIcon from '@material-ui/icons/Description';
@@ -39,7 +38,7 @@ import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
-import { useSignalsApi } from '@backstage/plugin-signals-react';
+import { useSignalApi } from '@backstage/plugin-signals-react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,13 +73,17 @@ const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
 /** @public */
 export const InfoContent = () => {
   const classes = useStyles();
+  const [info, setInfo] = useState<DevToolsInfo | undefined>(undefined);
   const { about, loading, error } = useInfo();
-  // Just testing for signals
-  const [messages, setMessages] = React.useState<string[]>([]);
-  useSignalsApi('devtools:info', message => {
-    messages.push(JSON.stringify(message));
-    setMessages([...messages]);
+  useSignalApi('devtools:info', message => {
+    setInfo(message as DevToolsInfo);
   });
+
+  useEffect(() => {
+    if (!loading && !error && about) {
+      setInfo(about);
+    }
+  }, [about, loading, error]);
 
   if (loading) {
     return <Progress />;
@@ -89,11 +92,6 @@ export const InfoContent = () => {
   }
   return (
     <Box>
-      <Paper>
-        {messages.map((msg, i) => {
-          return <Typography key={i}>{msg}</Typography>;
-        })}
-      </Paper>
       <Paper className={classes.paperStyle}>
         <List className={classes.flexContainer}>
           <ListItem>
@@ -104,7 +102,7 @@ export const InfoContent = () => {
             </ListItemAvatar>
             <ListItemText
               primary="Operating System"
-              secondary={about?.operatingSystem}
+              secondary={info?.operatingSystem}
             />
           </ListItem>
           <ListItem>
@@ -115,7 +113,7 @@ export const InfoContent = () => {
             </ListItemAvatar>
             <ListItemText
               primary="Resource utilization"
-              secondary={about?.resourceUtilization}
+              secondary={info?.resourceUtilization}
             />
           </ListItem>
           <ListItem>
@@ -126,7 +124,7 @@ export const InfoContent = () => {
             </ListItemAvatar>
             <ListItemText
               primary="NodeJS Version"
-              secondary={about?.nodeJsVersion}
+              secondary={info?.nodeJsVersion}
             />
           </ListItem>
           <ListItem>
@@ -137,14 +135,14 @@ export const InfoContent = () => {
             </ListItemAvatar>
             <ListItemText
               primary="Backstage Version"
-              secondary={about?.backstageVersion}
+              secondary={info?.backstageVersion}
             />
           </ListItem>
           <Divider orientation="vertical" variant="middle" flexItem />
           <ListItem
             button
             onClick={() => {
-              copyToClipboard({ about });
+              copyToClipboard({ about: info });
             }}
             className={classes.copyButton}
           >
@@ -157,7 +155,7 @@ export const InfoContent = () => {
           </ListItem>
         </List>
       </Paper>
-      <InfoDependenciesTable infoDependencies={about?.dependencies} />
+      <InfoDependenciesTable infoDependencies={info?.dependencies} />
     </Box>
   );
 };

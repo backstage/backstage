@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { signalsApiRef } from '../api';
+import { signalApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { useEffect, useState } from 'react';
 
 /** @public */
-export const useSignalsApi = (
+export const useSignalApi = (
   topic: string,
   onMessage: (message: JsonObject) => void,
 ) => {
-  const signals = useApi(signalsApiRef);
+  const signals = useApi(signalApiRef);
   const [subscription, setSubscription] = useState<null | string>(null);
   useEffect(() => {
     if (!subscription) {

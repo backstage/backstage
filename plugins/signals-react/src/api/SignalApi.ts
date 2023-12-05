@@ -17,12 +17,12 @@ import { createApiRef } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 
 /** @public */
-export const signalsApiRef = createApiRef<SignalsApi>({
-  id: 'plugin.signals.service',
+export const signalApiRef = createApiRef<SignalApi>({
+  id: 'plugin.signal.service',
 });
 
 /** @public */
-export type SignalsApi = {
+export type SignalApi = {
   subscribe(topic: string, onMessage: (message: JsonObject) => void): string;
 
   unsubscribe(subscription: string): void;

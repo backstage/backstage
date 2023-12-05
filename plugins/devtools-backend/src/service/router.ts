@@ -33,6 +33,7 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import { SignalService } from '@backstage/plugin-signals-node';
 
 /** @public */
 export interface RouterOptions {
@@ -40,16 +41,27 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   permissions: PermissionEvaluator;
+  signalService?: SignalService;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config, permissions } = options;
+  const { logger, config, permissions, signalService } = options;
 
   const devToolsBackendApi =
     options.devToolsBackendApi || new DevToolsBackendApi(logger, config);
+
+  if (signalService) {
+    // Publish info periodically using the signal service
+    setInterval(async () => {
+      if (signalService.hasSubscribers('devtools:info')) {
+        const info = await devToolsBackendApi.listInfo();
+        await signalService.publish('*', 'devtools:info', info);
+      }
+    }, 5000);
+  }
 
   const router = Router();
   router.use(express.json());

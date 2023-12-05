@@ -7,17 +7,17 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { SignalsApi } from '@backstage/plugin-signals-react';
+import { SignalApi } from '@backstage/plugin-signals-react';
 
 // @public (undocumented)
-export class SignalsClient implements SignalsApi {
+export class SignalClient implements SignalApi {
   // (undocumented)
   static create(options: {
     identity: IdentityApi;
     discoveryApi: DiscoveryApi;
     connectTimeout?: number;
     reconnectTimeout?: number;
-  }): SignalsClient;
+  }): SignalClient;
   // (undocumented)
   static readonly DEFAULT_CONNECT_TIMEOUT_MS: number;
   // (undocumented)

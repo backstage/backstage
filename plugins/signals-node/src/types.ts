@@ -29,7 +29,7 @@ export type ServiceOptions = {
 };
 
 /** @public */
-export type SignalsEventBrokerPayload = {
+export type SignalEventBrokerPayload = {
   recipients?: string[];
   topic?: string;
   message?: JsonObject;

@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SignalsApi } from '@backstage/plugin-signals-react';
+import { SignalApi } from '@backstage/plugin-signals-react';
 import { JsonObject } from '@backstage/types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { v4 as uuid } from 'uuid';
 
-/** @internal */
 type Subscription = {
   topic: string;
   callback: (message: JsonObject) => void;
 };
 
-/** @internal */
 const WS_CLOSE_NORMAL = 1000;
-/** @internal */
 const WS_CLOSE_GOING_AWAY = 1001;
 
 /** @public */
-export class SignalsClient implements SignalsApi {
+export class SignalClient implements SignalApi {
   static readonly DEFAULT_CONNECT_TIMEOUT_MS: number = 1000;
   static readonly DEFAULT_RECONNECT_TIMEOUT_MS: number = 5000;
   private ws: WebSocket | null = null;
@@ -47,10 +44,10 @@ export class SignalsClient implements SignalsApi {
     const {
       identity,
       discoveryApi,
-      connectTimeout = SignalsClient.DEFAULT_CONNECT_TIMEOUT_MS,
-      reconnectTimeout = SignalsClient.DEFAULT_RECONNECT_TIMEOUT_MS,
+      connectTimeout = SignalClient.DEFAULT_CONNECT_TIMEOUT_MS,
+      reconnectTimeout = SignalClient.DEFAULT_RECONNECT_TIMEOUT_MS,
     } = options;
-    return new SignalsClient(
+    return new SignalClient(
       identity,
       discoveryApi,
       connectTimeout,

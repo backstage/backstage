@@ -19,19 +19,20 @@ export type ServiceOptions = {
 };
 
 // @public (undocumented)
-export type SignalsEventBrokerPayload = {
+export type SignalEventBrokerPayload = {
   recipients?: string[];
   topic?: string;
   message?: JsonObject;
 };
 
 // @public (undocumented)
-export class SignalsService implements EventSubscriber {
+export class SignalService implements EventSubscriber {
   // (undocumented)
-  static create(options: ServiceOptions): SignalsService;
+  static create(options: ServiceOptions): SignalService;
   handleUpgrade: (req: Request_2) => Promise<void>;
+  hasSubscribers(topic: string): boolean;
   // (undocumented)
-  onEvent(params: EventParams<SignalsEventBrokerPayload>): Promise<void>;
+  onEvent(params: EventParams<SignalEventBrokerPayload>): Promise<void>;
   publish(
     to: string | string[],
     topic: string,

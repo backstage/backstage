@@ -17,12 +17,12 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { SignalsService } from '@backstage/plugin-signals-node';
+import { SignalService } from '@backstage/plugin-signals-node';
 
 /** @public */
 export interface RouterOptions {
   logger: Logger;
-  service: SignalsService;
+  service: SignalService;
 }
 
 /** @public */

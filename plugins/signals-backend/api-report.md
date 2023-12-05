@@ -5,7 +5,7 @@
 ```ts
 import express from 'express';
 import { Logger } from 'winston';
-import { SignalsService } from '@backstage/plugin-signals-node';
+import { SignalService } from '@backstage/plugin-signals-node';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -15,7 +15,7 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  service: SignalsService;
+  service: SignalService;
 }
 
 // (No @packageDocumentation comment for this package)

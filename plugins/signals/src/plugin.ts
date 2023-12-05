@@ -19,21 +19,21 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { signalsApiRef } from '@backstage/plugin-signals-react';
-import { SignalsClient } from './api/SignalsClient';
+import { signalApiRef } from '@backstage/plugin-signals-react';
+import { SignalClient } from './api/SignalClient';
 
 /** @public */
 export const signalsPlugin = createPlugin({
   id: 'signals',
   apis: [
     createApiFactory({
-      api: signalsApiRef,
+      api: signalApiRef,
       deps: {
         identity: identityApiRef,
         discoveryApi: discoveryApiRef,
       },
       factory: ({ identity, discoveryApi }) =>
-        SignalsClient.create({
+        SignalClient.create({
           identity,
           discoveryApi,
         }),

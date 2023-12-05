@@ -18,9 +18,9 @@ import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
-import { SignalsService } from '@backstage/plugin-signals-node';
+import { SignalService } from '@backstage/plugin-signals-node';
 
-const signalsServiceMock: jest.Mocked<SignalsService> = {} as any;
+const signalsServiceMock: jest.Mocked<SignalService> = {} as any;
 
 describe('createRouter', () => {
   let app: express.Express;

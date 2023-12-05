@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './SignalsService';
+export * from './SignalService';
 export * from './types';

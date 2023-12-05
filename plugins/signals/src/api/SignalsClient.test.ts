@@ -16,7 +16,7 @@
 
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import WS from 'jest-websocket-mock';
-import { SignalsClient } from './SignalsClient';
+import { SignalClient } from './SignalClient';
 
 describe('SignalsClient', () => {
   const tokenFunction = jest.fn();
@@ -43,7 +43,7 @@ describe('SignalsClient', () => {
 
   it('should handle single subscription correctly', async () => {
     const messageMock = jest.fn();
-    const client = SignalsClient.create({ discoveryApi, identity });
+    const client = SignalClient.create({ discoveryApi, identity });
     const sub = client.subscribe('topic', messageMock);
     await server.connected;
 
@@ -64,8 +64,8 @@ describe('SignalsClient', () => {
   it('should handle multiple subscription correctly', async () => {
     const messageMock1 = jest.fn();
     const messageMock2 = jest.fn();
-    const client1 = SignalsClient.create({ discoveryApi, identity });
-    const client2 = SignalsClient.create({ discoveryApi, identity });
+    const client1 = SignalClient.create({ discoveryApi, identity });
+    const client2 = SignalClient.create({ discoveryApi, identity });
     const sub1 = client1.subscribe('topic', messageMock1);
     const sub2 = client2.subscribe('topic', messageMock2);
 
@@ -94,7 +94,7 @@ describe('SignalsClient', () => {
 
   it('should reconnect on error', async () => {
     const messageMock = jest.fn();
-    const client = SignalsClient.create({
+    const client = SignalClient.create({
       discoveryApi,
       identity,
       reconnectTimeout: 10,

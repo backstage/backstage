@@ -22,7 +22,7 @@ import { Logger } from 'winston';
 import {
   ServiceOptions,
   SignalConnection,
-  SignalsEventBrokerPayload,
+  SignalEventBrokerPayload,
 } from './types';
 import { RawData, WebSocket, WebSocketServer } from 'ws';
 import { IncomingMessage } from 'http';
@@ -36,7 +36,7 @@ import {
 } from '@backstage/plugin-auth-node';
 
 /** @public */
-export class SignalsService implements EventSubscriber {
+export class SignalService implements EventSubscriber {
   private readonly serverId: string;
   private connections: Map<string, SignalConnection> = new Map<
     string,
@@ -48,7 +48,7 @@ export class SignalsService implements EventSubscriber {
   private server: WebSocketServer;
 
   static create(options: ServiceOptions) {
-    return new SignalsService(options);
+    return new SignalService(options);
   }
 
   private constructor(options: ServiceOptions) {
@@ -75,7 +75,7 @@ export class SignalsService implements EventSubscriber {
   }
 
   /**
-   * Handles request upgradce to websocket and adds the connection to internal
+   * Handles request upgrade to websocket and adds the connection to internal
    * list for publish/subscribe functionality
    * @param req - Request
    */
@@ -184,6 +184,19 @@ export class SignalsService implements EventSubscriber {
     );
   }
 
+  /**
+   * Checks if there is active subscriptions to specific topic.
+   * This can be useful to skip heavy processing before publishing messages if there are no subscriptions.
+   * @param topic - topic to check for subscriptions
+   */
+  hasSubscribers(topic: string): boolean {
+    return (
+      [...this.connections.values()].find(conn =>
+        conn.subscriptions.has(topic),
+      ) !== undefined
+    );
+  }
+
   private async publishInternal(
     recipients: string[],
     topic: string,
@@ -229,7 +242,7 @@ export class SignalsService implements EventSubscriber {
     }
   }
 
-  async onEvent(params: EventParams<SignalsEventBrokerPayload>): Promise<void> {
+  async onEvent(params: EventParams<SignalEventBrokerPayload>): Promise<void> {
     const { eventPayload, metadata } = params;
     // Discard message from same server to prevent duplicate messages
     if (!metadata?.server || metadata.server === this.serverId) {
