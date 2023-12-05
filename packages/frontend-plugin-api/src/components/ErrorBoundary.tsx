@@ -20,7 +20,7 @@ import { CoreErrorBoundaryFallbackProps } from '../types';
 
 type ErrorBoundaryProps = PropsWithChildren<{
   plugin?: BackstagePlugin;
-  fallback: ComponentType<CoreErrorBoundaryFallbackProps>;
+  Fallback: ComponentType<CoreErrorBoundaryFallbackProps>;
 }>;
 type ErrorBoundaryState = { error?: Error };
 
@@ -41,7 +41,7 @@ export class ErrorBoundary extends Component<
 
   render() {
     const { error } = this.state;
-    const { plugin, children, fallback: Fallback } = this.props;
+    const { plugin, children, Fallback } = this.props;
 
     if (error) {
       return (

@@ -70,7 +70,7 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
 
   return (
     <Suspense fallback={<Progress />}>
-      <ErrorBoundary plugin={plugin} fallback={fallback}>
+      <ErrorBoundary plugin={plugin} Fallback={fallback}>
         <AnalyticsContext attributes={attributes}>
           <RouteTracker disableTracking={!routable}>{children}</RouteTracker>
         </AnalyticsContext>
