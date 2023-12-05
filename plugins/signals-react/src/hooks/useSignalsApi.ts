@@ -27,7 +27,7 @@ export const useSignalsApi = (
   const [subscription, setSubscription] = useState<null | string>(null);
   useEffect(() => {
     if (!subscription) {
-      const sub = signals.subscribe(onMessage, topic);
+      const sub = signals.subscribe(topic, onMessage);
       setSubscription(sub);
     }
   }, [subscription, signals, onMessage, topic]);

@@ -8,10 +8,7 @@ import { JsonObject } from '@backstage/types';
 
 // @public (undocumented)
 export type SignalsApi = {
-  subscribe(
-    onMessage: (message: JsonObject, topic?: string) => void,
-    topic: string,
-  ): string;
+  subscribe(topic: string, onMessage: (message: JsonObject) => void): string;
   unsubscribe(subscription: string): void;
 };
 

@@ -31,27 +31,41 @@ const WS_CLOSE_GOING_AWAY = 1001;
 
 /** @public */
 export class SignalsClient implements SignalsApi {
-  static readonly CONNECT_TIMEOUT_MS: number = 1000;
-  static readonly RECONNECT_TIMEOUT_MS: number = 5000;
+  static readonly DEFAULT_CONNECT_TIMEOUT_MS: number = 1000;
+  static readonly DEFAULT_RECONNECT_TIMEOUT_MS: number = 5000;
   private ws: WebSocket | null = null;
   private subscriptions: Map<string, Subscription> = new Map();
   private messageQueue: string[] = [];
-  private reconnectTimeout: any;
+  private reconnectTo: any;
 
   static create(options: {
     identity: IdentityApi;
     discoveryApi: DiscoveryApi;
+    connectTimeout?: number;
+    reconnectTimeout?: number;
   }) {
-    const { identity, discoveryApi } = options;
-    return new SignalsClient(identity, discoveryApi);
+    const {
+      identity,
+      discoveryApi,
+      connectTimeout = SignalsClient.DEFAULT_CONNECT_TIMEOUT_MS,
+      reconnectTimeout = SignalsClient.DEFAULT_RECONNECT_TIMEOUT_MS,
+    } = options;
+    return new SignalsClient(
+      identity,
+      discoveryApi,
+      connectTimeout,
+      reconnectTimeout,
+    );
   }
 
   private constructor(
     private identity: IdentityApi,
     private discoveryApi: DiscoveryApi,
+    private connectTimeout: number,
+    private reconnectTimeout: number,
   ) {}
 
-  subscribe(onMessage: (message: JsonObject) => void, topic: string): string {
+  subscribe(topic: string, onMessage: (message: JsonObject) => void): string {
     const subscriptionId = uuid();
     const exists = [...this.subscriptions.values()].find(
       sub => sub.topic === topic,
@@ -118,11 +132,11 @@ export class SignalsClient implements SignalsApi {
   }
 
   private async connect() {
-    if (this.ws) {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       return;
     }
 
-    const apiUrl = `${await this.discoveryApi.getBaseUrl('signals')}`;
+    const apiUrl = await this.discoveryApi.getBaseUrl('signals');
     const { token } = await this.identity.getCredentials();
 
     const url = new URL(apiUrl);
@@ -148,7 +162,7 @@ export class SignalsClient implements SignalsApi {
     while (
       this.ws &&
       this.ws.readyState !== WebSocket.OPEN &&
-      connectSleep < SignalsClient.CONNECT_TIMEOUT_MS
+      connectSleep < this.connectTimeout
     ) {
       await new Promise(r => setTimeout(r, 100));
       connectSleep += 100;
@@ -175,12 +189,12 @@ export class SignalsClient implements SignalsApi {
   }
 
   private reconnect() {
-    if (this.reconnectTimeout) {
-      clearTimeout(this.reconnectTimeout);
+    if (this.reconnectTo) {
+      clearTimeout(this.reconnectTo);
     }
 
-    this.reconnectTimeout = setTimeout(() => {
-      this.reconnectTimeout = null;
+    this.reconnectTo = setTimeout(() => {
+      this.reconnectTo = null;
       if (this.ws) {
         this.ws.close();
       }
@@ -188,13 +202,13 @@ export class SignalsClient implements SignalsApi {
       this.connect()
         .then(() => {
           // Resubscribe to existing topics in case we lost connection
-          for (const topic of this.subscriptions.keys()) {
-            this.send({ action: 'subscribe', topic });
+          for (const sub of this.subscriptions.values()) {
+            this.send({ action: 'subscribe', topic: sub.topic });
           }
         })
         .catch(() => {
           this.reconnect();
         });
-    }, SignalsClient.RECONNECT_TIMEOUT_MS);
+    }, this.reconnectTimeout);
   }
 }

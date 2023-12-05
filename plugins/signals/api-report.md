@@ -12,16 +12,18 @@ import { SignalsApi } from '@backstage/plugin-signals-react';
 // @public (undocumented)
 export class SignalsClient implements SignalsApi {
   // (undocumented)
-  static readonly CONNECT_TIMEOUT_MS: number;
-  // (undocumented)
   static create(options: {
     identity: IdentityApi;
     discoveryApi: DiscoveryApi;
+    connectTimeout?: number;
+    reconnectTimeout?: number;
   }): SignalsClient;
   // (undocumented)
-  static readonly RECONNECT_TIMEOUT_MS: number;
+  static readonly DEFAULT_CONNECT_TIMEOUT_MS: number;
   // (undocumented)
-  subscribe(onMessage: (message: JsonObject) => void, topic: string): string;
+  static readonly DEFAULT_RECONNECT_TIMEOUT_MS: number;
+  // (undocumented)
+  subscribe(topic: string, onMessage: (message: JsonObject) => void): string;
   // (undocumented)
   unsubscribe(subscription: string): void;
 }

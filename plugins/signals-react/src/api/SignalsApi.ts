@@ -23,10 +23,7 @@ export const signalsApiRef = createApiRef<SignalsApi>({
 
 /** @public */
 export type SignalsApi = {
-  subscribe(
-    onMessage: (message: JsonObject, topic?: string) => void,
-    topic: string,
-  ): string;
+  subscribe(topic: string, onMessage: (message: JsonObject) => void): string;
 
   unsubscribe(subscription: string): void;
 };
