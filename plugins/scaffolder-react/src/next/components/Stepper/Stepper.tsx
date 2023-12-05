@@ -228,7 +228,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             uiSchema={currentStep.uiSchema}
             onSubmit={handleNext}
             fields={fields}
-            showErrorList={false}
+            showErrorList="top"
             onChange={handleChange}
             experimental_defaultFormStateBehavior={{
               allOf: 'populateDefaults',
