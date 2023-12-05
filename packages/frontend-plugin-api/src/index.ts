@@ -28,6 +28,7 @@ export * from './icons';
 export * from './routing';
 export * from './schema';
 export * from './apis/system';
+export * from './translation';
 export * from './wiring';
 
 export type {

@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-export { createApiExtension } from './createApiExtension';
-export { createPageExtension } from './createPageExtension';
-export { createNavItemExtension } from './createNavItemExtension';
-export { createSignInPageExtension } from './createSignInPageExtension';
-export { createThemeExtension } from './createThemeExtension';
-export { createComponentExtension } from './createComponentExtension';
-export { createTranslationExtension } from './createTranslationExtension';
+export {
+  type TranslationMessages,
+  type TranslationMessagesOptions,
+  type TranslationResource,
+  type TranslationResourceOptions,
+  type TranslationRef,
+  type TranslationRefOptions,
+  createTranslationMessages,
+  createTranslationResource,
+  createTranslationRef,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
