@@ -51,16 +51,12 @@ async function generate(spec: string, outputDirectory: string) {
         '@backstage/repo-tools',
         'templates/typescript-backstage.yaml',
       ),
-      '-t',
-      resolvePackagePath(
-        '@backstage/repo-tools',
-        'templates/typescript-backstage',
-      ),
       '--generator-key',
       'v3.0',
     ],
     {
       maxBuffer: Number.MAX_VALUE,
+      cwd: resolvePackagePath('@backstage/repo-tools'),
       env: {
         ...process.env,
       },
