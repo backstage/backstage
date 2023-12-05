@@ -22,7 +22,6 @@ import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
-import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/core-plugin-api';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
@@ -68,7 +67,6 @@ import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
-import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -297,7 +295,7 @@ export type CommonAnalyticsContext = {
 };
 
 // @public (undocumented)
-export type ComponentRef<T> = {
+export type ComponentRef<T extends {} = {}> = {
   id: string;
   T: T;
 };
@@ -305,7 +303,7 @@ export type ComponentRef<T> = {
 // @public
 export interface ComponentsApi {
   // (undocumented)
-  getComponent<T>(ref: ComponentRef<T>): T;
+  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T>;
 }
 
 // @public
@@ -332,29 +330,18 @@ export interface ConfigurableExtensionDataRef<
 }
 
 // @public (undocumented)
-export type CoreBootErrorPageComponent = ComponentType<
-  PropsWithChildren<{
-    step: 'load-config' | 'load-chunk';
-    error: Error;
-  }>
->;
-
-// @public (undocumented)
-export const coreComponentsRefs: {
-  progress: ComponentRef<CoreProgressComponent>;
-  bootErrorPage: ComponentRef<CoreBootErrorPageComponent>;
-  notFoundErrorPage: ComponentRef<CoreNotFoundErrorPageComponent>;
-  errorBoundaryFallback: ComponentRef<CoreErrorBoundaryFallbackComponent>;
+export const coreComponentRefs: {
+  progress: ComponentRef<CoreProgressProps>;
+  notFoundErrorPage: ComponentRef<CoreNotFoundErrorPageProps>;
+  errorBoundaryFallback: ComponentRef<CoreErrorBoundaryFallbackProps>;
 };
 
 // @public (undocumented)
-export type CoreErrorBoundaryFallbackComponent = ComponentType<
-  PropsWithChildren<{
-    plugin?: BackstagePlugin_2;
-    error: Error;
-    resetError: () => void;
-  }>
->;
+export type CoreErrorBoundaryFallbackProps = {
+  plugin?: BackstagePlugin;
+  error: Error;
+  resetError: () => void;
+};
 
 // @public (undocumented)
 export const coreExtensionData: {
@@ -367,20 +354,20 @@ export const coreExtensionData: {
   logoElements: ConfigurableExtensionDataRef<LogoElements, {}>;
   component: ConfigurableExtensionDataRef<
     {
-      ref: ComponentRef<ComponentType<any>>;
-      impl: ComponentType<any>;
+      ref: ComponentRef;
+      impl: ComponentType;
     },
     {}
   >;
 };
 
 // @public (undocumented)
-export type CoreNotFoundErrorPageComponent = ComponentType<
-  PropsWithChildren<{}>
->;
+export type CoreNotFoundErrorPageProps = {
+  children?: ReactNode;
+};
 
 // @public (undocumented)
-export type CoreProgressComponent = ComponentType<PropsWithChildren<{}>>;
+export type CoreProgressProps = {};
 
 // @public (undocumented)
 export function createApiExtension<
@@ -410,11 +397,11 @@ export { createApiRef };
 
 // @public (undocumented)
 export function createComponentExtension<
-  TRef extends ComponentRef<any>,
+  TProps extends {},
   TConfig extends {},
   TInputs extends AnyExtensionInputMap,
 >(options: {
-  ref: TRef;
+  ref: ComponentRef<TProps>;
   name?: string;
   disabled?: boolean;
   inputs?: TInputs;
@@ -424,13 +411,13 @@ export function createComponentExtension<
         lazy: (values: {
           config: TConfig;
           inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-        }) => Promise<TRef['T']>;
+        }) => Promise<ComponentType<TProps>>;
       }
     | {
         sync: (values: {
           config: TConfig;
           inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-        }) => TRef['T'];
+        }) => ComponentType<TProps>;
       };
 }): ExtensionDefinition<TConfig>;
 
@@ -1004,6 +991,11 @@ export function useAnalytics(): AnalyticsTracker;
 export { useApi };
 
 export { useApiHolder };
+
+// @public
+export function useComponentRef<T extends {}>(
+  ref: ComponentRef<T>,
+): ComponentType<T>;
 
 // @public
 export function useRouteRef<
