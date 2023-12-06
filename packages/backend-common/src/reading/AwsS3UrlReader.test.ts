@@ -54,6 +54,39 @@ describe('parseUrl', () => {
       region: 'us-east-1',
     });
     expect(
+      parseUrl('https://s3.amazonaws.com.cn/my.bucket-3/a/puppy.jpg', {
+        host: 'amazonaws.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-east-1',
+    });
+    expect(
+      parseUrl(
+        'https://ec-backstage-staging.s3.cn-north-1.amazonaws.com.cn/payments-prod-oas30.json',
+        {
+          host: 'amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'payments-prod-oas30.json',
+      bucket: 'ec-backstage-staging',
+      region: 'cn-north-1',
+    });
+    expect(
+      parseUrl(
+        'https://ec-backstage-staging.s3.cn-north-1.amazonaws.com.cn/payments-prod-oas30.json',
+        {
+          host: 'amazonaws.com.cn',
+        },
+      ),
+    ).toEqual({
+      path: 'payments-prod-oas30.json',
+      bucket: 'ec-backstage-staging',
+      region: 'cn-north-1',
+    });
+    expect(
       parseUrl('https://s3.us-west-2.amazonaws.com/my.bucket-3/a/puppy.jpg', {
         host: 'amazonaws.com',
       }),
