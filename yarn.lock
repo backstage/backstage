@@ -8582,6 +8582,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-azure@workspace:^, @backstage/plugin-scaffolder-backend-module-azure@workspace:plugins/scaffolder-backend-module-azure":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-azure@workspace:plugins/scaffolder-backend-module-azure"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    azure-devops-node-api: ^11.0.1
+    yaml: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:^, @backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    yaml: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:^, @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:plugins/scaffolder-backend-module-confluence-to-markdown":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:plugins/scaffolder-backend-module-confluence-to-markdown"
@@ -8626,18 +8658,61 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab":
+"@backstage/plugin-scaffolder-backend-module-gerrit@workspace:^, @backstage/plugin-scaffolder-backend-module-gerrit@workspace:plugins/scaffolder-backend-module-gerrit":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-gerrit@workspace:plugins/scaffolder-backend-module-gerrit"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    yaml: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-scaffolder-backend-module-github@workspace:^, @backstage/plugin-scaffolder-backend-module-github@workspace:plugins/scaffolder-backend-module-github":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-github@workspace:plugins/scaffolder-backend-module-github"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@octokit/webhooks": ^10.0.0
+    "@types/libsodium-wrappers": ^0.7.10
+    fs-extra: 10.1.0
+    jest-when: ^3.1.0
+    jsonschema: ^1.2.6
+    libsodium-wrappers: ^0.7.11
+    octokit: ^2.0.0
+    octokit-plugin-create-pull-request: ^3.10.0
+    winston: ^3.2.1
+    yaml: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-scaffolder-backend-module-gitlab@workspace:^, @backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
-    "@gitbeaker/node": ^35.8.0
+    "@gitbeaker/core": ^35.8.0
+    "@gitbeaker/node": ^35.1.0
     yaml: ^2.0.0
     zod: ^3.21.4
   languageName: unknown
@@ -8700,7 +8775,6 @@ __metadata:
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -8714,17 +8788,18 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-azure": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-bitbucket": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-gerrit": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-github": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-gitlab": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@gitbeaker/core": ^35.6.0
-    "@gitbeaker/node": ^35.1.0
-    "@octokit/webhooks": ^10.0.0
     "@types/command-exists": ^1.2.0
     "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.1
     "@types/git-url-parse": ^9.0.0
-    "@types/libsodium-wrappers": ^0.7.10
     "@types/luxon": ^3.0.0
     "@types/nunjucks": ^3.1.4
     "@types/supertest": ^2.0.8
@@ -8745,15 +8820,12 @@ __metadata:
     jest-when: ^3.1.0
     jsonschema: ^1.2.6
     knex: ^3.0.0
-    libsodium-wrappers: ^0.7.11
     lodash: ^4.17.21
     luxon: ^3.0.0
     morgan: ^1.10.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     nunjucks: ^3.2.3
-    octokit: ^2.0.0
-    octokit-plugin-create-pull-request: ^3.10.0
     p-limit: ^3.1.0
     p-queue: ^6.6.2
     prom-client: ^14.0.1
@@ -8785,6 +8857,7 @@ __metadata:
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -8793,7 +8866,9 @@ __metadata:
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/types": "workspace:^"
     fs-extra: 10.1.0
+    globby: ^11.0.0
     jsonschema: ^1.2.6
+    p-limit: ^3.1.0
     winston: ^3.2.1
     zod: ^3.21.4
     zod-to-json-schema: ^3.20.4
@@ -11526,7 +11601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/core@npm:^35.6.0, @gitbeaker/core@npm:^35.8.1":
+"@gitbeaker/core@npm:^35.6.0, @gitbeaker/core@npm:^35.8.0, @gitbeaker/core@npm:^35.8.1":
   version: 35.8.1
   resolution: "@gitbeaker/core@npm:35.8.1"
   dependencies:
@@ -11540,7 +11615,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/node@npm:^35.1.0, @gitbeaker/node@npm:^35.8.0":
+"@gitbeaker/node@npm:^35.1.0":
   version: 35.8.1
   resolution: "@gitbeaker/node@npm:35.8.1"
   dependencies:
