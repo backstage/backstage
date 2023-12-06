@@ -23,6 +23,7 @@ import { JsonObject } from '@backstage/types';
 export type TemplateGroupFilter = {
   title?: React.ReactNode;
   filter: (entity: TemplateEntityV1beta3) => boolean;
+  sort?: (a: TemplateEntityV1beta3, b: TemplateEntityV1beta3) => number;
 };
 
 /**
