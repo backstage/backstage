@@ -19,15 +19,18 @@ import {
   DefaultAzureDevOpsCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { initRepoAndPush } from '../helpers';
+import {
+  initRepoAndPush,
+  getRepoSourceDirectory,
+  parseRepoUrl,
+  createTemplateAction,
+} from '@backstage/plugin-scaffolder-node';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {
   getBearerHandler,
   getPersonalAccessTokenHandler,
   WebApi,
 } from 'azure-devops-node-api';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 import { examples } from './azure.examples';
 
