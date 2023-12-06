@@ -21,8 +21,10 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Octokit } from 'octokit';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { parseRepoUrl } from '../publish/util';
+import {
+  createTemplateAction,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 import { getOctokitOptions, initRepoPushAndProtect } from './helpers';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';

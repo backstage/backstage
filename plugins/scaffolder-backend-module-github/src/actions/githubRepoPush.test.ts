@@ -35,9 +35,30 @@ jest.mock('@backstage/backend-common', () => ({
   getVoidLogger: jest.requireActual('@backstage/backend-common').getVoidLogger,
 }));
 
-jest.mock('../helpers');
+jest.mock('./gitHelpers', () => {
+  return {
+    ...jest.requireActual('./gitHelpers'),
+    entityRefToName: jest.fn(),
+    enableBranchProtectionOnDefaultRepoBranch: jest.fn(),
+  };
+});
 
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+jest.mock('@backstage/plugin-scaffolder-node', () => {
+  return {
+    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
+    initRepoAndPush: jest.fn().mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    }),
+    commitAndPushRepo: jest.fn().mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    }),
+  };
+});
+
+import {
+  TemplateAction,
+  initRepoAndPush,
+} from '@backstage/plugin-scaffolder-node';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -46,10 +67,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { PassThrough } from 'stream';
-import {
-  enableBranchProtectionOnDefaultRepoBranch,
-  initRepoAndPush,
-} from '../helpers';
+import { enableBranchProtectionOnDefaultRepoBranch } from './gitHelpers';
 import { createGithubRepoPushAction } from './githubRepoPush';
 
 const initRepoAndPushMocked = initRepoAndPush as jest.Mock<

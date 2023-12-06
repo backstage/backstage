@@ -24,13 +24,18 @@ import {
 import { OctokitOptions } from '@octokit/core/dist-types/types';
 import { Octokit } from 'octokit';
 import { Logger } from 'winston';
+
+import {
+  getRepoSourceDirectory,
+  initRepoAndPush,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
+
+import Sodium from 'libsodium-wrappers';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
-  initRepoAndPush,
-} from '../helpers';
-import { getRepoSourceDirectory, parseRepoUrl } from '../publish/util';
-import { entityRefToName } from '../../builtin/helpers';
-import Sodium from 'libsodium-wrappers';
+  entityRefToName,
+} from './gitHelpers';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -421,4 +426,13 @@ async function validateAccessTeam(client: Octokit, access: string) {
       throw new NotFoundError(message);
     }
   }
+}
+
+export function getGitCommitMessage(
+  gitCommitMessage: string | undefined,
+  config: Config,
+): string | undefined {
+  return gitCommitMessage
+    ? gitCommitMessage
+    : config.getOptionalString('scaffolder.defaultCommitMessage');
 }
