@@ -18,8 +18,11 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Gitlab } from '@gitbeaker/node';
-import { initRepoAndPush } from '../helpers';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
+import {
+  initRepoAndPush,
+  getRepoSourceDirectory,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 import { examples } from './gitlab.examples';
 
