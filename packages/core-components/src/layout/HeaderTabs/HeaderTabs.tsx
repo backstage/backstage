@@ -81,14 +81,11 @@ export function HeaderTabs(props: HeaderTabsProps) {
   const styles = useStyles();
 
   const handleChange = useCallback(
-    (e: React.ChangeEvent<{}>, index: number) => {
+    (_: React.ChangeEvent<{}>, index: number) => {
       if (selectedIndex === undefined) {
         setSelectedTab(index);
       }
-
-      if (e.type === 'focus') {
-        onChange?.(index);
-      }
+      if (onChange) onChange(index);
     },
     [selectedIndex, onChange],
   );
@@ -102,7 +99,6 @@ export function HeaderTabs(props: HeaderTabsProps) {
   return (
     <Box className={styles.tabsWrapper}>
       <Tabs
-        selectionFollowsFocus
         indicatorColor="primary"
         textColor="inherit"
         variant="scrollable"
