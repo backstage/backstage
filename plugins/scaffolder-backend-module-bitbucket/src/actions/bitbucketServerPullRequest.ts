@@ -19,9 +19,11 @@ import {
   getBitbucketServerRequestOptions,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 import fetch, { RequestInit, Response } from 'node-fetch';
-import { parseRepoUrl } from './util';
 import { Config } from '@backstage/config';
 
 const createPullRequest = async (opts: {

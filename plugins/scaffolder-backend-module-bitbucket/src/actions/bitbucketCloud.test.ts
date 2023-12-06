@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-jest.mock('../helpers', () => {
+jest.mock('@backstage/plugin-scaffolder-node', () => {
   return {
+    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
     initRepoAndPush: jest.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
@@ -33,7 +34,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
-import { initRepoAndPush } from '../helpers';
+import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 
 describe('publish:bitbucketCloud', () => {
   const config = new ConfigReader({
