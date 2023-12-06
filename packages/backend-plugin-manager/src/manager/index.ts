@@ -25,14 +25,19 @@ export type {
   NewBackendPluginInstaller,
   LegacyBackendPluginInstaller,
   LegacyPluginEnvironment,
+  DynamicPluginProvider,
+  FrontendPluginProvider,
   BackendPluginProvider,
 } from './types';
 
 export {
-  PluginManager,
+  DynamicPluginManager,
   dynamicPluginsFeatureDiscoveryServiceFactory,
   dynamicPluginsServiceFactory,
   dynamicPluginsServiceRef,
 } from './plugin-manager';
 
-export type { DynamicPluginsFactoryOptions } from './plugin-manager';
+export type {
+  DynamicPluginManagerOptions,
+  DynamicPluginsFactoryOptions,
+} from './plugin-manager';

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginManager, dynamicPluginsServiceFactory } from './plugin-manager';
+import {
+  DynamicPluginManager,
+  dynamicPluginsServiceFactory,
+} from './plugin-manager';
 import {
   BackendFeature,
   coreServices,
@@ -462,12 +465,16 @@ describe('backend-plugin-manager', () => {
       mockDir.setContent(mockedFiles);
 
       const logger = new MockedLogger();
-      const pluginManager = new (PluginManager as any)(logger, [plugin], {
+      const pluginManager = new (DynamicPluginManager as any)(
         logger,
-        async bootstrap(_: string, __: string[]): Promise<void> {},
-        load: async (packagePath: string) =>
-          await require(/* webpackIgnore: true */ packagePath),
-      });
+        [plugin],
+        {
+          logger,
+          async bootstrap(_: string, __: string[]): Promise<void> {},
+          load: async (packagePath: string) =>
+            await require(/* webpackIgnore: true */ packagePath),
+        },
+      );
 
       const loadedPlugins: DynamicPlugin[] = await pluginManager.loadPlugins();
 
@@ -483,7 +490,10 @@ describe('backend-plugin-manager', () => {
   describe('backendPlugins', () => {
     it('should return only backend plugins and modules', async () => {
       const logger = new MockedLogger();
-      const pluginManager = new (PluginManager as any)(logger, '', []);
+      const pluginManager = new (DynamicPluginManager as any)(
+        logger,
+        [],
+      ) as DynamicPluginManager;
       const plugins: BaseDynamicPlugin[] = [
         {
           name: 'a-frontend-plugin',
@@ -504,7 +514,7 @@ describe('backend-plugin-manager', () => {
           version: '0.0.0',
         },
       ];
-      pluginManager.plugins = plugins;
+      (pluginManager as any)._plugins = plugins;
       expect(pluginManager.backendPlugins()).toEqual([
         {
           name: 'a-backend-plugin',
@@ -516,6 +526,57 @@ describe('backend-plugin-manager', () => {
           name: 'a-backend-module',
           platform: 'node',
           role: 'backend-plugin-module',
+          version: '0.0.0',
+        },
+      ]);
+    });
+  });
+
+  describe('frontendPlugins', () => {
+    it('should return only frontend plugins', async () => {
+      const logger = new MockedLogger();
+      const pluginManager = new (DynamicPluginManager as any)(
+        logger,
+        [],
+      ) as DynamicPluginManager;
+      const plugins: BaseDynamicPlugin[] = [
+        {
+          name: 'a-frontend-plugin',
+          platform: 'web',
+          role: 'frontend-plugin',
+          version: '0.0.0',
+        },
+        {
+          name: 'a-frontend-module',
+          platform: 'web',
+          role: 'frontend-plugin-module',
+          version: '0.0.0',
+        },
+        {
+          name: 'a-backend-plugin',
+          platform: 'node',
+          role: 'backend-plugin',
+          version: '0.0.0',
+        },
+        {
+          name: 'a-backend-module',
+          platform: 'node',
+          role: 'backend-plugin-module',
+          version: '0.0.0',
+        },
+      ];
+      (pluginManager as any)._plugins = plugins;
+      expect(pluginManager.frontendPlugins()).toEqual([
+        {
+          name: 'a-frontend-plugin',
+          platform: 'web',
+          role: 'frontend-plugin',
+          version: '0.0.0',
+        },
+        {
+          name: 'a-frontend-module',
+          platform: 'web',
+          role: 'frontend-plugin-module',
           version: '0.0.0',
         },
       ]);
@@ -547,27 +608,29 @@ describe('backend-plugin-manager', () => {
         'a-dynamic-plugin': {},
       });
 
-      const fromConfigSpier = jest.spyOn(PluginManager, 'fromConfig');
+      const fromConfigSpier = jest.spyOn(DynamicPluginManager, 'create');
       const applyConfigSpier = jest
         .spyOn(PluginScanner.prototype as any, 'applyConfig')
         .mockImplementation(() => {});
       const scanRootSpier = jest
         .spyOn(PluginScanner.prototype, 'scanRoot')
-        .mockImplementation(async () => [
-          {
-            location: url.pathToFileURL(
-              mockDir.resolve('dynamic-plugins-root/a-dynamic-plugin'),
-            ),
-            manifest: {
-              name: 'test',
-              version: '0.0.0',
-              main: 'dist/index.cjs.js',
-              backstage: {
-                role: 'backend-plugin',
+        .mockImplementation(async () => ({
+          packages: [
+            {
+              location: url.pathToFileURL(
+                mockDir.resolve('dynamic-plugins-root/a-dynamic-plugin'),
+              ),
+              manifest: {
+                name: 'test',
+                version: '0.0.0',
+                main: 'dist/index.cjs.js',
+                backstage: {
+                  role: 'backend-plugin',
+                },
               },
             },
-          },
-        ]);
+          ],
+        }));
       const mockedModuleLoader = {
         logger,
         bootstrap: jest.fn(),

@@ -206,11 +206,11 @@ Please add '${mockDir.resolve(
       const logger = new MockedLogger();
       const backstageRoot = tc.backstageRoot ? tc.backstageRoot : '';
       function toTest(): PluginScanner {
-        return new PluginScanner(
-          new ConfigReader(tc.config),
+        return PluginScanner.create({
+          config: new ConfigReader(tc.config),
           logger,
           backstageRoot,
-        );
+        });
       }
       if (tc.fileSystem) {
         mockDir.setContent(tc.fileSystem);
@@ -609,8 +609,8 @@ Please add '${mockDir.resolve(
       const logger = new MockedLogger();
       const backstageRoot = mockDir.resolve('backstageRoot');
       async function toTest(): Promise<ScannedPluginPackage[]> {
-        const pluginScanner = new PluginScanner(
-          new ConfigReader(
+        const pluginScanner = PluginScanner.create({
+          config: new ConfigReader(
             tc.fileSystem
               ? {
                   dynamicPlugins: {
@@ -621,9 +621,9 @@ Please add '${mockDir.resolve(
           ),
           logger,
           backstageRoot,
-          tc.preferAlpha === undefined ? false : tc.preferAlpha,
-        );
-        return await pluginScanner.scanRoot();
+          preferAlpha: tc.preferAlpha,
+        });
+        return (await pluginScanner.scanRoot()).packages;
       }
       if (tc.fileSystem) {
         mockDir.setContent(tc.fileSystem);

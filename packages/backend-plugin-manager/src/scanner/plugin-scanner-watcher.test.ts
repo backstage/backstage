@@ -64,22 +64,23 @@ describe('plugin-scanner', () => {
           unsubscribe: configUnsubscribe,
         };
       };
-      const pluginScanner = new PluginScanner(
+      const pluginScanner = PluginScanner.create({
         config,
         logger,
-        backstageRootDirectory,
-        false,
-      );
+        backstageRoot: backstageRootDirectory,
+        preferAlpha: false,
+      });
       await pluginScanner.trackChanges();
 
       expect(onConfigChange).toBeDefined();
 
-      let scannedPlugins: ScannedPluginPackage[] =
-        await pluginScanner.scanRoot();
+      let scannedPlugins: ScannedPluginPackage[] = (
+        await pluginScanner.scanRoot()
+      ).packages;
       expect(scannedPlugins).toEqual([]);
 
       const rootDirectorySubscriber = jest.fn(async () => {
-        scannedPlugins = await pluginScanner.scanRoot();
+        scannedPlugins = (await pluginScanner.scanRoot()).packages;
       });
       pluginScanner.subscribeToRootDirectoryChange(rootDirectorySubscriber);
 

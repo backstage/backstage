@@ -70,8 +70,24 @@ export type LegacyPluginEnvironment = {
 /**
  * @public
  */
+export interface DynamicPluginProvider
+  extends FrontendPluginProvider,
+    BackendPluginProvider {
+  plugins(): DynamicPlugin[];
+}
+
+/**
+ * @public
+ */
 export interface BackendPluginProvider {
   backendPlugins(): BackendDynamicPlugin[];
+}
+
+/**
+ * @public
+ */
+export interface FrontendPluginProvider {
+  frontendPlugins(): FrontendDynamicPlugin[];
 }
 
 /**
