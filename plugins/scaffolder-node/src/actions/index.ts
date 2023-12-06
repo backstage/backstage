@@ -25,3 +25,5 @@ export {
 } from './executeShellCommand';
 export { fetchContents, fetchFile } from './fetch';
 export { type ActionContext, type TemplateAction } from './types';
+export { initRepoAndPush, commitAndPushRepo } from './repoHelpers';
+export { parseRepoUrl, getRepoSourceDirectory } from './util';
