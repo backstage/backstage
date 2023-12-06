@@ -19,6 +19,7 @@ import { GroupsDiagram } from './GroupsDiagram';
 import {
   Content,
   ContentHeader,
+  DependencyGraphTypes,
   SupportButton,
 } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core/styles';
@@ -34,7 +35,10 @@ const useStyles = makeStyles(
   { name: 'ExploreGroupsContent' },
 );
 
-export const GroupsExplorerContent = (props: { title?: string }) => {
+export const GroupsExplorerContent = (props: {
+  title?: string;
+  direction?: DependencyGraphTypes.Direction;
+}) => {
   const classes = useStyles();
 
   return (
@@ -42,7 +46,7 @@ export const GroupsExplorerContent = (props: { title?: string }) => {
       <ContentHeader title={props.title ?? 'Groups'}>
         <SupportButton>Explore your groups.</SupportButton>
       </ContentHeader>
-      <GroupsDiagram />
+      <GroupsDiagram direction={props.direction} />
     </Content>
   );
 };
