@@ -15,21 +15,21 @@
  */
 
 import path from 'path';
-import { parseRepoUrl } from './util';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  parseRepoUrl,
+  SerializedFile,
+  serializeDirectoryContents,
+} from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { InputError, CustomErrorBase } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { getOctokitOptions } from '../github/helpers';
-import {
-  SerializedFile,
-  serializeDirectoryContents,
-} from '../../../../lib/files';
+import { getOctokitOptions } from './helpers';
 import { Logger } from 'winston';
 import { examples } from './githubPullRequest.examples';
 

@@ -16,7 +16,12 @@
 
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
-jest.mock('../helpers');
+jest.mock('./gitHelpers', () => {
+  return {
+    ...jest.requireActual('./gitHelpers'),
+    entityRefToName: jest.fn(),
+  };
+});
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
@@ -27,7 +32,7 @@ import {
 } from '@backstage/integration';
 import { PassThrough } from 'stream';
 import { createGithubRepoCreateAction } from './githubRepoCreate';
-import { entityRefToName } from '../helpers';
+import { entityRefToName } from './gitHelpers';
 import yaml from 'yaml';
 import { examples } from './githubRepoCreate.examples';
 

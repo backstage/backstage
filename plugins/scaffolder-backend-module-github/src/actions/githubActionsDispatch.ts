@@ -19,9 +19,11 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
-import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions } from './helpers';
 import { examples } from './githubActionsDispatch.examples';
 

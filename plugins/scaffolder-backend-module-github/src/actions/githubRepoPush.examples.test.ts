@@ -13,7 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+jest.mock('@backstage/plugin-scaffolder-node', () => {
+  return {
+    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
+    initRepoAndPush: jest.fn().mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    }),
+    commitAndPushRepo: jest.fn().mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    }),
+  };
+});
+
+import {
+  TemplateAction,
+  initRepoAndPush,
+} from '@backstage/plugin-scaffolder-node';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -22,7 +37,6 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { PassThrough } from 'stream';
-import { initRepoAndPush } from '../helpers';
 import { createGithubRepoPushAction } from './githubRepoPush';
 import { examples } from './githubRepoPush.examples';
 import yaml from 'yaml';
@@ -48,7 +62,12 @@ jest.mock('@backstage/backend-common', () => ({
   getVoidLogger: jest.requireActual('@backstage/backend-common').getVoidLogger,
 }));
 
-jest.mock('../helpers');
+jest.mock('./helpers', () => {
+  return {
+    ...jest.requireActual('./helpers'),
+    entityRefToName: jest.fn(),
+  };
+});
 
 const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
   Promise<{ commitHash: string }>
@@ -98,6 +117,7 @@ describe('github:repo:push examples', () => {
 
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+
     action = createGithubRepoPushAction({
       integrations,
       config,
