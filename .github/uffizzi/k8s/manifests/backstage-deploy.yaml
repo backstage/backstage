@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backstage
+  labels:
+    enterprise.uffizzi.com/wake_on_http: "true"
 spec:
   replicas: 1
   selector:
