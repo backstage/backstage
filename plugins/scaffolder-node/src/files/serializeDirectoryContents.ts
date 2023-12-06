@@ -41,6 +41,9 @@ async function asyncFilter<T>(
   return array.filter((_value, index) => filterMap[index]);
 }
 
+/**
+ * @public
+ */
 export async function serializeDirectoryContents(
   sourcePath: string,
   options?: {

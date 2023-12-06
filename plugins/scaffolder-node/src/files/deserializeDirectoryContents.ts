@@ -25,7 +25,7 @@ import { SerializedFile } from './types';
  * This method uses `resolveSafeChildPath` to make sure that files are
  * not written outside of the target directory.
  *
- * @internal
+ * @public
  */
 export async function deserializeDirectoryContents(
   targetPath: string,

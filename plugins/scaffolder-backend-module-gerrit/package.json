@@ -23,10 +23,10 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/plugin-scaffolder-node": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
-    "@backstage/config": "workspace:^",
+    "@backstage/plugin-scaffolder-node": "workspace:^",
     "node-fetch": "^2.6.7",
     "yaml": "^2.0.0"
   },

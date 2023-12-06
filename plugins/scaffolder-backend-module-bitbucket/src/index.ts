@@ -15,7 +15,7 @@
  */
 
 /**
- * The bitbucket module for @backstage/plugin-scaffolder-backend.
+ * A module for the scaffolder backend that lets you interact with bitbucket
  *
  * @packageDocumentation
  */
