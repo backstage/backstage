@@ -16,16 +16,24 @@
 
 import React from 'react';
 import * as statefulsets from '../../__fixtures__/2-statefulsets.json';
-import { renderInTestApp, textContentMatcher } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  TestApiProvider,
+  textContentMatcher,
+} from '@backstage/test-utils';
 import { StatefulSetDrawer } from './StatefulSetDrawer';
+import { kubernetesClusterLinkFormatterApiRef } from '../../api';
 
 describe('StatefulSetDrawer', () => {
   it('should render statefulset drawer', async () => {
     const { getByText, getAllByText } = await renderInTestApp(
-      <StatefulSetDrawer
-        statefulset={(statefulsets as any).statefulsets[0]}
-        expanded
-      />,
+      <TestApiProvider apis={[[kubernetesClusterLinkFormatterApiRef, {}]]}>
+        <StatefulSetDrawer
+          statefulset={(statefulsets as any).statefulsets[0]}
+          expanded
+        />
+        ,
+      </TestApiProvider>,
     );
 
     expect(getAllByText('dice-roller')).toHaveLength(4);
@@ -55,13 +63,16 @@ describe('StatefulSetDrawer', () => {
   it('should render statefulset drawer without namespace', async () => {
     const statefulset = (statefulsets as any).statefulsets[0];
     const { queryByText } = await renderInTestApp(
-      <StatefulSetDrawer
-        statefulset={{
-          ...statefulset,
-          metadata: { ...statefulset.metadata, namespace: undefined },
-        }}
-        expanded
-      />,
+      <TestApiProvider apis={[[kubernetesClusterLinkFormatterApiRef, {}]]}>
+        <StatefulSetDrawer
+          statefulset={{
+            ...statefulset,
+            metadata: { ...statefulset.metadata, namespace: undefined },
+          }}
+          expanded
+        />
+        ,
+      </TestApiProvider>,
     );
 
     expect(queryByText('namespace: default')).not.toBeInTheDocument();

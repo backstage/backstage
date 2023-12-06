@@ -15,13 +15,23 @@
  */
 
 import { FlatRoutes } from '@backstage/core-app-api';
+import {
+  CatalogEntityPage,
+  CatalogIndexPage,
+  EntityAboutCard,
+  EntityLayout,
+  EntitySwitch,
+  isKind,
+} from '@backstage/plugin-catalog';
 import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
-import React from 'react';
-import { Route } from 'react-router-dom';
+import React, { Fragment } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
 import { collectLegacyRoutes } from './collectLegacyRoutes';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalBackstagePlugin } from '../../frontend-plugin-api/src/wiring/createPlugin';
 
 describe('collectLegacyRoutes', () => {
   it('should collect legacy routes', () => {
@@ -37,7 +47,7 @@ describe('collectLegacyRoutes', () => {
     expect(
       collected.map(p => ({
         id: p.id,
-        extensions: p.extensions.map(e => ({
+        extensions: toInternalBackstagePlugin(p).extensions.map(e => ({
           id: e.id,
           attachTo: e.attachTo,
           disabled: e.disabled,
@@ -49,13 +59,13 @@ describe('collectLegacyRoutes', () => {
         id: 'score-card',
         extensions: [
           {
-            id: 'plugin.score-card.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:score-card',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'score-board' },
           },
           {
-            id: 'apis.plugin.scoringdata.service',
+            id: 'api:plugin.scoringdata.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
@@ -65,13 +75,13 @@ describe('collectLegacyRoutes', () => {
         id: 'stackstorm',
         extensions: [
           {
-            id: 'plugin.stackstorm.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:stackstorm',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'stackstorm' },
           },
           {
-            id: 'apis.plugin.stackstorm.service',
+            id: 'api:plugin.stackstorm.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },
@@ -81,19 +91,149 @@ describe('collectLegacyRoutes', () => {
         id: 'puppetDb',
         extensions: [
           {
-            id: 'plugin.puppetDb.page',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:puppetDb',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
-            id: 'plugin.puppetDb.page2',
-            attachTo: { id: 'core.routes', input: 'routes' },
+            id: 'page:puppetDb/1',
+            attachTo: { id: 'core/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
-            id: 'apis.plugin.puppetdb.service',
+            id: 'api:plugin.puppetdb.service',
+            attachTo: { id: 'core', input: 'apis' },
+            disabled: false,
+          },
+        ],
+      },
+    ]);
+  });
+
+  it('supports recursion into children, including passing through fragments', () => {
+    const collected = collectLegacyRoutes(
+      <FlatRoutes>
+        <Route path="/catalog" element={<CatalogIndexPage />} />
+        <Route
+          path="/catalog/:namespace/:kind/:name"
+          element={<CatalogEntityPage />}
+        >
+          <EntitySwitch>
+            <EntitySwitch.Case
+              if={isKind('component')}
+              children={
+                <EntityLayout>
+                  <EntityAboutCard variant="gridItem" />
+                </EntityLayout>
+              }
+            />
+            <EntitySwitch.Case>
+              <EntityLayout>
+                <EntityLayout.Route path="/" title="Overview">
+                  <Fragment>
+                    <Routes>
+                      <Route path="/subthing">
+                        <ScoreBoardPage />
+                      </Route>
+                    </Routes>
+                  </Fragment>
+                </EntityLayout.Route>
+              </EntityLayout>
+            </EntitySwitch.Case>
+          </EntitySwitch>
+        </Route>
+      </FlatRoutes>,
+    );
+
+    expect(
+      collected.map(p => ({
+        id: p.id,
+        extensions: toInternalBackstagePlugin(p).extensions.map(e => ({
+          id: e.id,
+          attachTo: e.attachTo,
+          disabled: e.disabled,
+          defaultConfig: e.configSchema?.parse({}),
+        })),
+      })),
+    ).toEqual([
+      {
+        id: 'catalog',
+        extensions: [
+          {
+            id: 'page:catalog',
+            attachTo: { id: 'core/routes', input: 'routes' },
+            disabled: false,
+            defaultConfig: { path: 'catalog' },
+          },
+          {
+            id: 'page:catalog/1',
+            attachTo: { id: 'core/routes', input: 'routes' },
+            defaultConfig: { path: 'catalog/:namespace/:kind/:name' },
+            disabled: false,
+          },
+          {
+            id: 'routing-shim:catalog/2',
+            attachTo: {
+              id: 'page:catalog/1',
+              input: 'childRoutingShims',
+            },
+            defaultConfig: undefined,
+            disabled: false,
+          },
+          {
+            id: 'routing-shim:catalog/3',
+            attachTo: {
+              id: 'routing-shim:catalog/2',
+              input: 'childRoutingShims',
+            },
+            defaultConfig: undefined,
+            disabled: false,
+          },
+          {
+            id: 'routing-shim:catalog/4',
+            attachTo: {
+              id: 'routing-shim:catalog/3',
+              input: 'childRoutingShims',
+            },
+            defaultConfig: undefined,
+            disabled: false,
+          },
+          {
+            id: 'api:plugin.catalog.service',
+            attachTo: {
+              id: 'core',
+              input: 'apis',
+            },
+            defaultConfig: undefined,
+            disabled: false,
+          },
+          {
+            id: 'api:catalog-react.starred-entities',
+            attachTo: {
+              id: 'core',
+              input: 'apis',
+            },
+            defaultConfig: undefined,
+            disabled: false,
+          },
+          {
+            id: 'api:plugin.catalog.entity-presentation',
+            attachTo: {
+              id: 'core',
+              input: 'apis',
+            },
+            defaultConfig: undefined,
+            disabled: false,
+          },
+        ],
+      },
+      {
+        id: 'score-card',
+        extensions: [
+          {
+            id: 'api:plugin.scoringdata.service',
             attachTo: { id: 'core', input: 'apis' },
             disabled: false,
           },

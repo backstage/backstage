@@ -173,3 +173,8 @@ export type BackstageOverrides = Overrides & {
     StyleRules<BackstageComponentsNameToClassKey[Name]>
   >;
 };
+
+declare module '@backstage/theme' {
+  interface OverrideComponentNameToClassKeys
+    extends BackstageComponentsNameToClassKey {}
+}

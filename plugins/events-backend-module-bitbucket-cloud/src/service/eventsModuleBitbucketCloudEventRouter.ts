@@ -27,7 +27,7 @@ import { BitbucketCloudEventRouter } from '../router/BitbucketCloudEventRouter';
  */
 export const eventsModuleBitbucketCloudEventRouter = createBackendModule({
   pluginId: 'events',
-  moduleId: 'bitbucketCloudEventRouter',
+  moduleId: 'bitbucket-cloud-event-router',
   register(env) {
     env.registerInit({
       deps: {

@@ -2,7 +2,7 @@ area:catalog:
   - plugins/catalog/**/*
   - plugins/catalog-*/**/*
   - packages/catalog-*/**/*
-scaffolder:
+area:scaffolder:
   - plugins/scaffolder/**/*
   - plugins/scaffolder-*/**/*
 search:

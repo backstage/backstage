@@ -33,7 +33,6 @@ const StackOverflowApi = createApiExtension({
 
 /** @alpha */
 const StackOverflowSearchResultListItem = createSearchResultListItemExtension({
-  id: 'stack-overflow',
   predicate: result => result.type === 'stack-overflow',
   component: () =>
     import('./search/StackOverflowSearchResultListItem').then(

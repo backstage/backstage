@@ -19,7 +19,8 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { extractRouteInfoFromAppNode } from './extractRouteInfoFromAppNode';
 import {
   AnyRouteRefParams,
-  Extension,
+  AppNode,
+  ExtensionDefinition,
   RouteRef,
   coreExtensionData,
   createExtension,
@@ -29,10 +30,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
 import { createAppTree } from '../tree';
-import { Core } from '../extensions/Core';
-import { CoreRoutes } from '../extensions/CoreRoutes';
-import { CoreNav } from '../extensions/CoreNav';
-import { CoreLayout } from '../extensions/CoreLayout';
+import { builtinExtensions } from '../wiring/createApp';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -42,16 +40,16 @@ const ref5 = createRouteRef();
 const refOrder: RouteRef<AnyRouteRefParams>[] = [ref1, ref2, ref3, ref4, ref5];
 
 function createTestExtension(options: {
-  id: string;
+  name: string;
   parent?: string;
   path?: string;
   routeRef?: RouteRef;
 }) {
   return createExtension({
-    id: options.id,
+    name: options.name,
     attachTo: options.parent
-      ? { id: options.parent, input: 'children' }
-      : { id: 'core.routes', input: 'routes' },
+      ? { id: `test/${options.parent}`, input: 'children' }
+      : { id: 'core/routes', input: 'routes' },
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath.optional(),
@@ -72,14 +70,14 @@ function createTestExtension(options: {
   });
 }
 
-function routeInfoFromExtensions(extensions: Extension<unknown>[]) {
+function routeInfoFromExtensions(extensions: ExtensionDefinition<unknown>[]) {
   const plugin = createPlugin({
     id: 'test',
     extensions,
   });
   const tree = createAppTree({
     config: new MockConfigApi({}),
-    builtinExtensions: [Core, CoreRoutes, CoreNav, CoreLayout],
+    builtinExtensions,
     features: [plugin],
   });
 
@@ -98,8 +96,10 @@ function routeObj(
   children: any[] = [],
   type: 'mounted' | 'gathered' = 'mounted',
   backstagePlugin?: BackstagePlugin,
+  appNode?: AppNode,
 ) {
   return {
+    appNode,
     path: path,
     caseSensitive: false,
     element: type,
@@ -122,33 +122,33 @@ describe('discovery', () => {
   it('should collect routes', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'nothing',
+        name: 'nothing',
         path: 'nothing',
       }),
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         path: 'foo',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'page1',
         path: 'bar/:id',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         parent: 'page2',
         path: 'baz',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         path: 'divsoup',
         routeRef: ref4,
       }),
       createTestExtension({
-        id: 'page5',
+        name: 'page5',
         parent: 'page1',
         path: 'blop',
         routeRef: ref5,
@@ -170,7 +170,14 @@ describe('discovery', () => {
       [ref5, ref1],
     ]);
     expect(info.routeObjects).toEqual([
-      routeObj('nothing', []),
+      routeObj(
+        'nothing',
+        [],
+        undefined,
+        undefined,
+        undefined,
+        expect.any(Object),
+      ),
       routeObj(
         'foo',
         [ref1],
@@ -178,45 +185,70 @@ describe('discovery', () => {
           routeObj(
             'bar/:id',
             [ref2],
-            [routeObj('baz', [ref3], undefined, undefined, expect.any(Object))],
+            [
+              routeObj(
+                'baz',
+                [ref3],
+                undefined,
+                undefined,
+                expect.any(Object),
+                expect.any(Object),
+              ),
+            ],
             undefined,
             expect.any(Object),
+            expect.any(Object),
           ),
-          routeObj('blop', [ref5], undefined, undefined, expect.any(Object)),
+          routeObj(
+            'blop',
+            [ref5],
+            undefined,
+            undefined,
+            expect.any(Object),
+            expect.any(Object),
+          ),
         ],
         undefined,
         expect.any(Object),
+        expect.any(Object),
       ),
-      routeObj('divsoup', [ref4], undefined, undefined, expect.any(Object)),
+      routeObj(
+        'divsoup',
+        [ref4],
+        undefined,
+        undefined,
+        expect.any(Object),
+        expect.any(Object),
+      ),
     ]);
   });
 
   it('should handle all react router Route patterns', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         path: 'foo',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'page1',
         path: 'bar/:id',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         path: 'baz',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         parent: 'page3',
         path: 'divsoup',
         routeRef: ref4,
       }),
       createTestExtension({
-        id: 'page5',
+        name: 'page5',
         parent: 'page3',
         path: 'blop',
         routeRef: ref5,
@@ -242,29 +274,29 @@ describe('discovery', () => {
   it('should strip leading slashes in route paths', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         path: '/foo',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'page1',
         path: '/bar/:id',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         path: '/baz',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         parent: 'page3',
         path: '/divsoup',
         routeRef: ref4,
       }),
       createTestExtension({
-        id: 'page5',
+        name: 'page5',
         parent: 'page3',
         path: '/blop',
         routeRef: ref5,
@@ -290,44 +322,44 @@ describe('discovery', () => {
   it('should use the route aggregator key to bind child routes to the same path', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'foo',
+        name: 'foo',
         path: 'foo',
       }),
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         parent: 'foo',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'fooChild',
+        name: 'fooChild',
         parent: 'foo',
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'fooChild',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'fooEmpty',
+        name: 'fooEmpty',
         parent: 'foo',
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         path: 'bar',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page3Child',
+        name: 'page3Child',
         parent: 'page3',
         path: '',
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         parent: 'page3Child',
         routeRef: ref4,
       }),
       createTestExtension({
-        id: 'page5',
+        name: 'page5',
         parent: 'page4',
         routeRef: ref5,
       }),
@@ -348,12 +380,29 @@ describe('discovery', () => {
       [ref5, ref3],
     ]);
     expect(info.routeObjects).toEqual([
-      routeObj('foo', [ref1, ref2], [], 'mounted', expect.any(Object)),
+      routeObj(
+        'foo',
+        [ref1, ref2],
+        [],
+        'mounted',
+        expect.any(Object),
+        expect.any(Object),
+      ),
       routeObj(
         'bar',
         [ref3],
-        [routeObj('', [ref4, ref5], [], 'mounted', expect.any(Object))],
+        [
+          routeObj(
+            '',
+            [ref4, ref5],
+            [],
+            'mounted',
+            expect.any(Object),
+            expect.any(Object),
+          ),
+        ],
         'mounted',
+        expect.any(Object),
         expect.any(Object),
       ),
     ]);
@@ -362,34 +411,34 @@ describe('discovery', () => {
   it('should use the route aggregator but stop when encountering explicit path', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         path: 'foo',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'page1Child',
+        name: 'page1Child',
         parent: 'page1',
         path: 'bar',
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'page1Child',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         parent: 'page2',
         path: 'baz',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         parent: 'page3',
         path: '/blop',
         routeRef: ref4,
       }),
       createTestExtension({
-        id: 'page5',
+        name: 'page5',
         parent: 'page2',
         routeRef: ref5,
       }),
@@ -428,17 +477,21 @@ describe('discovery', () => {
                     undefined,
                     undefined,
                     expect.any(Object),
+                    expect.any(Object),
                   ),
                 ],
                 undefined,
+                expect.any(Object),
                 expect.any(Object),
               ),
             ],
             'mounted',
             expect.any(Object),
+            expect.any(Object),
           ),
         ],
         undefined,
+        expect.any(Object),
         expect.any(Object),
       ),
     ]);
@@ -447,34 +500,34 @@ describe('discovery', () => {
   it('should account for loose route paths', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
-        id: 'r',
+        name: 'r',
         path: 'r',
       }),
       createTestExtension({
-        id: 'page1',
+        name: 'page1',
         parent: 'r',
         path: 'x',
         routeRef: ref1,
       }),
       createTestExtension({
-        id: 'y',
+        name: 'y',
         path: 'y',
         parent: 'r',
       }),
       createTestExtension({
-        id: 'page2',
+        name: 'page2',
         parent: 'y',
         path: '1',
         routeRef: ref2,
       }),
       createTestExtension({
-        id: 'page3',
+        name: 'page3',
         parent: 'page2',
         path: 'a',
         routeRef: ref3,
       }),
       createTestExtension({
-        id: 'page4',
+        name: 'page4',
         parent: 'page2',
         path: 'b',
         routeRef: ref4,
@@ -498,7 +551,14 @@ describe('discovery', () => {
         'r',
         [],
         [
-          routeObj('x', [ref1], [], 'mounted', expect.any(Object)),
+          routeObj(
+            'x',
+            [ref1],
+            [],
+            'mounted',
+            expect.any(Object),
+            expect.any(Object),
+          ),
           routeObj(
             'y',
             [],
@@ -513,6 +573,7 @@ describe('discovery', () => {
                     undefined,
                     'mounted',
                     expect.any(Object),
+                    expect.any(Object),
                   ),
                   routeObj(
                     'b',
@@ -520,15 +581,22 @@ describe('discovery', () => {
                     undefined,
                     'mounted',
                     expect.any(Object),
+                    expect.any(Object),
                   ),
                 ],
                 'mounted',
                 expect.any(Object),
+                expect.any(Object),
               ),
             ],
             'mounted',
+            undefined,
+            expect.any(Object),
           ),
         ],
+        undefined,
+        undefined,
+        expect.any(Object),
       ),
     ]);
   });

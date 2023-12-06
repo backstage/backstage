@@ -23,6 +23,7 @@ import {
   createComponentRouteRef,
   createFromTemplateRouteRef,
   rootRouteRef,
+  unregisterRedirectRouteRef,
   viewTechDocRouteRef,
 } from '../routes';
 
@@ -45,6 +46,7 @@ export default createPlugin({
     viewTechDoc: convertLegacyRouteRef(viewTechDocRouteRef),
     createComponent: convertLegacyRouteRef(createComponentRouteRef),
     createFromTemplate: convertLegacyRouteRef(createFromTemplateRouteRef),
+    unregisterRedirect: convertLegacyRouteRef(unregisterRedirectRouteRef),
   },
   extensions: [
     ...apis,

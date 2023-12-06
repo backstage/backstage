@@ -1,5 +1,30 @@
 # @backstage/plugin-events-backend-module-azure
 
+## 0.1.18-next.2
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/plugin-events-node@0.2.17-next.2
+
+## 0.1.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/plugin-events-node@0.2.17-next.1
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/plugin-events-node@0.2.17-next.0
+
 ## 0.1.17
 
 ### Patch Changes

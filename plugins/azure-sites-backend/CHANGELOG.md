@@ -1,5 +1,34 @@
 # @backstage/plugin-azure-sites-backend
 
+## 0.1.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.18-next.1
+
+### Patch Changes
+
+- 99fb54183b: Updated dependency `@azure/identity` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- b7a13edf6d: Updated dependency `@azure/arm-appservice` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
 ## 0.1.17
 
 ### Patch Changes

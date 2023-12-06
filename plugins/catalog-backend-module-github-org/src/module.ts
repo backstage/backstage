@@ -68,7 +68,7 @@ export const githubOrgEntityProviderTransformsExtensionPoint =
  */
 export const catalogModuleGithubOrgEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'githubOrgEntityProvider',
+  moduleId: 'github-org-entity-provider',
   register(env) {
     let userTransformer: UserTransformer | undefined;
     let teamTransformer: TeamTransformer | undefined;

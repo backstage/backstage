@@ -9,6 +9,7 @@ info:
   contact: {}
 servers:
   - url: /
+  - url: catalog
 components:
   examples: {}
   headers: {}
@@ -65,6 +66,7 @@ components:
       description: Restrict to just these fields in the response.
       required: false
       allowReserved: true
+      explode: false
       schema:
         type: array
         items:
@@ -180,11 +182,12 @@ components:
       required:
         - error
         - response
+      additionalProperties: {}
     JsonObject:
       type: object
       properties: {}
       description: A type representing all allowed JSON object values.
-      additionalProperties: true
+      additionalProperties: {}
     MapStringString:
       type: object
       properties: {}
@@ -211,82 +214,80 @@ components:
       description: A link to external information that is related to the entity.
       additionalProperties: false
     EntityMeta:
-      allOf:
-        - $ref: '#/components/schemas/JsonObject'
-        - type: object
-          properties:
-            links:
-              type: array
-              items:
-                $ref: '#/components/schemas/EntityLink'
-              description: A list of external hyperlinks related to the entity.
-            tags:
-              type: array
-              items:
-                type: string
-              description: |-
-                A list of single-valued strings, to for example classify catalog entities in
-                various ways.
-            annotations:
-              $ref: '#/components/schemas/MapStringString'
-            labels:
-              $ref: '#/components/schemas/MapStringString'
-            description:
-              type: string
-              description: |-
-                A short (typically relatively few words, on one line) description of the
-                entity.
-            title:
-              type: string
-              description: |-
-                A display name of the entity, to be presented in user interfaces instead
-                of the `name` property above, when available.
-                This field is sometimes useful when the `name` is cumbersome or ends up
-                being perceived as overly technical. The title generally does not have
-                as stringent format requirements on it, so it may contain special
-                characters and be more explanatory. Do keep it very short though, and
-                avoid situations where a title can be confused with the name of another
-                entity, or where two entities share a title.
-                Note that this is only for display purposes, and may be ignored by some
-                parts of the code. Entity references still always make use of the `name`
-                property, not the title.
-            namespace:
-              type: string
-              description: The namespace that the entity belongs to.
-            name:
-              type: string
-              description: |-
-                The name of the entity.
-                Must be unique within the catalog at any given point in time, for any
-                given namespace + kind pair. This value is part of the technical
-                identifier of the entity, and as such it will appear in URLs, database
-                tables, entity references, and similar. It is subject to restrictions
-                regarding what characters are allowed.
-                If you want to use a different, more human readable string with fewer
-                restrictions on it in user interfaces, see the `title` field below.
-            etag:
-              type: string
-              description: |-
-                An opaque string that changes for each update operation to any part of
-                the entity, including metadata.
-                This field can not be set by the user at creation time, and the server
-                will reject an attempt to do so. The field will be populated in read
-                operations. The field can (optionally) be specified when performing
-                update or delete operations, and the server will then reject the
-                operation if it does not match the current stored value.
-            uid:
-              type: string
-              description: |-
-                A globally unique ID for the entity.
-                This field can not be set by the user at creation time, and the server
-                will reject an attempt to do so. The field will be populated in read
-                operations. The field can (optionally) be specified when performing
-                update or delete operations, but the server is free to reject requests
-                that do so in such a way that it breaks semantics.
-          required:
-            - name
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityLink'
+          description: A list of external hyperlinks related to the entity.
+        tags:
+          type: array
+          items:
+            type: string
+          description: |-
+            A list of single-valued strings, to for example classify catalog entities in
+            various ways.
+        annotations:
+          $ref: '#/components/schemas/MapStringString'
+        labels:
+          $ref: '#/components/schemas/MapStringString'
+        description:
+          type: string
+          description: |-
+            A short (typically relatively few words, on one line) description of the
+            entity.
+        title:
+          type: string
+          description: |-
+            A display name of the entity, to be presented in user interfaces instead
+            of the `name` property above, when available.
+            This field is sometimes useful when the `name` is cumbersome or ends up
+            being perceived as overly technical. The title generally does not have
+            as stringent format requirements on it, so it may contain special
+            characters and be more explanatory. Do keep it very short though, and
+            avoid situations where a title can be confused with the name of another
+            entity, or where two entities share a title.
+            Note that this is only for display purposes, and may be ignored by some
+            parts of the code. Entity references still always make use of the `name`
+            property, not the title.
+        namespace:
+          type: string
+          description: The namespace that the entity belongs to.
+        name:
+          type: string
+          description: |-
+            The name of the entity.
+            Must be unique within the catalog at any given point in time, for any
+            given namespace + kind pair. This value is part of the technical
+            identifier of the entity, and as such it will appear in URLs, database
+            tables, entity references, and similar. It is subject to restrictions
+            regarding what characters are allowed.
+            If you want to use a different, more human readable string with fewer
+            restrictions on it in user interfaces, see the `title` field below.
+        etag:
+          type: string
+          description: |-
+            An opaque string that changes for each update operation to any part of
+            the entity, including metadata.
+            This field can not be set by the user at creation time, and the server
+            will reject an attempt to do so. The field will be populated in read
+            operations. The field can (optionally) be specified when performing
+            update or delete operations, and the server will then reject the
+            operation if it does not match the current stored value.
+        uid:
+          type: string
+          description: |-
+            A globally unique ID for the entity.
+            This field can not be set by the user at creation time, and the server
+            will reject an attempt to do so. The field will be populated in read
+            operations. The field can (optionally) be specified when performing
+            update or delete operations, but the server is free to reject requests
+            that do so in such a way that it breaks semantics.
+      required:
+        - name
       description: Metadata fields common to all versions/kinds of entity.
-      additionalProperties: true
+      additionalProperties: {}
     EntityRelation:
       type: object
       properties:
@@ -326,7 +327,6 @@ components:
         - kind
         - apiVersion
       description: The parts of the format that's common to all versions/kinds of entity.
-      additionalProperties: true
     NullableEntity:
       type: object
       properties:
@@ -352,7 +352,6 @@ components:
         - kind
         - apiVersion
       description: The parts of the format that's common to all versions/kinds of entity.
-      additionalProperties: true
       nullable: true
     EntityAncestryResponse:
       type: object
@@ -383,8 +382,7 @@ components:
         items:
           type: array
           items:
-            anyOf:
-              - $ref: '#/components/schemas/NullableEntity'
+            $ref: '#/components/schemas/NullableEntity'
           description: |-
             The list of entities, in the same order as the refs in the request. Entries
             that are null signify that no entity existed with that ref.
@@ -398,6 +396,9 @@ components:
           type: string
         count:
           type: number
+      required:
+        - value
+        - count
       additionalProperties: false
     EntityFacetsResponse:
       type: object
@@ -660,6 +661,10 @@ components:
             prevCursor:
               type: string
               description: The cursor for the previous batch of entities.
+      required:
+        - items
+        - totalItems
+        - pageInfo
       additionalProperties: false
   securitySchemes:
     JWT:
@@ -829,8 +834,6 @@ paths:
       security:
         - {}
         - JWT: []
-      parameters:
-        - $ref: '#/components/parameters/fields'
       requestBody:
         required: false
         content:
@@ -942,8 +945,8 @@ paths:
       operationId: CreateLocation
       description: Create a location for a given target.
       responses:
-        '200':
-          description: Ok
+        '201':
+          description: Created
           content:
             application/json:
               schema:
@@ -960,32 +963,6 @@ paths:
                 required:
                   - entities
                   - location
-        '201':
-          description: 201 response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  location:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      type:
-                        type: string
-                      target:
-                        type: string
-                    required:
-                      - id
-                      - type
-                      - target
-                  entities:
-                    type: array
-                    items: {}
-                required:
-                  - location
-                  - entities
         '400':
           $ref: '#/components/responses/ErrorResponse'
         default:
@@ -1120,7 +1097,7 @@ paths:
         '200':
           description: Ok
         '400':
-          description: 400 response
+          description: Validation errors.
           content:
             application/json; charset=utf-8:
               schema:
@@ -1138,6 +1115,7 @@ paths:
                       required:
                         - name
                         - message
+                      additionalProperties: {}
                 required:
                   - errors
       security:
@@ -1155,7 +1133,7 @@ paths:
                   type: string
                 entity:
                   type: object
-                  additionalProperties: true
+                  additionalProperties: {}
               required:
                 - location
                 - entity

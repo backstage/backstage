@@ -274,6 +274,7 @@ export type TransformFunc<T extends number | string | boolean> = (
   value: T,
   context: {
     visibility: ConfigVisibility;
+    path: string;
   },
 ) => T | undefined;
 ```

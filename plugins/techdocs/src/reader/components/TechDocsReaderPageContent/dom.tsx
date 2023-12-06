@@ -18,7 +18,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useTheme, useMediaQuery } from '@material-ui/core';
 
-import { BackstageTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
@@ -58,7 +57,7 @@ export const useTechDocsReaderDom = (
   entityRef: CompoundEntityRef,
 ): Element | null => {
   const navigate = useNavigateUrl();
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
   const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
   const sanitizerTransformer = useSanitizerTransformer();
   const stylesTransformer = useStylesTransformer();

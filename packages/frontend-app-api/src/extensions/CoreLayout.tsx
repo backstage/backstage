@@ -23,8 +23,9 @@ import {
 import { SidebarPage } from '@backstage/core-components';
 
 export const CoreLayout = createExtension({
-  id: 'core.layout',
-  attachTo: { id: 'core', input: 'root' },
+  namespace: 'core',
+  name: 'layout',
+  attachTo: { id: 'core/router', input: 'children' },
   inputs: {
     nav: createExtensionInput(
       {
@@ -46,8 +47,8 @@ export const CoreLayout = createExtension({
     return {
       element: (
         <SidebarPage>
-          {inputs.nav.element}
-          {inputs.content.element}
+          {inputs.nav.output.element}
+          {inputs.content.output.element}
         </SidebarPage>
       ),
     };

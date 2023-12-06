@@ -21,7 +21,6 @@ import {
   ListItemText,
   makeStyles,
   MenuItem,
-  Theme,
   Typography,
 } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -29,7 +28,7 @@ import React, { Fragment } from 'react';
 
 import AllIcon from '@material-ui/icons/FontDownload';
 
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles(
   theme => ({
     root: {
       backgroundColor: 'rgba(0, 0, 0, .11)',

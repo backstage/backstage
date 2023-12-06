@@ -30,10 +30,9 @@ import Warning from '@material-ui/icons/Warning';
 import { DateTime, Duration } from 'luxon';
 import { PagerDutyIncident } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
-import { BackstageTheme } from '@backstage/theme';
 import { Link } from '@backstage/core-components';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   denseListIcon: {
     marginRight: 0,
     display: 'flex',

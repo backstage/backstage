@@ -1,5 +1,68 @@
 # @backstage/frontend-app-api
 
+## 0.4.0-next.2
+
+### Minor Changes
+
+- ea06590: The app no longer provides the `AppContext` from `@backstage/core-plugin-api`. Components that require this context to be available should use the `compatWrapper` helper from `@backstage/core-compat-api`.
+
+### Patch Changes
+
+- aeb8008: Add support for translation extensions.
+- b7adf24: Use the new plugin type for error boundary components.
+- 8f5d6c1: Updates to match the new extension input wrapping.
+- cb4197a: Forward ` node`` instead of  `extensionId` to resolved extension inputs.
+- 8837a96: Updates to match the introduction of `ExtensionDefinition` and new extension ID naming patterns.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.2
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.4.0-next.1
+
+### Minor Changes
+
+- e539735435: Updated core extension structure to make space for the sign-in page by adding `core.router`.
+
+### Patch Changes
+
+- 5eb6b8a7bc: Added the nav logo extension for customization of sidebar logo
+- 1f12fb762c: Create a core components extension that allows adopters to override core app components such as `Progress`, `BootErrorPage`, `NotFoundErrorPage` and `ErrorBoundaryFallback`.
+- 59709286b3: Collect and register feature flags from plugins and extension overrides.
+- f27ee7d937: Migrate analytics route tracker component.
+- a5a04739e1: Updates to provide `node` to extension factories instead of `id` and `source`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/config@1.1.1
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 60d6eb544e: Removed `@backstage/plugin-graphiql` dependency.
+- 9ad4039efa: Bringing over apis from core-plugin-api
+- b8cb7804c8: Added `createSpecializedApp`, which is a synchronous version of `createApp` where config and features already need to be loaded.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/core-app-api@1.11.2-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 0.3.0
 
 ### Minor Changes

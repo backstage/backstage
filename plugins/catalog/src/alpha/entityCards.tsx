@@ -16,79 +16,80 @@
 
 import React from 'react';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { compatWrapper } from '@backstage/core-compat-api';
 
 export const EntityAboutCard = createEntityCardExtension({
-  id: 'about',
+  name: 'about',
   loader: async () =>
-    import('../components/AboutCard').then(m => (
-      <m.AboutCard variant="gridItem" />
-    )),
+    import('../components/AboutCard').then(m =>
+      compatWrapper(<m.AboutCard variant="gridItem" />),
+    ),
 });
 
 export const EntityLinksCard = createEntityCardExtension({
-  id: 'links',
-  filter: ({ entity }) => Boolean(entity.metadata.links),
+  name: 'links',
+  filter: 'has:links',
   loader: async () =>
-    import('../components/EntityLinksCard').then(m => {
-      return <m.EntityLinksCard variant="gridItem" />;
-    }),
+    import('../components/EntityLinksCard').then(m =>
+      compatWrapper(<m.EntityLinksCard variant="gridItem" />),
+    ),
 });
 
 export const EntityLabelsCard = createEntityCardExtension({
-  id: 'labels',
-  filter: ({ entity }) => Boolean(entity.metadata.labels),
+  name: 'labels',
+  filter: 'has:labels',
   loader: async () =>
-    import('../components/EntityLabelsCard').then(m => (
-      <m.EntityLabelsCard variant="gridItem" />
-    )),
+    import('../components/EntityLabelsCard').then(m =>
+      compatWrapper(<m.EntityLabelsCard variant="gridItem" />),
+    ),
 });
 
 export const EntityDependsOnComponentsCard = createEntityCardExtension({
-  id: 'dependsOn.components',
+  name: 'depends-on-components',
   loader: async () =>
-    import('../components/DependsOnComponentsCard').then(m => (
-      <m.DependsOnComponentsCard variant="gridItem" />
-    )),
+    import('../components/DependsOnComponentsCard').then(m =>
+      compatWrapper(<m.DependsOnComponentsCard variant="gridItem" />),
+    ),
 });
 
 export const EntityDependsOnResourcesCard = createEntityCardExtension({
-  id: 'dependsOn.resources',
+  name: 'depends-on-resources',
   loader: async () =>
-    import('../components/DependsOnResourcesCard').then(m => (
-      <m.DependsOnResourcesCard variant="gridItem" />
-    )),
+    import('../components/DependsOnResourcesCard').then(m =>
+      compatWrapper(<m.DependsOnResourcesCard variant="gridItem" />),
+    ),
 });
 
 export const EntityHasComponentsCard = createEntityCardExtension({
-  id: 'has.components',
+  name: 'has-components',
   loader: async () =>
-    import('../components/HasComponentsCard').then(m => (
-      <m.HasComponentsCard variant="gridItem" />
-    )),
+    import('../components/HasComponentsCard').then(m =>
+      compatWrapper(<m.HasComponentsCard variant="gridItem" />),
+    ),
 });
 
 export const EntityHasResourcesCard = createEntityCardExtension({
-  id: 'has.resources',
+  name: 'has-resources',
   loader: async () =>
-    import('../components/HasResourcesCard').then(m => (
-      <m.HasResourcesCard variant="gridItem" />
-    )),
+    import('../components/HasResourcesCard').then(m =>
+      compatWrapper(<m.HasResourcesCard variant="gridItem" />),
+    ),
 });
 
 export const EntityHasSubcomponentsCard = createEntityCardExtension({
-  id: 'has.subcomponents',
+  name: 'has-subcomponents',
   loader: async () =>
-    import('../components/HasSubcomponentsCard').then(m => (
-      <m.HasSubcomponentsCard variant="gridItem" />
-    )),
+    import('../components/HasSubcomponentsCard').then(m =>
+      compatWrapper(<m.HasSubcomponentsCard variant="gridItem" />),
+    ),
 });
 
 export const EntityHasSystemsCard = createEntityCardExtension({
-  id: 'has.systems',
+  name: 'has-systems',
   loader: async () =>
-    import('../components/HasSystemsCard').then(m => (
-      <m.HasSystemsCard variant="gridItem" />
-    )),
+    import('../components/HasSystemsCard').then(m =>
+      compatWrapper(<m.HasSystemsCard variant="gridItem" />),
+    ),
 });
 
 export default [

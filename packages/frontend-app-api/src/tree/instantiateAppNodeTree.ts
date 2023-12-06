@@ -18,13 +18,10 @@ import {
   AnyExtensionDataMap,
   AnyExtensionInputMap,
   ExtensionDataRef,
+  ResolvedExtensionInputs,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
-import {
-  AppNode,
-  AppNodeInstance,
-  AppNodeSpec,
-} from '@backstage/frontend-plugin-api';
+import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
 
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
@@ -32,14 +29,14 @@ type Mutable<T> = {
 
 function resolveInputData(
   dataMap: AnyExtensionDataMap,
-  attachment: { id: string; instance: AppNodeInstance },
+  attachment: AppNode,
   inputName: string,
 ) {
   return mapValues(dataMap, ref => {
-    const value = attachment.instance.getData(ref);
+    const value = attachment.instance?.getData(ref);
     if (value === undefined && !ref.config.optional) {
       throw new Error(
-        `input '${inputName}' did not receive required extension data '${ref.id}' from extension '${attachment.id}'`,
+        `input '${inputName}' did not receive required extension data '${ref.id}' from extension '${attachment.spec.id}'`,
       );
     }
     return value;
@@ -48,8 +45,8 @@ function resolveInputData(
 
 function resolveInputs(
   inputMap: AnyExtensionInputMap,
-  attachments: ReadonlyMap<string, { id: string; instance: AppNodeInstance }[]>,
-) {
+  attachments: ReadonlyMap<string, AppNode[]>,
+): ResolvedExtensionInputs<AnyExtensionInputMap> {
   const undeclaredAttachments = Array.from(attachments.entries()).filter(
     ([inputName]) => inputMap[inputName] === undefined,
   );
@@ -62,7 +59,7 @@ function resolveInputs(
         .map(
           ([k, exts]) =>
             `'${k}' from extension${exts.length > 1 ? 's' : ''} '${exts
-              .map(e => e.id)
+              .map(e => e.spec.id)
               .join("', '")}'`,
         )
         .join(' and ')}`,
@@ -74,7 +71,7 @@ function resolveInputs(
 
     if (input.config.singleton) {
       if (attachedNodes.length > 1) {
-        const attachedNodeIds = attachedNodes.map(e => e.id);
+        const attachedNodeIds = attachedNodes.map(e => e.spec.id);
         throw Error(
           `expected ${
             input.config.optional ? 'at most' : 'exactly'
@@ -88,22 +85,30 @@ function resolveInputs(
         }
         throw Error(`input '${inputName}' is required but was not received`);
       }
-      return resolveInputData(input.extensionData, attachedNodes[0], inputName);
+      return {
+        node: attachedNodes[0],
+        output: resolveInputData(
+          input.extensionData,
+          attachedNodes[0],
+          inputName,
+        ),
+      };
     }
 
-    return attachedNodes.map(attachment =>
-      resolveInputData(input.extensionData, attachment, inputName),
-    );
-  });
+    return attachedNodes.map(attachment => ({
+      node: attachment,
+      output: resolveInputData(input.extensionData, attachment, inputName),
+    }));
+  }) as ResolvedExtensionInputs<AnyExtensionInputMap>;
 }
 
 /** @internal */
 export function createAppNodeInstance(options: {
-  spec: AppNodeSpec;
-  attachments: ReadonlyMap<string, { id: string; instance: AppNodeInstance }[]>;
+  node: AppNode;
+  attachments: ReadonlyMap<string, AppNode[]>;
 }): AppNodeInstance {
-  const { spec, attachments } = options;
-  const { id, extension, config, source } = spec;
+  const { node, attachments } = options;
+  const { id, extension, config } = node.spec;
   const extensionData = new Map<string, unknown>();
   const extensionDataRefs = new Set<ExtensionDataRef<unknown>>();
 
@@ -118,7 +123,7 @@ export function createAppNodeInstance(options: {
 
   try {
     const namedOutputs = extension.factory({
-      source,
+      node,
       config: parsedConfig,
       inputs: resolveInputs(extension.inputs, attachments),
     });
@@ -139,7 +144,7 @@ export function createAppNodeInstance(options: {
   } catch (e) {
     throw new Error(
       `Failed to instantiate extension '${id}'${
-        e.name === 'Error' ? `, ${e.message}` : `; caused by ${e}`
+        e.name === 'Error' ? `, ${e.message}` : `; caused by ${e.stack}`
       }`,
     );
   }
@@ -167,10 +172,7 @@ export function instantiateAppNodeTree(rootNode: AppNode): void {
       return undefined;
     }
 
-    const instantiatedAttachments = new Map<
-      string,
-      { id: string; instance: AppNodeInstance }[]
-    >();
+    const instantiatedAttachments = new Map<string, AppNode[]>();
 
     for (const [input, children] of node.edges.attachments) {
       const instantiatedChildren = children.flatMap(child => {
@@ -178,7 +180,7 @@ export function instantiateAppNodeTree(rootNode: AppNode): void {
         if (!childInstance) {
           return [];
         }
-        return [{ id: child.spec.id, instance: childInstance }];
+        return [child];
       });
       if (instantiatedChildren.length > 0) {
         instantiatedAttachments.set(input, instantiatedChildren);
@@ -186,7 +188,7 @@ export function instantiateAppNodeTree(rootNode: AppNode): void {
     }
 
     (node as Mutable<AppNode>).instance = createAppNodeInstance({
-      spec: node.spec,
+      node,
       attachments: instantiatedAttachments,
     });
 

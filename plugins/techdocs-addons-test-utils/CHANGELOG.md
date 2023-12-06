@@ -1,5 +1,65 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.25-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-techdocs@1.9.2-next.3
+  - @backstage/plugin-catalog@1.16.0-next.3
+  - @backstage/plugin-catalog-react@1.9.2-next.2
+  - @backstage/plugin-search-react@1.7.4-next.2
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/test-utils@1.4.6-next.2
+  - @backstage/plugin-techdocs-react@1.1.14-next.2
+
+## 1.0.25-next.2
+
+### Patch Changes
+
+- 5d796829bb: Remove unnecessary catalog dependency
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.1
+  - @backstage/plugin-catalog@1.16.0-next.2
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/test-utils@1.4.6-next.1
+  - @backstage/plugin-search-react@1.7.4-next.1
+  - @backstage/plugin-techdocs@1.9.2-next.2
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/plugin-techdocs-react@1.1.14-next.1
+  - @backstage/theme@0.5.0-next.0
+
+## 1.0.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.16.0-next.1
+  - @backstage/plugin-techdocs@1.9.2-next.1
+
+## 1.0.25-next.0
+
+### Patch Changes
+
+- 3f354e68f4: Move `@testing-library/react` to be a `peerDependency`
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/plugin-catalog@1.16.0-next.0
+  - @backstage/plugin-techdocs@1.9.2-next.0
+  - @backstage/plugin-search-react@1.7.4-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/core-app-api@1.11.2-next.0
+  - @backstage/integration-react@1.1.22-next.0
+  - @backstage/test-utils@1.4.6-next.0
+  - @backstage/plugin-techdocs-react@1.1.14-next.0
+
 ## 1.0.23
 
 ### Patch Changes

@@ -65,7 +65,7 @@ export const TemplateTypePicker = () => {
       >
         Categories
       </Typography>
-      <Autocomplete
+      <Autocomplete<string, true>
         id="categories-picker"
         multiple
         options={availableTypes}

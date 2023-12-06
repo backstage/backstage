@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, darken, lighten } from '@material-ui/core/styles';
+
+import { makeStyles, darken, lighten, Theme } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -27,7 +27,7 @@ import { MarkdownContent } from '../MarkdownContent';
 
 const getWarningTextColor = (
   severity: NonNullable<WarningProps['severity']>,
-  theme: BackstageTheme,
+  theme: Theme,
 ) => {
   const getColor = theme.palette.type === 'light' ? darken : lighten;
   return getColor(theme.palette[severity].light, 0.6);
@@ -35,13 +35,13 @@ const getWarningTextColor = (
 
 const getWarningBackgroundColor = (
   severity: NonNullable<WarningProps['severity']>,
-  theme: BackstageTheme,
+  theme: Theme,
 ) => {
   const getBackgroundColor = theme.palette.type === 'light' ? lighten : darken;
   return getBackgroundColor(theme.palette[severity].light, 0.9);
 };
 
-const useErrorOutlineStyles = makeStyles<BackstageTheme>(theme => ({
+const useErrorOutlineStyles = makeStyles(theme => ({
   root: {
     marginRight: theme.spacing(1),
     fill: ({ severity }: WarningProps) =>
@@ -68,7 +68,7 @@ export type WarningPanelClassKey =
   | 'message'
   | 'details';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     panel: {
       backgroundColor: ({ severity }: WarningProps) =>

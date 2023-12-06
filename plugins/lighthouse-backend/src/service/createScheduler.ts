@@ -39,7 +39,9 @@ export async function createScheduler(
   const { logger, scheduler, catalogClient, config, tokenManager } = options;
   const lighthouseApi = LighthouseRestApi.fromConfig(config);
 
-  const lighthouseAuditConfig = LighthouseAuditScheduleImpl.fromConfig(config);
+  const lighthouseAuditConfig = LighthouseAuditScheduleImpl.fromConfig(config, {
+    logger,
+  });
   const formFactorToScreenEmulationMap = {
     // the default is mobile, so no need to override
     mobile: undefined,
@@ -56,16 +58,16 @@ export async function createScheduler(
 
   logger.info(
     `Running with Scheduler Config ${JSON.stringify(
-      lighthouseAuditConfig.getSchedule(),
-    )} and timeout ${JSON.stringify(lighthouseAuditConfig.getTimeout())}`,
+      lighthouseAuditConfig.frequency,
+    )} and timeout ${JSON.stringify(lighthouseAuditConfig.timeout)}`,
   );
 
   if (scheduler) {
     await scheduler.scheduleTask({
       id: 'lighthouse_audit',
-      frequency: lighthouseAuditConfig.getSchedule(),
-      timeout: lighthouseAuditConfig.getTimeout(),
-      initialDelay: { minutes: 15 },
+      frequency: lighthouseAuditConfig.frequency,
+      timeout: lighthouseAuditConfig.timeout,
+      initialDelay: lighthouseAuditConfig.initialDelay,
       fn: async () => {
         const filter: Record<string, symbol | string> = {
           kind: 'Component',

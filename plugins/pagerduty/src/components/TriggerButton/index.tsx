@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useCallback, ReactNode, useState } from 'react';
 import { makeStyles, Button } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
-
 import { usePagerdutyEntity } from '../../hooks';
 import { TriggerDialog } from '../TriggerDialog';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   buttonStyle: {
     backgroundColor: theme.palette.error.main,
     color: theme.palette.error.contrastText,

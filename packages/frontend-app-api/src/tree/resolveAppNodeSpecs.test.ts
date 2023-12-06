@@ -18,6 +18,7 @@ import {
   createExtensionOverrides,
   createPlugin,
   Extension,
+  ExtensionDefinition,
 } from '@backstage/frontend-plugin-api';
 import { resolveAppNodeSpecs } from './resolveAppNodeSpecs';
 
@@ -27,10 +28,24 @@ function makeExt(
   attachId: string = 'root',
 ) {
   return {
+    $$type: '@backstage/Extension',
     id,
     attachTo: { id: attachId, input: 'default' },
     disabled: status === 'disabled',
   } as Extension<unknown>;
+}
+
+function makeExtDef(
+  name: string,
+  status: 'disabled' | 'enabled' = 'enabled',
+  attachId: string = 'root',
+) {
+  return {
+    $$type: '@backstage/ExtensionDefinition',
+    name,
+    attachTo: { id: attachId, input: 'default' },
+    disabled: status === 'disabled',
+  } as ExtensionDefinition<unknown>;
 }
 
 describe('resolveAppNodeSpecs', () => {
@@ -78,9 +93,8 @@ describe('resolveAppNodeSpecs', () => {
   });
 
   it('should override attachment points', () => {
-    const a = makeExt('a');
     const b = makeExt('b');
-    const pluginA = createPlugin({ id: 'test', extensions: [a] });
+    const pluginA = createPlugin({ id: 'test', extensions: [makeExtDef('a')] });
     expect(
       resolveAppNodeSpecs({
         features: [pluginA],
@@ -94,8 +108,8 @@ describe('resolveAppNodeSpecs', () => {
       }),
     ).toEqual([
       {
-        id: 'a',
-        extension: a,
+        id: 'test/a',
+        extension: makeExt('test/a'),
         attachTo: { id: 'root', input: 'default' },
         source: pluginA,
         disabled: false,
@@ -110,31 +124,34 @@ describe('resolveAppNodeSpecs', () => {
   });
 
   it('should fully override configuration and duplicate', () => {
-    const a = makeExt('a');
-    const b = makeExt('b');
-    const plugin = createPlugin({ id: 'test', extensions: [a, b] });
+    const a = makeExt('test/a');
+    const b = makeExt('test/b');
+    const plugin = createPlugin({
+      id: 'test',
+      extensions: [makeExtDef('a'), makeExtDef('b')],
+    });
     expect(
       resolveAppNodeSpecs({
         features: [plugin],
         builtinExtensions: [],
         parameters: [
           {
-            id: 'a',
+            id: 'test/a',
             config: { foo: { bar: 1 } },
           },
           {
-            id: 'b',
+            id: 'test/b',
             config: { foo: { bar: 2 } },
           },
           {
-            id: 'b',
+            id: 'test/b',
             config: { foo: { qux: 3 } },
           },
         ],
       }),
     ).toEqual([
       {
-        id: 'a',
+        id: 'test/a',
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         source: plugin,
@@ -142,7 +159,7 @@ describe('resolveAppNodeSpecs', () => {
         disabled: false,
       },
       {
-        id: 'b',
+        id: 'test/b',
         extension: b,
         attachTo: { id: 'root', input: 'default' },
         source: plugin,
@@ -187,11 +204,12 @@ describe('resolveAppNodeSpecs', () => {
   });
 
   it('should apply extension overrides', () => {
-    const a = makeExt('a');
-    const b = makeExt('b');
-    const plugin = createPlugin({ id: 'test', extensions: [a, b] });
-    const aOverride = makeExt('a', 'enabled', 'other');
-    const bOverride = makeExt('b', 'disabled', 'other');
+    const plugin = createPlugin({
+      id: 'test',
+      extensions: [makeExtDef('a'), makeExtDef('b')],
+    });
+    const aOverride = makeExt('test/a', 'enabled', 'other');
+    const bOverride = makeExt('test/b', 'disabled', 'other');
     const cOverride = makeExt('c');
 
     expect(
@@ -199,7 +217,11 @@ describe('resolveAppNodeSpecs', () => {
         features: [
           plugin,
           createExtensionOverrides({
-            extensions: [aOverride, bOverride, cOverride],
+            extensions: [
+              makeExtDef('test/a', 'enabled', 'other'),
+              makeExtDef('test/b', 'disabled', 'other'),
+              makeExtDef('c'),
+            ],
           }),
         ],
         builtinExtensions: [],
@@ -207,14 +229,14 @@ describe('resolveAppNodeSpecs', () => {
       }),
     ).toEqual([
       {
-        id: 'a',
+        id: 'test/a',
         extension: aOverride,
         attachTo: { id: 'other', input: 'default' },
         source: plugin,
         disabled: false,
       },
       {
-        id: 'b',
+        id: 'test/b',
         extension: bOverride,
         attachTo: { id: 'other', input: 'default' },
         source: plugin,
@@ -231,39 +253,50 @@ describe('resolveAppNodeSpecs', () => {
   });
 
   it('should use order from configuration when rather than overrides', () => {
-    const a = makeExt('a', 'disabled');
-    const b = makeExt('b', 'disabled');
-    const c = makeExt('c', 'disabled');
-    const aOverride = makeExt('c', 'disabled');
-    const bOverride = makeExt('b', 'disabled');
-    const cOverride = makeExt('a', 'disabled');
-
     const result = resolveAppNodeSpecs({
       features: [
-        createPlugin({ id: 'test', extensions: [a, b, c] }),
+        createPlugin({
+          id: 'test',
+          extensions: [
+            makeExtDef('a', 'disabled'),
+            makeExtDef('b', 'disabled'),
+            makeExtDef('c', 'disabled'),
+          ],
+        }),
         createExtensionOverrides({
-          extensions: [cOverride, bOverride, aOverride],
+          extensions: [
+            makeExtDef('test/c', 'disabled'),
+            makeExtDef('test/b', 'disabled'),
+            makeExtDef('test/a', 'disabled'),
+          ],
         }),
       ],
       builtinExtensions: [],
-      parameters: ['b', 'c', 'a'].map(id => ({ id, disabled: false })),
+      parameters: ['test/b', 'test/c', 'test/a'].map(id => ({
+        id,
+        disabled: false,
+      })),
     });
 
-    expect(result.map(r => r.extension.id)).toEqual(['b', 'c', 'a']);
+    expect(result.map(r => r.extension.id)).toEqual([
+      'test/b',
+      'test/c',
+      'test/a',
+    ]);
   });
 
   it('throws an error when a forbidden extension is overridden by a plugin', () => {
     expect(() =>
       resolveAppNodeSpecs({
         features: [
-          createPlugin({ id: 'test', extensions: [makeExt('forbidden')] }),
+          createPlugin({ id: 'test', extensions: [makeExtDef('forbidden')] }),
         ],
         builtinExtensions: [],
         parameters: [],
-        forbidden: new Set(['forbidden']),
+        forbidden: new Set(['test/forbidden']),
       }),
     ).toThrow(
-      "It is forbidden to override the following extension(s): 'forbidden', which is done by the following plugin(s): 'test'",
+      "It is forbidden to override the following extension(s): 'test/forbidden', which is done by the following plugin(s): 'test'",
     );
   });
 
@@ -271,7 +304,7 @@ describe('resolveAppNodeSpecs', () => {
     expect(() =>
       resolveAppNodeSpecs({
         features: [
-          createExtensionOverrides({ extensions: [makeExt('forbidden')] }),
+          createExtensionOverrides({ extensions: [makeExtDef('forbidden')] }),
         ],
         builtinExtensions: [],
         parameters: [],

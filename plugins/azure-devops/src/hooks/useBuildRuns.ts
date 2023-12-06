@@ -15,11 +15,11 @@
  */
 
 import {
+  AZURE_DEVOPS_DEFAULT_TOP,
   BuildRun,
   BuildRunOptions,
 } from '@backstage/plugin-azure-devops-common';
 
-import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';

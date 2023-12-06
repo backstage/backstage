@@ -17,6 +17,9 @@
 import {
   AppTreeApi,
   appTreeApiRef,
+  coreExtensionData,
+  createExtension,
+  createExtensionOverrides,
   createPageExtension,
   createPlugin,
   createThemeExtension,
@@ -25,7 +28,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { createApp } from './createApp';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 
 describe('createApp', () => {
   it('should allow themes to be installed', async () => {
@@ -33,7 +36,10 @@ describe('createApp', () => {
       configLoader: async () =>
         new MockConfigApi({
           app: {
-            extensions: [{ 'themes.light': false }, { 'themes.dark': false }],
+            extensions: [
+              { 'theme:app/light': false },
+              { 'theme:app/dark': false },
+            ],
           },
         }),
       features: [
@@ -65,7 +71,6 @@ describe('createApp', () => {
           id: duplicatedFeatureId,
           extensions: [
             createPageExtension({
-              id: 'test.page.first',
               defaultPath: '/',
               loader: async () => <div>First Page</div>,
             }),
@@ -75,7 +80,6 @@ describe('createApp', () => {
           id: duplicatedFeatureId,
           extensions: [
             createPageExtension({
-              id: 'test.page.last',
               defaultPath: '/',
               loader: async () => <div>Last Page</div>,
             }),
@@ -94,6 +98,59 @@ describe('createApp', () => {
     );
   });
 
+  it('should register feature flags', async () => {
+    const app = createApp({
+      configLoader: async () => new MockConfigApi({}),
+      features: [
+        createPlugin({
+          id: 'test',
+          featureFlags: [{ name: 'test-1' }],
+          extensions: [
+            createExtension({
+              name: 'first',
+              attachTo: { id: 'core', input: 'root' },
+              output: { element: coreExtensionData.reactElement },
+              factory() {
+                const Component = () => {
+                  const flagsApi = useApi(featureFlagsApiRef);
+                  return (
+                    <div>
+                      Flags:{' '}
+                      {flagsApi
+                        .getRegisteredFlags()
+                        .map(flag => `${flag.name} from '${flag.pluginId}'`)
+                        .join(', ')}
+                    </div>
+                  );
+                };
+                return { element: <Component /> };
+              },
+            }),
+          ],
+        }),
+        createExtensionOverrides({
+          featureFlags: [{ name: 'test-2' }],
+          extensions: [
+            createExtension({
+              namespace: 'core',
+              name: 'router',
+              attachTo: { id: 'core', input: 'root' },
+              disabled: true,
+              output: {},
+              factory: () => ({}),
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText("Flags: test-1 from 'test', test-2 from ''"),
+    ).resolves.toBeInTheDocument();
+  });
+
   it('should make the app structure available through the AppTreeApi', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 
@@ -104,7 +161,6 @@ describe('createApp', () => {
           id: 'my-plugin',
           extensions: [
             createPageExtension({
-              id: 'plugin.my-plugin.page',
               defaultPath: '/',
               loader: async () => {
                 const Component = () => {
@@ -127,22 +183,31 @@ describe('createApp', () => {
     expect(String(tree.root)).toMatchInlineSnapshot(`
       "<core out=[core.reactElement]>
         root [
-          <core.layout out=[core.reactElement]>
-            content [
-              <core.routes out=[core.reactElement]>
-                routes [
-                  <plugin.my-plugin.page out=[core.routing.path, core.routing.ref, core.reactElement] />
+          <core/router out=[core.reactElement]>
+            children [
+              <core/layout out=[core.reactElement]>
+                content [
+                  <core/routes out=[core.reactElement]>
+                    routes [
+                      <page:my-plugin out=[core.routing.path, core.routing.ref, core.reactElement] />
+                    ]
+                  </core/routes>
                 ]
-              </core.routes>
+                nav [
+                  <core/nav out=[core.reactElement] />
+                ]
+              </core/layout>
             ]
-            nav [
-              <core.nav out=[core.reactElement] />
-            ]
-          </core.layout>
+          </core/router>
+        ]
+        components [
+          <component:core.components.progress out=[core.component] />
+          <component:core.components.errorBoundaryFallback out=[core.component] />
+          <component:core.components.notFoundErrorPage out=[core.component] />
         ]
         themes [
-          <themes.light out=[core.theme] />
-          <themes.dark out=[core.theme] />
+          <theme:app/light out=[core.theme] />
+          <theme:app/dark out=[core.theme] />
         ]
       </core>"
     `);

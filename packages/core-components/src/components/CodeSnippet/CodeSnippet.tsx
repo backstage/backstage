@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
+
 import Box from '@material-ui/core/Box';
 import { useTheme } from '@material-ui/core/styles';
 import React from 'react';
@@ -83,7 +83,7 @@ export function CodeSnippet(props: CodeSnippetProps) {
     customStyle,
     showCopyCodeButton = false,
   } = props;
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
   const mode = theme.palette.type === 'dark' ? dark : docco;
   const highlightColor = theme.palette.type === 'dark' ? '#256bf3' : '#e6ffed';
 

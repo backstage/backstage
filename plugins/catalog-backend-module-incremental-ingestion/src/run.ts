@@ -67,7 +67,7 @@ async function main() {
   backend.add(
     createBackendModule({
       pluginId: 'catalog',
-      moduleId: 'incrementalTestProvider',
+      moduleId: 'incremental-test-provider',
       register(reg) {
         reg.registerInit({
           deps: { extension: incrementalIngestionProvidersExtensionPoint },

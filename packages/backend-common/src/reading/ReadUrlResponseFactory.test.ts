@@ -16,7 +16,7 @@
 
 import { ConflictError } from '@backstage/errors';
 import getRawBody from 'raw-body';
-import { Readable, Stream } from 'stream';
+import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 describe('ReadUrlResponseFactory', () => {
@@ -74,25 +74,10 @@ describe('ReadUrlResponseFactory', () => {
 
   describe("fromNodeJSReadable's", () => {
     const expectedText = 'expected text';
-    const timeouts: NodeJS.Timeout[] = [];
     let readable: NodeJS.ReadableStream;
 
     beforeEach(() => {
-      readable = new Stream({
-        encoding: 'utf-8',
-      }) as unknown as NodeJS.ReadableStream;
-      readable.readable = true;
-
-      // Write data asynchronously, as soon as possible.
-      timeouts[0] = setTimeout(() => {
-        timeouts[1] = setTimeout(readable.emit.bind(readable, 'end'), 0);
-        readable.emit('data', expectedText);
-      }, 0);
-    });
-
-    afterEach(() => {
-      // Clear out timeouts so we don't emit data across tests.
-      timeouts.forEach(clearTimeout);
+      readable = Readable.from(Buffer.from(expectedText));
     });
 
     it('etag is passed through', async () => {

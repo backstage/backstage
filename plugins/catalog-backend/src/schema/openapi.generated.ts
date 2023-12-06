@@ -36,6 +36,9 @@ export const spec = {
     {
       url: '/',
     },
+    {
+      url: 'catalog',
+    },
   ],
   components: {
     examples: {},
@@ -105,6 +108,7 @@ export const spec = {
         description: 'Restrict to just these fields in the response.',
         required: false,
         allowReserved: true,
+        explode: false,
         schema: {
           type: 'array',
           items: {
@@ -248,12 +252,13 @@ export const spec = {
           },
         },
         required: ['error', 'response'],
+        additionalProperties: {},
       },
       JsonObject: {
         type: 'object',
         properties: {},
         description: 'A type representing all allowed JSON object values.',
-        additionalProperties: true,
+        additionalProperties: {},
       },
       MapStringString: {
         type: 'object',
@@ -291,70 +296,62 @@ export const spec = {
         additionalProperties: false,
       },
       EntityMeta: {
-        allOf: [
-          {
-            $ref: '#/components/schemas/JsonObject',
-          },
-          {
-            type: 'object',
-            properties: {
-              links: {
-                type: 'array',
-                items: {
-                  $ref: '#/components/schemas/EntityLink',
-                },
-                description:
-                  'A list of external hyperlinks related to the entity.',
-              },
-              tags: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-                description:
-                  'A list of single-valued strings, to for example classify catalog entities in\nvarious ways.',
-              },
-              annotations: {
-                $ref: '#/components/schemas/MapStringString',
-              },
-              labels: {
-                $ref: '#/components/schemas/MapStringString',
-              },
-              description: {
-                type: 'string',
-                description:
-                  'A short (typically relatively few words, on one line) description of the\nentity.',
-              },
-              title: {
-                type: 'string',
-                description:
-                  'A display name of the entity, to be presented in user interfaces instead\nof the `name` property above, when available.\nThis field is sometimes useful when the `name` is cumbersome or ends up\nbeing perceived as overly technical. The title generally does not have\nas stringent format requirements on it, so it may contain special\ncharacters and be more explanatory. Do keep it very short though, and\navoid situations where a title can be confused with the name of another\nentity, or where two entities share a title.\nNote that this is only for display purposes, and may be ignored by some\nparts of the code. Entity references still always make use of the `name`\nproperty, not the title.',
-              },
-              namespace: {
-                type: 'string',
-                description: 'The namespace that the entity belongs to.',
-              },
-              name: {
-                type: 'string',
-                description:
-                  'The name of the entity.\nMust be unique within the catalog at any given point in time, for any\ngiven namespace + kind pair. This value is part of the technical\nidentifier of the entity, and as such it will appear in URLs, database\ntables, entity references, and similar. It is subject to restrictions\nregarding what characters are allowed.\nIf you want to use a different, more human readable string with fewer\nrestrictions on it in user interfaces, see the `title` field below.',
-              },
-              etag: {
-                type: 'string',
-                description:
-                  'An opaque string that changes for each update operation to any part of\nthe entity, including metadata.\nThis field can not be set by the user at creation time, and the server\nwill reject an attempt to do so. The field will be populated in read\noperations. The field can (optionally) be specified when performing\nupdate or delete operations, and the server will then reject the\noperation if it does not match the current stored value.',
-              },
-              uid: {
-                type: 'string',
-                description:
-                  'A globally unique ID for the entity.\nThis field can not be set by the user at creation time, and the server\nwill reject an attempt to do so. The field will be populated in read\noperations. The field can (optionally) be specified when performing\nupdate or delete operations, but the server is free to reject requests\nthat do so in such a way that it breaks semantics.',
-              },
+        type: 'object',
+        properties: {
+          links: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/EntityLink',
             },
-            required: ['name'],
+            description: 'A list of external hyperlinks related to the entity.',
           },
-        ],
+          tags: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description:
+              'A list of single-valued strings, to for example classify catalog entities in\nvarious ways.',
+          },
+          annotations: {
+            $ref: '#/components/schemas/MapStringString',
+          },
+          labels: {
+            $ref: '#/components/schemas/MapStringString',
+          },
+          description: {
+            type: 'string',
+            description:
+              'A short (typically relatively few words, on one line) description of the\nentity.',
+          },
+          title: {
+            type: 'string',
+            description:
+              'A display name of the entity, to be presented in user interfaces instead\nof the `name` property above, when available.\nThis field is sometimes useful when the `name` is cumbersome or ends up\nbeing perceived as overly technical. The title generally does not have\nas stringent format requirements on it, so it may contain special\ncharacters and be more explanatory. Do keep it very short though, and\navoid situations where a title can be confused with the name of another\nentity, or where two entities share a title.\nNote that this is only for display purposes, and may be ignored by some\nparts of the code. Entity references still always make use of the `name`\nproperty, not the title.',
+          },
+          namespace: {
+            type: 'string',
+            description: 'The namespace that the entity belongs to.',
+          },
+          name: {
+            type: 'string',
+            description:
+              'The name of the entity.\nMust be unique within the catalog at any given point in time, for any\ngiven namespace + kind pair. This value is part of the technical\nidentifier of the entity, and as such it will appear in URLs, database\ntables, entity references, and similar. It is subject to restrictions\nregarding what characters are allowed.\nIf you want to use a different, more human readable string with fewer\nrestrictions on it in user interfaces, see the `title` field below.',
+          },
+          etag: {
+            type: 'string',
+            description:
+              'An opaque string that changes for each update operation to any part of\nthe entity, including metadata.\nThis field can not be set by the user at creation time, and the server\nwill reject an attempt to do so. The field will be populated in read\noperations. The field can (optionally) be specified when performing\nupdate or delete operations, and the server will then reject the\noperation if it does not match the current stored value.',
+          },
+          uid: {
+            type: 'string',
+            description:
+              'A globally unique ID for the entity.\nThis field can not be set by the user at creation time, and the server\nwill reject an attempt to do so. The field will be populated in read\noperations. The field can (optionally) be specified when performing\nupdate or delete operations, but the server is free to reject requests\nthat do so in such a way that it breaks semantics.',
+          },
+        },
+        required: ['name'],
         description: 'Metadata fields common to all versions/kinds of entity.',
-        additionalProperties: true,
+        additionalProperties: {},
       },
       EntityRelation: {
         type: 'object',
@@ -403,7 +400,6 @@ export const spec = {
         required: ['metadata', 'kind', 'apiVersion'],
         description:
           "The parts of the format that's common to all versions/kinds of entity.",
-        additionalProperties: true,
       },
       NullableEntity: {
         type: 'object',
@@ -435,7 +431,6 @@ export const spec = {
         required: ['metadata', 'kind', 'apiVersion'],
         description:
           "The parts of the format that's common to all versions/kinds of entity.",
-        additionalProperties: true,
         nullable: true,
       },
       EntityAncestryResponse: {
@@ -472,11 +467,7 @@ export const spec = {
           items: {
             type: 'array',
             items: {
-              anyOf: [
-                {
-                  $ref: '#/components/schemas/NullableEntity',
-                },
-              ],
+              $ref: '#/components/schemas/NullableEntity',
             },
             description:
               'The list of entities, in the same order as the refs in the request. Entries\nthat are null signify that no entity existed with that ref.',
@@ -495,6 +486,7 @@ export const spec = {
             type: 'number',
           },
         },
+        required: ['value', 'count'],
         additionalProperties: false,
       },
       EntityFacetsResponse: {
@@ -782,6 +774,7 @@ export const spec = {
             },
           },
         },
+        required: ['items', 'totalItems', 'pageInfo'],
         additionalProperties: false,
       },
     },
@@ -1076,11 +1069,6 @@ export const spec = {
             JWT: [],
           },
         ],
-        parameters: [
-          {
-            $ref: '#/components/parameters/fields',
-          },
-        ],
         requestBody: {
           required: false,
           content: {
@@ -1257,8 +1245,8 @@ export const spec = {
         operationId: 'CreateLocation',
         description: 'Create a location for a given target.',
         responses: {
-          '200': {
-            description: 'Ok',
+          '201': {
+            description: 'Created',
             content: {
               'application/json': {
                 schema: {
@@ -1278,38 +1266,6 @@ export const spec = {
                     },
                   },
                   required: ['entities', 'location'],
-                },
-              },
-            },
-          },
-          '201': {
-            description: '201 response',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    location: {
-                      type: 'object',
-                      properties: {
-                        id: {
-                          type: 'string',
-                        },
-                        type: {
-                          type: 'string',
-                        },
-                        target: {
-                          type: 'string',
-                        },
-                      },
-                      required: ['id', 'type', 'target'],
-                    },
-                    entities: {
-                      type: 'array',
-                      items: {},
-                    },
-                  },
-                  required: ['location', 'entities'],
                 },
               },
             },
@@ -1524,7 +1480,7 @@ export const spec = {
             description: 'Ok',
           },
           '400': {
-            description: '400 response',
+            description: 'Validation errors.',
             content: {
               'application/json; charset=utf-8': {
                 schema: {
@@ -1543,6 +1499,7 @@ export const spec = {
                           },
                         },
                         required: ['name', 'message'],
+                        additionalProperties: {},
                       },
                     },
                   },
@@ -1571,7 +1528,7 @@ export const spec = {
                   },
                   entity: {
                     type: 'object',
-                    additionalProperties: true,
+                    additionalProperties: {},
                   },
                 },
                 required: ['location', 'entity'],

@@ -28,7 +28,10 @@ import { paths } from '../paths';
 import spawn from 'cross-spawn';
 
 const [nodeMajor, nodeMinor] = process.versions.node.split('.').map(Number);
-const supportsModuleLoaderRegister = nodeMajor >= 20 && nodeMinor >= 6;
+const supportsModuleLoaderRegister =
+  nodeMajor > 20 ||
+  (nodeMajor === 20 && nodeMinor >= 6) ||
+  (nodeMajor === 18 && nodeMinor >= 19);
 
 const loaderArgs = [
   '--require',

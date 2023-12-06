@@ -323,6 +323,7 @@ reusability
 Reusability
 roadmaps
 rollbar
+Roboto
 Rollbar
 Rollup
 routable
@@ -462,3 +463,4 @@ zod
 Zolotusky
 zoomable
 zsh
+scrollable

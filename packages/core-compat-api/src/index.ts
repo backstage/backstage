@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export * from './compatWrapper';
+
 export { collectLegacyRoutes } from './collectLegacyRoutes';
 export { convertLegacyApp } from './convertLegacyApp';
 export { convertLegacyRouteRef } from './convertLegacyRouteRef';

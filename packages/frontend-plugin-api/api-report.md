@@ -5,18 +5,145 @@
 ```ts
 /// <reference types="react" />
 
+import { AlertApi } from '@backstage/core-plugin-api';
+import { alertApiRef } from '@backstage/core-plugin-api';
+import { AlertMessage } from '@backstage/core-plugin-api';
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
+import { ApiFactory } from '@backstage/core-plugin-api';
+import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
+import { ApiRefConfig } from '@backstage/core-plugin-api';
 import { AppTheme } from '@backstage/core-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
+import { AppThemeApi } from '@backstage/core-plugin-api';
+import { appThemeApiRef } from '@backstage/core-plugin-api';
+import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
+import { AuthProviderInfo } from '@backstage/core-plugin-api';
+import { AuthRequestOptions } from '@backstage/core-plugin-api';
+import { BackstageIdentityApi } from '@backstage/core-plugin-api';
+import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
+import { BackstageUserIdentity } from '@backstage/core-plugin-api';
+import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
+import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
+import { ComponentType } from 'react';
+import { ConfigApi } from '@backstage/core-plugin-api';
+import { configApiRef } from '@backstage/core-plugin-api';
+import { createApiFactory } from '@backstage/core-plugin-api';
+import { createApiRef } from '@backstage/core-plugin-api';
+import { createTranslationMessages } from '@backstage/core-plugin-api/alpha';
+import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { createTranslationResource } from '@backstage/core-plugin-api/alpha';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { discoveryApiRef } from '@backstage/core-plugin-api';
+import { ErrorApi } from '@backstage/core-plugin-api';
+import { ErrorApiError } from '@backstage/core-plugin-api';
+import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
+import { errorApiRef } from '@backstage/core-plugin-api';
+import { FeatureFlag } from '@backstage/core-plugin-api';
+import { FeatureFlagsApi } from '@backstage/core-plugin-api';
+import { featureFlagsApiRef } from '@backstage/core-plugin-api';
+import { FeatureFlagsSaveOptions } from '@backstage/core-plugin-api';
+import { FeatureFlagState } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
+import { fetchApiRef } from '@backstage/core-plugin-api';
+import { githubAuthApiRef } from '@backstage/core-plugin-api';
+import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
+import { googleAuthApiRef } from '@backstage/core-plugin-api';
+import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
+import { identityApiRef } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
+import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
+import { OAuthApi } from '@backstage/core-plugin-api';
+import { OAuthRequestApi } from '@backstage/core-plugin-api';
+import { oauthRequestApiRef } from '@backstage/core-plugin-api';
+import { OAuthRequester } from '@backstage/core-plugin-api';
+import { OAuthRequesterOptions } from '@backstage/core-plugin-api';
+import { OAuthScope } from '@backstage/core-plugin-api';
+import { oktaAuthApiRef } from '@backstage/core-plugin-api';
+import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
+import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { PendingOAuthRequest } from '@backstage/core-plugin-api';
+import { ProfileInfo } from '@backstage/core-plugin-api';
+import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { SessionApi } from '@backstage/core-plugin-api';
+import { SessionState } from '@backstage/core-plugin-api';
+import { SignInPageProps } from '@backstage/core-plugin-api';
+import { StorageApi } from '@backstage/core-plugin-api';
+import { storageApiRef } from '@backstage/core-plugin-api';
+import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { TranslationMessages } from '@backstage/core-plugin-api/alpha';
+import { TranslationMessagesOptions } from '@backstage/core-plugin-api/alpha';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { TranslationRefOptions } from '@backstage/core-plugin-api/alpha';
+import { TranslationResource } from '@backstage/core-plugin-api/alpha';
+import { TranslationResourceOptions } from '@backstage/core-plugin-api/alpha';
+import { TypesToApiRefs } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
+import { useApiHolder } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { withApis } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
+
+export { AlertApi };
+
+export { alertApiRef };
+
+export { AlertMessage };
+
+// @public
+export type AnalyticsApi = {
+  captureEvent(event: AnalyticsEvent): void;
+};
+
+// @public
+export const analyticsApiRef: ApiRef<AnalyticsApi>;
+
+// @public
+export const AnalyticsContext: (options: {
+  attributes: Partial<AnalyticsContextValue>;
+  children: ReactNode;
+}) => React_2.JSX.Element;
+
+// @public
+export type AnalyticsContextValue = CommonAnalyticsContext & {
+  [param in string]: string | boolean | number | undefined;
+};
+
+// @public
+export type AnalyticsEvent = {
+  action: string;
+  subject: string;
+  value?: number;
+  attributes?: AnalyticsEventAttributes;
+  context: AnalyticsContextValue;
+};
+
+// @public
+export type AnalyticsEventAttributes = {
+  [attribute in string]: string | boolean | number;
+};
+
+// @public
+export type AnalyticsTracker = {
+  captureEvent: (
+    action: string,
+    subject: string,
+    options?: {
+      value?: number;
+      attributes?: AnalyticsEventAttributes;
+    },
+  ) => void;
+};
+
+export { AnyApiFactory };
+
+export { AnyApiRef };
 
 // @public (undocumented)
 export type AnyExtensionDataMap = {
@@ -55,6 +182,14 @@ export type AnyRouteRefParams =
 export type AnyRoutes = {
   [name in string]: RouteRef;
 };
+
+export { ApiFactory };
+
+export { ApiHolder };
+
+export { ApiRef };
+
+export { ApiRefConfig };
 
 // @public
 export interface AppNode {
@@ -99,6 +234,12 @@ export interface AppNodeSpec {
   readonly source?: BackstagePlugin;
 }
 
+export { AppTheme };
+
+export { AppThemeApi };
+
+export { appThemeApiRef };
+
 // @public
 export interface AppTree {
   readonly nodes: ReadonlyMap<string, AppNode>;
@@ -116,22 +257,61 @@ export interface AppTreeApi {
 // @public
 export const appTreeApiRef: ApiRef<AppTreeApi>;
 
+export { atlassianAuthApiRef };
+
+export { AuthProviderInfo };
+
+export { AuthRequestOptions };
+
+export { BackstageIdentityApi };
+
+export { BackstageIdentityResponse };
+
 // @public (undocumented)
 export interface BackstagePlugin<
   Routes extends AnyRoutes = AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
 > {
   // (undocumented)
-  $$type: '@backstage/BackstagePlugin';
+  readonly $$type: '@backstage/BackstagePlugin';
   // (undocumented)
-  extensions: Extension<unknown>[];
+  readonly externalRoutes: ExternalRoutes;
   // (undocumented)
-  externalRoutes: ExternalRoutes;
+  readonly id: string;
   // (undocumented)
-  id: string;
-  // (undocumented)
-  routes: Routes;
+  readonly routes: Routes;
 }
+
+export { BackstageUserIdentity };
+
+export { bitbucketAuthApiRef };
+
+export { bitbucketServerAuthApiRef };
+
+// @public
+export type CommonAnalyticsContext = {
+  pluginId: string;
+  extensionId: string;
+};
+
+// @public (undocumented)
+export type ComponentRef<T extends {} = {}> = {
+  id: string;
+  T: T;
+};
+
+// @public
+export interface ComponentsApi {
+  // (undocumented)
+  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T>;
+}
+
+// @public
+export const componentsApiRef: ApiRef<ComponentsApi>;
+
+export { ConfigApi };
+
+export { configApiRef };
 
 // @public (undocumented)
 export interface ConfigurableExtensionDataRef<
@@ -150,6 +330,20 @@ export interface ConfigurableExtensionDataRef<
 }
 
 // @public (undocumented)
+export const coreComponentRefs: {
+  progress: ComponentRef<CoreProgressProps>;
+  notFoundErrorPage: ComponentRef<CoreNotFoundErrorPageProps>;
+  errorBoundaryFallback: ComponentRef<CoreErrorBoundaryFallbackProps>;
+};
+
+// @public (undocumented)
+export type CoreErrorBoundaryFallbackProps = {
+  plugin?: BackstagePlugin;
+  error: Error;
+  resetError: () => void;
+};
+
+// @public (undocumented)
 export const coreExtensionData: {
   reactElement: ConfigurableExtensionDataRef<JSX_2.Element, {}>;
   routePath: ConfigurableExtensionDataRef<string, {}>;
@@ -157,7 +351,23 @@ export const coreExtensionData: {
   routeRef: ConfigurableExtensionDataRef<RouteRef<AnyRouteRefParams>, {}>;
   navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
   theme: ConfigurableExtensionDataRef<AppTheme, {}>;
+  logoElements: ConfigurableExtensionDataRef<LogoElements, {}>;
+  component: ConfigurableExtensionDataRef<
+    {
+      ref: ComponentRef;
+      impl: ComponentType;
+    },
+    {}
+  >;
 };
+
+// @public (undocumented)
+export type CoreNotFoundErrorPageProps = {
+  children?: ReactNode;
+};
+
+// @public (undocumented)
+export type CoreProgressProps = {};
 
 // @public (undocumented)
 export function createApiExtension<
@@ -169,7 +379,7 @@ export function createApiExtension<
         api: AnyApiRef;
         factory: (options: {
           config: TConfig;
-          inputs: Expand<ExtensionInputValues<TInputs>>;
+          inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         }) => AnyApiFactory;
       }
     | {
@@ -179,7 +389,37 @@ export function createApiExtension<
     configSchema?: PortableSchema<TConfig>;
     inputs?: TInputs;
   },
-): Extension<TConfig>;
+): ExtensionDefinition<TConfig>;
+
+export { createApiFactory };
+
+export { createApiRef };
+
+// @public (undocumented)
+export function createComponentExtension<
+  TProps extends {},
+  TConfig extends {},
+  TInputs extends AnyExtensionInputMap,
+>(options: {
+  ref: ComponentRef<TProps>;
+  name?: string;
+  disabled?: boolean;
+  inputs?: TInputs;
+  configSchema?: PortableSchema<TConfig>;
+  component:
+    | {
+        lazy: (values: {
+          config: TConfig;
+          inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+        }) => Promise<ComponentType<TProps>>;
+      }
+    | {
+        sync: (values: {
+          config: TConfig;
+          inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+        }) => ComponentType<TProps>;
+      };
+}): ExtensionDefinition<TConfig>;
 
 // @public (undocumented)
 export function createExtension<
@@ -188,7 +428,7 @@ export function createExtension<
   TConfig = never,
 >(
   options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
-): Extension<TConfig>;
+): ExtensionDefinition<TConfig>;
 
 // @public (undocumented)
 export function createExtensionDataRef<TData>(
@@ -230,14 +470,18 @@ export interface CreateExtensionOptions<
   disabled?: boolean;
   // (undocumented)
   factory(options: {
-    source?: BackstagePlugin;
+    node: AppNode;
     config: TConfig;
-    inputs: Expand<ExtensionInputValues<TInputs>>;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
   // (undocumented)
-  id: string;
-  // (undocumented)
   inputs?: TInputs;
+  // (undocumented)
+  kind?: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  namespace?: string;
   // (undocumented)
   output: TOutput;
 }
@@ -274,11 +518,12 @@ export function createExternalRouteRef<
 
 // @public
 export function createNavItemExtension(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   routeRef: RouteRef<undefined>;
   title: string;
-  icon: IconComponent;
-}): Extension<{
+  icon: IconComponent_2;
+}): ExtensionDefinition<{
   title: string;
 }>;
 
@@ -297,7 +542,8 @@ export function createPageExtension<
         configSchema: PortableSchema<TConfig>;
       }
   ) & {
-    id: string;
+    namespace?: string;
+    name?: string;
     attachTo?: {
       id: string;
       input: string;
@@ -307,10 +553,10 @@ export function createPageExtension<
     routeRef?: RouteRef;
     loader: (options: {
       config: TConfig;
-      inputs: Expand<ExtensionInputValues<TInputs>>;
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     }) => Promise<JSX.Element>;
   },
-): Extension<TConfig>;
+): ExtensionDefinition<TConfig>;
 
 // @public (undocumented)
 export function createPlugin<
@@ -345,6 +591,26 @@ export function createSchemaFromZod<TOutput, TInput>(
   schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,
 ): PortableSchema<TOutput>;
 
+// @public (undocumented)
+export function createSignInPageExtension<
+  TConfig extends {},
+  TInputs extends AnyExtensionInputMap,
+>(options: {
+  namespace?: string;
+  name?: string;
+  attachTo?: {
+    id: string;
+    input: string;
+  };
+  configSchema?: PortableSchema<TConfig>;
+  disabled?: boolean;
+  inputs?: TInputs;
+  loader: (options: {
+    config: TConfig;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+  }) => Promise<ComponentType<SignInPageProps>>;
+}): ExtensionDefinition<TConfig>;
+
 // @public
 export function createSubRouteRef<
   Path extends string,
@@ -355,7 +621,49 @@ export function createSubRouteRef<
 }): MakeSubRouteRef<PathParams<Path>, ParentParams>;
 
 // @public (undocumented)
-export function createThemeExtension(theme: AppTheme): Extension<never>;
+export function createThemeExtension(
+  theme: AppTheme,
+): ExtensionDefinition<never>;
+
+// @public (undocumented)
+export function createTranslationExtension(options: {
+  name?: string;
+  resource: TranslationResource | TranslationMessages;
+}): ExtensionDefinition<never>;
+
+// @public (undocumented)
+export namespace createTranslationExtension {
+  const // (undocumented)
+    translationDataRef: ConfigurableExtensionDataRef<
+      | TranslationResource<string>
+      | TranslationMessages<
+          string,
+          {
+            [x: string]: string;
+          },
+          boolean
+        >,
+      {}
+    >;
+}
+
+export { createTranslationMessages };
+
+export { createTranslationRef };
+
+export { createTranslationResource };
+
+export { DiscoveryApi };
+
+export { discoveryApiRef };
+
+export { ErrorApi };
+
+export { ErrorApiError };
+
+export { ErrorApiErrorContext };
+
+export { errorApiRef };
 
 // @public (undocumented)
 export interface Extension<TConfig> {
@@ -372,12 +680,9 @@ export interface Extension<TConfig> {
   disabled: boolean;
   // (undocumented)
   factory(options: {
-    source?: BackstagePlugin;
+    node: AppNode;
     config: TConfig;
-    inputs: Record<
-      string,
-      undefined | Record<string, unknown> | Array<Record<string, unknown>>
-    >;
+    inputs: ResolvedExtensionInputs<any>;
   }): ExtensionDataValues<any>;
   // (undocumented)
   id: string;
@@ -397,11 +702,9 @@ export interface ExtensionBoundaryProps {
   // (undocumented)
   children: ReactNode;
   // (undocumented)
-  id: string;
+  node: AppNode;
   // (undocumented)
   routable?: boolean;
-  // (undocumented)
-  source?: BackstagePlugin;
 }
 
 // @public (undocumented)
@@ -433,6 +736,37 @@ export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
 };
 
 // @public (undocumented)
+export interface ExtensionDefinition<TConfig> {
+  // (undocumented)
+  $$type: '@backstage/ExtensionDefinition';
+  // (undocumented)
+  attachTo: {
+    id: string;
+    input: string;
+  };
+  // (undocumented)
+  configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled: boolean;
+  // (undocumented)
+  factory(options: {
+    node: AppNode;
+    config: TConfig;
+    inputs: ResolvedExtensionInputs<any>;
+  }): ExtensionDataValues<any>;
+  // (undocumented)
+  inputs: AnyExtensionInputMap;
+  // (undocumented)
+  kind?: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  namespace?: string;
+  // (undocumented)
+  output: AnyExtensionDataMap;
+}
+
+// @public (undocumented)
 export interface ExtensionInput<
   TExtensionData extends AnyExtensionDataMap,
   TConfig extends {
@@ -448,31 +782,18 @@ export interface ExtensionInput<
   extensionData: TExtensionData;
 }
 
-// @public
-export type ExtensionInputValues<
-  TInputs extends {
-    [name in string]: ExtensionInput<any, any>;
-  },
-> = {
-  [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
-    ? Array<Expand<ExtensionDataValues<TInputs[InputName]['extensionData']>>>
-    : false extends TInputs[InputName]['config']['optional']
-    ? Expand<ExtensionDataValues<TInputs[InputName]['extensionData']>>
-    : Expand<
-        ExtensionDataValues<TInputs[InputName]['extensionData']> | undefined
-      >;
-};
-
 // @public (undocumented)
 export interface ExtensionOverrides {
   // (undocumented)
-  $$type: '@backstage/ExtensionOverrides';
+  readonly $$type: '@backstage/ExtensionOverrides';
 }
 
 // @public (undocumented)
 export interface ExtensionOverridesOptions {
   // (undocumented)
-  extensions: Extension<unknown>[];
+  extensions: ExtensionDefinition<unknown>[];
+  // (undocumented)
+  featureFlags?: FeatureFlagConfig[];
 }
 
 // @public
@@ -488,12 +809,79 @@ export interface ExternalRouteRef<
   readonly T: TParams;
 }
 
+export { FeatureFlag };
+
+// @public
+export type FeatureFlagConfig = {
+  name: string;
+};
+
+export { FeatureFlagsApi };
+
+export { featureFlagsApiRef };
+
+export { FeatureFlagsSaveOptions };
+
+export { FeatureFlagState };
+
+export { FetchApi };
+
+export { fetchApiRef };
+
+export { githubAuthApiRef };
+
+export { gitlabAuthApiRef };
+
+export { googleAuthApiRef };
+
+// @public
+export type IconComponent = ComponentType<
+  | {
+      fontSize?: 'large' | 'small' | 'default' | 'inherit';
+    }
+  | {
+      fontSize?: 'medium' | 'large' | 'small' | 'inherit';
+    }
+>;
+
+export { IdentityApi };
+
+export { identityApiRef };
+
+// @public (undocumented)
+export type LogoElements = {
+  logoIcon?: JSX_2.Element;
+  logoFull?: JSX_2.Element;
+};
+
+export { microsoftAuthApiRef };
+
 // @public (undocumented)
 export type NavTarget = {
   title: string;
-  icon: IconComponent;
+  icon: IconComponent_2;
   routeRef: RouteRef<undefined>;
 };
+
+export { OAuthApi };
+
+export { OAuthRequestApi };
+
+export { oauthRequestApiRef };
+
+export { OAuthRequester };
+
+export { OAuthRequesterOptions };
+
+export { OAuthScope };
+
+export { oktaAuthApiRef };
+
+export { oneloginAuthApiRef };
+
+export { OpenIdConnectApi };
+
+export { PendingOAuthRequest };
 
 // @public (undocumented)
 export interface PluginOptions<
@@ -501,9 +889,11 @@ export interface PluginOptions<
   ExternalRoutes extends AnyExternalRoutes,
 > {
   // (undocumented)
-  extensions?: Extension<unknown>[];
+  extensions?: ExtensionDefinition<unknown>[];
   // (undocumented)
   externalRoutes?: ExternalRoutes;
+  // (undocumented)
+  featureFlags?: FeatureFlagConfig[];
   // (undocumented)
   id: string;
   // (undocumented)
@@ -514,6 +904,32 @@ export interface PluginOptions<
 export type PortableSchema<TOutput> = {
   parse: (input: unknown) => TOutput;
   schema: JsonObject;
+};
+
+export { ProfileInfo };
+
+export { ProfileInfoApi };
+
+// @public
+export type ResolvedExtensionInput<TExtensionData extends AnyExtensionDataMap> =
+  {
+    node: AppNode;
+    output: ExtensionDataValues<TExtensionData>;
+  };
+
+// @public
+export type ResolvedExtensionInputs<
+  TInputs extends {
+    [name in string]: ExtensionInput<any, any>;
+  },
+> = {
+  [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
+    ? Array<Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>>
+    : false extends TInputs[InputName]['config']['optional']
+    ? Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>
+    : Expand<
+        ResolvedExtensionInput<TInputs[InputName]['extensionData']> | undefined
+      >;
 };
 
 // @public
@@ -533,6 +949,16 @@ export interface RouteRef<
   readonly T: TParams;
 }
 
+export { SessionApi };
+
+export { SessionState };
+
+export { StorageApi };
+
+export { storageApiRef };
+
+export { StorageValueSnapshot };
+
 // @public
 export interface SubRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
@@ -544,6 +970,32 @@ export interface SubRouteRef<
   // (undocumented)
   readonly T: TParams;
 }
+
+export { TranslationMessages };
+
+export { TranslationMessagesOptions };
+
+export { TranslationRef };
+
+export { TranslationRefOptions };
+
+export { TranslationResource };
+
+export { TranslationResourceOptions };
+
+export { TypesToApiRefs };
+
+// @public
+export function useAnalytics(): AnalyticsTracker;
+
+export { useApi };
+
+export { useApiHolder };
+
+// @public
+export function useComponentRef<T extends {}>(
+  ref: ComponentRef<T>,
+): ComponentType<T>;
 
 // @public
 export function useRouteRef<
@@ -562,4 +1014,8 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 export function useRouteRefParams<Params extends AnyRouteRefParams>(
   _routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
+
+export { useTranslationRef };
+
+export { withApis };
 ```

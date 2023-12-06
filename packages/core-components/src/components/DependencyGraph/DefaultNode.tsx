@@ -16,14 +16,13 @@
 
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
 import { DependencyGraphTypes as Types } from './types';
 
 /** @public */
 export type DependencyGraphDefaultNodeClassKey = 'node' | 'text';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+  theme => ({
     node: {
       fill: theme.palette.primary.light,
       stroke: theme.palette.primary.light,

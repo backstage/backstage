@@ -24,6 +24,7 @@ import {
   createPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
+import { compatWrapper } from '@backstage/core-compat-api';
 
 const rootRouteRef = createRouteRef();
 
@@ -33,7 +34,6 @@ const rootRouteRef = createRouteRef();
 export const titleExtensionDataRef = createExtensionDataRef<string>('title');
 
 const HomepageCompositionRootExtension = createPageExtension({
-  id: 'home',
   defaultPath: '/home',
   routeRef: rootRouteRef,
   inputs: {
@@ -50,12 +50,14 @@ const HomepageCompositionRootExtension = createPageExtension({
     ),
   },
   loader: ({ inputs }) =>
-    import('./components/').then(m => (
-      <m.HomepageCompositionRoot
-        children={inputs.props?.children}
-        title={inputs.props?.title}
-      />
-    )),
+    import('./components/').then(m =>
+      compatWrapper(
+        <m.HomepageCompositionRoot
+          children={inputs.props?.output.children}
+          title={inputs.props?.output.title}
+        />,
+      ),
+    ),
 });
 
 /**

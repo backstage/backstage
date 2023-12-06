@@ -54,12 +54,11 @@ describe('createAppTree', () => {
   it('throws an error when a core extension is overridden', () => {
     const config = new MockConfigApi({});
     const features = [
-      createPlugin({
-        id: 'plugin',
+      createExtensionOverrides({
         extensions: [
           createExtension({
-            id: 'core',
-            attachTo: { id: 'core.routes', input: 'route' },
+            name: 'core',
+            attachTo: { id: 'core/routes', input: 'route' },
             inputs: {},
             output: {},
             factory: () => ({}),
@@ -70,33 +69,7 @@ describe('createAppTree', () => {
     expect(() =>
       createAppTree({ features, config, builtinExtensions: [] }),
     ).toThrow(
-      "It is forbidden to override the following extension(s): 'core', which is done by the following plugin(s): 'plugin'",
-    );
-  });
-
-  it('throws an error when duplicated extensions are detected', () => {
-    const config = new MockConfigApi({});
-
-    const ExtensionA = createExtension({ ...extBase, id: 'A' });
-
-    const ExtensionB = createExtension({ ...extBase, id: 'B' });
-
-    const PluginA = createPlugin({
-      id: 'A',
-      extensions: [ExtensionA, ExtensionA],
-    });
-
-    const PluginB = createPlugin({
-      id: 'B',
-      extensions: [ExtensionA, ExtensionB, ExtensionB],
-    });
-
-    const features = [PluginA, PluginB];
-
-    expect(() =>
-      createAppTree({ features, config, builtinExtensions: [] }),
-    ).toThrow(
-      "The following extensions are duplicated: The extension 'A' was provided 2 time(s) by the plugin 'A' and 1 time(s) by the plugin 'B', The extension 'B' was provided 2 time(s) by the plugin 'B'",
+      "It is forbidden to override the following extension(s): 'core', which is done by one or more extension overrides",
     );
   });
 
@@ -106,13 +79,13 @@ describe('createAppTree', () => {
         features: [
           createExtensionOverrides({
             extensions: [
-              createExtension({ ...extBase, id: 'a' }),
-              createExtension({ ...extBase, id: 'a' }),
-              createExtension({ ...extBase, id: 'b' }),
+              createExtension({ ...extBase, name: 'a' }),
+              createExtension({ ...extBase, name: 'a' }),
+              createExtension({ ...extBase, name: 'b' }),
             ],
           }),
           createExtensionOverrides({
-            extensions: [createExtension({ ...extBase, id: 'b' })],
+            extensions: [createExtension({ ...extBase, name: 'b' })],
           }),
         ],
         config: new MockConfigApi({}),

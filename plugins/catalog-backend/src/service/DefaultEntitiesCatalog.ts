@@ -31,11 +31,9 @@ import {
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
-  EntitiesSearchFilter,
   EntityAncestryResponse,
   EntityFacetsRequest,
   EntityFacetsResponse,
-  EntityFilter,
   EntityPagination,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
@@ -55,6 +53,10 @@ import {
   isQueryEntitiesCursorRequest,
   isQueryEntitiesInitialRequest,
 } from './util';
+import {
+  EntitiesSearchFilter,
+  EntityFilter,
+} from '@backstage/plugin-catalog-node';
 
 const defaultSortField: EntityOrder = {
   field: 'metadata.uid',
