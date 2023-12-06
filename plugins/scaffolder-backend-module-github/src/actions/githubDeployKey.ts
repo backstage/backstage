@@ -15,9 +15,11 @@
  */
 
 import { InputError } from '@backstage/errors';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions } from './helpers';
 import { Octokit } from 'octokit';
 import Sodium from 'libsodium-wrappers';

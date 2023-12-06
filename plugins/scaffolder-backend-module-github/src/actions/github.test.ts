@@ -13,7 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-jest.mock('../helpers');
+jest.mock('./gitHelpers', () => {
+  return {
+    ...jest.requireActual('./gitHelpers'),
+    enableBranchProtectionOnDefaultRepoBranch: jest.fn(),
+    entityRefToName: jest.fn(),
+  };
+});
+
+jest.mock('@backstage/plugin-scaffolder-node', () => {
+  return {
+    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
+    initRepoAndPush: jest.fn().mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    }),
+    commitAndPushRepo: jest.fn().mockResolvedValue({
+      commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
+    }),
+  };
+});
 
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -25,12 +43,12 @@ import {
 } from '@backstage/integration';
 import { when } from 'jest-when';
 import { PassThrough } from 'stream';
+import { createPublishGithubAction } from './github';
+import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   entityRefToName,
-  initRepoAndPush,
-} from '../helpers';
-import { createPublishGithubAction } from './github';
+} from './gitHelpers';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
@@ -79,7 +97,7 @@ describe('publish:github', () => {
   });
 
   const { entityRefToName: realFamiliarizeEntityName } =
-    jest.requireActual('../helpers');
+    jest.requireActual('./gitHelpers');
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any>;

@@ -18,12 +18,14 @@ import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 import { emitterEventNames } from '@octokit/webhooks';
 import { assertError, InputError } from '@backstage/errors';
 import { Octokit } from 'octokit';
 import { getOctokitOptions } from './helpers';
-import { parseRepoUrl } from '../publish/util';
 import { examples } from './githubWebhook.examples';
 
 /**
