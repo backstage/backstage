@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * @public
+ */
 export interface SerializedFile {
   path: string;
   content: Buffer;

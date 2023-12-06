@@ -23,10 +23,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { PassThrough } from 'stream';
-import {
-  OctokitWithPullRequestPluginClient,
-  createPublishGithubPullRequestAction,
-} from './githubPullRequest';
+import { createPublishGithubPullRequestAction } from './githubPullRequest';
 import yaml from 'yaml';
 import { examples } from './githubPullRequest.examples';
 import { createMockDirectory } from '@backstage/backend-test-utils';
@@ -103,9 +100,7 @@ describe('publish:github:pull-request examples', () => {
       },
     };
 
-    const clientFactory = jest.fn(
-      async () => fakeClient as unknown as OctokitWithPullRequestPluginClient,
-    );
+    const clientFactory = jest.fn(async () => fakeClient as any);
 
     mockDir.setContent({
       [workspacePath]: { 'file.txt': 'Hello there!' },

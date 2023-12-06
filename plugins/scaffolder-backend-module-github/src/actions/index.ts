@@ -22,5 +22,8 @@ export { createGithubWebhookAction } from './githubWebhook';
 export { createGithubDeployKeyAction } from './githubDeployKey';
 export { createGithubEnvironmentAction } from './githubEnvironment';
 
-export { createPublishGithubPullRequestAction } from './githubPullRequest';
+export {
+  createPublishGithubPullRequestAction,
+  type CreateGithubPullRequestActionOptions,
+} from './githubPullRequest';
 export { createPublishGithubAction } from './github';
