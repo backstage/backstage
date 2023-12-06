@@ -4994,7 +4994,6 @@ __metadata:
     "@types/passport-microsoft": ^1.0.0
     express: ^4.18.2
     jose: ^4.6.0
-    loadash: ^1.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     passport: ^0.6.0
@@ -33781,13 +33780,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loadash@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "loadash@npm:1.0.0"
-  checksum: 05a105fa9773a7c15963ea783507daa4d488a7a5b782ba77d84dbfaa40b01eb6a3a6cb1a160e67c4af339c7aa9209f9bfb8ef35eefffe98838930f05752ea550
-  languageName: node
-  linkType: hard
-
 "loader-runner@npm:^4.2.0":
   version: 4.2.0
   resolution: "loader-runner@npm:4.2.0"
@@ -41327,6 +41319,7 @@ __metadata:
     fs-extra: 10.1.0
     husky: ^8.0.0
     lint-staged: ^15.0.0
+    lodash: ^4.17.21
     minimist: ^1.2.5
     node-gyp: ^10.0.0
     prettier: ^2.2.1
