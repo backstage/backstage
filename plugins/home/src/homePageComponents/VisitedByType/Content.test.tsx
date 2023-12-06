@@ -34,6 +34,13 @@ const visits = [
     hits: 35,
     timestamp: Date.now() - 86400_000,
   },
+  {
+    id: 'tech-radar',
+    name: 'Tech Radar',
+    pathname: '/tech-radar',
+    hits: 40,
+    timestamp: Date.now() - 360_000,
+  },
 ];
 
 const mockVisitsApi = {
@@ -123,22 +130,24 @@ describe('<Content kind="recent"/>', () => {
     expect(container.querySelectorAll('li')[1]).not.toBeVisible();
   });
 
-  it('allows items to be filtered', async () => {
+  it('allows recent items to be filtered using config', async () => {
     const configApiMock = new MockConfigApi({
       home: {
-        topVisits: {
+        recentVisits: {
           filterBy: [
             {
               field: 'pathname',
               operator: '==',
-              value: '/explore',
+              value: '/tech-radar',
             },
           ],
         },
       },
     });
 
-    const { getByText, queryByText } = await renderInTestApp(
+    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -151,8 +160,41 @@ describe('<Content kind="recent"/>', () => {
       </TestApiProvider>,
     );
     await waitFor(() => {
-      expect(getByText('Explore Backstage')).toBeInTheDocument();
-      expect(queryByText('Tech Radar')).toBeNull();
+      expect(listSpy).toHaveBeenCalledWith({
+        limit: 8,
+        orderBy: [
+          {
+            direction: 'desc',
+            field: 'timestamp',
+          },
+        ],
+        filterBy: [{ field: 'pathname', operator: '==', value: '/tech-radar' }],
+      });
+    });
+  });
+
+  it('shows all recent items when there is no filtering in the config', async () => {
+    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <ContextProvider>
+          <Content kind="recent" />
+        </ContextProvider>
+      </TestApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(listSpy).toHaveBeenCalledWith({
+        limit: 8,
+        orderBy: [
+          {
+            direction: 'desc',
+            field: 'timestamp',
+          },
+        ],
+        filterBy: [],
+      });
     });
   });
 });
@@ -170,5 +212,74 @@ describe('<Content kind="top"/>', () => {
     await waitFor(() =>
       expect(getByText('Explore Backstage')).toBeInTheDocument(),
     );
+  });
+
+  it('allows top items to be filtered using config', async () => {
+    const configApiMock = new MockConfigApi({
+      home: {
+        topVisits: {
+          filterBy: [
+            {
+              field: 'pathname',
+              operator: '==',
+              value: '/explore',
+            },
+          ],
+        },
+      },
+    });
+
+    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [visitsApiRef, mockVisitsApi],
+        ]}
+      >
+        <ContextProvider>
+          <Content kind="top" />
+        </ContextProvider>
+      </TestApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(listSpy).toHaveBeenCalledWith({
+        limit: 8,
+        orderBy: [
+          {
+            direction: 'desc',
+            field: 'hits',
+          },
+        ],
+        filterBy: [{ field: 'pathname', operator: '==', value: '/explore' }],
+      });
+    });
+  });
+
+  it('shows all top items when there is no filtering in the config', async () => {
+    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <ContextProvider>
+          <Content kind="top" />
+        </ContextProvider>
+      </TestApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(listSpy).toHaveBeenCalledWith({
+        limit: 8,
+        orderBy: [
+          {
+            direction: 'desc',
+            field: 'hits',
+          },
+        ],
+        filterBy: [],
+      });
+    });
   });
 });
