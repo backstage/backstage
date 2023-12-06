@@ -4,6 +4,8 @@
 
 ```ts
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
+import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
+import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucket';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
@@ -11,6 +13,9 @@ import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
 import express from 'express';
 import { fetchContents as fetchContents_2 } from '@backstage/plugin-scaffolder-node';
+import * as gerrit from '@backstage/plugin-scaffolder-backend-module-gerrit';
+import * as github from '@backstage/plugin-scaffolder-backend-module-github';
+import * as gitlab from '@backstage/plugin-scaffolder-backend-module-gitlab';
 import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
@@ -25,6 +30,7 @@ import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-co
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 import { Schema } from 'jsonschema';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SerializedTask as SerializedTask_2 } from '@backstage/plugin-scaffolder-node';
 import { SerializedTaskEvent as SerializedTaskEvent_2 } from '@backstage/plugin-scaffolder-node';
@@ -189,6 +195,101 @@ export const createFilesystemRenameAction: () => TemplateAction_2<
       to: string;
       overwrite?: boolean;
     }>;
+  },
+  JsonObject
+>;
+
+// @public @deprecated (undocumented)
+export const createGithubActionsDispatchAction: typeof github.createGithubActionsDispatchAction;
+
+// @public @deprecated (undocumented)
+export const createGithubDeployKeyAction: typeof github.createGithubDeployKeyAction;
+
+// @public @deprecated (undocumented)
+export const createGithubEnvironmentAction: typeof github.createGithubEnvironmentAction;
+
+// @public @deprecated (undocumented)
+export const createGithubIssuesLabelAction: typeof github.createGithubIssuesLabelAction;
+
+// @public @deprecated (undocumented)
+export type CreateGithubPullRequestActionOptions =
+  github.CreateGithubPullRequestActionOptions;
+
+// @public @deprecated (undocumented)
+export const createGithubRepoCreateAction: typeof github.createGithubRepoCreateAction;
+
+// @public @deprecated (undocumented)
+export const createGithubRepoPushAction: typeof github.createGithubRepoPushAction;
+
+// @public @deprecated (undocumented)
+export const createGithubWebhookAction: typeof github.createGithubWebhookAction;
+
+// @public @deprecated (undocumented)
+export const createPublishAzureAction: typeof azure.createPublishAzureAction;
+
+// @public @deprecated (undocumented)
+export const createPublishBitbucketAction: typeof bitbucket.createPublishBitbucketAction;
+
+// @public @deprecated (undocumented)
+export const createPublishBitbucketCloudAction: typeof bitbucket.createPublishBitbucketCloudAction;
+
+// @public @deprecated (undocumented)
+export const createPublishBitbucketServerAction: typeof bitbucket.createPublishBitbucketServerAction;
+
+// @public @deprecated (undocumented)
+export const createPublishBitbucketServerPullRequestAction: typeof bitbucket.createPublishBitbucketServerPullRequestAction;
+
+// @public @deprecated (undocumented)
+export const createPublishGerritAction: typeof gerrit.createPublishGerritAction;
+
+// @public @deprecated (undocumented)
+export const createPublishGerritReviewAction: typeof gerrit.createPublishGerritReviewAction;
+
+// @public @deprecated (undocumented)
+export const createPublishGithubAction: typeof github.createPublishGithubAction;
+
+// @public @deprecated (undocumented)
+export const createPublishGithubPullRequestAction: (
+  options: github.CreateGithubPullRequestActionOptions,
+) => TemplateAction_2<
+  {
+    title: string;
+    branchName: string;
+    targetBranchName?: string | undefined;
+    description: string;
+    repoUrl: string;
+    draft?: boolean | undefined;
+    targetPath?: string | undefined;
+    sourcePath?: string | undefined;
+    token?: string | undefined;
+    reviewers?: string[] | undefined;
+    teamReviewers?: string[] | undefined;
+    commitMessage?: string | undefined;
+    update?: boolean | undefined;
+  },
+  JsonObject
+>;
+
+// @public @deprecated (undocumented)
+export const createPublishGitlabAction: typeof gitlab.createPublishGitlabAction;
+
+// @public @deprecated (undocumented)
+export const createPublishGitlabMergeRequestAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction_2<
+  {
+    repoUrl: string;
+    title: string;
+    description: string;
+    branchName: string;
+    targetBranchName?: string | undefined;
+    sourcePath?: string | undefined;
+    targetPath?: string | undefined;
+    token?: string | undefined;
+    commitAction?: 'update' | 'delete' | 'create' | undefined;
+    projectid?: string | undefined;
+    removeSourceBranch?: boolean | undefined;
+    assignee?: string | undefined;
   },
   JsonObject
 >;
