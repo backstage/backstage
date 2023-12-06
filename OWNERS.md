@@ -78,7 +78,6 @@ Scope: The Permission Framework and plugins integrating with the permission fram
 | Name                 | Organization | Team            | GitHub                                          | Discord          |
 | -------------------- | ------------ | --------------- | ----------------------------------------------- | ---------------- |
 | Ainhoa Larumbe       | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)            | ainhoa#8085      |
-| Aramis Sennyey       | Spotify      | Imaginary Goats | [sennyeya](https://github.com/sennyeya)         | Aramis#7984      |
 | Claire Casey         | Spotify      | Imaginary Goats | [clairelcasey](http://github.com/clairelcasey)  | clairecasey#2710 |
 | Eric Peterson        | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)              | iamEAP#3058      |
 | Harry Hogg           | Spotify      | Imaginary Goats | [HHogg](http://github.com/HHogg)                | simplex#3451     |
@@ -118,7 +117,7 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 
 | Name           | Organization | GitHub                                  | Discord       |
 | -------------- | ------------ | --------------------------------------- | ------------- |
-| Aramis Sennyey | Spotify      | [sennyeya](https://github.com/sennyeya) | `Aramis#7984` |
+| Aramis Sennyey |              | [sennyeya](https://github.com/sennyeya) | `Aramis#7984` |
 
 ### Scaffolder
 
@@ -146,7 +145,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
 | Andre Wanlin                   | Spotify                   | [awanlin](https://github.com/awanlin)                 | `ahhhndre`                     |
 | Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
-| Aramis Sennyey                 | Spotify                   | [sennyeya](https://github.com/sennyeya)               | `Aramis#7984`                  |
+| Aramis Sennyey                 |                           | [sennyeya](https://github.com/sennyeya)               | `Aramis#7984`                  |
 | Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
 | David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |
