@@ -37,57 +37,32 @@ export type Encoding = 'utf-8' | 'base64';
 
 class GithubResponseError extends CustomErrorBase {}
 
-/** @public */
-export type OctokitWithPullRequestPluginClient = Octokit & {
-  createPullRequest(options: createPullRequest.Options): Promise<{
-    data: {
-      html_url: string;
-      number: number;
-      base: {
-        ref: string;
-      };
-    };
-  } | null>;
-};
-
-/**
- * The options passed to the client factory function.
- * @public
- */
-export type CreateGithubPullRequestClientFactoryInput = {
-  integrations: ScmIntegrationRegistry;
-  githubCredentialsProvider?: GithubCredentialsProvider;
-  host: string;
-  owner: string;
-  repo: string;
-  token?: string;
-};
-
-export const defaultClientFactory = async ({
-  integrations,
-  githubCredentialsProvider,
-  owner,
-  repo,
-  host = 'github.com',
-  token: providedToken,
-}: CreateGithubPullRequestClientFactoryInput): Promise<OctokitWithPullRequestPluginClient> => {
-  const [encodedHost, encodedOwner, encodedRepo] = [host, owner, repo].map(
-    encodeURIComponent,
-  );
-
-  const octokitOptions = await getOctokitOptions({
+export const defaultClientFactory: CreateGithubPullRequestActionOptions['clientFactory'] =
+  async ({
     integrations,
-    credentialsProvider: githubCredentialsProvider,
-    repoUrl: `${encodedHost}?owner=${encodedOwner}&repo=${encodedRepo}`,
+    githubCredentialsProvider,
+    owner,
+    repo,
+    host = 'github.com',
     token: providedToken,
-  });
+  }) => {
+    const [encodedHost, encodedOwner, encodedRepo] = [host, owner, repo].map(
+      encodeURIComponent,
+    );
 
-  const OctokitPR = Octokit.plugin(createPullRequest);
-  return new OctokitPR({
-    ...octokitOptions,
-    ...{ throttle: { enabled: false } },
-  });
-};
+    const octokitOptions = await getOctokitOptions({
+      integrations,
+      credentialsProvider: githubCredentialsProvider,
+      repoUrl: `${encodedHost}?owner=${encodedOwner}&repo=${encodedRepo}`,
+      token: providedToken,
+    });
+
+    const OctokitPR = Octokit.plugin(createPullRequest);
+    return new OctokitPR({
+      ...octokitOptions,
+      ...{ throttle: { enabled: false } },
+    });
+  };
 
 /**
  * The options passed to {@link createPublishGithubPullRequestAction} method
@@ -105,9 +80,26 @@ export interface CreateGithubPullRequestActionOptions {
   /**
    * A method to return the Octokit client with the Pull Request Plugin.
    */
-  clientFactory?: (
-    input: CreateGithubPullRequestClientFactoryInput,
-  ) => Promise<OctokitWithPullRequestPluginClient>;
+  clientFactory?: (input: {
+    integrations: ScmIntegrationRegistry;
+    githubCredentialsProvider?: GithubCredentialsProvider;
+    host: string;
+    owner: string;
+    repo: string;
+    token?: string;
+  }) => Promise<
+    Octokit & {
+      createPullRequest(options: createPullRequest.Options): Promise<{
+        data: {
+          html_url: string;
+          number: number;
+          base: {
+            ref: string;
+          };
+        };
+      } | null>;
+    }
+  >;
 }
 
 type GithubPullRequest = {

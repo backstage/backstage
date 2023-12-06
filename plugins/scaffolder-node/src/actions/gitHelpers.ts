@@ -17,6 +17,9 @@
 import { Git } from '@backstage/backend-common';
 import { Logger } from 'winston';
 
+/**
+ * @public
+ */
 export async function initRepoAndPush({
   dir,
   remoteUrl,
@@ -75,6 +78,9 @@ export async function initRepoAndPush({
   return { commitHash };
 }
 
+/**
+ * @public
+ */
 export async function commitAndPushRepo({
   dir,
   auth,

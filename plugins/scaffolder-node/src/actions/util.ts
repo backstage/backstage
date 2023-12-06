@@ -19,6 +19,9 @@ import { isChildPath } from '@backstage/backend-common';
 import { join as joinPath, normalize as normalizePath } from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
+/**
+ * @public
+ */
 export const getRepoSourceDirectory = (
   workspacePath: string,
   sourcePath: string | undefined,
@@ -37,6 +40,9 @@ export const getRepoSourceDirectory = (
   return workspacePath;
 };
 
+/**
+ * @public
+ */
 export const parseRepoUrl = (
   repoUrl: string,
   integrations: ScmIntegrationRegistry,

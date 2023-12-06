@@ -26,10 +26,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
 import { Writable } from 'stream';
-import {
-  createPublishGithubPullRequestAction,
-  OctokitWithPullRequestPluginClient,
-} from './githubPullRequest';
+import { createPublishGithubPullRequestAction } from './githubPullRequest';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 // Make sure root logger is initialized ahead of FS mock
@@ -78,9 +75,7 @@ describe('createPublishGithubPullRequestAction', () => {
         },
       },
     };
-    const clientFactory = jest.fn(
-      async () => fakeClient as unknown as OctokitWithPullRequestPluginClient,
-    );
+    const clientFactory = jest.fn(async () => fakeClient as any);
     const githubCredentialsProvider: GithubCredentialsProvider = {
       getCredentials: jest.fn(),
     };

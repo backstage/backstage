@@ -10,6 +10,7 @@ import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { Schema } from 'jsonschema';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -44,6 +45,37 @@ export type ActionContext<
   each?: JsonObject;
 };
 
+// @public (undocumented)
+export function commitAndPushRepo({
+  dir,
+  auth,
+  logger,
+  commitMessage,
+  gitAuthorInfo,
+  branch,
+  remoteRef,
+}: {
+  dir: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger: Logger;
+  commitMessage: string;
+  gitAuthorInfo?: {
+    name?: string;
+    email?: string;
+  };
+  branch?: string;
+  remoteRef?: string;
+}): Promise<{
+  commitHash: string;
+}>;
+
 // @public
 export const createTemplateAction: <
   TInputParams extends JsonObject = JsonObject,
@@ -72,6 +104,12 @@ export const createTemplateAction: <
     TOutputSchema
   >,
 ) => TemplateAction<TActionInput, TActionOutput>;
+
+// @public
+export function deserializeDirectoryContents(
+  targetPath: string,
+  files: SerializedFile[],
+): Promise<void>;
 
 // @public
 export function executeShellCommand(
@@ -103,6 +141,77 @@ export function fetchFile(options: {
   fetchUrl?: string;
   outputPath: string;
 }): Promise<void>;
+
+// @public (undocumented)
+export const getRepoSourceDirectory: (
+  workspacePath: string,
+  sourcePath: string | undefined,
+) => string;
+
+// @public (undocumented)
+export function initRepoAndPush({
+  dir,
+  remoteUrl,
+  auth,
+  logger,
+  defaultBranch,
+  commitMessage,
+  gitAuthorInfo,
+}: {
+  dir: string;
+  remoteUrl: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger: Logger;
+  defaultBranch?: string;
+  commitMessage?: string;
+  gitAuthorInfo?: {
+    name?: string;
+    email?: string;
+  };
+}): Promise<{
+  commitHash: string;
+}>;
+
+// @public (undocumented)
+export const parseRepoUrl: (
+  repoUrl: string,
+  integrations: ScmIntegrationRegistry,
+) => {
+  repo: string;
+  host: string;
+  owner?: string | undefined;
+  organization?: string | undefined;
+  workspace?: string | undefined;
+  project?: string | undefined;
+};
+
+// @public (undocumented)
+export interface SerializedFile {
+  // (undocumented)
+  content: Buffer;
+  // (undocumented)
+  executable?: boolean;
+  // (undocumented)
+  path: string;
+  // (undocumented)
+  symlink?: boolean;
+}
+
+// @public (undocumented)
+export function serializeDirectoryContents(
+  sourcePath: string,
+  options?: {
+    gitignore?: boolean;
+    globPatterns?: string[];
+  },
+): Promise<SerializedFile[]>;
 
 // @public
 export type SerializedTask = {
