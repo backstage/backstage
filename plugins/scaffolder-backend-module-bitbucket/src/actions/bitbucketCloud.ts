@@ -15,18 +15,18 @@
  */
 
 import { InputError } from '@backstage/errors';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
-  BitbucketIntegrationConfig,
-  ScmIntegrationRegistry,
-} from '@backstage/integration';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+  createTemplateAction,
+  initRepoAndPush,
+  getRepoSourceDirectory,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 import fetch, { Response, RequestInit } from 'node-fetch';
-import { initRepoAndPush } from '../helpers';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
-import { Config } from '@backstage/config';
-import { examples } from './bitbucket.examples';
 
-const createBitbucketCloudRepository = async (opts: {
+import { Config } from '@backstage/config';
+
+const createRepository = async (opts: {
   workspace: string;
   project: string;
   repo: string;
@@ -93,64 +93,11 @@ const createBitbucketCloudRepository = async (opts: {
   return { remoteUrl, repoContentsUrl };
 };
 
-const createBitbucketServerRepository = async (opts: {
-  project: string;
-  repo: string;
-  description?: string;
-  repoVisibility: 'private' | 'public';
-  authorization: string;
-  apiBaseUrl: string;
+const getAuthorizationHeader = (config: {
+  username?: string;
+  appPassword?: string;
+  token?: string;
 }) => {
-  const {
-    project,
-    repo,
-    description,
-    authorization,
-    repoVisibility,
-    apiBaseUrl,
-  } = opts;
-
-  let response: Response;
-  const options: RequestInit = {
-    method: 'POST',
-    body: JSON.stringify({
-      name: repo,
-      description: description,
-      public: repoVisibility === 'public',
-    }),
-    headers: {
-      Authorization: authorization,
-      'Content-Type': 'application/json',
-    },
-  };
-
-  try {
-    response = await fetch(`${apiBaseUrl}/projects/${project}/repos`, options);
-  } catch (e) {
-    throw new Error(`Unable to create repository, ${e}`);
-  }
-
-  if (response.status !== 201) {
-    throw new Error(
-      `Unable to create repository, ${response.status} ${
-        response.statusText
-      }, ${await response.text()}`,
-    );
-  }
-
-  const r = await response.json();
-  let remoteUrl = '';
-  for (const link of r.links.clone) {
-    if (link.name === 'http') {
-      remoteUrl = link.href;
-    }
-  }
-
-  const repoContentsUrl = `${r.links.self[0].href}`;
-  return { remoteUrl, repoContentsUrl };
-};
-
-const getAuthorizationHeader = (config: BitbucketIntegrationConfig) => {
   if (config.username && config.appPassword) {
     const buffer = Buffer.from(
       `${config.username}:${config.appPassword}`,
@@ -165,43 +112,16 @@ const getAuthorizationHeader = (config: BitbucketIntegrationConfig) => {
   }
 
   throw new Error(
-    `Authorization has not been provided for Bitbucket. Please add either username + appPassword or token to the Integrations config`,
+    `Authorization has not been provided for Bitbucket Cloud. Please add either username + appPassword to the Integrations config or a user login auth token`,
   );
-};
-
-const performEnableLFS = async (opts: {
-  authorization: string;
-  host: string;
-  project: string;
-  repo: string;
-}) => {
-  const { authorization, host, project, repo } = opts;
-
-  const options: RequestInit = {
-    method: 'PUT',
-    headers: {
-      Authorization: authorization,
-    },
-  };
-
-  const { ok, status, statusText } = await fetch(
-    `https://${host}/rest/git-lfs/admin/projects/${project}/repos/${repo}/enabled`,
-    options,
-  );
-
-  if (!ok)
-    throw new Error(
-      `Failed to enable LFS in the repository, ${status}: ${statusText}`,
-    );
 };
 
 /**
  * Creates a new action that initializes a git repository of the content in the workspace
- * and publishes it to Bitbucket.
+ * and publishes it to Bitbucket Cloud.
  * @public
- * @deprecated in favor of createPublishBitbucketCloudAction and createPublishBitbucketServerAction
  */
-export function createPublishBitbucketAction(options: {
+export function createPublishBitbucketCloudAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
 }) {
@@ -213,16 +133,11 @@ export function createPublishBitbucketAction(options: {
     defaultBranch?: string;
     repoVisibility?: 'private' | 'public';
     sourcePath?: string;
-    enableLFS?: boolean;
     token?: string;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
   }>({
-    id: 'publish:bitbucket',
+    id: 'publish:bitbucketCloud',
     description:
-      'Initializes a git repository of the content in the workspace, and publishes it to Bitbucket.',
-    examples,
+      'Initializes a git repository of the content in the workspace, and publishes it to Bitbucket Cloud.',
     schema: {
       input: {
         type: 'object',
@@ -252,31 +167,11 @@ export function createPublishBitbucketAction(options: {
               'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
             type: 'string',
           },
-          enableLFS: {
-            title: 'Enable LFS?',
-            description:
-              'Enable LFS for the repository. Only available for hosted Bitbucket.',
-            type: 'boolean',
-          },
           token: {
             title: 'Authentication Token',
             type: 'string',
-            description: 'The token to use for authorization to BitBucket',
-          },
-          gitCommitMessage: {
-            title: 'Git Commit Message',
-            type: 'string',
-            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
-          },
-          gitAuthorName: {
-            title: 'Default Author Name',
-            type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Default Author Email',
-            type: 'string',
-            description: `Sets the default author email for the commit.`,
+            description:
+              'The token to use for authorization to BitBucket Cloud',
           },
         },
       },
@@ -299,18 +194,11 @@ export function createPublishBitbucketAction(options: {
       },
     },
     async handler(ctx) {
-      ctx.logger.warn(
-        `[Deprecated] Please migrate the use of action "publish:bitbucket" to "publish:bitbucketCloud" or "publish:bitbucketServer".`,
-      );
       const {
         repoUrl,
         description,
         defaultBranch = 'master',
         repoVisibility = 'private',
-        enableLFS = false,
-        gitCommitMessage = 'initial commit',
-        gitAuthorName,
-        gitAuthorEmail,
       } = ctx.input;
 
       const { workspace, project, repo, host } = parseRepoUrl(
@@ -318,24 +206,19 @@ export function createPublishBitbucketAction(options: {
         integrations,
       );
 
-      // Workspace is only required for bitbucket cloud
-      if (host === 'bitbucket.org') {
-        if (!workspace) {
-          throw new InputError(
-            `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing workspace`,
-          );
-        }
+      if (!workspace) {
+        throw new InputError(
+          `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing workspace`,
+        );
       }
 
-      // Project is required for both bitbucket cloud and bitbucket server
       if (!project) {
         throw new InputError(
           `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing project`,
         );
       }
 
-      const integrationConfig = integrations.bitbucket.byHost(host);
-
+      const integrationConfig = integrations.bitbucketCloud.byHost(host);
       if (!integrationConfig) {
         throw new InputError(
           `No matching integration configuration for host ${host}, please check your integrations config`,
@@ -343,23 +226,12 @@ export function createPublishBitbucketAction(options: {
       }
 
       const authorization = getAuthorizationHeader(
-        ctx.input.token
-          ? {
-              host: integrationConfig.config.host,
-              apiBaseUrl: integrationConfig.config.apiBaseUrl,
-              token: ctx.input.token,
-            }
-          : integrationConfig.config,
+        ctx.input.token ? { token: ctx.input.token } : integrationConfig.config,
       );
 
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;
 
-      const createMethod =
-        host === 'bitbucket.org'
-          ? createBitbucketCloudRepository
-          : createBitbucketServerRepository;
-
-      const { remoteUrl, repoContentsUrl } = await createMethod({
+      const { remoteUrl, repoContentsUrl } = await createRepository({
         authorization,
         workspace: workspace || '',
         project,
@@ -371,12 +243,8 @@ export function createPublishBitbucketAction(options: {
       });
 
       const gitAuthorInfo = {
-        name: gitAuthorName
-          ? gitAuthorName
-          : config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: gitAuthorEmail
-          ? gitAuthorEmail
-          : config.getOptionalString('scaffolder.defaultAuthor.email'),
+        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
       let auth;
@@ -387,13 +255,18 @@ export function createPublishBitbucketAction(options: {
           password: ctx.input.token,
         };
       } else {
+        if (
+          !integrationConfig.config.username ||
+          !integrationConfig.config.appPassword
+        ) {
+          throw new Error(
+            'Credentials for Bitbucket Cloud integration required for this action.',
+          );
+        }
+
         auth = {
-          username: integrationConfig.config.username
-            ? integrationConfig.config.username
-            : 'x-token-auth',
-          password: integrationConfig.config.appPassword
-            ? integrationConfig.config.appPassword
-            : integrationConfig.config.token ?? '',
+          username: integrationConfig.config.username,
+          password: integrationConfig.config.appPassword,
         };
       }
 
@@ -403,15 +276,11 @@ export function createPublishBitbucketAction(options: {
         auth,
         defaultBranch,
         logger: ctx.logger,
-        commitMessage: gitCommitMessage
-          ? gitCommitMessage
-          : config.getOptionalString('scaffolder.defaultCommitMessage'),
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
         gitAuthorInfo,
       });
-
-      if (enableLFS && host !== 'bitbucket.org') {
-        await performEnableLFS({ authorization, host, project, repo });
-      }
 
       ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('remoteUrl', remoteUrl);
