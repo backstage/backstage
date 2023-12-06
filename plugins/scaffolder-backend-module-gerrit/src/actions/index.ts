@@ -13,8 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//   const executeBitMask = 0o000111;
-//   const res = fileMode & executeBitMask;
-//   return res > 0;
-// };
+export * from './gerrit';
+export * from './gerritReview';

@@ -22,10 +22,13 @@ import {
   getGerritRequestOptions,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
+import {
+  createTemplateAction,
+  initRepoAndPush,
+  getRepoSourceDirectory,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 import fetch, { Response, RequestInit } from 'node-fetch';
-import { initRepoAndPush } from '../helpers';
 import { examples } from './gerrit.examples';
 
 const createGerritProject = async (

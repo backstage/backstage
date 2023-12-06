@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-jest.mock('../helpers');
+jest.mock('@backstage/plugin-scaffolder-node', () => {
+  return {
+    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
+    commitAndPushRepo: jest.fn(),
+  };
+});
 
 import { createPublishGerritReviewAction } from './gerritReview';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
-import { commitAndPushRepo } from '../helpers';
+import { commitAndPushRepo } from '@backstage/plugin-scaffolder-node';
 
 describe('publish:gerrit:review', () => {
   const config = new ConfigReader({

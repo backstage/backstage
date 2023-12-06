@@ -18,9 +18,12 @@ import crypto from 'crypto';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
-import { commitAndPushRepo } from '../helpers';
+import {
+  createTemplateAction,
+  commitAndPushRepo,
+  getRepoSourceDirectory,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 
 const generateGerritChangeId = (): string => {
   const changeId = crypto.randomBytes(20).toString('hex');

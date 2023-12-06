@@ -50,12 +50,15 @@
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "fs-extra": "10.1.0",
+    "globby": "^11.0.0",
     "jsonschema": "^1.2.6",
+    "p-limit": "^3.1.0",
     "winston": "^3.2.1",
     "zod": "^3.21.4",
     "zod-to-json-schema": "^3.20.4"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^"
   },
