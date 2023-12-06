@@ -15,8 +15,9 @@
  */
 import yaml from 'yaml';
 
-jest.mock('../helpers', () => {
+jest.mock('@backstage/plugin-scaffolder-node', () => {
   return {
+    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
     initRepoAndPush: jest.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
@@ -27,11 +28,11 @@ jest.mock('../helpers', () => {
 });
 
 import { createPublishGitlabAction } from './gitlab';
+import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
-import { initRepoAndPush } from '../helpers';
 import { examples } from './gitlab.examples';
 
 const mockGitlabClient = {

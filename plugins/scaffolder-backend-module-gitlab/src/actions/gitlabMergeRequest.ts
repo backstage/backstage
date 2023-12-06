@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  createTemplateAction,
+  parseRepoUrl,
+  serializeDirectoryContents,
+} from '@backstage/plugin-scaffolder-node';
 import { Gitlab } from '@gitbeaker/node';
 import { Types } from '@gitbeaker/core';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
-import { parseRepoUrl } from './util';
 import { resolveSafeChildPath } from '@backstage/backend-common';
-import { serializeDirectoryContents } from '../../../../lib/files';
 
 /**
  * Create a new action that creates a gitlab merge request.
