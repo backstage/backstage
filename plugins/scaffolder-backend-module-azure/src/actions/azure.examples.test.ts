@@ -21,7 +21,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { getVoidLogger } from '@backstage/backend-common';
 import { WebApi } from 'azure-devops-node-api';
 import { PassThrough } from 'stream';
-import { initRepoAndPush } from '../helpers';
+import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { examples } from './azure.examples';
 
 jest.mock('azure-devops-node-api', () => ({
@@ -29,8 +29,9 @@ jest.mock('azure-devops-node-api', () => ({
   getPersonalAccessTokenHandler: jest.fn().mockReturnValue(() => {}),
 }));
 
-jest.mock('../helpers', () => {
+jest.mock('@backstage/plugin-scaffolder-node', () => {
   return {
+    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
     initRepoAndPush: jest.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
