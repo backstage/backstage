@@ -8777,6 +8777,7 @@ __metadata:
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -8806,7 +8807,6 @@ __metadata:
     "@types/nunjucks": ^3.1.4
     "@types/supertest": ^2.0.8
     "@types/zen-observable": ^0.8.0
-    azure-devops-node-api: ^11.0.1
     command-exists: ^1.2.9
     compression: ^1.7.4
     cors: ^2.8.5
