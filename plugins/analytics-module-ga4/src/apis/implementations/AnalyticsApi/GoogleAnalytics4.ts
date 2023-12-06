@@ -47,6 +47,7 @@ export class GoogleAnalytics4 implements AnalyticsApi {
     measurementId: string;
     testMode: boolean;
     debug: boolean;
+    enableSendPageView: boolean;
     contentGroupBy?: string;
     allowedContexts?: string[];
     allowedAttributes?: string[];
@@ -58,6 +59,7 @@ export class GoogleAnalytics4 implements AnalyticsApi {
       userIdTransform = 'sha-256',
       testMode,
       debug,
+      enableSendPageView,
       contentGroupBy,
       allowedContexts,
       allowedAttributes,
@@ -70,7 +72,7 @@ export class GoogleAnalytics4 implements AnalyticsApi {
       },
       gtagOptions: {
         debug_mode: debug,
-        send_page_view: false,
+        send_page_view: enableSendPageView,
       },
     });
 
@@ -113,6 +115,9 @@ export class GoogleAnalytics4 implements AnalyticsApi {
     const identity =
       config.getOptionalString('app.analytics.ga4.identity') || 'disabled';
     const debug = config.getOptionalBoolean('app.analytics.ga4.debug') ?? false;
+    const enableSendPageView =
+      config.getOptionalBoolean('app.analytics.ga4.enableSendPageView') ??
+      false;
     const testMode =
       config.getOptionalBoolean('app.analytics.ga4.testMode') ?? false;
 
@@ -139,6 +144,7 @@ export class GoogleAnalytics4 implements AnalyticsApi {
       measurementId: measurementId,
       testMode,
       debug,
+      enableSendPageView,
       contentGroupBy,
       allowedContexts,
       allowedAttributes,

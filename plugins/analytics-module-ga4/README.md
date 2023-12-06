@@ -87,6 +87,7 @@ Additional dimensional data can be captured using custom dimensions, like this:
    attribute names will be prefixed by `a_`.
 5. `allowedContexts` and `allowedAttributes` are optional, if not provided, no additional context and attributes will be sent.
 6. if `allowedContexts` or `allowedAttributes` is set to '\*', all context and attributes will be sent.
+7. `enableSendPageView` is used to send default events and is disabled by default.
 
 ```yaml
 app:
