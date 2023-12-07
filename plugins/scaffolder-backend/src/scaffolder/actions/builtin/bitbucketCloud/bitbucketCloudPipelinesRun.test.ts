@@ -66,30 +66,6 @@ describe('bitbucket:pipelines:run', () => {
     createTemporaryDirectory: jest.fn(),
   };
 
-  const body = {
-    type: '<string>',
-    uuid: '<string>',
-    build_number: 33,
-    creator: {
-      type: '<string>',
-    },
-    repository: {
-      type: '<string>',
-    },
-    target: {
-      type: '<string>',
-    },
-    trigger: {
-      type: '<string>',
-    },
-    state: {
-      type: '<string>',
-    },
-    created_on: '<string>',
-    completed_on: '<string>',
-    build_seconds_used: 50,
-  };
-
   beforeEach(() => {
     jest.resetAllMocks();
     action = createBitbucketPipelinesRunAction();
@@ -112,7 +88,7 @@ describe('bitbucket:pipelines:run', () => {
     expect(fetch).toHaveBeenCalledWith(
       'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
       {
-        body: JSON.stringify(body),
+        body: {},
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer testToken',
