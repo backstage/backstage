@@ -28,6 +28,7 @@ export const createBitbucketPipelinesRunAction = () => {
   return createTemplateAction<{
     workspace: string;
     repo_slug: string;
+    body?: object;
   }>({
     id,
     description: '',
@@ -47,35 +48,114 @@ export const createBitbucketPipelinesRunAction = () => {
             description: 'The repository name',
             type: 'string',
           },
+          body: {
+            title: '',
+            description: '',
+            type: 'object',
+            properties: {
+              target: {
+                title: 'target',
+                type: 'object',
+                properties: {
+                  ref_type: {
+                    title: 'ref_type',
+                    type: 'string',
+                  },
+                  type: {
+                    title: 'type',
+                    type: 'string',
+                  },
+                  ref_name: {
+                    title: 'ref_name',
+                    type: 'string',
+                  },
+                  source: {
+                    title: 'source',
+                    type: 'string',
+                  },
+                  destination: {
+                    title: 'destination',
+                    type: 'string',
+                  },
+                  destination_commit: {
+                    title: 'destination_commit',
+                    type: 'object',
+                    properties: {
+                      hash: {
+                        title: 'hash',
+                        type: 'string',
+                      },
+                    },
+                  },
+                  commit: {
+                    title: 'commit',
+                    type: 'object',
+                    properties: {
+                      type: {
+                        title: 'type',
+                        type: 'string',
+                      },
+                      hash: {
+                        title: 'hash',
+                        type: 'string',
+                      },
+                    },
+                  },
+                  selector: {
+                    title: 'selector',
+                    type: 'object',
+                    properties: {
+                      type: {
+                        title: 'type',
+                        type: 'string',
+                      },
+                      pattern: {
+                        title: 'pattern',
+                        type: 'string',
+                      },
+                    },
+                  },
+                  pull_request: {
+                    title: 'pull_request',
+                    type: 'object',
+                    properties: {
+                      id: {
+                        title: 'id',
+                        type: 'string',
+                      },
+                    },
+                  },
+                },
+              },
+              variables: {
+                title: 'variables',
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    key: {
+                      title: 'key',
+                      type: 'string',
+                    },
+                    value: {
+                      title: 'value',
+                      type: 'string',
+                    },
+                    secured: {
+                      title: 'secured',
+                      type: 'boolean',
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },
     supportsDryRun: false,
     async handler(ctx) {
-      const { workspace, repo_slug } = ctx.input;
-      const bodyData = {
-        type: '<string>',
-        uuid: '<string>',
-        build_number: 33,
-        creator: {
-          type: '<string>',
-        },
-        repository: {
-          type: '<string>',
-        },
-        target: {
-          type: '<string>',
-        },
-        trigger: {
-          type: '<string>',
-        },
-        state: {
-          type: '<string>',
-        },
-        created_on: '<string>',
-        completed_on: '<string>',
-        build_seconds_used: 50,
-      };
+      const { workspace, repo_slug, body } = ctx.input;
       try {
         const response = await fetch(
           `https://api.bitbucket.org/2.0/repositories/${workspace}/${repo_slug}/pipelines`,
@@ -86,7 +166,7 @@ export const createBitbucketPipelinesRunAction = () => {
               Accept: 'application/json',
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(bodyData),
+            body: JSON.stringify(body) ?? {},
           },
         );
         ctx.logStream.write(
