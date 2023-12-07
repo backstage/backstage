@@ -230,6 +230,9 @@ export const Stepper = (stepperProps: StepperProps) => {
             fields={fields}
             showErrorList={false}
             onChange={handleChange}
+            experimental_defaultFormStateBehavior={{
+              allOf: 'populateDefaults',
+            }}
             {...(props.formProps ?? {})}
           >
             <div className={styles.footer}>
