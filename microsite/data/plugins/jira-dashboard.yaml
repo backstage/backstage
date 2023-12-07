@@ -7,4 +7,4 @@ description: Allows you to fetch and display Jira issues for your entity. You ge
 documentation: https://github.com/AxisCommunications/backstage-plugins/blob/main/plugins/jira-dashboard/README.md
 iconUrl: https://github.com/AxisCommunications/backstage-plugins/blob/main/plugins/jira-dashboard/media/jira-logo.png
 npmPackageName: '@axis-backstage/plugin-jira-dashboard'
-addedDate: '2023-11-29'
+addedDate: '2023-12-07'
