@@ -157,6 +157,9 @@ export const CustomFieldExplorer = ({
               onSubmit={e => handleFieldConfigChange(e.formData)}
               validator={validator}
               schema={selectedField.schema?.uiOptions || {}}
+              experimental_defaultFormStateBehavior={{
+                allOf: 'populateDefaults',
+              }}
             >
               <Button
                 variant="contained"
