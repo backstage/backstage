@@ -8783,9 +8783,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
-    "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
@@ -8797,34 +8795,23 @@ __metadata:
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/command-exists": ^1.2.0
     "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.1
-    "@types/git-url-parse": ^9.0.0
     "@types/luxon": ^3.0.0
     "@types/nunjucks": ^3.1.4
     "@types/supertest": ^2.0.8
     "@types/zen-observable": ^0.8.0
-    command-exists: ^1.2.9
-    compression: ^1.7.4
-    cors: ^2.8.5
     esbuild: ^0.19.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     fs-extra: 10.1.0
-    git-url-parse: ^13.0.0
     globby: ^11.0.0
     isbinaryfile: ^5.0.0
     isolated-vm: ^4.5.0
-    isomorphic-git: ^1.23.0
-    jest-when: ^3.1.0
     jsonschema: ^1.2.6
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    morgan: ^1.10.0
-    msw: ^1.0.0
-    node-fetch: ^2.6.7
     nunjucks: ^3.2.3
     p-limit: ^3.1.0
     p-queue: ^6.6.2
