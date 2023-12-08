@@ -44,7 +44,7 @@
     "luxon": "^3.0.0",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
