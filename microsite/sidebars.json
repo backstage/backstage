@@ -409,7 +409,8 @@
       "tutorials/switching-sqlite-postgres",
       "tutorials/using-backstage-proxy-within-plugin",
       "tutorials/yarn-migration",
-      "tutorials/migrate-to-mui5"
+      "tutorials/migrate-to-mui5",
+      "tutorials/setup-opentelemetry"
     ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",
