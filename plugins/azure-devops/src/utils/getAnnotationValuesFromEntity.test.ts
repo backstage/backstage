@@ -67,7 +67,7 @@ describe('getAnnotationValuesFromEntity', () => {
   });
 
   describe('with project-repo annotation missing project', () => {
-    it('should throw missing project error', () => {
+    it('should throw incorrect format error', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -91,7 +91,7 @@ describe('getAnnotationValuesFromEntity', () => {
   });
 
   describe('with project-repo annotation missing repo', () => {
-    it('should throw missing repo error', () => {
+    it('should throw incorrect format error', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -261,7 +261,7 @@ describe('getAnnotationValuesFromEntity', () => {
   });
 
   describe('with host-org annotation missing host', () => {
-    it('should throw missing project error', () => {
+    it('should throw incorrect format error', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -285,7 +285,7 @@ describe('getAnnotationValuesFromEntity', () => {
   });
 
   describe('with host-org annotation missing org', () => {
-    it('should throw missing repo error', () => {
+    it('should throw incorrect format error', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -304,6 +304,56 @@ describe('getAnnotationValuesFromEntity', () => {
 
       expect(test).toThrow(
         'Invalid value for annotation "dev.azure.com/host-org"; expected format is: <host-name>/<organization-name>, found: "host/"',
+      );
+    });
+  });
+
+  describe('with tfs subpath for org', () => {
+    it('should return host and org', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'tfs-subpath',
+          annotations: {
+            'dev.azure.com/project-repo': 'projectName/repoName',
+            'dev.azure.com/host-org': 'company.com/tfs/organizationName',
+          },
+        },
+      };
+
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: 'repoName',
+        definition: undefined,
+        host: 'company.com/tfs',
+        org: 'organizationName',
+      });
+    });
+  });
+
+  describe('with more then expected slashes', () => {
+    it('should throw incorrect format error', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'host-org',
+          annotations: {
+            'dev.azure.com/host-org': 'host/subpath/another-path/org/project',
+          },
+        },
+      };
+
+      const test = () => {
+        return getAnnotationValuesFromEntity(entity);
+      };
+
+      expect(test).toThrow(
+        'Invalid value for annotation "dev.azure.com/host-org"; expected format is: <host-name>/<organization-name>, found: "host/subpath/another-path/org/project"',
       );
     });
   });
