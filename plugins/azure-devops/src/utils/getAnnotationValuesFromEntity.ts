@@ -68,7 +68,7 @@ function getProjectRepo(annotations?: Record<string, string>): {
     return { project: undefined, repo: undefined };
   }
 
-  if (annotation.includes('/')) {
+  if (annotation.split('/').length === 2) {
     const [project, repo] = annotation.split('/');
     if (project && repo) {
       return { project, repo };
