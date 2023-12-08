@@ -192,6 +192,9 @@ export const MultistepJsonForm = (props: MultistepJsonFormProps) => {
                   onSubmit={(e: IChangeEvent<any>) => {
                     if (e.errors.length === 0) handleNext();
                   }}
+                  experimental_defaultFormStateBehavior={{
+                    allOf: 'populateDefaults',
+                  }}
                   {...formProps}
                   {...transformSchemaToProps(schema, layouts)}
                 >
