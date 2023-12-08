@@ -126,10 +126,9 @@ Team: @backstage/scaffolder-maintainers
 
 Scope: The Scaffolder frontend and backend plugins, and related tooling.
 
-| Name                | Organization   | GitHub                                | Discord          |
-| ------------------- | -------------- | ------------------------------------- | ---------------- |
-| Bogdan Nechyporenko | Bol.com        | [acierto](https://github.com/acierto) | `bogdan_haarlem` |
-| Paul Cowan          | frontendrescue | [dagda1](https://github.com/dagda1)   | `dagda1`         |
+| Name                | Organization | GitHub                                | Discord          |
+| ------------------- | ------------ | ------------------------------------- | ---------------- |
+| Bogdan Nechyporenko | Bol.com      | [acierto](https://github.com/acierto) | `bogdan_haarlem` |
 
 ## Sponsors
 
@@ -173,3 +172,9 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Name      | Organization | GitHub                                      | Discord        |
 | --------- | ------------ | ------------------------------------------- | -------------- |
 | Lee Mills | Spotify      | [leemills83](https://github.com/leemills83) | `.binarypoint` |
+
+## Emeritus Project Area Maintainers
+
+| Maintainer | Organization   | GitHub                              | Discord  |
+| ---------- | -------------- | ----------------------------------- | -------- |
+| Paul Cowan | frontendrescue | [dagda1](https://github.com/dagda1) | `dagda1` |
