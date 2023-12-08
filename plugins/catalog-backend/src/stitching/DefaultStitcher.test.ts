@@ -121,58 +121,109 @@ describe('Stitcher', () => {
       const firstHash = entities[0].hash;
 
       const search = await db<DbSearchRow>('search');
+      const stitch_expected_array = [
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'relations.looksat',
+          original_value: 'k:ns/other',
+          value: 'k:ns/other',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'apiversion',
+          original_value: 'a',
+          value: 'a',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'kind',
+          original_value: 'k',
+          value: 'k',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'metadata.name',
+          original_value: 'n',
+          value: 'n',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'metadata.namespace',
+          original_value: 'ns',
+          value: 'ns',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'metadata.uid',
+          original_value: 'my-id',
+          value: 'my-id',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'spec.k',
+          original_value: 'v',
+          value: 'v',
+        },
+      ];
+
+      const sqlite_stitch_expected_array = [
+        {
+          entity_id: 'my-id',
+          key: 'relations.looksat',
+          original_value: 'k:ns/other',
+          value: 'k:ns/other',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'apiversion',
+          original_value: 'a',
+          value: 'a',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'kind',
+          original_value: 'k',
+          value: 'k',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'metadata.name',
+          original_value: 'n',
+          value: 'n',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'metadata.namespace',
+          original_value: 'ns',
+          value: 'ns',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'metadata.uid',
+          original_value: 'my-id',
+          value: 'my-id',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'spec.k',
+          original_value: 'v',
+          value: 'v',
+        },
+      ];
+
       expect(search).toEqual(
-        expect.arrayContaining([
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'relations.looksat',
-            original_value: 'k:ns/other',
-            value: 'k:ns/other',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'apiversion',
-            original_value: 'a',
-            value: 'a',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'kind',
-            original_value: 'k',
-            value: 'k',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'metadata.name',
-            original_value: 'n',
-            value: 'n',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'metadata.namespace',
-            original_value: 'ns',
-            value: 'ns',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'metadata.uid',
-            original_value: 'my-id',
-            value: 'my-id',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'spec.k',
-            original_value: 'v',
-            value: 'v',
-          },
-        ]),
+        expect.arrayContaining(
+          databaseId === 'SQLITE_3'
+            ? sqlite_stitch_expected_array
+            : stitch_expected_array,
+        ),
       );
 
       // Re-stitch without any changes
@@ -227,65 +278,122 @@ describe('Stitcher', () => {
       expect(entities[0].hash).not.toEqual(firstHash);
       expect(entities[0].hash).toEqual(entity.metadata.etag);
 
+      const restitch_expected_array = [
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'relations.looksat',
+          original_value: 'k:ns/other',
+          value: 'k:ns/other',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'relations.looksat',
+          original_value: 'k:ns/third',
+          value: 'k:ns/third',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'apiversion',
+          original_value: 'a',
+          value: 'a',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'kind',
+          original_value: 'k',
+          value: 'k',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'metadata.name',
+          original_value: 'n',
+          value: 'n',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'metadata.namespace',
+          original_value: 'ns',
+          value: 'ns',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'metadata.uid',
+          original_value: 'my-id',
+          value: 'my-id',
+        },
+        {
+          entity_id: 'my-id',
+          id: expect.anything(),
+          key: 'spec.k',
+          original_value: 'v',
+          value: 'v',
+        },
+      ];
+
+      const sqlite_restitch_expected_array = [
+        {
+          entity_id: 'my-id',
+          key: 'relations.looksat',
+          original_value: 'k:ns/other',
+          value: 'k:ns/other',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'relations.looksat',
+          original_value: 'k:ns/third',
+          value: 'k:ns/third',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'apiversion',
+          original_value: 'a',
+          value: 'a',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'kind',
+          original_value: 'k',
+          value: 'k',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'metadata.name',
+          original_value: 'n',
+          value: 'n',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'metadata.namespace',
+          original_value: 'ns',
+          value: 'ns',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'metadata.uid',
+          original_value: 'my-id',
+          value: 'my-id',
+        },
+        {
+          entity_id: 'my-id',
+          key: 'spec.k',
+          original_value: 'v',
+          value: 'v',
+        },
+      ];
+
       expect(await db<DbSearchRow>('search')).toEqual(
-        expect.arrayContaining([
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'relations.looksat',
-            original_value: 'k:ns/other',
-            value: 'k:ns/other',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'relations.looksat',
-            original_value: 'k:ns/third',
-            value: 'k:ns/third',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'apiversion',
-            original_value: 'a',
-            value: 'a',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'kind',
-            original_value: 'k',
-            value: 'k',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'metadata.name',
-            original_value: 'n',
-            value: 'n',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'metadata.namespace',
-            original_value: 'ns',
-            value: 'ns',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'metadata.uid',
-            original_value: 'my-id',
-            value: 'my-id',
-          },
-          {
-            entity_id: 'my-id',
-            id: expect.anything(),
-            key: 'spec.k',
-            original_value: 'v',
-            value: 'v',
-          },
-        ]),
+        expect.arrayContaining(
+          databaseId === 'SQLITE_3'
+            ? sqlite_restitch_expected_array
+            : restitch_expected_array,
+        ),
       );
     },
   );

@@ -134,17 +134,35 @@ describe('migrations', () => {
         .insert({ entity_id: 'i', key: 'k2', value: null })
         .into('search');
 
-      await expect(knex('search')).resolves.toEqual(
-        expect.arrayContaining([
+      const expected_initial_search_result = (() => {
+        if (databaseId === 'SQLITE_3') {
+          return [
+            { entity_id: 'i', key: 'k1', value: 'v1' },
+            { entity_id: 'i', key: 'k2', value: null },
+          ];
+        }
+
+        return [
           { entity_id: 'i', id: expect.anything(), key: 'k1', value: 'v1' },
           { entity_id: 'i', id: expect.anything(), key: 'k2', value: null },
-        ]),
+        ];
+      })();
+
+      await expect(knex('search')).resolves.toEqual(
+        expect.arrayContaining(expected_initial_search_result),
       );
 
       await migrateUpOnce(knex);
 
-      await expect(knex('search')).resolves.toEqual(
-        expect.arrayContaining([
+      const expected_search_result_after_migration = (() => {
+        if (databaseId === 'SQLITE_3') {
+          return [
+            { entity_id: 'i', key: 'k1', value: 'v1', original_value: 'v1' },
+            { entity_id: 'i', key: 'k2', value: null, original_value: null },
+          ];
+        }
+
+        return [
           {
             entity_id: 'i',
             id: expect.anything(),
@@ -159,16 +177,31 @@ describe('migrations', () => {
             value: null,
             original_value: null,
           },
-        ]),
+        ];
+      })();
+
+      await expect(knex('search')).resolves.toEqual(
+        expect.arrayContaining(expected_search_result_after_migration),
       );
 
       await migrateDownOnce(knex);
 
-      await expect(knex('search')).resolves.toEqual(
-        expect.arrayContaining([
+      const expected_search_result_after_rollback = (() => {
+        if (databaseId === 'SQLITE_3') {
+          return [
+            { entity_id: 'i', key: 'k1', value: 'v1' },
+            { entity_id: 'i', key: 'k2', value: null },
+          ];
+        }
+
+        return [
           { entity_id: 'i', id: expect.anything(), key: 'k1', value: 'v1' },
           { entity_id: 'i', id: expect.anything(), key: 'k2', value: null },
-        ]),
+        ];
+      })();
+
+      await expect(knex('search')).resolves.toEqual(
+        expect.arrayContaining(expected_search_result_after_rollback),
       );
 
       await knex.destroy();
