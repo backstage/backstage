@@ -13,9 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createServiceRef } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createServiceFactory,
+  createServiceRef,
+} from '@backstage/backend-plugin-api';
+import { SignalService } from './SignalService';
 
 /** @public */
-export const signalService = createServiceRef<
-  import('./SignalService').SignalService
->({ id: 'signals.service', scope: 'plugin' });
+export const signalService = createServiceRef<SignalService>({
+  id: 'signals.service',
+  scope: 'plugin',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {
+        logger: coreServices.logger,
+        identity: coreServices.identity,
+        // TODO: EventBroker
+      },
+      factory({ logger, identity }) {
+        return SignalService.create({ identity, logger });
+      },
+    }),
+});

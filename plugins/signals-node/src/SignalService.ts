@@ -18,7 +18,6 @@ import {
   EventParams,
   EventSubscriber,
 } from '@backstage/plugin-events-node';
-import { Logger } from 'winston';
 import {
   ServiceOptions,
   SignalConnection,
@@ -34,6 +33,7 @@ import {
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { Duplex } from 'stream';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export class SignalService implements EventSubscriber {
@@ -43,7 +43,7 @@ export class SignalService implements EventSubscriber {
     SignalConnection
   >();
   private eventBroker?: EventBroker;
-  private logger: Logger;
+  private logger: LoggerService;
   private identity: IdentityApi;
   private server: WebSocketServer;
 

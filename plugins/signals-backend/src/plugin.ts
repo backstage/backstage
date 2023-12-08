@@ -27,7 +27,7 @@ import { signalService } from '@backstage/plugin-signals-node';
  * @public
  */
 export const signalsPlugin = createBackendPlugin({
-  pluginId: 'devtools',
+  pluginId: 'signals',
   register(env) {
     env.registerInit({
       deps: {

@@ -12,13 +12,13 @@ import { EventSubscriber } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { IncomingMessage } from 'http';
 import { JsonObject } from '@backstage/types';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export type ServiceOptions = {
   eventBroker?: EventBroker;
-  logger: Logger;
+  logger: LoggerService;
   identity: IdentityApi;
 };
 

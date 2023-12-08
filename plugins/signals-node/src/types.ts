@@ -15,16 +15,16 @@
  */
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { EventBroker } from '@backstage/plugin-events-node';
-import { Logger } from 'winston';
 import { WebSocket } from 'ws';
 import { JsonObject } from '@backstage/types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
  */
 export type ServiceOptions = {
   eventBroker?: EventBroker;
-  logger: Logger;
+  logger: LoggerService;
   identity: IdentityApi;
 };
 
