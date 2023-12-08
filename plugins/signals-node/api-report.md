@@ -13,6 +13,7 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { IncomingMessage } from 'http';
 import { JsonObject } from '@backstage/types';
 import { Logger } from 'winston';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export type ServiceOptions = {
@@ -48,6 +49,9 @@ export class SignalService implements EventSubscriber {
   // (undocumented)
   supportsEventTopics(): string[];
 }
+
+// @public (undocumented)
+export const signalService: ServiceRef<SignalService, 'plugin'>;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -24,3 +24,21 @@ export default async function createPlugin(
   });
 }
 ```
+
+Now add the signals to `packages/backend/src/index.ts`:
+
+```ts
+// ...
+import signals from './plugins/sonarqube';
+
+async function main() {
+  // ...
+  const signalsEnv = useHotMemoize(module, () => createEnv('signals'));
+
+  const apiRouter = Router();
+  // ...
+  apiRouter.use('/signals', await signals(signalsEnv));
+  apiRouter.use(notFoundHandler());
+  // ...
+}
+```

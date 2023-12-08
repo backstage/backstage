@@ -13,5 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './service/router';
-export { signalsPlugin as default } from './plugin';
+import { createServiceRef } from '@backstage/backend-plugin-api';
+
+/** @public */
+export const signalService = createServiceRef<
+  import('./SignalService').SignalService
+>({ id: 'signals.service', scope: 'plugin' });

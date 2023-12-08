@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
@@ -23,28 +22,24 @@ import { createRouter } from './service/router';
 import { signalService } from '@backstage/plugin-signals-node';
 
 /**
- * DevTools backend plugin
+ * Signals backend plugin
  *
  * @public
  */
-export const devtoolsPlugin = createBackendPlugin({
+export const signalsPlugin = createBackendPlugin({
   pluginId: 'devtools',
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.rootConfig,
-        logger: coreServices.logger,
-        permissions: coreServices.permissions,
         httpRouter: coreServices.httpRouter,
-        signals: signalService,
+        logger: coreServices.logger,
+        service: signalService,
       },
-      async init({ config, logger, permissions, httpRouter, signals }) {
+      async init({ httpRouter, logger, service }) {
         httpRouter.use(
           await createRouter({
-            config,
             logger: loggerToWinstonLogger(logger),
-            permissions,
-            signalService: signals,
+            service,
           }),
         );
       },

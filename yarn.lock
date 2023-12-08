@@ -8839,6 +8839,7 @@ __metadata:
   resolution: "@backstage/plugin-signals-backend@workspace:plugins/signals-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
@@ -8865,6 +8866,7 @@ __metadata:
   resolution: "@backstage/plugin-signals-node@workspace:plugins/signals-node"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"

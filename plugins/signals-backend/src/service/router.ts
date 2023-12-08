@@ -33,7 +33,6 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { logger, service } = options;
   let subscribed = false;
-
   const upgradeMiddleware = (req: Request, _: Response, next: NextFunction) => {
     const server: https.Server | http.Server = (
       (req.socket ?? req.connection) as any
@@ -49,10 +48,10 @@ export async function createRouter(
     }
 
     if (!subscribed) {
+      subscribed = true;
       server.on('upgrade', async (request, socket, head) => {
         await service.handleUpgrade(request, socket, head);
       });
-      subscribed = true;
     }
   };
 
