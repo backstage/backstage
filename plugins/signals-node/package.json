@@ -22,7 +22,8 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@types/express": "^4.17.21"
   },
   "files": [
     "dist"
@@ -33,7 +34,6 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@types/express": "^4.17.21",
     "express": "^4.17.1",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
