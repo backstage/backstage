@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { DateTime, Duration } from 'luxon';
-import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
-import { Knex as KnexType, Knex } from 'knex';
-import { TestDatabases } from '@backstage/backend-test-utils';
+import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { getVoidLogger } from '@backstage/backend-common';
 import { initializePersistenceContext } from './persistenceContext';
 
@@ -74,12 +73,15 @@ const secondSchema = {
   }),
 };
 
-const now = DateTime.now().toISO()!;
-const shortlyInTheFuture = DateTime.now()
-  .plus(Duration.fromMillis(555))
+const baseTimestamp = DateTime.fromISO('2023-12-01T12:00:00.000Z', {
+  zone: 'UTC',
+});
+const now = baseTimestamp.toISO()!;
+const shortlyInTheFuture = baseTimestamp
+  .plus(Duration.fromObject({ seconds: 1 }))
   .toISO()!;
-const farInTheFuture = DateTime.now()
-  .plus(Duration.fromMillis(555666777))
+const farInTheFuture = baseTimestamp
+  .plus(Duration.fromObject({ years: 10 }))
   .toISO()!;
 
 const facts = [
@@ -127,12 +129,12 @@ const sameFactsDiffDateSchema = {
   }),
 };
 
-const sameFactsDiffDateNow = DateTime.now().toISO()!;
-const sameFactsDiffDateNearFuture = DateTime.now()
-  .plus(Duration.fromMillis(555))
+const sameFactsDiffDateNow = baseTimestamp.toISO()!;
+const sameFactsDiffDateNearFuture = baseTimestamp
+  .plus(Duration.fromObject({ seconds: 1 }))
   .toISO()!;
-const sameFactsDiffDateFuture = DateTime.now()
-  .plus(Duration.fromMillis(1000))
+const sameFactsDiffDateFuture = baseTimestamp
+  .plus(Duration.fromObject({ days: 1 }))
   .toISO()!;
 
 const multipleSameFacts = [
@@ -165,40 +167,34 @@ const multipleSameFacts = [
   },
 ];
 
-function createDatabaseManager(
-  client: KnexType,
-  skipMigrations: boolean = false,
-) {
-  return {
-    getClient: async () => client,
-    migrations: {
-      skip: skipMigrations,
-    },
-  };
-}
-
 describe('Tech Insights database', () => {
-  const databases = TestDatabases.create();
-  let store: TechInsightsStore;
-  let testDbClient: Knex<any, unknown[]>;
-  beforeAll(async () => {
-    testDbClient = await databases.init('SQLITE_3');
-    const database = createDatabaseManager(testDbClient);
+  const databases = TestDatabases.create({
+    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+  });
 
-    store = (
-      await initializePersistenceContext(database, {
-        logger: getVoidLogger(),
-      })
-    ).techInsightsStore;
-  });
-  beforeEach(async () => {
-    await testDbClient.batchInsert('fact_schemas', factSchemas);
-    await testDbClient.batchInsert('facts', facts);
-  });
-  afterEach(async () => {
-    await testDbClient('facts').delete();
-    await testDbClient('fact_schemas').delete();
-  });
+  async function createStore(databaseId: TestDatabaseId) {
+    const knex = await databases.init(databaseId);
+    const { techInsightsStore } = await initializePersistenceContext(
+      { getClient: async () => knex },
+      { logger: getVoidLogger() },
+    );
+
+    await knex.batchInsert('fact_schemas', factSchemas);
+    await knex.batchInsert('facts', facts);
+
+    async function rawFacts() {
+      const rows = await knex('facts').select();
+      return rows.map(it => ({
+        ...it,
+        timestamp:
+          it.timestamp === 'string'
+            ? DateTime.fromISO(it.timestamp)
+            : DateTime.fromJSDate(it.timestamp),
+      }));
+    }
+
+    return { store: techInsightsStore, knex, rawFacts };
+  }
 
   const baseAssertionFact = {
     id: 'test-fact',
@@ -208,220 +204,203 @@ describe('Tech Insights database', () => {
     facts: { testNumberFact: 2 },
   };
 
-  it('should be able to return latest schema', async () => {
-    const schemas = await store.getLatestSchemas();
-    expect(schemas[0]).toMatchObject({
-      id: 'test-fact',
-      version: '0.0.1-test',
-      entityFilter: [{ kind: 'component' }],
-      testNumberFact: {
-        type: 'integer',
-        description: 'Test fact with a number type',
-      },
-    });
-  });
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip.each(databases.eachSupportedId())(
+    'should be able to return latest schema, %p',
+    async databaseId => {
+      const { store } = await createStore(databaseId);
+      const schemas = await store.getLatestSchemas();
+      expect(schemas[0]).toMatchObject({
+        id: 'test-fact',
+        version: '0.0.1-test',
+        entityFilter: [{ kind: 'component' }],
+        testNumberFact: {
+          type: 'integer',
+          description: 'Test fact with a number type',
+        },
+      });
+    },
+  );
 
-  it('should return last schema based on semver', async () => {
-    await testDbClient.batchInsert('fact_schemas', additionalFactSchemas);
+  it.each(databases.eachSupportedId())(
+    'should return last schema based on semver, %p',
+    async databaseId => {
+      const { store, knex } = await createStore(databaseId);
+      await knex.batchInsert('fact_schemas', additionalFactSchemas);
 
-    const schemas = await store.getLatestSchemas();
-    expect(schemas[0]).toMatchObject({
-      id: 'test-fact',
-      version: '1.2.1-test',
-      entityFilter: [{ kind: 'component' }],
-      testNumberFact: {
-        type: 'integer',
-        description: 'Test fact with a number type',
-      },
-      testStringFact: {
-        type: 'string',
-        description: 'Test fact with a string type',
-      },
-    });
-  });
+      const schemas = await store.getLatestSchemas();
+      expect(schemas[0]).toMatchObject({
+        id: 'test-fact',
+        version: '1.2.1-test',
+        entityFilter: [{ kind: 'component' }],
+        testNumberFact: {
+          type: 'integer',
+          description: 'Test fact with a number type',
+        },
+        testStringFact: {
+          type: 'string',
+          description: 'Test fact with a string type',
+        },
+      });
+    },
+  );
 
-  it('should return multiple schemas if those exists', async () => {
-    await testDbClient.batchInsert('fact_schemas', [
-      {
-        ...secondSchema,
+  it.each(databases.eachSupportedId())(
+    'should return multiple schemas if those exists, %p',
+    async databaseId => {
+      const { store, knex } = await createStore(databaseId);
+      await knex.batchInsert('fact_schemas', [
+        {
+          ...secondSchema,
+          id: 'second',
+        },
+      ]);
+
+      const schemas = await store.getLatestSchemas();
+      expect(schemas).toHaveLength(2);
+      expect(schemas[0]).toMatchObject({
+        id: 'test-fact',
+        version: '0.0.1-test',
+        entityFilter: [{ kind: 'component' }],
+        testNumberFact: {
+          type: 'integer',
+          description: 'Test fact with a number type',
+        },
+      });
+      expect(schemas[1]).toMatchObject({
         id: 'second',
-      },
-    ]);
+        version: '0.0.1-test',
+        entityFilter: [{ kind: 'service' }],
+        testStringFact: {
+          type: 'string',
+          description: 'Test fact with a string type',
+        },
+      });
+    },
+  );
 
-    const schemas = await store.getLatestSchemas();
-    expect(schemas).toHaveLength(2);
-    expect(schemas[0]).toMatchObject({
-      id: 'test-fact',
-      version: '0.0.1-test',
-      entityFilter: [{ kind: 'component' }],
-      testNumberFact: {
-        type: 'integer',
-        description: 'Test fact with a number type',
-      },
-    });
-    expect(schemas[1]).toMatchObject({
-      id: 'second',
-      version: '0.0.1-test',
-      entityFilter: [{ kind: 'service' }],
-      testStringFact: {
-        type: 'string',
-        description: 'Test fact with a string type',
-      },
-    });
-  });
+  it.each(databases.eachSupportedId())(
+    'should return latest facts only for the correct id, %p',
+    async databaseId => {
+      const { store } = await createStore(databaseId);
+      const returnedFact = await store.getLatestFactsByIds(
+        ['test-fact'],
+        'a:a/a',
+      );
+      expect(returnedFact['test-fact']).toMatchObject(baseAssertionFact);
+    },
+  );
 
-  it('should return latest facts only for the correct id', async () => {
-    const returnedFact = await store.getLatestFactsByIds(
-      ['test-fact'],
-      'a:a/a',
-    );
-    expect(returnedFact['test-fact']).toMatchObject(baseAssertionFact);
-  });
+  it.each(databases.eachSupportedId())(
+    'should return latest fact with multiple entries, %p',
+    async databaseId => {
+      const { store, knex } = await createStore(databaseId);
+      await knex.batchInsert('fact_schemas', [sameFactsDiffDateSchema]);
+      await knex.batchInsert(
+        'facts',
+        multipleSameFacts.map(fact => ({
+          ...fact,
+          id: sameFactsDiffDateSchema.id,
+        })),
+      );
 
-  it('should return latest fact with multiple entries', async () => {
-    await testDbClient.batchInsert('fact_schemas', [sameFactsDiffDateSchema]);
-    await testDbClient.batchInsert(
-      'facts',
-      multipleSameFacts.map(fact => ({
-        ...fact,
+      const returnedFacts = await store.getLatestFactsByIds(
+        ['test-fact', sameFactsDiffDateSchema.id],
+        'a:a/a',
+      );
+
+      expect(returnedFacts['test-fact']).toMatchObject({
+        ...baseAssertionFact,
+      });
+
+      expect(returnedFacts[sameFactsDiffDateSchema.id]).toMatchObject({
+        ...baseAssertionFact,
         id: sameFactsDiffDateSchema.id,
-      })),
-    );
+        timestamp: DateTime.fromISO(sameFactsDiffDateFuture),
+        facts: { testNumberFact: 3 },
+      });
+    },
+  );
 
-    const returnedFacts = await store.getLatestFactsByIds(
-      ['test-fact', sameFactsDiffDateSchema.id],
-      'a:a/a',
-    );
+  it.each(databases.eachSupportedId())(
+    'should return latest facts for multiple ids, %p',
+    async databaseId => {
+      const { store, knex } = await createStore(databaseId);
+      await knex.batchInsert('fact_schemas', [secondSchema]);
+      await knex.batchInsert(
+        'facts',
+        additionalFacts.map(fact => ({
+          ...fact,
+          id: 'second-test-fact',
+          timestamp: farInTheFuture,
+        })),
+      );
+      const returnedFacts = await store.getLatestFactsByIds(
+        ['test-fact', 'second-test-fact'],
+        'a:a/a',
+      );
 
-    expect(returnedFacts['test-fact']).toMatchObject({
-      ...baseAssertionFact,
-    });
-
-    expect(returnedFacts[sameFactsDiffDateSchema.id]).toMatchObject({
-      ...baseAssertionFact,
-      id: sameFactsDiffDateSchema.id,
-      timestamp: DateTime.fromISO(sameFactsDiffDateFuture),
-      facts: { testNumberFact: 3 },
-    });
-  });
-
-  it('should return latest facts for multiple ids', async () => {
-    await testDbClient.batchInsert('fact_schemas', [secondSchema]);
-    await testDbClient.batchInsert(
-      'facts',
-      additionalFacts.map(fact => ({
-        ...fact,
+      expect(returnedFacts['test-fact']).toMatchObject({
+        ...baseAssertionFact,
+      });
+      expect(returnedFacts['second-test-fact']).toMatchObject({
+        ...baseAssertionFact,
         id: 'second-test-fact',
-        timestamp: farInTheFuture,
-      })),
-    );
-    const returnedFacts = await store.getLatestFactsByIds(
-      ['test-fact', 'second-test-fact'],
-      'a:a/a',
-    );
+        timestamp: DateTime.fromISO(farInTheFuture),
+        facts: { testNumberFact: 3 },
+      });
+    },
+  );
 
-    expect(returnedFacts['test-fact']).toMatchObject({
-      ...baseAssertionFact,
-    });
-    expect(returnedFacts['second-test-fact']).toMatchObject({
-      ...baseAssertionFact,
-      id: 'second-test-fact',
-      timestamp: DateTime.fromISO(farInTheFuture),
-      facts: { testNumberFact: 3 },
-    });
-  });
+  it.each(databases.eachSupportedId())(
+    'should return facts correctly between time range, %p',
+    async databaseId => {
+      const { store, knex } = await createStore(databaseId);
+      await knex.batchInsert('facts', additionalFacts);
+      const returnedFacts = await store.getFactsBetweenTimestampsByIds(
+        ['test-fact'],
+        'a:a/a',
+        DateTime.fromISO(now),
+        DateTime.fromISO(shortlyInTheFuture).plus(
+          Duration.fromObject({ seconds: 1 }),
+        ),
+      );
+      expect(returnedFacts['test-fact']).toHaveLength(2);
 
-  it('should return facts correctly between time range', async () => {
-    await testDbClient.batchInsert('facts', additionalFacts);
-    const returnedFacts = await store.getFactsBetweenTimestampsByIds(
-      ['test-fact'],
-      'a:a/a',
-      DateTime.fromISO(now),
-      DateTime.fromISO(shortlyInTheFuture).plus(Duration.fromMillis(10)),
-    );
-    expect(returnedFacts['test-fact']).toHaveLength(2);
+      expect(returnedFacts['test-fact'][0]).toMatchObject({
+        ...baseAssertionFact,
+        timestamp: DateTime.fromISO(now),
+        facts: { testNumberFact: 1 },
+      });
+      expect(returnedFacts['test-fact'][1]).toMatchObject({
+        ...baseAssertionFact,
+      });
+      expect(returnedFacts['test-fact']).not.toContainEqual({
+        ...baseAssertionFact,
+        timestamp: DateTime.fromISO(farInTheFuture),
+        facts: { testNumberFact: 3 },
+      });
+    },
+  );
 
-    expect(returnedFacts['test-fact'][0]).toMatchObject({
-      ...baseAssertionFact,
-      timestamp: DateTime.fromISO(now),
-      facts: { testNumberFact: 1 },
-    });
-    expect(returnedFacts['test-fact'][1]).toMatchObject({
-      ...baseAssertionFact,
-    });
-    expect(returnedFacts['test-fact']).not.toContainEqual({
-      ...baseAssertionFact,
-      timestamp: DateTime.fromISO(farInTheFuture),
-      facts: { testNumberFact: 3 },
-    });
-  });
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip.each(databases.eachSupportedId())(
+    'should delete extraneous rows when MaxItems is defined. Should leave only n latest, %p',
+    async databaseId => {
+      const { store, knex, rawFacts } = await createStore(databaseId);
+      const deviledFact = (it: {}) => ({
+        ...it,
+        facts: JSON.stringify({
+          testNumberFact: 666,
+        }),
+      });
+      await knex.batchInsert('facts', additionalFacts.map(deviledFact));
 
-  it('should delete extraneous rows when MaxItems is defined. Should leave only n latest', async () => {
-    const deviledFact = (it: {}) => ({
-      ...it,
-      facts: JSON.stringify({
-        testNumberFact: 666,
-      }),
-    });
-    await testDbClient.batchInsert('facts', additionalFacts.map(deviledFact));
+      const preInsertionFacts = await rawFacts();
+      expect(preInsertionFacts).toHaveLength(3);
 
-    const preInsertionFacts = await testDbClient('facts').select();
-    expect(preInsertionFacts).toHaveLength(3);
-
-    const timestamp = DateTime.now().plus(Duration.fromMillis(1111));
-    const factToBeInserted = {
-      timestamp: timestamp,
-      entity: {
-        namespace: 'a',
-        kind: 'a',
-        name: 'a',
-      },
-      facts: {
-        testNumberFact: 555,
-      },
-    };
-    const maxItems = 2;
-    await store.insertFacts({
-      id: 'test-fact',
-      facts: [factToBeInserted],
-      lifecycle: { maxItems },
-    });
-
-    const afterInsertionFacts = await testDbClient('facts').select();
-    expect(afterInsertionFacts).toHaveLength(maxItems);
-    expect(afterInsertionFacts[0]).toMatchObject(
-      deviledFact(additionalFacts[0]),
-    );
-    expect(afterInsertionFacts[1]).toMatchObject({
-      id: 'test-fact',
-      version: '0.0.1-test',
-      timestamp: timestamp.toISO(),
-      entity: 'a:a/a',
-      facts: JSON.stringify({ testNumberFact: 555 }),
-    });
-  });
-
-  it('should delete extraneous rows for each entity when MaxItems is defined. Should leave only n latest', async () => {
-    const deviledFact = (it: {}) => ({
-      ...it,
-      facts: JSON.stringify({
-        testNumberFact: 666,
-      }),
-    });
-    await testDbClient.batchInsert('facts', additionalFacts.map(deviledFact));
-
-    const preInsertionFacts = await testDbClient('facts').select();
-
-    expect(preInsertionFacts).toHaveLength(3);
-
-    await testDbClient.batchInsert(
-      'facts',
-      preInsertionFacts.map(it => ({ ...it, entity: 'b:b/b' })),
-    );
-
-    const timestamp = DateTime.now().plus(Duration.fromMillis(1111));
-    const factsToBeInserted = [
-      {
+      const timestamp = baseTimestamp.plus(Duration.fromObject({ seconds: 2 }));
+      const factToBeInserted = {
         timestamp: timestamp,
         entity: {
           namespace: 'a',
@@ -431,128 +410,128 @@ describe('Tech Insights database', () => {
         facts: {
           testNumberFact: 555,
         },
-      },
-      {
-        timestamp: timestamp,
-        entity: {
-          namespace: 'b',
-          kind: 'b',
-          name: 'b',
+      };
+      const maxItems = 2;
+      await store.insertFacts({
+        id: 'test-fact',
+        facts: [factToBeInserted],
+        lifecycle: { maxItems },
+      });
+
+      const afterInsertionFacts = await rawFacts();
+      expect(afterInsertionFacts).toHaveLength(maxItems);
+      expect(afterInsertionFacts[0]).toMatchObject(
+        deviledFact(additionalFacts[0]),
+      );
+      expect(afterInsertionFacts[1]).toMatchObject({
+        id: 'test-fact',
+        version: '0.0.1-test',
+        timestamp: timestamp.toISO(),
+        entity: 'a:a/a',
+        facts: JSON.stringify({ testNumberFact: 555 }),
+      });
+    },
+  );
+
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip.each(databases.eachSupportedId())(
+    'should delete extraneous rows for each entity when MaxItems is defined. Should leave only n latest, %p',
+    async databaseId => {
+      const { store, knex, rawFacts } = await createStore(databaseId);
+      const deviledFact = (it: {}) => ({
+        ...it,
+        facts: JSON.stringify({
+          testNumberFact: 666,
+        }),
+      });
+      await knex.batchInsert('facts', additionalFacts.map(deviledFact));
+
+      const preInsertionFacts = await rawFacts();
+
+      expect(preInsertionFacts).toHaveLength(3);
+
+      await knex.batchInsert(
+        'facts',
+        preInsertionFacts.map(it => ({ ...it, entity: 'b:b/b' })),
+      );
+
+      const timestamp = baseTimestamp.plus(Duration.fromObject({ seconds: 2 }));
+      const factsToBeInserted = [
+        {
+          timestamp: timestamp,
+          entity: {
+            namespace: 'a',
+            kind: 'a',
+            name: 'a',
+          },
+          facts: {
+            testNumberFact: 555,
+          },
         },
-        facts: {
-          testNumberFact: 555,
+        {
+          timestamp: timestamp,
+          entity: {
+            namespace: 'b',
+            kind: 'b',
+            name: 'b',
+          },
+          facts: {
+            testNumberFact: 555,
+          },
         },
-      },
-    ];
-    const maxItems = 2;
-    await store.insertFacts({
-      id: 'test-fact',
-      facts: factsToBeInserted,
-      lifecycle: { maxItems },
-    });
+      ];
+      const maxItems = 2;
+      await store.insertFacts({
+        id: 'test-fact',
+        facts: factsToBeInserted,
+        lifecycle: { maxItems },
+      });
 
-    const afterInsertionFacts = await testDbClient('facts').select();
+      const afterInsertionFacts = await rawFacts();
 
-    const inserted = {
-      id: 'test-fact',
-      version: '0.0.1-test',
-      timestamp: timestamp.toISO(),
-      entity: 'a:a/a',
-      facts: JSON.stringify({ testNumberFact: 555 }),
-    };
-    expect(afterInsertionFacts).toHaveLength(maxItems * 2);
-    expect(afterInsertionFacts[0]).toMatchObject(
-      deviledFact(additionalFacts[0]),
-    );
+      const inserted = {
+        id: 'test-fact',
+        version: '0.0.1-test',
+        timestamp: timestamp.toISO(),
+        entity: 'a:a/a',
+        facts: JSON.stringify({ testNumberFact: 555 }),
+      };
+      expect(afterInsertionFacts).toHaveLength(maxItems * 2);
+      expect(afterInsertionFacts[0]).toMatchObject(
+        deviledFact(additionalFacts[0]),
+      );
 
-    expect(afterInsertionFacts[1]).toMatchObject({
-      ...deviledFact(additionalFacts[0]),
-      entity: 'b:b/b',
-    });
-    expect(afterInsertionFacts[2]).toMatchObject(inserted);
-    expect(afterInsertionFacts[3]).toMatchObject({
-      ...inserted,
-      entity: 'b:b/b',
-    });
-  });
+      expect(afterInsertionFacts[1]).toMatchObject({
+        ...deviledFact(additionalFacts[0]),
+        entity: 'b:b/b',
+      });
+      expect(afterInsertionFacts[2]).toMatchObject(inserted);
+      expect(afterInsertionFacts[3]).toMatchObject({
+        ...inserted,
+        entity: 'b:b/b',
+      });
+    },
+  );
 
-  it('should delete extraneous rows when TTL is defined. Should leave only items with timestamp greater than TTL', async () => {
-    const oldStaledOutFact = (it: {}) => ({
-      ...it,
-      facts: JSON.stringify({
-        testNumberFact: 666,
-      }),
-      timestamp: DateTime.now().minus({ weeks: 3 }).toISO(),
-    });
-    await testDbClient.batchInsert(
-      'facts',
-      additionalFacts.map(oldStaledOutFact),
-    );
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip.each(databases.eachSupportedId())(
+    'should delete extraneous rows when TTL is defined. Should leave only items with timestamp greater than TTL, %p',
+    async databaseId => {
+      const { store, knex, rawFacts } = await createStore(databaseId);
+      const oldStaledOutFact = (it: {}) => ({
+        ...it,
+        facts: JSON.stringify({
+          testNumberFact: 666,
+        }),
+        timestamp: baseTimestamp.minus({ weeks: 3 }).toISO(),
+      });
+      await knex.batchInsert('facts', additionalFacts.map(oldStaledOutFact));
 
-    const preInsertionFacts = await testDbClient('facts').select();
-    expect(preInsertionFacts).toHaveLength(3);
+      const preInsertionFacts = await rawFacts();
+      expect(preInsertionFacts).toHaveLength(3);
 
-    const timestamp = DateTime.now().plus(Duration.fromMillis(1111));
-    const factToBeInserted = {
-      timestamp: timestamp,
-      entity: {
-        namespace: 'a',
-        kind: 'a',
-        name: 'a',
-      },
-      facts: {
-        testNumberFact: 555,
-      },
-    };
-    await store.insertFacts({
-      id: 'test-fact',
-      facts: [factToBeInserted],
-      lifecycle: { timeToLive: { weeks: 2 } },
-    });
-
-    const afterInsertionFacts = await testDbClient('facts')
-      .select()
-      .orderBy('timestamp', 'desc');
-    expect(afterInsertionFacts).toHaveLength(3);
-    expect(afterInsertionFacts[0]).toMatchObject({
-      id: 'test-fact',
-      version: '0.0.1-test',
-      timestamp: timestamp.toISO(),
-      entity: 'a:a/a',
-      facts: JSON.stringify({ testNumberFact: 555 }),
-    });
-    expect(afterInsertionFacts[1]).toMatchObject(facts[1]);
-    expect(afterInsertionFacts[2]).toMatchObject(facts[0]);
-
-    expect(afterInsertionFacts).not.toContainEqual(
-      oldStaledOutFact(additionalFacts[0]),
-    );
-  });
-
-  it('should delete extraneous rows for each entity when TTL expired', async () => {
-    const oldStaledOutFact = (it: {}) => ({
-      ...it,
-      facts: JSON.stringify({
-        testNumberFact: 666,
-      }),
-      timestamp: DateTime.now().minus({ weeks: 3 }).toISO(),
-    });
-    await testDbClient.batchInsert(
-      'facts',
-      additionalFacts.map(oldStaledOutFact),
-    );
-
-    const preInsertionFacts = await testDbClient('facts').select();
-    expect(preInsertionFacts).toHaveLength(3);
-
-    await testDbClient.batchInsert(
-      'facts',
-      preInsertionFacts.map(it => ({ ...it, entity: 'b:b/b' })),
-    );
-
-    const timestamp = DateTime.now().plus(Duration.fromMillis(1111));
-    const factsToBeInserted = [
-      {
+      const timestamp = baseTimestamp.plus(Duration.fromObject({ seconds: 2 }));
+      const factToBeInserted = {
         timestamp: timestamp,
         entity: {
           namespace: 'a',
@@ -562,61 +541,123 @@ describe('Tech Insights database', () => {
         facts: {
           testNumberFact: 555,
         },
-      },
-      {
-        timestamp: timestamp,
-        entity: {
-          namespace: 'b',
-          kind: 'b',
-          name: 'b',
+      };
+      await store.insertFacts({
+        id: 'test-fact',
+        facts: [factToBeInserted],
+        lifecycle: { timeToLive: { weeks: 2 } },
+      });
+
+      const afterInsertionFacts = await knex('facts')
+        .select()
+        .orderBy('timestamp', 'desc');
+      expect(afterInsertionFacts).toHaveLength(3);
+      expect(afterInsertionFacts[0]).toMatchObject({
+        id: 'test-fact',
+        version: '0.0.1-test',
+        timestamp: timestamp.toISO(),
+        entity: 'a:a/a',
+        facts: JSON.stringify({ testNumberFact: 555 }),
+      });
+      expect(afterInsertionFacts[1]).toMatchObject(facts[1]);
+      expect(afterInsertionFacts[2]).toMatchObject(facts[0]);
+
+      expect(afterInsertionFacts).not.toContainEqual(
+        oldStaledOutFact(additionalFacts[0]),
+      );
+    },
+  );
+
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip.each(databases.eachSupportedId())(
+    'should delete extraneous rows for each entity when TTL expired, %p',
+    async databaseId => {
+      const { store, knex, rawFacts } = await createStore(databaseId);
+      const oldStaledOutFact = (it: {}) => ({
+        ...it,
+        facts: JSON.stringify({
+          testNumberFact: 666,
+        }),
+        timestamp: baseTimestamp.minus({ weeks: 3 }).toISO(),
+      });
+      await knex.batchInsert('facts', additionalFacts.map(oldStaledOutFact));
+
+      const preInsertionFacts = await rawFacts();
+      expect(preInsertionFacts).toHaveLength(3);
+
+      await knex.batchInsert(
+        'facts',
+        preInsertionFacts.map(it => ({ ...it, entity: 'b:b/b' })),
+      );
+
+      const timestamp = baseTimestamp.plus(Duration.fromObject({ seconds: 2 }));
+      const factsToBeInserted = [
+        {
+          timestamp: timestamp,
+          entity: {
+            namespace: 'a',
+            kind: 'a',
+            name: 'a',
+          },
+          facts: {
+            testNumberFact: 555,
+          },
         },
-        facts: {
-          testNumberFact: 555,
+        {
+          timestamp: timestamp,
+          entity: {
+            namespace: 'b',
+            kind: 'b',
+            name: 'b',
+          },
+          facts: {
+            testNumberFact: 555,
+          },
         },
-      },
-    ];
-    await store.insertFacts({
-      id: 'test-fact',
-      facts: factsToBeInserted,
-      lifecycle: { timeToLive: { weeks: 2 } },
-    });
+      ];
+      await store.insertFacts({
+        id: 'test-fact',
+        facts: factsToBeInserted,
+        lifecycle: { timeToLive: { weeks: 2 } },
+      });
 
-    const afterInsertionFacts = await testDbClient('facts')
-      .select()
-      .orderBy('timestamp', 'desc');
+      const afterInsertionFacts = await knex('facts')
+        .select()
+        .orderBy('timestamp', 'desc');
 
-    expect(afterInsertionFacts).toHaveLength(6);
-    expect(afterInsertionFacts[0]).toMatchObject({
-      id: 'test-fact',
-      version: '0.0.1-test',
-      timestamp: timestamp.toISO(),
-      entity: 'a:a/a',
-      facts: JSON.stringify({ testNumberFact: 555 }),
-    });
-    expect(afterInsertionFacts[1]).toMatchObject({
-      id: 'test-fact',
-      version: '0.0.1-test',
-      timestamp: timestamp.toISO(),
-      entity: 'b:b/b',
-      facts: JSON.stringify({ testNumberFact: 555 }),
-    });
-    expect(afterInsertionFacts[2]).toMatchObject(facts[1]);
-    expect(afterInsertionFacts[3]).toMatchObject({
-      ...facts[1],
-      entity: 'b:b/b',
-    });
-    expect(afterInsertionFacts[4]).toMatchObject(facts[0]);
-    expect(afterInsertionFacts[5]).toMatchObject({
-      ...facts[0],
-      entity: 'b:b/b',
-    });
+      expect(afterInsertionFacts).toHaveLength(6);
+      expect(afterInsertionFacts[0]).toMatchObject({
+        id: 'test-fact',
+        version: '0.0.1-test',
+        timestamp: timestamp.toISO(),
+        entity: 'a:a/a',
+        facts: JSON.stringify({ testNumberFact: 555 }),
+      });
+      expect(afterInsertionFacts[1]).toMatchObject({
+        id: 'test-fact',
+        version: '0.0.1-test',
+        timestamp: timestamp.toISO(),
+        entity: 'b:b/b',
+        facts: JSON.stringify({ testNumberFact: 555 }),
+      });
+      expect(afterInsertionFacts[2]).toMatchObject(facts[1]);
+      expect(afterInsertionFacts[3]).toMatchObject({
+        ...facts[1],
+        entity: 'b:b/b',
+      });
+      expect(afterInsertionFacts[4]).toMatchObject(facts[0]);
+      expect(afterInsertionFacts[5]).toMatchObject({
+        ...facts[0],
+        entity: 'b:b/b',
+      });
 
-    expect(afterInsertionFacts).not.toContainEqual(
-      oldStaledOutFact(additionalFacts[0]),
-    );
-    expect(afterInsertionFacts).not.toContainEqual({
-      ...oldStaledOutFact(additionalFacts[0]),
-      entity: 'b:b/b',
-    });
-  });
+      expect(afterInsertionFacts).not.toContainEqual(
+        oldStaledOutFact(additionalFacts[0]),
+      );
+      expect(afterInsertionFacts).not.toContainEqual({
+        ...oldStaledOutFact(additionalFacts[0]),
+        entity: 'b:b/b',
+      });
+    },
+  );
 });
