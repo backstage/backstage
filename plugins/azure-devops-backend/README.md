@@ -118,35 +118,17 @@ The Azure DevOps backend plugin includes the `AzureDevOpsAnnotatorProcessor` whi
   }
 ```
 
-To use this with the New Backend System you'll want to create a [backend module extension for the Catalog](https://backstage.io/docs/backend-system/building-backends/migrating#other-catalog-extensions) if you haven't already. Here's a basic example of this assuming you are only adding the `AzureDevOpsAnnotatorProcessor`, this would go in your `packages/backend/index.ts`:
+To use this with the [new backend system](https://backstage.io/docs/backend-system/) you'll make the following changes, this would go in your `packages/backend/index.ts`:
 
 ```diff
    import { createBackend } from '@backstage/backend-defaults';
-+  import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-+  import { coreServices, createBackendModule } from '@backstage/backend-plugin-api';
-+  import { AzureDevOpsAnnotatorProcessor } from '@backstage/plugin-azure-devops-backend';
-
-+  const catalogModuleCustomExtensions = createBackendModule({
-+    pluginId: 'catalog', // name of the plugin that the module is targeting
-+    moduleId: 'custom-extensions',
-+    register(env) {
-+      env.registerInit({
-+        deps: {
-+          catalog: catalogProcessingExtensionPoint,
-+          config: coreServices.rootConfig,
-+        },
-+        async init({ catalog, config }) {
-+          catalog.addProcessor(AzureDevOpsAnnotatorProcessor.fromConfig(config));
-+        },
-+      });
-+    },
-+  });
++  import { azureDevOpsAnnotatorProcessorModule } from '@backstage/plugin-azure-devops-backend';
 
    const backend = createBackend();
 
    // ... other feature additions
 
-+  backend.add(catalogModuleCustomExtensions());
++  backend.add(azureDevOpsAnnotatorProcessorModule());
 
    backend.start();
 ```

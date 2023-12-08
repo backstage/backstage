@@ -44,6 +44,9 @@ export class AzureDevOpsAnnotatorProcessor implements CatalogProcessor {
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
 
+// @public
+export const azureDevOpsAnnotatorProcessorModule: () => BackendFeature;
+
 // @public (undocumented)
 export class AzureDevOpsApi {
   // (undocumented)
