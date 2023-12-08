@@ -34,6 +34,7 @@ import {
   useApi,
   errorApiRef,
   IconComponent,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 import { ProviderSettingsAvatar } from './ProviderSettingsAvatar';
 
@@ -49,10 +50,20 @@ export const ProviderSettingsItem = (props: {
   const { title, description, icon: Icon, apiRef } = props;
 
   const api = useApi(apiRef);
+  const identityApi = useApi(identityApiRef);
   const errorApi = useApi(errorApiRef);
   const [signedIn, setSignedIn] = useState(false);
   const [profile, setProfile] = useState<ProfileInfo>(emptyProfile);
-
+  const handleLogout = () => {
+    const provider = localStorage.getItem(
+      '@backstage/core:SignInPage:provider',
+    );
+    const log = api?.sessionManager?.connector?.provider?.id;
+    if (provider?.split('-')[0] === log) {
+      return identityApi.signOut();
+    }
+    return api.signOut();
+  };
   useEffect(() => {
     let didCancel = false;
 
@@ -132,7 +143,7 @@ export const ProviderSettingsItem = (props: {
             variant="outlined"
             color="primary"
             onClick={() => {
-              const action = signedIn ? api.signOut() : api.signIn();
+              const action = signedIn ? handleLogout() : api.signIn();
               action.catch(error => errorApi.post(error));
             }}
           >
