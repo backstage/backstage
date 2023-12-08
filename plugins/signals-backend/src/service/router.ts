@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 import { errorHandler } from '@backstage/backend-common';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { SignalService } from '@backstage/plugin-signals-node';
+import * as https from 'https';
+import http from 'http';
 
 /** @public */
 export interface RouterOptions {
@@ -30,17 +32,14 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { logger, service } = options;
+  let subscribed = false;
 
-  const router = Router();
-  router.use(express.json());
-
-  router.get('/health', (_, response) => {
-    logger.info('PONG!');
-    response.json({ status: 'ok' });
-  });
-
-  router.get('/', async (req, _, next) => {
+  const upgradeMiddleware = (req: Request, _: Response, next: NextFunction) => {
+    const server: https.Server | http.Server = (
+      (req.socket ?? req.connection) as any
+    )?.server;
     if (
+      !server ||
       !req.headers ||
       req.headers.upgrade === undefined ||
       req.headers.upgrade.toLowerCase() !== 'websocket'
@@ -49,7 +48,21 @@ export async function createRouter(
       return;
     }
 
-    await service.handleUpgrade(req);
+    if (!subscribed) {
+      server.on('upgrade', async (request, socket, head) => {
+        await service.handleUpgrade(request, socket, head);
+      });
+      subscribed = true;
+    }
+  };
+
+  const router = Router();
+  router.use(express.json());
+  router.use(upgradeMiddleware);
+
+  router.get('/health', (_, response) => {
+    logger.info('PONG!');
+    response.json({ status: 'ok' });
   });
 
   router.use(errorHandler());

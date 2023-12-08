@@ -73,15 +73,15 @@ const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
 /** @public */
 export const InfoContent = () => {
   const classes = useStyles();
-  const [info, setInfo] = useState<DevToolsInfo | undefined>(undefined);
+  const [resources, setResources] = useState<string | undefined>(undefined);
   const { about, loading, error } = useInfo();
-  useSignalApi('devtools:info', message => {
-    setInfo(message as DevToolsInfo);
+  useSignalApi('devtools:resources', message => {
+    setResources(message.resources as string);
   });
 
   useEffect(() => {
     if (!loading && !error && about) {
-      setInfo(about);
+      setResources(about.resourceUtilization);
     }
   }, [about, loading, error]);
 
@@ -102,7 +102,7 @@ export const InfoContent = () => {
             </ListItemAvatar>
             <ListItemText
               primary="Operating System"
-              secondary={info?.operatingSystem}
+              secondary={about?.operatingSystem}
             />
           </ListItem>
           <ListItem>
@@ -113,7 +113,7 @@ export const InfoContent = () => {
             </ListItemAvatar>
             <ListItemText
               primary="Resource utilization"
-              secondary={info?.resourceUtilization}
+              secondary={resources}
             />
           </ListItem>
           <ListItem>
@@ -124,7 +124,7 @@ export const InfoContent = () => {
             </ListItemAvatar>
             <ListItemText
               primary="NodeJS Version"
-              secondary={info?.nodeJsVersion}
+              secondary={about?.nodeJsVersion}
             />
           </ListItem>
           <ListItem>
@@ -135,14 +135,14 @@ export const InfoContent = () => {
             </ListItemAvatar>
             <ListItemText
               primary="Backstage Version"
-              secondary={info?.backstageVersion}
+              secondary={about?.backstageVersion}
             />
           </ListItem>
           <Divider orientation="vertical" variant="middle" flexItem />
           <ListItem
             button
             onClick={() => {
-              copyToClipboard({ about: info });
+              copyToClipboard({ about });
             }}
             className={classes.copyButton}
           >
@@ -155,7 +155,7 @@ export const InfoContent = () => {
           </ListItem>
         </List>
       </Paper>
-      <InfoDependenciesTable infoDependencies={info?.dependencies} />
+      <InfoDependenciesTable infoDependencies={about?.dependencies} />
     </Box>
   );
 };

@@ -56,9 +56,11 @@ export async function createRouter(
   if (signalService) {
     // Publish info periodically using the signal service
     setInterval(async () => {
-      if (signalService.hasSubscribers('devtools:info')) {
-        const info = await devToolsBackendApi.listInfo();
-        await signalService.publish('*', 'devtools:info', info);
+      if (signalService.hasSubscribers('devtools:resources')) {
+        const info = await devToolsBackendApi.listResourceUtilization();
+        await signalService.publish('*', 'devtools:resources', {
+          resources: info,
+        });
       }
     }, 5000);
   }

@@ -25,6 +25,8 @@ export class DevToolsBackendApi {
   listExternalDependencyDetails(): Promise<ExternalDependency[]>;
   // (undocumented)
   listInfo(): Promise<DevToolsInfo>;
+  // (undocumented)
+  listResourceUtilization(): Promise<string>;
 }
 
 // @public

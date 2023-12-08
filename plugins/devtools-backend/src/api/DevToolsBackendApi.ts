@@ -203,17 +203,21 @@ export class DevToolsBackendApi {
     return configInfo;
   }
 
-  public async listInfo(): Promise<DevToolsInfo> {
-    const operatingSystem = `${os.hostname()}: ${os.type} ${os.release} - ${
-      os.platform
-    }/${os.arch}`;
+  public async listResourceUtilization(): Promise<string> {
     const usedMem = Math.floor((os.totalmem() - os.freemem()) / (1024 * 1024));
-    const resources = `Memory: ${usedMem}/${Math.floor(
+    return `Memory: ${usedMem}/${Math.floor(
       os.totalmem() / (1024 * 1024),
     )}MB - Load: ${os
       .loadavg()
       .map(v => v.toFixed(2))
       .join('/')}`;
+  }
+
+  public async listInfo(): Promise<DevToolsInfo> {
+    const operatingSystem = `${os.hostname()}: ${os.type} ${os.release} - ${
+      os.platform
+    }/${os.arch}`;
+
     const nodeJsVersion = process.version;
 
     /* eslint-disable-next-line no-restricted-syntax */
@@ -247,7 +251,7 @@ export class DevToolsBackendApi {
 
     const info: DevToolsInfo = {
       operatingSystem: operatingSystem ?? 'N/A',
-      resourceUtilization: resources ?? 'N/A',
+      resourceUtilization: (await this.listResourceUtilization()) ?? 'N/A',
       nodeJsVersion: nodeJsVersion ?? 'N/A',
       backstageVersion:
         backstageJson && backstageJson.version ? backstageJson.version : 'N/A',

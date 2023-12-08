@@ -27,13 +27,13 @@ import {
 import { RawData, WebSocket, WebSocketServer } from 'ws';
 import { IncomingMessage } from 'http';
 import { v4 as uuid } from 'uuid';
-import { Request } from 'express';
 import { JsonObject } from '@backstage/types';
 import {
   BackstageIdentityResponse,
   IdentityApi,
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
+import { Duplex } from 'stream';
 
 /** @public */
 export class SignalService implements EventSubscriber {
@@ -61,14 +61,7 @@ export class SignalService implements EventSubscriber {
     this.serverId = uuid();
     this.server = new WebSocketServer({
       noServer: true,
-    });
-
-    this.server.on('close', () => {
-      this.logger.info('Closing signals server');
-      this.connections.forEach(conn => {
-        conn.ws.close();
-      });
-      this.connections = new Map();
+      clientTracking: false,
     });
 
     this.eventBroker?.subscribe(this);
@@ -79,7 +72,11 @@ export class SignalService implements EventSubscriber {
    * list for publish/subscribe functionality
    * @param req - Request
    */
-  handleUpgrade = async (req: Request) => {
+  handleUpgrade = async (
+    req: IncomingMessage,
+    socket: Duplex,
+    head: Buffer,
+  ) => {
     let identity: BackstageIdentityResponse | undefined = undefined;
 
     // Authentication token is passed in Sec-WebSocket-Protocol header as there
@@ -95,8 +92,8 @@ export class SignalService implements EventSubscriber {
 
     this.server.handleUpgrade(
       req,
-      req.socket,
-      Buffer.from(''),
+      socket,
+      head,
       (ws: WebSocket, __: IncomingMessage) => {
         this.addConnection(ws, identity);
       },
@@ -131,17 +128,11 @@ export class SignalService implements EventSubscriber {
       this.connections.delete(id);
     });
 
-    ws.on('ping', () => {
-      this.logger.debug(`Ping from connection ${id}`);
-      ws.pong();
-    });
-
     ws.on('message', (data: RawData, isBinary: boolean) => {
       this.logger.debug(`Received message from connection ${id}: ${data}`);
       if (isBinary) {
         return;
       }
-
       try {
         const json = JSON.parse(data.toString()) as JsonObject;
         this.handleMessage(conn, json);
