@@ -124,7 +124,12 @@ export class TaskWorker {
   }
 
   start() {
-    setTimeout(async () => await this.recoverTasks(), 1);
+    (async () => {
+      for (;;) {
+        await new Promise(resolve => setTimeout(resolve, 6000));
+        await this.recoverTasks();
+      }
+    })();
     (async () => {
       for (;;) {
         await this.onReadyToClaimTask();
