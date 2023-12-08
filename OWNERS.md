@@ -163,13 +163,18 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 
 ## Emeritus Core Maintainers
 
-| Maintainer   | Organization   | GitHub                                        | Discord        |
-| ------------ | -------------- | --------------------------------------------- | -------------- |
-| Stefan Ålund | Spotify        | [stefanalund](https://github.com/stefanalund) | `stalund#9602` |
-| Paul Cowan   | frontendrescue | [dagda1](https://github.com/dagda1)           | `dagda1`       |
+| Maintainer   | Organization | GitHub                                        | Discord        |
+| ------------ | ------------ | --------------------------------------------- | -------------- |
+| Stefan Ålund | Spotify      | [stefanalund](https://github.com/stefanalund) | `stalund#9602` |
 
 ## Emeritus End User Sponsors
 
 | Name      | Organization | GitHub                                      | Discord        |
 | --------- | ------------ | ------------------------------------------- | -------------- |
 | Lee Mills | Spotify      | [leemills83](https://github.com/leemills83) | `.binarypoint` |
+
+## Emeritus Project Area Maintainers
+
+| Maintainer | Organization   | GitHub                              | Discord  |
+| ---------- | -------------- | ----------------------------------- | -------- |
+| Paul Cowan | frontendrescue | [dagda1](https://github.com/dagda1) | `dagda1` |
