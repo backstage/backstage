@@ -334,7 +334,7 @@ describe('getAnnotationValuesFromEntity', () => {
     });
   });
 
-  describe('with more then expected slashes', () => {
+  describe('host-org with more then expected slashes', () => {
     it('should throw incorrect format error', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
@@ -354,6 +354,30 @@ describe('getAnnotationValuesFromEntity', () => {
 
       expect(test).toThrow(
         'Invalid value for annotation "dev.azure.com/host-org"; expected format is: <host-name>/<organization-name>, found: "host/subpath/another-path/org/project"',
+      );
+    });
+  });
+
+  describe('project-repo with more then expected slashes', () => {
+    it('should throw incorrect format error', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'project-repo',
+          annotations: {
+            'dev.azure.com/project-repo': 'project/another/repo/final',
+          },
+        },
+      };
+
+      const test = () => {
+        return getAnnotationValuesFromEntity(entity);
+      };
+
+      expect(test).toThrow(
+        'Invalid value for annotation "dev.azure.com/project-repo"; expected format is: <project-name>/<repo-name>, found: "project/another/repo/final"',
       );
     });
   });
