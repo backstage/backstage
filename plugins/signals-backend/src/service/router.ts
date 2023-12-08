@@ -34,9 +34,7 @@ export async function createRouter(
   const { logger, service } = options;
   let subscribed = false;
   const upgradeMiddleware = (req: Request, _: Response, next: NextFunction) => {
-    const server: https.Server | http.Server = (
-      (req.socket ?? req.connection) as any
-    )?.server;
+    const server: https.Server | http.Server = (req.socket as any)?.server;
     if (
       !server ||
       !req.headers ||
@@ -50,7 +48,10 @@ export async function createRouter(
     if (!subscribed) {
       subscribed = true;
       server.on('upgrade', async (request, socket, head) => {
-        await service.handleUpgrade(request, socket, head);
+        // Only upgrade if request to root of the signals plugin
+        if (request.url === '/api/signals') {
+          await service.handleUpgrade(request, socket, head);
+        }
       });
     }
   };
