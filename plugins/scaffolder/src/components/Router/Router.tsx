@@ -133,6 +133,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
             contextMenu={props.contextMenu}
             groups={props.groups}
             templateFilter={props.templateFilter}
+            headerOptions={props.headerOptions}
           />
         }
       />
@@ -141,6 +142,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
         element={
           <SecretsContextProvider>
             <TemplateWizardPageComponent
+              headerOptions={props.headerOptions}
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
               components={{ ReviewStepComponent }}

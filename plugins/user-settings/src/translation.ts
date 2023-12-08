@@ -20,15 +20,21 @@ import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const userSettingsTranslationRef = createTranslationRef({
   id: 'user-settings',
   messages: {
-    language: 'Language',
-    change_the_language: 'Change the language',
-    theme: 'Theme',
-    theme_light: 'Light',
-    theme_dark: 'Dark',
-    theme_auto: 'Auto',
-    change_the_theme_mode: 'Change the theme mode',
-    select_theme: 'Select {{theme}}',
-    select_theme_auto: 'Select Auto Theme',
-    select_lng: 'Select language {{language}}',
+    languageToggle: {
+      title: 'Language',
+      description: 'Change the language',
+      select: 'Select language {{language}}',
+    },
+    themeToggle: {
+      title: 'Theme',
+      description: 'Change the theme mode',
+      select: 'Select theme {{theme}}',
+      selectAuto: 'Select Auto Theme',
+      names: {
+        light: 'Light',
+        dark: 'Dark',
+        auto: 'Auto',
+      },
+    },
   },
 });

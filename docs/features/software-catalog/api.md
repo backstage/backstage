@@ -31,8 +31,8 @@ with a `Bearer` token, which should then be the Backstage token returned by the
 
 These are the endpoints that deal with reading of entities directly. What it
 exposes are final entities - i.e. the output of all processing and the stitching
-process, not the raw originally ingested entity data. See [The Life of an
-Entity](life-of-an-entity.md) for more details about this process and
+process, not the raw originally ingested entity data. See
+[The Life of an Entity](./life-of-an-entity.md) for more details about this process and
 distinction.
 
 ### `GET /entities`

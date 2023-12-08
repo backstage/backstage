@@ -16,7 +16,7 @@
 
 import { OptionValues } from 'commander';
 import { findRoleFromCommand } from '../../lib/role';
-import { startBackend } from './startBackend';
+import { startBackend, startBackendPlugin } from './startBackend';
 import { startFrontend } from './startFrontend';
 
 export async function command(opts: OptionValues): Promise<void> {
@@ -31,10 +31,11 @@ export async function command(opts: OptionValues): Promise<void> {
 
   switch (role) {
     case 'backend':
+      return startBackend(options);
     case 'backend-plugin':
     case 'backend-plugin-module':
     case 'node-library':
-      return startBackend(options);
+      return startBackendPlugin(options);
     case 'frontend':
       return startFrontend({
         ...options,

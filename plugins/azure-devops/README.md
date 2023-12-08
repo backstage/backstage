@@ -72,6 +72,53 @@ dev.azure.com/build-definition: <build-definition-name>
 
 In this case `<project-name>` will be the name of your Team Project and `<build-definition-name>` will be the name of the Build Definition you would like to see Builds for, and it's possible to add more Builds separated by a comma. If the Build Definition name has spaces in it make sure to put quotes around it.
 
+#### Multiple Organizations
+
+If you have multiple organizations you'll need to also add this annotation:
+
+```yaml
+dev.azure.com/host-org: <host>/<organization>
+```
+
+For this annotation `<host>` will match the `host` value in the `integrations.azure` section in your `app-config.yaml` and `<organization>` will be the name of the Organization that is part of the `host`. Let's break this down with an example:
+
+Say we have the following `integrations.azure` section:
+
+```yaml
+integrations:
+  azure:
+    - host: dev.azure.com
+      credentials:
+        - organizations:
+            - my-org
+            - my-other-org
+          clientId: ${AZURE_CLIENT_ID}
+          clientSecret: ${AZURE_CLIENT_SECRET}
+          tenantId: ${AZURE_TENANT_ID}
+        - organizations:
+            - another-org
+          clientId: ${AZURE_CLIENT_ID}
+    - host: server.company.com
+      credentials:
+        - organizations:
+            - yet-another-org
+          personalAccessToken: ${PERSONAL_ACCESS_TOKEN}
+```
+
+If the entity we are viewing lives in the `my-other-org` organization then the `dev.azure.com/host-org` annotation would look like this:
+
+```yaml
+dev.azure.com/host-org: dev.azure.com/my-other-org
+```
+
+And if the entity was from `yet-another-org` it would look like this:
+
+```yaml
+dev.azure.com/host-org: server.company.com/yet-another-org
+```
+
+**Note:** To save you time, effort, and confusion setting up these annotations manually you can use the `AzureDevOpsAnnotatorProcessor` processor which will add the `dev.azure.com/host-org` and `dev.azure.com/project-repo` annotations for you with the correct values. The Azure DevOps backend plugin has details on how to [add this processor](https://github.com/backstage/backstage/tree/master/plugins/azure-devops-backend#processor).
+
 ### Azure Pipelines Component
 
 To get the Azure Pipelines component working you'll need to do the following two steps:
@@ -247,8 +294,3 @@ To get the README component working you'll need to do the following two steps:
 - You'll need to add the `EntitySwitch.Case` above from step 2 to all the entity sections you want to see Readme in. For example if you wanted to see Readme when looking at Website entities then you would need to add this to the `websiteEntityPage` section.
 - The `if` prop is optional on the `EntitySwitch.Case`, you can remove it if you always want to see the tab even if the entity being viewed does not have the needed annotation
 - The `maxHeight` property on the `EntityAzureReadmeCard` will set the maximum screen size you would like to see, if not set it will default to 100%
-
-## Limitations
-
-- Currently multiple organizations are not supported
-- Mixing Azure DevOps Services (cloud) and Azure DevOps Server (on-premise) is not supported

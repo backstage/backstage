@@ -36,7 +36,7 @@ export const pageXRouteRef = createRouteRef();
 // });
 
 const IndexPage = createPageExtension({
-  id: 'index',
+  name: 'index',
   defaultPath: '/',
   routeRef: indexRouteRef,
   loader: async () => {
@@ -68,7 +68,7 @@ const IndexPage = createPageExtension({
 });
 
 const Page1 = createPageExtension({
-  id: 'page1',
+  name: 'page1',
   defaultPath: '/page1',
   routeRef: page1RouteRef,
   loader: async () => {
@@ -102,7 +102,7 @@ const Page1 = createPageExtension({
 });
 
 const ExternalPage = createPageExtension({
-  id: 'pageX',
+  name: 'pageX',
   defaultPath: '/pageX',
   routeRef: pageXRouteRef,
   loader: async () => {

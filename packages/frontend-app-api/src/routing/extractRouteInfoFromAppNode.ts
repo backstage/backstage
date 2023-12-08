@@ -15,10 +15,9 @@
  */
 
 import { RouteRef, coreExtensionData } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toLegacyPlugin } from '../wiring/createApp';
 import { BackstageRouteObject } from './types';
 import { AppNode } from '@backstage/frontend-plugin-api';
+import { toLegacyPlugin } from './toLegacyPlugin';
 
 // We always add a child that matches all subroutes but without any route refs. This makes
 // sure that we're always able to match each route no matter how deep the navigation goes.
@@ -85,6 +84,7 @@ export function extractRouteInfoFromAppNode(node: AppNode): {
         caseSensitive: false,
         children: [MATCH_ALL_ROUTE],
         plugins: new Set(),
+        appNode: current,
       };
       parentChildren.push(currentObj);
 

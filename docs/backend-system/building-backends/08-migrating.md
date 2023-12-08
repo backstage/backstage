@@ -297,7 +297,7 @@ import { microsoftGraphOrgEntityProviderTransformExtensionPoint } from '@backsta
 backend.add(
   createBackendModule({
     pluginId: 'catalog',
-    moduleId: 'microsoftGraphExtensions',
+    moduleId: 'microsoft-graph-extensions',
     register(env) {
       env.registerInit({
         deps: {
@@ -330,21 +330,21 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 
 /* highlight-add-start */
 const catalogModuleCustomExtensions = createBackendModule({
   pluginId: 'catalog', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
         // ... and other dependencies as needed
       },
-      init({ catalog /* ..., other dependencies */ }) {
+      async init({ catalog /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
         catalog.addEntityProvider(new MyEntityProvider()); // just an example
@@ -399,21 +399,21 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 
 /* highlight-add-start */
 const eventsModuleCustomExtensions = createBackendModule({
   pluginId: 'events', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {
         events: eventsExtensionPoint,
         // ... and other dependencies as needed
       },
-      init({ events /* ..., other dependencies */ }) {
+      async init({ events /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
         events.addSubscribers(new MySubscriber()); // just an example
@@ -464,21 +464,21 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
-import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 
 /* highlight-add-start */
 const scaffolderModuleCustomExtensions = createBackendModule({
   pluginId: 'scaffolder', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {
         scaffolder: scaffolderActionsExtensionPoint,
         // ... and other dependencies as needed
       },
-      init({ scaffolder /* ..., other dependencies */ }) {
+      async init({ scaffolder /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
         scaffolder.addActions(new MyAction()); // just an example

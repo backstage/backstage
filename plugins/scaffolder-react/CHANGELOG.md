@@ -1,5 +1,71 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.6.2-next.2
+
+### Patch Changes
+
+- 5bb5240: Fixed issue for showing undefined for hidden form items
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.2
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-scaffolder-common@1.4.3
+
+## 1.6.2-next.1
+
+### Patch Changes
+
+- fa66d1b5b3: Fixed bug in `ReviewState` where `enum` value was displayed in step review instead of the corresponding label when using `enumNames`
+- 2aee53bbeb: Add horizontal slider if stepper overflows
+- 2b725913c1: Updated dependency `@rjsf/utils` to `5.14.3`.
+  Updated dependency `@rjsf/core` to `5.14.3`.
+  Updated dependency `@rjsf/material-ui` to `5.14.3`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.14.3`.
+- a518c5a25b: Updated dependency `@react-hookz/web` to `^23.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.1
+  - @backstage/catalog-client@1.5.0-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-scaffolder-common@1.4.3
+
+## 1.6.2-next.0
+
+### Patch Changes
+
+- e516bf4da8: Step titles in the Stepper are now clickable and redirect the user to the corresponding step, as an alternative to using the back buttons.
+- aaa6fb3bc9: Minor updates for TypeScript 5.2.2+ compatibility
+- 6cd12f277b: Updated dependency `@rjsf/utils` to `5.14.1`.
+  Updated dependency `@rjsf/core` to `5.14.1`.
+  Updated dependency `@rjsf/material-ui` to `5.14.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.14.1`.
+- 63c494ef22: Updated dependency `@rjsf/utils` to `5.14.2`.
+  Updated dependency `@rjsf/core` to `5.14.2`.
+  Updated dependency `@rjsf/material-ui` to `5.14.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.14.2`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-react@1.9.2-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-scaffolder-common@1.4.3
+
 ## 1.6.0
 
 ### Minor Changes

@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-export { coreExtensionData, type NavTarget } from './coreExtensionData';
+export {
+  coreExtensionData,
+  type LogoElements,
+  type NavTarget,
+} from './coreExtensionData';
 export {
   createExtension,
   type Extension,
+  type ExtensionDefinition,
   type CreateExtensionOptions,
   type ExtensionDataValues,
-  type ExtensionInputValues,
+  type ResolvedExtensionInput,
+  type ResolvedExtensionInputs,
   type AnyExtensionInputMap,
   type AnyExtensionDataMap,
 } from './createExtension';
@@ -45,3 +51,4 @@ export {
   type ExtensionOverrides,
   type ExtensionOverridesOptions,
 } from './createExtensionOverrides';
+export type { FeatureFlagConfig } from './types';

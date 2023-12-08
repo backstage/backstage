@@ -20,7 +20,9 @@ import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const catalogTranslationRef = createTranslationRef({
   id: 'catalog',
   messages: {
-    catalog_page_title: `{{orgName}} Catalog`,
-    catalog_page_create_button_title: 'Create',
+    indexPage: {
+      title: `{{orgName}} Catalog`,
+      createButtonTitle: 'Create',
+    },
   },
 });

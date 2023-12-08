@@ -35,7 +35,7 @@ async function init(directoryPath: string) {
     );
   }
   const opticConfigFilePath = join(directoryPath, 'optic.yml');
-  if (!(await fs.pathExists(opticConfigFilePath))) {
+  if (await fs.pathExists(opticConfigFilePath)) {
     throw new Error(`This directory already has an optic.yml file. Exiting.`);
   }
   await fs.writeFile(
@@ -56,7 +56,7 @@ capture:
                 # 🔧 Specify a command that will generate traffic
                 command: yarn backstage-cli package test --no-watch ${ROUTER_TEST_PATHS.map(
                   e => `"${e}"`,
-                ).join(',')} 
+                ).join(' ')} 
   `,
   );
   if (await cliPaths.resolveTargetRoot('node_modules/.bin/prettier')) {

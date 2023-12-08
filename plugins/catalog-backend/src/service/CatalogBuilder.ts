@@ -37,6 +37,7 @@ import lodash, { keyBy } from 'lodash';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
+  EntitiesSearchFilter,
   EntityProvider,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
@@ -79,7 +80,6 @@ import { Config, readDurationFromConfig } from '@backstage/config';
 import { Logger } from 'winston';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
-import { EntitiesSearchFilter } from '../catalog/types';
 import { permissionRules as catalogPermissionRules } from '../permissions/rules';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import {

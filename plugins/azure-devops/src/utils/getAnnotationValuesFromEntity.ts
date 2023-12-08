@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
-  AZURE_DEVOPS_HOST_ORG_ANNOTATION,
-  AZURE_DEVOPS_PROJECT_ANNOTATION,
-  AZURE_DEVOPS_REPO_ANNOTATION,
-} from '../constants';
-
 import { Entity } from '@backstage/catalog-model';
+import {
+  AZURE_DEVOPS_PROJECT_ANNOTATION,
+  AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
+  AZURE_DEVOPS_REPO_ANNOTATION,
+  AZURE_DEVOPS_HOST_ORG_ANNOTATION,
+} from '@backstage/plugin-azure-devops-common';
 
 export function getAnnotationValuesFromEntity(entity: Entity): {
   project: string;

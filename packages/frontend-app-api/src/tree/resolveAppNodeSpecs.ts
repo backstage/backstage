@@ -23,6 +23,8 @@ import {
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createPlugin';
 
 /** @internal */
 export function resolveAppNodeSpecs(options: {
@@ -42,7 +44,10 @@ export function resolveAppNodeSpecs(options: {
   );
 
   const pluginExtensions = plugins.flatMap(source => {
-    return source.extensions.map(extension => ({ ...extension, source }));
+    return toInternalBackstagePlugin(source).extensions.map(extension => ({
+      ...extension,
+      source,
+    }));
   });
   const overrideExtensions = overrides.flatMap(
     override => toInternalExtensionOverrides(override).extensions,

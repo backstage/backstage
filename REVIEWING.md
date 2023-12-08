@@ -349,3 +349,13 @@ type LabelStyle = 'normal' | 'thin';
 // Output, since it's an exported constant
 const LABEL_SIZE: number;
 ```
+
+## Plugin Directory Submissions
+
+When reviewing Plugin Directory submissions please consider the following:
+
+- Check to make sure they have the rights for any icon being used. This is mostly for clearly copyrighted logos, for example the Microsoft Azure DevOps logo
+- Make sure the package has been published on the NPM registry.
+- Make sure the package on NPM has a link back to the code repo, this helps provide confidence that it's the right package.
+- If they use an [NPM scope](https://docs.npmjs.com/about-scopes) make sure it that matches either the Organization name or user name, this provides trust in the plugin
+- If the plugin has both a frontend and backend make sure that the documentation notes that.

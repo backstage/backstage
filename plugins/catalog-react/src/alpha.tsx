@@ -14,106 +14,75 @@
  * limitations under the License.
  */
 
-import React, { lazy } from 'react';
 import {
   AnyExtensionInputMap,
   ExtensionBoundary,
-  ExtensionInputValues,
+  ResolvedExtensionInputs,
   RouteRef,
   coreExtensionData,
   createExtension,
   createExtensionDataRef,
   createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
+import React, { lazy } from 'react';
+import { Entity } from '@backstage/catalog-model';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { Expand } from '../../../packages/frontend-plugin-api/src/types';
-import { Entity } from '@backstage/catalog-model';
 
-export { isOwnerOf } from './utils';
 export { useEntityPermission } from './hooks/useEntityPermission';
+export { isOwnerOf } from './utils';
 
 /** @alpha */
 export const entityContentTitleExtensionDataRef =
   createExtensionDataRef<string>('plugin.catalog.entity.content.title');
 
 /** @alpha */
-export const entityFilterExtensionDataRef = createExtensionDataRef<
-  (ctx: { entity: Entity }) => boolean
->('plugin.catalog.entity.filter');
+export const entityFilterFunctionExtensionDataRef = createExtensionDataRef<
+  (entity: Entity) => boolean
+>('plugin.catalog.entity.filter.fn');
 
-function applyFilter(a?: string, b?: string): boolean {
-  if (!a) {
-    return true;
-  }
-  return a.toLocaleLowerCase('en-US') === b?.toLocaleLowerCase('en-US');
-}
-
-// TODO: Only two hardcoded isKind and isType filters are available for now
-//       This is just an initial config filter implementation and needs to be revisited
-function buildFilter(
-  config: { filter?: { isKind?: string; isType?: string }[] },
-  filterFunc?: (ctx: { entity: Entity }) => boolean,
-) {
-  return (ctx: { entity: Entity }) => {
-    const configuredFilterMatch = config.filter?.some(filter => {
-      const kindMatch = applyFilter(filter.isKind, ctx.entity.kind);
-      const typeMatch = applyFilter(
-        filter.isType,
-        ctx.entity.spec?.type?.toString(),
-      );
-      return kindMatch && typeMatch;
-    });
-    if (configuredFilterMatch) {
-      return true;
-    }
-    if (filterFunc) {
-      return filterFunc(ctx);
-    }
-    return true;
-  };
-}
+/** @alpha */
+export const entityFilterExpressionExtensionDataRef =
+  createExtensionDataRef<string>('plugin.catalog.entity.filter.expression');
 
 // TODO: Figure out how to merge with provided config schema
 /** @alpha */
 export function createEntityCardExtension<
   TInputs extends AnyExtensionInputMap,
 >(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   attachTo?: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
-  filter?: (ctx: { entity: Entity }) => boolean;
+  filter?:
+    | typeof entityFilterFunctionExtensionDataRef.T
+    | typeof entityFilterExpressionExtensionDataRef.T;
   loader: (options: {
-    inputs: Expand<ExtensionInputValues<TInputs>>;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
 }) {
-  const id = `entity.cards.${options.id}`;
-
   return createExtension({
-    id,
+    kind: 'entity-card',
+    namespace: options.namespace,
+    name: options.name,
     attachTo: options.attachTo ?? {
-      id: 'entity.content.overview',
+      id: 'entity-content:catalog/overview',
       input: 'cards',
     },
     disabled: options.disabled ?? true,
     output: {
       element: coreExtensionData.reactElement,
-      filter: entityFilterExtensionDataRef,
+      filterFunction: entityFilterFunctionExtensionDataRef.optional(),
+      filterExpression: entityFilterExpressionExtensionDataRef.optional(),
     },
     inputs: options.inputs,
     configSchema: createSchemaFromZod(z =>
       z.object({
-        filter: z
-          .array(
-            z.object({
-              isKind: z.string().optional(),
-              isType: z.string().optional(),
-            }),
-          )
-          .optional(),
+        filter: z.string().optional(),
       }),
     ),
-    factory({ config, inputs, source }) {
+    factory({ config, inputs, node }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ inputs })
@@ -122,11 +91,11 @@ export function createEntityCardExtension<
 
       return {
         element: (
-          <ExtensionBoundary id={id} source={source}>
+          <ExtensionBoundary node={node}>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),
-        filter: buildFilter(config, options.filter),
+        ...mergeFilters({ config, options }),
       };
     },
   });
@@ -136,24 +105,27 @@ export function createEntityCardExtension<
 export function createEntityContentExtension<
   TInputs extends AnyExtensionInputMap,
 >(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   attachTo?: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
   routeRef?: RouteRef;
   defaultPath: string;
   defaultTitle: string;
-  filter?: (ctx: { entity: Entity }) => boolean;
+  filter?:
+    | typeof entityFilterFunctionExtensionDataRef.T
+    | typeof entityFilterExpressionExtensionDataRef.T;
   loader: (options: {
-    inputs: Expand<ExtensionInputValues<TInputs>>;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
 }) {
-  const id = `entity.content.${options.id}`;
-
   return createExtension({
-    id,
+    kind: 'entity-content',
+    namespace: options.namespace,
+    name: options.name,
     attachTo: options.attachTo ?? {
-      id: 'plugin.catalog.page.entity',
+      id: 'page:catalog/entity',
       input: 'contents',
     },
     disabled: options.disabled ?? true,
@@ -162,24 +134,18 @@ export function createEntityContentExtension<
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
       title: entityContentTitleExtensionDataRef,
-      filter: entityFilterExtensionDataRef,
+      filterFunction: entityFilterFunctionExtensionDataRef.optional(),
+      filterExpression: entityFilterExpressionExtensionDataRef.optional(),
     },
     inputs: options.inputs,
     configSchema: createSchemaFromZod(z =>
       z.object({
         path: z.string().default(options.defaultPath),
         title: z.string().default(options.defaultTitle),
-        filter: z
-          .array(
-            z.object({
-              isKind: z.string().optional(),
-              isType: z.string().optional(),
-            }),
-          )
-          .optional(),
+        filter: z.string().optional(),
       }),
     ),
-    factory({ config, inputs, source }) {
+    factory({ config, inputs, node }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ inputs })
@@ -191,12 +157,39 @@ export function createEntityContentExtension<
         title: config.title,
         routeRef: options.routeRef,
         element: (
-          <ExtensionBoundary id={id} source={source} routable>
+          <ExtensionBoundary node={node} routable>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),
-        filter: buildFilter(config, options.filter),
+        ...mergeFilters({ config, options }),
       };
     },
   });
+}
+
+/**
+ * Decides what filter outputs to produce, given some options and config
+ */
+function mergeFilters(inputs: {
+  options: {
+    filter?:
+      | typeof entityFilterFunctionExtensionDataRef.T
+      | typeof entityFilterExpressionExtensionDataRef.T;
+  };
+  config: {
+    filter?: string;
+  };
+}): {
+  filterFunction?: typeof entityFilterFunctionExtensionDataRef.T;
+  filterExpression?: typeof entityFilterExpressionExtensionDataRef.T;
+} {
+  const { options, config } = inputs;
+  if (config.filter) {
+    return { filterExpression: config.filter };
+  } else if (typeof options.filter === 'string') {
+    return { filterExpression: options.filter };
+  } else if (typeof options.filter === 'function') {
+    return { filterFunction: options.filter };
+  }
+  return {};
 }

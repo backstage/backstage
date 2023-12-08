@@ -19,6 +19,8 @@ import {
   BackstagePaletteAdditions,
   BackstageThemeAdditions,
 } from '../base/types';
+// eslint-disable-next-line no-restricted-imports
+import { OverridesStyleRules } from '@mui/material/styles/overrides';
 
 declare module '@mui/material/styles' {
   interface Palette extends BackstagePaletteAdditions {}
@@ -34,4 +36,31 @@ declare module '@mui/material/styles' {
 
 declare module '@mui/private-theming/defaultTheme' {
   interface DefaultTheme extends Theme {}
+}
+
+/**
+ * Merge interface declarations into this type to register overrides for your components.
+ *
+ * @public
+ * @example
+ * ```ts
+ * declare module '@backstage/theme' {
+ *   interface OverrideComponentNameToClassKeys {
+ *     MyComponent: 'root' | 'header';
+ *   }
+ * }
+ * ```
+ */
+export interface OverrideComponentNameToClassKeys {}
+
+type BackstageComponentOverrides = {
+  [TName in keyof OverrideComponentNameToClassKeys]?: {
+    styleOverrides?: Partial<
+      OverridesStyleRules<OverrideComponentNameToClassKeys[TName], TName, Theme>
+    >;
+  };
+};
+
+declare module '@mui/material/styles' {
+  interface Components extends BackstageComponentOverrides {}
 }

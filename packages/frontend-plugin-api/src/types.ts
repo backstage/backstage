@@ -14,9 +14,27 @@
  * limitations under the License.
  */
 
+import { ReactNode } from 'react';
+import { BackstagePlugin } from './wiring';
+
 // TODO(Rugvip): This might be a quite useful utility type, maybe add to @backstage/types?
 /**
  * Utility type to expand type aliases into their equivalent type.
  * @ignore
  */
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+/** @public */
+export type CoreProgressProps = {};
+
+/** @public */
+export type CoreNotFoundErrorPageProps = {
+  children?: ReactNode;
+};
+
+/** @public */
+export type CoreErrorBoundaryFallbackProps = {
+  plugin?: BackstagePlugin;
+  error: Error;
+  resetError: () => void;
+};

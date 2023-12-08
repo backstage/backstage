@@ -25,6 +25,7 @@
  *  https://mui.com/material-ui/react-use-media-query/#testing
  *
  * @public
+ * @deprecated Import from `@backstage/core-components/testUtils` instead.
  */
 export default function mockBreakpoint(options: { matches: boolean }) {
   Object.defineProperty(window, 'matchMedia', {

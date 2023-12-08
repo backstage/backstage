@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.3.5-next.2
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.2-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/catalog-model@1.4.3
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-auth-node@0.4.2-next.1
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.2-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/catalog-model@1.4.3
+
 ## 0.3.4
 
 ### Patch Changes

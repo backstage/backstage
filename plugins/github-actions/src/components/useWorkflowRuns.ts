@@ -17,6 +17,7 @@ import { useState } from 'react';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { githubActionsApiRef } from '../api/GithubActionsApi';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
+import { Branch } from '../api';
 
 export type WorkflowRun = {
   workflowName?: string;
@@ -41,12 +42,12 @@ export function useWorkflowRuns({
   owner,
   repo,
   branch,
-  initialPageSize = 5,
+  initialPageSize = 6,
 }: {
   hostname?: string;
   owner: string;
   repo: string;
-  branch?: string;
+  branch?: string | undefined;
   initialPageSize?: number;
 }) {
   const api = useApi(githubActionsApiRef);
@@ -56,6 +57,8 @@ export function useWorkflowRuns({
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [defaultBranch, setDefaultBranch] = useState<string>('');
 
   const {
     loading,
@@ -63,6 +66,43 @@ export function useWorkflowRuns({
     retry,
     error,
   } = useAsyncRetry<WorkflowRun[]>(async () => {
+    const fetchedDefaultBranch = await api.getDefaultBranch({
+      hostname,
+      owner,
+      repo,
+    });
+
+    setDefaultBranch(fetchedDefaultBranch);
+    let selectedBranch = branch;
+    if (branch === 'default') {
+      selectedBranch = fetchedDefaultBranch;
+    }
+
+    const fetchBranches = async () => {
+      let next = true;
+      let iteratePage = 0;
+      const branchSet: Branch[] = [];
+
+      while (next) {
+        const branchesData = await api.listBranches({
+          hostname,
+          owner,
+          repo,
+          page: iteratePage,
+        });
+        if (branchesData.length === 0) {
+          next = false;
+        }
+        iteratePage++;
+        branchSet.push(...branchesData);
+      }
+
+      return branchSet;
+    };
+
+    const branchSet = await fetchBranches();
+    setBranches(branchSet);
+
     // GitHub API pagination count starts from 1
     const workflowRunsData = await api.listWorkflowRuns({
       hostname,
@@ -70,7 +110,7 @@ export function useWorkflowRuns({
       repo,
       pageSize,
       page: page + 1,
-      branch,
+      branch: selectedBranch,
     });
     setTotal(workflowRunsData.total_count);
     // Transformation here
@@ -88,7 +128,7 @@ export function useWorkflowRuns({
           });
         } catch (e) {
           errorApi.post(
-            new Error(`Failed to rerun the workflow: ${e.message}`),
+            new Error(`Failed to rerun the workflow: ${(e as Error).message}`),
           );
         }
       },
@@ -115,6 +155,8 @@ export function useWorkflowRuns({
       pageSize,
       loading,
       runs,
+      branches,
+      defaultBranch,
       projectName: `${owner}/${repo}`,
       total,
       error,

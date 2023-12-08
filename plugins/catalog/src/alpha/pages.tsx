@@ -15,7 +15,10 @@
  */
 
 import React from 'react';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
 import {
   createPageExtension,
   coreExtensionData,
@@ -30,7 +33,6 @@ import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 
 export const CatalogIndexPage = createPageExtension({
-  id: 'plugin.catalog.page.index',
   defaultPath: '/catalog',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   inputs: {
@@ -40,13 +42,13 @@ export const CatalogIndexPage = createPageExtension({
   },
   loader: async ({ inputs }) => {
     const { BaseCatalogPage } = await import('../components/CatalogPage');
-    const filters = inputs.filters.map(filter => filter.element);
-    return <BaseCatalogPage filters={<>{filters}</>} />;
+    const filters = inputs.filters.map(filter => filter.output.element);
+    return compatWrapper(<BaseCatalogPage filters={<>{filters}</>} />);
   },
 });
 
 export const CatalogEntityPage = createPageExtension({
-  id: 'plugin.catalog.page.entity',
+  name: 'entity',
   defaultPath: '/catalog/:namespace/:kind/:name',
   routeRef: convertLegacyRouteRef(entityRouteRef),
   inputs: {
@@ -65,18 +67,18 @@ export const CatalogEntityPage = createPageExtension({
           <EntityLayout>
             {inputs.contents.map(content => (
               <EntityLayout.Route
-                key={content.path}
-                path={content.path}
-                title={content.title}
+                key={content.output.path}
+                path={content.output.path}
+                title={content.output.title}
               >
-                {content.element}
+                {content.output.element}
               </EntityLayout.Route>
             ))}
           </EntityLayout>
         </AsyncEntityProvider>
       );
     };
-    return <Component />;
+    return compatWrapper(<Component />);
   },
 });
 

@@ -61,12 +61,13 @@ type ComponentTypes<Doc extends RequiredDoc> = Extract<
 >;
 
 // @public (undocumented)
-type ConvertAll<T, R extends ReadonlyArray<unknown> = []> = T extends [
-  infer First extends JSONSchema7,
-  ...infer Rest,
-]
-  ? ConvertAll<Rest, [...R, FromSchema<First>]>
-  : R;
+type ConvertAll<T extends ReadonlyArray<unknown>> = {
+  [Index in keyof T]: T[Index] extends JSONSchema7
+    ? FromSchema<T[Index]>
+    : T[Index];
+} & {
+  length: T['length'];
+};
 
 // @public (undocumented)
 interface CookieObject extends ParameterObject {

@@ -22,6 +22,7 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { createApiRef } from '@backstage/core-plugin-api';
 import { Event } from 'kubernetes-models/v1';
+import { JsonObject } from '@backstage/types';
 
 /** @public */
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
@@ -32,6 +33,12 @@ export const kubernetesApiRef = createApiRef<KubernetesApi>({
 export const kubernetesProxyApiRef = createApiRef<KubernetesProxyApi>({
   id: 'plugin.kubernetes.proxy-service',
 });
+
+/** @public */
+export const kubernetesClusterLinkFormatterApiRef =
+  createApiRef<KubernetesClusterLinkFormatterApi>({
+    id: 'plugin.kubernetes.cluster-link-formatter-service',
+  });
 
 /** @public */
 export interface KubernetesApi {
@@ -81,4 +88,22 @@ export interface KubernetesProxyApi {
     involvedObjectName: string;
     namespace: string;
   }): Promise<Event[]>;
+}
+
+/**
+ * @public
+ */
+export type FormatClusterLinkOptions = {
+  dashboardUrl?: string;
+  dashboardApp?: string;
+  dashboardParameters?: JsonObject;
+  object: any;
+  kind: string;
+};
+
+/** @public */
+export interface KubernetesClusterLinkFormatterApi {
+  formatClusterLink(
+    options: FormatClusterLinkOptions,
+  ): Promise<string | undefined>;
 }

@@ -20,7 +20,10 @@ import {
   AppTree,
   appTreeApiRef,
   BackstagePlugin,
+  ComponentRef,
+  componentsApiRef,
   coreExtensionData,
+  createTranslationExtension,
   ExtensionDataRef,
   ExtensionOverrides,
   RouteRef,
@@ -33,13 +36,10 @@ import { CoreNav } from '../extensions/CoreNav';
 import {
   AnyApiFactory,
   ApiHolder,
-  AppComponents,
-  AppContext,
   appThemeApiRef,
   ConfigApi,
   configApiRef,
   IconComponent,
-  BackstagePlugin as LegacyBackstagePlugin,
   featureFlagsApiRef,
   attachComponentData,
   identityApiRef,
@@ -59,8 +59,6 @@ import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { LocalStorageFeatureFlags } from '../../../core-app-api/src/apis/implementations/FeatureFlagsApi/LocalStorageFeatureFlags';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultConfigLoader';
@@ -71,16 +69,13 @@ import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementati
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  apis as defaultApis,
-  components as defaultComponents,
-  icons as defaultIcons,
-} from '../../../app-defaults/src/defaults';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { apis as defaultApis } from '../../../app-defaults/src/defaults';
+import { Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
-import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 import {
   appLanguageApiRef,
   translationApiRef,
@@ -90,16 +85,32 @@ import { RoutingProvider } from '../routing/RoutingProvider';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import { createAppTree } from '../tree';
+import {
+  DefaultProgressComponent,
+  DefaultErrorBoundaryComponent,
+  DefaultNotFoundErrorPageComponent,
+} from '../extensions/components';
 import { AppNode } from '@backstage/frontend-plugin-api';
+import { InternalAppContext } from './InternalAppContext';
+import { CoreRouter } from '../extensions/CoreRouter';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createPlugin';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
+import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
 
-const builtinExtensions = [
+export const builtinExtensions = [
   Core,
+  CoreRouter,
   CoreRoutes,
   CoreNav,
   CoreLayout,
+  DefaultProgressComponent,
+  DefaultErrorBoundaryComponent,
+  DefaultNotFoundErrorPageComponent,
   LightTheme,
   DarkTheme,
-];
+].map(def => resolveExtensionDefinition(def));
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -154,7 +165,7 @@ export function createExtensionTree(options: {
       );
     },
     getRootRoutes(): JSX.Element[] {
-      return this.getExtensionAttachments('core.routes', 'routes').map(node => {
+      return this.getExtensionAttachments('core/routes', 'routes').map(node => {
         const path = node.getData(coreExtensionData.routePath);
         const element = node.getData(coreExtensionData.reactElement);
         const routeRef = node.getData(coreExtensionData.routeRef);
@@ -181,7 +192,7 @@ export function createExtensionTree(options: {
         );
       };
 
-      return this.getExtensionAttachments('core.nav', 'items')
+      return this.getExtensionAttachments('core/nav', 'items')
         .map((node, index) => {
           const target = node.getData(coreExtensionData.navTarget);
           if (!target) {
@@ -244,49 +255,18 @@ export function createApp(options?: {
 
     const discoveredFeatures = getAvailableFeatures(config);
     const loadedFeatures = (await options?.featureLoader?.({ config })) ?? [];
-    const allFeatures = deduplicateFeatures([
-      ...discoveredFeatures,
-      ...loadedFeatures,
-      ...(options?.features ?? []),
-    ]);
 
-    const tree = createAppTree({
-      features: allFeatures,
-      builtinExtensions,
+    const app = createSpecializedApp({
       config,
-    });
+      features: [
+        ...discoveredFeatures,
+        ...loadedFeatures,
+        ...(options?.features ?? []),
+      ],
+      bindRoutes: options?.bindRoutes,
+    }).createRoot();
 
-    const appContext = createLegacyAppContext(
-      allFeatures.filter(
-        (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
-      ),
-    );
-
-    const routeIds = collectRouteIds(allFeatures);
-
-    const App = () => (
-      <ApiProvider apis={createApiHolder(tree, config)}>
-        <AppContextProvider appContext={appContext}>
-          <AppThemeProvider>
-            <RoutingProvider
-              {...extractRouteInfoFromAppNode(tree.root)}
-              routeBindings={resolveRouteBindings(
-                options?.bindRoutes,
-                config,
-                routeIds,
-              )}
-            >
-              {/* TODO: set base path using the logic from AppRouter */}
-              <BrowserRouter>
-                {tree.root.instance!.getData(coreExtensionData.reactElement)}
-              </BrowserRouter>
-            </RoutingProvider>
-          </AppThemeProvider>
-        </AppContextProvider>
-      </ApiProvider>
-    );
-
-    return { default: App };
+    return { default: () => app };
   }
 
   return {
@@ -301,65 +281,85 @@ export function createApp(options?: {
   };
 }
 
-// Make sure that we only convert each new plugin instance to its legacy equivalent once
-const legacyPluginStore = getOrCreateGlobalSingleton(
-  'legacy-plugin-compatibility-store',
-  () => new WeakMap<BackstagePlugin, LegacyBackstagePlugin>(),
-);
+/**
+ * Synchronous version of {@link createApp}, expecting all features and
+ * config to have been loaded already.
+ * @public
+ */
+export function createSpecializedApp(options?: {
+  features?: (BackstagePlugin | ExtensionOverrides)[];
+  config?: ConfigApi;
+  bindRoutes?(context: { bind: AppRouteBinder }): void;
+}): { createRoot(): JSX.Element } {
+  const {
+    features: duplicatedFeatures = [],
+    config = new ConfigReader({}, 'empty-config'),
+  } = options ?? {};
 
-export function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
-  let legacy = legacyPluginStore.get(plugin);
-  if (legacy) {
-    return legacy;
+  const features = deduplicateFeatures(duplicatedFeatures);
+
+  const tree = createAppTree({
+    features,
+    builtinExtensions,
+    config,
+  });
+
+  const appIdentityProxy = new AppIdentityProxy();
+  const apiHolder = createApiHolder(tree, config, appIdentityProxy);
+
+  const featureFlagApi = apiHolder.get(featureFlagsApiRef);
+  if (featureFlagApi) {
+    for (const feature of features) {
+      if (feature.$$type === '@backstage/BackstagePlugin') {
+        toInternalBackstagePlugin(feature).featureFlags.forEach(flag =>
+          featureFlagApi.registerFlag({
+            name: flag.name,
+            pluginId: feature.id,
+          }),
+        );
+      }
+      if (feature.$$type === '@backstage/ExtensionOverrides') {
+        toInternalExtensionOverrides(feature).featureFlags.forEach(flag =>
+          featureFlagApi.registerFlag({ name: flag.name, pluginId: '' }),
+        );
+      }
+    }
   }
 
-  const errorMsg = 'Not implemented in legacy plugin compatibility layer';
-  const notImplemented = () => {
-    throw new Error(errorMsg);
-  };
+  const routeInfo = extractRouteInfoFromAppNode(tree.root);
+  const routeBindings = resolveRouteBindings(
+    options?.bindRoutes,
+    config,
+    collectRouteIds(features),
+  );
+  const rootEl = tree.root.instance!.getData(coreExtensionData.reactElement);
 
-  legacy = {
-    getId(): string {
-      return plugin.id;
-    },
-    get routes() {
-      return {};
-    },
-    get externalRoutes() {
-      return {};
-    },
-    getApis: notImplemented,
-    getFeatureFlags: notImplemented,
-    provide: notImplemented,
-  };
+  const App = () => (
+    <ApiProvider apis={apiHolder}>
+      <AppThemeProvider>
+        <RoutingProvider {...routeInfo} routeBindings={routeBindings}>
+          <InternalAppContext.Provider
+            value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
+          >
+            {rootEl}
+          </InternalAppContext.Provider>
+        </RoutingProvider>
+      </AppThemeProvider>
+    </ApiProvider>
+  );
 
-  legacyPluginStore.set(plugin, legacy);
-  return legacy;
-}
-
-function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
   return {
-    getPlugins(): LegacyBackstagePlugin[] {
-      return plugins.map(toLegacyPlugin);
-    },
-
-    getSystemIcon(key: string): IconComponent | undefined {
-      return key in defaultIcons
-        ? defaultIcons[key as keyof typeof defaultIcons]
-        : undefined;
-    },
-
-    getSystemIcons(): Record<string, IconComponent> {
-      return defaultIcons;
-    },
-
-    getComponents(): AppComponents {
-      return defaultComponents;
+    createRoot() {
+      return <App />;
     },
   };
 }
 
-function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
+function createApiHolder(
+  tree: AppTree,
+  configApi: ConfigApi,
+  appIdentityProxy: AppIdentityProxy,
+): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
   const pluginApis =
@@ -373,6 +373,16 @@ function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
       .get('themes')
       ?.map(e => e.instance?.getData(coreExtensionData.theme))
       .filter((x): x is AppTheme => !!x) ?? [];
+
+  const translationResources =
+    tree.root.edges.attachments
+      .get('translations')
+      ?.map(e =>
+        e.instance?.getData(createTranslationExtension.translationDataRef),
+      )
+      .filter(
+        (x): x is typeof createTranslationExtension.translationDataRef.T => !!x,
+      ) ?? [];
 
   for (const factory of [...defaultApis, ...pluginApis]) {
     factoryRegistry.register('default', factory);
@@ -388,33 +398,7 @@ function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
   factoryRegistry.register('static', {
     api: identityApiRef,
     deps: {},
-    factory: () => {
-      const appIdentityProxy = new AppIdentityProxy();
-      // TODO: Remove this when sign-in page is migrated
-      appIdentityProxy.setTarget(
-        {
-          getUserId: () => 'guest',
-          getIdToken: async () => undefined,
-          getProfile: () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getProfileInfo: async () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getBackstageIdentity: async () => ({
-            type: 'user',
-            userEntityRef: 'user:default/guest',
-            ownershipEntityRefs: ['user:default/guest'],
-          }),
-          getCredentials: async () => ({}),
-          signOut: async () => {},
-        },
-        { signOutTargetUrl: '/' },
-      );
-      return appIdentityProxy;
-    },
+    factory: () => appIdentityProxy,
   });
 
   factoryRegistry.register('static', {
@@ -423,6 +407,24 @@ function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
     factory: () => ({
       getTree: () => ({ tree }),
     }),
+  });
+
+  const componentsExtensions =
+    tree.root.edges.attachments
+      .get('components')
+      ?.map(e => e.instance?.getData(coreExtensionData.component))
+      .filter(x => !!x) ?? [];
+
+  const componentsMap = componentsExtensions.reduce(
+    (components, component) =>
+      component ? components.set(component.ref, component?.impl) : components,
+    new Map<ComponentRef<any>, any>(),
+  );
+
+  factoryRegistry.register('static', {
+    api: componentsApiRef,
+    deps: {},
+    factory: () => new DefaultComponentsApi(componentsMap),
   });
 
   factoryRegistry.register('static', {
@@ -438,15 +440,6 @@ function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
     factory: () => AppLanguageSelector.createWithStorage(),
   });
 
-  factoryRegistry.register('default', {
-    api: translationApiRef,
-    deps: { languageApi: appLanguageApiRef },
-    factory: ({ languageApi }) =>
-      I18nextTranslationApi.create({
-        languageApi,
-      }),
-  });
-
   factoryRegistry.register('static', {
     api: configApiRef,
     deps: {},
@@ -459,12 +452,13 @@ function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
     factory: () => AppLanguageSelector.createWithStorage(),
   });
 
-  factoryRegistry.register('default', {
+  factoryRegistry.register('static', {
     api: translationApiRef,
     deps: { languageApi: appLanguageApiRef },
     factory: ({ languageApi }) =>
       I18nextTranslationApi.create({
         languageApi,
+        resources: translationResources,
       }),
   });
 

@@ -25,7 +25,7 @@ import { examples } from './gitHubEnvironment.examples';
 const mockOctokit = {
   rest: {
     actions: {
-      getRepoPublicKey: jest.fn(),
+      getEnvironmentPublicKey: jest.fn(),
       createEnvironmentVariable: jest.fn(),
       createOrUpdateEnvironmentSecret: jest.fn(),
     },
@@ -68,7 +68,7 @@ describe('github:environment:create examples', () => {
   };
 
   beforeEach(() => {
-    mockOctokit.rest.actions.getRepoPublicKey.mockResolvedValue({
+    mockOctokit.rest.actions.getEnvironmentPublicKey.mockResolvedValue({
       data: {
         key: publicKey,
         key_id: 'keyid',
@@ -109,7 +109,9 @@ describe('github:environment:create examples', () => {
     expect(
       mockOctokit.rest.actions.createEnvironmentVariable,
     ).not.toHaveBeenCalled();
-    expect(mockOctokit.rest.actions.getRepoPublicKey).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.getEnvironmentPublicKey,
+    ).not.toHaveBeenCalled();
     expect(
       mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
     ).not.toHaveBeenCalled();
@@ -141,7 +143,9 @@ describe('github:environment:create examples', () => {
     expect(
       mockOctokit.rest.actions.createEnvironmentVariable,
     ).not.toHaveBeenCalled();
-    expect(mockOctokit.rest.actions.getRepoPublicKey).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.getEnvironmentPublicKey,
+    ).not.toHaveBeenCalled();
     expect(
       mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
     ).not.toHaveBeenCalled();

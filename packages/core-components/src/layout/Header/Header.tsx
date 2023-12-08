@@ -15,7 +15,6 @@
  */
 
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -39,7 +38,7 @@ export type HeaderClassKey =
   | 'breadcrumbType'
   | 'breadcrumbTitle';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     header: {
       gridArea: 'pageHeader',

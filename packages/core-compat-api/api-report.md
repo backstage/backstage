@@ -11,6 +11,7 @@ import { ExtensionOverrides } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { ExternalRouteRef as ExternalRouteRef_2 } from '@backstage/frontend-plugin-api';
 import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
@@ -20,6 +21,9 @@ import { SubRouteRef as SubRouteRef_2 } from '@backstage/frontend-plugin-api';
 export function collectLegacyRoutes(
   flatRoutesElement: JSX.Element,
 ): BackstagePlugin[];
+
+// @public
+export function compatWrapper(element: ReactNode): React_2.JSX.Element;
 
 // @public (undocumented)
 export function convertLegacyApp(

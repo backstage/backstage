@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import Grid from '@material-ui/core/Grid';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -24,7 +23,7 @@ import { Link } from '../../components/Link';
 /** @public */
 export type HeaderLabelClassKey = 'root' | 'label' | 'value';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     root: {
       textAlign: 'left',

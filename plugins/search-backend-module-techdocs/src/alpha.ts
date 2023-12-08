@@ -51,8 +51,8 @@ export const techdocsCollatorEntityTransformerExtensionPoint =
  * Search backend module for the TechDocs index.
  */
 export default createBackendModule({
-  moduleId: 'techDocsCollator',
   pluginId: 'search',
+  moduleId: 'techdocs-collator',
   register(env) {
     let transformer: TechDocsCollatorEntityTransformer | undefined;
 

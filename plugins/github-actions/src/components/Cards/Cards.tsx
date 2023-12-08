@@ -15,12 +15,7 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog-react';
-import {
-  LinearProgress,
-  makeStyles,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import { LinearProgress, makeStyles, Typography } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import React, { useEffect } from 'react';
 import { GITHUB_ACTIONS_ANNOTATION } from '../getProjectNameFromEntity';
@@ -36,7 +31,7 @@ import {
 } from '@backstage/core-components';
 import { getHostnameFromEntity } from '../getHostnameFromEntity';
 
-const useStyles = makeStyles<Theme>({
+const useStyles = makeStyles({
   externalLinkIcon: {
     fontSize: 'inherit',
     verticalAlign: 'bottom',

@@ -49,7 +49,7 @@ export interface IncrementalIngestionProviderExtensionPoint {
  * ```ts
  * backend.add(createBackendModule({
  *   pluginId: 'catalog',
- *   moduleId: 'myIncrementalProvider',
+ *   moduleId: 'my-incremental-provider',
  *   register(env) {
  *     env.registerInit({
  *       deps: {
@@ -85,7 +85,7 @@ export const incrementalIngestionProvidersExtensionPoint =
 export const catalogModuleIncrementalIngestionEntityProvider =
   createBackendModule({
     pluginId: 'catalog',
-    moduleId: 'incrementalIngestionEntityProvider',
+    moduleId: 'incremental-ingestion-entity-provider',
     register(env) {
       const addedProviders = new Array<{
         provider: IncrementalEntityProvider<unknown, unknown>;

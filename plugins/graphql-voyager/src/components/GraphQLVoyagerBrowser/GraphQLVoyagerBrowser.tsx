@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   GraphQLVoyagerEndpoint,
   introspectionQuery,
@@ -20,18 +21,17 @@ import {
 import { useState } from 'react';
 import { makeStyles, Tab, Tabs, Typography } from '@material-ui/core';
 import React, { Suspense } from 'react';
-import { BackstageTheme } from '@backstage/theme';
 import { Content, ErrorPanel, Progress } from '@backstage/core-components';
 import { Voyager } from 'graphql-voyager';
 import useAsync from 'react-use/lib/useAsync';
 
-const useStyles = makeStyles<BackstageTheme>(() => ({
+const useStyles = makeStyles({
   root: {
     height: '100%',
     display: 'flex',
     flexFlow: 'column nowrap',
   },
-}));
+});
 
 type GraphQLVoyagerBrowserProps = {
   endpoints: GraphQLVoyagerEndpoint[];

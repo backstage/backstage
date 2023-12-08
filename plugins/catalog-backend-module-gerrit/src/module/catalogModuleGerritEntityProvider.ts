@@ -27,7 +27,7 @@ import { GerritEntityProvider } from '../providers/GerritEntityProvider';
  */
 export const catalogModuleGerritEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'gerritEntityProvider',
+  moduleId: 'gerrit-entity-provider',
   register(env) {
     env.registerInit({
       deps: {

@@ -31,7 +31,7 @@ import {
   mockedCatalogApiSupportingGroups,
 } from '../../../../__testUtils__/catalogMocks';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
-import { EntityLayout } from '@backstage/plugin-catalog';
+import { EntityLayout, catalogPlugin } from '@backstage/plugin-catalog';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Observable } from '@backstage/types';
@@ -62,6 +62,8 @@ const mockedStarredEntitiesApi: Partial<StarredEntitiesApi> = {
     } as Observable<Set<string>>;
   },
 };
+
+const rootRouteRef = catalogPlugin.routes.catalogIndex;
 
 describe('MemberTab Test', () => {
   const groupEntity: GroupEntity = {
@@ -122,6 +124,7 @@ describe('MemberTab Test', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -151,6 +154,7 @@ describe('MemberTab Test', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -179,6 +183,7 @@ describe('MemberTab Test', () => {
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
+            '/catalog': rootRouteRef,
           },
         },
       );
@@ -206,6 +211,7 @@ describe('MemberTab Test', () => {
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
+            '/catalog': rootRouteRef,
           },
         },
       );
@@ -231,6 +237,7 @@ describe('MemberTab Test', () => {
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
+            '/catalog': rootRouteRef,
           },
         },
       );
@@ -265,6 +272,7 @@ describe('MemberTab Test', () => {
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
+            '/catalog': rootRouteRef,
           },
         },
       );
@@ -299,6 +307,7 @@ describe('MemberTab Test', () => {
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
+            '/catalog': rootRouteRef,
           },
         },
       );

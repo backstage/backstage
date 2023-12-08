@@ -7,18 +7,17 @@ app:
       plugin.catalog.externalRoutes.viewTechDoc: plugin.techdocs.routes.docRoot
 
   extensions:
-    - apis.plugin.graphiql.browse.gitlab: true
+    # - apis.plugin.graphiql.browse.gitlab: true
+    - graphiql-endpoint:graphiql/gitlab: true
 
-    # Entity page cards
-    - entity.cards.about
-    - entity.cards.labels
-    - entity.cards.links:
+    - entity-card:catalog/about
+    - entity-card:catalog/labels
+    - entity-card:catalog/links:
         config:
-          filter:
-            - isKind: component
+          filter: kind:component has:links
 
     # Entity page content
-    - entity.content.techdocs
+    - entity-content:techdocs
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

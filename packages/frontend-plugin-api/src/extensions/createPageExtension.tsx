@@ -20,12 +20,12 @@ import { createSchemaFromZod, PortableSchema } from '../schema';
 import {
   coreExtensionData,
   createExtension,
-  Extension,
-  ExtensionInputValues,
+  ResolvedExtensionInputs,
   AnyExtensionInputMap,
 } from '../wiring';
 import { RouteRef } from '../routing';
 import { Expand } from '../types';
+import { ExtensionDefinition } from '../wiring/createExtension';
 
 /**
  * Helper for creating extensions for a routable React page component.
@@ -44,19 +44,18 @@ export function createPageExtension<
         configSchema: PortableSchema<TConfig>;
       }
   ) & {
-    id: string;
+    namespace?: string;
+    name?: string;
     attachTo?: { id: string; input: string };
     disabled?: boolean;
     inputs?: TInputs;
     routeRef?: RouteRef;
     loader: (options: {
       config: TConfig;
-      inputs: Expand<ExtensionInputValues<TInputs>>;
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     }) => Promise<JSX.Element>;
   },
-): Extension<TConfig> {
-  const { id } = options;
-
+): ExtensionDefinition<TConfig> {
   const configSchema =
     'configSchema' in options
       ? options.configSchema
@@ -65,8 +64,10 @@ export function createPageExtension<
         ) as PortableSchema<TConfig>);
 
   return createExtension({
-    id,
-    attachTo: options.attachTo ?? { id: 'core.routes', input: 'routes' },
+    kind: 'page',
+    namespace: options.namespace,
+    name: options.name,
+    attachTo: options.attachTo ?? { id: 'core/routes', input: 'routes' },
     configSchema,
     inputs: options.inputs,
     disabled: options.disabled,
@@ -75,7 +76,7 @@ export function createPageExtension<
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
     },
-    factory({ config, inputs, source }) {
+    factory({ config, inputs, node }) {
       const ExtensionComponent = lazy(() =>
         options
           .loader({ config, inputs })
@@ -86,7 +87,7 @@ export function createPageExtension<
         path: config.path,
         routeRef: options.routeRef,
         element: (
-          <ExtensionBoundary id={id} source={source} routable>
+          <ExtensionBoundary node={node} routable>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),

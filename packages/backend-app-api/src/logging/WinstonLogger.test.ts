@@ -14,25 +14,37 @@
  * limitations under the License.
  */
 
+import { TransformableInfo } from 'logform';
 import { WinstonLogger } from './WinstonLogger';
 
-function msg(message: string) {
-  return { message, level: 'info' };
+function msg(info: TransformableInfo): TransformableInfo {
+  return { message: info.message, level: info.level, stack: info.stack };
 }
 
 describe('WinstonLogger', () => {
   it('redacter should redact and escape regex', () => {
     const redacter = WinstonLogger.redacter();
-    expect(redacter.format.transform(msg('hello (world)'))).toEqual(
-      msg('hello (world)'),
+    const log = {
+      level: 'error',
+      message: 'hello (world)',
+      stack: 'hello (world) from this file',
+    };
+    expect(redacter.format.transform(msg(log))).toEqual(msg(log));
+    redacter.add(['hello\n']);
+    expect(redacter.format.transform(msg(log))).toEqual(
+      msg({
+        ...log,
+        message: '[REDACTED] (world)',
+        stack: '[REDACTED] (world) from this file',
+      }),
     );
-    redacter.add(['hello']);
-    expect(redacter.format.transform(msg('hello (world)'))).toEqual(
-      msg('[REDACTED] (world)'),
-    );
-    redacter.add(['(world)']);
-    expect(redacter.format.transform(msg('hello (world)'))).toEqual(
-      msg('[REDACTED] [REDACTED]'),
+    redacter.add(['(world']);
+    expect(redacter.format.transform(msg(log))).toEqual(
+      msg({
+        ...log,
+        message: '[REDACTED] [REDACTED])',
+        stack: '[REDACTED] [REDACTED]) from this file',
+      }),
     );
   });
 });

@@ -34,19 +34,21 @@ import {
 } from '@backstage/plugin-graphiql';
 import { createApiFactory, IconComponent } from '@backstage/core-plugin-api';
 import { graphiQLRouteRef } from './route-refs';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
 
 /** @alpha */
 export const GraphiqlPage = createPageExtension({
-  id: 'plugin.graphiql.page',
   defaultPath: '/graphiql',
   routeRef: convertLegacyRouteRef(graphiQLRouteRef),
-  loader: () => import('./components').then(m => <m.GraphiQLPage />),
+  loader: () =>
+    import('./components').then(m => compatWrapper(<m.GraphiQLPage />)),
 });
 
 /** @alpha */
 export const graphiqlPageSidebarItem = createNavItemExtension({
-  id: 'plugin.graphiql.nav.index',
   title: 'GraphiQL',
   icon: GraphiQLIcon as IconComponent,
   routeRef: convertLegacyRouteRef(graphiQLRouteRef),
@@ -59,7 +61,7 @@ const endpointDataRef = createExtensionDataRef<GraphQLEndpoint>(
 
 /** @alpha */
 export const graphiqlBrowseApi = createApiExtension({
-  api: graphQlBrowseApiRef, // apis.plugin.graphiql.browse
+  api: graphQlBrowseApiRef,
   inputs: {
     endpoints: createExtensionInput({
       endpoint: endpointDataRef,
@@ -68,21 +70,24 @@ export const graphiqlBrowseApi = createApiExtension({
   factory({ inputs }) {
     return createApiFactory(
       graphQlBrowseApiRef,
-      GraphQLEndpoints.from(inputs.endpoints.map(i => i.endpoint)),
+      GraphQLEndpoints.from(inputs.endpoints.map(i => i.output.endpoint)),
     );
   },
 });
 
 /** @alpha */
-export function createEndpointExtension<TConfig extends {}>(options: {
-  id: string;
+export function createGraphiQLEndpointExtension<TConfig extends {}>(options: {
+  namespace?: string;
+  name?: string;
   configSchema?: PortableSchema<TConfig>;
   disabled?: boolean;
   factory: (options: { config: TConfig }) => { endpoint: GraphQLEndpoint };
 }) {
   return createExtension({
-    id: `apis.plugin.graphiql.browse.${options.id}`,
-    attachTo: { id: 'apis.plugin.graphiql.browse', input: 'endpoints' },
+    kind: 'graphiql-endpoint',
+    namespace: options.namespace,
+    name: options.name,
+    attachTo: { id: 'api:graphiql/browse', input: 'endpoints' },
     configSchema: options.configSchema,
     disabled: options.disabled ?? false,
     output: {
@@ -97,8 +102,8 @@ export function createEndpointExtension<TConfig extends {}>(options: {
 }
 
 /** @alpha */
-const gitlabGraphiQLBrowseExtension = createEndpointExtension({
-  id: 'gitlab',
+const gitlabGraphiQLBrowseExtension = createGraphiQLEndpointExtension({
+  name: 'gitlab',
   disabled: true,
   configSchema: createSchemaFromZod(z =>
     z
