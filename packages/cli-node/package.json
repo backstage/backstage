@@ -35,7 +35,7 @@
     "@yarnpkg/parsers": "^3.0.0-rc.4",
     "fs-extra": "10.1.0",
     "semver": "^7.5.3",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
