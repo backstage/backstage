@@ -46,15 +46,7 @@ export type ActionContext<
 };
 
 // @public (undocumented)
-export function commitAndPushRepo({
-  dir,
-  auth,
-  logger,
-  commitMessage,
-  gitAuthorInfo,
-  branch,
-  remoteRef,
-}: {
+export function commitAndPushRepo(input: {
   dir: string;
   auth:
     | {
@@ -149,15 +141,7 @@ export const getRepoSourceDirectory: (
 ) => string;
 
 // @public (undocumented)
-export function initRepoAndPush({
-  dir,
-  remoteUrl,
-  auth,
-  logger,
-  defaultBranch,
-  commitMessage,
-  gitAuthorInfo,
-}: {
+export function initRepoAndPush(input: {
   dir: string;
   remoteUrl: string;
   auth:
