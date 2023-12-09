@@ -114,10 +114,7 @@ export class TaskWorker {
 
   async recoverTasks() {
     try {
-      const enabled = await this.options.taskBroker.recoverTasks?.();
-      if (enabled) {
-        setTimeout(async () => await this.recoverTasks(), 60000);
-      }
+      await this.options.taskBroker.recoverTasks?.();
     } catch (_err) {
       // ignore
     }
