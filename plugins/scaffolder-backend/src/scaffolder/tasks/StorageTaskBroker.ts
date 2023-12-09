@@ -31,7 +31,6 @@ import {
 } from './types';
 import { Duration } from 'luxon';
 import { readDuration } from './helper';
-import { lastRecoveredStepId } from './taskRecoveryHelper';
 
 /**
  * TaskManager
@@ -40,6 +39,7 @@ import { lastRecoveredStepId } from './taskRecoveryHelper';
  */
 export class TaskManager implements TaskContext {
   private isDone = false;
+
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
 
   static create(
@@ -47,15 +47,8 @@ export class TaskManager implements TaskContext {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
-    stepIdToRecoverFrom?: string,
   ) {
-    const agent = new TaskManager(
-      task,
-      storage,
-      abortSignal,
-      logger,
-      stepIdToRecoverFrom,
-    );
+    const agent = new TaskManager(task, storage, abortSignal, logger);
     agent.startTimeout();
     return agent;
   }
@@ -66,7 +59,6 @@ export class TaskManager implements TaskContext {
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
-    private readonly stepIdToRecoverFrom: string | undefined,
   ) {}
 
   get spec() {
@@ -91,10 +83,6 @@ export class TaskManager implements TaskContext {
 
   get done() {
     return this.isDone;
-  }
-
-  getStepIdToRecoverFrom(): Promise<string | undefined> {
-    return Promise.resolve(this.stepIdToRecoverFrom);
   }
 
   async emitLog(message: string, logMetadata?: JsonObject): Promise<void> {
@@ -221,16 +209,22 @@ export class StorageTaskBroker implements TaskBroker {
   public async recoverTasks(): Promise<boolean> {
     const enabled =
       (this.config &&
-        this.config.getOptionalBoolean('scaffolder.recoverTasks')) ??
+        this.config.getOptionalBoolean(
+          'scaffolder.EXPERIMENTAL_recoverTasks',
+        )) ??
       false;
 
     if (enabled) {
       const recoveredTaskIds =
         (await this.storage.recoverTasks?.({
           timeoutS: Duration.fromObject(
-            readDuration(this.config!!, 'scaffolder.recoverTasksTimeout', {
-              seconds: 30,
-            }),
+            readDuration(
+              this.config!!,
+              'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
+              {
+                seconds: 30,
+              },
+            ),
           ).as('seconds'),
         })) ?? [];
       recoveredTaskIds.forEach(() => {
@@ -238,21 +232,6 @@ export class StorageTaskBroker implements TaskBroker {
       });
     }
     return enabled;
-  }
-
-  private async getTheLastRecoveredStepId(
-    task: SerializedTask,
-  ): Promise<string | undefined> {
-    if (
-      ['idempotent', 'restart'].includes(task.spec.recovery?.strategy ?? 'none')
-    ) {
-      const { events } = await this.storage.listEvents({
-        taskId: task.id,
-        raw: true,
-      });
-      return lastRecoveredStepId(task.spec, events);
-    }
-    return undefined;
   }
 
   /**
@@ -263,9 +242,6 @@ export class StorageTaskBroker implements TaskBroker {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
         const abortController = new AbortController();
-        const stepIdToRecoverFrom = await this.getTheLastRecoveredStepId(
-          pendingTask,
-        );
         await this.registerCancellable(pendingTask.id, abortController);
         return TaskManager.create(
           {
@@ -277,7 +253,6 @@ export class StorageTaskBroker implements TaskBroker {
           this.storage,
           abortController.signal,
           this.logger,
-          stepIdToRecoverFrom,
         );
       }
 

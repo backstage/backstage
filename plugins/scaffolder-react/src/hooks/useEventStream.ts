@@ -62,7 +62,7 @@ type ReducerLogEntry = {
     message: string;
     output?: ScaffolderTaskOutput;
     error?: Error;
-    recoverStrategy?: 'none' | 'idempotent' | 'restart';
+    recoverStrategy?: 'none' | 'start_over';
   };
 };
 

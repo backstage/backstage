@@ -6,4 +6,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Introduced recoverable tasks
+Introduced the first version of recoverable tasks.

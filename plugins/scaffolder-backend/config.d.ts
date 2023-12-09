@@ -45,7 +45,7 @@ export interface Config {
      *
      * If not specified, the default value is false.
      */
-    recoverTasks?: boolean;
+    EXPERIMENTAL_recoverTasks?: boolean;
 
     /**
      * Every task which is in progress state and having a last heartbeat longer than a specified timeout is going to
@@ -54,7 +54,7 @@ export interface Config {
      * If not specified, the default value is 5 seconds.
      *
      */
-    recoverTasksTimeout?: HumanDuration;
+    EXPERIMENTAL_recoverTasksTimeout?: HumanDuration;
 
     /**
      * Makes sure to auto-expire and clean up things that time out or for other reasons should not be left lingering.

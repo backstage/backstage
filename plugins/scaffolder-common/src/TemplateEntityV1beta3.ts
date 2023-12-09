@@ -54,7 +54,7 @@ export interface TemplateEntityV1beta3 extends Entity {
     /**
      * Recovery strategy for the template
      */
-    recovery?: TemplateRecoveryV1beta3;
+    EXPERIMENTAL_recovery?: TemplateRecoveryV1beta3;
 
     /**
      * This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend
@@ -76,6 +76,22 @@ export interface TemplateEntityV1beta3 extends Entity {
      */
     owner?: string;
   };
+}
+
+/**
+ * Depends on how you designed your task you might tailor the behaviour for each of them.
+ *
+ * @public
+ */
+export interface TemplateRecoveryV1beta3 extends JsonObject {
+  /**
+   *
+   * none - not recover, let the task be marked as failed
+   * start_over - do recover, start the execution of the task from the first step.
+   *
+   * @public
+   */
+  EXPERIMENTAL_strategy?: 'none' | 'start_over';
 }
 
 /**
@@ -101,23 +117,6 @@ export interface TemplatePresentationV1beta3 extends JsonObject {
      */
     reviewButtonText?: string;
   };
-}
-
-/**
- * Depends on how you designed your task you might tailor the behaviour for each of them.
- *
- * @public
- */
-export interface TemplateRecoveryV1beta3 extends JsonObject {
-  /**
-   *
-   * none - not recover, let the task be marked as failed
-   * idempotent - do recover, treat a task as idempotent and rerun the task from the step which has failed.
-   * restart - do recover, start the execution of the task from the first step.
-   *
-   * @public
-   */
-  strategy?: 'none' | 'idempotent' | 'restart';
 }
 
 /**

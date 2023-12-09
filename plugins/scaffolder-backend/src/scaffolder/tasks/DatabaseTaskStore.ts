@@ -118,8 +118,8 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   private isRecoverableTask(spec: TaskSpec): boolean {
-    return ['idempotent', 'restart'].includes(
-      spec.recovery?.strategy ?? 'none',
+    return ['start_over'].includes(
+      spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
     );
   }
 
@@ -299,7 +299,7 @@ export class DatabaseTaskStore implements TaskStore {
       .where('status', 'processing')
       .andWhere('last_heartbeat_at', '<=', heartbeatInterval);
     const tasks = rawRows.map(row => ({
-      recovery: (JSON.parse(row.spec) as TaskSpec).recovery,
+      recovery: (JSON.parse(row.spec) as TaskSpec).EXPERIMENTAL_recovery,
       taskId: row.id,
     }));
     return { tasks };
@@ -427,8 +427,7 @@ export class DatabaseTaskStore implements TaskStore {
     });
 
     if (!raw) {
-      const taskSpec = await this.fetchTaskSpec({ taskId });
-      return compactEvents(taskSpec, events);
+      return compactEvents(events);
     }
 
     return { events };
@@ -473,19 +472,6 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  private async fetchTaskSpec(options: {
-    taskId: string;
-  }): Promise<TaskSpec | undefined> {
-    const res = (await this.db<RawDbTaskRow>('tasks')
-      .where({ id: options.taskId })
-      .select('spec')) as { spec: string }[];
-    if (res.length) {
-      const [{ spec }] = res;
-      return spec ? (JSON.parse(spec as string) as TaskSpec) : undefined;
-    }
-    return undefined;
-  }
-
   private async reopenTask(options: { taskId: string }): Promise<void> {
     const { taskId } = options;
 
@@ -505,8 +491,8 @@ export class DatabaseTaskStore implements TaskStore {
         event_type: 'recovered',
         body: JSON.stringify({
           recoverStrategy:
-            (JSON.parse(spec as string) as TaskSpec).recovery?.strategy ??
-            'none',
+            (JSON.parse(spec as string) as TaskSpec).EXPERIMENTAL_recovery
+              ?.EXPERIMENTAL_strategy ?? 'none',
         }),
       });
     });
@@ -532,7 +518,7 @@ export class DatabaseTaskStore implements TaskStore {
 
     for (const task of tasks) {
       if (
-        ['idempotent', 'restart'].includes(task.recovery?.strategy ?? 'none')
+        ['start_over'].includes(task.recovery?.EXPERIMENTAL_strategy ?? 'none')
       ) {
         await this.reopenTask({ taskId: task.taskId });
         recoveredTaskIds.push(task.taskId);

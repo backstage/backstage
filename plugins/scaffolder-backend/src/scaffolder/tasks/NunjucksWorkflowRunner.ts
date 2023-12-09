@@ -54,7 +54,6 @@ import {
 import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
-import { getRestoredStepIds } from './taskRecoveryHelper';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -68,7 +67,7 @@ type NunjucksWorkflowRunnerOptions = {
 
 type TemplateContext = {
   parameters: JsonObject;
-  recovery?: TaskRecovery;
+  EXPERIMENTAL_recovery?: TaskRecovery;
   steps: {
     [stepName: string]: { output: { [outputName: string]: JsonValue } };
   };
@@ -417,7 +416,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const context: TemplateContext = {
         parameters: task.spec.parameters,
-        recovery: task.spec.recovery,
+        EXPERIMENTAL_recovery: task.spec.EXPERIMENTAL_recovery,
         steps: {},
         user: task.spec.user,
       };
@@ -430,24 +429,16 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )
           : [{ result: AuthorizeResult.ALLOW }];
 
-      const stepIdToRecoverFrom = await task.getStepIdToRecoverFrom?.();
-      const restoredStepIds = getRestoredStepIds(
-        task.spec,
-        stepIdToRecoverFrom,
-      );
-
       for (const step of task.spec.steps) {
-        if (!restoredStepIds.includes(step.id)) {
-          await this.executeStep(
-            task,
-            step,
-            context,
-            renderTemplate,
-            taskTrack,
-            workspacePath,
-            decision,
-          );
-        }
+        await this.executeStep(
+          task,
+          step,
+          context,
+          renderTemplate,
+          taskTrack,
+          workspacePath,
+          decision,
+        );
       }
 
       const output = this.render(task.spec.output, context, renderTemplate);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SerializedTaskEvent } from './types';
+import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
 import {
   TaskRecoverStrategy,
   TaskSpec,
@@ -87,25 +87,7 @@ export const lastRecoveredStepId = (
   return dependentStepId ? dependentStepId : lastStep.id;
 };
 
-export const getRestoredStepIds = (
-  spec: TaskSpec,
-  stepIdToRecoverFrom: string | undefined,
-) => {
-  const ind = spec.steps.findIndex(step => step.id === stepIdToRecoverFrom);
-  return ind > 0 ? spec.steps.map(step => step.id).slice(0, ind) : [];
-};
-
-const findRecoverPoint = (events: SerializedTaskEvent[]): number => {
-  const lastRunReversedInd = events
-    .slice()
-    .reverse()
-    .findIndex(event => event.type === 'recovered');
-
-  return lastRunReversedInd < 0 ? 0 : events.length - lastRunReversedInd - 1;
-};
-
 export const compactEvents = (
-  taskSpec: TaskSpec | undefined,
   events: SerializedTaskEvent[],
 ): { events: SerializedTaskEvent[] } => {
   const recoveredEventInd = events
@@ -118,38 +100,9 @@ export const compactEvents = (
     const { recoverStrategy } = events[ind].body as {
       recoverStrategy: TaskRecoverStrategy;
     };
-    if (recoverStrategy === 'restart') {
+    if (recoverStrategy === 'start_over') {
       return {
         events: recoveredEventInd === 0 ? [] : events.slice(ind),
-      };
-    } else if (recoverStrategy === 'idempotent') {
-      if (!taskSpec) {
-        return { events };
-      }
-
-      const recoverPoint = findRecoverPoint(events);
-      const stepIdToStart = lastRecoveredStepId(
-        taskSpec,
-        events.slice(0, recoverPoint),
-      );
-
-      const preservedIdSteps: string[] = [];
-      const stepIds = taskSpec.steps.map(step => step.id);
-      for (const stepId of stepIds) {
-        if (stepId === stepIdToStart) {
-          break;
-        } else {
-          preservedIdSteps.push(stepId);
-        }
-      }
-
-      const recoveredEvents = events.filter(event => {
-        const { stepId } = event.body as { stepId?: string };
-        return stepId ? preservedIdSteps.includes(stepId) : false;
-      });
-
-      return {
-        events: [...recoveredEvents, ...events.slice(recoverPoint)],
       };
     }
   }
