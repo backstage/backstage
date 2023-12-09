@@ -20,15 +20,7 @@ import { Logger } from 'winston';
 /**
  * @public
  */
-export async function initRepoAndPush({
-  dir,
-  remoteUrl,
-  auth,
-  logger,
-  defaultBranch = 'master',
-  commitMessage = 'Initial commit',
-  gitAuthorInfo,
-}: {
+export async function initRepoAndPush(input: {
   dir: string;
   remoteUrl: string;
   // For use cases where token has to be used with Basic Auth
@@ -40,6 +32,15 @@ export async function initRepoAndPush({
   commitMessage?: string;
   gitAuthorInfo?: { name?: string; email?: string };
 }): Promise<{ commitHash: string }> {
+  const {
+    dir,
+    remoteUrl,
+    auth,
+    logger,
+    defaultBranch = 'master',
+    commitMessage = 'Initial commit',
+    gitAuthorInfo,
+  } = input;
   const git = Git.fromAuth({
     ...auth,
     logger,
@@ -81,15 +82,7 @@ export async function initRepoAndPush({
 /**
  * @public
  */
-export async function commitAndPushRepo({
-  dir,
-  auth,
-  logger,
-  commitMessage,
-  gitAuthorInfo,
-  branch = 'master',
-  remoteRef,
-}: {
+export async function commitAndPushRepo(input: {
   dir: string;
   // For use cases where token has to be used with Basic Auth
   // it has to be provided as password together with a username
@@ -101,6 +94,16 @@ export async function commitAndPushRepo({
   branch?: string;
   remoteRef?: string;
 }): Promise<{ commitHash: string }> {
+  const {
+    dir,
+    auth,
+    logger,
+    commitMessage,
+    gitAuthorInfo,
+    branch = 'master',
+    remoteRef,
+  } = input;
+
   const git = Git.fromAuth({
     ...auth,
     logger,
