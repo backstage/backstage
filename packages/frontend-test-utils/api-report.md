@@ -5,10 +5,11 @@
 ```ts
 /// <reference types="react" />
 
+import { AnalyticsApi } from '@backstage/frontend-plugin-api';
+import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
 import { ErrorWithContext } from '@backstage/test-utils';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { MockAnalyticsApi } from '@backstage/test-utils';
 import { MockConfigApi } from '@backstage/test-utils';
 import { MockErrorApi } from '@backstage/test-utils';
 import { MockErrorApiOptions } from '@backstage/test-utils';
@@ -47,7 +48,13 @@ export class ExtensionTester {
   render(options?: { config?: JsonObject }): RenderResult;
 }
 
-export { MockAnalyticsApi };
+// @public
+export class MockAnalyticsApi implements AnalyticsApi {
+  // (undocumented)
+  captureEvent(event: AnalyticsEvent): void;
+  // (undocumented)
+  getEvents(): AnalyticsEvent[];
+}
 
 export { MockConfigApi };
 
