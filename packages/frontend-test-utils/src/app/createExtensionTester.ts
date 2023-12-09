@@ -17,6 +17,8 @@
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
   ExtensionDefinition,
+  coreExtensionData,
+  createExtension,
   createExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -33,13 +35,27 @@ export class ExtensionTester {
     options?: { config?: TConfig },
   ): ExtensionTester {
     const tester = new ExtensionTester();
-    tester.add(subject, options);
+    const { output, factory, ...rest } = subject;
+    // attaching to core/routes to render as index route
+    const extension = createExtension({
+      ...rest,
+      attachTo: { id: 'core/routes', input: 'routes' },
+      output: {
+        ...output,
+        path: coreExtensionData.routePath,
+      },
+      factory: params => ({
+        ...factory(params),
+        path: '/',
+      }),
+    });
+    tester.add(extension, options);
     return tester;
   }
 
   readonly #extensions = new Array<{
     id: string;
-    extension: ExtensionDefinition<any>;
+    definition: ExtensionDefinition<any>;
     config?: JsonValue;
   }>();
 
@@ -47,13 +63,19 @@ export class ExtensionTester {
     extension: ExtensionDefinition<TConfig>,
     options?: { config?: TConfig },
   ): ExtensionTester {
-    const withNamespace = {
+    const { name, namespace } = extension;
+
+    const definition = {
       ...extension,
-      name: !extension.namespace && !extension.name ? 'test' : extension.name,
+      // setting name "test" as fallback
+      name: !namespace && !name ? 'test' : name,
     };
+
+    const { id } = resolveExtensionDefinition(definition);
+
     this.#extensions.push({
-      id: resolveExtensionDefinition(withNamespace).id,
-      extension: withNamespace,
+      id,
+      definition,
       config: options?.config as JsonValue,
     });
 
@@ -71,26 +93,16 @@ export class ExtensionTester {
     }
 
     const extensionsConfig: JsonArray = [
-      ...rest.map(entry => ({
-        [entry.id]: {
-          config: entry.config,
+      ...rest.map(extension => ({
+        [extension.id]: {
+          config: extension.config,
         },
       })),
       {
         [subject.id]: {
-          attachTo: { id: 'core/router', input: 'children' },
           config: subject.config,
           disabled: false,
         },
-      },
-      {
-        'core/layout': false,
-      },
-      {
-        'core/nav': false,
-      },
-      {
-        'core/routes': false,
       },
     ];
 
@@ -105,7 +117,7 @@ export class ExtensionTester {
     const app = createSpecializedApp({
       features: [
         createExtensionOverrides({
-          extensions: this.#extensions.map(entry => entry.extension),
+          extensions: this.#extensions.map(extension => extension.definition),
         }),
       ],
       config: new MockConfigApi(finalConfig),
