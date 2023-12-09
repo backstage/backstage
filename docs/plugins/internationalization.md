@@ -113,7 +113,7 @@ export const myPluginTranslationRef = createTranslationRef({
 
 There's build in support for pluralization in our `i18n` library which closely follows the `react-i18next` API. You can read more about it [here](https://www.i18next.com/translation-function/plurals).
 
-We enourage you to use this feature and avoid creating duplicate keys for pluralized content. For example:
+We encourage you to use this feature and avoid creating different key prefixes for pluralized content. For example:
 
 ```ts
 export const myPluginTranslationRef = createTranslationRef({
