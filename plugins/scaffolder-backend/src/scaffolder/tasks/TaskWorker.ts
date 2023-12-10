@@ -123,7 +123,7 @@ export class TaskWorker {
   start() {
     (async () => {
       for (;;) {
-        await new Promise(resolve => setTimeout(resolve, 6000));
+        await new Promise(resolve => setTimeout(resolve, 10000));
         await this.recoverTasks();
       }
     })();

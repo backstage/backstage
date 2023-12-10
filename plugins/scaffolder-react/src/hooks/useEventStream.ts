@@ -244,18 +244,16 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
               // just to restart the fetch process
               // details here https://github.com/backstage/backstage/issues/15002
 
-              const maxRetries = 30;
+              const maxRetries = 3;
 
               if (!error.message) {
                 error.message = `We cannot connect at the moment, trying again in some seconds... Retrying (${retryCount}/${maxRetries} retries)`;
               }
 
-              if (retryCount <= maxRetries) {
-                setTimeout(() => {
-                  retryCount += 1;
-                  void startStreamLogProcess();
-                }, 15000);
-              }
+              setTimeout(() => {
+                retryCount += 1;
+                void startStreamLogProcess();
+              }, 15000);
 
               dispatch({ type: 'ERROR', data: error });
             },

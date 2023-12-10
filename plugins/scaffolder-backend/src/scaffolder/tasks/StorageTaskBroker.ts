@@ -219,7 +219,7 @@ export class StorageTaskBroker implements TaskBroker {
         (await this.storage.recoverTasks?.({
           timeoutS: Duration.fromObject(
             readDuration(
-              this.config!!,
+              this.config,
               'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
               {
                 seconds: 30,

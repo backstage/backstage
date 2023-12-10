@@ -15,77 +15,7 @@
  */
 
 import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
-import {
-  TaskRecoverStrategy,
-  TaskSpec,
-} from '@backstage/plugin-scaffolder-common';
-
-type Dependencies = { [key in string]: string };
-
-const findStepsDependencies = (spec: TaskSpec) => {
-  const dependencies = {} as Dependencies;
-
-  const stepIds = spec.steps.map(step => step.id).reverse();
-
-  spec.steps.map(step =>
-    Object.values(step.input ?? {}).forEach(value => {
-      const strValue = JSON.stringify(value).trim();
-      const startInd = strValue.indexOf('${{');
-      const endInd = strValue.indexOf('}}');
-      if (startInd > 0 && endInd > startInd) {
-        const variable = strValue.substring(startInd + '${{'.length, endInd);
-        const parts = variable.split('.').map(part => part.trim());
-        if (parts[0] === 'steps' && parts[2] === 'output') {
-          dependencies[step.id] = parts[1];
-        }
-      }
-    }),
-  );
-
-  const findUltimateDep = (
-    stepId: string,
-    forStepId: string,
-  ): string | undefined => {
-    const depValue = dependencies[stepId];
-    if (depValue) {
-      return findUltimateDep(depValue, forStepId);
-    }
-    return stepId === forStepId ? undefined : stepId;
-  };
-
-  stepIds.forEach(stepId => {
-    const stepDependency = findUltimateDep(stepId, stepId);
-    if (stepDependency) {
-      dependencies[stepId] = stepDependency;
-    }
-  });
-
-  return dependencies;
-};
-
-export const lastRecoveredStepId = (
-  spec: TaskSpec,
-  events: SerializedTaskEvent[],
-): string | undefined => {
-  if (!spec.steps.length || !events.length) {
-    return undefined;
-  }
-  const lastStepId = events
-    .slice()
-    .reverse()
-    .find(e => e.type === 'log' && e.body.stepId)?.body.stepId;
-
-  const lastStep = spec.steps.find(step => step.id === lastStepId);
-
-  if (!lastStep) {
-    return undefined;
-  }
-
-  const dependencies = findStepsDependencies(spec);
-  const dependentStepId = dependencies[lastStep.id];
-
-  return dependentStepId ? dependentStepId : lastStep.id;
-};
+import { TaskRecoverStrategy } from '@backstage/plugin-scaffolder-common';
 
 export const compactEvents = (
   events: SerializedTaskEvent[],

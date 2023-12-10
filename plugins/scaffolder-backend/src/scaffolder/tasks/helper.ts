@@ -58,11 +58,11 @@ export function generateExampleOutput(schema: Schema): unknown {
 }
 
 export const readDuration = (
-  config: Config,
+  config: Config | undefined,
   key: string,
   defaultValue: HumanDuration,
 ) => {
-  if (config.has(key)) {
+  if (config?.has(key)) {
     return readDurationFromConfig(config, { key });
   }
   return defaultValue;
