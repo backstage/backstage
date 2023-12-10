@@ -85,6 +85,8 @@ const mockUrlReader = UrlReaders.default({
 
 const getIdentity = jest.fn();
 
+const config = new ConfigReader({});
+
 describe('createRouter', () => {
   let app: express.Express;
   let loggerSpy: jest.SpyInstance;
@@ -181,7 +183,7 @@ describe('createRouter', () => {
       const databaseTaskStore = await DatabaseTaskStore.create({
         database: createDatabase(),
       });
-      taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+      taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
       jest.spyOn(taskBroker, 'dispatch');
       jest.spyOn(taskBroker, 'get');
@@ -787,7 +789,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       const databaseTaskStore = await DatabaseTaskStore.create({
         database: createDatabase(),
       });
-      taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+      taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
       jest.spyOn(taskBroker, 'dispatch');
       jest.spyOn(taskBroker, 'get');

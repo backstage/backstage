@@ -41,6 +41,22 @@ export interface Config {
     concurrentTasksLimit?: number;
 
     /**
+     * Sets the tasks recoverability on system start up.
+     *
+     * If not specified, the default value is false.
+     */
+    EXPERIMENTAL_recoverTasks?: boolean;
+
+    /**
+     * Every task which is in progress state and having a last heartbeat longer than a specified timeout is going to
+     * be attempted to recover.
+     *
+     * If not specified, the default value is 5 seconds.
+     *
+     */
+    EXPERIMENTAL_recoverTasksTimeout?: HumanDuration;
+
+    /**
      * Makes sure to auto-expire and clean up things that time out or for other reasons should not be left lingering.
      *
      * By default, the frequency is every 5 minutes.

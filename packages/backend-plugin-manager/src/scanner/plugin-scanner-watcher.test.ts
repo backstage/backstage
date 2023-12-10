@@ -124,6 +124,14 @@ describe('plugin-scanner', () => {
       });
 
       expect(logger.logs).toEqual<Logs>({
+        debugs: [
+          {
+            message: `rootDirectory changed (addDir - ${path.resolve(
+              backstageRootDirectory,
+              'first-dir',
+            )}): no need to scan plugins again`,
+          },
+        ],
         infos: [
           {
             message: `rootDirectory changed (addDir - ${path.resolve(

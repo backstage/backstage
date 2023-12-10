@@ -41,6 +41,23 @@ default, we highly recommend you to set that up. Follow our how-to guide
 [How to add documentation setup to your software templates](./how-to-guides.md#how-to-add-the-documentation-setup-to-your-software-templates)
 to get started.
 
+### Use the documentation template
+
+There could be _some_ situations where you don't want to keep your docs close to
+your code, but still want to publish documentation - for example, an onboarding
+tutorial. For this use case, we have put together a documentation template. Your
+Backstage instance should by default have a documentation template added. If
+not, copy the catalog locations from the
+[create-app template](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/app-config.yaml.hbs)
+to add the documentation template. The template creates a component with
+**only** TechDocs configuration and default markdown files, and is otherwise
+empty.
+
+![Documentation Template](../../assets/techdocs/documentation-template.png)
+
+Create an entity from the documentation template and you will get the needed
+setup for free.
+
 ### Enable documentation for an already existing entity
 
 Prerequisites:

@@ -8,6 +8,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Duration } from 'luxon';
+import { EventBroker } from '@backstage/plugin-events-node';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
 import express from 'express';
@@ -17,6 +18,7 @@ import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
+import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 import { Octokit } from 'octokit';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -38,6 +40,7 @@ import { TaskBrokerDispatchResult as TaskBrokerDispatchResult_2 } from '@backsta
 import { TaskCompletionState as TaskCompletionState_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskContext as TaskContext_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskEventType as TaskEventType_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -841,8 +844,11 @@ export class DatabaseTaskStore implements TaskStore {
   listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: {
       taskId: string;
+      recovery?: TaskRecovery;
     }[];
   }>;
+  // (undocumented)
+  recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<string[]>;
   // (undocumented)
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -887,7 +893,11 @@ export interface RouterOptions {
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
+  eventBroker?: EventBroker;
+  // (undocumented)
   identity?: IdentityApi;
+  // (undocumented)
+  lifecycle?: LifecycleService;
   // (undocumented)
   logger: Logger;
   // (undocumented)
@@ -1006,6 +1016,8 @@ export interface TaskStore {
     }[];
   }>;
   // (undocumented)
+  recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<string[]>;
+  // (undocumented)
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
@@ -1031,6 +1043,12 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 export type TaskStoreListEventsOptions = {
   taskId: string;
   after?: number | undefined;
+  raw?: boolean;
+};
+
+// @public
+export type TaskStoreRecoverTaskOptions = {
+  timeoutS: number;
 };
 
 // @public
@@ -1044,6 +1062,8 @@ export class TaskWorker {
   static create(options: CreateWorkerOptions): Promise<TaskWorker>;
   // (undocumented)
   protected onReadyToClaimTask(): Promise<void>;
+  // (undocumented)
+  recoverTasks(): Promise<void>;
   // (undocumented)
   runOneTask(task: TaskContext): Promise<void>;
   // (undocumented)
