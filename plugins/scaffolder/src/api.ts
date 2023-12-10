@@ -284,15 +284,7 @@ export class ScaffolderClient implements ScaffolderApi {
           const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
             taskId,
           )}/events?${qs.stringify({ after })}`;
-          const originalAfter = after;
-          let response;
-
-          try {
-            response = await this.fetchApi.fetch(url);
-          } catch (_) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            continue;
-          }
+          const response = await this.fetchApi.fetch(url);
 
           if (!response.ok) {
             // wait for one second to not run into an
@@ -311,10 +303,6 @@ export class ScaffolderClient implements ScaffolderApi {
               subscriber.complete();
               return;
             }
-          }
-
-          if (originalAfter && logs.find(e => e.type === 'recovered')) {
-            after = undefined;
           }
         }
       });
