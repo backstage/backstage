@@ -17,11 +17,11 @@ export const isTemplateEntityV1beta3: (
 ) => entity is TemplateEntityV1beta3;
 
 // @public
-export type TaskRecoverStrategy = 'none' | 'idempotent' | 'restart';
+export type TaskRecoverStrategy = 'none' | 'start_over';
 
 // @public
 export interface TaskRecovery {
-  strategy?: TaskRecoverStrategy;
+  EXPERIMENTAL_strategy?: TaskRecoverStrategy;
 }
 
 // @public
@@ -30,11 +30,11 @@ export type TaskSpec = TaskSpecV1beta3;
 // @public
 export interface TaskSpecV1beta3 {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
+  EXPERIMENTAL_recovery?: TaskRecovery;
   output: {
     [name: string]: JsonValue;
   };
   parameters: JsonObject;
-  recovery?: TaskRecovery;
   steps: TaskStep[];
   templateInfo?: TemplateInfo;
   user?: {
@@ -51,13 +51,6 @@ export interface TaskStep {
   if?: string | boolean;
   input?: JsonObject;
   name: string;
-  // (undocumented)
-  recovery?: TaskStepRecovery;
-}
-
-// @public
-export interface TaskStepRecovery {
-  dependsOn?: string;
 }
 
 // @public
@@ -83,7 +76,7 @@ export interface TemplateEntityV1beta3 extends Entity {
   spec: {
     type: string;
     presentation?: TemplatePresentationV1beta3;
-    recovery?: TemplateRecoveryV1beta3;
+    EXPERIMENTAL_recovery?: TemplateRecoveryV1beta3;
     parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
     steps: Array<TemplateEntityStepV1beta3>;
     output?: {
@@ -128,6 +121,6 @@ export interface TemplatePresentationV1beta3 extends JsonObject {
 
 // @public
 export interface TemplateRecoveryV1beta3 extends JsonObject {
-  strategy?: 'none' | 'idempotent' | 'restart';
+  EXPERIMENTAL_strategy?: 'none' | 'start_over';
 }
 ```

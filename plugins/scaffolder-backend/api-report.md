@@ -18,6 +18,7 @@ import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
+import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 import { Octokit } from 'octokit';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -896,6 +897,8 @@ export interface RouterOptions {
   // (undocumented)
   identity?: IdentityApi;
   // (undocumented)
+  lifecycle?: LifecycleService;
+  // (undocumented)
   logger: Logger;
   // (undocumented)
   permissionRules?: Array<
@@ -955,7 +958,6 @@ export class TaskManager implements TaskContext {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
-    stepIdToRecoverFrom?: string,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;
@@ -963,8 +965,6 @@ export class TaskManager implements TaskContext {
   get done(): boolean;
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
-  // (undocumented)
-  getStepIdToRecoverFrom(): Promise<string | undefined>;
   // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
@@ -1062,6 +1062,8 @@ export class TaskWorker {
   static create(options: CreateWorkerOptions): Promise<TaskWorker>;
   // (undocumented)
   protected onReadyToClaimTask(): Promise<void>;
+  // (undocumented)
+  recoverTasks(): Promise<void>;
   // (undocumented)
   runOneTask(task: TaskContext): Promise<void>;
   // (undocumented)
