@@ -115,7 +115,7 @@ export function getClient(props: {
   };
 
   gitlabOptions[tokenType] = requestToken;
-
+  console.log({ gitlabOptions });
   return new Gitlab(gitlabOptions);
 }
 
