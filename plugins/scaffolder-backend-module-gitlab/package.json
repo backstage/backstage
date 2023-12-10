@@ -43,7 +43,8 @@
   "devDependencies": {
     "@backstage/backend-common": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-app-api": "workspace:^",
+    "jest-date-mock": "^1.0.8"
   },
   "files": [
     "dist"

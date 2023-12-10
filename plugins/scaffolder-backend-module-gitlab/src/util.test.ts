@@ -18,19 +18,26 @@ import * as util from './util';
 import { Gitlab, GroupSchema } from '@gitbeaker/rest';
 
 // Mock the Gitlab client and its methods
-jest.mock('@gitbeaker/rest', () => {
-  return {
-    Gitlab: jest.fn().mockImplementation(() => ({
-      Groups: {
-        show: jest.fn(),
-        search: jest.fn(),
-      },
-    })),
-  };
-});
+const setupGitlabMock = () => {
+  jest.mock('@gitbeaker/rest', () => {
+    return {
+      Gitlab: jest.fn().mockImplementation(() => ({
+        Groups: {
+          show: jest.fn(),
+        },
+      })),
+    };
+  });
+};
 
 describe('getTopLevelParentGroup', () => {
-  const config = {
+  beforeEach(() => {
+    setupGitlabMock();
+  });
+
+  afterEach(() => jest.resetAllMocks());
+
+  const mockConfig = {
     gitlab: [
       {
         host: 'gitlab.com',
@@ -47,8 +54,8 @@ describe('getTopLevelParentGroup', () => {
   it('should return the top-level parent group', async () => {
     // Instance with token
     const mockGitlabClient = new Gitlab({
-      host: config.gitlab[0].host,
-      token: config.gitlab[0].token!,
+      host: mockConfig.gitlab[0].host,
+      token: mockConfig.gitlab[0].token!,
     });
 
     // Mocked nested groups
