@@ -79,6 +79,7 @@ import {
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
 import { EventBroker, EventParams } from '@backstage/plugin-events-node';
 import { Duration } from 'luxon';
+import { LifecycleService } from '@backstage/backend-plugin-api';
 
 /**
  *
@@ -125,6 +126,7 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   reader: UrlReader;
+  lifecycle?: LifecycleService;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
   scheduler?: PluginTaskScheduler;
@@ -344,7 +346,9 @@ export async function createRouter(
       },
     });
   } else {
-    workers.forEach(worker => worker.start());
+    options.lifecycle?.addStartupHook(() => {
+      workers.forEach(worker => worker.start());
+    });
   }
 
   const dryRunner = createDryRunner({
