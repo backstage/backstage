@@ -49,7 +49,7 @@ describe('StarredEntitiesContent', () => {
     mockedApi.toggleStarred('component:default/mock-starred-entity-3');
 
     const mockCatalogApi = {
-      getEntities: jest
+      getEntitiesByRefs: jest
         .fn()
         .mockImplementation(async () => ({ items: entities })),
     };
@@ -87,7 +87,7 @@ describe('StarredEntitiesContent', () => {
     const mockedApi = new MockStarredEntitiesApi();
 
     const mockCatalogApi = {
-      getEntities: jest
+      getEntitiesByRefs: jest
         .fn()
         .mockImplementation(async () => ({ items: entities })),
     };
@@ -117,7 +117,7 @@ describe('StarredEntitiesContent', () => {
     const mockedApi = new MockStarredEntitiesApi();
 
     const mockCatalogApi = {
-      getEntities: jest
+      getEntitiesByRefs: jest
         .fn()
         .mockImplementation(async () => ({ items: entities })),
     };
