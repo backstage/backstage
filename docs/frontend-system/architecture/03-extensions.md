@@ -18,6 +18,10 @@ Each extensions has a number of different properties that define how it behaves 
 
 ### ID
 
+<!--
+Update this to be 3 different sections: name, kind and namespace
+-->
+
 The ID of an extension is used to uniquely identity it, and it should ideally by unique across the entire Backstage ecosystem. For each frontend app instance there can only be a single extension for any given ID. Installing multiple extensions with the same ID will either result in an error or one of the extensions will override the others. The ID is also used to reference the extensions from other extensions, in configuration, and in other places such as developer tools and analytics.
 
 ### Output
@@ -85,20 +89,64 @@ TODO
 
 ## Extension Inputs
 
-TODO
+<!--
 
-## Configuration
+Introduce the concept of extension inputs and how they use extension data to reference types just like outputs
 
-TODO
+Show how to use the `createExtensionInput` API to create an input for an extension.
 
-## Configuration Schema
+- Example of creating a single input
 
-TODO
+Talk about different types of inputs, singleton vs array + optional vs required.
+
+ - Example of creating an optional singleton input - not the value is no longer an array
+
+Talk about the shape of the input values and that you have access to the AppNode node in addition to the data, but discourage use of AppNode.
+
+ - Example of how to access the AppNode next to the input data
+
+-->
+
+## Extension Configuration
+
+<!--
+
+Introduce the concept of extension configuration, highlight that it's different from app config
+
+Show how to define a configuration schema for an extension, talk about it using zod (link to zod), in general explain everything there is to know about the schema
+
+ - Example that creates a configuration schema for an extension
+
+Show how to provide configuration for an extension - keep this part short, and instead link to the architecture section that talks about writing configuration
+
+ - One example of a YAML configurations for the above extension
+
+ -->
 
 ## Extension Creators
 
-TODO
+<!--
+
+Introduce the concept of extension creators, talk about how they are used to provide an opinionated way of creating extensions for specific use cases. Mention a few of the built-in creators, link to the reference section on built-in extension kinds (TBD).
+
+ - Example of using an existing extension creator to create an extension
+
+Explain that each extension creator creates a specific "kind" of extensions - introduce the concept of extension kinds. Show an example of how the kind is used to build up the ID.
+
+ - Example of creating a new extension creator for creating a specific kind of extension
+
+Explain that extension creators should be exported from library packages (`-react`) rather than plugin packages.
+
+ -->
 
 ## Extension Boundary
 
-TODO
+<!--
+
+Introduce the need for extension specific React contexts, for example error boundaries and analytics.
+
+Any React elements that are rendered by extension creators should be wrapped in the `ExtensionBoundary`
+
+ - Example of how to use the `ExtensionBoundary` in an extension creator
+
+ -->
