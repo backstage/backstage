@@ -178,8 +178,6 @@ export interface TaskContext {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
-  getStepIdToRecoverFrom?(): Promise<string | undefined>;
-  // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
   isDryRun?: boolean;
