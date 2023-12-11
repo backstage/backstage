@@ -23,7 +23,7 @@ import { AuthHandler, SignInResolver } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 /**
- * Auth provider integration for Google Identity-Aware Proxy auth
+ * Auth provider integration for AWS ALB auth
  *
  * @public
  */
