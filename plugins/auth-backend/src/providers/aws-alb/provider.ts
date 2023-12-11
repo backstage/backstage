@@ -28,7 +28,7 @@ import { createAuthProviderIntegration } from '../createAuthProviderIntegration'
  * @public
  */
 export const awsAlb = createAuthProviderIntegration({
-  create(options: {
+  create(options?: {
     /**
      * The profile transformation function used to verify and convert the auth
      * response into the profile that will be presented to the user. The default
