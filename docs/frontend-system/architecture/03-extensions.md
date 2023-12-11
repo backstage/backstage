@@ -60,7 +60,7 @@ Extensions are created using the `createExtension` function from `@backstage/fro
 
 ```tsx
 const extension = createExtension({
-  id: 'my-extension',
+  name: 'my-extension',
   // This is the attachment point, `id` is the ID of the parent extension,
   // while `input` is the name of the input to attach to.
   attachTo: { id: 'my-parent', input: 'content' },
@@ -71,10 +71,10 @@ const extension = createExtension({
     element: coreExtensionData.reactElement,
   },
   // This factory is called to instantiate the extensions and produce its output.
-  factory({ bind }) {
-    bind({
+  factory() {
+    return {
       element: <div>Hello World</div>,
-    });
+    };
   },
 });
 ```
@@ -85,7 +85,75 @@ Note that while the `createExtension` is public API and used in many places, it 
 
 ## Extension Data
 
-TODO
+Communication between extensions happens in one direction, from one child extension through the attachment point to its parent. The child extension outputs data which is then passed as inputs to the parent extension. This data is called Extension Data, where the shape of each individual piece of data is described by an Extension Data Reference. These references are created separately from the extensions themselves, and can be shared across multiple different kinds of extenses. Each reference consists of an ID and a TypeScript type that the data needs to conform to, and represents one type of data that can be shared between extensions.
+
+### Extension Data References
+
+To create a new extension data reference to represent a type of shared extension data you use the `createExtensionDataRef` function. When defining a new reference you need to provide an ID and a TypeScript type, for example:
+
+```ts
+export const reactElementExtensionDataRef =
+  createExtensionDataRef<React.JSX.Element>('my-plugin.reactElement');
+```
+
+The `ExtensionDataRef` can then be used to describe an output property of the extension. This will enforce typing on the return value of the extension factory:
+
+```tsx
+const extension = createExtension({
+  // ...
+  output: {
+    element: reactElementExtensionDataRef,
+  },
+  factory() {
+    return {
+      element: <div>Hello World</div>,
+    };
+  },
+});
+```
+
+### Extension Data Uniqueness
+
+Note that the key used in the output map, in this case `element`, is only used internally within the definition of the extension itself. That actual identifier for the data when consumed by other extensions is the ID of the reference, in this case `core.reactElement`. This means that you can not output multiple different values for the same extension data reference, as they would conflict with each other. That in turn makes overly generic extension data references a bad idea, for example a generic "string" type. Instead create separate references for each type of data that you want to share.
+
+```tsx
+const extension = createExtension({
+  // ...
+  output: {
+    // ❌ Bad example - outputting values of same type
+    element1: reactElementExtensionDataRef,
+    element2: reactElementExtensionDataRef,
+  },
+  factory() {
+    return {
+      element1: <div>Hello World</div>,
+      element2: <div>Hello World</div>,
+    };
+  },
+});
+```
+
+### Core Extension Data
+
+We provide default `coreExtensionData`, which provides commonly used `ExtensionDataRef` - e.g. for `React.JSX.Element`, `RouteRef` or `AppTheme`. They can be used when creating your own extension. For example, the React Element extension data that we defined above is already provided as `coreExtensionData.reactElement`. For a full list and explanations of all types of core extension data, see the [core extension data reference](#TODO).
+
+### Optional Extension Data
+
+By default all extension data is required, meaning that the extension factory must provide a value for each output. However, it is possible to make extension data optional by calling the `.optional()` method. This makes it optional for the factory function to return a value as part of its output. When calling the `.optional()` method you create a new copy of the extension data reference, it does not mutate the existing reference.
+
+```tsx
+const extension = createExtension({
+  // ...
+  output: {
+    element: coreExtensionData.reactElement.option(),
+  },
+  factory() {
+    return {
+      element: Math.random() < 0.5 ? <div>Hello World</div> : undefined,
+    };
+  },
+});
+```
 
 ## Extension Inputs
 
