@@ -1,3 +1,9 @@
+---
+id: test-case-validation
+title: Validate your OpenAPI spec against test data
+description: Documetnation on how to use the `schema openapi test` command.
+---
+
 ## OpenAPI Validation using Test Cases
 
 This is primarily performed by `backstage-repo-tools schema openapi test`. Any errors found in the generated specs can be either

@@ -253,7 +253,9 @@
         "type": "category",
         "label": "OpenAPI",
         "items": [
-          "openapi/01-getting-started"
+          "openapi/01-getting-started",
+          "openapi/generate-client",
+          "openapi/test-case-validation"
         ]
       },
       {
