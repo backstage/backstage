@@ -58,8 +58,9 @@ export const TaskSteps = (props: TaskStepsProps) => {
           activeStep={props.activeStep}
           alternativeLabel
           variant="elevation"
+          style={{ overflowX: 'auto' }}
         >
-          {props.steps.map((step, index) => {
+          {props.steps.map(step => {
             const isCompleted = step.status === 'completed';
             const isFailed = step.status === 'failed';
             const isActive = step.status === 'processing';
@@ -73,7 +74,7 @@ export const TaskSteps = (props: TaskStepsProps) => {
               };
 
             return (
-              <MuiStep key={index}>
+              <MuiStep key={step.id}>
                 <MuiStepButton>
                   <MuiStepLabel
                     StepIconProps={stepIconProps}

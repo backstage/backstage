@@ -13,7 +13,23 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { Playlist } from '@backstage/plugin-playlist-common';
 import { PlaylistMetadata } from '@backstage/plugin-playlist-common';
+import { PropsWithChildren } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+
+// @public (undocumented)
+export const CreatePlaylistButton: () => React_2.JSX.Element;
+
+// @public (undocumented)
+export type DefaultPlaylistFilters = {
+  noop?: NoopFilter;
+  owners?: PlaylistOwnerFilter;
+  personal?: PersonalListFilter;
+  text?: PlaylistTextFilter;
+};
+
+// @public (undocumented)
+export const DefaultPlaylistIndexPage: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export const EntityPlaylistDialog: (
@@ -34,6 +50,43 @@ export interface GetAllPlaylistsRequest {
     | Record<string, string | string[] | null>[]
     | Record<string, string | string[] | null>;
 }
+
+// @public (undocumented)
+export class NoopFilter implements PlaylistFilter {
+  // (undocumented)
+  getBackendFilters(): {
+    '': null;
+  };
+}
+
+// @public (undocumented)
+export class PersonalListFilter implements PlaylistFilter {
+  constructor(
+    value: PersonalListFilterValue,
+    isOwnedPlaylist: (playlist: Playlist) => boolean,
+  );
+  // (undocumented)
+  filterPlaylist(playlist: Playlist): boolean;
+  // (undocumented)
+  readonly isOwnedPlaylist: (playlist: Playlist) => boolean;
+  // (undocumented)
+  toQueryValue(): string;
+  // (undocumented)
+  readonly value: PersonalListFilterValue;
+}
+
+// @public (undocumented)
+export const enum PersonalListFilterValue {
+  // (undocumented)
+  all = 'all',
+  // (undocumented)
+  following = 'following',
+  // (undocumented)
+  owned = 'owned',
+}
+
+// @public (undocumented)
+export const PersonalListPicker: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export interface PlaylistApi {
@@ -94,7 +147,41 @@ export class PlaylistClient implements PlaylistApi {
 }
 
 // @public (undocumented)
+export type PlaylistFilter = {
+  getBackendFilters?: () => Record<string, string | string[] | null>;
+  filterPlaylist?: (playlist: Playlist) => boolean;
+  toQueryValue?: () => string | string[];
+};
+
+// @public (undocumented)
 export const PlaylistIndexPage: () => JSX_2.Element;
+
+// @public (undocumented)
+export const PlaylistList: () => React_2.JSX.Element;
+
+// @public (undocumented)
+export const PlaylistListProvider: <
+  PlaylistFilters extends DefaultPlaylistFilters,
+>({
+  children,
+}: PropsWithChildren<{}>) => React_2.JSX.Element;
+
+// @public (undocumented)
+export class PlaylistOwnerFilter implements PlaylistFilter {
+  constructor(values: string[]);
+  // (undocumented)
+  filterPlaylist(playlist: Playlist): boolean;
+  // (undocumented)
+  toQueryValue(): string[];
+  // (undocumented)
+  readonly values: string[];
+}
+
+// @public (undocumented)
+export const PlaylistOwnerPicker: () => React_2.JSX.Element | null;
+
+// @public (undocumented)
+export const PlaylistPage: () => JSX_2.Element;
 
 // @public (undocumented)
 export const playlistPlugin: BackstagePlugin<
@@ -103,4 +190,19 @@ export const playlistPlugin: BackstagePlugin<
   },
   {}
 >;
+
+// @public (undocumented)
+export const PlaylistSearchBar: () => React_2.JSX.Element;
+
+// @public (undocumented)
+export const PlaylistSortPicker: () => React_2.JSX.Element;
+
+// @public (undocumented)
+export class PlaylistTextFilter implements PlaylistFilter {
+  constructor(value: string);
+  // (undocumented)
+  filterPlaylist(playlist: Playlist): boolean;
+  // (undocumented)
+  readonly value: string;
+}
 ```

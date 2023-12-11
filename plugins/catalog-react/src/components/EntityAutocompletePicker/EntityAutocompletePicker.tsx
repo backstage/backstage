@@ -130,7 +130,7 @@ export function EntityAutocompletePicker<
     <Box pb={1} pt={1}>
       <Typography variant="button" component="label">
         {label}
-        <Autocomplete
+        <Autocomplete<string, true>
           multiple
           disableCloseOnSelect
           options={availableOptions}

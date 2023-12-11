@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles, Theme } from '@material-ui/core';
+
+import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { RadarLegendQuadrant } from './RadarLegendQuadrant';
 import { RadarLegendProps } from './types';
 import { setupSegments } from './utils';
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   quadrant: {
     height: '100%',
     width: '100%',

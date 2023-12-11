@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import os from 'os';
 import { join as joinPath, sep as pathSep } from 'path';
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
 import {
   getVoidLogger,
   resolvePackagePath,
@@ -33,6 +31,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './template.examples';
 import yaml from 'yaml';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 jest.mock('@backstage/plugin-scaffolder-node', () => ({
   ...jest.requireActual('@backstage/plugin-scaffolder-node'),
@@ -44,16 +43,6 @@ type FetchTemplateInput = ReturnType<
 > extends TemplateAction<infer U>
   ? U
   : never;
-
-const realFiles = Object.fromEntries(
-  [
-    resolvePackagePath(
-      '@backstage/plugin-scaffolder-backend',
-      'assets',
-      'nunjucks.js.txt',
-    ),
-  ].map(k => [k, mockFs.load(k)]),
-);
 
 const aBinaryFile = fs.readFileSync(
   resolvePackagePath(
@@ -69,14 +58,8 @@ const mockFetchContents = fetchContents as jest.MockedFunction<
 describe('fetch:template examples', () => {
   let action: TemplateAction<any>;
 
-  const workspacePath = os.tmpdir();
-  const createTemporaryDirectory: jest.MockedFunction<
-    ActionContext<FetchTemplateInput>['createTemporaryDirectory']
-  > = jest.fn(() =>
-    Promise.resolve(
-      joinPath(workspacePath, `${createTemporaryDirectory.mock.calls.length}`),
-    ),
-  );
+  const mockDir = createMockDirectory();
+  const workspacePath = mockDir.resolve('workspace');
 
   const logger = getVoidLogger();
 
@@ -90,22 +73,18 @@ describe('fetch:template examples', () => {
     logStream: new PassThrough(),
     logger,
     workspacePath,
-    createTemporaryDirectory,
+
+    async createTemporaryDirectory() {
+      return fs.mkdtemp(mockDir.resolve('tmp-'));
+    },
   });
 
   beforeEach(() => {
-    mockFs({
-      ...realFiles,
-    });
-
+    mockDir.clear();
     action = createFetchTemplateAction({
       reader: Symbol('UrlReader') as unknown as UrlReader,
       integrations: Symbol('Integrations') as unknown as ScmIntegrations,
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   describe('handler', () => {
@@ -116,13 +95,13 @@ describe('fetch:template examples', () => {
         context = mockContext(yaml.parse(examples[0].example).steps[0].input);
 
         mockFetchContents.mockImplementation(({ outputPath }) => {
-          mockFs({
-            ...realFiles,
+          mockDir.setContent({
             [outputPath]: {
-              'an-executable.sh': mockFs.file({
-                content: '#!/usr/bin/env bash',
-                mode: parseInt('100755', 8),
-              }),
+              'an-executable.sh': ctx =>
+                fs.writeFileSync(ctx.path, '#!/usr/bin/env bash', {
+                  encoding: 'utf8',
+                  mode: parseInt('100755', 8),
+                }),
               'empty-dir-${{ values.count }}': {},
               'static.txt': 'static content',
               '${{ values.name }}.txt': 'static content',
@@ -132,12 +111,8 @@ describe('fetch:template examples', () => {
               },
               '.${{ values.name }}': '${{ values.itemList | dump }}',
               'a-binary-file.png': aBinaryFile,
-              symlink: mockFs.symlink({
-                path: 'a-binary-file.png',
-              }),
-              brokenSymlink: mockFs.symlink({
-                path: './not-a-real-file.txt',
-              }),
+              symlink: ctx => ctx.symlink('a-binary-file.png'),
+              brokenSymlink: ctx => ctx.symlink('./not-a-real-file.txt'),
             },
           });
 
@@ -212,7 +187,11 @@ describe('fetch:template examples', () => {
 
         await expect(
           fs.realpath(`${workspacePath}/target/symlink`),
-        ).resolves.toBe(joinPath(workspacePath, 'target', 'a-binary-file.png'));
+        ).resolves.toBe(
+          fs.realpathSync(
+            joinPath(workspacePath, 'target', 'a-binary-file.png'),
+          ),
+        );
       });
 
       it('copies broken symlinks as-is without processing them', async () => {

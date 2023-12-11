@@ -20,7 +20,6 @@
  * @packageDocumentation
  */
 
-export * from './catalog';
 export * from './ingestion';
 export * from './modules';
 export * from './processing';

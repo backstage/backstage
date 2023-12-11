@@ -72,12 +72,12 @@ items.
 
 ## Modules
 
-Backend modules are used to extend [plugins](../architecture/04-plugins.md) with
+Backend modules are used to extend [plugins](../architecture/04-plugins.md) or other modules with
 additional features or change existing behavior. They must always be installed
-in the same backend instance as the plugin that they extend, and may only extend
-a single plugin. Modules interact with their target plugin using the [extension
+in the same backend instance as the plugin or module that they extend, and may only extend a single plugin and modules from that plugin at a time.
+Modules interact with their target plugin or module using the [extension
 points](../architecture/05-extension-points.md) registered by the plugin, while also being
-able to depend on the [services](../architecture/03-services.md) of that plugin.
+able to depend on the [services](../architecture/03-services.md) of the target plugin.
 That last point is worth reiterating: injected `plugin` scoped services will be
 the exact
 same ones as the target plugin will receive later, i.e. they will be scoped
@@ -88,6 +88,9 @@ package, for example `@backstage/plugin-catalog-node`, and does not directly
 declare a dependency on the plugin package itself. This is to avoid a direct
 dependency and potentially cause duplicate installations of the plugin package,
 while duplicate installations of library packages should always be supported.
+Modules with extension points typically export their extension points from the same
+package however, since the extension points are generally only intended for internal
+customizations where package versions can be kept in sync.
 
 To create a Backend module, run `yarn new`, select `backend-module`, and fill out the rest of the prompts. This will create a new package at `plugins/<pluginId>-backend-module-<moduleId>`.
 
@@ -101,8 +104,8 @@ import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node'
 import { MyCustomProcessor } from './MyCustomProcessor';
 
 export const catalogModuleExampleCustomProcessor = createBackendModule({
-  moduleId: 'exampleCustomProcessor',
   pluginId: 'catalog',
+  moduleId: 'example-custom-processor',
   register(env) {
     env.registerInit({
       deps: {

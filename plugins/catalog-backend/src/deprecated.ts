@@ -18,6 +18,8 @@ import {
   locationSpecToMetadataName as _locationSpecToMetadataName,
   locationSpecToLocationEntity as _locationSpecToLocationEntity,
   processingResult as _processingResult,
+  type EntitiesSearchFilter as _EntitiesSearchFilter,
+  type EntityFilter as _EntityFilter,
   type DeferredEntity as _DeferredEntity,
   type EntityRelationSpec as _EntityRelationSpec,
   type CatalogProcessor as _CatalogProcessor,
@@ -33,6 +35,8 @@ import {
   type EntityProvider as _EntityProvider,
   type EntityProviderConnection as _EntityProviderConnection,
   type EntityProviderMutation as _EntityProviderMutation,
+  type AnalyzeOptions as _AnalyzeOptions,
+  type ScmLocationAnalyzer as _ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { type LocationSpec as _LocationSpec } from '@backstage/plugin-catalog-common';
 
@@ -51,6 +55,16 @@ export const locationSpecToLocationEntity = _locationSpecToLocationEntity;
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export const processingResult = _processingResult;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type EntitiesSearchFilter = _EntitiesSearchFilter;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type EntityFilter = _EntityFilter;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
@@ -141,3 +155,13 @@ export type EntityProviderMutation = _EntityProviderMutation;
  * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
  */
 export type LocationSpec = _LocationSpec;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type AnalyzeOptions = _AnalyzeOptions;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type ScmLocationAnalyzer = _ScmLocationAnalyzer;

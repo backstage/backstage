@@ -19,6 +19,7 @@ import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { HeaderTabs } from './HeaderTabs';
+import userEvent from '@testing-library/user-event';
 
 const mockTabs = [
   { id: 'overview', label: 'Overview' },
@@ -41,7 +42,7 @@ describe('<HeaderTabs />', () => {
       'false',
     );
 
-    rendered.getByText('Docs').click();
+    await userEvent.click(rendered.getByText('Docs'));
 
     expect(rendered.getByText('Docs').parentElement).toHaveAttribute(
       'aria-selected',
@@ -81,5 +82,17 @@ describe('<HeaderTabs />', () => {
 
     expect(rendered.getByText('Alarms')).toBeInTheDocument();
     expect(rendered.getByText('three new alarms')).toBeInTheDocument();
+  });
+
+  it('should trigger onChange only once', async () => {
+    const mockOnChange = jest.fn();
+    const user = userEvent.setup();
+
+    const rendered = await renderInTestApp(
+      <HeaderTabs tabs={mockTabs} onChange={mockOnChange} />,
+    );
+
+    await user.click(rendered.getByText('Docs'));
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
   });
 });

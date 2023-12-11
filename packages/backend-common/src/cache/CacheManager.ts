@@ -55,7 +55,9 @@ export class CacheManager {
   private readonly logger: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
+  private readonly useRedisSets: boolean;
   private readonly errorHandler: CacheManagerOptions['onError'];
+  private readonly defaultTtl?: number;
 
   /**
    * Creates a new {@link CacheManager} instance by reading from the `backend`
@@ -70,19 +72,31 @@ export class CacheManager {
     // If no `backend.cache` config is provided, instantiate the CacheManager
     // with an in-memory cache client.
     const store = config.getOptionalString('backend.cache.store') || 'memory';
+    const defaultTtl = config.getOptionalNumber('backend.cache.defaultTtl');
     const connectionString =
       config.getOptionalString('backend.cache.connection') || '';
+    const useRedisSets =
+      config.getOptionalBoolean('backend.cache.useRedisSets') ?? true;
     const logger = (options.logger || getRootLogger()).child({
       type: 'cacheManager',
     });
-    return new CacheManager(store, connectionString, logger, options.onError);
+    return new CacheManager(
+      store,
+      connectionString,
+      useRedisSets,
+      logger,
+      options.onError,
+      defaultTtl,
+    );
   }
 
   private constructor(
     store: string,
     connectionString: string,
+    useRedisSets: boolean,
     logger: LoggerService,
     errorHandler: CacheManagerOptions['onError'],
+    defaultTtl?: number,
   ) {
     if (!this.storeFactories.hasOwnProperty(store)) {
       throw new Error(`Unknown cache store: ${store}`);
@@ -90,7 +104,9 @@ export class CacheManager {
     this.logger = logger;
     this.store = store as keyof CacheManager['storeFactories'];
     this.connection = connectionString;
+    this.useRedisSets = useRedisSets;
     this.errorHandler = errorHandler;
+    this.defaultTtl = defaultTtl;
   }
 
   /**
@@ -105,7 +121,7 @@ export class CacheManager {
         const clientFactory = (options: CacheServiceOptions) => {
           const concreteClient = this.getClientWithTtl(
             pluginId,
-            options.defaultTtl,
+            options.defaultTtl ?? this.defaultTtl,
           );
 
           // Always provide an error handler to avoid stopping the process.
@@ -143,6 +159,7 @@ export class CacheManager {
       namespace: pluginId,
       ttl: defaultTtl,
       store: new KeyvRedis(this.connection),
+      useRedisSets: this.useRedisSets,
     });
   }
 

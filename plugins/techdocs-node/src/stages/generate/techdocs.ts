@@ -53,7 +53,7 @@ export class TechdocsGenerator implements GeneratorBase {
    * The default docker image (and version) used to generate content. Public
    * and static so that techdocs-node consumers can use the same version.
    */
-  public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.1';
+  public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.3';
   private readonly logger: Logger;
   private readonly containerRunner?: ContainerRunner;
   private readonly options: GeneratorConfig;
@@ -97,6 +97,7 @@ export class TechdocsGenerator implements GeneratorBase {
       logger: childLogger,
       logStream,
       siteOptions,
+      runAsDefaultUser,
     } = options;
 
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
@@ -171,6 +172,7 @@ export class TechdocsGenerator implements GeneratorBase {
             // write to, otherwise they will just fail trying to write to /
             envVars: { HOME: '/tmp' },
             pullImage: this.options.pullImage,
+            defaultUser: runAsDefaultUser,
           });
           childLogger.info(
             `Successfully generated docs from ${inputDir} into ${outputDir} using techdocs-container`,

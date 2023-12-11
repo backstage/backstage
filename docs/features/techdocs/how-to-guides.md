@@ -504,6 +504,18 @@ folder (/docs) or replace the content in this file.
 
 Done! You now have support for TechDocs in your own software template!
 
+### Prevent download of Google fonts
+
+If your Backstage instance does not have internet access, the generation will fail. TechDocs tries to download the Roboto font from Google. You can disable it by adding the following lines to mkdocs.yaml:
+
+```yaml
+theme:
+  name: material
+  font: false
+```
+
+> Note: The addition `name: material` is necessary. Otherwise it will not work
+
 ## How to enable iframes in TechDocs
 
 TechDocs uses the [DOMPurify](https://github.com/cure53/DOMPurify) library to
@@ -524,6 +536,39 @@ techdocs:
 
 This way, all iframes where the host in the src attribute is in the
 `sanitizer.allowedIframeHosts` list will be displayed.
+
+## How to render PlantUML diagram in TechDocs
+
+PlantUML allows you to create diagrams from plain text language. Each diagram description begins with the keyword - (@startXYZ and @endXYZ, depending on the kind of diagram). For UML Diagrams, Keywords @startuml & @enduml should be used. Further details for all types of diagrams can be found at [PlantUML Language Reference Guide](https://plantuml.com/guide).
+
+### UML Diagram Details:-
+
+#### Embedded PlantUML Diagram Example
+
+Here, the markdown file itself contains the diagram description.
+
+````md
+```plantuml
+@startuml
+title Login Sequence
+    ComponentA->ComponentB: Login Request
+    note right of ComponentB: ComponentB logs message
+    ComponentB->ComponentA: Login Response
+@enduml
+```
+````
+
+#### Referenced PlantUML Diagram Example
+
+Here, the markdown file refers to another file (`*.puml` or `*.pu`) which contains the diagram description.
+
+````md
+```plantuml
+!include umldiagram.puml
+```
+````
+
+Note: To refer external diagram files, we need to include the diagrams directory in the path. Please refer [`Dockerfile`](https://github.com/backstage/techdocs-container/blob/main/Dockerfile) for details.
 
 ## How to add Mermaid support in TechDocs
 

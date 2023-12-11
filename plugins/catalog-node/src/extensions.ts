@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import {
-  EntityProvider,
   CatalogProcessor,
+  EntitiesSearchFilter,
+  EntityProvider,
   PlaceholderResolver,
+  ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 
 /**
  * @alpha
@@ -39,4 +45,45 @@ export interface CatalogProcessingExtensionPoint {
 export const catalogProcessingExtensionPoint =
   createExtensionPoint<CatalogProcessingExtensionPoint>({
     id: 'catalog.processing',
+  });
+
+/**
+ * @alpha
+ */
+export interface CatalogAnalysisExtensionPoint {
+  addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void;
+}
+
+/**
+ * @alpha
+ */
+export const catalogAnalysisExtensionPoint =
+  createExtensionPoint<CatalogAnalysisExtensionPoint>({
+    id: 'catalog.analysis',
+  });
+
+/**
+ * @alpha
+ */
+export type CatalogPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
+
+/**
+ * @alpha
+ */
+export interface CatalogPermissionExtensionPoint {
+  addPermissionRules(
+    ...rules: Array<
+      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
+    >
+  ): void;
+}
+
+/**
+ * @alpha
+ */
+export const catalogPermissionExtensionPoint =
+  createExtensionPoint<CatalogPermissionExtensionPoint>({
+    id: 'catalog.permission',
   });

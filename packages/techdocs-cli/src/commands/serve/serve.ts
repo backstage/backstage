@@ -24,6 +24,7 @@ import { LogFunc, waitForSignal } from '../../lib/run';
 import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
+import { checkIfDockerIsOperational } from './utils';
 
 function findPreviewBundlePath(): string {
   try {
@@ -65,11 +66,21 @@ export default async function serve(opts: OptionValues) {
   const mkdocsExpectedDevAddr = opts.docker
     ? mkdocsDockerAddr
     : mkdocsLocalAddr;
+  const mkdocsConfigFileName = opts.mkdocsConfigFileName;
+  const siteName = opts.siteName;
 
-  const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml(
-    './',
-    opts.siteName,
-  );
+  const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml('./', {
+    name: siteName,
+    mkdocsConfigFileName,
+  });
+
+  // Validate that Docker is up and running
+  if (opts.docker) {
+    const isDockerOperational = await checkIfDockerIsOperational(logger);
+    if (!isDockerOperational) {
+      return;
+    }
+  }
 
   let mkdocsServerHasStarted = false;
   const mkdocsLogFunc: LogFunc = data => {
@@ -104,6 +115,10 @@ export default async function serve(opts: OptionValues) {
     useDocker: opts.docker,
     stdoutLogFunc: mkdocsLogFunc,
     stderrLogFunc: mkdocsLogFunc,
+    mkdocsConfigFileName: mkdocsYmlPath,
+    mkdocsParameterClean: opts.mkdocsParameterClean,
+    mkdocsParameterDirtyReload: opts.mkdocsParameterDirtyReload,
+    mkdocsParameterStrict: opts.mkdocsParameterStrict,
   });
 
   // Wait until mkdocs server has started so that Backstage starts with docs loaded

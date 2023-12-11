@@ -20,7 +20,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import type { RJSFValidationError } from '@rjsf/utils';
 import { JsonValue } from '@backstage/types';
-import { NextFieldExtensionComponentProps } from '../../extensions';
+import { FieldExtensionComponentProps } from '../../../extensions';
 import { LayoutTemplate } from '../../../layouts';
 
 describe('Stepper', () => {
@@ -112,10 +112,58 @@ describe('Stepper', () => {
     );
   });
 
+  it('should remember the state of the form when cycling through the pages by directly clicking on the step labels', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+          },
+        },
+        {
+          title: 'Step 2',
+          schema: {
+            properties: {
+              description: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      ],
+      title: 'React JSON Schema Form Test',
+    };
+
+    const { getByRole, getByLabelText } = await renderInTestApp(
+      <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
+    );
+
+    await fireEvent.change(getByRole('textbox', { name: 'name' }), {
+      target: { value: 'im a test value' },
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByLabelText('Step 1'));
+    });
+
+    expect(getByRole('textbox', { name: 'name' })).toHaveValue(
+      'im a test value',
+    );
+  });
+
   it('should merge nested formData correctly in multiple steps', async () => {
     const Repo = ({
       onChange,
-    }: NextFieldExtensionComponentProps<{ repository: string }, any>) => (
+    }: FieldExtensionComponentProps<{ repository: string }, any>) => (
       <input
         aria-label="repo"
         type="text"
@@ -126,7 +174,7 @@ describe('Stepper', () => {
 
     const Owner = ({
       onChange,
-    }: NextFieldExtensionComponentProps<{ owner: string }, any>) => (
+    }: FieldExtensionComponentProps<{ owner: string }, any>) => (
       <input
         aria-label="owner"
         type="text"
@@ -273,12 +321,12 @@ describe('Stepper', () => {
       />,
     );
 
-    await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Review' }));
-
-      expect(getByRole('progressbar')).toBeInTheDocument();
-      expect(getByRole('button', { name: 'Review' })).toBeDisabled();
+    act(() => {
+      fireEvent.click(getByRole('button', { name: 'Review' }));
     });
+
+    expect(getByRole('progressbar')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Review' })).toBeDisabled();
   });
 
   it('should transform default error message', async () => {
@@ -312,7 +360,7 @@ describe('Stepper', () => {
         manifest={manifest}
         extensions={[]}
         onCreate={jest.fn()}
-        FormProps={{ transformErrors }}
+        formProps={{ transformErrors }}
       />,
     );
 

@@ -17,7 +17,7 @@
 import {
   createServiceBuilder,
   loadBackendConfig,
-  SingleHostDiscovery,
+  HostDiscovery,
 } from '@backstage/backend-common';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import { Server } from 'http';
@@ -36,7 +36,7 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'todo-list-backend' });
   logger.debug('Starting application server...');
   const config = await loadBackendConfig({ logger, argv: process.argv });
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const discovery = HostDiscovery.fromConfig(config);
   const router = await createRouter({
     logger,
     identity: DefaultIdentityClient.create({

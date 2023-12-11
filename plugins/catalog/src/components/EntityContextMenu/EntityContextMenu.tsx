@@ -24,23 +24,23 @@ import {
   Popover,
   Tooltip,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import MoreVert from '@material-ui/icons/MoreVert';
 import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
-import { BackstageTheme } from '@backstage/theme';
 import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
 import { useApi, alertApiRef } from '@backstage/core-plugin-api';
+import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => {
+  (theme: Theme) => {
     return {
       button: {
         color: theme.page.fontColor,
@@ -88,16 +88,16 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   };
 
   const alertApi = useApi(alertApiRef);
-
-  const copyToClipboard = useCallback(() => {
-    window.navigator.clipboard.writeText(window.location.toString()).then(() =>
+  const [copyState, copyToClipboard] = useCopyToClipboard();
+  useEffect(() => {
+    if (!copyState.error && copyState.value) {
       alertApi.post({
         message: 'Copied!',
         severity: 'info',
         display: 'transient',
-      }),
-    );
-  }, [alertApi]);
+      });
+    }
+  }, [copyState, alertApi]);
 
   const extraItems = UNSTABLE_extraContextMenuItems && [
     ...UNSTABLE_extraContextMenuItems.map(item => (
@@ -164,7 +164,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
           <MenuItem
             onClick={() => {
               onClose();
-              copyToClipboard();
+              copyToClipboard(window.location.toString());
             }}
           >
             <ListItemIcon>

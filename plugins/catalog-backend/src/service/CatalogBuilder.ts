@@ -37,7 +37,9 @@ import lodash, { keyBy } from 'lodash';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
+  EntitiesSearchFilter,
   EntityProvider,
+  ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
   AnnotateLocationEntityProcessor,
@@ -57,7 +59,7 @@ import {
   yamlPlaceholderResolver,
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
-import { LocationAnalyzer, ScmLocationAnalyzer } from '../ingestion/types';
+import { LocationAnalyzer } from '../ingestion/types';
 import { CatalogProcessingEngine } from '../processing';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
@@ -78,7 +80,6 @@ import { Config, readDurationFromConfig } from '@backstage/config';
 import { Logger } from 'winston';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
-import { EntitiesSearchFilter } from '../catalog/types';
 import { permissionRules as catalogPermissionRules } from '../permissions/rules';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import {

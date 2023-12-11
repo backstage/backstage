@@ -65,6 +65,5 @@ export async function command(opts: OptionValues): Promise<void> {
   return buildPackage({
     outputs,
     minify: Boolean(opts.minify),
-    useApiExtractor: Boolean(opts.experimentalTypeBuild),
   });
 }

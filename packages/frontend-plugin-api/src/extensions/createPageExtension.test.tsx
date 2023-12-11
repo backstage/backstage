@@ -15,9 +15,17 @@
  */
 
 import React from 'react';
+import { useAnalytics } from '@backstage/core-plugin-api';
+import { waitFor } from '@testing-library/react';
 import { PortableSchema } from '../schema';
 import { coreExtensionData, createExtensionInput } from '../wiring';
 import { createPageExtension } from './createPageExtension';
+import { createExtensionTester } from '@backstage/frontend-test-utils';
+
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useAnalytics: jest.fn(),
+}));
 
 describe('createPageExtension', () => {
   it('creates the extension properly', () => {
@@ -28,14 +36,15 @@ describe('createPageExtension', () => {
 
     expect(
       createPageExtension({
-        id: 'test',
+        name: 'test',
         configSchema,
         loader: async () => <div />,
       }),
     ).toEqual({
-      $$type: '@backstage/Extension',
-      id: 'test',
-      at: 'core.routes/routes',
+      $$type: '@backstage/ExtensionDefinition',
+      name: 'test',
+      kind: 'page',
+      attachTo: { id: 'core/routes', input: 'routes' },
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},
@@ -49,8 +58,8 @@ describe('createPageExtension', () => {
 
     expect(
       createPageExtension({
-        id: 'test',
-        at: 'other/place',
+        name: 'test',
+        attachTo: { id: 'other', input: 'place' },
         disabled: true,
         configSchema,
         inputs: {
@@ -61,9 +70,10 @@ describe('createPageExtension', () => {
         loader: async () => <div />,
       }),
     ).toEqual({
-      $$type: '@backstage/Extension',
-      id: 'test',
-      at: 'other/place',
+      $$type: '@backstage/ExtensionDefinition',
+      name: 'test',
+      kind: 'page',
+      attachTo: { id: 'other', input: 'place' },
       configSchema: expect.anything(),
       disabled: true,
       inputs: {
@@ -81,14 +91,15 @@ describe('createPageExtension', () => {
 
     expect(
       createPageExtension({
-        id: 'test',
+        name: 'test',
         defaultPath: '/here',
         loader: async () => <div />,
       }),
     ).toEqual({
-      $$type: '@backstage/Extension',
-      id: 'test',
-      at: 'core.routes/routes',
+      $$type: '@backstage/ExtensionDefinition',
+      name: 'test',
+      kind: 'page',
+      attachTo: { id: 'core/routes', input: 'routes' },
       configSchema: expect.anything(),
       disabled: false,
       inputs: {},
@@ -99,5 +110,27 @@ describe('createPageExtension', () => {
       },
       factory: expect.any(Function),
     });
+  });
+
+  it('capture page view event in analytics', async () => {
+    const captureEvent = jest.fn();
+
+    (useAnalytics as jest.Mock).mockReturnValue({
+      captureEvent,
+    });
+
+    createExtensionTester(
+      createPageExtension({
+        defaultPath: '/',
+        loader: async () => <div>Component</div>,
+      }),
+    ).render();
+
+    await waitFor(() =>
+      expect(captureEvent).toHaveBeenCalledWith(
+        '_ROUTABLE-EXTENSION-RENDERED',
+        '',
+      ),
+    );
   });
 });

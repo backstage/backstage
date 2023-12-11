@@ -43,7 +43,7 @@ export const columnFactories = Object.freeze({
 
     return {
       title: 'Name',
-      field: 'resolved.name',
+      field: 'resolved.entityRef',
       highlight: true,
       customSort({ entity: entity1 }, { entity: entity2 }) {
         // TODO: We could implement this more efficiently by comparing field by field.
@@ -54,7 +54,6 @@ export const columnFactories = Object.freeze({
         <EntityRefLink
           entityRef={entity}
           defaultKind={options?.defaultKind || 'Component'}
-          title={entity.metadata?.title}
         />
       ),
     };
@@ -101,11 +100,15 @@ export const columnFactories = Object.freeze({
       ),
     };
   },
-  createSpecTypeColumn(): TableColumn<CatalogTableRow> {
+  createSpecTypeColumn(
+    options: {
+      hidden: boolean;
+    } = { hidden: false },
+  ): TableColumn<CatalogTableRow> {
     return {
       title: 'Type',
       field: 'entity.spec.type',
-      hidden: true,
+      hidden: options.hidden,
       width: 'auto',
     };
   },

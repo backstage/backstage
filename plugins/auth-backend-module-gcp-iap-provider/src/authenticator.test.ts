@@ -29,7 +29,7 @@ jest.mock('./helpers', () => ({
 
 describe('GcpIapProvider', () => {
   it('should find default JWT header', async () => {
-    const ctx = await gcpIapAuthenticator.initialize({
+    const ctx = gcpIapAuthenticator.initialize({
       config: mockServices.rootConfig({ data: { audience: 'my-audience' } }),
     });
     await expect(
@@ -50,7 +50,7 @@ describe('GcpIapProvider', () => {
 
   it('should find custom JWT header', async () => {
     const jwtHeader = 'x-custom-header';
-    const ctx = await gcpIapAuthenticator.initialize({
+    const ctx = gcpIapAuthenticator.initialize({
       config: mockServices.rootConfig({
         data: { audience: 'my-audience', jwtHeader },
       }),
@@ -70,7 +70,7 @@ describe('GcpIapProvider', () => {
   });
 
   it('should throw if header is missing', async () => {
-    const ctx = await gcpIapAuthenticator.initialize({
+    const ctx = gcpIapAuthenticator.initialize({
       config: mockServices.rootConfig({
         data: { audience: 'my-audience' },
       }),

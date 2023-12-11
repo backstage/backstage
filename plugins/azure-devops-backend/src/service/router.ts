@@ -19,7 +19,6 @@ import {
   PullRequestOptions,
   PullRequestStatus,
 } from '@backstage/plugin-azure-devops-common';
-import { WebApi, getPersonalAccessTokenHandler } from 'azure-devops-node-api';
 
 import { AzureDevOpsApi } from '../api';
 import { Config } from '@backstage/config';
@@ -43,18 +42,11 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, reader } = options;
-  const config = options.config.getConfig('azureDevOps');
-
-  const token = config.getString('token');
-  const host = config.getString('host');
-  const organization = config.getString('organization');
-
-  const authHandler = getPersonalAccessTokenHandler(token);
-  const webApi = new WebApi(`https://${host}/${organization}`, authHandler);
+  const { logger, reader, config } = options;
 
   const azureDevOpsApi =
-    options.azureDevOpsApi || new AzureDevOpsApi(logger, webApi, reader);
+    options.azureDevOpsApi ||
+    AzureDevOpsApi.fromConfig(config, { logger, urlReader: reader });
 
   const pullRequestsDashboardProvider =
     await PullRequestsDashboardProvider.create(logger, azureDevOpsApi);
@@ -83,10 +75,14 @@ export async function createRouter(
   router.get('/builds/:projectName/:repoId', async (req, res) => {
     const { projectName, repoId } = req.params;
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+    const host = req.query.host?.toString();
+    const org = req.query.org?.toString();
     const buildList = await azureDevOpsApi.getBuildList(
       projectName,
       repoId,
       top,
+      host,
+      org,
     );
     res.status(200).json(buildList);
   });
@@ -95,11 +91,14 @@ export async function createRouter(
     const { projectName, repoName } = req.params;
 
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
-
+    const host = req.query.host?.toString();
+    const org = req.query.org?.toString();
     const gitRepository = await azureDevOpsApi.getRepoBuilds(
       projectName,
       repoName,
       top,
+      host,
+      org,
     );
 
     res.status(200).json(gitRepository);
@@ -107,7 +106,14 @@ export async function createRouter(
 
   router.get('/git-tags/:projectName/:repoName', async (req, res) => {
     const { projectName, repoName } = req.params;
-    const gitTags = await azureDevOpsApi.getGitTags(projectName, repoName);
+    const host = req.query.host?.toString();
+    const org = req.query.org?.toString();
+    const gitTags = await azureDevOpsApi.getGitTags(
+      projectName,
+      repoName,
+      host,
+      org,
+    );
     res.status(200).json(gitTags);
   });
 
@@ -115,7 +121,8 @@ export async function createRouter(
     const { projectName, repoName } = req.params;
 
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
-
+    const host = req.query.host?.toString();
+    const org = req.query.org?.toString();
     const status = req.query.status
       ? Number(req.query.status)
       : PullRequestStatus.Active;
@@ -129,6 +136,8 @@ export async function createRouter(
       projectName,
       repoName,
       pullRequestOptions,
+      host,
+      org,
     );
 
     res.status(200).json(gitPullRequest);
@@ -166,9 +175,13 @@ export async function createRouter(
     '/build-definitions/:projectName/:definitionName',
     async (req, res) => {
       const { projectName, definitionName } = req.params;
+      const host = req.query.host?.toString();
+      const org = req.query.org?.toString();
       const buildDefinitionList = await azureDevOpsApi.getBuildDefinitions(
         projectName,
         definitionName,
+        host,
+        org,
       );
       res.status(200).json(buildDefinitionList);
     },
@@ -179,11 +192,15 @@ export async function createRouter(
     const repoName = req.query.repoName?.toString();
     const definitionName = req.query.definitionName?.toString();
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+    const host = req.query.host?.toString();
+    const org = req.query.org?.toString();
     const builds = await azureDevOpsApi.getBuildRuns(
       projectName,
       top,
       repoName,
       definitionName,
+      host,
+      org,
     );
     res.status(200).json(builds);
   });
@@ -195,10 +212,14 @@ export async function createRouter(
   });
 
   router.get('/readme/:projectName/:repoName', async (req, res) => {
+    const host =
+      req.query.host?.toString() ?? config.getString('azureDevOps.host');
+    const org =
+      req.query.org?.toString() ?? config.getString('azureDevOps.organization');
     const { projectName, repoName } = req.params;
     const readme = await azureDevOpsApi.getReadme(
       host,
-      organization,
+      org,
       projectName,
       repoName,
     );

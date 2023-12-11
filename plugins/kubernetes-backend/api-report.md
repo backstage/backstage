@@ -6,16 +6,18 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import type { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
+import { CustomResourcesByEntity } from '@backstage/plugin-kubernetes-node';
 import { Duration } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import type { JsonObject } from '@backstage/types';
 import type { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
+import { KubernetesObjectsByEntity } from '@backstage/plugin-kubernetes-node';
+import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger } from 'winston';
-import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RequestHandler } from 'http-proxy-middleware';
@@ -101,11 +103,7 @@ export interface CustomResource extends ObjectToFetch {
   objectType: 'customresources';
 }
 
-// @public (undocumented)
-export interface CustomResourcesByEntity extends KubernetesObjectsByEntity {
-  // (undocumented)
-  customResources: CustomResourceMatcher[];
-}
+export { CustomResourcesByEntity };
 
 // @public (undocumented)
 export const DEFAULT_OBJECTS: ObjectToFetch[];
@@ -209,6 +207,10 @@ export class KubernetesBuilder {
   // (undocumented)
   protected buildServiceLocator(
     method: ServiceLocatorMethod,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesServiceLocator;
+  // (undocumented)
+  protected buildSingleTenantServiceLocator(
     clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
   // (undocumented)
@@ -316,25 +318,9 @@ export interface KubernetesFetcher {
   ): Promise<FetchResponseWrapper>;
 }
 
-// @public (undocumented)
-export interface KubernetesObjectsByEntity {
-  // (undocumented)
-  auth: KubernetesRequestAuth;
-  // (undocumented)
-  entity: Entity;
-}
+export { KubernetesObjectsByEntity };
 
-// @public (undocumented)
-export interface KubernetesObjectsProvider {
-  // (undocumented)
-  getCustomResourcesByEntity(
-    customResourcesByEntity: CustomResourcesByEntity,
-  ): Promise<ObjectsByEntityResponse>;
-  // (undocumented)
-  getKubernetesObjectsByEntity(
-    kubernetesObjectsByEntity: KubernetesObjectsByEntity,
-  ): Promise<ObjectsByEntityResponse>;
-}
+export { KubernetesObjectsProvider };
 
 // @public (undocumented)
 export interface KubernetesObjectsProviderOptions {
@@ -359,6 +345,7 @@ export type KubernetesObjectTypes =
   | 'configmaps'
   | 'deployments'
   | 'limitranges'
+  | 'resourcequotas'
   | 'replicasets'
   | 'horizontalpodautoscalers'
   | 'jobs'
@@ -409,7 +396,7 @@ export interface ObjectFetchParams {
   // (undocumented)
   customResources: CustomResource[];
   // (undocumented)
-  labelSelector: string;
+  labelSelector?: string;
   // (undocumented)
   namespace?: string;
   // (undocumented)
@@ -469,7 +456,7 @@ export class ServiceAccountStrategy implements AuthenticationStrategy {
 }
 
 // @public (undocumented)
-export type ServiceLocatorMethod = 'multiTenant' | 'http';
+export type ServiceLocatorMethod = 'multiTenant' | 'singleTenant' | 'http';
 
 // @public (undocumented)
 export interface ServiceLocatorRequestContext {

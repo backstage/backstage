@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,39 +14,33 @@
  * limitations under the License.
  */
 
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import {
-  PermissionApi,
-  permissionApiRef,
-} from '@backstage/plugin-permission-react';
 import React from 'react';
-
-import { PlaylistApi, playlistApiRef } from '../../api';
-import { rootRouteRef } from '../../routes';
+import { renderInTestApp } from '@backstage/test-utils';
+import { useOutlet } from 'react-router-dom';
 import { PlaylistIndexPage } from './PlaylistIndexPage';
 
-const playlistApi: Partial<PlaylistApi> = {
-  getAllPlaylists: async () => [],
-};
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useOutlet: jest.fn().mockReturnValue('Route Children'),
+}));
 
-const permissionApi: Partial<PermissionApi> = {
-  authorize: async () => ({ result: AuthorizeResult.ALLOW }),
-};
+jest.mock('./DefaultPlaylistIndexPage', () => ({
+  DefaultPlaylistIndexPage: jest
+    .fn()
+    .mockReturnValue('DefaultPlaylistIndexPage'),
+}));
 
 describe('PlaylistIndexPage', () => {
-  it('should render', async () => {
-    const rendered = await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [permissionApiRef, permissionApi],
-          [playlistApiRef, playlistApi],
-        ]}
-      >
-        <PlaylistIndexPage />
-      </TestApiProvider>,
-      { mountedRoutes: { '/playlists': rootRouteRef } },
-    );
-    expect(rendered.getByText('Playlists')).toBeInTheDocument();
+  it('renders provided router element', async () => {
+    const { getByText } = await renderInTestApp(<PlaylistIndexPage />);
+
+    expect(getByText('Route Children')).toBeInTheDocument();
+  });
+
+  it('renders DefaultPlaylistIndexPage when no router children are provided', async () => {
+    (useOutlet as jest.Mock).mockReturnValueOnce(null);
+    const { getByText } = await renderInTestApp(<PlaylistIndexPage />);
+
+    expect(getByText('DefaultPlaylistIndexPage')).toBeInTheDocument();
   });
 });

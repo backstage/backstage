@@ -14,10 +14,41 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
+import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
+import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
+import homePlugin, {
+  titleExtensionDataRef,
+} from '@backstage/plugin-home/alpha';
+
+import {
+  coreExtensionData,
+  createExtension,
+  createApiExtension,
+  createExtensionOverrides,
+} from '@backstage/frontend-plugin-api';
+import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
+import { homePage } from './HomePage';
+import { collectLegacyRoutes } from '@backstage/core-compat-api';
+import { FlatRoutes } from '@backstage/core-app-api';
+import { Route } from 'react-router';
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import {
+  createApiFactory,
+  configApiRef,
+  SignInPageProps,
+} from '@backstage/core-plugin-api';
+import {
+  ScmAuth,
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
+import { createSignInPageExtension } from '@backstage/frontend-plugin-api';
+import { SignInPage } from '@backstage/core-components';
 
 /*
 
@@ -48,15 +79,64 @@ TODO:
 
 /* app.tsx */
 
+const homePageExtension = createExtension({
+  name: 'myhomepage',
+  attachTo: { id: 'home', input: 'props' },
+  output: {
+    children: coreExtensionData.reactElement,
+    title: titleExtensionDataRef,
+  },
+  factory() {
+    return { children: homePage, title: 'just a title' };
+  },
+});
+
+const signInPage = createSignInPageExtension({
+  name: 'guest',
+  loader: async () => (props: SignInPageProps) =>
+    <SignInPage {...props} providers={['guest']} />,
+});
+
+const scmAuthExtension = createApiExtension({
+  factory: ScmAuth.createDefaultApiFactory(),
+});
+
+const scmIntegrationApi = createApiExtension({
+  factory: createApiFactory({
+    api: scmIntegrationsApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+  }),
+});
+
+const collectedLegacyPlugins = collectLegacyRoutes(
+  <FlatRoutes>
+    <Route path="/catalog-import" element={<CatalogImportPage />} />
+  </FlatRoutes>,
+);
+
 const app = createApp({
-  plugins: [graphiqlPlugin, pagesPlugin, techRadarPlugin],
+  features: [
+    graphiqlPlugin,
+    pagesPlugin,
+    techRadarPlugin,
+    techdocsPlugin,
+    userSettingsPlugin,
+    homePlugin,
+    ...collectedLegacyPlugins,
+    createExtensionOverrides({
+      extensions: [
+        homePageExtension,
+        scmAuthExtension,
+        scmIntegrationApi,
+        signInPage,
+        notFoundErrorPage,
+      ],
+    }),
+  ],
+  /* Handled through config instead */
   // bindRoutes({ bind }) {
-  //   bind(catalogPlugin.externalRoutes, {
-  //     createComponent: scaffolderPlugin.routes.root,
-  //   });
-  //   bind(scaffolderPlugin.externalRoutes, {
-  //     registerComponent: catalogImportPlugin.routes.importPage,
-  //   });
+  //   bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });
   // },
 });
 

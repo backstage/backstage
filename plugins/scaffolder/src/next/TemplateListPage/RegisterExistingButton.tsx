@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -23,6 +22,7 @@ import { Link as RouterLink, LinkProps } from 'react-router-dom';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
+import { Theme } from '@material-ui/core';
 
 /**
  * Properties for {@link RegisterExistingButton}
@@ -42,7 +42,7 @@ export const RegisterExistingButton = (props: RegisterExistingButtonProps) => {
   const { allowed } = usePermission({
     permission: catalogEntityCreatePermission,
   });
-  const isXSScreen = useMediaQuery<BackstageTheme>(theme =>
+  const isXSScreen = useMediaQuery<Theme>(theme =>
     theme.breakpoints.down('xs'),
   );
 

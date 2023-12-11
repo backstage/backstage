@@ -26,14 +26,15 @@ describe('createApiExtension', () => {
       factory: () => ({ foo: 'bar' }),
     });
 
-    const extension = createApiExtension({
-      factory,
-    });
-
-    expect(extension).toEqual({
-      $$type: '@backstage/Extension',
-      id: 'apis.test',
-      at: 'core/apis',
+    expect(
+      createApiExtension({
+        factory,
+      }),
+    ).toEqual({
+      $$type: '@backstage/ExtensionDefinition',
+      kind: 'api',
+      namespace: 'test',
+      attachTo: { id: 'core', input: 'apis' },
       disabled: false,
       configSchema: undefined,
       inputs: {},
@@ -65,9 +66,10 @@ describe('createApiExtension', () => {
     });
     // boo
     expect(extension).toEqual({
-      $$type: '@backstage/Extension',
-      id: 'apis.test',
-      at: 'core/apis',
+      $$type: '@backstage/ExtensionDefinition',
+      kind: 'api',
+      namespace: 'test',
+      attachTo: { id: 'core', input: 'apis' },
       disabled: false,
       configSchema: undefined,
       inputs: {},

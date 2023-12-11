@@ -16,7 +16,7 @@ import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const EntityPagerDutyCard: (
   props: EntityPagerDutyCardProps,
 ) => JSX_2.Element;
@@ -27,7 +27,7 @@ export type EntityPagerDutyCardProps = {
   disableChangeEvents?: boolean;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const HomePagePagerDutyCard: (
   props: CardExtensionProps<HomePagePagerDutyCardProps>,
 ) => JSX_2.Element;
@@ -138,7 +138,7 @@ export type PagerDutyClientApiDependencies = {
   fetchApi: FetchApi;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type PagerDutyEntity = {
   integrationKey?: string;
   serviceId?: string;
@@ -176,7 +176,7 @@ export type PagerDutyOnCallsResponse = {
   oncalls: PagerDutyOnCall[];
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 const pagerDutyPlugin: BackstagePlugin<{}, {}>;
 export { pagerDutyPlugin };
 export { pagerDutyPlugin as plugin };

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -34,7 +33,7 @@ interface IErrorPageProps {
 /** @public */
 export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     container: {
       padding: theme.spacing(8),

@@ -659,6 +659,7 @@ export const createPublishGithubPullRequestAction: (
     reviewers?: string[] | undefined;
     teamReviewers?: string[] | undefined;
     commitMessage?: string | undefined;
+    update?: boolean | undefined;
   },
   JsonObject
 >;
@@ -679,6 +680,36 @@ export function createPublishGitlabAction(options: {
     gitAuthorEmail?: string | undefined;
     setUserAsOwner?: boolean | undefined;
     topics?: string[] | undefined;
+    settings?:
+      | {
+          path?: string | undefined;
+          auto_devops_enabled?: boolean | undefined;
+          ci_config_path?: string | undefined;
+          description?: string | undefined;
+          topics?: string[] | undefined;
+          visibility?: 'internal' | 'private' | 'public' | undefined;
+        }
+      | undefined;
+    branches?:
+      | {
+          name: string;
+          protect?: boolean | undefined;
+          create?: boolean | undefined;
+          ref?: string | undefined;
+        }[]
+      | undefined;
+    projectVariables?:
+      | {
+          key: string;
+          value: string;
+          description?: string | undefined;
+          variable_type?: string | undefined;
+          protected?: boolean | undefined;
+          masked?: boolean | undefined;
+          raw?: boolean | undefined;
+          environment_scope?: string | undefined;
+        }[]
+      | undefined;
   },
   JsonObject
 >;
@@ -773,11 +804,11 @@ export class DatabaseTaskStore implements TaskStore {
     >,
   ): Promise<void>;
   // (undocumented)
-  claimTask(): Promise<SerializedTask | undefined>;
+  claimTask(): Promise<SerializedTask_2 | undefined>;
   // (undocumented)
   completeTask(options: {
     taskId: string;
-    status: TaskStatus;
+    status: TaskStatus_2;
     eventBody: JsonObject;
   }): Promise<void>;
   // (undocumented)
@@ -795,16 +826,16 @@ export class DatabaseTaskStore implements TaskStore {
     >,
   ): Promise<void>;
   // (undocumented)
-  getTask(taskId: string): Promise<SerializedTask>;
+  getTask(taskId: string): Promise<SerializedTask_2>;
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
   list(options: { createdBy?: string }): Promise<{
-    tasks: SerializedTask[];
+    tasks: SerializedTask_2[];
   }>;
   // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{
-    events: SerializedTaskEvent[];
+    events: SerializedTaskEvent_2[];
   }>;
   // (undocumented)
   listStaleTasks(options: { timeoutS: number }): Promise<{
@@ -845,9 +876,9 @@ export interface RouterOptions {
   // (undocumented)
   actions?: TemplateAction_2<any, any>[];
   // (undocumented)
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   // (undocumented)
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   // (undocumented)
   catalogClient: CatalogApi;
   concurrentTasksLimit?: number;
@@ -870,7 +901,7 @@ export interface RouterOptions {
   // (undocumented)
   scheduler?: PluginTaskScheduler;
   // (undocumented)
-  taskBroker?: TaskBroker;
+  taskBroker?: TaskBroker_2;
   // @deprecated (undocumented)
   taskWorkers?: number;
 }

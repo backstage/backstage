@@ -29,7 +29,7 @@ import { GkeEntityProvider } from '../providers/GkeEntityProvider';
  */
 export const catalogModuleGcpGkeEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'gcpGkeEntityProvider',
+  moduleId: 'gcp-gke-entity-provider',
   register(env) {
     env.registerInit({
       deps: {

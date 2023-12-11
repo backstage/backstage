@@ -19,6 +19,9 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
+  LogoElements,
+  NavTarget,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import {
@@ -29,7 +32,6 @@ import {
   SidebarDivider,
   SidebarItem,
 } from '@backstage/core-components';
-import { GraphiQLIcon } from '@backstage/plugin-graphiql';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import LogoIcon from '../../../app/src/components/Root/LogoIcon';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -50,40 +52,60 @@ const useSidebarLogoStyles = makeStyles({
   },
 });
 
-const SidebarLogo = () => {
+const SidebarLogo = (props: LogoElements) => {
   const classes = useSidebarLogoStyles();
   const { isOpen } = useSidebarOpenState();
 
   return (
     <div className={classes.root}>
       <Link to="/" underline="none" className={classes.link} aria-label="Home">
-        {isOpen ? <LogoFull /> : <LogoIcon />}
+        {isOpen
+          ? props?.logoFull ?? <LogoFull />
+          : props?.logoIcon ?? <LogoIcon />}
       </Link>
     </div>
   );
 };
 
+const SidebarNavItem = (props: NavTarget) => {
+  const { icon: Icon, title, routeRef } = props;
+  const to = useRouteRef(routeRef)();
+  // TODO: Support opening modal, for example, the search one
+  return <SidebarItem to={to} icon={Icon} text={title} />;
+};
+
 export const CoreNav = createExtension({
-  id: 'core.nav',
-  at: 'core.layout/nav',
+  namespace: 'core',
+  name: 'nav',
+  attachTo: { id: 'core/layout', input: 'nav' },
   inputs: {
     items: createExtensionInput({
-      path: coreExtensionData.navTarget,
+      target: coreExtensionData.navTarget,
     }),
+    logos: createExtensionInput(
+      {
+        elements: coreExtensionData.logoElements,
+      },
+      {
+        singleton: true,
+        optional: true,
+      },
+    ),
   },
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory({ bind }) {
-    bind({
-      // TODO: set base path using the logic from AppRouter
+  factory({ inputs }) {
+    return {
       element: (
         <Sidebar>
-          <SidebarLogo />
+          <SidebarLogo {...inputs.logos?.output.elements} />
           <SidebarDivider />
-          <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
+          {inputs.items.map((item, index) => (
+            <SidebarNavItem {...item.output.target} key={index} />
+          ))}
         </Sidebar>
       ),
-    });
+    };
   },
 });

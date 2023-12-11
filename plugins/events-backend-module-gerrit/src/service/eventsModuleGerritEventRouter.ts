@@ -27,7 +27,7 @@ import { GerritEventRouter } from '../router/GerritEventRouter';
  */
 export const eventsModuleGerritEventRouter = createBackendModule({
   pluginId: 'events',
-  moduleId: 'gerritEventRouter',
+  moduleId: 'gerrit-event-router',
   register(env) {
     env.registerInit({
       deps: {

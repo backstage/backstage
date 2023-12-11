@@ -16,14 +16,14 @@
 import { makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
 import type { LayoutOptions } from '@backstage/plugin-scaffolder-react';
-import { NextFieldExtensionOptions } from '@backstage/plugin-scaffolder-react/alpha';
+import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { TemplateDirectoryAccess } from '../../lib/filesystem';
-import { DirectoryEditorProvider } from '../../components/TemplateEditorPage/DirectoryEditorContext';
-import { DryRunProvider } from '../../components/TemplateEditorPage/DryRunContext';
-import { DryRunResults } from '../../components/TemplateEditorPage/DryRunResults';
-import { TemplateEditorBrowser } from '../../components/TemplateEditorPage/TemplateEditorBrowser';
+import { DirectoryEditorProvider } from './DirectoryEditorContext';
+import { TemplateEditorBrowser } from './TemplateEditorBrowser';
+import { DryRunProvider } from './DryRunContext';
+import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 import { TemplateEditorForm } from './TemplateEditorForm';
-import { TemplateEditorTextArea } from '../../components/TemplateEditorPage/TemplateEditorTextArea';
+import { DryRunResults } from './DryRunResults';
 
 const useStyles = makeStyles({
   // Reset and fix sizing to make sure scrolling behaves correctly
@@ -57,7 +57,7 @@ const useStyles = makeStyles({
 
 export const TemplateEditor = (props: {
   directory: TemplateDirectoryAccess;
-  fieldExtensions?: NextFieldExtensionOptions<any, any>[];
+  fieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
   onClose?: () => void;
 }) => {

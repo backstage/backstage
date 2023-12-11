@@ -1,0 +1,10 @@
+---
+title: HCP Consul
+author: Hashicorp
+authorUrl: https://www.hashicorp.com/
+category: Infrastructure
+description: View your HCP Consul clusters, services, instances in Backstage.
+documentation: https://github.com/hashicorp-forge/backstage-plugin-hcp-consul/tree/main
+iconUrl: /img/hcp-consul.svg
+npmPackageName: '@hashicorp/plugin-hcp-consul'
+addedDate: '2023-11-24'

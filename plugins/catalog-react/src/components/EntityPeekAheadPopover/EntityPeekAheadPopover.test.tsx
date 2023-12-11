@@ -49,7 +49,7 @@ const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
 describe('<EntityPeekAheadPopover/>', () => {
   it('renders all owners', async () => {
-    renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityPeekAheadPopover entityRef="component:default/service1">
           <Button data-testid="popover1">s1</Button>
@@ -66,12 +66,12 @@ describe('<EntityPeekAheadPopover/>', () => {
     );
     expect(screen.getByText('s1')).toBeInTheDocument();
     expect(screen.queryByText('service1')).toBeNull();
-    user.hover(screen.getByTestId('popover1'));
+    await user.hover(screen.getByTestId('popover1'));
     expect(await screen.findByText('service1')).toBeInTheDocument();
 
     expect(screen.getByText('s2')).toBeInTheDocument();
     expect(screen.queryByText('service2')).toBeNull();
-    user.hover(screen.getByTestId('popover2'));
+    await user.hover(screen.getByTestId('popover2'));
     expect(
       await screen.findByText('Error: component:default/service2 not found'),
     ).toBeInTheDocument();

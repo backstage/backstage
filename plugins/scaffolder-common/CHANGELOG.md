@@ -1,5 +1,54 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.4.3
+
+### Patch Changes
+
+- 2e0cef42ab: Add missing required property `type` in `Template.v1beta3.schema.json` schema
+- 76d07da66a: Make it possible to define control buttons text (Back, Create, Review) per template
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+
+## 1.4.3-next.1
+
+### Patch Changes
+
+- 76d07da66a: Make it possible to define control buttons text (Back, Create, Review) per template
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
+## 1.4.3-next.0
+
+### Patch Changes
+
+- 2e0cef42ab: Add missing required property `type` in `Template.v1beta3.schema.json` schema
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
+## 1.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
+## 1.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9-next.0
+
 ## 1.4.1
 
 ### Patch Changes

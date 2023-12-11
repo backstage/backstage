@@ -5,11 +5,18 @@
 ```ts
 /// <reference types="node" />
 
+import { AnalyzeLocationExistingEntity } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
+
+// @public (undocumented)
+export type AnalyzeOptions = {
+  url: string;
+  catalogFilename?: string;
+};
 
 // @public (undocumented)
 export type CatalogProcessor = {
@@ -97,6 +104,25 @@ export type DeferredEntity = {
   entity: Entity;
   locationKey?: string;
 };
+
+// @public
+export type EntitiesSearchFilter = {
+  key: string;
+  values?: string[];
+};
+
+// @public
+export type EntityFilter =
+  | {
+      allOf: EntityFilter[];
+    }
+  | {
+      anyOf: EntityFilter[];
+    }
+  | {
+      not: EntityFilter;
+    }
+  | EntitiesSearchFilter;
 
 // @public
 export interface EntityProvider {
@@ -198,4 +224,12 @@ export const processingResult: Readonly<{
   readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;
   readonly refresh: (key: string) => CatalogProcessorResult;
 }>;
+
+// @public (undocumented)
+export type ScmLocationAnalyzer = {
+  supports(url: string): boolean;
+  analyze(options: AnalyzeOptions): Promise<{
+    existing: AnalyzeLocationExistingEntity[];
+  }>;
+};
 ```

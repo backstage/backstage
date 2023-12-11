@@ -43,17 +43,18 @@ import {
 
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
+import { SingleTenantServiceLocator } from '../service-locator/SingleTenantServiceLocator';
 import {
   CustomResource,
   KubernetesClustersSupplier,
   KubernetesFetcher,
-  KubernetesObjectsProvider,
   KubernetesObjectsProviderOptions,
   KubernetesObjectTypes,
   KubernetesServiceLocator,
   ObjectsByEntityRequest,
   ServiceLocatorMethod,
 } from '../types/types';
+import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
 import {
   DEFAULT_OBJECTS,
   KubernetesFanOutHandler,
@@ -205,6 +206,9 @@ export class KubernetesBuilder {
   }
 
   public addAuthStrategy(key: string, strategy: AuthenticationStrategy) {
+    if (key.includes('-')) {
+      throw new Error('Strategy name can not include dashes');
+    }
     this.getAuthStrategyMap()[key] = strategy;
     return this;
   }
@@ -273,6 +277,10 @@ export class KubernetesBuilder {
         this.serviceLocator =
           this.buildMultiTenantServiceLocator(clusterSupplier);
         break;
+      case 'singleTenant':
+        this.serviceLocator =
+          this.buildSingleTenantServiceLocator(clusterSupplier);
+        break;
       case 'http':
         this.serviceLocator = this.buildHttpServiceLocator(clusterSupplier);
         break;
@@ -289,6 +297,12 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator {
     return new MultiTenantServiceLocator(clusterSupplier);
+  }
+
+  protected buildSingleTenantServiceLocator(
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesServiceLocator {
+    return new SingleTenantServiceLocator(clusterSupplier);
   }
 
   protected buildHttpServiceLocator(

@@ -32,7 +32,7 @@ import { createGitlabTokenValidator } from '../http/createGitlabTokenValidator';
  */
 export const eventsModuleGitlabWebhook = createBackendModule({
   pluginId: 'events',
-  moduleId: 'gitlabWebhook',
+  moduleId: 'gitlab-webhook',
   register(env) {
     env.registerInit({
       deps: {

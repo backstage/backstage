@@ -15,7 +15,7 @@ The following steps assume that you have
 to it.
 
 We are using the
-[CircleCI](https://github.com/backstage/backstage/blob/master/plugins/circleci/README.md)
+[CircleCI](https://github.com/CircleCI-Public/backstage-plugin/tree/main/plugins/circleci)
 plugin in this example, which is designed to show CI/CD pipeline information attached
 to an entity in the software catalog.
 
@@ -23,7 +23,7 @@ to an entity in the software catalog.
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-circleci
+   yarn add --cwd packages/app @circleci/backstage-plugin
    ```
 
    Note the plugin is added to the `app` package, rather than the root
@@ -38,7 +38,7 @@ to an entity in the software catalog.
    import {
      EntityCircleCIContent,
      isCircleCIAvailable,
-   } from '@backstage/plugin-circleci';
+   } from '@circleci/backstage-plugin';
    /* highlight-add-end */
 
    const cicdContent = (

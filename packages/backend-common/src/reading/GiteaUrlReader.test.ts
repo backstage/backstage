@@ -26,6 +26,8 @@ import { DefaultReadTreeResponseFactory } from './tree';
 import getRawBody from 'raw-body';
 import { GiteaUrlReader } from './GiteaUrlReader';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import fs from 'fs-extra';
+import path from 'path';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -47,6 +49,7 @@ const giteaProcessor = new GiteaUrlReader(
       }),
     ),
   ),
+  { treeResponseFactory },
 );
 
 const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
@@ -245,6 +248,84 @@ describe('GiteaUrlReader', () => {
           },
         ),
       ).rejects.toThrow(NotModifiedError);
+    });
+  });
+
+  describe('readTree', () => {
+    const commitHash = '3bdd5457286abdf920db4b77bf2fef79a06190c2';
+
+    const repoBuffer = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/mock-main.tar.gz'),
+    );
+
+    beforeEach(() => {
+      worker.use(
+        rest.get(
+          'https://gitea.com/api/v1/repos/owner/project/git/commits/branch2',
+          (_, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json({ sha: commitHash }),
+            );
+          },
+        ),
+      );
+    });
+
+    it('should be able to get archive', async () => {
+      worker.use(
+        rest.get(
+          'https://gitea.com/api/v1/repos/owner/project/archive/branch2.tar.gz',
+          (_, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/gzip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock.tar.gz',
+              ),
+              ctx.body(repoBuffer),
+            );
+          },
+        ),
+      );
+
+      const response = await giteaProcessor.readTree(
+        'https://gitea.com/owner/project/src/branch/branch2',
+      );
+      expect(response.etag).toBe(commitHash);
+
+      const files = await response.files();
+      expect(files.length).toBe(2);
+    });
+
+    it('should return not modified', async () => {
+      await expect(
+        giteaProcessor.readTree(
+          'https://gitea.com/owner/project/src/branch/branch2',
+          {
+            etag: commitHash,
+          },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should return not found', async () => {
+      worker.use(
+        rest.get(
+          'https://gitea.com/api/v1/repos/owner/project/git/commits/branch3',
+          (_, res, ctx) => {
+            return res(ctx.status(404));
+          },
+        ),
+      );
+
+      await expect(
+        giteaProcessor.readTree(
+          'https://gitea.com/owner/project/src/branch/branch3',
+        ),
+      ).rejects.toThrow(NotFoundError);
     });
   });
 });

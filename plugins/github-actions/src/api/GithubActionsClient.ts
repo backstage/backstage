@@ -174,4 +174,41 @@ export class GithubActionsClient implements GithubActionsApi {
 
     return workflow.data;
   }
+
+  async listBranches(options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+    page?: number;
+  }): Promise<
+    RestEndpointMethodTypes['repos']['listBranches']['response']['data']
+  > {
+    const { hostname, owner, repo, page = 0 } = options;
+    const octokit = await this.getOctokit(hostname);
+    const response = await octokit.rest.repos.listBranches({
+      owner,
+      repo,
+      per_page: 100,
+      page,
+    });
+
+    return response.data;
+  }
+
+  async getDefaultBranch(options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+  }): Promise<
+    RestEndpointMethodTypes['repos']['get']['response']['data']['default_branch']
+  > {
+    const { hostname, owner, repo } = options;
+    const octokit = await this.getOctokit(hostname);
+    const response = await octokit.rest.repos.get({
+      owner,
+      repo,
+    });
+
+    return response.data.default_branch;
+  }
 }

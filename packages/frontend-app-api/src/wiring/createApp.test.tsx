@@ -15,92 +15,201 @@
  */
 
 import {
+  AppTreeApi,
+  appTreeApiRef,
+  coreExtensionData,
   createExtension,
+  createExtensionOverrides,
   createPageExtension,
   createPlugin,
+  createThemeExtension,
 } from '@backstage/frontend-plugin-api';
-import { createInstances } from './createApp';
-
-import { MockConfigApi } from '@backstage/test-utils';
+import { screen, waitFor } from '@testing-library/react';
+import { createApp } from './createApp';
+import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
-import { createRouteRef } from '@backstage/core-plugin-api';
+import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 
-describe('createInstances', () => {
-  it('throws an error when a root extension is parametrized', () => {
-    const config = new MockConfigApi({
-      app: {
-        extensions: [
-          {
-            root: {
-              at: '',
-            },
+describe('createApp', () => {
+  it('should allow themes to be installed', async () => {
+    const app = createApp({
+      configLoader: async () =>
+        new MockConfigApi({
+          app: {
+            extensions: [
+              { 'theme:app/light': false },
+              { 'theme:app/dark': false },
+            ],
           },
-        ],
-      },
+        }),
+      features: [
+        createPlugin({
+          id: 'test',
+          extensions: [
+            createThemeExtension({
+              id: 'derp',
+              title: 'Derp',
+              variant: 'dark',
+              Provider: () => <div>Derp</div>,
+            }),
+          ],
+        }),
+      ],
     });
-    const plugins = [
-      createPlugin({
-        id: 'plugin',
-        extensions: [],
-      }),
-    ];
-    expect(() => createInstances({ config, plugins })).toThrow(
-      "A 'root' extension configuration was detected, but the root extension is not configurable",
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(screen.findByText('Derp')).resolves.toBeInTheDocument();
+  });
+
+  it('should deduplicate features keeping the last received one', async () => {
+    const duplicatedFeatureId = 'test';
+    const app = createApp({
+      configLoader: async () => new MockConfigApi({}),
+      features: [
+        createPlugin({
+          id: duplicatedFeatureId,
+          extensions: [
+            createPageExtension({
+              defaultPath: '/',
+              loader: async () => <div>First Page</div>,
+            }),
+          ],
+        }),
+        createPlugin({
+          id: duplicatedFeatureId,
+          extensions: [
+            createPageExtension({
+              defaultPath: '/',
+              loader: async () => <div>Last Page</div>,
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await waitFor(() =>
+      expect(screen.queryByText('First Page')).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(screen.getByText('Last Page')).toBeInTheDocument(),
     );
   });
 
-  it('throws an error when a root extension is overridden', () => {
-    const config = new MockConfigApi({});
-    const plugins = [
-      createPlugin({
-        id: 'plugin',
-        extensions: [
-          createExtension({
-            id: 'root',
-            at: 'core.routes/route',
-            inputs: {},
-            output: {},
-            factory() {},
-          }),
-        ],
-      }),
-    ];
-    expect(() => createInstances({ config, plugins })).toThrow(
-      "The following plugin(s) are overriding the 'root' extension which is forbidden: plugin",
-    );
+  it('should register feature flags', async () => {
+    const app = createApp({
+      configLoader: async () => new MockConfigApi({}),
+      features: [
+        createPlugin({
+          id: 'test',
+          featureFlags: [{ name: 'test-1' }],
+          extensions: [
+            createExtension({
+              name: 'first',
+              attachTo: { id: 'core', input: 'root' },
+              output: { element: coreExtensionData.reactElement },
+              factory() {
+                const Component = () => {
+                  const flagsApi = useApi(featureFlagsApiRef);
+                  return (
+                    <div>
+                      Flags:{' '}
+                      {flagsApi
+                        .getRegisteredFlags()
+                        .map(flag => `${flag.name} from '${flag.pluginId}'`)
+                        .join(', ')}
+                    </div>
+                  );
+                };
+                return { element: <Component /> };
+              },
+            }),
+          ],
+        }),
+        createExtensionOverrides({
+          featureFlags: [{ name: 'test-2' }],
+          extensions: [
+            createExtension({
+              namespace: 'core',
+              name: 'router',
+              attachTo: { id: 'core', input: 'root' },
+              disabled: true,
+              output: {},
+              factory: () => ({}),
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText("Flags: test-1 from 'test', test-2 from ''"),
+    ).resolves.toBeInTheDocument();
   });
 
-  it('throws an error when duplicated extensions are detected', () => {
-    const config = new MockConfigApi({});
+  it('should make the app structure available through the AppTreeApi', async () => {
+    let appTreeApi: AppTreeApi | undefined = undefined;
 
-    const ExtensionA = createPageExtension({
-      id: 'A',
-      defaultPath: '/',
-      routeRef: createRouteRef({ id: 'A.route' }),
-      loader: async () => <div>Extension A</div>,
+    const app = createApp({
+      configLoader: async () => new MockConfigApi({}),
+      features: [
+        createPlugin({
+          id: 'my-plugin',
+          extensions: [
+            createPageExtension({
+              defaultPath: '/',
+              loader: async () => {
+                const Component = () => {
+                  appTreeApi = useApi(appTreeApiRef);
+                  return <div>My Plugin Page</div>;
+                };
+                return <Component />;
+              },
+            }),
+          ],
+        }),
+      ],
     });
 
-    const ExtensionB = createPageExtension({
-      id: 'B',
-      defaultPath: '/',
-      routeRef: createRouteRef({ id: 'B.route' }),
-      loader: async () => <div>Extension B</div>,
-    });
+    await renderWithEffects(app.createRoot());
 
-    const PluginA = createPlugin({
-      id: 'A',
-      extensions: [ExtensionA, ExtensionA],
-    });
+    expect(appTreeApi).toBeDefined();
+    const { tree } = appTreeApi!.getTree();
 
-    const PluginB = createPlugin({
-      id: 'B',
-      extensions: [ExtensionA, ExtensionB, ExtensionB],
-    });
-
-    const plugins = [PluginA, PluginB];
-
-    expect(() => createInstances({ config, plugins })).toThrow(
-      "The following extensions are duplicated: The extension 'A' was provided 2 time(s) by the plugin 'A' and 1 time(s) by the plugin 'B', The extension 'B' was provided 2 time(s) by the plugin 'B'",
-    );
+    expect(String(tree.root)).toMatchInlineSnapshot(`
+      "<core out=[core.reactElement]>
+        root [
+          <core/router out=[core.reactElement]>
+            children [
+              <core/layout out=[core.reactElement]>
+                content [
+                  <core/routes out=[core.reactElement]>
+                    routes [
+                      <page:my-plugin out=[core.routing.path, core.routing.ref, core.reactElement] />
+                    ]
+                  </core/routes>
+                ]
+                nav [
+                  <core/nav out=[core.reactElement] />
+                ]
+              </core/layout>
+            ]
+          </core/router>
+        ]
+        components [
+          <component:core.components.progress out=[core.component] />
+          <component:core.components.errorBoundaryFallback out=[core.component] />
+          <component:core.components.notFoundErrorPage out=[core.component] />
+        ]
+        themes [
+          <theme:app/light out=[core.theme] />
+          <theme:app/dark out=[core.theme] />
+        ]
+      </core>"
+    `);
   });
 });

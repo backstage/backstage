@@ -41,13 +41,18 @@ export function useEntityOwnership(): {
   const identityApi = useApi(identityApiRef);
 
   // Trigger load only on mount
-  const { loading, value: refs } = useAsync(async () => {
-    const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
-    return ownershipEntityRefs;
-  }, []);
+  const { loading, value: refs } = useAsync(
+    async () => {
+      const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
+      return ownershipEntityRefs;
+    },
+    // load only on mount
+    [],
+  );
 
   const isOwnedEntity = useMemo(() => {
     const myOwnerRefs = new Set(refs ?? []);
+
     return (entity: Entity) => {
       const entityOwnerRefs = getEntityRelations(entity, RELATION_OWNED_BY).map(
         stringifyEntityRef,
@@ -61,5 +66,5 @@ export function useEntityOwnership(): {
     };
   }, [refs]);
 
-  return useMemo(() => ({ loading, isOwnedEntity }), [loading, isOwnedEntity]);
+  return { loading, isOwnedEntity };
 }

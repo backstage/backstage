@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import fetch from 'node-fetch';
 import {
   getGitLabRequestOptions,
   GitLabIntegrationConfig,
 } from '@backstage/integration';
+import fetch from 'node-fetch';
 import { Logger } from 'winston';
+
 import {
-  GitLabGroup,
   GitLabDescendantGroupsResponse,
+  GitLabGroup,
   GitLabGroupMembersResponse,
   GitLabUser,
+  PagedResponse,
 } from './types';
 
 export type CommonListOptions = {
@@ -43,11 +44,6 @@ interface UserListOptions extends CommonListOptions {
   without_project_bots?: boolean | undefined;
   exclude_internal?: boolean | undefined;
 }
-
-export type PagedResponse<T> = {
-  items: T[];
-  nextPage?: number;
-};
 
 export class GitLabClient {
   private readonly config: GitLabIntegrationConfig;
@@ -88,6 +84,22 @@ export class GitLabClient {
       ...options,
       without_project_bots: true,
       exclude_internal: true,
+    });
+  }
+
+  async listSaaSUsers(
+    groupPath: string,
+    options?: CommonListOptions,
+  ): Promise<PagedResponse<GitLabUser>> {
+    return this.pagedRequest(
+      `/groups/${encodeURIComponent(groupPath)}/members/all`,
+      {
+        ...options,
+        show_seat_info: true,
+      },
+    ).then(resp => {
+      resp.items = resp.items.filter(user => user.is_using_seat);
+      return resp;
     });
   }
 
@@ -205,7 +217,7 @@ export class GitLabClient {
                       user {
                         id
                         username
-                        commitEmail
+                        publicEmail
                         name
                         state
                         webUrl
@@ -240,7 +252,7 @@ export class GitLabClient {
         const formattedUserResponse = {
           id: Number(userItem.user.id.replace(/^gid:\/\/gitlab\/User\//, '')),
           username: userItem.user.username,
-          email: userItem.user.commitEmail,
+          email: userItem.user.publicEmail,
           name: userItem.user.name,
           state: userItem.user.state,
           web_url: userItem.user.webUrl,
@@ -309,7 +321,7 @@ export class GitLabClient {
   ): Promise<PagedResponse<T>> {
     const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
     for (const key in options) {
-      if (options[key]) {
+      if (options[key] !== undefined && options[key] !== '') {
         request.searchParams.append(key, options[key]!.toString());
       }
     }

@@ -25,6 +25,7 @@ backend's
 backported
 backporting
 BEPs
+bigint
 Bigtable
 Billett
 bitbucket
@@ -106,6 +107,7 @@ dynatrace
 Dynatrace
 ecco
 elasticsearch
+Entra
 env
 Env
 esbuild
@@ -195,10 +197,12 @@ Leasot
 lerna
 Lerna
 lightbox
+Lightsail
 limitranges
 LocalStack
 lockdown
 lockfile
+lookbehind
 lunr
 Luxon
 magiclink
@@ -206,6 +210,7 @@ mailto
 maintainer's
 maintainership
 makefile
+Matomo
 md
 memcache
 memoize
@@ -257,6 +262,7 @@ onboarding
 Onboarding
 OpenSearch
 OpenShift
+openssl
 orgs
 padding
 paddings
@@ -282,6 +288,7 @@ Podman
 posix
 postgres
 postpack
+PR
 pre
 prebaked
 preconfigured
@@ -289,10 +296,12 @@ prepack
 Preprarer
 productional
 Protobuf
+proxied
 proxying
 Proxying
 pseudonymized
 pubsub
+Pulumi
 pygments
 pymdownx
 rankdir
@@ -300,6 +309,7 @@ readme
 Readme
 readonly
 rebase
+rebasing
 Recharts
 Redash
 replicasets
@@ -308,10 +318,12 @@ Repo
 repos
 rerender
 rerenders
+resourcequotas
 reusability
 Reusability
 roadmaps
 rollbar
+Roboto
 Rollbar
 Rollup
 routable
@@ -421,14 +433,15 @@ unregistration
 untracked
 upsert
 upvote
-url
 URIs
+url
 URLs
 utils
 Valentina
 validator
 validators
 varchar
+vite
 VMware
 Vodafone
 VPCs
@@ -450,7 +463,4 @@ zod
 Zolotusky
 zoomable
 zsh
-Pulumi
-Lightsail
-PR
-rebasing
+scrollable

@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core/styles';
-import GraphiQL from 'graphiql';
+import {
+  DocExplorer,
+  EditorContextProvider,
+  ExplorerContextProvider,
+  SchemaContextProvider,
+} from '@graphiql/react';
 import 'graphiql/graphiql.css';
 import { buildSchema } from 'graphql';
 import React from 'react';
 
-const useStyles = makeStyles<BackstageTheme>(() => ({
+const useStyles = makeStyles({
   root: {
     height: '100%',
     display: 'flex',
@@ -36,9 +40,12 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
         minHeight: '600px',
         flex: '1 1 auto',
       },
+      '.graphiql-sidebar': {
+        width: '100%',
+      },
     },
   },
-}));
+});
 
 type Props = {
   definition: string;
@@ -51,12 +58,22 @@ export const GraphQlDefinition = ({ definition }: Props) => {
   return (
     <div className={classes.root}>
       <div className={classes.graphiQlWrapper}>
-        <GraphiQL
-          fetcher={() => Promise.resolve(null) as any}
-          schema={schema}
-          docExplorerOpen
-          defaultSecondaryEditorOpen={false}
-        />
+        <EditorContextProvider>
+          <SchemaContextProvider
+            schema={schema}
+            fetcher={() => Promise.resolve(null) as any}
+          >
+            <div className="graphiql-container">
+              <div className="graphiql-sidebar">
+                <div className="graphiql-sidebar-section">
+                  <ExplorerContextProvider>
+                    <DocExplorer />
+                  </ExplorerContextProvider>
+                </div>
+              </div>
+            </div>
+          </SchemaContextProvider>
+        </EditorContextProvider>
       </div>
     </div>
   );

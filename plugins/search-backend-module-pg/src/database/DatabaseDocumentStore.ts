@@ -117,12 +117,16 @@ export class DatabaseDocumentStore implements DatabaseStore {
       .ignore();
 
     // Delete all documents that we don't expect (deleted and changed)
+    const rowsToDelete = tx<RawDocumentRow>('documents')
+      .select('documents.hash')
+      .leftJoin<RawDocumentRow>('documents_to_insert', {
+        'documents.hash': 'documents_to_insert.hash',
+      })
+      .whereNull('documents_to_insert.hash');
+
     await tx<RawDocumentRow>('documents')
       .where({ type })
-      .whereNotIn(
-        'hash',
-        tx<RawDocumentRow>('documents_to_insert').select('hash'),
-      )
+      .whereIn('hash', rowsToDelete)
       .delete();
   }
 

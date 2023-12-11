@@ -17,6 +17,7 @@ import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { TabbedLayout } from './TabbedLayout';
+import { Link, Route, Routes } from 'react-router-dom';
 
 describe('TabbedLayout', () => {
   it('renders simplest case', async () => {
@@ -52,6 +53,11 @@ describe('TabbedLayout', () => {
           'Child of TabbedLayout must be an TabbedLayout.Route',
         ),
       }),
+      expect.objectContaining({
+        detail: new Error(
+          'Child of TabbedLayout must be an TabbedLayout.Route',
+        ),
+      }),
       expect.stringMatching(
         /The above error occurred in the <TabbedLayout> component/,
       ),
@@ -80,5 +86,42 @@ describe('TabbedLayout', () => {
 
     expect(getByText('tabbed-test-title-2')).toBeInTheDocument();
     expect(getByText('tabbed-test-content-2')).toBeInTheDocument();
+  });
+
+  it('navigates when user clicks the same tab', async () => {
+    const { getByText, queryByText, queryAllByRole } = await renderInTestApp(
+      <TabbedLayout>
+        <TabbedLayout.Route path="/" title="tabbed-test-title">
+          <div>
+            tabbed-test-content
+            <div>
+              <Link to="test">tabbed-test-sub-link</Link>
+              <Routes>
+                <Route
+                  path="test"
+                  element={<div>tabbed-test-sub-content</div>}
+                />
+              </Routes>
+            </div>
+          </div>
+        </TabbedLayout.Route>
+        <TabbedLayout.Route path="/some-other-path" title="tabbed-test-title-2">
+          <div>tabbed-test-content-2</div>
+        </TabbedLayout.Route>
+      </TabbedLayout>,
+    );
+
+    const subLink = getByText('tabbed-test-sub-link');
+    expect(subLink).toBeInTheDocument();
+    act(() => {
+      fireEvent.click(subLink);
+    });
+
+    expect(queryByText('tabbed-test-sub-content')).toBeInTheDocument();
+    const [firstTab] = queryAllByRole('tab');
+    act(() => {
+      fireEvent.click(firstTab);
+    });
+    expect(queryByText('tabbed-test-sub-content')).not.toBeInTheDocument();
   });
 });

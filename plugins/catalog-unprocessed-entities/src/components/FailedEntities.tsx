@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   ErrorPanel,
@@ -91,6 +91,7 @@ export const FailedEntities = () => {
     error,
     value: data,
   } = useAsync(async () => await unprocessedApi.failed());
+  const [, setSelectedSearchTerm] = useState<string>('');
 
   if (loading) {
     return <Progress />;
@@ -102,22 +103,33 @@ export const FailedEntities = () => {
   const columns: TableColumn[] = [
     {
       title: <Typography>entityRef</Typography>,
+      sorting: true,
+      field: 'entity_ref',
+      customFilterAndSearch: (query, row: any) =>
+        row.entity_ref
+          .toLocaleUpperCase('en-US')
+          .includes(query.toLocaleUpperCase('en-US')),
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).entity_ref,
     },
     {
       title: <Typography>Kind</Typography>,
+      sorting: true,
+      field: 'kind',
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).unprocessed_entity.kind,
     },
     {
       title: <Typography>Owner</Typography>,
+      sorting: true,
+      field: 'unprocessed_entity.spec.owner',
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).unprocessed_entity.spec?.owner ||
         'unknown',
     },
     {
       title: <Typography>Raw</Typography>,
+      sorting: false,
       render: (rowData: UnprocessedEntity | {}) => (
         <EntityDialog entity={rowData as UnprocessedEntity} />
       ),
@@ -133,6 +145,9 @@ export const FailedEntities = () => {
           <Typography className={classes.successMessage}>
             No failed entities found
           </Typography>
+        }
+        onSearchChange={(searchTerm: string) =>
+          setSelectedSearchTerm(searchTerm)
         }
         detailPanel={({ rowData }) => {
           const errors = (rowData as UnprocessedEntity).errors;

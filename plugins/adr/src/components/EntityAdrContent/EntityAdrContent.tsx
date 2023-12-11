@@ -24,7 +24,6 @@ import {
   Content,
   ContentHeader,
   InfoCard,
-  MissingAnnotationEmptyState,
   Progress,
   SupportButton,
   WarningPanel,
@@ -38,7 +37,10 @@ import {
   isAdrAvailable,
   madrFilePathFilter,
 } from '@backstage/plugin-adr-common';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import {
   Box,
   Chip,
@@ -217,7 +219,7 @@ export const EntityAdrContent = (props: {
 
   return (
     <Content>
-      <ContentHeader title={t('content_header_title')}>
+      <ContentHeader title={t('contentHeaderTitle')}>
         {appSupportConfigured && <SupportButton />}
       </ContentHeader>
 
@@ -228,7 +230,7 @@ export const EntityAdrContent = (props: {
       {loading && <Progress />}
 
       {entityHasAdrs && !loading && error && (
-        <WarningPanel title={t('failed_to_fetch')} message={error?.message} />
+        <WarningPanel title={t('failedToFetch')} message={error?.message} />
       )}
 
       {entityHasAdrs &&
@@ -255,7 +257,7 @@ export const EntityAdrContent = (props: {
             </Grid>
           </Grid>
         ) : (
-          <Typography>{t('no_adrs')}</Typography>
+          <Typography>{t('notFound')}</Typography>
         ))}
     </Content>
   );

@@ -1,6 +1,8 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.20.0",
+      "releases/v1.19.0",
       "releases/v1.18.0",
       "releases/v1.17.0",
       "releases/v1.16.0",
@@ -115,7 +117,7 @@
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
           "features/software-templates/authorizing-parameters-steps-and-actions",
-          "features/software-templates/testing-scaffolder-alpha",
+          "features/software-templates/migrating-to-rjsf-v5",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
       },
@@ -406,7 +408,8 @@
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres",
       "tutorials/using-backstage-proxy-within-plugin",
-      "tutorials/yarn-migration"
+      "tutorials/yarn-migration",
+      "tutorials/migrate-to-mui5"
     ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",

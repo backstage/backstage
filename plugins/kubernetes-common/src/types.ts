@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { JsonObject } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 import {
   PodStatus,
   V1ConfigMap,
@@ -27,13 +27,16 @@ import {
   V1LimitRange,
   V1Pod,
   V1ReplicaSet,
+  V1ResourceQuota,
   V1Service,
   V1StatefulSet,
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
 /** @public */
-export type KubernetesRequestAuth = JsonObject;
+export type KubernetesRequestAuth = {
+  [providerKey: string]: JsonValue | undefined;
+};
 
 /** @public */
 export interface CustomResourceMatcher {
@@ -123,6 +126,7 @@ export type FetchResponse =
   | ConfigMapFetchResponse
   | DeploymentFetchResponse
   | LimitRangeFetchResponse
+  | ResourceQuotaFetchResponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
   | JobsFetchResponse
@@ -167,6 +171,12 @@ export interface ReplicaSetsFetchResponse {
 export interface LimitRangeFetchResponse {
   type: 'limitranges';
   resources: Array<V1LimitRange>;
+}
+
+/** @public */
+export interface ResourceQuotaFetchResponse {
+  type: 'resourcequotas';
+  resources: Array<V1ResourceQuota>;
 }
 
 /** @public */
@@ -261,4 +271,23 @@ export interface ClientPodStatus {
   cpu: ClientCurrentResourceUsage;
   memory: ClientCurrentResourceUsage;
   containers: ClientContainerStatus[];
+}
+
+/** @public */
+export interface DeploymentResources {
+  pods: V1Pod[];
+  replicaSets: V1ReplicaSet[];
+  deployments: V1Deployment[];
+  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
+}
+
+/** @public */
+export interface GroupedResponses extends DeploymentResources {
+  services: V1Service[];
+  configMaps: V1ConfigMap[];
+  ingresses: V1Ingress[];
+  jobs: V1Job[];
+  cronJobs: V1CronJob[];
+  customResources: any[];
+  statefulsets: V1StatefulSet[];
 }

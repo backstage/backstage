@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-import { IconComponent, RouteRef } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
 import { coreExtensionData, createExtension } from '../wiring';
+import { RouteRef } from '../routing';
 
 /**
  * Helper for creating extensions for a nav item.
  * @public
  */
 export function createNavItemExtension(options: {
-  id: string;
-  routeRef: RouteRef;
+  namespace?: string;
+  name?: string;
+  routeRef: RouteRef<undefined>;
   title: string;
   icon: IconComponent;
 }) {
-  const { id, routeRef, title, icon } = options;
+  const { routeRef, title, icon, namespace, name } = options;
   return createExtension({
-    id,
-    at: 'core.nav/items',
+    namespace,
+    name,
+    kind: 'nav-item',
+    attachTo: { id: 'core/nav', input: 'items' },
     configSchema: createSchemaFromZod(z =>
       z.object({
         title: z.string().default(title),
@@ -40,14 +44,12 @@ export function createNavItemExtension(options: {
     output: {
       navTarget: coreExtensionData.navTarget,
     },
-    factory: ({ bind, config }) => {
-      bind({
-        navTarget: {
-          title: config.title,
-          icon,
-          routeRef,
-        },
-      });
-    },
+    factory: ({ config }) => ({
+      navTarget: {
+        title: config.title,
+        icon,
+        routeRef,
+      },
+    }),
   });
 }

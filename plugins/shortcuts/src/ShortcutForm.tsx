@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import useObservable from 'react-use/lib/useObservable';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import {
@@ -58,6 +58,10 @@ export const ShortcutForm = ({
     shortcutApi.shortcut$(),
     shortcutApi.get(),
   );
+  const { current: originalValues } = useRef({
+    url: formValues?.url ?? '',
+    title: formValues?.title ?? '',
+  });
   const {
     handleSubmit,
     reset,
@@ -65,20 +69,23 @@ export const ShortcutForm = ({
     formState: { errors },
   } = useForm<FormValues>({
     mode: 'onChange',
-    defaultValues: {
-      url: formValues?.url ?? '',
-      title: formValues?.title ?? '',
-    },
+    defaultValues: originalValues,
   });
 
   const titleIsUnique = (title: string) => {
-    if (shortcutData.some(shortcutTitle => shortcutTitle.title === title))
+    if (
+      title !== originalValues.title &&
+      shortcutData.some(shortcutTitle => shortcutTitle.title === title)
+    )
       return 'A shortcut with this title already exists';
     return true;
   };
 
   const urlIsUnique = (url: string) => {
-    if (shortcutData.some(shortcutUrl => shortcutUrl.url === url))
+    if (
+      url !== originalValues.url &&
+      shortcutData.some(shortcutUrl => shortcutUrl.url === url)
+    )
       return 'A shortcut with this url already exists';
     return true;
   };

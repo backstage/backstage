@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import type { Ring } from '../../utils/types';
 
 export type Props = {
@@ -23,7 +23,7 @@ export type Props = {
   rings: Ring[];
 };
 
-const useStyles = makeStyles<Theme>(
+const useStyles = makeStyles(
   theme => ({
     ring: {
       fill: 'none',

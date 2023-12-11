@@ -18,16 +18,38 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
+  createTranslationExtension,
 } from '@backstage/frontend-plugin-api';
 
 export const Core = createExtension({
-  id: 'core',
-  at: 'root',
+  namespace: 'core',
+  attachTo: { id: 'root', input: 'default' }, // ignored
   inputs: {
     apis: createExtensionInput({
       api: coreExtensionData.apiFactory,
     }),
+    themes: createExtensionInput({
+      theme: coreExtensionData.theme,
+    }),
+    components: createExtensionInput({
+      component: coreExtensionData.component,
+    }),
+    translations: createExtensionInput({
+      translation: createTranslationExtension.translationDataRef,
+    }),
+    root: createExtensionInput(
+      {
+        element: coreExtensionData.reactElement,
+      },
+      { singleton: true },
+    ),
   },
-  output: {},
-  factory() {},
+  output: {
+    root: coreExtensionData.reactElement,
+  },
+  factory({ inputs }) {
+    return {
+      root: inputs.root.output.element,
+    };
+  },
 });

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 
 /**
@@ -45,4 +46,13 @@ export interface TechDocsDocument extends IndexableDocument {
    * Entity path
    */
   path: string;
+}
+
+/**
+ * A strategy for when to build TechDocs locally, and when to skip building TechDocs (allowing for an external build)
+ *
+ * @public
+ */
+export interface DocsBuildStrategy {
+  shouldBuild(params: { entity: Entity }): Promise<boolean>;
 }

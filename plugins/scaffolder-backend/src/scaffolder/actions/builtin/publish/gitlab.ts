@@ -38,6 +38,7 @@ export function createPublishGitlabAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     defaultBranch?: string;
+    /** @deprecated in favour of settings.visibility field */
     repoVisibility?: 'private' | 'internal' | 'public';
     sourcePath?: string;
     token?: string;
@@ -45,7 +46,32 @@ export function createPublishGitlabAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     setUserAsOwner?: boolean;
+    /** @deprecated in favour of settings.topics field */
     topics?: string[];
+    settings?: {
+      path?: string;
+      auto_devops_enabled?: boolean;
+      ci_config_path?: string;
+      description?: string;
+      topics?: string[];
+      visibility?: 'private' | 'internal' | 'public';
+    };
+    branches?: Array<{
+      name: string;
+      protect?: boolean;
+      create?: boolean;
+      ref?: string;
+    }>;
+    projectVariables?: Array<{
+      key: string;
+      value: string;
+      description?: string;
+      variable_type?: string;
+      protected?: boolean;
+      masked?: boolean;
+      raw?: boolean;
+      environment_scope?: string;
+    }>;
   }>({
     id: 'publish:gitlab',
     description:
@@ -63,6 +89,7 @@ export function createPublishGitlabAction(options: {
           },
           repoVisibility: {
             title: 'Repository Visibility',
+            description: `Sets the visibility of the repository. The default value is 'private'. (deprecated, use settings.visibility instead)`,
             type: 'string',
             enum: ['private', 'public', 'internal'],
           },
@@ -105,10 +132,133 @@ export function createPublishGitlabAction(options: {
           },
           topics: {
             title: 'Topic labels',
-            description: 'Topic labels to apply on the repository.',
+            description:
+              'Topic labels to apply on the repository. (deprecated, use settings.topics instead)',
             type: 'array',
             items: {
               type: 'string',
+            },
+          },
+          settings: {
+            title: 'Project settings',
+            description:
+              'Additional project settings, based on https://docs.gitlab.com/ee/api/projects.html#create-project attributes',
+            type: 'object',
+            properties: {
+              path: {
+                title: 'Project path',
+                description:
+                  'Repository name for new project. Generated based on name if not provided (generated as lowercase with dashes).',
+                type: 'string',
+              },
+              auto_devops_enabled: {
+                title: 'Auto DevOps enabled',
+                description: 'Enable Auto DevOps for this project',
+                type: 'boolean',
+              },
+              ci_config_path: {
+                title: 'CI config path',
+                description: 'Custom CI config path for this project',
+                type: 'string',
+              },
+              description: {
+                title: 'Project description',
+                description: 'Short project description',
+                type: 'string',
+              },
+              topics: {
+                title: 'Topic labels',
+                description: 'Topic labels to apply on the repository',
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              visibility: {
+                title: 'Project visibility',
+                description:
+                  'The visibility of the project. Can be private, internal, or public. The default value is private.',
+                type: 'string',
+                enum: ['private', 'public', 'internal'],
+              },
+            },
+          },
+          branches: {
+            title: 'Project branches settings',
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['name'],
+              properties: {
+                name: {
+                  title: 'Branch name',
+                  type: 'string',
+                },
+                protect: {
+                  title: 'Should branch be protected',
+                  description: `Will mark branch as protected. The default value is 'false'`,
+                  type: 'boolean',
+                },
+                create: {
+                  title: 'Should branch be created',
+                  description: `If branch does not exist, it will be created from provided ref. The default value is 'false'`,
+                  type: 'boolean',
+                },
+                ref: {
+                  title: 'Branch reference',
+                  description: `Branch reference to create branch from. The default value is 'master'`,
+                  type: 'string',
+                },
+              },
+            },
+          },
+          projectVariables: {
+            title: 'Project variables',
+            description:
+              'Project variables settings based on Gitlab Project Environments API - https://docs.gitlab.com/ee/api/project_level_variables.html#create-a-variable',
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['key', 'value'],
+              properties: {
+                key: {
+                  title: 'Variable key',
+                  description:
+                    'The key of a variable; must have no more than 255 characters; only A-Z, a-z, 0-9, and _ are allowed',
+                  type: 'string',
+                },
+                value: {
+                  title: 'Variable value',
+                  description: 'The value of a variable',
+                  type: 'string',
+                },
+                description: {
+                  title: 'Variable description',
+                  description: `The description of the variable. The default value is 'null'`,
+                  type: 'string',
+                },
+                variable_type: {
+                  title: 'Variable type',
+                  description: `The type of a variable. The default value is 'env_var'`,
+                  type: 'string',
+                  enum: ['env_var', 'file'],
+                },
+                protected: {
+                  title: 'Variable protection',
+                  description: `Whether the variable is protected. The default value is 'false'`,
+                  type: 'boolean',
+                },
+                raw: {
+                  title: 'Variable raw',
+                  description: `Whether the variable is in raw format. The default value is 'false'`,
+                  type: 'boolean',
+                },
+                environment_scope: {
+                  title: 'Variable environment scope',
+                  description: `The environment_scope of the variable. The default value is '*'`,
+                  type: 'string',
+                },
+              },
             },
           },
         },
@@ -145,6 +295,9 @@ export function createPublishGitlabAction(options: {
         gitAuthorEmail,
         setUserAsOwner = false,
         topics = [],
+        settings = {},
+        branches = [],
+        projectVariables = [],
       } = ctx.input;
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -174,23 +327,37 @@ export function createPublishGitlabAction(options: {
         [tokenType]: token,
       });
 
-      let { id: targetNamespace } = (await client.Namespaces.show(owner)) as {
-        id: number;
-      };
+      let targetNamespaceId;
+
+      try {
+        const namespaceResponse = (await client.Namespaces.show(owner)) as {
+          id: number;
+        };
+
+        targetNamespaceId = namespaceResponse.id;
+      } catch (e) {
+        if (e.response && e.response.statusCode === 404) {
+          throw new InputError(
+            `The namespace ${owner} is not found or the user doesn't have permissions to access it`,
+          );
+        }
+        throw e;
+      }
 
       const { id: userId } = (await client.Users.current()) as {
         id: number;
       };
 
-      if (!targetNamespace) {
-        targetNamespace = userId;
+      if (!targetNamespaceId) {
+        targetNamespaceId = userId;
       }
 
       const { id: projectId, http_url_to_repo } = await client.Projects.create({
-        namespace_id: targetNamespace,
+        namespace_id: targetNamespaceId,
         name: repo,
         visibility: repoVisibility,
         ...(topics.length ? { topics } : {}),
+        ...(Object.keys(settings).length ? { ...settings } : {}),
       });
 
       // When setUserAsOwner is true the input token is expected to come from an unprivileged user GitLab
@@ -234,10 +401,74 @@ export function createPublishGitlabAction(options: {
         gitAuthorInfo,
       });
 
+      if (branches) {
+        for (const branch of branches) {
+          const {
+            name,
+            protect = false,
+            create = false,
+            ref = 'master',
+          } = branch;
+
+          if (create) {
+            try {
+              await client.Branches.create(projectId, name, ref);
+            } catch (e) {
+              throw new InputError(
+                `Branch creation failed for ${name}. ${printGitlabError(e)}`,
+              );
+            }
+            ctx.logger.info(
+              `Branch ${name} created for ${projectId} with ref ${ref}`,
+            );
+          }
+
+          if (protect) {
+            try {
+              await client.ProtectedBranches.protect(projectId, name);
+            } catch (e) {
+              throw new InputError(
+                `Branch protection failed for ${name}. ${printGitlabError(e)}`,
+              );
+            }
+            ctx.logger.info(`Branch ${name} protected for ${projectId}`);
+          }
+        }
+      }
+
+      if (projectVariables) {
+        for (const variable of projectVariables) {
+          const variableWithDefaults = Object.assign(variable, {
+            variable_type: variable.variable_type ?? 'env_var',
+            protected: variable.protected ?? false,
+            masked: variable.masked ?? false,
+            raw: variable.raw ?? false,
+            environment_scope: variable.environment_scope ?? '*',
+          });
+
+          try {
+            await client.ProjectVariables.create(
+              projectId,
+              variableWithDefaults,
+            );
+          } catch (e) {
+            throw new InputError(
+              `Environment variable creation failed for ${
+                variableWithDefaults.key
+              }. ${printGitlabError(e)}`,
+            );
+          }
+        }
+      }
+
       ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
       ctx.output('projectId', projectId);
     },
   });
+}
+
+function printGitlabError(error: any): string {
+  return JSON.stringify({ code: error.code, message: error.description });
 }

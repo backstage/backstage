@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 import React, {
   ComponentType,
   PropsWithChildren,
+  Suspense,
   useMemo,
   useRef,
 } from 'react';
@@ -239,11 +240,21 @@ export class AppManager implements BackstageApp {
       );
 
       const { routing, featureFlags, routeBindings } = useMemo(() => {
+        const usesReactRouterBeta = isReactRouterBeta();
+        if (usesReactRouterBeta) {
+          // eslint-disable-next-line no-console
+          console.warn(`
+DEPRECATION WARNING: React Router Beta is deprecated and support for it will be removed in a future release.
+                     Please migrate to use React Router v6 stable.
+                     See https://backstage.io/docs/tutorials/react-router-stable-migration
+`);
+        }
+
         const result = traverseElementTree({
           root: children,
           discoverers: [childDiscoverer, routeElementDiscoverer],
           collectors: {
-            routing: isReactRouterBeta()
+            routing: usesReactRouterBeta
               ? routingV1Collector
               : routingV2Collector,
             collectedPlugins: pluginCollector,
@@ -341,7 +352,7 @@ export class AppManager implements BackstageApp {
         }
       }
 
-      const { ThemeProvider = AppThemeProvider } = this.components;
+      const { ThemeProvider = AppThemeProvider, Progress } = this.components;
 
       return (
         <ApiProvider apis={this.getApiHolder()}>
@@ -360,7 +371,7 @@ export class AppManager implements BackstageApp {
                     appIdentityProxy: this.appIdentityProxy,
                   }}
                 >
-                  {children}
+                  <Suspense fallback={<Progress />}>{children}</Suspense>
                 </InternalAppContext.Provider>
               </RoutingProvider>
             </ThemeProvider>

@@ -20,13 +20,12 @@ import {
   useRouteRef,
   alertApiRef,
 } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {
   permissions,
   PlaylistMetadata,
 } from '@backstage/plugin-playlist-common';
-import { Button, IconButton, useMediaQuery } from '@material-ui/core';
+import { Button, IconButton, Theme, useMediaQuery } from '@material-ui/core';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -36,6 +35,9 @@ import { playlistRouteRef } from '../../routes';
 import { PlaylistEditDialog } from '../PlaylistEditDialog';
 import { useTitle } from '../../hooks';
 
+/**
+ * @public
+ */
 export const CreatePlaylistButton = () => {
   const navigate = useNavigate();
   const errorApi = useApi(errorApiRef);
@@ -46,7 +48,7 @@ export const CreatePlaylistButton = () => {
   const { allowed } = usePermission({
     permission: permissions.playlistListCreate,
   });
-  const isXSScreen = useMediaQuery<BackstageTheme>(theme =>
+  const isXSScreen = useMediaQuery<Theme>(theme =>
     theme.breakpoints.down('xs'),
   );
 

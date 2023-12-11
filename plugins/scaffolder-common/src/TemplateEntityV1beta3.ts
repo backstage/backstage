@@ -45,6 +45,12 @@ export interface TemplateEntityV1beta3 extends Entity {
      * The type that the Template will create. For example service, website or library.
      */
     type: string;
+
+    /**
+     * Template specific configuration of the presentation layer.
+     */
+    presentation?: TemplatePresentationV1beta3;
+
     /**
      * This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend
      * to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
@@ -64,6 +70,31 @@ export interface TemplateEntityV1beta3 extends Entity {
      * The owner entityRef of the TemplateEntity
      */
     owner?: string;
+  };
+}
+
+/**
+ * The presentation of the template.
+ *
+ * @public
+ */
+export interface TemplatePresentationV1beta3 extends JsonObject {
+  /**
+   * Overrides default buttons' text
+   */
+  buttonLabels?: {
+    /**
+     * The text for the button which leads to the previous template page
+     */
+    backButtonText?: string;
+    /**
+     * The text for the button which starts the execution of the template
+     */
+    createButtonText?: string;
+    /**
+     * The text for the button which opens template's review/summary
+     */
+    reviewButtonText?: string;
   };
 }
 

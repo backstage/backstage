@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LinearProgress, makeStyles, Theme } from '@material-ui/core';
+import { LinearProgress, makeStyles } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { DateTime, Duration } from 'luxon';
 import React from 'react';
@@ -29,7 +29,7 @@ import {
 } from '@backstage/core-components';
 import { Project } from '../../api/JenkinsApi';
 
-const useStyles = makeStyles<Theme>({
+const useStyles = makeStyles({
   externalLinkIcon: {
     fontSize: 'inherit',
     verticalAlign: 'bottom',

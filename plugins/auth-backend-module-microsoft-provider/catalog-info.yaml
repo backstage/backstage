@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-auth-backend-module-microsoft-provider
+  title: '@backstage/plugin-auth-backend-module-microsoft-provider'
+  description: The microsoft-provider backend module for the auth plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

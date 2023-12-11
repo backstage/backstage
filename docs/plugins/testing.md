@@ -18,11 +18,11 @@ Running all tests:
 
     yarn test
 
-Running an individual test (e.g. `MyComponent.test.js`):
+Running an individual test (e.g. `MyComponent.test.tsx`):
 
     yarn test MyComponent
 
-To run both `MyComponent.test.js` and `MyControl.test.js` suite of tests:
+To run both `MyComponent.test.tsx` and `MyControl.test.tsx` suite of tests:
 
     yarn test MyCo
 
@@ -32,9 +32,9 @@ working on.
 
 ## Naming Test Files
 
-Tests should be named `[filename].test.js`.
+Tests should be named `[filename].test.ts`, or `[filename].test.tsx` if it contains JSX (as is the case for a lot of React tests, e.g. components).
 
-For example, the tests for **`Link.js`** exist in the file **`Link.test.js`**.
+For example, the tests for **`Link.tsx`** exist in the file **`Link.test.tsx`**.
 
 ## Third-Party Dependencies
 
@@ -183,9 +183,9 @@ data then it actually does it. this way both tests fail if the data loading part
 breaks and the next developer immediately know the problem is that the data
 loading is broken, not that the loading indicator is broken.
 
-# Examples
+## Examples
 
-## Utility Functions
+### Utility Functions
 
 A utility function is a function with no side effects. It takes in arguments and
 returns a result or displays an error or console message, like so:
@@ -241,12 +241,12 @@ it('Works with midCharIx', () => {
 });
 ```
 
-## Non-React Classes
+### Non-React Classes
 
 Testing a JavaScript object which is _not_ a React component follows a lot of
 the same principles as testing objects in other languages.
 
-### API Testing Principles
+#### API Testing Principles
 
 Testing an API involves verifying four things:
 
@@ -255,7 +255,7 @@ Testing an API involves verifying four things:
 3. Server response is translated into an expected JavaScript object.
 4. Server errors are handled gracefully.
 
-### Mocking API Calls
+#### Mocking API Calls
 
 [Mocking in Jest](https://facebook.github.io/jest/docs/en/mock-functions.html)
 involves wrapping existing functions (like an API call function) with an
@@ -263,52 +263,46 @@ alternative.
 
 For example:
 
-**`./MyApi.js`**
+**`./MyApi.ts`**
 
 ```ts
-export {
-  fetchSomethingFromServer: () => {
-    // Live production call to a URI. Must be avoided during testing!
-    return fetch('blah');
-  }
-};
-```
-
-**`./__mocks__/MyApi.js`**
-
-```ts
-export {
-  fetchSomethingFromServer: () => {
-    // Simulate a production call, but avoid jest and just use a promise
-    return Promise.resolve('some result object simulating server data here');
-  }
+export async function fetchSomethingFromServer() {
+  // Live production call to a URI. Must be avoided during testing!
+  return fetch('blah');
 }
 ```
 
-**`./MyApi.test.js`**
+**`./__mocks__/MyApi.ts`**
 
 ```ts
-/* eslint-disable import/first */
+export async function fetchSomethingFromServer() {
+  // Simulate a production call response
+  return 'some result object simulating server data here';
+}
+```
 
-jest.mock('./MyApi'); // Instruct Jest to swap all future imports of './MyApi.js' to './__mocks__/MyApi.js'
+**`./MyApi.test.ts`**
 
-import MyApi from './MyApi'; // Will actually return the contents of the file in the __mocks__ folder now
+```ts
+// This import will actually return the contents of the file in the
+// __mocks__ folder now, due to the jest.mock line below
+import { fetchSomethingFromServer } from './MyApi';
 
-it('loads data', done => {
-  MyApi.fetchSomethingFromServer().then(result => {
-    expect(result).toBe('some result object simulating server data here');
-    done();
-  });
+// This instructs Jest to swap all imports of './MyApi.ts' to
+// './__mocks__/MyApi.ts' - this gets automatically hoisted to the top
+// of the file
+jest.mock('./MyApi');
+
+it('loads data', async () => {
+  await expect(fetchSomethingFromServer()).resolves.toBe(
+    'some result object simulating server data here',
+  );
 });
 ```
 
-Note: make sure you disable the eslint `'import/first'` rule at the top of the
-file since technically you are not allowed by the default settings to have an
-import after the `jest.mock` call.
+### React Components
 
-## React Components
-
-### Working with the React Lifecycle
+#### Working with the React Lifecycle
 
 The [React lifecycle](https://reactjs.org/docs/state-and-lifecycle.html) is
 asynchronous.
@@ -317,7 +311,7 @@ When you call `setState` or update the `props` of a component, there are several
 asynchronous stages that must occur before a rerender. Note the following
 example:
 
-```jsx
+```tsx
 class MyComponent extends Component {
   load() {
     this.setState({loading: true});
@@ -350,7 +344,7 @@ For more information:
 
 - [React lifecycle](https://reactjs.org/docs/state-and-lifecycle.html)
 
-### Accessing `store`, `theme`, routing, browser history, etc.
+#### Accessing `store`, `theme`, routing, browser history, etc
 
 The Backstage application has several core providers at its root. To run your
 test wrapped in a "sample" Backstage application, you can use our utility
@@ -369,6 +363,6 @@ functions:
 Note: wrapping in the test application **requires** you to do a `find()` or
 `dive()` since the wrapped component is now the application.
 
-# Debugging Jest Tests
+## Debugging Jest Tests
 
 You can find it [here](https://backstage.io/docs/local-dev/cli-build-system#debugging-jest-tests)

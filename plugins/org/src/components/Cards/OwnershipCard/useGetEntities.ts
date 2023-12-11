@@ -16,9 +16,9 @@
 
 import {
   Entity,
+  parseEntityRef,
   RELATION_MEMBER_OF,
   RELATION_PARENT_OF,
-  parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -32,6 +32,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import qs from 'qs';
 import { EntityRelationAggregation as EntityRelationsAggregation } from './types';
+import { uniq } from 'lodash';
 
 const limiter = limiterFactory(10);
 
@@ -80,6 +81,7 @@ const isEntity = (entity: Entity | undefined): entity is Entity =>
 const getChildOwnershipEntityRefs = async (
   entity: Entity,
   catalogApi: CatalogApi,
+  alreadyRetrievedParentRefs: string[] = [],
 ): Promise<string[]> => {
   const childGroups = getEntityRelations(entity, RELATION_PARENT_OF, {
     kind: 'Group',
@@ -87,26 +89,38 @@ const getChildOwnershipEntityRefs = async (
 
   const hasChildGroups = childGroups.length > 0;
 
+  const entityRef = stringifyEntityRef(entity);
   if (hasChildGroups) {
     const entityRefs = childGroups.map(r => stringifyEntityRef(r));
     const childGroupResponse = await catalogApi.getEntitiesByRefs({
-      fields: ['kind', 'metadata.namespace', 'metadata.name'],
+      fields: ['kind', 'metadata.namespace', 'metadata.name', 'relations'],
       entityRefs,
     });
     const childGroupEntities = childGroupResponse.items.filter(isEntity);
 
-    return (
+    const unknownChildren = childGroupEntities.filter(
+      childGroupEntity =>
+        !alreadyRetrievedParentRefs.includes(
+          stringifyEntityRef(childGroupEntity),
+        ),
+    );
+    const childrenRefs = (
       await Promise.all(
-        childGroupEntities.map(childGroupEntity =>
+        unknownChildren.map(childGroupEntity =>
           limiter(() =>
-            getChildOwnershipEntityRefs(childGroupEntity, catalogApi),
+            getChildOwnershipEntityRefs(childGroupEntity, catalogApi, [
+              ...alreadyRetrievedParentRefs,
+              entityRef,
+            ]),
           ),
         ),
       )
     ).flatMap(aggregated => aggregated);
+
+    return uniq([...childrenRefs, entityRef]);
   }
 
-  return [stringifyEntityRef(entity)];
+  return [entityRef];
 };
 
 const getOwners = async (
@@ -118,23 +132,15 @@ const getOwners = async (
   const isAggregated = relations === 'aggregated';
   const isUserEntity = entity.kind === 'User';
 
-  const owners: string[] = [];
-
   if (isAggregated && isGroup) {
-    const childEntityRefs = await getChildOwnershipEntityRefs(
-      entity,
-      catalogApi,
-    );
-    owners.push(stringifyEntityRef(entity));
-    owners.push.apply(owners, childEntityRefs);
-  } else if (isAggregated && isUserEntity) {
-    const parentEntityRefs = getMemberOfEntityRefs(entity);
-    owners.push.apply(owners, parentEntityRefs);
-  } else {
-    owners.push(stringifyEntityRef(entity));
+    return getChildOwnershipEntityRefs(entity, catalogApi);
   }
 
-  return owners;
+  if (isAggregated && isUserEntity) {
+    return getMemberOfEntityRefs(entity);
+  }
+
+  return [stringifyEntityRef(entity)];
 };
 
 const getOwnedEntitiesByOwners = (

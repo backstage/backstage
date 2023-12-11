@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityLayout } from '@backstage/plugin-catalog';
+import { EntityLayout, catalogPlugin } from '@backstage/plugin-catalog';
 import {
   EntityProvider,
   starredEntitiesApiRef,
@@ -51,6 +51,7 @@ describe('EntityPage Test', () => {
     listWorkflowRuns: jest.fn().mockResolvedValue([]),
   };
   const mockPermissionApi = new MockPermissionApi();
+  const rootRouteRef = catalogPlugin.routes.catalogIndex;
 
   describe('cicdContent', () => {
     it('Should render GitHub Actions View', async () => {
@@ -70,6 +71,11 @@ describe('EntityPage Test', () => {
             </EntityLayout>
           </EntityProvider>
         </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog': rootRouteRef,
+          },
+        },
       );
 
       expect(rendered.getByText('ExampleComponent')).toBeInTheDocument();

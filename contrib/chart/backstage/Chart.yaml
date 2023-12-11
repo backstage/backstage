@@ -18,7 +18,7 @@ sources:
 dependencies:
   - name: postgresql
     condition: postgresql.enabled
-    version: 9.8.12
+    version: 13.2.21
     repository: https://charts.bitnami.com/bitnami
 
 maintainers:

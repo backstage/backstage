@@ -36,6 +36,11 @@ export const createFromTemplateRouteRef = createExternalRouteRef({
   params: ['namespace', 'templateName'],
 });
 
+export const unregisterRedirectRouteRef = createExternalRouteRef({
+  id: 'catalog:unregister-redirect',
+  optional: true,
+});
+
 export const rootRouteRef = createRouteRef({
   id: 'catalog',
 });

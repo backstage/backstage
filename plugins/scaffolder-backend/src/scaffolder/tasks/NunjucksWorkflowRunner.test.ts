@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
-import * as winston from 'winston';
-
-import { getVoidLogger, resolvePackagePath } from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
@@ -36,25 +33,17 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import stripAnsi from 'strip-ansi';
 
-// The Stream module is lazy loaded, so make sure it's in the module cache before mocking fs
-void winston.transports.Stream;
-
-const realFiles = Object.fromEntries(
-  [
-    resolvePackagePath(
-      '@backstage/plugin-scaffolder-backend',
-      'assets',
-      'nunjucks.js.txt',
-    ),
-  ].map(k => [k, mockFs.load(k)]),
-);
-
-describe('DefaultWorkflowRunner', () => {
+describe('NunjucksWorkflowRunner', () => {
   const logger = getVoidLogger();
   let actionRegistry = new TemplateActionRegistry();
   let runner: NunjucksWorkflowRunner;
   let fakeActionHandler: jest.Mock;
+  let fakeTaskLog: jest.Mock;
+
+  const mockDir = createMockDirectory();
 
   const mockedPermissionApi: jest.Mocked<PermissionEvaluator> = {
     authorizeConditional: jest.fn(),
@@ -78,21 +67,24 @@ describe('DefaultWorkflowRunner', () => {
     isDryRun,
     complete: async () => {},
     done: false,
-    emitLog: async () => {},
+    emitLog: fakeTaskLog,
     cancelSignal: new AbortController().signal,
     getWorkspaceName: () => Promise.resolve('test-workspace'),
   });
 
+  function expectTaskLog(message: string) {
+    expect(fakeTaskLog.mock.calls.map(args => stripAnsi(args[0]))).toContain(
+      message,
+    );
+  }
+
   beforeEach(() => {
-    winston.format.simple(); // put logform in the require.cache before mocking fs
-    mockFs({
-      '/tmp': mockFs.directory(),
-      ...realFiles,
-    });
+    mockDir.clear();
 
     jest.resetAllMocks();
     actionRegistry = new TemplateActionRegistry();
     fakeActionHandler = jest.fn();
+    fakeTaskLog = jest.fn();
 
     actionRegistry.register({
       id: 'jest-mock-action',
@@ -148,14 +140,10 @@ describe('DefaultWorkflowRunner', () => {
     runner = new NunjucksWorkflowRunner({
       actionRegistry,
       integrations,
-      workingDirectory: '/tmp',
+      workingDirectory: mockDir.path,
       logger,
       permissions: mockedPermissionApi,
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('should throw an error if the action does not exist', async () => {
@@ -575,6 +563,7 @@ describe('DefaultWorkflowRunner', () => {
 
   describe('each', () => {
     it('should run a step repeatedly - flat values', async () => {
+      const colors = ['blue', 'green', 'red'];
       const task = createMockTaskWithSpec({
         apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
@@ -588,21 +577,19 @@ describe('DefaultWorkflowRunner', () => {
         ],
         output: {},
         parameters: {
-          colors: ['blue', 'green', 'red'],
+          colors,
         },
       });
-
       await runner.execute(task);
 
-      expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ input: { color: 'blue' } }),
-      );
-      expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ input: { color: 'green' } }),
-      );
-      expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ input: { color: 'red' } }),
-      );
+      colors.forEach((color, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"${color}"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({ input: { color } }),
+        );
+      });
     });
 
     it('should run a step repeatedly - object list', async () => {
@@ -625,9 +612,11 @@ describe('DefaultWorkflowRunner', () => {
           settings: [{ color: 'blue' }],
         },
       });
-
       await runner.execute(task);
 
+      expectTaskLog(
+        'info: Running step each: {"key":"0","value":"[object Object]"}',
+      );
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           input: { key: '0', value: { color: 'blue' } },
@@ -636,6 +625,10 @@ describe('DefaultWorkflowRunner', () => {
     });
 
     it('should run a step repeatedly - object', async () => {
+      const settings = {
+        color: 'blue',
+        transparent: 'yes',
+      };
       const task = createMockTaskWithSpec({
         apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
@@ -649,22 +642,81 @@ describe('DefaultWorkflowRunner', () => {
         ],
         output: {},
         parameters: {
-          settings: { color: 'blue', transparent: 'yes' },
+          settings,
         },
       });
-
       await runner.execute(task);
 
-      expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({
-          input: { key: 'color', value: 'blue' },
-        }),
+      for (const [key, value] of Object.entries(settings)) {
+        expectTaskLog(
+          `info: Running step each: {"key":"${key}","value":"${value}"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            input: { key, value },
+          }),
+        );
+      }
+    });
+
+    it('should run a step repeatedly with validation of single-expression value', async () => {
+      const numbers = [5, 7, 9];
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.numbers}}',
+            action: 'jest-validated-action',
+            input: { foo: '${{each.value}}' },
+          },
+        ],
+        output: {},
+        parameters: {
+          numbers,
+        },
+      });
+      await runner.execute(task);
+
+      numbers.forEach((foo, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"${foo}"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            input: { foo },
+          }),
+        );
+      });
+    });
+
+    it('should validate each action iteration', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.data}}',
+            action: 'jest-validated-action',
+            input: { foo: '${{each.value.foo}}' },
+          },
+        ],
+        output: {},
+        parameters: {
+          data: [
+            {
+              foo: 0,
+            },
+            {},
+          ],
+        },
+      });
+      await expect(runner.execute(task)).rejects.toThrow(
+        'Invalid input passed to action jest-validated-action[1], instance requires property "foo"',
       );
-      expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({
-          input: { key: 'transparent', value: 'yes' },
-        }),
-      );
+      expect(fakeActionHandler).not.toHaveBeenCalled();
     });
   });
 

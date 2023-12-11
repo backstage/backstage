@@ -15,17 +15,37 @@
  */
 
 import {
+  createApiFactory,
   createComponentExtension,
   createPlugin,
   createRoutableExtension,
+  identityApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home-react';
-import { ToolkitContentProps } from './homePageComponents';
+import {
+  ToolkitContentProps,
+  VisitedByTypeProps,
+  FeaturedDocsCardProps,
+} from './homePageComponents';
 import { rootRouteRef } from './routes';
+import { VisitsStorageApi, visitsApiRef } from './api';
+import { StarredEntitiesProps } from './homePageComponents/StarredEntities/Content';
 
 /** @public */
 export const homePlugin = createPlugin({
   id: 'home',
+  apis: [
+    createApiFactory({
+      api: visitsApiRef,
+      deps: {
+        storageApi: storageApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ storageApi, identityApi }) =>
+        VisitsStorageApi.create({ storageApi, identityApi }),
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },
@@ -149,7 +169,7 @@ export const HomePageToolkit = homePlugin.provide(
  * @public
  */
 export const HomePageStarredEntities = homePlugin.provide(
-  createCardExtension({
+  createCardExtension<Partial<StarredEntitiesProps>>({
     name: 'HomePageStarredEntities',
     title: 'Your Starred Entities',
     components: () => import('./homePageComponents/StarredEntities'),
@@ -170,5 +190,41 @@ export const HeaderWorldClock = homePlugin.provide(
           m => m.HeaderWorldClock,
         ),
     },
+  }),
+);
+
+/**
+ * Display top visited pages for the homepage
+ * @public
+ */
+export const HomePageTopVisited = homePlugin.provide(
+  createCardExtension<Partial<VisitedByTypeProps>>({
+    name: 'HomePageTopVisited',
+    components: () => import('./homePageComponents/VisitedByType/TopVisited'),
+  }),
+);
+
+/**
+ * Display recently visited pages for the homepage
+ * @public
+ */
+export const HomePageRecentlyVisited = homePlugin.provide(
+  createCardExtension<Partial<VisitedByTypeProps>>({
+    name: 'HomePageRecentlyVisited',
+    components: () =>
+      import('./homePageComponents/VisitedByType/RecentlyVisited'),
+  }),
+);
+
+/**
+ * A component to display specific Featured Docs.
+ *
+ * @public
+ */
+export const FeaturedDocsCard = homePlugin.provide(
+  createCardExtension<FeaturedDocsCardProps>({
+    name: 'FeaturedDocsCard',
+    title: 'Featured Docs',
+    components: () => import('./homePageComponents/FeaturedDocsCard'),
   }),
 );

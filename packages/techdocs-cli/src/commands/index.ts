@@ -75,6 +75,11 @@ export function registerCommands(program: Command) {
       'Plugins which should be added automatically to the mkdocs.yaml file',
       [],
     )
+    .option(
+      '--runAsDefaultUser',
+      'Bypass setting the container user as the same user and group id as host for Linux and MacOS',
+      false,
+    )
     .alias('build')
     .action(lazy(() => import('./generate/generate').then(m => m.default)));
 
@@ -284,6 +289,25 @@ export function registerCommands(program: Command) {
       '--preview-app-port <PORT>',
       'Port for the preview app to be served on',
       defaultPreviewAppPort,
+    )
+    .option(
+      '-c, --mkdocs-config-file-name <FILENAME>',
+      'Mkdocs config file name',
+    )
+    .option(
+      '--mkdocs-parameter-clean',
+      'Pass "--clean" parameter to mkdocs server running in containerized environment',
+      false,
+    )
+    .option(
+      '--mkdocs-parameter-dirtyreload',
+      'Pass "--dirtyreload" parameter to mkdocs server running in containerized environment',
+      false,
+    )
+    .option(
+      '--mkdocs-parameter-strict',
+      'Pass "--strict" parameter to mkdocs server running in containerized environment',
+      false,
     )
     .hook('preAction', command => {
       if (
