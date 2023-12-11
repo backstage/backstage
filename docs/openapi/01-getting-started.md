@@ -1,6 +1,6 @@
 ---
 id: 01-getting-started
-title: Creating plugins with OpenAPI (Experimental)
+title: Schema-first plugins with OpenAPI (Experimental)
 description: Tutorial on how to start using OpenAPI schema-first development in your plugins.
 ---
 
