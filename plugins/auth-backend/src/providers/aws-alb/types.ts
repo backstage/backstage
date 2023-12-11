@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-export { awsAlb } from './provider';
-export type { AwsAlbResult } from './types';
+import { AwsAlbResult as _AwsAlbResult } from '@backstage/plugin-auth-backend-module-aws-alb-provider';
+
+/**
+ * The result of the initial auth challenge. This is the input to the auth
+ * callbacks.
+ *
+ * @public
+ * @deprecated import from `@backstage/plugin-auth-backend-module-aws-alb-provider` instead
+ */
+export type AwsAlbResult = _AwsAlbResult;
