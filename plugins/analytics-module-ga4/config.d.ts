@@ -55,6 +55,14 @@ export interface Config {
         debug?: boolean;
 
         /**
+         * Whether to send default send_page_view event.
+         * Defaults to false.
+         *
+         * @visibility frontend
+         */
+        enableSendPageView?: boolean;
+
+        /**
          * Prevents events from actually being sent when set to true. Defaults
          * to false.
          *
