@@ -217,6 +217,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
 
           subscription = observable.subscribe({
             next: event => {
+              retryCount = 1;
               switch (event.type) {
                 case 'log':
                   return collectedLogEvents.push(event);
@@ -247,7 +248,9 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
               const maxRetries = 3;
 
               if (!error.message) {
-                error.message = `We cannot connect at the moment, trying again in some seconds... Retrying (${retryCount}/${maxRetries} retries)`;
+                error.message = `We cannot connect at the moment, trying again in some seconds... Retrying (${
+                  retryCount > maxRetries ? maxRetries : retryCount
+                }/${maxRetries} retries)`;
               }
 
               setTimeout(() => {
