@@ -14,33 +14,4 @@
  * limitations under the License.
  */
 
-import passport from 'passport';
-
-/**
- * JWT header extraction result, containing the raw value and the parsed JWT
- * payload.
- *
- * @public
- */
-export type AwsAlbResult = {
-  fullProfile: PassportProfile;
-  expiresInSeconds?: number;
-  accessToken: string;
-};
-/**
- * @public
- */
-export type PassportProfile = passport.Profile & {
-  avatarUrl?: string;
-};
-
-export type AwsAlbClaims = {
-  sub: string;
-  name: string;
-  family_name: string;
-  given_name: string;
-  picture: string;
-  email: string;
-  exp: number;
-  iss: string;
-};
+export { type PassportProfile } from './types';

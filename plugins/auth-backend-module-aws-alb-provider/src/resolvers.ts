@@ -19,8 +19,8 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { AwsAlbResult } from './types';
-/*
- * Available sign-in resolvers for the AWS ALB Provider.
+/**
+ * Available sign-in resolvers for the Google auth provider.
  *
  * @public
  */
