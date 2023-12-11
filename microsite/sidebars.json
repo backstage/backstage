@@ -249,7 +249,13 @@
       "plugins/internationalization",
       "plugins/analytics",
       "plugins/feature-flags",
-      "openapi/01-getting-started",
+      {
+        "type": "category",
+        "label": "OpenAPI",
+        "items": [
+          "openapi/01-getting-started"
+        ]
+      },
       {
         "type": "category",
         "label": "Backends and APIs",
