@@ -4751,7 +4751,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-aws-alb-provider@^0.0.0, @backstage/plugin-auth-backend-module-aws-alb-provider@workspace:^, @backstage/plugin-auth-backend-module-aws-alb-provider@workspace:plugins/auth-backend-module-aws-alb-provider":
+"@backstage/plugin-auth-backend-module-aws-alb-provider@workspace:^, @backstage/plugin-auth-backend-module-aws-alb-provider@workspace:plugins/auth-backend-module-aws-alb-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-aws-alb-provider@workspace:plugins/auth-backend-module-aws-alb-provider"
   dependencies:
@@ -26819,7 +26819,7 @@ __metadata:
     "@backstage/plugin-adr-backend": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
-    "@backstage/plugin-auth-backend-module-aws-alb-provider": ^0.0.0
+    "@backstage/plugin-auth-backend-module-aws-alb-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-azure-devops-backend": "workspace:^"
     "@backstage/plugin-azure-sites-backend": "workspace:^"
