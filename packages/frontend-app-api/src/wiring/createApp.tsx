@@ -418,7 +418,14 @@ function createApiHolder(
         (x): x is typeof createTranslationExtension.translationDataRef.T => !!x,
       ) ?? [];
 
+  const apis = new Map<string, AnyApiFactory>();
+
+  // removing duplicates by id, overriding the default one with the plugin one
   for (const factory of [...defaultApis, ...pluginApis]) {
+    apis.set(factory.api.id, factory);
+  }
+
+  for (const factory of apis.values()) {
     factoryRegistry.register('default', factory);
   }
 
@@ -495,15 +502,6 @@ function createApiHolder(
         resources: translationResources,
       }),
   });
-
-  // TODO: ship these as default extensions instead
-  for (const factory of defaultApis as AnyApiFactory[]) {
-    if (!factoryRegistry.register('app', factory)) {
-      throw new Error(
-        `Duplicate or forbidden API factory for ${factory.api} in app`,
-      );
-    }
-  }
 
   ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
 
