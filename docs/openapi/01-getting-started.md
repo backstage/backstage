@@ -1,4 +1,10 @@
-# Getting started with OpenAPI in Backstage plugins
+---
+id: 01-getting-started
+title: Creating plugins with OpenAPI (Experimental)
+description: Tutorial on how to start using OpenAPI schema-first development in your plugins.
+---
+
+# Getting started with OpenAPI in your Backstage plugins
 
 Target Audience: Plugin developers
 
@@ -6,7 +12,7 @@ Difficulty: Medium
 
 ## Goal
 
-The goal of this tutorial is to more tightly couple your OpenAPI specification and plugin lifecycle. The OpenAPI tooling project area has created tools that allow you to create,
+The goal of this tutorial is to give you exposure to tools that more tightly couple your OpenAPI specification and plugin lifecycle. The tools we'll be presenting were created by the OpenAPI tooling project area and allow you to create,
 
 1. A typed `express` router that provides strong guardrails during development for input and output values. Support for query, path parameters and request body, as well as experimental support for headers and cookies.
 2. An auto-generated client to interact with your plugin's backend. Support for all request types, parameters and body, as well as return types. Provides a low-level interface to allow more customization by higher level libraries.
@@ -19,7 +25,7 @@ The goal of this tutorial is to more tightly couple your OpenAPI specification a
 This tutorial assumes that you're already familiar with the following,
 
 1. How to build a Backstage plugin.
-2. `Express.js` and Typescript
+2. `Express.js` and `Typescript`
 3. OpenAPI 3.0 schemas
 
 ### Setting up
@@ -35,7 +41,7 @@ You should install both of the above packages in the _root_ of your workspace.
 
 You should create a new folder, `src/schema` in your backend plugin to store your OpenAPI (and any other) specifications. For example, if you're adding a specification to the catalog plugin, you would add a `src/schema` folder to `plugins/catalog-backend`, making a `plugins/catalog-backend/src/schema` directory. This directory should have an `openapi.yaml` file inside.
 
-> Currently, only the `.yaml` ending is supported, not `.yml`.
+> Currently, only the `.yaml` extension is supported, not `.yml`.
 
 ## Generating a typed express router from a spec
 
