@@ -1,5 +1,11 @@
 # @backstage/plugin-azure-devops-common
 
+## 0.3.2-next.1
+
+### Patch Changes
+
+- c70e4f5: Added multi-org support
+
 ## 0.3.2-next.0
 
 ### Patch Changes

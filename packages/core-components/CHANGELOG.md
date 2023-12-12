@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.13.9-next.3
+
+### Patch Changes
+
+- 175d86b: Fixed an issue where the `onChange` prop within `HeaderTabs` was triggering twice upon tab-switching.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/version-bridge@1.0.7
+
 ## 0.13.9-next.2
 
 ### Patch Changes
