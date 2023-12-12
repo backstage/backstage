@@ -18,11 +18,7 @@ import {
   catalogApiRef,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import {
-  Entity,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { List, Typography, Tabs, Tab } from '@material-ui/core';
@@ -55,17 +51,9 @@ export const Content = ({
       return [];
     }
 
-    const filter = [...starredEntities]
-      .map(ent => parseEntityRef(ent))
-      .map(ref => ({
-        kind: ref.kind,
-        'metadata.namespace': ref.namespace,
-        'metadata.name': ref.name,
-      }));
-
     return (
-      await catalogApi.getEntities({
-        filter,
+      await catalogApi.getEntitiesByRefs({
+        entityRefs: [...starredEntities],
         fields: [
           'kind',
           'metadata.namespace',
@@ -73,7 +61,7 @@ export const Content = ({
           'metadata.title',
         ],
       })
-    ).items;
+    ).items.filter((e): e is Entity => !!e);
   }, [catalogApi, starredEntities]);
 
   if (starredEntities.size === 0)
