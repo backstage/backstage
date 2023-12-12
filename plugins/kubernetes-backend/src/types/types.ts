@@ -17,12 +17,7 @@
 import { Logger } from 'winston';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Config } from '@backstage/config';
-import {
-  CustomResource,
-  KubernetesFetcher,
-  KubernetesServiceLocator,
-  ObjectToFetch,
-} from '@backstage/plugin-kubernetes-node';
+import * as k8sTypes from '@backstage/plugin-kubernetes-node';
 
 /**
  *
@@ -37,10 +32,10 @@ export type ServiceLocatorMethod = 'multiTenant' | 'singleTenant' | 'http'; // T
 export interface KubernetesObjectsProviderOptions {
   logger: Logger;
   config: Config;
-  fetcher: KubernetesFetcher;
-  serviceLocator: KubernetesServiceLocator;
-  customResources: CustomResource[];
-  objectTypesToFetch?: ObjectToFetch[];
+  fetcher: k8sTypes.KubernetesFetcher;
+  serviceLocator: k8sTypes.KubernetesServiceLocator;
+  customResources: k8sTypes.CustomResource[];
+  objectTypesToFetch?: k8sTypes.ObjectToFetch[];
 }
 
 /**
@@ -50,4 +45,71 @@ export interface KubernetesObjectsProviderOptions {
 export type ObjectsByEntityRequest = KubernetesRequestBody;
 
 // TODO remove this re-export as a breaking change after a couple of releases
-export type * from '@backstage/plugin-kubernetes-node';
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type KubernetesObjectsProvider = k8sTypes.KubernetesObjectsProvider;
+
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type CustomResourcesByEntity = k8sTypes.CustomResourcesByEntity;
+
+/**
+ * @public
+ * @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type AuthMetadata = k8sTypes.AuthMetadata;
+
+/**
+ * @public
+ * @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type ClusterDetails = k8sTypes.ClusterDetails;
+
+/**
+ * @public
+ * @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type KubernetesClustersSupplier = k8sTypes.KubernetesClustersSupplier;
+
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type KubernetesObjectTypes = k8sTypes.KubernetesObjectTypes;
+
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type ObjectToFetch = k8sTypes.ObjectToFetch;
+
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type CustomResource = k8sTypes.CustomResource;
+
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type ObjectFetchParams = k8sTypes.ObjectFetchParams;
+
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type FetchResponseWrapper = k8sTypes.FetchResponseWrapper;
+
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type KubernetesFetcher = k8sTypes.KubernetesFetcher;
+
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type ServiceLocatorRequestContext =
+  k8sTypes.ServiceLocatorRequestContext;
+
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type KubernetesServiceLocator = k8sTypes.KubernetesServiceLocator;
