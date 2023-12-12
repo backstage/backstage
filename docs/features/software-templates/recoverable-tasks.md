@@ -14,12 +14,12 @@ If you would like to recover your tasks automatically, at this version you'll ha
 For that you have to specify in your template a recovery strategy:
 
 ```yaml
-apiVersion: scaffolder.backstage.io/v1beta4
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: my-recoverable-template
 spec:
-  recovery:
+  EXPERIMENTAL_recovery:
     EXPERIMENTAL_strategy: 'start_over'
 ```
 
