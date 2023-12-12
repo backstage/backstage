@@ -73,58 +73,63 @@ const MemberComponent = (props: { member: UserEntity }) => {
   const displayName = profile?.displayName ?? metaName;
 
   return (
-    <Grid item container xs={12} sm={6} md={4} xl={2}>
-      <Box className={classes.card}>
+    <Box className={classes.card}>
+      <Box
+        display="flex"
+        flexDirection="column"
+        m={3}
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Avatar
+          displayName={displayName}
+          picture={profile?.picture}
+          customStyles={{
+            position: 'absolute',
+            top: '-2rem',
+          }}
+        />
         <Box
-          display="flex"
-          flexDirection="column"
-          m={3}
-          alignItems="center"
-          justifyContent="center"
+          pt={2}
+          sx={{
+            width: '100%',
+          }}
+          textAlign="center"
         >
-          <Avatar
-            displayName={displayName}
-            picture={profile?.picture}
-            customStyles={{
-              position: 'absolute',
-              top: '-2rem',
-            }}
-          />
-          <Box
-            pt={2}
-            sx={{
-              width: '100%',
-            }}
-            textAlign="center"
-          >
-            <Typography variant="h6">
-              <EntityRefLink
-                data-testid="user-link"
-                entityRef={props.member}
-                title={displayName}
-              />
-            </Typography>
-            {profile?.email && (
-              <Link to={`mailto:${profile.email}`}>
-                <OverflowTooltip text={profile.email} />
-              </Link>
-            )}
-            {description && (
-              <Typography variant="subtitle2">{description}</Typography>
-            )}
-          </Box>
+          <Typography variant="h6">
+            <EntityRefLink
+              data-testid="user-link"
+              entityRef={props.member}
+              title={displayName}
+            />
+          </Typography>
+          {profile?.email && (
+            <Link to={`mailto:${profile.email}`}>
+              <OverflowTooltip text={profile.email} />
+            </Link>
+          )}
+          {description && (
+            <Typography variant="subtitle2">{description}</Typography>
+          )}
         </Box>
       </Box>
-    </Grid>
+    </Box>
   );
 };
 
-const useListStyles = makeStyles(() => ({
+const useListStyles = makeStyles(theme => ({
   root: {
     height: '100%',
   },
   cardContent: {
     overflow: 'auto',
+  },
+  memberList: {
+    display: 'grid',
+    gap: theme.spacing(1.5),
+    gridTemplateColumns: `repeat(auto-fit, minmax(auto, ${theme.spacing(
+      34,
+    )}px))`,
   },
 }));
 
@@ -219,6 +224,25 @@ export const MembersListCard = (props: {
     />
   );
 
+  let memberList: React.JSX.Element;
+  if (members && members.length > 0) {
+    memberList = (
+      <Box className={classes.memberList}>
+        {members.slice(pageSize * (page - 1), pageSize * page).map(member => (
+          <MemberComponent member={member} key={member.metadata.uid} />
+        ))}
+      </Box>
+    );
+  } else {
+    memberList = (
+      <Box p={2}>
+        <Typography>
+          This group has no {memberDisplayTitle.toLocaleLowerCase()}.
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Grid item className={classes.root}>
       <InfoCard
@@ -247,21 +271,7 @@ export const MembersListCard = (props: {
         {showAggregateMembers && loadingDescendantMembers ? (
           <Progress />
         ) : (
-          <Grid container spacing={3}>
-            {members && members.length > 0 ? (
-              members
-                .slice(pageSize * (page - 1), pageSize * page)
-                .map(member => (
-                  <MemberComponent member={member} key={member.metadata.uid} />
-                ))
-            ) : (
-              <Box p={2}>
-                <Typography>
-                  This group has no {memberDisplayTitle.toLocaleLowerCase()}.
-                </Typography>
-              </Box>
-            )}
-          </Grid>
+          memberList
         )}
       </InfoCard>
     </Grid>
