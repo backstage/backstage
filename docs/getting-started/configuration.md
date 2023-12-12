@@ -134,7 +134,7 @@ links:
 
 There are multiple authentication providers available for you to use with
 Backstage, feel free to follow
-[the instructions for adding authentication](../auth/).
+[the instructions for adding authentication](../auth/index.md).
 
 For this tutorial we choose to use GitHub, a free service most of you might be
 familiar with. For other options, see
@@ -205,7 +205,7 @@ Restart Backstage from the terminal, by stopping it with `Control-C`, and starti
 To learn more about Authentication in Backstage, here are some docs you
 could read:
 
-- [Authentication in Backstage](../auth/)
+- [Authentication in Backstage](../auth/index.md)
 - [Using organizational data from GitHub](../integrations/github/org.md)
 
 ### Setting up a GitHub Integration
@@ -254,7 +254,7 @@ integrations:
 
 Some helpful links, for if you want to learn more about:
 
-- [Other available integrations](../integrations/)
+- [Other available integrations](../integrations/index.md)
 - [Using GitHub Apps instead of a Personal Access Token](../integrations/github/github-apps.md#docsNav)
 
 ### Explore what we've done so far
