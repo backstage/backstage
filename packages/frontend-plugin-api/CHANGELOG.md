@@ -1,5 +1,16 @@
 # @backstage/frontend-plugin-api
 
+## 0.4.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 0.4.0-next.2
 
 ### Minor Changes
