@@ -12,7 +12,7 @@ As described [in the architecture section](../architecture/06-utility-apis.md), 
 
 > For details, [see the main article](./02-creating.md).
 
-Backstage apps, the core Backstage framework, and plugins can all expose utility APIs for general use.
+Backstage apps, plugins, and the core Backstage framework can all expose utility APIs for general use.
 
 Some are available out of the box, such as the API for reading app configuration. Some are provided by third party plugins, such as the catalog client API that both the catalog itself and your own code can leverage to talk to the catalog backend. Some, you may create yourself and make available inside your Backstage instance for use within your private ecosystem of plugins.
 
