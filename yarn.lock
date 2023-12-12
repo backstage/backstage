@@ -6277,7 +6277,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@material-ui/styles": ^4.11.0
+    "@mui/styles": ^5.0.0
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -6387,7 +6387,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@material-ui/styles": ^4.9.6
+    "@mui/styles": ^5.0.0
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -8088,7 +8088,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.60
     "@material-ui/pickers": ^3.3.10
-    "@material-ui/styles": ^4.11.5
+    "@mui/styles": ^5.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
@@ -9371,7 +9371,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@material-ui/styles": ^4.10.0
+    "@mui/styles": ^5.0.0
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -9814,7 +9814,7 @@ __metadata:
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/lab": 4.0.0-alpha.61
-    "@material-ui/styles": ^4.11.0
+    "@mui/styles": ^5.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -9855,7 +9855,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@material-ui/styles": ^4.10.0
+    "@mui/styles": ^5.0.0
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -13017,7 +13017,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/styles@npm:^4.10.0, @material-ui/styles@npm:^4.11.0, @material-ui/styles@npm:^4.11.4, @material-ui/styles@npm:^4.11.5, @material-ui/styles@npm:^4.9.6":
+"@material-ui/styles@npm:^4.11.4, @material-ui/styles@npm:^4.11.5":
   version: 4.11.5
   resolution: "@material-ui/styles@npm:4.11.5"
   dependencies:
@@ -13393,12 +13393,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/private-theming@npm:^5.14.19":
-  version: 5.14.19
-  resolution: "@mui/private-theming@npm:5.14.19"
+"@mui/private-theming@npm:^5.14.19, @mui/private-theming@npm:^5.14.20":
+  version: 5.14.20
+  resolution: "@mui/private-theming@npm:5.14.20"
   dependencies:
     "@babel/runtime": ^7.23.4
-    "@mui/utils": ^5.14.19
+    "@mui/utils": ^5.14.20
     prop-types: ^15.8.1
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -13406,7 +13406,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: ee17fa123ae671fcfb6e59787e9a5b6d650d4a53ea575f5d5519dd187c9b04fbb50f12f2da5a663d3ba3a82d503086faa18bf3b68923237de78f44e401e04935
+  checksum: 9e23ec14b699866914240ef1f5d28135369e5812ea80febb8179ec31ecd307d12d9e573256be3edbc26f002d15d55924eec6c67448a6efbf2f1823c62baa3908
   languageName: node
   linkType: hard
 
@@ -13431,15 +13431,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/styles@npm:^5.14.18":
-  version: 5.14.19
-  resolution: "@mui/styles@npm:5.14.19"
+"@mui/styles@npm:^5.0.0, @mui/styles@npm:^5.14.18":
+  version: 5.14.20
+  resolution: "@mui/styles@npm:5.14.20"
   dependencies:
     "@babel/runtime": ^7.23.4
     "@emotion/hash": ^0.9.1
-    "@mui/private-theming": ^5.14.19
+    "@mui/private-theming": ^5.14.20
     "@mui/types": ^7.2.10
-    "@mui/utils": ^5.14.19
+    "@mui/utils": ^5.14.20
     clsx: ^2.0.0
     csstype: ^3.1.2
     hoist-non-react-statics: ^3.3.2
@@ -13458,7 +13458,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 03780cba63ee5dca4bd3f81aa8634039e6a18291eb2f89cdcee236669e4b05a2593a3e5e74c21378950cc34a790163d2d3b80d2b649fd368a5b09439f198489e
+  checksum: 0e7b995f30daf9cb78abd90a9c8fb3fdca92998106b39b9a7e8136bb3b308c7135f0abac19e060c963ea2aa67b48fb0cd4a3de27bb66e2a9547b59ecca9e8938
   languageName: node
   linkType: hard
 
@@ -13502,9 +13502,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^5.14.15, @mui/utils@npm:^5.14.19":
-  version: 5.14.19
-  resolution: "@mui/utils@npm:5.14.19"
+"@mui/utils@npm:^5.14.15, @mui/utils@npm:^5.14.19, @mui/utils@npm:^5.14.20":
+  version: 5.14.20
+  resolution: "@mui/utils@npm:5.14.20"
   dependencies:
     "@babel/runtime": ^7.23.4
     "@types/prop-types": ^15.7.11
@@ -13516,7 +13516,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: f53f746eb33bc5d700b9f2b454e211ca17f5aa320cd30f54a82a347e4da0c61b872f323f01ff4b5247d3f992ac4f72a69ac79974300a6dedf01ff6b8f6d75b49
+  checksum: 72db14bb3d53c3a66f3051c479a1abaa6d39682f788ea3d43127f68d92a84b369cadbc2cb5e5f40e2f0005363042057ff0f34bcd30c0047c617bfd1d6021391e
   languageName: node
   linkType: hard
 
