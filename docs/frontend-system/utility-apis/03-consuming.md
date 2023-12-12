@@ -43,9 +43,9 @@ Your utility APIs can depend on other utility APIs in their factories. You do th
 
 ```tsx
 import {
+  configApiRef,
   createApiExtension,
   createApiFactory,
-  configApiRef,
   discoveryApiRef,
 } from '@backstage/frontend-plugin-api';
 import { MyApiImpl } from './MyApiImpl';

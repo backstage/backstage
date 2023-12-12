@@ -62,12 +62,8 @@ const workApi = createApiExtension({
   factory: () =>
     createApiFactory({
       api: workApiRef,
-      deps: {
-        configApi: configApiRef,
-      },
-      factory: ({ configApi }) => {
-        return new WorkImpl({ configApi });
-      },
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) => new WorkImpl({ configApi }),
     }),
 });
 
@@ -81,7 +77,7 @@ export default createPlugin({
 });
 ```
 
-For illustration we make a skeleton implementation class and the API extension and factory for it, in the same file. These are not exported to the public surface of the plugin package; only the plugin is, as the default export.
+For illustration we make a skeleton implementation class and the API extension and factory for it, in the same file. These are not exported to the public surface of the plugin package; only the plugin is, as the default export. Users who install the plugin will now get the utility API automatically as well.
 
 The code also illustrates how the API factory declares a dependency on another utility API - the core config API in this case. An instance of that utility API is then provided to the factory function.
 
