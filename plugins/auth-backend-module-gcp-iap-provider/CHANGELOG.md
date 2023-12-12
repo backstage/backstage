@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-gcp-iap-provider
 
+## 0.2.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.2-next.3
+
 ## 0.2.2-next.2
 
 ### Patch Changes
