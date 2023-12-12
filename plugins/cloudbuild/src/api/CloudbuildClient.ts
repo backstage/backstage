@@ -92,7 +92,10 @@ export class CloudbuildClient implements CloudbuildApi {
     );
   }
 
-  async request(url: string, method: string = 'GET'): Promise<Response> {
+  private async request(
+    url: string,
+    method: string = 'GET',
+  ): Promise<Response> {
     const requestHeaders = {
       Accept: '*/*',
       Authorization: `Bearer ${await this.getToken()}`,
