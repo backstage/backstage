@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-// TODO remove this re-export as a breaking change after a couple of releases
+import * as k8sAuthTypes from '@backstage/plugin-kubernetes-node';
 
-export type {
-  AuthenticationStrategy,
-  KubernetesCredential,
-} from '@backstage/plugin-kubernetes-node';
+// TODO remove this re-export as a breaking change after a couple of releases
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type AuthenticationStrategy = k8sAuthTypes.AuthenticationStrategy;
+
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type KubernetesCredential = k8sAuthTypes.KubernetesCredential;
