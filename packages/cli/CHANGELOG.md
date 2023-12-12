@@ -1,5 +1,23 @@
 # @backstage/cli
 
+## 0.25.0-next.3
+
+### Patch Changes
+
+- 219d7f0: Updating template generation for scaffolder module
+- bd586a5: Updated dependency `bfj` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.0
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/eslint-plugin@0.1.4-next.0
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.25.0-next.2
 
 ### Patch Changes
