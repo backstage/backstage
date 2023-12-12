@@ -4835,7 +4835,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
-    azure-devops-node-api: ^11.0.1
+    azure-devops-node-api: ^12.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
@@ -7975,7 +7975,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
-    azure-devops-node-api: ^11.0.1
+    azure-devops-node-api: ^12.0.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -20828,13 +20828,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"azure-devops-node-api@npm:^11.0.1":
-  version: 11.2.0
-  resolution: "azure-devops-node-api@npm:11.2.0"
+"azure-devops-node-api@npm:^12.0.0":
+  version: 12.1.0
+  resolution: "azure-devops-node-api@npm:12.1.0"
   dependencies:
     tunnel: 0.0.6
     typed-rest-client: ^1.8.4
-  checksum: 52e84379b4ce71ad8a79470ba89e1d1217b28ee3670c7e484e1b1d9c210acf406ab09132c241cb481f78354df701dae7752ba3c4e3d28b2b6c0b0ff2d9eb7199
+  checksum: aa3c3f3eff89485a44ea31843749c5abf5ddfb0d2f059a3f5623d75d5eddbab5b839a5458c158e7941b9c8a2adfde2ecfea128ed076f730c309c869e8a318a78
   languageName: node
   linkType: hard
 
@@ -26479,7 +26479,7 @@ __metadata:
     "@types/express": ^4.17.6
     "@types/express-serve-static-core": ^4.17.5
     "@types/luxon": ^3.0.0
-    azure-devops-node-api: ^11.0.1
+    azure-devops-node-api: ^12.0.0
     better-sqlite3: ^9.0.0
     dockerode: ^3.3.1
     example-app: "link:../app"
