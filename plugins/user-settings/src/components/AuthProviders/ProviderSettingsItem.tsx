@@ -58,8 +58,8 @@ export const ProviderSettingsItem = (props: {
     const provider = localStorage.getItem(
       '@backstage/core:SignInPage:provider',
     );
-    const log = api?.sessionManager?.connector?.provider?.id;
-    if (provider?.split('-')[0] === log) {
+    const currentProvider = title.toLocaleLowerCase('en-US');
+    if (provider?.split('-')[0] === currentProvider) {
       return identityApi.signOut();
     }
     return api.signOut();
