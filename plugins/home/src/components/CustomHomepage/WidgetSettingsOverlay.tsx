@@ -91,6 +91,9 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
                   setSettingsDialogOpen(false);
                 }
               }}
+              experimental_defaultFormStateBehavior={{
+                allOf: 'populateDefaults',
+              }}
             />
           </DialogContent>
         </Dialog>

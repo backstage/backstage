@@ -21,20 +21,19 @@ import { v4 as uuid } from 'uuid';
 import { pathToFileURL } from 'url';
 import { Logger } from 'winston';
 import {
+  createTemplateAction,
+  TaskSecrets,
+  TemplateFilter,
+  TemplateGlobal,
   deserializeDirectoryContents,
   SerializedFile,
   serializeDirectoryContents,
-} from '../../lib/files';
-import { TemplateFilter, TemplateGlobal } from '../../lib';
+} from '@backstage/plugin-scaffolder-node';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import fs from 'fs-extra';
 import { resolveSafeChildPath } from '@backstage/backend-common';
-import {
-  createTemplateAction,
-  TaskSecrets,
-} from '@backstage/plugin-scaffolder-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 interface DryRunInput {
