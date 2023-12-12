@@ -107,7 +107,7 @@ export class GithubUrlReader implements UrlReader {
 
     let response: Response;
     try {
-      response = await fetch(ghUrl, {
+      response = await this.fetchResponse(ghUrl, {
         headers: {
           ...credentials?.headers,
           ...(options?.etag && { 'If-None-Match': options.etag }),
@@ -125,38 +125,13 @@ export class GithubUrlReader implements UrlReader {
         signal: options?.signal as any,
       });
     } catch (e) {
-      throw new Error(`Unable to read ${url}, ${e}`);
+      throw e;
     }
 
-    if (response.status === 304) {
-      throw new NotModifiedError();
-    }
-
-    if (response.ok) {
-      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
-        etag: response.headers.get('ETag') ?? undefined,
-        lastModifiedAt: parseLastModified(
-          response.headers.get('Last-Modified'),
-        ),
-      });
-    }
-
-    let message = `${url} could not be read as ${ghUrl}, ${response.status} ${response.statusText}`;
-    if (response.status === 404) {
-      throw new NotFoundError(message);
-    }
-
-    // GitHub returns a 403 response with a couple of headers indicating rate
-    // limit status. See more in the GitHub docs:
-    // https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
-    if (
-      response.status === 403 &&
-      response.headers.get('X-RateLimit-Remaining') === '0'
-    ) {
-      message += ' (rate limit exceeded)';
-    }
-
-    throw new Error(message);
+    return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
+      etag: response.headers.get('ETag') ?? undefined,
+      lastModifiedAt: parseLastModified(response.headers.get('Last-Modified')),
+    });
   }
 
   async readTree(
@@ -350,10 +325,26 @@ export class GithubUrlReader implements UrlReader {
     const response = await fetch(urlAsString, init);
 
     if (!response.ok) {
-      const message = `Request failed for ${urlAsString}, ${response.status} ${response.statusText}`;
+      let message = `Request failed for ${urlAsString}, ${response.status} ${response.statusText}`;
+
+      if (response.status === 304) {
+        throw new NotModifiedError();
+      }
+
       if (response.status === 404) {
         throw new NotFoundError(message);
       }
+
+      // GitHub returns a 403 response with a couple of headers indicating rate
+      // limit status. See more in the GitHub docs:
+      // https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
+      if (
+        response.status === 403 &&
+        response.headers.get('X-RateLimit-Remaining') === '0'
+      ) {
+        message += ' (rate limit exceeded)';
+      }
+
       throw new Error(message);
     }
 
