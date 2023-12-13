@@ -20,6 +20,9 @@ import {
   ExtensionDataRef,
   RouteRef,
   coreExtensionData,
+  createApiExtension,
+  createNavItemExtension,
+  createThemeExtension,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
@@ -63,10 +66,11 @@ const getOutputColor = createOutputColorGenerator(
     [coreExtensionData.reactElement.id]: colors.green[500],
     [coreExtensionData.routePath.id]: colors.yellow[500],
     [coreExtensionData.routeRef.id]: colors.purple[500],
-    [coreExtensionData.apiFactory.id]: colors.blue[500],
-    [coreExtensionData.theme.id]: colors.lime[500],
-    [coreExtensionData.navTarget.id]: colors.orange[500],
+    [createApiExtension.factoryDataRef.id]: colors.blue[500],
+    [createThemeExtension.themeDataRef.id]: colors.lime[500],
+    [createNavItemExtension.targetDataRef.id]: colors.orange[500],
   },
+
   [
     colors.blue[200],
     colors.orange[200],
@@ -187,6 +191,7 @@ function OutputLink(props: {
 
   let link: string | undefined = undefined;
   try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     link = useRouteRef(routeRef as RouteRef<undefined>)();
   } catch {
     /* ignore */
@@ -257,8 +262,12 @@ function Attachments(props: {
                 </Typography>
               </Box>
               <Box className={classes.attachmentsInputChildren}>
-                {children.map(node => (
-                  <Extension key={node.spec.id} node={node} depth={depth + 1} />
+                {children.map(childNode => (
+                  <Extension
+                    key={childNode.spec.id}
+                    node={childNode}
+                    depth={depth + 1}
+                  />
                 ))}
               </Box>
             </Box>
@@ -320,11 +329,11 @@ function Extension(props: { node: AppNode; depth: number }) {
 
 const legendMap = {
   'React Element': coreExtensionData.reactElement,
-  'Utility API': coreExtensionData.apiFactory,
+  'Utility API': createApiExtension.factoryDataRef,
   'Route Path': coreExtensionData.routePath,
   'Route Ref': coreExtensionData.routeRef,
-  'Nav Target': coreExtensionData.navTarget,
-  Theme: coreExtensionData.theme,
+  'Nav Target': createNavItemExtension.targetDataRef,
+  Theme: createThemeExtension.themeDataRef,
 };
 
 function Legend() {
