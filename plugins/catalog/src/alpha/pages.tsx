@@ -32,7 +32,7 @@ import { catalogExtensionData } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 
-export const CatalogIndexPage = createPageExtension({
+export const catalogPage = createPageExtension({
   defaultPath: '/catalog',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   inputs: {
@@ -47,7 +47,7 @@ export const CatalogIndexPage = createPageExtension({
   },
 });
 
-export const CatalogEntityPage = createPageExtension({
+export const catalogEntityPage = createPageExtension({
   name: 'entity',
   defaultPath: '/catalog/:namespace/:kind/:name',
   routeRef: convertLegacyRouteRef(entityRouteRef),
@@ -82,4 +82,4 @@ export const CatalogEntityPage = createPageExtension({
   },
 });
 
-export default [CatalogIndexPage, CatalogEntityPage];
+export default [catalogPage, catalogEntityPage];
