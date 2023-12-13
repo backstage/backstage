@@ -38,6 +38,7 @@ export const visualizerNavItem = createNavItemExtension({
   routeRef: rootRouteRef,
 });
 
+/** @public */
 export const visualizerPlugin = createPlugin({
   id: 'visualizer',
   extensions: [visualizerPage, visualizerNavItem],
