@@ -21,7 +21,6 @@ export {
 } from './coreExtensionData';
 export {
   createExtension,
-  type Extension,
   type ExtensionDefinition,
   type CreateExtensionOptions,
   type ExtensionDataValues,
@@ -51,4 +50,5 @@ export {
   type ExtensionOverrides,
   type ExtensionOverridesOptions,
 } from './createExtensionOverrides';
+export { type Extension } from './resolveExtensionDefinition';
 export type { FeatureFlagConfig } from './types';

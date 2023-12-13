@@ -101,14 +101,20 @@ export interface CreateExtensionOptions<
 /** @public */
 export interface ExtensionDefinition<TConfig> {
   $$type: '@backstage/ExtensionDefinition';
-  kind?: string;
-  namespace?: string;
-  name?: string;
-  attachTo: { id: string; input: string };
-  disabled: boolean;
-  inputs: AnyExtensionInputMap;
-  output: AnyExtensionDataMap;
-  configSchema?: PortableSchema<TConfig>;
+  readonly kind?: string;
+  readonly namespace?: string;
+  readonly name?: string;
+  readonly attachTo: { id: string; input: string };
+  readonly disabled: boolean;
+  readonly configSchema?: PortableSchema<TConfig>;
+}
+
+/** @internal */
+export interface InternalExtensionDefinition<TConfig>
+  extends ExtensionDefinition<TConfig> {
+  readonly version: 'v1';
+  readonly inputs: AnyExtensionInputMap;
+  readonly output: AnyExtensionDataMap;
   factory(options: {
     node: AppNode;
     config: TConfig;
@@ -116,20 +122,22 @@ export interface ExtensionDefinition<TConfig> {
   }): ExtensionDataValues<any>;
 }
 
-/** @public */
-export interface Extension<TConfig> {
-  $$type: '@backstage/Extension';
-  id: string;
-  attachTo: { id: string; input: string };
-  disabled: boolean;
-  inputs: AnyExtensionInputMap;
-  output: AnyExtensionDataMap;
-  configSchema?: PortableSchema<TConfig>;
-  factory(options: {
-    node: AppNode;
-    config: TConfig;
-    inputs: ResolvedExtensionInputs<any>;
-  }): ExtensionDataValues<any>;
+/** @internal */
+export function toInternalExtensionDefinition<TConfig>(
+  overrides: ExtensionDefinition<TConfig>,
+): InternalExtensionDefinition<TConfig> {
+  const internal = overrides as InternalExtensionDefinition<TConfig>;
+  if (internal.$$type !== '@backstage/ExtensionDefinition') {
+    throw new Error(
+      `Invalid extension definition instance, bad type '${internal.$$type}'`,
+    );
+  }
+  if (internal.version !== 'v1') {
+    throw new Error(
+      `Invalid extension definition instance, bad version '${internal.version}'`,
+    );
+  }
+  return internal;
 }
 
 /** @public */
@@ -142,6 +150,7 @@ export function createExtension<
 ): ExtensionDefinition<TConfig> {
   return {
     $$type: '@backstage/ExtensionDefinition',
+    version: 'v1',
     kind: options.kind,
     namespace: options.namespace,
     name: options.name,
@@ -157,5 +166,5 @@ export function createExtension<
         ...rest,
       });
     },
-  };
+  } as InternalExtensionDefinition<TConfig>;
 }

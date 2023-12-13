@@ -42,6 +42,7 @@ describe('createPageExtension', () => {
       }),
     ).toEqual({
       $$type: '@backstage/ExtensionDefinition',
+      version: 'v1',
       name: 'test',
       kind: 'page',
       attachTo: { id: 'core/routes', input: 'routes' },
@@ -71,6 +72,7 @@ describe('createPageExtension', () => {
       }),
     ).toEqual({
       $$type: '@backstage/ExtensionDefinition',
+      version: 'v1',
       name: 'test',
       kind: 'page',
       attachTo: { id: 'other', input: 'place' },
@@ -97,6 +99,7 @@ describe('createPageExtension', () => {
       }),
     ).toEqual({
       $$type: '@backstage/ExtensionDefinition',
+      version: 'v1',
       name: 'test',
       kind: 'page',
       attachTo: { id: 'core/routes', input: 'routes' },
