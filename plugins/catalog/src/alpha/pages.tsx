@@ -28,7 +28,7 @@ import {
   AsyncEntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { entityContentTitleExtensionDataRef } from '@backstage/plugin-catalog-react/alpha';
+import { catalogExtensionData } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 
@@ -56,7 +56,7 @@ export const CatalogEntityPage = createPageExtension({
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
-      title: entityContentTitleExtensionDataRef,
+      title: catalogExtensionData.entityContentTitle,
     }),
   },
   loader: async ({ inputs }) => {
