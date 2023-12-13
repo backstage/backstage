@@ -18,8 +18,8 @@ import React, { lazy, ComponentType } from 'react';
 import {
   AnyExtensionInputMap,
   ResolvedExtensionInputs,
-  coreExtensionData,
   createExtension,
+  createExtensionDataRef,
 } from '../wiring';
 import { Expand } from '../types';
 import { PortableSchema } from '../schema';
@@ -59,7 +59,7 @@ export function createComponentExtension<
     disabled: options.disabled,
     configSchema: options.configSchema,
     output: {
-      component: coreExtensionData.component,
+      component: createComponentExtension.componentDataRef,
     },
     factory({ config, inputs, node }) {
       let ExtensionComponent: ComponentType<TProps>;
@@ -87,4 +87,12 @@ export function createComponentExtension<
       };
     },
   });
+}
+
+/** @public */
+export namespace createComponentExtension {
+  export const componentDataRef = createExtensionDataRef<{
+    ref: ComponentRef;
+    impl: ComponentType;
+  }>('core.component.component');
 }

@@ -19,9 +19,9 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
-  LogoElements,
-  NavTarget,
   useRouteRef,
+  createNavItemExtension,
+  createNavLogoExtension,
 } from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import {
@@ -52,7 +52,9 @@ const useSidebarLogoStyles = makeStyles({
   },
 });
 
-const SidebarLogo = (props: LogoElements) => {
+const SidebarLogo = (
+  props: (typeof createNavLogoExtension.logoElementsDataRef)['T'],
+) => {
   const classes = useSidebarLogoStyles();
   const { isOpen } = useSidebarOpenState();
 
@@ -67,7 +69,9 @@ const SidebarLogo = (props: LogoElements) => {
   );
 };
 
-const SidebarNavItem = (props: NavTarget) => {
+const SidebarNavItem = (
+  props: (typeof createNavItemExtension.targetDataRef)['T'],
+) => {
   const { icon: Icon, title, routeRef } = props;
   const to = useRouteRef(routeRef)();
   // TODO: Support opening modal, for example, the search one
@@ -80,11 +84,11 @@ export const CoreNav = createExtension({
   attachTo: { id: 'core/layout', input: 'nav' },
   inputs: {
     items: createExtensionInput({
-      target: coreExtensionData.navTarget,
+      target: createNavItemExtension.targetDataRef,
     }),
     logos: createExtensionInput(
       {
-        elements: coreExtensionData.logoElements,
+        elements: createNavLogoExtension.logoElementsDataRef,
       },
       {
         singleton: true,

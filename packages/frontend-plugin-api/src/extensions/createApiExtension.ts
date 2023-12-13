@@ -19,7 +19,7 @@ import { PortableSchema } from '../schema';
 import {
   ResolvedExtensionInputs,
   createExtension,
-  coreExtensionData,
+  createExtensionDataRef,
 } from '../wiring';
 import { AnyExtensionInputMap } from '../wiring/createExtension';
 import { Expand } from '../types';
@@ -59,7 +59,7 @@ export function createApiExtension<
     inputs: extensionInputs,
     configSchema,
     output: {
-      api: coreExtensionData.apiFactory,
+      api: createApiExtension.factoryDataRef,
     },
     factory({ config, inputs }) {
       if (typeof factory === 'function') {
@@ -68,4 +68,10 @@ export function createApiExtension<
       return { api: factory };
     },
   });
+}
+
+/** @public */
+export namespace createApiExtension {
+  export const factoryDataRef =
+    createExtensionDataRef<AnyApiFactory>('core.api.factory');
 }
