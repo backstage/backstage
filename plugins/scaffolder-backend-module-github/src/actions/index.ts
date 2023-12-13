@@ -27,3 +27,4 @@ export {
   type CreateGithubPullRequestActionOptions,
 } from './githubPullRequest';
 export { createPublishGithubAction } from './github';
+export { createGithubAutolinksAction } from './githubAutolinks';
