@@ -139,6 +139,7 @@ export interface KubernetesClustersSupplier {
  */
 export type KubernetesCredential =
   | { type: 'bearer token'; token: string }
+  | { type: 'x509 client certificate'; cert: string; key: string }
   | { type: 'anonymous' };
 
 /**

@@ -895,7 +895,7 @@ describe('KubernetesFetcher', () => {
           customResources: [],
         });
         return expect(result).rejects.toThrow(
-          "no bearer token for cluster 'unauthenticated-cluster' and not running in Kubernetes",
+          "no bearer token or client cert for cluster 'unauthenticated-cluster' and not running in Kubernetes",
         );
       });
     });

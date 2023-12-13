@@ -224,13 +224,14 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       [url, requestInit] = this.fetchArgsInCluster(credential);
     } else if (
       credential.type === 'bearer token' ||
+      credential.type === 'x509 client certificate' ||
       authProvider === 'localKubectlProxy'
     ) {
       [url, requestInit] = this.fetchArgs(clusterDetails, credential);
     } else {
       return Promise.reject(
         new Error(
-          `no bearer token for cluster '${clusterDetails.name}' and not running in Kubernetes`,
+          `no bearer token or client cert for cluster '${clusterDetails.name}' and not running in Kubernetes`,
         ),
       );
     }
@@ -272,6 +273,10 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
             clusterDetails.caData,
           ) ?? undefined,
         rejectUnauthorized: !clusterDetails.skipTLSVerify,
+        ...(credential.type === 'x509 client certificate' && {
+          cert: credential.cert,
+          key: credential.key,
+        }),
       });
     }
     return [url, requestInit];

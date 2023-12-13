@@ -101,6 +101,11 @@ export type KubernetesCredential =
       token: string;
     }
   | {
+      type: 'x509 client certificate';
+      cert: string;
+      key: string;
+    }
+  | {
       type: 'anonymous';
     };
 
