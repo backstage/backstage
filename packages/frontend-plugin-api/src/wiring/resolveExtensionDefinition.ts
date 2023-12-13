@@ -14,15 +14,64 @@
  * limitations under the License.
  */
 
-import { Extension, ExtensionDefinition } from './createExtension';
+import { AppNode } from '../apis';
+import {
+  AnyExtensionDataMap,
+  AnyExtensionInputMap,
+  ExtensionDataValues,
+  ExtensionDefinition,
+  ResolvedExtensionInputs,
+  toInternalExtensionDefinition,
+} from './createExtension';
+import { PortableSchema } from '../schema';
+
+/** @public */
+export interface Extension<TConfig> {
+  $$type: '@backstage/Extension';
+  readonly id: string;
+  readonly attachTo: { id: string; input: string };
+  readonly disabled: boolean;
+  readonly configSchema?: PortableSchema<TConfig>;
+}
+
+/** @internal */
+export interface InternalExtension<TConfig> extends Extension<TConfig> {
+  readonly version: 'v1';
+  readonly inputs: AnyExtensionInputMap;
+  readonly output: AnyExtensionDataMap;
+  factory(options: {
+    node: AppNode;
+    config: TConfig;
+    inputs: ResolvedExtensionInputs<any>;
+  }): ExtensionDataValues<any>;
+}
+
+/** @internal */
+export function toInternalExtension<TConfig>(
+  overrides: Extension<TConfig>,
+): InternalExtension<TConfig> {
+  const internal = overrides as InternalExtension<TConfig>;
+  if (internal.$$type !== '@backstage/Extension') {
+    throw new Error(
+      `Invalid extension instance, bad type '${internal.$$type}'`,
+    );
+  }
+  if (internal.version !== 'v1') {
+    throw new Error(
+      `Invalid extension instance, bad version '${internal.version}'`,
+    );
+  }
+  return internal;
+}
 
 /** @internal */
 export function resolveExtensionDefinition<TConfig>(
   definition: ExtensionDefinition<TConfig>,
   context?: { namespace?: string },
 ): Extension<TConfig> {
-  const { name, kind, namespace: _, ...rest } = definition;
-  const namespace = definition.namespace ?? context?.namespace;
+  const internalDefinition = toInternalExtensionDefinition(definition);
+  const { name, kind, namespace: _, ...rest } = internalDefinition;
+  const namespace = internalDefinition.namespace ?? context?.namespace;
 
   const namePart =
     name && namespace ? `${namespace}/${name}` : namespace || name;
@@ -34,7 +83,8 @@ export function resolveExtensionDefinition<TConfig>(
 
   return {
     ...rest,
-    id: kind ? `${kind}:${namePart}` : namePart,
     $$type: '@backstage/Extension',
-  };
+    version: 'v1',
+    id: kind ? `${kind}:${namePart}` : namePart,
+  } as InternalExtension<TConfig>;
 }

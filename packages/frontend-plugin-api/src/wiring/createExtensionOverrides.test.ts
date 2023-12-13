@@ -74,6 +74,7 @@ describe('createExtensionOverrides', () => {
             "id": "a",
             "inputs": {},
             "output": {},
+            "version": "v1",
           },
           {
             "$$type": "@backstage/Extension",
@@ -87,6 +88,7 @@ describe('createExtensionOverrides', () => {
             "id": "b",
             "inputs": {},
             "output": {},
+            "version": "v1",
           },
           {
             "$$type": "@backstage/Extension",
@@ -100,6 +102,7 @@ describe('createExtensionOverrides', () => {
             "id": "k:c/n",
             "inputs": {},
             "output": {},
+            "version": "v1",
           },
         ],
         "featureFlags": [],

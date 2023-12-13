@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { Extension, ExtensionDefinition } from './createExtension';
-import { resolveExtensionDefinition } from './resolveExtensionDefinition';
+import { ExtensionDefinition } from './createExtension';
+import {
+  Extension,
+  resolveExtensionDefinition,
+} from './resolveExtensionDefinition';
 import { FeatureFlagConfig } from './types';
 
 /** @public */
