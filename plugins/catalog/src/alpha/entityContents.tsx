@@ -24,7 +24,7 @@ import {
   catalogExtensionData,
 } from '@backstage/plugin-catalog-react/alpha';
 
-export const OverviewEntityContent = createEntityContentExtension({
+export const catalogOverviewEntityContent = createEntityContentExtension({
   name: 'overview',
   defaultPath: '/',
   defaultTitle: 'Overview',
@@ -42,4 +42,4 @@ export const OverviewEntityContent = createEntityContentExtension({
     )),
 });
 
-export default [OverviewEntityContent];
+export default [catalogOverviewEntityContent];

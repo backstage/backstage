@@ -28,7 +28,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { DefaultStarredEntitiesApi } from '../apis';
 
-export const CatalogApi = createApiExtension({
+export const catalogApi = createApiExtension({
   factory: createApiFactory({
     api: catalogApiRef,
     deps: {
@@ -40,7 +40,7 @@ export const CatalogApi = createApiExtension({
   }),
 });
 
-export const StarredEntitiesApi = createApiExtension({
+export const catalogStarredEntitiesApi = createApiExtension({
   factory: createApiFactory({
     api: starredEntitiesApiRef,
     deps: { storageApi: storageApiRef },
@@ -48,4 +48,4 @@ export const StarredEntitiesApi = createApiExtension({
   }),
 });
 
-export default [CatalogApi, StarredEntitiesApi];
+export default [catalogApi, catalogStarredEntitiesApi];
