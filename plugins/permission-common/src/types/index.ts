@@ -49,4 +49,10 @@ export type {
   ResourcePermission,
   AuthorizeRequestOptions,
 } from './permission';
-export { permissionCriteriaSchema } from './schema';
+export {
+  permissionConditionSchema,
+  permissionCriteriaSchema,
+  conditionalPolicyDecisionSchema,
+  definitivePolicyDecisionSchema,
+  policyDecisionSchema,
+} from './schema';

@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 import { z } from 'zod';
-import { PermissionCondition, PermissionCriteria } from './api';
+import {
+  AuthorizeResult,
+  PermissionCondition,
+  PermissionCriteria,
+} from './api';
+
+/**
+ * A zod schema to help validate permission conditions.
+ * @public
+ */
+export const permissionConditionSchema: z.ZodSchema<PermissionCondition> =
+  z.object({
+    rule: z.string(),
+    resourceType: z.string(),
+    params: z.record(z.any()).optional(),
+  });
 
 /**
  * A zod schema to help validate permission criteria.
@@ -23,13 +38,39 @@ import { PermissionCondition, PermissionCriteria } from './api';
 export const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
 > = z.lazy(() =>
-  z
-    .object({
-      rule: z.string(),
-      resourceType: z.string(),
-      params: z.record(z.any()).optional(),
-    })
+  permissionConditionSchema
     .or(z.object({ anyOf: z.array(permissionCriteriaSchema).nonempty() }))
     .or(z.object({ allOf: z.array(permissionCriteriaSchema).nonempty() }))
     .or(z.object({ not: permissionCriteriaSchema })),
 );
+
+/**
+ * A zod schema to help validate conditional policy decisions.
+ * @public
+ */
+export const conditionalPolicyDecisionSchema = z.object({
+  result: z.literal(AuthorizeResult.CONDITIONAL),
+  pluginId: z.string().min(1),
+  resourceType: z.string().min(1),
+  conditions: permissionCriteriaSchema,
+});
+
+/**
+ * A zod schema to help validate definitive policy decisions.
+ * @public
+ */
+export const definitivePolicyDecisionSchema = z.object({
+  result: z.union([
+    z.literal(AuthorizeResult.ALLOW),
+    z.literal(AuthorizeResult.DENY),
+  ]),
+});
+
+/**
+ * A zod schema to help validate policy decisions.
+ * @public
+ */
+export const policyDecisionSchema = z.union([
+  definitivePolicyDecisionSchema,
+  conditionalPolicyDecisionSchema,
+]);

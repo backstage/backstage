@@ -55,6 +55,36 @@ export type ConditionalPolicyDecision = {
 };
 
 // @public
+export const conditionalPolicyDecisionSchema: z.ZodObject<
+  {
+    result: z.ZodLiteral<AuthorizeResult.CONDITIONAL>;
+    pluginId: z.ZodString;
+    resourceType: z.ZodString;
+    conditions: z.ZodType<
+      PermissionCriteria<PermissionCondition>,
+      z.ZodTypeDef,
+      PermissionCriteria<PermissionCondition>
+    >;
+  },
+  'strip',
+  z.ZodTypeAny,
+  {
+    result: AuthorizeResult.CONDITIONAL;
+    resourceType: string;
+    pluginId: string;
+    conditions: PermissionCriteria<PermissionCondition> &
+      (PermissionCriteria<PermissionCondition> | undefined);
+  },
+  {
+    result: AuthorizeResult.CONDITIONAL;
+    resourceType: string;
+    pluginId: string;
+    conditions: PermissionCriteria<PermissionCondition> &
+      (PermissionCriteria<PermissionCondition> | undefined);
+  }
+>;
+
+// @public
 export function createPermission<TResourceType extends string>(input: {
   name: string;
   attributes: PermissionAttributes;
@@ -71,6 +101,23 @@ export function createPermission(input: {
 export type DefinitivePolicyDecision = {
   result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
 };
+
+// @public
+export const definitivePolicyDecisionSchema: z.ZodObject<
+  {
+    result: z.ZodUnion<
+      [z.ZodLiteral<AuthorizeResult.ALLOW>, z.ZodLiteral<AuthorizeResult.DENY>]
+    >;
+  },
+  'strip',
+  z.ZodTypeAny,
+  {
+    result: AuthorizeResult.DENY | AuthorizeResult.ALLOW;
+  },
+  {
+    result: AuthorizeResult.DENY | AuthorizeResult.ALLOW;
+  }
+>;
 
 // @public
 export type DiscoveryApi = {
@@ -182,6 +229,9 @@ export type PermissionCondition<
 };
 
 // @public
+export const permissionConditionSchema: z.ZodSchema<PermissionCondition>;
+
+// @public
 export type PermissionCriteria<TQuery> =
   | AllOfCriteria<TQuery>
   | AnyOfCriteria<TQuery>
@@ -222,6 +272,58 @@ export type PermissionRuleParams =
 export type PolicyDecision =
   | DefinitivePolicyDecision
   | ConditionalPolicyDecision;
+
+// @public
+export const policyDecisionSchema: z.ZodUnion<
+  [
+    z.ZodObject<
+      {
+        result: z.ZodUnion<
+          [
+            z.ZodLiteral<AuthorizeResult.ALLOW>,
+            z.ZodLiteral<AuthorizeResult.DENY>,
+          ]
+        >;
+      },
+      'strip',
+      z.ZodTypeAny,
+      {
+        result: AuthorizeResult.DENY | AuthorizeResult.ALLOW;
+      },
+      {
+        result: AuthorizeResult.DENY | AuthorizeResult.ALLOW;
+      }
+    >,
+    z.ZodObject<
+      {
+        result: z.ZodLiteral<AuthorizeResult.CONDITIONAL>;
+        pluginId: z.ZodString;
+        resourceType: z.ZodString;
+        conditions: z.ZodType<
+          PermissionCriteria<PermissionCondition>,
+          z.ZodTypeDef,
+          PermissionCriteria<PermissionCondition>
+        >;
+      },
+      'strip',
+      z.ZodTypeAny,
+      {
+        result: AuthorizeResult.CONDITIONAL;
+        resourceType: string;
+        pluginId: string;
+        conditions: PermissionCriteria<PermissionCondition> &
+          (PermissionCriteria<PermissionCondition> | undefined);
+      },
+      {
+        result: AuthorizeResult.CONDITIONAL;
+        resourceType: string;
+        pluginId: string;
+        conditions: PermissionCriteria<PermissionCondition> &
+          (PermissionCriteria<PermissionCondition> | undefined);
+      }
+    >,
+  ]
+>;
 
 // @public
 export type QueryPermissionRequest = {
