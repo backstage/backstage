@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  BackstagePlugin,
-  Extension,
-  ExtensionOverrides,
-} from '@backstage/frontend-plugin-api';
+import { Extension, FrontendFeature } from '@backstage/frontend-plugin-api';
 import { readAppExtensionsConfig } from './readAppExtensionsConfig';
 import { resolveAppTree } from './resolveAppTree';
 import { resolveAppNodeSpecs } from './resolveAppNodeSpecs';
@@ -28,7 +24,7 @@ import { instantiateAppNodeTree } from './instantiateAppNodeTree';
 
 /** @internal */
 export interface CreateAppTreeOptions {
-  features: (BackstagePlugin | ExtensionOverrides)[];
+  features: FrontendFeature[];
   builtinExtensions: Extension<unknown>[];
   config: Config;
 }

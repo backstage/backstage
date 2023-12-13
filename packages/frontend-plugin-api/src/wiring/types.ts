@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ExternalRouteRef, RouteRef } from '../routing';
+
 /**
  * Feature flag configuration.
  *
@@ -23,3 +25,28 @@ export type FeatureFlagConfig = {
   /** Feature flag name */
   name: string;
 };
+
+/** @public */
+export type AnyRoutes = { [name in string]: RouteRef };
+
+/** @public */
+export type AnyExternalRoutes = { [name in string]: ExternalRouteRef };
+
+/** @public */
+export interface BackstagePlugin<
+  Routes extends AnyRoutes = AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+> {
+  readonly $$type: '@backstage/BackstagePlugin';
+  readonly id: string;
+  readonly routes: Routes;
+  readonly externalRoutes: ExternalRoutes;
+}
+
+/** @public */
+export interface ExtensionOverrides {
+  readonly $$type: '@backstage/ExtensionOverrides';
+}
+
+/** @public */
+export type FrontendFeature = BackstagePlugin | ExtensionOverrides;
