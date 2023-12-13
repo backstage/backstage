@@ -21,7 +21,7 @@ spec:
             - containerPort: 5432
           env:
             - name: PGDATA
-              value: "/data/pgdata"
+              value: '/data/pgdata'
           envFrom:
             - secretRef:
                 name: postgres-secrets
