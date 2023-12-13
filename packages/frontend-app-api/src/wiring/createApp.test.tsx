@@ -201,13 +201,13 @@ describe('createApp', () => {
           </core/router>
         ]
         components [
-          <component:core.components.progress out=[core.component] />
-          <component:core.components.errorBoundaryFallback out=[core.component] />
-          <component:core.components.notFoundErrorPage out=[core.component] />
+          <component:core.components.progress out=[core.component.component] />
+          <component:core.components.errorBoundaryFallback out=[core.component.component] />
+          <component:core.components.notFoundErrorPage out=[core.component.component] />
         ]
         themes [
-          <theme:app/light out=[core.theme] />
-          <theme:app/dark out=[core.theme] />
+          <theme:app/light out=[core.theme.theme] />
+          <theme:app/dark out=[core.theme.theme] />
         ]
       </core>"
     `);

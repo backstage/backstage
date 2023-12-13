@@ -16,7 +16,7 @@
 
 import { IconComponent } from '@backstage/core-plugin-api';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import { coreExtensionData, createExtension } from '../wiring';
+import { createExtension, createExtensionDataRef } from '../wiring';
 import { RouteRef } from '../routing';
 
 /**
@@ -42,7 +42,7 @@ export function createNavItemExtension(options: {
       }),
     ),
     output: {
-      navTarget: coreExtensionData.navTarget,
+      navTarget: createNavItemExtension.targetDataRef,
     },
     factory: ({ config }) => ({
       navTarget: {
@@ -52,4 +52,14 @@ export function createNavItemExtension(options: {
       },
     }),
   });
+}
+
+/** @public */
+export namespace createNavItemExtension {
+  // TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
+  export const targetDataRef = createExtensionDataRef<{
+    title: string;
+    icon: IconComponent;
+    routeRef: RouteRef<undefined>;
+  }>('core.nav-item.target');
 }
