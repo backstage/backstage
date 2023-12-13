@@ -100,6 +100,7 @@ export function createPublishGerritAction(options: {
     sourcePath?: string;
   }>({
     id: 'publish:gerrit',
+    supportsDryRun: true,
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to Gerrit.',
     examples,
@@ -190,6 +191,31 @@ export function createPublishGerritAction(options: {
         );
       }
 
+      const repoContentsUrl = `${integrationConfig.config.gitilesBaseUrl}/${repo}/+/refs/heads/${defaultBranch}`;
+      const remoteUrl = `${integrationConfig.config.cloneUrl}/a/${repo}`;
+      const gitName = gitAuthorName
+        ? gitAuthorName
+        : config.getOptionalString('scaffolder.defaultAuthor.name');
+      const gitEmail = gitAuthorEmail
+        ? gitAuthorEmail
+        : config.getOptionalString('scaffolder.defaultAuthor.email');
+      const commitMessage = generateCommitMessage(config, gitCommitMessage);
+
+      if (ctx.isDryRun) {
+        ctx.logger.info(
+          `Dry run arguments: ${{
+            gitName,
+            gitEmail,
+            commitMessage,
+            ...ctx.input,
+          }}`,
+        );
+        ctx.output('remoteUrl', remoteUrl);
+        ctx.output('commitHash', 'abcd-dry-run-1234');
+        ctx.output('repoContentsUrl', repoContentsUrl);
+        return;
+      }
+
       await createGerritProject(integrationConfig.config, {
         description,
         owner: owner,
@@ -201,15 +227,10 @@ export function createPublishGerritAction(options: {
         password: integrationConfig.config.password!,
       };
       const gitAuthorInfo = {
-        name: gitAuthorName
-          ? gitAuthorName
-          : config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: gitAuthorEmail
-          ? gitAuthorEmail
-          : config.getOptionalString('scaffolder.defaultAuthor.email'),
+        name: gitName,
+        email: gitEmail,
       };
 
-      const remoteUrl = `${integrationConfig.config.cloneUrl}/a/${repo}`;
       const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, sourcePath),
         remoteUrl,
@@ -220,7 +241,6 @@ export function createPublishGerritAction(options: {
         gitAuthorInfo,
       });
 
-      const repoContentsUrl = `${integrationConfig.config.gitilesBaseUrl}/${repo}/+/refs/heads/${defaultBranch}`;
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('repoContentsUrl', repoContentsUrl);
