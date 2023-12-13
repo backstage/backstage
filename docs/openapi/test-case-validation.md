@@ -1,7 +1,7 @@
 ---
 id: test-case-validation
 title: Validate your OpenAPI spec against test data
-description: Documetnation on how to use the `schema openapi test` command.
+description: Documentation on how to use the `schema openapi test` command.
 ---
 
 ## OpenAPI Validation using Test Cases
