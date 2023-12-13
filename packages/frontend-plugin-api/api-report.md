@@ -670,26 +670,16 @@ export interface Extension<TConfig> {
   // (undocumented)
   $$type: '@backstage/Extension';
   // (undocumented)
-  attachTo: {
+  readonly attachTo: {
     id: string;
     input: string;
   };
   // (undocumented)
-  configSchema?: PortableSchema<TConfig>;
+  readonly configSchema?: PortableSchema<TConfig>;
   // (undocumented)
-  disabled: boolean;
+  readonly disabled: boolean;
   // (undocumented)
-  factory(options: {
-    node: AppNode;
-    config: TConfig;
-    inputs: ResolvedExtensionInputs<any>;
-  }): ExtensionDataValues<any>;
-  // (undocumented)
-  id: string;
-  // (undocumented)
-  inputs: AnyExtensionInputMap;
-  // (undocumented)
-  output: AnyExtensionDataMap;
+  readonly id: string;
 }
 
 // @public (undocumented)
@@ -740,30 +730,20 @@ export interface ExtensionDefinition<TConfig> {
   // (undocumented)
   $$type: '@backstage/ExtensionDefinition';
   // (undocumented)
-  attachTo: {
+  readonly attachTo: {
     id: string;
     input: string;
   };
   // (undocumented)
-  configSchema?: PortableSchema<TConfig>;
+  readonly configSchema?: PortableSchema<TConfig>;
   // (undocumented)
-  disabled: boolean;
+  readonly disabled: boolean;
   // (undocumented)
-  factory(options: {
-    node: AppNode;
-    config: TConfig;
-    inputs: ResolvedExtensionInputs<any>;
-  }): ExtensionDataValues<any>;
+  readonly kind?: string;
   // (undocumented)
-  inputs: AnyExtensionInputMap;
+  readonly name?: string;
   // (undocumented)
-  kind?: string;
-  // (undocumented)
-  name?: string;
-  // (undocumented)
-  namespace?: string;
-  // (undocumented)
-  output: AnyExtensionDataMap;
+  readonly namespace?: string;
 }
 
 // @public (undocumented)
