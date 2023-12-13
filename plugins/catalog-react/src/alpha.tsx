@@ -33,17 +33,17 @@ export { useEntityPermission } from './hooks/useEntityPermission';
 export { isOwnerOf } from './utils';
 
 /** @alpha */
-export const entityContentTitleExtensionDataRef =
-  createExtensionDataRef<string>('plugin.catalog.entity.content.title');
-
-/** @alpha */
-export const entityFilterFunctionExtensionDataRef = createExtensionDataRef<
-  (entity: Entity) => boolean
->('plugin.catalog.entity.filter.fn');
-
-/** @alpha */
-export const entityFilterExpressionExtensionDataRef =
-  createExtensionDataRef<string>('plugin.catalog.entity.filter.expression');
+export const catalogExtensionData = {
+  entityContentTitle: createExtensionDataRef<string>(
+    'catalog.entity-content-title',
+  ),
+  entityFilterFunction: createExtensionDataRef<(entity: Entity) => boolean>(
+    'catalog.entity-filter-function',
+  ),
+  entityFilterExpression: createExtensionDataRef<string>(
+    'catalog.entity-filter-expression',
+  ),
+};
 
 // TODO: Figure out how to merge with provided config schema
 /** @alpha */
@@ -56,8 +56,8 @@ export function createEntityCardExtension<
   disabled?: boolean;
   inputs?: TInputs;
   filter?:
-    | typeof entityFilterFunctionExtensionDataRef.T
-    | typeof entityFilterExpressionExtensionDataRef.T;
+    | typeof catalogExtensionData.entityFilterFunction.T
+    | typeof catalogExtensionData.entityFilterExpression.T;
   loader: (options: {
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
@@ -73,8 +73,8 @@ export function createEntityCardExtension<
     disabled: options.disabled ?? true,
     output: {
       element: coreExtensionData.reactElement,
-      filterFunction: entityFilterFunctionExtensionDataRef.optional(),
-      filterExpression: entityFilterExpressionExtensionDataRef.optional(),
+      filterFunction: catalogExtensionData.entityFilterFunction.optional(),
+      filterExpression: catalogExtensionData.entityFilterExpression.optional(),
     },
     inputs: options.inputs,
     configSchema: createSchemaFromZod(z =>
@@ -114,8 +114,8 @@ export function createEntityContentExtension<
   defaultPath: string;
   defaultTitle: string;
   filter?:
-    | typeof entityFilterFunctionExtensionDataRef.T
-    | typeof entityFilterExpressionExtensionDataRef.T;
+    | typeof catalogExtensionData.entityFilterFunction.T
+    | typeof catalogExtensionData.entityFilterExpression.T;
   loader: (options: {
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
@@ -133,9 +133,9 @@ export function createEntityContentExtension<
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
-      title: entityContentTitleExtensionDataRef,
-      filterFunction: entityFilterFunctionExtensionDataRef.optional(),
-      filterExpression: entityFilterExpressionExtensionDataRef.optional(),
+      title: catalogExtensionData.entityContentTitle,
+      filterFunction: catalogExtensionData.entityFilterFunction.optional(),
+      filterExpression: catalogExtensionData.entityFilterExpression.optional(),
     },
     inputs: options.inputs,
     configSchema: createSchemaFromZod(z =>
@@ -173,15 +173,15 @@ export function createEntityContentExtension<
 function mergeFilters(inputs: {
   options: {
     filter?:
-      | typeof entityFilterFunctionExtensionDataRef.T
-      | typeof entityFilterExpressionExtensionDataRef.T;
+      | typeof catalogExtensionData.entityFilterFunction.T
+      | typeof catalogExtensionData.entityFilterExpression.T;
   };
   config: {
     filter?: string;
   };
 }): {
-  filterFunction?: typeof entityFilterFunctionExtensionDataRef.T;
-  filterExpression?: typeof entityFilterExpressionExtensionDataRef.T;
+  filterFunction?: typeof catalogExtensionData.entityFilterFunction.T;
+  filterExpression?: typeof catalogExtensionData.entityFilterExpression.T;
 } {
   const { options, config } = inputs;
   if (config.filter) {

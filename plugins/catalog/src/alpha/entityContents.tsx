@@ -21,8 +21,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   createEntityContentExtension,
-  entityFilterFunctionExtensionDataRef,
-  entityFilterExpressionExtensionDataRef,
+  catalogExtensionData,
 } from '@backstage/plugin-catalog-react/alpha';
 
 export const OverviewEntityContent = createEntityContentExtension({
@@ -33,8 +32,8 @@ export const OverviewEntityContent = createEntityContentExtension({
   inputs: {
     cards: createExtensionInput({
       element: coreExtensionData.reactElement,
-      filterFunction: entityFilterFunctionExtensionDataRef.optional(),
-      filterExpression: entityFilterExpressionExtensionDataRef.optional(),
+      filterFunction: catalogExtensionData.entityFilterFunction.optional(),
+      filterExpression: catalogExtensionData.entityFilterExpression.optional(),
     }),
   },
   loader: async ({ inputs }) =>
