@@ -33,13 +33,13 @@ export default _default;
 export const graphiqlBrowseApi: ExtensionDefinition<{}>;
 
 // @alpha (undocumented)
-export const GraphiqlPage: ExtensionDefinition<{
-  path: string;
+export const graphiqlNavItem: ExtensionDefinition<{
+  title: string;
 }>;
 
 // @alpha (undocumented)
-export const graphiqlPageSidebarItem: ExtensionDefinition<{
-  title: string;
+export const graphiqlPage: ExtensionDefinition<{
+  path: string;
 }>;
 
 // (No @packageDocumentation comment for this package)

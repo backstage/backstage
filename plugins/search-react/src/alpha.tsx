@@ -48,12 +48,6 @@ export type SearchResultItemExtensionPredicate = (
 ) => boolean;
 
 /** @alpha */
-export const searchResultItemExtensionData = createExtensionDataRef<{
-  predicate?: SearchResultItemExtensionPredicate;
-  component: SearchResultItemExtensionComponent;
-}>('plugin.search.result.item.data');
-
-/** @alpha */
 export type SearchResultItemExtensionOptions<
   TConfig extends { noTrack?: boolean },
 > = {
@@ -109,7 +103,7 @@ export function createSearchResultListItemExtension<
     },
     configSchema,
     output: {
-      item: searchResultItemExtensionData,
+      item: createSearchResultListItemExtension.itemDataRef,
     },
     factory({ config, node }) {
       const ExtensionComponent = lazy(() =>
@@ -136,4 +130,12 @@ export function createSearchResultListItemExtension<
       };
     },
   });
+}
+
+/** @alpha */
+export namespace createSearchResultListItemExtension {
+  export const itemDataRef = createExtensionDataRef<{
+    predicate?: SearchResultItemExtensionPredicate;
+    component: SearchResultItemExtensionComponent;
+  }>('search.search-result-list-item.item');
 }

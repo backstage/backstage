@@ -26,7 +26,6 @@ import React from 'react';
 import {
   BaseSearchResultListItemProps,
   createSearchResultListItemExtension,
-  searchResultItemExtensionData as searchResultListItemExtensionData,
 } from './alpha';
 
 describe('createSearchResultListItemExtension', () => {
@@ -76,7 +75,7 @@ describe('createSearchResultListItemExtension', () => {
       defaultPath: '/',
       inputs: {
         items: createExtensionInput({
-          item: searchResultListItemExtensionData,
+          item: createSearchResultListItemExtension.itemDataRef,
         }),
       },
       loader: async ({ inputs }) => {

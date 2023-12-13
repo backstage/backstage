@@ -23,7 +23,7 @@ import { createSearchResultListItemExtension } from '@backstage/plugin-search-re
 import { StackOverflowClient, stackOverflowApiRef } from './api';
 
 /** @alpha */
-const StackOverflowApi = createApiExtension({
+const stackOverflowApi = createApiExtension({
   factory: createApiFactory({
     api: stackOverflowApiRef,
     deps: { configApi: configApiRef },
@@ -32,7 +32,7 @@ const StackOverflowApi = createApiExtension({
 });
 
 /** @alpha */
-const StackOverflowSearchResultListItem = createSearchResultListItemExtension({
+const stackOverflowSearchResultListItem = createSearchResultListItemExtension({
   predicate: result => result.type === 'stack-overflow',
   component: () =>
     import('./search/StackOverflowSearchResultListItem').then(
@@ -44,5 +44,5 @@ const StackOverflowSearchResultListItem = createSearchResultListItemExtension({
 export default createPlugin({
   id: 'stack-overflow',
   // TODO: Migrate homepage cards when the declarative homepage plugin supports them
-  extensions: [StackOverflowApi, StackOverflowSearchResultListItem],
+  extensions: [stackOverflowApi, stackOverflowSearchResultListItem],
 });
