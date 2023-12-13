@@ -29,6 +29,7 @@ import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { Pod } from 'kubernetes-models/v1';
 import { Pod as Pod_2 } from 'kubernetes-models/v1/Pod';
+import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { TypeMeta } from '@kubernetes-models/base';
@@ -251,13 +252,13 @@ export type FormatClusterLinkOptions = {
 };
 
 // @public (undocumented)
-export function getDefaultFormatters(_deps: {}): Record<
-  string,
-  ClusterLinksFormatter
->;
+export function getDefaultFormatters(deps: {
+  googleAuthApi: ProfileInfoApi;
+}): Record<string, ClusterLinksFormatter>;
 
 // @public (undocumented)
 export class GkeClusterLinksFormatter implements ClusterLinksFormatter {
+  constructor(googleAuthApi: ProfileInfoApi | undefined);
   // (undocumented)
   formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL>;
 }
