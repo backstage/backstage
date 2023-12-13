@@ -26,15 +26,13 @@ import React from 'react';
 const rootRouteRef = createRouteRef();
 
 const visualizerPage = createPageExtension({
-  id: 'plugin.visualizer.page',
   defaultPath: '/visualizer',
   routeRef: rootRouteRef,
   loader: () =>
     import('./components/AppVisualizerPage').then(m => <m.AppVisualizerPage />),
 });
 
-export const visualizerPageSidebarItem = createNavItemExtension({
-  id: 'plugin.visualizer.nav.index',
+export const visualizerNavItem = createNavItemExtension({
   title: 'Visualizer',
   icon: VisualizerIcon,
   routeRef: rootRouteRef,
@@ -42,5 +40,5 @@ export const visualizerPageSidebarItem = createNavItemExtension({
 
 export const visualizerPlugin = createPlugin({
   id: 'visualizer',
-  extensions: [visualizerPage, visualizerPageSidebarItem],
+  extensions: [visualizerPage, visualizerNavItem],
 });
