@@ -22,6 +22,8 @@ import {
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
@@ -122,14 +124,16 @@ export function createAppNodeInstance(options: {
   }
 
   try {
-    const namedOutputs = extension.factory({
+    const internalExtension = toInternalExtension(extension);
+
+    const namedOutputs = internalExtension.factory({
       node,
       config: parsedConfig,
-      inputs: resolveInputs(extension.inputs, attachments),
+      inputs: resolveInputs(internalExtension.inputs, attachments),
     });
 
     for (const [name, output] of Object.entries(namedOutputs)) {
-      const ref = extension.output[name];
+      const ref = internalExtension.output[name];
       if (!ref) {
         throw new Error(`unknown output provided via '${name}'`);
       }

@@ -31,6 +31,7 @@ describe('createNavLogoExtension', () => {
       }),
     ).toEqual({
       $$type: '@backstage/ExtensionDefinition',
+      version: 'v1',
       kind: 'nav-logo',
       name: 'test',
       attachTo: { id: 'core/nav', input: 'logos' },

@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { Extension, ExtensionDefinition } from './createExtension';
+import { ExtensionDefinition } from './createExtension';
 import { ExternalRouteRef, RouteRef } from '../routing';
 import { FeatureFlagConfig } from './types';
-import { resolveExtensionDefinition } from './resolveExtensionDefinition';
+import {
+  Extension,
+  resolveExtensionDefinition,
+} from './resolveExtensionDefinition';
 
 /** @public */
 export type AnyRoutes = { [name in string]: RouteRef };

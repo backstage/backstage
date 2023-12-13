@@ -29,6 +29,7 @@ function makeExt(
 ) {
   return {
     $$type: '@backstage/Extension',
+    version: 'v1',
     id,
     attachTo: { id: attachId, input: 'default' },
     disabled: status === 'disabled',
@@ -42,6 +43,7 @@ function makeExtDef(
 ) {
   return {
     $$type: '@backstage/ExtensionDefinition',
+    version: 'v1',
     name,
     attachTo: { id: attachId, input: 'default' },
     disabled: status === 'disabled',
