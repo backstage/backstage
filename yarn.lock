@@ -4238,6 +4238,7 @@ __metadata:
   peerDependencies:
     "@testing-library/react": ^12.1.3 || ^13.0.0 || ^14.0.0
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 

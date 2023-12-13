@@ -103,7 +103,7 @@ describe('createExtensionTester', () => {
     ).resolves.toBeInTheDocument();
   });
 
-  it.skip('should accepts a custom config', async () => {
+  it('should accepts a custom config', async () => {
     const indexPageExtension = createExtension({
       ...defaultDefinition,
       configSchema: createSchemaFromZod(z =>
@@ -175,7 +175,7 @@ describe('createExtensionTester', () => {
     ).resolves.toBeInTheDocument();
   });
 
-  it.skip('should capture click events in anylitics', async () => {
+  it('should capture click events in anylitics', async () => {
     // Mocking the analytics api implementation
     const analyticsApiMock = new MockAnalyticsApi();
 
@@ -219,7 +219,7 @@ describe('createExtensionTester', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'See details' }));
 
     await waitFor(() =>
-      expect(analyticsApiMock.getEvents()[1]).toMatchObject({
+      expect(analyticsApiMock.getEvents()[0]).toMatchObject({
         action: 'click',
         subject: 'See details',
       }),
