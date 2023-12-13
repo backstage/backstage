@@ -1,7 +1,7 @@
 {
   "name": "@backstage/repo-tools",
   "description": "CLI for Backstage repo tooling ",
-  "version": "0.5.0-next.0",
+  "version": "0.5.0-next.2",
   "publishConfig": {
     "access": "public"
   },
@@ -32,6 +32,7 @@
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.0",
     "@apisyouwonthate/style-guide": "^1.4.0",
+    "@backstage/backend-common": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
@@ -85,7 +86,9 @@
   },
   "files": [
     "bin",
-    "dist/**/*.js"
+    "dist/**/*.js",
+    "templates",
+    "openapitools.json"
   ],
   "nodemonConfig": {
     "watch": "./src",

@@ -40,17 +40,23 @@ export interface AzureDevOpsApi {
   getRepoBuilds(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
     options?: RepoBuildOptions,
   ): Promise<{ items: RepoBuild[] }>;
 
   getGitTags(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
   ): Promise<{ items: GitTag[] }>;
 
   getPullRequests(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
     options?: PullRequestOptions,
   ): Promise<{ items: PullRequest[] }>;
 
@@ -66,6 +72,8 @@ export interface AzureDevOpsApi {
     projectName: string,
     repoName?: string,
     definitionName?: string,
+    host?: string,
+    org?: string,
     options?: BuildRunOptions,
   ): Promise<{ items: BuildRun[] }>;
 

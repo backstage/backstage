@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { coreComponentsRefs, type ComponentRef } from './ComponentRef';
+export { coreComponentRefs, type ComponentRef } from './ComponentRef';
 
 export {
   ExtensionBoundary,

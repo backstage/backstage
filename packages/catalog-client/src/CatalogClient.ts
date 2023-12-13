@@ -107,11 +107,7 @@ export class CatalogClient implements CatalogApi {
     if (order) {
       for (const directive of [order].flat()) {
         if (directive) {
-          encodedOrder.push(
-            `${encodeURIComponent(directive.order)}:${encodeURIComponent(
-              directive.field,
-            )}`,
-          );
+          encodedOrder.push(`${directive.order}:${directive.field}`);
         }
       }
     }
@@ -120,7 +116,7 @@ export class CatalogClient implements CatalogApi {
       await this.apiClient.getEntities(
         {
           query: {
-            fields: fields.map(encodeURIComponent),
+            fields,
             limit,
             filter: this.getFilterValue(filter),
             offset,
@@ -209,10 +205,10 @@ export class CatalogClient implements CatalogApi {
       if (orderFields !== undefined) {
         params.orderField = (
           Array.isArray(orderFields) ? orderFields : [orderFields]
-        ).map(({ field, order }) => encodeURIComponent(`${field},${order}`));
+        ).map(({ field, order }) => `${field},${order}`);
       }
       if (fields.length) {
-        params.fields = fields.map(encodeURIComponent);
+        params.fields = fields;
       }
 
       const normalizedFullTextFilterTerm = fullTextFilter?.term?.trim();
@@ -230,7 +226,7 @@ export class CatalogClient implements CatalogApi {
         params.limit = limit;
       }
       if (fields.length) {
-        params.fields = fields.map(encodeURIComponent);
+        params.fields = fields;
       }
     }
 
@@ -452,11 +448,9 @@ export class CatalogClient implements CatalogApi {
       for (const [key, value] of Object.entries(filterItem)) {
         for (const v of [value].flat()) {
           if (v === CATALOG_FILTER_EXISTS) {
-            filterParts.push(encodeURIComponent(key));
+            filterParts.push(key);
           } else if (typeof v === 'string') {
-            filterParts.push(
-              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
-            );
+            filterParts.push(`${key}=${v}`);
           }
         }
       }

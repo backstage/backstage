@@ -1,5 +1,43 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.6.2-next.3
+
+### Patch Changes
+
+- 64301d3: Updated dependency `@rjsf/utils` to `5.15.0`.
+  Updated dependency `@rjsf/core` to `5.15.0`.
+  Updated dependency `@rjsf/material-ui` to `5.15.0`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.15.0`.
+- c8908d4: Use new option from RJSF 5.15
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-react@1.9.2-next.3
+  - @backstage/plugin-scaffolder-common@1.4.3
+
+## 1.6.2-next.2
+
+### Patch Changes
+
+- 5bb5240: Fixed issue for showing undefined for hidden form items
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.2
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-scaffolder-common@1.4.3
+
 ## 1.6.2-next.1
 
 ### Patch Changes

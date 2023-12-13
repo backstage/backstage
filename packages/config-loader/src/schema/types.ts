@@ -105,11 +105,22 @@ export type ValidationFunc = (configs: AppConfig[]) => ValidationResult;
 /**
  * A function used to transform primitive configuration values.
  *
+ * The "path" in the context is a JQ-style path to the current value from
+ * within the original object passed to filterByVisibility().
+ * For example, "field.list[2]" would refer to:
+ * \{
+ *   field: [
+ *     "foo",
+ *     "bar",
+ *     "baz" -- this one
+ *   ]
+ * \}
+ *
  * @public
  */
 export type TransformFunc<T extends number | string | boolean> = (
   value: T,
-  context: { visibility: ConfigVisibility },
+  context: { visibility: ConfigVisibility; path: string },
 ) => T | undefined;
 
 /**

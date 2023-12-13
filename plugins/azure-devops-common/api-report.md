@@ -224,6 +224,10 @@ export interface Readme {
 // @public (undocumented)
 export interface ReadmeConfig {
   // (undocumented)
+  host?: string;
+  // (undocumented)
+  org?: string;
+  // (undocumented)
   project: string;
   // (undocumented)
   repo: string;

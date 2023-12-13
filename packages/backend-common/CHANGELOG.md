@@ -1,5 +1,40 @@
 # @backstage/backend-common
 
+## 0.20.0-next.3
+
+### Patch Changes
+
+- d86a007: Fixed the AwsS3UrlReader host regex and host to allow the S3 reading for CN AWS domain
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.9-next.3
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
+## 0.20.0-next.2
+
+### Patch Changes
+
+- bc67498: Updated dependency `archiver` to `^6.0.0`.
+  Updated dependency `@types/archiver` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.6.0-next.0
+  - @backstage/backend-app-api@0.5.9-next.2
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
 ## 0.20.0-next.1
 
 ### Patch Changes
