@@ -80,7 +80,7 @@ import {
   appLanguageApiRef,
   translationApiRef,
 } from '@backstage/core-plugin-api/alpha';
-import { AppRouteBinder } from '../routing';
+import { CreateAppRouteBinder } from '../routing';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
@@ -239,7 +239,7 @@ function deduplicateFeatures(
 export function createApp(options?: {
   features?: (BackstagePlugin | ExtensionOverrides)[];
   configLoader?: () => Promise<ConfigApi>;
-  bindRoutes?(context: { bind: AppRouteBinder }): void;
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   featureLoader?: (ctx: {
     config: ConfigApi;
   }) => Promise<(BackstagePlugin | ExtensionOverrides)[]>;
@@ -289,7 +289,7 @@ export function createApp(options?: {
 export function createSpecializedApp(options?: {
   features?: (BackstagePlugin | ExtensionOverrides)[];
   config?: ConfigApi;
-  bindRoutes?(context: { bind: AppRouteBinder }): void;
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
 }): { createRoot(): JSX.Element } {
   const {
     features: duplicatedFeatures = [],
