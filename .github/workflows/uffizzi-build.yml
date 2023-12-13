@@ -56,7 +56,7 @@ jobs:
 
       - name: Generate UUID image name
         id: uuid
-        run: echo "UUID_TAG_APP=$(uuidgen)" >> $GITHUB_ENV
+        run: echo "UUID_TAG_APP=backstage-$(uuidgen --time)" >> $GITHUB_ENV
 
       - name: Docker metadata
         id: meta
