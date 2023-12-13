@@ -43,13 +43,13 @@ import {
   createApiExtension,
   createApiFactory,
   createPlugin,
-  configApiRef,
-  ConfigApi,
+  storageApiRef,
+  StorageApi,
 } from '@backstage/frontend-plugin-api';
 import { WorkApi, workApiRef } from '@internal/plugin-example-react';
 
 class WorkImpl implements WorkApi {
-  constructor(options: { configApi: ConfigApi }) {
+  constructor(options: { storageApiRef: StorageApi }) {
     /* TODO */
   }
   async doWork() {
@@ -62,8 +62,8 @@ const workApi = createApiExtension({
   factory: () =>
     createApiFactory({
       api: workApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) => new WorkImpl({ configApi }),
+      deps: { storageApi: storageApiRef },
+      factory: ({ storageApi }) => new WorkImpl({ storageApi }),
     }),
 });
 
@@ -79,7 +79,7 @@ export default createPlugin({
 
 For illustration we make a skeleton implementation class and the API extension and factory for it, in the same file. These are not exported to the public surface of the plugin package; only the plugin is, as the default export. Users who install the plugin will now get the utility API automatically as well.
 
-The code also illustrates how the API factory declares a dependency on another utility API - the core config API in this case. An instance of that utility API is then provided to the factory function.
+The code also illustrates how the API factory declares a dependency on another utility API - the core storage API in this case. An instance of that utility API is then provided to the factory function.
 
 The resulting extension ID of the work API will be the kind `api:` followed by the plugin ID as the namespace, in this case ending up as `api:plugin.example.work`. You can now use this ID to refer to the API in app-config and elsewhere.
 

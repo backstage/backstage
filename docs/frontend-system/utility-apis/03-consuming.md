@@ -64,4 +64,4 @@ const myApi = createApiExtension({
 });
 ```
 
-Note how the `deps` section essentially assigns free-form names that you choose, to API refs. In this example we for example map `configApiRef` to the name `configApi`, but that's just a convention. The framework will ensure that all of those deps get instantiated and passed into your `factory` function with the same set of names as your `deps`. At that point, `configApi` refers to an actual functioning instance of that API ref.
+Note how the `deps` section essentially assigns free-form names that you choose, to API refs. Here we for example map `configApiRef` to the name `configApi`, but that's just a convention. The framework will ensure that all of those deps get instantiated and passed into your `factory` function with the same set of names as your `deps`. At that point, `configApi` refers to an actual functioning instance of that API ref.
