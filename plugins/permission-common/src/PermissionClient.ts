@@ -22,8 +22,6 @@ import { z } from 'zod';
 import {
   AuthorizeResult,
   PermissionMessageBatch,
-  PermissionCriteria,
-  PermissionCondition,
   PermissionEvaluator,
   QueryPermissionRequest,
   AuthorizePermissionRequest,
@@ -33,20 +31,7 @@ import {
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { AuthorizeRequestOptions } from './types/permission';
-
-const permissionCriteriaSchema: z.ZodSchema<
-  PermissionCriteria<PermissionCondition>
-> = z.lazy(() =>
-  z
-    .object({
-      rule: z.string(),
-      resourceType: z.string(),
-      params: z.record(z.any()).optional(),
-    })
-    .or(z.object({ anyOf: z.array(permissionCriteriaSchema).nonempty() }))
-    .or(z.object({ allOf: z.array(permissionCriteriaSchema).nonempty() }))
-    .or(z.object({ not: permissionCriteriaSchema })),
-);
+import { permissionCriteriaSchema } from './types';
 
 const authorizePermissionResponseSchema: z.ZodSchema<AuthorizePermissionResponse> =
   z.object({

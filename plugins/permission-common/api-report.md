@@ -5,6 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import { JsonPrimitive } from '@backstage/types';
+import { z } from 'zod';
 
 // @public
 export type AllOfCriteria<TQuery> = {
@@ -186,6 +187,11 @@ export type PermissionCriteria<TQuery> =
   | AnyOfCriteria<TQuery>
   | NotCriteria<TQuery>
   | TQuery;
+
+// @public
+export const permissionCriteriaSchema: z.ZodSchema<
+  PermissionCriteria<PermissionCondition>
+>;
 
 // @public
 export interface PermissionEvaluator {
