@@ -341,7 +341,7 @@ the three-dots menu option of entity views does offer this option, and the
 orphaned status can be seen in an info box at the top of the entity's overview
 page.
 
-However, if you were to try to do an explicit depletion on an entity that's
+However, if you were to try to do an explicit deletion on an entity that's
 being kept actively updated by a parent entity, it would just reappear again
 shortly thereafter when the processing loops reconsider the parent entity that's
 still in there.
