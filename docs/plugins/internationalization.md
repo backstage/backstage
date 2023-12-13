@@ -52,7 +52,7 @@ The API for `i18n` messages and keys can be pretty tricky to get right, as it's 
 
 #### Key names
 
-Dot notation is used when consuming these keys, and should represent a semantic hierarchy in your translations. This allows for better organization and understanding of the structure. For example:
+When defining messages it is recommended to use a nested structure that represents the semantic hierarchy in your translations. This allows for better organization and understanding of the structure. For example:
 
 ```ts
 export const myPluginTranslationRef = createTranslationRef({
@@ -81,11 +81,11 @@ export const myPluginTranslationRef = createTranslationRef({
 
 Think about the semantic placement of content rather than the text content itself. Group related translations under a common prefix, and use nesting to represent relationships between different parts of your application. It's good to start grouping under extensions, page sections, or visual scopes and experiences.
 
-The translations should avoid where possible having their text content in the keys, as this can lead to ambiguity and confusion when the translation changes.
+Translations should avoid using their own text content as key where possible, as this can lead to confusion if the translation changes. Instead prefer to use keys that describe the location or usage of the text.
 
 #### Key reuse
 
-Discourage key reuse to prevent ambiguity and maintain a clear separation of concerns. Consider creating duplicate keys that are grouped under a semantic section instead.
+Reusing the same key in multiple places is discouraged. This helps prevent ambiguity, and instead keeps the usage of each key as clear as possible. Consider creating duplicate keys that are grouped under a semantic section instead.
 
 #### Flat keys
 
@@ -111,7 +111,7 @@ export const myPluginTranslationRef = createTranslationRef({
 
 #### Plurals
 
-There's build in support for pluralization in our `i18n` library which closely follows the `react-i18next` API. You can read more about it [here](https://www.i18next.com/translation-function/plurals).
+The `i18next` library, which is used as the underlying implementation, has built-in support for pluralization. You can use this feature as is described in [the documentation](https://www.i18next.com/translation-function/plurals).
 
 We encourage you to use this feature and avoid creating different key prefixes for pluralized content. For example:
 
