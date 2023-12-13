@@ -25,6 +25,15 @@ The other side of the `capture` command is the ability to capture test traffic a
 
 You can find a spec that I generated with this flow [here](https://github.com/sennyeya/backstage/blob/dev-ops-openapi-spec/plugins/azure-devops-backend/src/schema/openapi.yaml). 
 
-I expect this command to be extremely useful in onboarding existing plugins to an OpenAPI schema-first workflow. One of the things that this reveals is missing test cases, which is a strong driver for updating coverage and/or updating the spec. Currently, if you were to buy into our tooling and only had 3/4 endpoints documented, you would get type errors for the last endpoint after generating the spec with Optic. And nothing gets fixed faster than a squiggly red line.
+I expect this command to be extremely useful in onboarding existing plugins to an OpenAPI schema-first workflow. Along with bootstrapping a full OpenAPI spec, it also shows users where test cases or branches are missing, which is a strong driver for updating coverage and/or updating the spec. 
+
+With our current tooling, that experience would look a little something like this. 
+1. You generate the spec from test data.
+2. You realize that only 75% of your code is covered with test cases.
+3. Your router has type errors for the other 25% of uncovered code.
+4. You either decide to update just your spec (bad) or update your test cases and your spec(good). 
+5. Reviewers appreciate that you updated the test cases and the spec and the code gets merged.
+
+## Closing remarks
 
 All in all, I've been extremely pleased with the test validation provided by Optic and I look forward to adopting other Optic tools in the future, like their linting or breaking changes validation.
