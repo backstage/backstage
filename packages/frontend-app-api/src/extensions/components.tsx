@@ -29,17 +29,17 @@ import { components as defaultComponents } from '../../../app-defaults/src/defau
 
 export const DefaultProgressComponent = createComponentExtension({
   ref: coreComponentRefs.progress,
-  component: { sync: () => defaultComponents.Progress },
+  loader: { sync: () => defaultComponents.Progress },
 });
 
 export const DefaultNotFoundErrorPageComponent = createComponentExtension({
   ref: coreComponentRefs.notFoundErrorPage,
-  component: { sync: () => defaultComponents.NotFoundErrorPage },
+  loader: { sync: () => defaultComponents.NotFoundErrorPage },
 });
 
 export const DefaultErrorBoundaryComponent = createComponentExtension({
   ref: coreComponentRefs.errorBoundaryFallback,
-  component: {
+  loader: {
     sync: () => props => {
       const { plugin, error, resetError } = props;
       const title = `Error in ${plugin?.id}`;
