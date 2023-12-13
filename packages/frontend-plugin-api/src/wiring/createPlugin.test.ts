@@ -128,7 +128,7 @@ function createTestAppRoot({
 }) {
   return createApp({
     features,
-    configLoader: async () => new MockConfigApi(config),
+    configLoader: async () => ({ config: new MockConfigApi(config) }),
   }).createRoot();
 }
 

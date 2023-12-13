@@ -242,7 +242,7 @@ function deduplicateFeatures(
 /** @public */
 export function createApp(options?: {
   features?: (BackstagePlugin | ExtensionOverrides)[];
-  configLoader?: () => Promise<ConfigApi>;
+  configLoader?: () => Promise<{ config: ConfigApi }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   featureLoader?: (ctx: {
     config: ConfigApi;
@@ -252,7 +252,7 @@ export function createApp(options?: {
 } {
   async function appLoader() {
     const config =
-      (await options?.configLoader?.()) ??
+      (await options?.configLoader?.().then(c => c.config)) ??
       ConfigReader.fromConfigs(
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
