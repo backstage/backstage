@@ -48,7 +48,7 @@ import {
 import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
 /** @alpha */
-const techDocsStorage = createApiExtension({
+const techDocsStorageApi = createApiExtension({
   factory: createApiFactory({
     api: techdocsStorageApiRef,
     deps: {
@@ -68,7 +68,7 @@ const techDocsStorage = createApiExtension({
 });
 
 /** @alpha */
-const techDocsClient = createApiExtension({
+const techDocsClientApi = createApiExtension({
   factory: createApiFactory({
     api: techdocsApiRef,
     deps: {
@@ -86,7 +86,7 @@ const techDocsClient = createApiExtension({
 });
 
 /** @alpha */
-export const TechDocsSearchResultListItemExtension =
+export const techDocsSearchResultListItemExtension =
   createSearchResultListItemExtension({
     configSchema: createSchemaFromZod(z =>
       z.object({
@@ -113,7 +113,7 @@ export const TechDocsSearchResultListItemExtension =
  *
  * @alpha
  */
-const TechDocsIndexPage = createPageExtension({
+const techDocsPage = createPageExtension({
   defaultPath: '/docs',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   loader: () =>
@@ -127,7 +127,7 @@ const TechDocsIndexPage = createPageExtension({
  *
  * @alpha
  */
-const TechDocsReaderPage = createPageExtension({
+const techDocsReaderPage = createPageExtension({
   name: 'reader',
   defaultPath: '/docs/:namespace/:kind/:name',
   routeRef: convertLegacyRouteRef(rootDocsRouteRef),
@@ -142,7 +142,7 @@ const TechDocsReaderPage = createPageExtension({
  *
  * @alpha
  */
-const TechDocsEntityContent = createEntityContentExtension({
+const techDocsEntityContent = createEntityContentExtension({
   defaultPath: 'docs',
   defaultTitle: 'TechDocs',
   loader: () =>
@@ -150,7 +150,7 @@ const TechDocsEntityContent = createEntityContentExtension({
 });
 
 /** @alpha */
-const TechDocsNavItem = createNavItemExtension({
+const techDocsNavItem = createNavItemExtension({
   icon: LibraryBooks,
   title: 'Docs',
   routeRef: convertLegacyRouteRef(rootRouteRef),
@@ -160,13 +160,13 @@ const TechDocsNavItem = createNavItemExtension({
 export default createPlugin({
   id: 'techdocs',
   extensions: [
-    techDocsClient,
-    techDocsStorage,
-    TechDocsNavItem,
-    TechDocsIndexPage,
-    TechDocsReaderPage,
-    TechDocsEntityContent,
-    TechDocsSearchResultListItemExtension,
+    techDocsClientApi,
+    techDocsStorageApi,
+    techDocsNavItem,
+    techDocsPage,
+    techDocsReaderPage,
+    techDocsEntityContent,
+    techDocsSearchResultListItemExtension,
   ],
   routes: {
     root: convertLegacyRouteRef(rootRouteRef),

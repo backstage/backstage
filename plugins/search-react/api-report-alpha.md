@@ -28,20 +28,23 @@ export function createSearchResultListItemExtension<
 ): ExtensionDefinition<TConfig>;
 
 // @alpha (undocumented)
+export namespace createSearchResultListItemExtension {
+  const // (undocumented)
+    itemDataRef: ConfigurableExtensionDataRef<
+      {
+        predicate?: SearchResultItemExtensionPredicate | undefined;
+        component: SearchResultItemExtensionComponent;
+      },
+      {}
+    >;
+}
+
+// @alpha (undocumented)
 export type SearchResultItemExtensionComponent = <
   P extends BaseSearchResultListItemProps,
 >(
   props: P,
 ) => JSX.Element | null;
-
-// @alpha (undocumented)
-export const searchResultItemExtensionData: ConfigurableExtensionDataRef<
-  {
-    predicate?: SearchResultItemExtensionPredicate | undefined;
-    component: SearchResultItemExtensionComponent;
-  },
-  {}
->;
 
 // @alpha (undocumented)
 export type SearchResultItemExtensionOptions<

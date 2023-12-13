@@ -19,10 +19,10 @@ import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { createNavItemExtension } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../routes';
 
-export const CatalogIndexNavItem = createNavItemExtension({
+export const catalogNavItem = createNavItemExtension({
   routeRef: convertLegacyRouteRef(rootRouteRef),
   title: 'Catalog',
   icon: HomeIcon,
 });
 
-export default [CatalogIndexNavItem];
+export default [catalogNavItem];

@@ -40,7 +40,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 // TODO: It's currently possible to override the import page with a custom one. We need to decide
 //       whether this type of override is typically done with an input or by overriding the entire extension.
-const CatalogImportPageExtension = createPageExtension({
+const catalogImportPage = createPageExtension({
   defaultPath: '/catalog-import',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   loader: () =>
@@ -49,7 +49,7 @@ const CatalogImportPageExtension = createPageExtension({
     ),
 });
 
-const CatalogImportService = createApiExtension({
+const catalogImportApi = createApiExtension({
   factory: createApiFactory({
     api: catalogImportApiRef,
     deps: {
@@ -82,7 +82,7 @@ const CatalogImportService = createApiExtension({
 /** @alpha */
 export default createPlugin({
   id: 'catalog-import',
-  extensions: [CatalogImportService, CatalogImportPageExtension],
+  extensions: [catalogImportApi, catalogImportPage],
   routes: {
     importPage: convertLegacyRouteRef(rootRouteRef),
   },

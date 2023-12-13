@@ -29,7 +29,7 @@ import React from 'react';
 
 export * from './translation';
 
-const UserSettingsPage = createPageExtension({
+const userSettingsPage = createPageExtension({
   defaultPath: '/settings',
   routeRef: convertLegacyRouteRef(settingsRouteRef),
   inputs: {
@@ -55,7 +55,7 @@ const UserSettingsPage = createPageExtension({
  */
 export default createPlugin({
   id: 'user-settings',
-  extensions: [UserSettingsPage],
+  extensions: [userSettingsPage],
   routes: {
     root: convertLegacyRouteRef(settingsRouteRef),
   },

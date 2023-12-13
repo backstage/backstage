@@ -61,7 +61,7 @@ import {
 } from '@backstage/plugin-search-react';
 import { SearchResult } from '@backstage/plugin-search-common';
 import { searchApiRef } from '@backstage/plugin-search-react';
-import { searchResultItemExtensionData } from '@backstage/plugin-search-react/alpha';
+import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 
 import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
@@ -73,7 +73,7 @@ import {
 } from '@backstage/core-compat-api';
 
 /** @alpha */
-export const SearchApi = createApiExtension({
+export const searchApi = createApiExtension({
   factory: {
     api: searchApiRef,
     deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
@@ -100,7 +100,7 @@ const useSearchPageStyles = makeStyles((theme: Theme) => ({
 }));
 
 /** @alpha */
-export const SearchPage = createPageExtension({
+export const searchPage = createPageExtension({
   routeRef: convertLegacyRouteRef(rootRouteRef),
   configSchema: createSchemaFromZod(z =>
     z.object({
@@ -110,7 +110,7 @@ export const SearchPage = createPageExtension({
   ),
   inputs: {
     items: createExtensionInput({
-      item: searchResultItemExtensionData,
+      item: createSearchResultListItemExtension.itemDataRef,
     }),
   },
   loader: async ({ config, inputs }) => {
@@ -238,7 +238,7 @@ export const SearchPage = createPageExtension({
 });
 
 /** @alpha */
-export const SearchNavItem = createNavItemExtension({
+export const searchNavItem = createNavItemExtension({
   routeRef: convertLegacyRouteRef(rootRouteRef),
   title: 'Search',
   icon: SearchIcon,
@@ -247,7 +247,7 @@ export const SearchNavItem = createNavItemExtension({
 /** @alpha */
 export default createPlugin({
   id: 'search',
-  extensions: [SearchApi, SearchPage, SearchNavItem],
+  extensions: [searchApi, searchPage, searchNavItem],
   routes: {
     root: convertLegacyRouteRef(rootRouteRef),
   },
