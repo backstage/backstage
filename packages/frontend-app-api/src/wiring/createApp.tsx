@@ -23,6 +23,10 @@ import {
   ComponentRef,
   componentsApiRef,
   coreExtensionData,
+  createApiExtension,
+  createComponentExtension,
+  createNavItemExtension,
+  createThemeExtension,
   createTranslationExtension,
   ExtensionDataRef,
   ExtensionOverrides,
@@ -194,7 +198,7 @@ export function createExtensionTree(options: {
 
       return this.getExtensionAttachments('core/nav', 'items')
         .map((node, index) => {
-          const target = node.getData(coreExtensionData.navTarget);
+          const target = node.getData(createNavItemExtension.targetDataRef);
           if (!target) {
             return null;
           }
@@ -365,13 +369,13 @@ function createApiHolder(
   const pluginApis =
     tree.root.edges.attachments
       .get('apis')
-      ?.map(e => e.instance?.getData(coreExtensionData.apiFactory))
+      ?.map(e => e.instance?.getData(createApiExtension.factoryDataRef))
       .filter((x): x is AnyApiFactory => !!x) ?? [];
 
   const themeExtensions =
     tree.root.edges.attachments
       .get('themes')
-      ?.map(e => e.instance?.getData(coreExtensionData.theme))
+      ?.map(e => e.instance?.getData(createThemeExtension.themeDataRef))
       .filter((x): x is AppTheme => !!x) ?? [];
 
   const translationResources =
@@ -412,7 +416,7 @@ function createApiHolder(
   const componentsExtensions =
     tree.root.edges.attachments
       .get('components')
-      ?.map(e => e.instance?.getData(coreExtensionData.component))
+      ?.map(e => e.instance?.getData(createComponentExtension.componentDataRef))
       .filter(x => !!x) ?? [];
 
   const componentsMap = componentsExtensions.reduce(

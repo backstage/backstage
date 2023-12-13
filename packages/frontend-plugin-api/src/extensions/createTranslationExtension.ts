@@ -38,5 +38,5 @@ export function createTranslationExtension(options: {
 export namespace createTranslationExtension {
   export const translationDataRef = createExtensionDataRef<
     TranslationResource | TranslationMessages
-  >('core.translationResource');
+  >('core.translation.translation');
 }
