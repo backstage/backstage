@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { type AppRouteBinder } from './resolveRouteBindings';
+export { type CreateAppRouteBinder } from './resolveRouteBindings';
