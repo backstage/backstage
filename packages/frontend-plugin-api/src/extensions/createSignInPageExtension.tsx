@@ -27,10 +27,6 @@ import {
 import { Expand } from '../types';
 import { SignInPageProps } from '@backstage/core-plugin-api';
 
-/** @internal */
-export const signInPageComponentDataRef =
-  createExtensionDataRef<ComponentType<SignInPageProps>>('core.signInPage');
-
 /**
  *
  * @public
@@ -59,7 +55,7 @@ export function createSignInPageExtension<
     inputs: options.inputs,
     disabled: options.disabled,
     output: {
-      component: signInPageComponentDataRef,
+      component: createSignInPageExtension.componentDataRef,
     },
     factory({ config, inputs, node }) {
       const ExtensionComponent = lazy(() =>
@@ -77,4 +73,11 @@ export function createSignInPageExtension<
       };
     },
   });
+}
+
+/** @public */
+export namespace createSignInPageExtension {
+  export const componentDataRef = createExtensionDataRef<
+    ComponentType<SignInPageProps>
+  >('core.sign-in-page.component');
 }
