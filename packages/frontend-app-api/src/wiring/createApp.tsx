@@ -103,6 +103,8 @@ import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/w
 import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
 import { stringifyError } from '@backstage/errors';
 
+const DefaultApis = defaultApis.map(factory => createApiExtension({ factory }));
+
 export const builtinExtensions = [
   Core,
   CoreRouter,
@@ -114,6 +116,7 @@ export const builtinExtensions = [
   DefaultNotFoundErrorPageComponent,
   LightTheme,
   DarkTheme,
+  ...DefaultApis,
 ].map(def => resolveExtensionDefinition(def));
 
 /** @public */
@@ -418,14 +421,7 @@ function createApiHolder(
         (x): x is typeof createTranslationExtension.translationDataRef.T => !!x,
       ) ?? [];
 
-  const apis = new Map<string, AnyApiFactory>();
-
-  // removing duplicates by id, overriding the default one with the plugin one
-  for (const factory of [...defaultApis, ...pluginApis]) {
-    apis.set(factory.api.id, factory);
-  }
-
-  for (const factory of apis.values()) {
+  for (const factory of pluginApis) {
     factoryRegistry.register('default', factory);
   }
 
