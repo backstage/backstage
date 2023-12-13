@@ -36,7 +36,7 @@ export function createComponentExtension<
   disabled?: boolean;
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
-  component:
+  loader:
     | {
         lazy: (values: {
           config: TConfig;
@@ -64,13 +64,13 @@ export function createComponentExtension<
     factory({ config, inputs, node }) {
       let ExtensionComponent: ComponentType<TProps>;
 
-      if ('sync' in options.component) {
-        ExtensionComponent = options.component.sync({ config, inputs });
+      if ('sync' in options.loader) {
+        ExtensionComponent = options.loader.sync({ config, inputs });
       } else {
-        const lazyLoader = options.component.lazy;
+        const lazyLoader = options.loader.lazy;
         ExtensionComponent = lazy(() =>
-          lazyLoader({ config, inputs }).then(component => ({
-            default: component,
+          lazyLoader({ config, inputs }).then(Component => ({
+            default: Component,
           })),
         ) as unknown as ComponentType<TProps>;
       }
