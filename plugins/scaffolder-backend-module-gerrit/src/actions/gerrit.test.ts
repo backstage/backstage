@@ -241,7 +241,22 @@ describe('publish:gerrit', () => {
       'https://gerrithost.org/repo/+/refs/heads/master',
     );
   });
+  it('should not create new projects on dryRun', async () => {
+    await action.handler({
+      ...mockContext,
+      isDryRun: true,
+      input: {
+        ...mockContext.input,
+        repoUrl: 'gerrithost.org?workspace=workspace&repo=repo',
+        sourcePath: 'repository/',
+      },
+    });
 
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'commitHash',
+      'abcd-dry-run-1234',
+    );
+  });
   afterEach(() => {
     jest.resetAllMocks();
   });
