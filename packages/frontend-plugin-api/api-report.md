@@ -863,6 +863,9 @@ export { FetchApi };
 
 export { fetchApiRef };
 
+// @public (undocumented)
+export type FrontendFeature = BackstagePlugin | ExtensionOverrides;
+
 export { githubAuthApiRef };
 
 export { gitlabAuthApiRef };
