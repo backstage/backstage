@@ -40,7 +40,7 @@ import {
 } from '@backstage/core-compat-api';
 
 /** @alpha */
-export const GraphiqlPage = createPageExtension({
+export const graphiqlPage = createPageExtension({
   defaultPath: '/graphiql',
   routeRef: convertLegacyRouteRef(graphiQLRouteRef),
   loader: () =>
@@ -48,7 +48,7 @@ export const GraphiqlPage = createPageExtension({
 });
 
 /** @alpha */
-export const graphiqlPageSidebarItem = createNavItemExtension({
+export const graphiqlNavItem = createNavItemExtension({
   title: 'GraphiQL',
   icon: GraphiQLIcon as IconComponent,
   routeRef: convertLegacyRouteRef(graphiQLRouteRef),
@@ -56,7 +56,7 @@ export const graphiqlPageSidebarItem = createNavItemExtension({
 
 /** @internal */
 const endpointDataRef = createExtensionDataRef<GraphQLEndpoint>(
-  'plugin.graphiql.endpoint',
+  'graphiql.graphiql-endpoint',
 );
 
 /** @alpha */
@@ -102,29 +102,31 @@ export function createGraphiQLEndpointExtension<TConfig extends {}>(options: {
 }
 
 /** @alpha */
-const gitlabGraphiQLBrowseExtension = createGraphiQLEndpointExtension({
-  name: 'gitlab',
-  disabled: true,
-  configSchema: createSchemaFromZod(z =>
-    z
-      .object({
-        id: z.string().default('gitlab'),
-        title: z.string().default('GitLab'),
-        url: z.string().default('https://gitlab.com/api/graphql'),
-      })
-      .default({}),
-  ),
-  factory: ({ config }) => ({ endpoint: GraphQLEndpoints.create(config) }),
-});
+const graphiqlGitlabGraphiQLEndpointExtension = createGraphiQLEndpointExtension(
+  {
+    name: 'gitlab',
+    disabled: true,
+    configSchema: createSchemaFromZod(z =>
+      z
+        .object({
+          id: z.string().default('gitlab'),
+          title: z.string().default('GitLab'),
+          url: z.string().default('https://gitlab.com/api/graphql'),
+        })
+        .default({}),
+    ),
+    factory: ({ config }) => ({ endpoint: GraphQLEndpoints.create(config) }),
+  },
+);
 
 /** @alpha */
 export default createPlugin({
   id: 'graphiql',
   extensions: [
-    GraphiqlPage,
+    graphiqlPage,
     graphiqlBrowseApi,
-    gitlabGraphiQLBrowseExtension,
-    graphiqlPageSidebarItem,
+    graphiqlGitlabGraphiQLEndpointExtension,
+    graphiqlNavItem,
   ],
   routes: {
     root: convertLegacyRouteRef(graphiQLRouteRef),

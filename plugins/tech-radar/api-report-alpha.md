@@ -17,10 +17,10 @@ const _default: BackstagePlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const sampleTechRadarApi: ExtensionDefinition<{}>;
+export const techRadarApi: ExtensionDefinition<{}>;
 
 // @alpha (undocumented)
-export const TechRadarPage: ExtensionDefinition<{
+export const techRadarPage: ExtensionDefinition<{
   height: number;
   width: number;
   title: string;
