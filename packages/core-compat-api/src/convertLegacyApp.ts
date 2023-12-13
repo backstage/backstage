@@ -62,6 +62,10 @@ function selectChildren(
 export function convertLegacyApp(
   rootElement: React.JSX.Element,
 ): (ExtensionOverrides | BackstagePlugin)[] {
+  if (getComponentData(rootElement, 'core.type') === 'FlatRoutes') {
+    return collectLegacyRoutes(rootElement);
+  }
+
   const appRouterEls = selectChildren(
     rootElement,
     el => getComponentData(el, 'core.type') === 'AppRouter',

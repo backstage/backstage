@@ -126,4 +126,37 @@ describe('convertLegacyApp', () => {
       },
     ]);
   });
+
+  it('should find and extract just routes', () => {
+    const collected = convertLegacyApp(
+      <FlatRoutes>
+        <Route path="/score-board" element={<ScoreBoardPage />} />
+        <Route path="/stackstorm" element={<StackstormPage />} />
+        <Route path="/puppetdb" element={<PuppetDbPage />} />
+        <Route path="/puppetdb" element={<PuppetDbPage />} />
+      </FlatRoutes>,
+    );
+
+    expect(
+      collected.map((p: any /* TODO */) => ({
+        id: p.id,
+        extensions: p.extensions.map((e: any) => ({
+          id: e.id,
+          attachTo: e.attachTo,
+          disabled: e.disabled,
+          defaultConfig: e.configSchema?.parse({}),
+        })),
+      })),
+    ).toEqual([
+      expect.objectContaining({
+        id: 'score-card',
+      }),
+      expect.objectContaining({
+        id: 'stackstorm',
+      }),
+      expect.objectContaining({
+        id: 'puppetDb',
+      }),
+    ]);
+  });
 });
