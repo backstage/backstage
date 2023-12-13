@@ -25,6 +25,13 @@ spec:
           envFrom:
             - secretRef:
                 name: postgres-secrets
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 256Mi
+            requests:
+              cpu: 10m
+              memory: 96Mi
           volumeMounts:
             - mountPath: /data
               name: postgresdb

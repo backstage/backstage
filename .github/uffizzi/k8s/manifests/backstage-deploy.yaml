@@ -35,3 +35,10 @@ spec:
               value: 'postgres.default.svc.cluster.local'
             - name: NODE_ENV
               value: production
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 384Mi
+            requests:
+              cpu: 20m
+              memory: 160Mi
