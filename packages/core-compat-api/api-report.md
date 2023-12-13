@@ -4,10 +4,9 @@
 
 ```ts
 import { AnyRouteRefParams } from '@backstage/core-plugin-api';
-import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { ExtensionOverrides } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { ExternalRouteRef as ExternalRouteRef_2 } from '@backstage/frontend-plugin-api';
+import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -21,7 +20,7 @@ export function compatWrapper(element: ReactNode): React_2.JSX.Element;
 // @public (undocumented)
 export function convertLegacyApp(
   rootElement: React_2.JSX.Element,
-): (ExtensionOverrides | BackstagePlugin)[];
+): FrontendFeature[];
 
 // @public
 export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
