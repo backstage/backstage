@@ -78,7 +78,7 @@ Now let's turn to the main plugin package where the plugin itself is exported. Y
 
 ```tsx title="in @internal/plugin-example, NOTE THIS IS LEGACY CODE"
 import {
-  configApiRef,
+  storageApiRef,
   createPlugin,
   createApiFactory,
 } from '@backstage/core-plugin-api';
@@ -87,8 +87,8 @@ import { WorkImpl } from './WorkImpl';
 
 const workApi = createApiFactory({
   api: workApiRef,
-  deps: { configApi: configApiRef },
-  factory: ({ configApi }) => new WorkImpl({ configApi }),
+  deps: { storageApi: storageApiRef },
+  factory: ({ storageApi }) => new WorkImpl({ storageApi }),
 });
 
 /** @public */
@@ -107,7 +107,7 @@ The major changes we'll make are
 
 ```tsx title="in @internal/plugin-example"
 import {
-  configApiRef,
+  storageApiRef,
   createPlugin,
   createApiFactory,
   createApiExtension,
@@ -121,8 +121,8 @@ const workApi = createApiExtension({
     // The factory itself is unchanged
     createApiFactory({
       api: workApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) => new WorkImpl({ configApi }),
+      deps: { storageApi: storageApiRef },
+      factory: ({ storageApi }) => new WorkImpl({ storageApi }),
     }),
 });
 
