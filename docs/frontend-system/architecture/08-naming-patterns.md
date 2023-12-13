@@ -12,7 +12,7 @@ These are the naming patterns to adhere to within the frontend system. They help
 
 As a rule, all names should be camel case, with the exceptions of plugin and extension IDs, which should use kebab case.
 
-### Plugins
+## Plugins
 
 | Description | Pattern      | Examples                              |
 | ----------- | ------------ | ------------------------------------- |
@@ -22,24 +22,27 @@ As a rule, all names should be camel case, with the exceptions of plugin and ext
 Example:
 
 ```ts
+// This declaration is only for internal usage in tests. This could also be a direct default export.
 export const userSettingsPlugin = createPlugin({
   id: 'user-settings',
   ...
 })
+
+// The plugin instance should be the default export of the package, typically this is placed in src/index.ts
+export { userSettingsPlugin as default } from './plugin';
 ```
 
 Note that while we use this naming pattern for the plugin instance this is only for internal usage within the package. Plugins are always exported as the default export of the plugin package.
 
-### Extensions
+## Extensions
 
 | Description | Pattern                         | Examples                                                            |
 | ----------- | ------------------------------- | ------------------------------------------------------------------- |
-| Kind        | `<Kind>`                        | `Page`, `EntityCard`, `SearchResultListItem`                        |
 | Creator     | `create<Kind>Extension`         | `createPageExtension`, `createEntityCardExtension`                  |
 | ID          | `[<kind>:]<namespace>[/<name>]` | `'core.nav'`, `'page:user-settings'`, `'entity-card:catalog/about'` |
 | Symbol      | `<namespace>[<Name>][<Kind>]`   | `coreNav`, `userSettingsPage`, `catalogAboutEntityCard`             |
 
-When you create a new extension you never provide the ID directly. Instead, you indirectly or directly provide that kind, namespace, and name parts that make up the ID. The kind is always provided by the extension creator used to create the extension, the only exception is if you use `createExtension` directly. Any extension that is provided by a plugin will by default have its namespace set to the plugin ID, so you generally only need to provide an explicit namespace if you want to override an existing extension. The name is also optional, and primarily used to distinguish between multiple extensions of the same kind and namespace. If a plugin doesn't need to distinguish between different extensions of the same kind, the name can be omitted.
+When you create a new extension you never provide the ID directly. Instead, you indirectly or directly provide the kind, namespace, and name parts that make up the ID. The kind is always provided by the extension creator function used to create the extension, the only exception is if you use `createExtension` directly. Any extension that is provided by a plugin will by default have its namespace set to the plugin ID, so you generally only need to provide an explicit namespace if you want to override an existing extension. The name is also optional, and primarily used to distinguish between multiple extensions of the same kind and namespace. If a plugin doesn't need to distinguish between different extensions of the same kind, the name can be omitted.
 
 Example:
 
@@ -72,7 +75,7 @@ export const catalogPlugin = createPlugin({
 });
 ```
 
-### Extension Data
+## Extension Data
 
 | Description          | Pattern                               | Examples                                                                      |
 | -------------------- | ------------------------------------- | ----------------------------------------------------------------------------- |
@@ -104,7 +107,7 @@ export const searchResultItemExtensionDataRef =
 
 #### Grouped Extension Data
 
-This way of defining extension data is similar to the standalone way, but it used when you want to export multiple pieces of grouped extension data for general use. This avoids separate exports and help make related extension data references easier to discover. The name of the group should generally by the same as the namespace of the exporting package, typically the plugin ID. If the group needs to be more specific it should be prefixed with the namespace.
+This way of defining extension data is similar to the standalone way, but it used when you want to export multiple pieces of grouped extension data for general use. This avoids separate exports and helps make related extension data references easier to discover. The name of the group should generally by the same as the namespace of the exporting package, typically the plugin ID. If the group needs to be more specific it should be prefixed with the namespace.
 
 ```ts
 export const coreExtensionData = {
@@ -130,9 +133,9 @@ export namespace createGraphiQLEndpointExtension {
 }
 ```
 
-### Extension Inputs
+## Extension Inputs
 
-Extension inputs do not have naming patterns for all kind of inputs, but there are some specific use-cases where we encourage to use a recognizable input name.
+Extension inputs do not have naming patterns for all types of input, but there are some specific use-cases where we encourage using a recognizable input name.
 
 | Name       | Description                                                                                                                                                   |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
