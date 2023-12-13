@@ -144,7 +144,7 @@ function visitRouteChildren(options: {
   });
 }
 
-/** @public */
+/** @internal */
 export function collectLegacyRoutes(
   flatRoutesElement: JSX.Element,
 ): BackstagePlugin[] {
