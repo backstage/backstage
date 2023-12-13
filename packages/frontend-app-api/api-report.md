@@ -13,8 +13,20 @@ import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
+// @public (undocumented)
+export function createApp(options?: {
+  features?: (BackstagePlugin | ExtensionOverrides)[];
+  configLoader?: () => Promise<ConfigApi>;
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+  featureLoader?: (ctx: {
+    config: ConfigApi;
+  }) => Promise<(BackstagePlugin | ExtensionOverrides)[]>;
+}): {
+  createRoot(): JSX_2.Element;
+};
+
 // @public
-export type AppRouteBinder = <
+export type CreateAppRouteBinder = <
   TExternalRoutes extends {
     [name: string]: ExternalRouteRef;
   },
@@ -27,25 +39,13 @@ export type AppRouteBinder = <
 ) => void;
 
 // @public (undocumented)
-export function createApp(options?: {
-  features?: (BackstagePlugin | ExtensionOverrides)[];
-  configLoader?: () => Promise<ConfigApi>;
-  bindRoutes?(context: { bind: AppRouteBinder }): void;
-  featureLoader?: (ctx: {
-    config: ConfigApi;
-  }) => Promise<(BackstagePlugin | ExtensionOverrides)[]>;
-}): {
-  createRoot(): JSX_2.Element;
-};
-
-// @public (undocumented)
 export function createExtensionTree(options: { config: Config }): ExtensionTree;
 
 // @public
 export function createSpecializedApp(options?: {
   features?: (BackstagePlugin | ExtensionOverrides)[];
   config?: ConfigApi;
-  bindRoutes?(context: { bind: AppRouteBinder }): void;
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
 }): {
   createRoot(): JSX_2.Element;
 };
