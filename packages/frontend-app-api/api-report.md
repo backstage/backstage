@@ -16,7 +16,9 @@ import { SubRouteRef } from '@backstage/frontend-plugin-api';
 // @public (undocumented)
 export function createApp(options?: {
   features?: (BackstagePlugin | ExtensionOverrides)[];
-  configLoader?: () => Promise<ConfigApi>;
+  configLoader?: () => Promise<{
+    config: ConfigApi;
+  }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   featureLoader?: (ctx: {
     config: ConfigApi;
