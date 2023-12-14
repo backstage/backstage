@@ -24,9 +24,12 @@ export function createApp(options?: {
 };
 
 // @public
-export type CreateAppFeatureLoader = (options: {
-  config: ConfigApi;
-}) => Promise<FrontendFeature[]>;
+export interface CreateAppFeatureLoader {
+  getLoaderName(): string;
+  load(options: { config: ConfigApi }): Promise<{
+    features: FrontendFeature[];
+  }>;
+}
 
 // @public
 export type CreateAppRouteBinder = <
