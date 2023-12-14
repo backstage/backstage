@@ -15,11 +15,10 @@
  */
 
 import {
-  BackstagePlugin,
-  ExtensionOverrides,
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
+  FrontendFeature,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalRouteRef } from '../../../frontend-plugin-api/src/routing/RouteRef';
@@ -33,9 +32,7 @@ export interface RouteRefsById {
 }
 
 /** @internal */
-export function collectRouteIds(
-  features: (BackstagePlugin | ExtensionOverrides)[],
-): RouteRefsById {
+export function collectRouteIds(features: FrontendFeature[]): RouteRefsById {
   const routesById = new Map<string, RouteRef | SubRouteRef>();
   const externalRoutesById = new Map<string, ExternalRouteRef>();
 
