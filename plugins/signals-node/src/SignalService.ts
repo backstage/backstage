@@ -37,7 +37,6 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export class SignalService implements EventSubscriber {
-  private readonly serverId: string;
   private connections: Map<string, SignalConnection> = new Map<
     string,
     SignalConnection
@@ -58,7 +57,6 @@ export class SignalService implements EventSubscriber {
       identity: this.identity,
     } = options);
 
-    this.serverId = uuid();
     this.server = new WebSocketServer({
       noServer: true,
       clientTracking: false,
@@ -199,6 +197,21 @@ export class SignalService implements EventSubscriber {
       return;
     }
 
+    // If there is event broker, use that to publish the message to
+    // all signal services, including this one.
+    if (this.eventBroker && !brokedEvent) {
+      await this.eventBroker.publish({
+        topic: 'signals',
+        eventPayload: {
+          recipients,
+          message,
+          topic,
+        },
+      });
+      return;
+    }
+
+    // Actual websocket message sending
     this.connections.forEach(conn => {
       if (!conn.subscriptions.has(topic)) {
         return;
@@ -217,29 +230,10 @@ export class SignalService implements EventSubscriber {
 
       conn.ws.send(jsonMessage);
     });
-
-    // If this event has not been broadcasted to all servers, then use
-    // EventBroker to do that
-    if (this.eventBroker && !brokedEvent) {
-      await this.eventBroker.publish({
-        topic: 'signals',
-        eventPayload: {
-          recipients,
-          message,
-          topic,
-        },
-        metadata: { server: this.serverId },
-      });
-    }
   }
 
   async onEvent(params: EventParams<SignalEventBrokerPayload>): Promise<void> {
-    const { eventPayload, metadata } = params;
-    // Discard message from same server to prevent duplicate messages
-    if (!metadata?.server || metadata.server === this.serverId) {
-      return;
-    }
-
+    const { eventPayload } = params;
     if (
       !eventPayload?.recipients ||
       !eventPayload.topic ||

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { signalApiRef } from '../api';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { useEffect, useState } from 'react';
 
@@ -23,10 +23,13 @@ export const useSignalApi = (
   topic: string,
   onMessage: (message: JsonObject) => void,
 ) => {
-  const signals = useApi(signalApiRef);
+  const apiHolder = useApiHolder();
+  // Use apiHolder instead useApi in case signalApi is not available in the
+  // backstage instance this is used
+  const signals = apiHolder.get(signalApiRef);
   const [subscription, setSubscription] = useState<null | string>(null);
   useEffect(() => {
-    if (!subscription) {
+    if (signals && !subscription) {
       const sub = signals.subscribe(topic, onMessage);
       setSubscription(sub);
     }
@@ -34,7 +37,7 @@ export const useSignalApi = (
 
   useEffect(() => {
     return () => {
-      if (subscription) {
+      if (signals && subscription) {
         signals.unsubscribe(subscription);
       }
     };
