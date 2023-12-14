@@ -51,6 +51,7 @@ import {
   FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
+import { ErrorListTemplate } from './ErrorListTemplate';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -233,6 +234,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             experimental_defaultFormStateBehavior={{
               allOf: 'populateDefaults',
             }}
+            templates={{ ErrorListTemplate }}
             {...(props.formProps ?? {})}
           >
             <div className={styles.footer}>
