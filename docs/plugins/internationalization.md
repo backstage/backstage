@@ -6,7 +6,7 @@ description: Documentation on adding internationalization to the plugin
 
 ## Overview
 
-The Backstage core function provides internationalization for plugins
+The Backstage core function provides internationalization for plugins. The underlying library is [`i18next`](https://www.i18next.com/) with some additional Backstage typescript magic for type safety with keys.
 
 ## For a plugin developer
 
@@ -46,6 +46,8 @@ return (
 );
 ```
 
+You will see how the initial dictionary structure and nesting gets converted into dot notation, so we encourage `camelCase` in key names and lean on the nesting structure to separate keys.
+
 ### Guidelines for `i18n` messages and keys
 
 The API for `i18n` messages and keys can be pretty tricky to get right, as it's a pretty flexible API. We've put together some guidelines to help you get started that encourage good practices when thinking about translating plugins:
@@ -82,6 +84,16 @@ export const myPluginTranslationRef = createTranslationRef({
 Think about the semantic placement of content rather than the text content itself. Group related translations under a common prefix, and use nesting to represent relationships between different parts of your application. It's good to start grouping under extensions, page sections, or visual scopes and experiences.
 
 Translations should avoid using their own text content as key where possible, as this can lead to confusion if the translation changes. Instead prefer to use keys that describe the location or usage of the text.
+
+#### Common Key names
+
+This list is intended to grow over time, but below are some examples of common key names and patterns that we encourage you to use where possible:
+
+- `${page}.title`
+- `${page}.subtitle`
+- `${page}.description`
+
+- `${page}.header.title`
 
 #### Key reuse
 
