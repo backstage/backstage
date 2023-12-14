@@ -105,28 +105,23 @@ export class GithubUrlReader implements UrlReader {
       credentials,
     );
 
-    let response: Response;
-    try {
-      response = await this.fetchResponse(ghUrl, {
-        headers: {
-          ...credentials?.headers,
-          ...(options?.etag && { 'If-None-Match': options.etag }),
-          ...(options?.lastModifiedAfter && {
-            'If-Modified-Since': options.lastModifiedAfter.toUTCString(),
-          }),
-          Accept: 'application/vnd.github.v3.raw',
-        },
-        // TODO(freben): The signal cast is there because pre-3.x versions of
-        // node-fetch have a very slightly deviating AbortSignal type signature.
-        // The difference does not affect us in practice however. The cast can
-        // be removed after we support ESM for CLI dependencies and migrate to
-        // version 3 of node-fetch.
-        // https://github.com/backstage/backstage/issues/8242
-        signal: options?.signal as any,
-      });
-    } catch (e) {
-      throw e;
-    }
+    const response = await this.fetchResponse(ghUrl, {
+      headers: {
+        ...credentials?.headers,
+        ...(options?.etag && { 'If-None-Match': options.etag }),
+        ...(options?.lastModifiedAfter && {
+          'If-Modified-Since': options.lastModifiedAfter.toUTCString(),
+        }),
+        Accept: 'application/vnd.github.v3.raw',
+      },
+      // TODO(freben): The signal cast is there because pre-3.x versions of
+      // node-fetch have a very slightly deviating AbortSignal type signature.
+      // The difference does not affect us in practice however. The cast can
+      // be removed after we support ESM for CLI dependencies and migrate to
+      // version 3 of node-fetch.
+      // https://github.com/backstage/backstage/issues/8242
+      signal: options?.signal as any,
+    });
 
     return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
       etag: response.headers.get('ETag') ?? undefined,
