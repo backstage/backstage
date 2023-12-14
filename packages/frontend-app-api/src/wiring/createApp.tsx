@@ -244,9 +244,19 @@ function deduplicateFeatures(
  *
  * @public
  */
-export type CreateAppFeatureLoader = (options: {
-  config: ConfigApi;
-}) => Promise<FrontendFeature[]>;
+export interface CreateAppFeatureLoader {
+  /**
+   * Returns name of this loader. suitable for showing to users.
+   */
+  getLoaderName(): string;
+
+  /**
+   * Loads a number of features dynamically.
+   */
+  load(options: { config: ConfigApi }): Promise<{
+    features: FrontendFeature[];
+  }>;
+}
 
 /** @public */
 export function createApp(options?: {
@@ -266,20 +276,20 @@ export function createApp(options?: {
     const discoveredFeatures = getAvailableFeatures(config);
 
     const providedFeatures: FrontendFeature[] = [];
-    for (const feature of options?.features ?? []) {
-      if (typeof feature === 'function') {
+    for (const entry of options?.features ?? []) {
+      if ('load' in entry) {
         try {
-          const loadedFeatures = await feature({ config });
-          providedFeatures.push(...loadedFeatures);
+          const result = await entry.load({ config });
+          providedFeatures.push(...result.features);
         } catch (e) {
           throw new Error(
-            `Failed to read frontend features from loader, ${stringifyError(
+            `Failed to read frontend features from loader '${entry.getLoaderName()}', ${stringifyError(
               e,
             )}`,
           );
         }
       } else {
-        providedFeatures.push(feature);
+        providedFeatures.push(entry);
       }
     }
 
