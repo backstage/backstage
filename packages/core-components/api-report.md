@@ -547,8 +547,8 @@ export function IconLinkVertical({
   href,
   icon,
   label,
-  onClick,
   title,
+  ...props
 }: IconLinkVerticalProps): React_2.JSX.Element;
 
 // @public (undocumented)
@@ -562,14 +562,12 @@ export type IconLinkVerticalClassKey =
 // Warning: (ae-missing-release-tag) "IconLinkVerticalProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type IconLinkVerticalProps = {
+export type IconLinkVerticalProps = Omit<LinkProps, 'to' | 'className'> & {
   color?: 'primary' | 'secondary';
   disabled?: boolean;
   href?: string;
   icon?: React_2.ReactNode;
   label: string;
-  onClick?: React_2.MouseEventHandler<HTMLAnchorElement>;
-  title?: string;
 };
 
 // @public (undocumented)

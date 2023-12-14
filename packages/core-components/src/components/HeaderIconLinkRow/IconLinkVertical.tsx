@@ -17,18 +17,16 @@ import React from 'react';
 import classnames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 import LinkIcon from '@material-ui/icons/Link';
-import { Link } from '../Link';
+import { Link, LinkProps } from '../Link';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 
-export type IconLinkVerticalProps = {
+export type IconLinkVerticalProps = Omit<LinkProps, 'to' | 'className'> & {
   color?: 'primary' | 'secondary';
   disabled?: boolean;
   href?: string;
   icon?: React.ReactNode;
   label: string;
-  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
-  title?: string;
 };
 
 /** @public */
@@ -73,8 +71,8 @@ export function IconLinkVertical({
   href = '#',
   icon = <LinkIcon />,
   label,
-  onClick,
   title,
+  ...props
 }: IconLinkVerticalProps) {
   const classes = useIconStyles();
 
@@ -98,7 +96,7 @@ export function IconLinkVertical({
       title={title}
       className={classnames(classes.link, classes[color])}
       to={href}
-      onClick={onClick}
+      {...props}
     >
       {icon}
       <Typography variant="caption" component="span" className={classes.label}>
