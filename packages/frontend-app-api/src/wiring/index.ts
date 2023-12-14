@@ -18,6 +18,7 @@ export {
   createApp,
   createSpecializedApp,
   createExtensionTree,
+  type CreateAppFeatureLoader,
   type ExtensionTreeNode,
   type ExtensionTree,
 } from './createApp';

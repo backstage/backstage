@@ -101,6 +101,7 @@ import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiri
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
+import { stringifyError } from '@backstage/errors';
 
 export const builtinExtensions = [
   Core,
@@ -238,12 +239,20 @@ function deduplicateFeatures(
     .reverse();
 }
 
+/**
+ * A source of dynamically loaded frontend features.
+ *
+ * @public
+ */
+export type CreateAppFeatureLoader = (options: {
+  config: ConfigApi;
+}) => Promise<FrontendFeature[]>;
+
 /** @public */
 export function createApp(options?: {
-  features?: FrontendFeature[];
+  features?: (FrontendFeature | CreateAppFeatureLoader)[];
   configLoader?: () => Promise<{ config: ConfigApi }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  featureLoader?: (ctx: { config: ConfigApi }) => Promise<FrontendFeature[]>;
 }): {
   createRoot(): JSX.Element;
 } {
@@ -255,15 +264,28 @@ export function createApp(options?: {
       );
 
     const discoveredFeatures = getAvailableFeatures(config);
-    const loadedFeatures = (await options?.featureLoader?.({ config })) ?? [];
+
+    const providedFeatures: FrontendFeature[] = [];
+    for (const feature of options?.features ?? []) {
+      if (typeof feature === 'function') {
+        try {
+          const loadedFeatures = await feature({ config });
+          providedFeatures.push(...loadedFeatures);
+        } catch (e) {
+          throw new Error(
+            `Failed to read frontend features from loader, ${stringifyError(
+              e,
+            )}`,
+          );
+        }
+      } else {
+        providedFeatures.push(feature);
+      }
+    }
 
     const app = createSpecializedApp({
       config,
-      features: [
-        ...discoveredFeatures,
-        ...loadedFeatures,
-        ...(options?.features ?? []),
-      ],
+      features: [...discoveredFeatures, ...providedFeatures],
       bindRoutes: options?.bindRoutes,
     }).createRoot();
 
@@ -285,6 +307,7 @@ export function createApp(options?: {
 /**
  * Synchronous version of {@link createApp}, expecting all features and
  * config to have been loaded already.
+ *
  * @public
  */
 export function createSpecializedApp(options?: {

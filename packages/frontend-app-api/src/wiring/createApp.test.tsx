@@ -99,6 +99,33 @@ describe('createApp', () => {
     );
   });
 
+  it('should support feature loaders', async () => {
+    const app = createApp({
+      configLoader: async () => ({
+        config: new MockConfigApi({ key: 'config-value' }),
+      }),
+      features: [
+        async ({ config }) => [
+          createPlugin({
+            id: 'test',
+            extensions: [
+              createPageExtension({
+                defaultPath: '/',
+                loader: async () => <div>{config.getString('key')}</div>,
+              }),
+            ],
+          }),
+        ],
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText('config-value'),
+    ).resolves.toBeInTheDocument();
+  });
+
   it('should register feature flags', async () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
