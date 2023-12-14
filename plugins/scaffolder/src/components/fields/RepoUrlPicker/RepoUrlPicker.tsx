@@ -20,6 +20,7 @@ import {
 } from '@backstage/integration-react';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { GithubRepoPicker } from './GithubRepoPicker';
+import { GiteaRepoPicker } from './GiteaRepoPicker';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
 import { AzureRepoPicker } from './AzureRepoPicker';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
@@ -181,6 +182,15 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           onChange={updateLocalState}
           rawErrors={rawErrors}
           state={state}
+        />
+      )}
+      {hostType === 'gitea' && (
+        <GiteaRepoPicker
+          allowedOwners={allowedOwners}
+          allowedRepos={allowedRepos}
+          rawErrors={rawErrors}
+          state={state}
+          onChange={updateLocalState}
         />
       )}
       {hostType === 'gitlab' && (
