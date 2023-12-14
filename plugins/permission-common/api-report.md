@@ -70,15 +70,15 @@ export const conditionalPolicyDecisionSchema: z.ZodObject<
   z.ZodTypeAny,
   {
     result: AuthorizeResult.CONDITIONAL;
-    resourceType: string;
     pluginId: string;
+    resourceType: string;
     conditions: PermissionCriteria<PermissionCondition> &
       (PermissionCriteria<PermissionCondition> | undefined);
   },
   {
     result: AuthorizeResult.CONDITIONAL;
-    resourceType: string;
     pluginId: string;
+    resourceType: string;
     conditions: PermissionCriteria<PermissionCondition> &
       (PermissionCriteria<PermissionCondition> | undefined);
   }
@@ -309,15 +309,15 @@ export const policyDecisionSchema: z.ZodUnion<
       z.ZodTypeAny,
       {
         result: AuthorizeResult.CONDITIONAL;
-        resourceType: string;
         pluginId: string;
+        resourceType: string;
         conditions: PermissionCriteria<PermissionCondition> &
           (PermissionCriteria<PermissionCondition> | undefined);
       },
       {
         result: AuthorizeResult.CONDITIONAL;
-        resourceType: string;
         pluginId: string;
+        resourceType: string;
         conditions: PermissionCriteria<PermissionCondition> &
           (PermissionCriteria<PermissionCondition> | undefined);
       }
