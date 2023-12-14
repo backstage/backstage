@@ -126,6 +126,25 @@ describe('createApp', () => {
     ).resolves.toBeInTheDocument();
   });
 
+  it('should propagate errors thrown by feature loaders', async () => {
+    const app = createApp({
+      configLoader: async () => ({
+        config: new MockConfigApi({}),
+      }),
+      features: [
+        async () => {
+          throw new TypeError('boom');
+        },
+      ],
+    });
+
+    await expect(
+      renderWithEffects(app.createRoot()),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Failed to read frontend features from loader, TypeError: boom"`,
+    );
+  });
+
   it('should register feature flags', async () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
