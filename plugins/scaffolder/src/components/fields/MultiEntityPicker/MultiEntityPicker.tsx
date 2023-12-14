@@ -34,7 +34,7 @@ import Autocomplete, {
 } from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { FieldValidation } from '@rjsf/core';
+import { FieldValidation } from '@rjsf/utils';
 import {
   MultiEntityPickerFilterQueryValue,
   MultiEntityPickerProps,
