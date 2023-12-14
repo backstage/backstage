@@ -33,6 +33,12 @@ import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+
+const mockAuthorize = jest.fn();
+
+const mockPermissionApi = { authorize: mockAuthorize };
 
 describe('<AboutCard />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
@@ -87,6 +93,7 @@ describe('<AboutCard />', () => {
             ),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -143,6 +150,7 @@ describe('<AboutCard />', () => {
             ),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -198,6 +206,7 @@ describe('<AboutCard />', () => {
             ),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -240,6 +249,7 @@ describe('<AboutCard />', () => {
             ScmIntegrationsApi.fromConfig(new ConfigReader({})),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -276,6 +286,10 @@ describe('<AboutCard />', () => {
       },
     };
 
+    mockAuthorize.mockImplementation(async () => ({
+      result: AuthorizeResult.ALLOW,
+    }));
+
     await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -284,6 +298,7 @@ describe('<AboutCard />', () => {
             ScmIntegrationsApi.fromConfig(new ConfigReader({})),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, mockPermissionApi],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -308,6 +323,55 @@ describe('<AboutCard />', () => {
     );
   });
 
+  it('should not render refresh button if the permission is DENY', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location':
+            'url:https://backstage.io/catalog-info.yaml',
+        },
+        name: 'software-deny',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    mockAuthorize.mockImplementation(async () => ({
+      result: AuthorizeResult.DENY,
+    }));
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(new ConfigReader({})),
+          ],
+          [catalogApiRef, catalogApi],
+          [permissionApiRef, mockPermissionApi],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(
+      screen.queryByTitle('Schedule entity refresh'),
+    ).not.toBeInTheDocument();
+  });
+
   it('should not render refresh button if the location is not an url or file', async () => {
     const entity = {
       apiVersion: 'v1',
@@ -330,6 +394,7 @@ describe('<AboutCard />', () => {
             ScmIntegrationsApi.fromConfig(new ConfigReader({})),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -384,6 +449,7 @@ describe('<AboutCard />', () => {
             ),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -440,6 +506,7 @@ describe('<AboutCard />', () => {
             ),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -493,6 +560,7 @@ describe('<AboutCard />', () => {
             ),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -546,6 +614,7 @@ describe('<AboutCard />', () => {
             ),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -592,6 +661,7 @@ describe('<AboutCard />', () => {
             ),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -659,6 +729,7 @@ describe('<AboutCard />', () => {
               ),
             ],
             [catalogApiRef, catalogApi],
+            [permissionApiRef, {}],
           ]}
         >
           <EntityProvider entity={entity}>
@@ -707,6 +778,7 @@ describe('<AboutCard />', () => {
             ),
           ],
           [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
         ]}
       >
         <EntityProvider entity={entity}>
