@@ -22051,6 +22051,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"backstage-plugin-scaffolder-backend-module-gitea@workspace:plugins/scaffolder-backend-module-gitea":
+  version: 0.0.0-use.local
+  resolution: "backstage-plugin-scaffolder-backend-module-gitea@workspace:plugins/scaffolder-backend-module-gitea"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    node-fetch: ^2.6.7
+    yaml: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
 "badge-maker@npm:^3.3.0":
   version: 3.3.1
   resolution: "badge-maker@npm:3.3.1"
