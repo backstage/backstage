@@ -812,6 +812,129 @@ describe('KubernetesFetcher', () => {
         const [[{ agent }]] = httpsRequest.mock.calls;
         expect(agent.options.rejectUnauthorized).toBe(false);
       });
+
+      it('should use a x509 client cert authentication strategy to consume kubeapi when backstage-kubernetes-auth field is not provided and the authStrategy enables x509 client cert authentication - fetchObjectsForService', async () => {
+        worker.use(
+          rest.get('https://localhost:9999/api/v1/pods', (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                items: [{ metadata: { name: 'pod-name' } }],
+              }),
+            ),
+          ),
+        );
+
+        const myCert = 'MOCKCert';
+        const myKey = 'MOCKKey';
+
+        const result = sut.fetchObjectsForService({
+          serviceId: 'some-service',
+          clusterDetails: {
+            name: 'cluster1',
+            url: 'https://localhost:9999',
+            authMetadata: {},
+            caData: 'MOCKCA',
+          },
+          credential: {
+            type: 'x509 client certificate',
+            cert: myCert,
+            key: myKey,
+          },
+          objectTypesToFetch: new Set<ObjectToFetch>([
+            {
+              group: '',
+              apiVersion: 'v1',
+              plural: 'pods',
+              objectType: 'pods',
+            },
+          ]),
+          labelSelector: '',
+          customResources: [],
+        });
+
+        await expect(result).rejects.toThrow(/PEM/);
+
+        expect(httpsRequest).toHaveBeenCalledTimes(1);
+        const [[{ agent }]] = httpsRequest.mock.calls;
+        expect(agent.options.ca.toString('base64')).toMatch('MOCKCA');
+        expect(agent.options.cert).toEqual(myCert);
+        expect(agent.options.key).toEqual(myKey);
+      });
+
+      it('should use a x509 client cert authentication strategy to consume kubeapi when backstage-kubernetes-auth field is not provided and the authStrategy enables x509 client cert authentication - fetchPodMetricsByNamespaces', async () => {
+        worker.use(
+          rest.get(
+            'https://localhost:9999/api/v1/namespaces/:namespace/pods',
+            (req, res, ctx) =>
+              res(
+                withLabels(req, ctx, {
+                  items: [
+                    {
+                      metadata: { name: 'pod-name' },
+                      spec: {
+                        containers: [
+                          {
+                            name: 'container-name',
+                            resources: {
+                              requests: { cpu: '500m', memory: '512M' },
+                              limits: { cpu: '1000m', memory: '1G' },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                }),
+              ),
+          ),
+          rest.get(
+            'https://localhost:9999/apis/metrics.k8s.io/v1beta1/namespaces/:namespace/pods',
+            (req, res, ctx) =>
+              res(
+                withLabels(req, ctx, {
+                  items: [
+                    {
+                      metadata: { name: 'pod-name' },
+                      containers: [
+                        {
+                          name: 'container-name',
+                          usage: { cpu: '0', memory: '0' },
+                        },
+                      ],
+                    },
+                  ],
+                }),
+              ),
+          ),
+        );
+
+        const myCert = 'MOCKCert';
+        const myKey = 'MOCKKey';
+
+        const result = sut.fetchPodMetricsByNamespaces(
+          {
+            name: 'cluster1',
+            url: 'https://localhost:9999',
+            authMetadata: {},
+            caData: 'MOCKCA',
+          },
+          {
+            type: 'x509 client certificate',
+            cert: myCert,
+            key: myKey,
+          },
+          new Set(['ns-a']),
+        );
+
+        await expect(result).rejects.toThrow(/PEM/);
+
+        expect(httpsRequest).toHaveBeenCalledTimes(2);
+        const [[{ agent }]] = httpsRequest.mock.calls;
+        expect(agent.options.ca.toString('base64')).toMatch('MOCKCA');
+        expect(agent.options.cert).toEqual(myCert);
+        expect(agent.options.key).toEqual(myKey);
+      });
     });
 
     it('should use namespace if provided', async () => {

@@ -216,16 +216,11 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     let requestInit: RequestInit;
     const authProvider =
       clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
-    if (
-      authProvider === 'serviceAccount' &&
-      !clusterDetails.authMetadata.serviceAccountToken &&
-      fs.pathExistsSync(Config.SERVICEACCOUNT_CA_PATH)
-    ) {
+
+    if (this.isServiceAccountAuthentication(authProvider, clusterDetails)) {
       [url, requestInit] = this.fetchArgsInCluster(credential);
     } else if (
-      credential.type === 'bearer token' ||
-      credential.type === 'x509 client certificate' ||
-      authProvider === 'localKubectlProxy'
+      this.isTokenOrClientCertificateAuthentication(authProvider, credential)
     ) {
       [url, requestInit] = this.fetchArgs(clusterDetails, credential);
     } else {
@@ -247,6 +242,28 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     }
 
     return fetch(url, requestInit);
+  }
+
+  private isServiceAccountAuthentication(
+    authProvider: string,
+    clusterDetails: ClusterDetails,
+  ) {
+    return (
+      authProvider === 'serviceAccount' &&
+      !clusterDetails.authMetadata.serviceAccountToken &&
+      fs.pathExistsSync(Config.SERVICEACCOUNT_CA_PATH)
+    );
+  }
+
+  private isTokenOrClientCertificateAuthentication(
+    authProvider: string,
+    credential: KubernetesCredential,
+  ) {
+    return (
+      credential.type === 'bearer token' ||
+      credential.type === 'x509 client certificate' ||
+      authProvider === 'localKubectlProxy'
+    );
   }
 
   private fetchArgs(
