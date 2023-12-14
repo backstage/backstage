@@ -14,15 +14,19 @@ import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
 export function createApp(options?: {
-  features?: FrontendFeature[];
+  features?: (FrontendFeature | CreateAppFeatureLoader)[];
   configLoader?: () => Promise<{
     config: ConfigApi;
   }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  featureLoader?: (ctx: { config: ConfigApi }) => Promise<FrontendFeature[]>;
 }): {
   createRoot(): JSX_2.Element;
 };
+
+// @public
+export type CreateAppFeatureLoader = (options: {
+  config: ConfigApi;
+}) => Promise<FrontendFeature[]>;
 
 // @public
 export type CreateAppRouteBinder = <
