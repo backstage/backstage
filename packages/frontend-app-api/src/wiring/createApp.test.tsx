@@ -25,7 +25,7 @@ import {
   createThemeExtension,
 } from '@backstage/frontend-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
-import { createApp } from './createApp';
+import { CreateAppFeatureLoader, createApp } from './createApp';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
@@ -100,23 +100,32 @@ describe('createApp', () => {
   });
 
   it('should support feature loaders', async () => {
+    const loader: CreateAppFeatureLoader = {
+      getLoaderName() {
+        return 'test-loader';
+      },
+      async load({ config }) {
+        return {
+          features: [
+            createPlugin({
+              id: 'test',
+              extensions: [
+                createPageExtension({
+                  defaultPath: '/',
+                  loader: async () => <div>{config.getString('key')}</div>,
+                }),
+              ],
+            }),
+          ],
+        };
+      },
+    };
+
     const app = createApp({
       configLoader: async () => ({
         config: new MockConfigApi({ key: 'config-value' }),
       }),
-      features: [
-        async ({ config }) => [
-          createPlugin({
-            id: 'test',
-            extensions: [
-              createPageExtension({
-                defaultPath: '/',
-                loader: async () => <div>{config.getString('key')}</div>,
-              }),
-            ],
-          }),
-        ],
-      ],
+      features: [loader],
     });
 
     await renderWithEffects(app.createRoot());
@@ -127,21 +136,26 @@ describe('createApp', () => {
   });
 
   it('should propagate errors thrown by feature loaders', async () => {
+    const loader: CreateAppFeatureLoader = {
+      getLoaderName() {
+        return 'test-loader';
+      },
+      async load() {
+        throw new TypeError('boom');
+      },
+    };
+
     const app = createApp({
       configLoader: async () => ({
         config: new MockConfigApi({}),
       }),
-      features: [
-        async () => {
-          throw new TypeError('boom');
-        },
-      ],
+      features: [loader],
     });
 
     await expect(
       renderWithEffects(app.createRoot()),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Failed to read frontend features from loader, TypeError: boom"`,
+      `"Failed to read frontend features from loader 'test-loader', TypeError: boom"`,
     );
   });
 
