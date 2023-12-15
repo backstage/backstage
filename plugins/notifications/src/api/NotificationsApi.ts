@@ -16,6 +16,7 @@
 import { createApiRef } from '@backstage/core-plugin-api';
 import {
   Notification,
+  NotificationIds,
   NotificationStatus,
   NotificationType,
 } from '@backstage/plugin-notifications-common';
@@ -36,6 +37,11 @@ export interface NotificationsApi {
 
   getStatus(): Promise<NotificationStatus>;
 
-  // TODO: Mark as read/unread by notification id(s)
-  // TODO: Mark as saved/unsaved by notification id(s)
+  markRead(ids: string[]): Promise<NotificationIds>;
+
+  markUnread(ids: string[]): Promise<NotificationIds>;
+
+  markSaved(ids: string[]): Promise<NotificationIds>;
+
+  markUnsaved(ids: string[]): Promise<NotificationIds>;
 }

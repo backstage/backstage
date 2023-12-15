@@ -44,12 +44,14 @@ const useStyles = makeStyles(_theme => ({
 export const NotificationsPage = () => {
   const [type, setType] = useState<NotificationType>('unread');
 
-  const {
-    loading: _loading,
-    error,
-    value,
-    retry: _retry,
-  } = useNotificationsApi(api => api.getNotifications({ type }), [type]);
+  const { loading, error, value, retry } = useNotificationsApi(
+    api => api.getNotifications({ type }),
+    [type],
+  );
+
+  const onUpdate = () => {
+    retry();
+  };
 
   const styles = useStyles();
   if (error) {
@@ -89,7 +91,12 @@ export const NotificationsPage = () => {
           </Grid>
           <Grid item xs={10}>
             <TableContainer component={Paper}>
-              <NotificationsTable notifications={value} />
+              <NotificationsTable
+                notifications={value}
+                type={type}
+                loading={loading}
+                onUpdate={onUpdate}
+              />
             </TableContainer>
           </Grid>
         </Grid>

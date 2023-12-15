@@ -21,8 +21,11 @@ exports.up = async function up(knex) {
     table.string('title').notNullable();
     table.text('description').notNullable();
     table.text('link').notNullable();
+    table.text('icon').nullable();
+    table.text('image').nullable();
     table.datetime('created').notNullable();
     table.datetime('read').nullable();
+    table.boolean('saved').defaultTo(false).notNullable();
   });
 };
 

@@ -18,6 +18,7 @@ import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import {
   Notification,
+  NotificationIds,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
 
@@ -44,18 +45,50 @@ export class NotificationsClient implements NotificationsApi {
 
     const urlSegment = `notifications?${queryString}`;
 
-    return await this.get<Notification[]>(urlSegment);
+    return await this.request<Notification[]>(urlSegment);
   }
 
   async getStatus(): Promise<NotificationStatus> {
-    return await this.get<NotificationStatus>('status');
+    return await this.request<NotificationStatus>('status');
   }
 
-  private async get<T>(path: string): Promise<T> {
+  async markRead(ids: string[]): Promise<NotificationIds> {
+    return await this.request<NotificationIds>('read', {
+      method: 'POST',
+      body: JSON.stringify({ ids: ids }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  async markUnread(ids: string[]): Promise<NotificationIds> {
+    return await this.request<NotificationIds>('unread', {
+      method: 'POST',
+      body: JSON.stringify({ ids: ids }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  async markSaved(ids: string[]): Promise<NotificationIds> {
+    return await this.request<NotificationIds>('save', {
+      method: 'POST',
+      body: JSON.stringify({ ids: ids }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  async markUnsaved(ids: string[]): Promise<NotificationIds> {
+    return await this.request<NotificationIds>('unsave', {
+      method: 'POST',
+      body: JSON.stringify({ ids: ids }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  private async request<T>(path: string, init?: any): Promise<T> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('notifications')}/`;
     const url = new URL(path, baseUrl);
 
-    const response = await this.fetchApi.fetch(url.toString());
+    const response = await this.fetchApi.fetch(url.toString(), init);
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);

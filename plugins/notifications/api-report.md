@@ -11,6 +11,7 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
+import { NotificationIds } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
 import { NotificationType } from '@backstage/plugin-notifications-common';
 import { default as React_2 } from 'react';
@@ -29,6 +30,14 @@ export interface NotificationsApi {
   ): Promise<Notification_2[]>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
+  // (undocumented)
+  markRead(ids: string[]): Promise<NotificationIds>;
+  // (undocumented)
+  markSaved(ids: string[]): Promise<NotificationIds>;
+  // (undocumented)
+  markUnread(ids: string[]): Promise<NotificationIds>;
+  // (undocumented)
+  markUnsaved(ids: string[]): Promise<NotificationIds>;
 }
 
 // @public (undocumented)
@@ -43,6 +52,14 @@ export class NotificationsClient implements NotificationsApi {
   ): Promise<Notification_2[]>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
+  // (undocumented)
+  markRead(ids: string[]): Promise<NotificationIds>;
+  // (undocumented)
+  markSaved(ids: string[]): Promise<NotificationIds>;
+  // (undocumented)
+  markUnread(ids: string[]): Promise<NotificationIds>;
+  // (undocumented)
+  markUnsaved(ids: string[]): Promise<NotificationIds>;
 }
 
 // @public (undocumented)
@@ -61,6 +78,9 @@ export const NotificationsSidebarItem: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export const NotificationsTable: (props: {
+  onUpdate: () => void;
+  type: NotificationType;
+  loading?: boolean;
   notifications?: Notification_2[];
 }) => React_2.JSX.Element;
 

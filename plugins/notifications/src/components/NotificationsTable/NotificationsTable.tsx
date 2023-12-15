@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  Box,
+  Button,
   IconButton,
   makeStyles,
   Table,
@@ -24,19 +26,44 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
-import { Notification } from '@backstage/plugin-notifications-common';
+import {
+  Notification,
+  NotificationType,
+} from '@backstage/plugin-notifications-common';
 import { useNavigate } from 'react-router-dom';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import Checkbox from '@material-ui/core/Checkbox';
 import Check from '@material-ui/icons/Check';
 import Bookmark from '@material-ui/icons/Bookmark';
+import { notificationsApiRef } from '../../api';
+import { useApi } from '@backstage/core-plugin-api';
+import Inbox from '@material-ui/icons/Inbox';
+import CloseIcon from '@material-ui/icons/Close';
+import { Skeleton } from '@material-ui/lab';
+// @ts-ignore
+import RelativeTime from 'react-relative-time';
 
 const useStyles = makeStyles(theme => ({
   notificationRow: {
     cursor: 'pointer',
+    '&.hideOnHover': {
+      display: 'initial',
+    },
+    '& .showOnHover': {
+      display: 'none',
+    },
     '&:hover': {
       backgroundColor: theme.palette.linkHover,
+      '& .hideOnHover': {
+        display: 'none',
+      },
+      '& .showOnHover': {
+        display: 'initial',
+      },
     },
+  },
+  actionButton: {
+    padding: '9px',
   },
   checkBox: {
     padding: '0 10px 10px 0',
@@ -45,25 +72,102 @@ const useStyles = makeStyles(theme => ({
 
 /** @public */
 export const NotificationsTable = (props: {
+  onUpdate: () => void;
+  type: NotificationType;
+  loading?: boolean;
   notifications?: Notification[];
 }) => {
-  const { notifications } = props;
+  const { notifications, type, loading } = props;
   const navigate = useNavigate();
   const styles = useStyles();
-  // TODO: Add select all
-  // TODO: Make mark as read work
-  // TODO: Check status of the notification and change to "Mark as unread" if it's already read
-  // TODO: Add support to save notifications (storageApi)
+  const [selected, setSelected] = useState<string[]>([]);
+  const notificationsApi = useApi(notificationsApiRef);
+
+  const onCheckBoxClick = (id: string) => {
+    const index = selected.indexOf(id);
+    if (index !== -1) {
+      setSelected(selected.filter(s => s !== id));
+    } else {
+      setSelected([...selected, id]);
+    }
+  };
+
+  useEffect(() => {
+    setSelected([]);
+  }, [type]);
+
+  const isChecked = (id: string) => {
+    return selected.indexOf(id) !== -1;
+  };
+
+  const isAllSelected = () => {
+    return (
+      selected.length === notifications?.length && notifications.length > 0
+    );
+  };
+
+  if (loading) {
+    return <Skeleton variant="rect" height={200} />;
+  }
+
   // TODO: Show timestamp relative time (react-relative-time npm package)
   // TODO: Add signals listener and refresh data on message
-  // TODO: Handle no notifications properly
-  // TODO: Handle loading notifications
   return (
     <Table size="small">
       <TableHead>
         <TableRow>
           <TableCell colSpan={3}>
-            {notifications?.length ?? 0} notifications
+            {type !== 'saved' && !notifications?.length && 'No notifications'}
+            {type !== 'saved' && !!notifications?.length && (
+              <Checkbox
+                size="small"
+                style={{ paddingLeft: 0 }}
+                checked={isAllSelected()}
+                onClick={() => {
+                  if (isAllSelected()) {
+                    setSelected([]);
+                  } else {
+                    setSelected(
+                      notifications ? notifications.map(n => n.id) : [],
+                    );
+                  }
+                }}
+              />
+            )}
+            {type === 'saved' &&
+              `${notifications?.length ?? 0} saved notifications`}
+            {selected.length === 0 &&
+              !!notifications?.length &&
+              type !== 'saved' &&
+              'Select all'}
+            {selected.length > 0 && `${selected.length} selected`}
+            {type === 'read' && selected.length > 0 && (
+              <Button
+                startIcon={<Inbox fontSize="small" />}
+                onClick={() => {
+                  notificationsApi
+                    .markUnread(selected)
+                    .then(() => props.onUpdate());
+                  setSelected([]);
+                }}
+              >
+                Move to inbox
+              </Button>
+            )}
+
+            {type === 'unread' && selected.length > 0 && (
+              <Button
+                startIcon={<Check fontSize="small" />}
+                onClick={() => {
+                  notificationsApi
+                    .markRead(selected)
+                    .then(() => props.onUpdate());
+                  setSelected([]);
+                }}
+              >
+                Mark as done
+              </Button>
+            )}
           </TableCell>
         </TableRow>
       </TableHead>
@@ -71,7 +175,12 @@ export const NotificationsTable = (props: {
         return (
           <TableRow key={notification.id} className={styles.notificationRow}>
             <TableCell width={100} style={{ verticalAlign: 'center' }}>
-              <Checkbox className={styles.checkBox} size="small" />
+              <Checkbox
+                className={styles.checkBox}
+                size="small"
+                checked={isChecked(notification.id)}
+                onClick={() => onCheckBoxClick(notification.id)}
+              />
               {notification.icon ?? <NotificationsIcon fontSize="small" />}
             </TableCell>
             <TableCell onClick={() => navigate(notification.link)}>
@@ -81,16 +190,67 @@ export const NotificationsTable = (props: {
               </Typography>
             </TableCell>
             <TableCell style={{ textAlign: 'right' }}>
-              <Tooltip title="Mark as read">
-                <IconButton>
-                  <Check fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Save">
-                <IconButton>
-                  <Bookmark fontSize="small" />
-                </IconButton>
-              </Tooltip>
+              <Box className="hideOnHover">
+                <RelativeTime value={notification.created} />
+              </Box>
+              <Box className="showOnHover">
+                <Tooltip
+                  title={notification.read ? 'Move to inbox' : 'Mark as done'}
+                >
+                  <IconButton
+                    className={styles.actionButton}
+                    onClick={() => {
+                      if (notification.read) {
+                        notificationsApi
+                          .markUnread([notification.id])
+                          .then(() => {
+                            props.onUpdate();
+                          });
+                      } else {
+                        notificationsApi
+                          .markRead([notification.id])
+                          .then(() => {
+                            props.onUpdate();
+                          });
+                      }
+                    }}
+                  >
+                    {notification.read ? (
+                      <Inbox fontSize="small" />
+                    ) : (
+                      <Check fontSize="small" />
+                    )}
+                  </IconButton>
+                </Tooltip>
+                <Tooltip
+                  title={notification.saved ? 'Remove from saved' : 'Save'}
+                >
+                  <IconButton
+                    className={styles.actionButton}
+                    onClick={() => {
+                      if (notification.saved) {
+                        notificationsApi
+                          .markUnsaved([notification.id])
+                          .then(() => {
+                            props.onUpdate();
+                          });
+                      } else {
+                        notificationsApi
+                          .markSaved([notification.id])
+                          .then(() => {
+                            props.onUpdate();
+                          });
+                      }
+                    }}
+                  >
+                    {notification.saved ? (
+                      <CloseIcon fontSize="small" />
+                    ) : (
+                      <Bookmark fontSize="small" />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </TableCell>
           </TableRow>
         );

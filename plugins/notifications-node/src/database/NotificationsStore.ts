@@ -27,6 +27,11 @@ export type NotificationGetOptions = {
 };
 
 /** @public */
+export type NotificationModifyOptions = {
+  ids: string[];
+} & NotificationGetOptions;
+
+/** @public */
 export interface NotificationsStore {
   getNotifications(options: NotificationGetOptions): Promise<Notification[]>;
 
@@ -34,5 +39,11 @@ export interface NotificationsStore {
 
   getStatus(options: NotificationGetOptions): Promise<NotificationStatus>;
 
-  // TODO: Mark as read/unread by notification id(s)
+  markRead(options: NotificationModifyOptions): Promise<void>;
+
+  markUnread(options: NotificationModifyOptions): Promise<void>;
+
+  markSaved(options: NotificationModifyOptions): Promise<void>;
+
+  markUnsaved(options: NotificationModifyOptions): Promise<void>;
 }

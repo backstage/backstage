@@ -26,12 +26,19 @@ export type Notification = {
   link: string;
   // TODO: Icon should be typed so that we know what to render
   icon?: string;
+  image?: string;
   created: Date;
   read?: Date;
+  saved: boolean;
 };
 
 /** @public */
 export type NotificationStatus = {
   unread: number;
   read: number;
+};
+
+/** @public */
+export type NotificationIds = {
+  ids: string[];
 };

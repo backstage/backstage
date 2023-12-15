@@ -19,6 +19,7 @@ import {
 } from '@backstage/backend-common';
 import {
   NotificationGetOptions,
+  NotificationModifyOptions,
   NotificationsStore,
 } from './NotificationsStore';
 import { Notification } from '@backstage/plugin-notifications-common';
@@ -55,7 +56,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return typeof val === 'string' ? Number.parseInt(val, 10) : val ?? 0;
   };
 
-  private getNotificationsBaseQuery = (options: NotificationGetOptions) => {
+  private getNotificationsBaseQuery = (
+    options: NotificationGetOptions | NotificationModifyOptions,
+  ) => {
     const { user_ref, type } = options;
     const query = this.db('notifications').where('userRef', user_ref);
 
@@ -63,8 +66,14 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       query.whereNull('read');
     } else if (type === 'read') {
       query.whereNotNull('read');
+    } else if (type === 'saved') {
+      query.where('saved', true);
     }
-    // TODO: Saved
+
+    if ('ids' in options && options.ids) {
+      query.whereIn('id', options.ids);
+    }
+
     return query;
   };
 
@@ -95,5 +104,25 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       unread: this.mapToInteger((unreadQuery as any)?.UNREAD),
       read: this.mapToInteger((readQuery as any)?.READ),
     };
+  }
+
+  async markRead(options: NotificationModifyOptions): Promise<void> {
+    const notificationQuery = this.getNotificationsBaseQuery(options);
+    await notificationQuery.update({ read: new Date() });
+  }
+
+  async markUnread(options: NotificationModifyOptions): Promise<void> {
+    const notificationQuery = this.getNotificationsBaseQuery(options);
+    await notificationQuery.update({ read: null });
+  }
+
+  async markSaved(options: NotificationModifyOptions): Promise<void> {
+    const notificationQuery = this.getNotificationsBaseQuery(options);
+    await notificationQuery.update({ saved: true });
+  }
+
+  async markUnsaved(options: NotificationModifyOptions): Promise<void> {
+    const notificationQuery = this.getNotificationsBaseQuery(options);
+    await notificationQuery.update({ saved: false });
   }
 }

@@ -22,13 +22,17 @@ export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   // TODO: Remove this test code
+  let notifications = 0;
   setInterval(() => {
-    env.notificationService.send(
-      'user:default/guest',
-      'Test',
-      'This is test notification',
-      '/catalog',
-    );
+    if (notifications < 10) {
+      env.notificationService.send({
+        entityRef: 'user:default/guest',
+        title: 'Test',
+        description: 'This is test notification',
+        link: '/catalog',
+      });
+      notifications++;
+    }
   }, 60000);
 
   return await createRouter({

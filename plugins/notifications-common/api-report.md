@@ -11,10 +11,17 @@ type Notification_2 = {
   description: string;
   link: string;
   icon?: string;
+  image?: string;
   created: Date;
   read?: Date;
+  saved: boolean;
 };
 export { Notification_2 as Notification };
+
+// @public (undocumented)
+export type NotificationIds = {
+  ids: string[];
+};
 
 // @public (undocumented)
 export type NotificationStatus = {

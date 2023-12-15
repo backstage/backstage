@@ -70,7 +70,49 @@ export async function createRouter(
     res.send(status);
   });
 
-  // TODO: Add endpoint to set read/unread by notification id(s)
+  router.post('/read', async (req, res) => {
+    const user = await getUser(req);
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids)) {
+      res.status(400).send();
+      return;
+    }
+    await store.markRead({ user_ref: user, ids });
+    res.status(200).send({ ids });
+  });
+
+  router.post('/unread', async (req, res) => {
+    const user = await getUser(req);
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids)) {
+      res.status(400).send();
+      return;
+    }
+    await store.markUnread({ user_ref: user, ids });
+    res.status(200).send({ ids });
+  });
+
+  router.post('/save', async (req, res) => {
+    const user = await getUser(req);
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids)) {
+      res.status(400).send();
+      return;
+    }
+    await store.markSaved({ user_ref: user, ids });
+    res.status(200).send({ ids });
+  });
+
+  router.post('/unsave', async (req, res) => {
+    const user = await getUser(req);
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids)) {
+      res.status(400).send();
+      return;
+    }
+    await store.markUnsaved({ user_ref: user, ids });
+    res.status(200).send({ ids });
+  });
 
   router.use(errorHandler());
   return router;

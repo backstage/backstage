@@ -28,6 +28,14 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     read: number;
   }>;
   // (undocumented)
+  markRead(options: NotificationModifyOptions): Promise<void>;
+  // (undocumented)
+  markSaved(options: NotificationModifyOptions): Promise<void>;
+  // (undocumented)
+  markUnread(options: NotificationModifyOptions): Promise<void>;
+  // (undocumented)
+  markUnsaved(options: NotificationModifyOptions): Promise<void>;
+  // (undocumented)
   saveNotification(notification: Notification_2): Promise<void>;
 }
 
@@ -35,6 +43,21 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 export type NotificationGetOptions = {
   user_ref: string;
   type?: NotificationType;
+};
+
+// @public (undocumented)
+export type NotificationModifyOptions = {
+  ids: string[];
+} & NotificationGetOptions;
+
+// @public (undocumented)
+export type NotificationSendOptions = {
+  entityRef: string | string[];
+  title: string;
+  description: string;
+  link: string;
+  image?: string;
+  icon?: string;
 };
 
 // @public (undocumented)
@@ -47,12 +70,7 @@ export class NotificationService {
   // (undocumented)
   getStore(): Promise<NotificationsStore>;
   // (undocumented)
-  send(
-    entityRef: string | string[],
-    title: string,
-    description: string,
-    link: string,
-  ): Promise<Notification_2[]>;
+  send(options: NotificationSendOptions): Promise<Notification_2[]>;
 }
 
 // @public (undocumented)
@@ -70,6 +88,14 @@ export interface NotificationsStore {
   getNotifications(options: NotificationGetOptions): Promise<Notification_2[]>;
   // (undocumented)
   getStatus(options: NotificationGetOptions): Promise<NotificationStatus>;
+  // (undocumented)
+  markRead(options: NotificationModifyOptions): Promise<void>;
+  // (undocumented)
+  markSaved(options: NotificationModifyOptions): Promise<void>;
+  // (undocumented)
+  markUnread(options: NotificationModifyOptions): Promise<void>;
+  // (undocumented)
+  markUnsaved(options: NotificationModifyOptions): Promise<void>;
   // (undocumented)
   saveNotification(notification: Notification_2): Promise<void>;
 }

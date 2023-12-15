@@ -37,6 +37,16 @@ export type NotificationServiceOptions = {
 };
 
 /** @public */
+export type NotificationSendOptions = {
+  entityRef: string | string[];
+  title: string;
+  description: string;
+  link: string;
+  image?: string;
+  icon?: string;
+};
+
+/** @public */
 export class NotificationService {
   private store: NotificationsStore | null = null;
 
@@ -56,12 +66,8 @@ export class NotificationService {
     return new NotificationService(database, catalogClient);
   }
 
-  async send(
-    entityRef: string | string[],
-    title: string,
-    description: string,
-    link: string,
-  ): Promise<Notification[]> {
+  async send(options: NotificationSendOptions): Promise<Notification[]> {
+    const { entityRef, title, description, link, icon, image } = options;
     const users = await this.getUsersForEntityRef(entityRef);
     const notifications = [];
     const store = await this.getStore();
@@ -73,6 +79,9 @@ export class NotificationService {
         description,
         link,
         created: new Date(),
+        icon,
+        image,
+        saved: false,
       };
 
       await store.saveNotification(notification);
