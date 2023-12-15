@@ -75,7 +75,7 @@ const exampleWorkApi = createApiExtension({
  */
 export default createPlugin({
   id: 'example',
-  extensions: [workApi],
+  extensions: [exampleWorkApi],
 });
 ```
 
