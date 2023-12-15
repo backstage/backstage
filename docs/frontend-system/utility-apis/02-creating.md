@@ -18,15 +18,19 @@ The first step toward exposing a utility API is to define its TypeScript contrac
 import { createApiRef } from '@backstage/frontend-plugin-api';
 
 /**
- * Performs some work.
- * @oublic
+ * The work interface for the Example plugin.
+ * @public
  */
 export interface WorkApi {
+  /**
+   * Performs some work.
+   * @public
+   */
   doWork(): Promise<void>;
 }
 
 /**
- * The work interface for the Example plugin.
+ * API Reference for {@link WorkApi}.
  * @public
  */
 export const workApiRef = createApiRef<WorkApi>({
