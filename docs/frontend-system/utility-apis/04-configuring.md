@@ -8,74 +8,67 @@ description: Configuring, extending, and overriding utility APIs
 
 Utility APIs are extensions and can therefore optionally be amended with configurability, as well as inputs that other extensions attach themselves to. This section describes how to add those capabilities to your own utility APIs, and how to make use of them as a consumer of such utility APIs.
 
-## Adding configurability
+## Configuring
 
-Here we will describe how to amend a utility API with the capability of being configured in app-config. You do this by giving a config schema to your API extension factory function.
+To configure your Utility API extension, first you'll need to know its ID. That ID is formed from the API ref ID; check [the naming patterns docs](../architecture/08-naming-patterns.md) for details.
 
-Let's make the required additions to [our original work example](./02-creating.md) API.
+Our example work API from [the creating section](./02-creating.md) would have the ID `api:plugin.example.work`. You configure it and all other extensions under the `app.extensions` section of your app-config.
 
-```tsx title="in @internal/plugin-example"
-import {
-  createApiExtension,
-  createApiFactory,
-  createPlugin,
-  /* highlight-add-next-line */
-  createSchemaFromZod,
-  storageApiRef,
-  StorageApi,
-} from '@backstage/frontend-plugin-api';
-import { WorkApi, workApiRef } from '@internal/plugin-example-react';
+```yaml title="in e.g. app-config.yaml or app-config.production.yaml"
+app:
+  extensions:
+    - api:plugin.example.work:
+        config:
+          goSlow: false
+    -  # ... other extensions
+```
 
+It's important to note that the `extensions` are a list (mind the initial `-`), and that the `api:plugin.example.work` entry is an object such that the `config` key needs to be indented below it. If you do not get those two pieces right, the application may not start up correctly.
+
+The config schema of the extension will tell you what configuration parameters it supports. Here we override the `goSlow` configuration value, which replaces the default.
+
+## Attaching extensions to inputs
+
+Like with other extension types, you add input attachments to a Utility API by declaring the `attachTo` section of that attachment to point to the Utility APIs ID and input name.
+
+Well written input-enabled extension often have extension creator functions that help you make such attachments. Those functions typically set the `attachTo` section correctly on your behalf so that you don't have to figure them out.
+
+## Replacing a Utility API implementation
+
+Like with other extension types, you replace Utility APIs with your own custom implementation using [extension overrides](../architecture/05-extension-overrides.md).
+
+```tsx title="in your app"
 /* highlight-add-start */
-interface WorkApiConfig {
-  goSlow: boolean;
+import { createExtensionOverrides } from '@backstage/frontend-plugin-api';
+
+class CustomWorkImpl implements WorkApi {
+  /* ... */
 }
+
+const myOverrides = createExtensionOverrides({
+  extensions: [
+    createApiExtension({
+      api: workApiRef,
+      factory: () =>
+        createApiFactory({
+          api: workApiRef,
+          factory: () => new CustomWorkImpl(),
+        }),
+    }),
+  ],
+});
 /* highlight-add-end */
 
-const workApi = createApiExtension({
-  /* highlight-add-start */
-  api: workApiRef,
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      goSlow: z.boolean().default(false),
-    }),
-  ),
-  /* highlight-add-end */
-  /* highlight-remove-next-line */
-  factory: createApiFactory({
-  /* highlight-add-next-line */
-  factory: ({ config }) => createApiFactory({
-    api: workApiRef,
-    deps: { storageApi: storageApiRef },
-    factory: ({ storageApi }) => {
-      /* highlight-add-start */
-      if (config.goSlow) {
-        /* ... */
-      }
-      /* highlight-add-end */
-    },
-  }),
+// Remember to pass the overrides to your createApp
+export default createApp({
+  features: [
+    // ... other features
+    /* highlight-add-next-line */
+    myOverrides,
+  ],
 });
 ```
 
-We wanted users to be able to configure a `goSlow` parameter for our API instances. So we added another interface type for holding our various options, and passed in a `configSchema` to `createApiExtension` which matches that interface. This example builds it using [the zod library](https://zod.dev/). The actual config values will then be passed in to the `factory` which is now a callback, wherein we can do what we wish with them. When changing to the callback form, we also had to add a top level `api: workApiRef` under `createApiExtension`.
+In this example the overriding extension is kept minimal, but just like any other extension it can also have `deps`, configurability, and inputs. Check out [the Creating section](./02-creating.md) for more details about that.
 
-Note that while we use the word "config" here, it's _not_ the same thing as the `configApi` which gives you access to the full app-config. The config discussed here is instead the particular configuration settings given to your utility API instance. This is discussed more [in the section below](#configuring).
-
-Note also that the config schema contained a default value fo the `goSlow` field. This is an important consideration. You want users of your API to be able to make maximum use of it, without having to dive deep into how to configure it. For that reason you generally want to provide as many sane defaults as possible, while letting users override them rarely but with purpose, only when called for. If you have a config schema without defaults, the framework will refuse to instantiate the utility API on startup unless the user had configured those values explicitly. Since it had a default value, the TypeScript code and interfaces also don't have to defensively allow `undefined` - we know that it'll have either the default value or an overridden value when we start consuming the config data.
-
-## Configuring
-
-> TODO
-
-## Adding extension inputs
-
-> TODO
-
-## Adding data to extension inputs
-
-> TODO
-
-## Replacing a utility API implementation
-
-> TODO
+When you create a replacement extension, in general you may want to mimic its config schema or input shapes where applicable. This makes it an easier thing to slot in to an app, since it'll be responding to extensibility the same way as the original one did.
