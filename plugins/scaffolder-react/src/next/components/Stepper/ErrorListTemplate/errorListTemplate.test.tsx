@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ErrorListTemplate } from './ErrorListTemplate';
+import { ErrorListTemplate } from './errorListTemplate';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ErrorListProps } from '@rjsf/utils';
 
