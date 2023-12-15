@@ -75,6 +75,8 @@ import {
   createPublishGerritReviewAction,
 } from '@backstage/plugin-scaffolder-backend-module-gerrit';
 
+import { createPublishGiteaAction } from '@backstage/plugin-scaffolder-backend-module-gitea';
+
 import {
   createPublishGitlabAction,
   createGitlabRepoPushAction,
