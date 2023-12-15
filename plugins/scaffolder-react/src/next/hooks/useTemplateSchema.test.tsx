@@ -263,7 +263,6 @@ describe('useTemplateSchema', () => {
 
       expect(first.schema).toEqual({
         type: 'object',
-        properties: {},
       });
     });
   });
