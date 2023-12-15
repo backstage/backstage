@@ -59,13 +59,18 @@ export const useTemplateSchema = (
       return stepFeatureFlag ? featureFlags.isActive(stepFeatureFlag) : true;
     })
     // Then filter out the properties that are not enabled with feature flag
-    .map(step => ({
-      ...step,
-      schema: {
-        ...step.schema,
-        // Title is rendered at the top of the page, so let's ignore this from jsonschemaform
-        title: undefined,
-        properties: Object.fromEntries(
+    .map(step => {
+      const strippedSchema = {
+        ...step,
+        schema: {
+          ...step.schema,
+          // Title is rendered at the top of the page, so let's ignore this from jsonschemaform
+          title: undefined,
+        },
+      } as ParsedTemplateSchema;
+
+      if (step.schema?.properties) {
+        strippedSchema.schema.properties = Object.fromEntries(
           Object.entries((step.schema?.properties ?? []) as JsonObject).filter(
             ([key]) => {
               const stepFeatureFlag =
@@ -75,9 +80,11 @@ export const useTemplateSchema = (
                 : true;
             },
           ),
-        ),
-      },
-    }));
+        );
+      }
+
+      return strippedSchema;
+    });
 
   return {
     presentation: manifest.presentation,
