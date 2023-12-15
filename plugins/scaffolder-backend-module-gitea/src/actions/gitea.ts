@@ -35,20 +35,19 @@ const createGiteaProject = async (
   config: GiteaIntegrationConfig,
   options: {
     projectName: string;
-    parent: string;
+    // parent: string;
     owner?: string;
     description: string;
   },
 ): Promise<void> => {
-  const { projectName, parent, owner, description } = options;
+  const { projectName, owner, description } = options;
 
   const fetchOptions: RequestInit = {
-    method: 'PUT',
+    method: 'POST',
     body: JSON.stringify({
-      parent,
+      name: projectName,
       description,
-      owners: owner ? [owner] : [],
-      create_empty_commit: false,
+      owner,
     }),
     headers: {
       ...getGiteaRequestOptions(config).headers,
@@ -57,8 +56,10 @@ const createGiteaProject = async (
   };
 
   // TODO
+  // Create a repository in Gitea
+  // API request: https://gitea.com/api/swagger#/user/createCurrentUserRepo
   const response: Response = await fetch(
-    `${config.baseUrl}/a/projects/${encodeURIComponent(projectName)}`,
+    `${config.baseUrl}/api/v1/user/repos`,
     fetchOptions,
   );
   if (response.status !== 201) {
@@ -174,31 +175,34 @@ export function createPublishGiteaAction(options: {
         sourcePath,
       } = ctx.input;
 
-      const { repo, host, owner, workspace } = parseRepoUrl(
-        repoUrl,
-        integrations,
-      );
+      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
       const integrationConfig = integrations.gitea.byHost(host);
-
       if (!integrationConfig) {
         throw new InputError(
           `No matching integration configuration for host ${host}, please check your integrations config`,
         );
       }
 
-      if (!workspace) {
-        throw new InputError(
-          `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing workspace`,
+      if (
+        !integrationConfig.config.username ||
+        !integrationConfig.config.password
+      ) {
+        throw new Error(
+          'Credentials for Gitea integration required for this action.',
         );
       }
+
+      // TODO
+      // Check if the integration config includes a baseUrl
 
       await createGiteaProject(integrationConfig.config, {
         description,
         owner: owner,
         projectName: repo,
-        parent: workspace,
+        // parent: workspace,
       });
+
       const auth = {
         username: integrationConfig.config.username!,
         password: integrationConfig.config.password!,
@@ -212,7 +216,7 @@ export function createPublishGiteaAction(options: {
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
       // TODO
-      const remoteUrl = `${integrationConfig.config.baseUrl}/a/${repo}`;
+      const remoteUrl = `${integrationConfig.config.baseUrl}/api/v1/user/${repo}`;
       const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, sourcePath),
         remoteUrl,

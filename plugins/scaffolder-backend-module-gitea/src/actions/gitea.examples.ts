@@ -20,7 +20,7 @@ import yaml from 'yaml';
 export const examples: TemplateExample[] = [
   {
     description:
-      'Initializes a Gitea repository of contents in workspace and publish it to Gitea with default configuration.',
+      'Initializes a Gitea repository using the content of the workspace and publish it to Gitea with default configuration.',
     example: yaml.stringify({
       steps: [
         {
@@ -52,7 +52,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Initializes a Gitea repository with a default Branch, if not set defaults to master',
+      'Initializes a Gitea repository with a default Branch, if not set defaults to main',
     example: yaml.stringify({
       steps: [
         {
@@ -61,7 +61,7 @@ export const examples: TemplateExample[] = [
           name: 'Publish to Gitea',
           input: {
             repoUrl: 'gitea.com?repo=repo&owner=owner',
-            defaultBranch: 'staging',
+            defaultBranch: 'main',
           },
         },
       ],
