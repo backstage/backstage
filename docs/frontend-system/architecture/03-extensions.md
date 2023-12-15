@@ -145,11 +145,11 @@ By default all extension data is required, meaning that the extension factory mu
 const extension = createExtension({
   // ...
   output: {
-    element: coreExtensionData.reactElement.option(),
+    element: coreExtensionData.reactElement.optional(),
   },
   factory() {
     return {
-      element: Math.random() < 0.5 ? <div>Hello World</div> : undefined,
+      element: <img src="./assets/logo.png" />,
     };
   },
 });
@@ -157,23 +157,97 @@ const extension = createExtension({
 
 ## Extension Inputs
 
-<!--
+The Extension Data can be passed up to other extensions through their extension inputs. Similar to the outputs seen before, let's create an example an extension with a extension input:
 
-Introduce the concept of extension inputs and how they use extension data to reference types just like outputs
+```tsx
+const navigationExtension = createExtension({
+  // ...
+  inputs: {
+    // [1]: Input
+    logo: createExtensionInput(
+      {
+        element: coreExtensionData.reactElement,
+      },
+      { singleton: true, optional: true },
+    ),
+  },
+  factory({ inputs }) {
+    return {
+      element: (
+        <nav>{inputs.logo.output?.element ?? <span>Backstage</span>}</nav>
+      ),
+    };
+  },
+  // ...
+});
+```
 
-Show how to use the `createExtensionInput` API to create an input for an extension.
+The input (see [1] above) is an object with the properties `$$type`, `extensionData` and `config`, where `createExtensionInput` helps creating this object by taking the `extensionData` as the first parameter, and the `config` as the second parameter making sure the `$$type` is set correctly. The extension data ensures the input is of the type & format we expect. With `config` the format & type can be defined even more precisely. The extension input can be converted from an array of inputs to just a single input by setting `singleton` to `true`. If the extension input is optional, `optional: true` converts the type to be optional as well.
 
-- Example of creating a single input
+So how can we now attach the output to the parent extension's input? If we think about a navigation component, like the Sidebar in Backstage, there might be plugins that want to attach a link to their plugin to this navigation component. In this case the plugin only needs to know the extension `id` and the name of the extension `input` to attach the extension `output` returned by the `factory` to the specified extension:
 
-Talk about different types of inputs, singleton vs array + optional vs required.
+```tsx
+const navigationItemExtension = createExtension({
+  // ...
+  attachTo: { id: 'app/nav', input: 'items' },
+  factory() {
+    return {
+      element: <Link to="/home">Home</Link>,
+    };
+  },
+});
 
- - Example of creating an optional singleton input - not the value is no longer an array
+const navigationExtension = createExtension({
+  // ...
+  // [2]: Extension `id` will be `app/nav` following the extension naming pattern
+  namespace: 'app',
+  name: 'nav',
+  output: {
+    element: coreExtensionData.reactElement,
+  },
+  inputs: {
+    items: createExtensionInput({
+      element: coreExtensionData.reactElement,
+    }),
+  },
+  factory({ inputs }) {
+    return {
+      element: (
+        <nav>
+          <ul>
+            {inputs.items.map(item => {
+              return <li>{item.output.element}</li>;
+            })}
+          </ul>
+        </nav>
+      ),
+    };
+  },
+  // ...
+});
+```
 
-Talk about the shape of the input values and that you have access to the AppNode node in addition to the data, but discourage use of AppNode.
+In this case the extension input `items` is an array, where each individual item is an extension that attached itself to the extension inputs of this `id`.
 
- - Example of how to access the AppNode next to the input data
+With the `inputs` not only the `output` is passed to the extension, but also the `node`. It is discouraged to consume and/or modify the `node` here. If we are looking at the `factory` function from the example above we could access the `node` like the following:
 
--->
+```tsx
+  // ...
+  factory({ inputs }) {
+    return {
+      element: (
+        <nav>
+          <ul>
+            {inputs.items.map(({output, node}) => {
+              const _node: AppNode = node;
+              return <li>{output.element}</li>;
+            })}
+          </ul>
+        </nav>
+      ),
+    };
+  },
+```
 
 ## Extension Configuration
 
