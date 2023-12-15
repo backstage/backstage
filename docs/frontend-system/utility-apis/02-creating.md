@@ -12,7 +12,7 @@ description: Creating new utility APIs in your plugins and app
 
 ## Creating the Utility API contract
 
-The first step toward exposing a utility API is to define its TypeScript contract, and an API ref for consumers to find it via. This should be done in [your plugin's `-react` package](../../architecture-decisions/adr011-plugin-package-structure.md), so that it can be imported by other plugins. In this example, we have an Example plugin that wants to expose a utility API for performing some type of work.
+The first step toward exposing a utility API is to define its TypeScript contract, as well as an API reference for consumers use to access the implementation. If you want your API to be accessible by other plugins this should be done in [your plugin's `-react` package](../../architecture-decisions/adr011-plugin-package-structure.md), so that it can be imported separately. If you just want to use the API within your own plugin it is fine to place the definition within the plugin itself. In this example, we have an Example plugin that wants to expose a utility API for performing some type of work.
 
 ```tsx title="in @internal/plugin-example-react"
 import { createApiRef } from '@backstage/frontend-plugin-api';
