@@ -354,9 +354,8 @@ export async function initRepoPushAndProtect(
       : config.getOptionalString('scaffolder.defaultAuthor.email'),
   };
 
-  const commitMessage = gitCommitMessage
-    ? gitCommitMessage
-    : config.getOptionalString('scaffolder.defaultCommitMessage');
+  const commitMessage =
+    getGitCommitMessage(gitCommitMessage, config) || 'initial commit';
 
   const commitResult = await initRepoAndPush({
     dir: getRepoSourceDirectory(workspacePath, sourcePath),
