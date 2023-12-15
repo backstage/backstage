@@ -75,13 +75,13 @@ import {
   createPublishGerritReviewAction,
 } from '@backstage/plugin-scaffolder-backend-module-gerrit';
 
-import { createPublishGiteaAction } from '@backstage/plugin-scaffolder-backend-module-gitea';
-
 import {
   createPublishGitlabAction,
   createGitlabRepoPushAction,
   createPublishGitlabMergeRequestAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
+
+import { createPublishGiteaAction } from '@backstage/plugin-scaffolder-backend-module-gitea';
 
 /**
  * The options passed to {@link createBuiltinActions}
@@ -157,6 +157,10 @@ export const createBuiltinActions = (
       config,
     }),
     createPublishGerritReviewAction({
+      integrations,
+      config,
+    }),
+    createPublishGiteaAction({
       integrations,
       config,
     }),
