@@ -15,10 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import {
-  BackstagePlugin,
-  ExtensionOverrides,
-} from '@backstage/frontend-plugin-api';
+import { FrontendFeature } from '@backstage/frontend-plugin-api';
 
 interface DiscoveryGlobal {
   modules: Array<{ name: string; export?: string; default: unknown }>;
@@ -58,9 +55,7 @@ function readPackageDetectionConfig(config: Config) {
 /**
  * @public
  */
-export function getAvailableFeatures(
-  config: Config,
-): (BackstagePlugin | ExtensionOverrides)[] {
+export function getAvailableFeatures(config: Config): FrontendFeature[] {
   const discovered = (
     window as { '__@backstage/discovered__'?: DiscoveryGlobal }
   )['__@backstage/discovered__'];
@@ -86,9 +81,7 @@ export function getAvailableFeatures(
   );
 }
 
-function isBackstageFeature(
-  obj: unknown,
-): obj is BackstagePlugin | ExtensionOverrides {
+function isBackstageFeature(obj: unknown): obj is FrontendFeature {
   if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
     return (
       obj.$$type === '@backstage/BackstagePlugin' ||

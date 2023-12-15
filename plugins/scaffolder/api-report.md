@@ -379,6 +379,7 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
           secretsKey: string;
           additionalScopes?:
             | {
+                gitea?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
@@ -405,6 +406,7 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
           secretsKey: string;
           additionalScopes?:
             | {
+                gitea?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;

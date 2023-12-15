@@ -60,6 +60,8 @@ import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { parseEntityRef } from '@backstage/catalog-model';
+import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
+import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
@@ -108,6 +110,9 @@ export function AboutCard(props: AboutCardProps) {
   const errorApi = useApi(errorApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(createFromTemplateRouteRef);
+  const { allowed: canRefresh } = useEntityPermission(
+    catalogEntityRefreshPermission,
+  );
 
   const entitySourceLocation = getEntitySourceLocation(
     entity,
@@ -215,7 +220,7 @@ export function AboutCard(props: AboutCardProps) {
         title="About"
         action={
           <>
-            {allowRefresh && (
+            {allowRefresh && canRefresh && (
               <IconButton
                 aria-label="Refresh"
                 title="Schedule entity refresh"

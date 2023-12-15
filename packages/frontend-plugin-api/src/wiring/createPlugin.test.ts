@@ -18,13 +18,14 @@ import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { screen } from '@testing-library/react';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import { createPlugin, BackstagePlugin } from './createPlugin';
+import { createPlugin } from './createPlugin';
 import { JsonObject } from '@backstage/types';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { coreExtensionData } from './coreExtensionData';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import { createExtensionInput } from './createExtensionInput';
+import { BackstagePlugin } from './types';
 
 const nameExtensionDataRef = createExtensionDataRef<string>('name');
 

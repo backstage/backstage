@@ -54,6 +54,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import { LinksGroup } from '../../Meta';
+import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
+import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
 
 const CardTitle = (props: { title: string }) => (
   <Box display="flex" alignItems="center">
@@ -70,6 +72,9 @@ export const GroupProfileCard = (props: {
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const { entity: group } = useEntity<GroupEntity>();
+  const { allowed: canRefresh } = useEntityPermission(
+    catalogEntityRefreshPermission,
+  );
 
   const refreshEntity = useCallback(async () => {
     await catalogApi.refreshEntity(stringifyEntityRef(group));
@@ -127,7 +132,7 @@ export const GroupProfileCard = (props: {
       variant={props.variant}
       action={
         <>
-          {allowRefresh && (
+          {allowRefresh && canRefresh && (
             <IconButton
               aria-label="Refresh"
               title="Schedule entity refresh"

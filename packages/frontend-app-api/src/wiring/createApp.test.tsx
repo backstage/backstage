@@ -25,7 +25,7 @@ import {
   createThemeExtension,
 } from '@backstage/frontend-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
-import { createApp } from './createApp';
+import { CreateAppFeatureLoader, createApp } from './createApp';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
@@ -96,6 +96,66 @@ describe('createApp', () => {
     );
     await waitFor(() =>
       expect(screen.getByText('Last Page')).toBeInTheDocument(),
+    );
+  });
+
+  it('should support feature loaders', async () => {
+    const loader: CreateAppFeatureLoader = {
+      getLoaderName() {
+        return 'test-loader';
+      },
+      async load({ config }) {
+        return {
+          features: [
+            createPlugin({
+              id: 'test',
+              extensions: [
+                createPageExtension({
+                  defaultPath: '/',
+                  loader: async () => <div>{config.getString('key')}</div>,
+                }),
+              ],
+            }),
+          ],
+        };
+      },
+    };
+
+    const app = createApp({
+      configLoader: async () => ({
+        config: new MockConfigApi({ key: 'config-value' }),
+      }),
+      features: [loader],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText('config-value'),
+    ).resolves.toBeInTheDocument();
+  });
+
+  it('should propagate errors thrown by feature loaders', async () => {
+    const loader: CreateAppFeatureLoader = {
+      getLoaderName() {
+        return 'test-loader';
+      },
+      async load() {
+        throw new TypeError('boom');
+      },
+    };
+
+    const app = createApp({
+      configLoader: async () => ({
+        config: new MockConfigApi({}),
+      }),
+      features: [loader],
+    });
+
+    await expect(
+      renderWithEffects(app.createRoot()),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Failed to read frontend features from loader 'test-loader', TypeError: boom"`,
     );
   });
 

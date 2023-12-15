@@ -107,6 +107,7 @@ export class ScaffolderClient implements ScaffolderApi {
       ...this.scmIntegrationsApi.bitbucketCloud.list(),
       ...this.scmIntegrationsApi.bitbucketServer.list(),
       ...this.scmIntegrationsApi.gerrit.list(),
+      ...this.scmIntegrationsApi.gitea.list(),
       ...this.scmIntegrationsApi.github.list(),
       ...this.scmIntegrationsApi.gitlab.list(),
     ]

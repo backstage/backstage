@@ -309,7 +309,7 @@ package, which is done as follows:
        .addRouter('', await app(appEnv));
    ```
 3. Remove the `@backstage/plugin-app-backend` and the app package dependency
-   (e.g. `app`) from `packages/backend/packages.json`. If you don't remove the
+   (e.g. `app`) from `packages/backend/package.json`. If you don't remove the
    app package dependency the app will still be built and bundled with the
    backend.
 
