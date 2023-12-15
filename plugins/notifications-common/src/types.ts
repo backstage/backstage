@@ -15,6 +15,9 @@
  */
 
 /** @public */
+export type NotificationType = 'read' | 'unread' | 'saved';
+
+/** @public */
 export type Notification = {
   id: string;
   userRef: string;

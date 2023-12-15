@@ -17,11 +17,13 @@
 import {
   Notification,
   NotificationStatus,
+  NotificationType,
 } from '@backstage/plugin-notifications-common';
 
 /** @public */
 export type NotificationGetOptions = {
   user_ref: string;
+  type?: NotificationType;
 };
 
 /** @public */

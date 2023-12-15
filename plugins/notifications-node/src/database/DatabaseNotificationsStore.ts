@@ -55,15 +55,22 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return typeof val === 'string' ? Number.parseInt(val, 10) : val ?? 0;
   };
 
+  private getNotificationsBaseQuery = (options: NotificationGetOptions) => {
+    const { user_ref, type } = options;
+    const query = this.db('notifications').where('userRef', user_ref);
+
+    if (type === 'unread') {
+      query.whereNull('read');
+    } else if (type === 'read') {
+      query.whereNotNull('read');
+    }
+    // TODO: Saved
+    return query;
+  };
+
   async getNotifications(options: NotificationGetOptions) {
-    const { user_ref } = options;
-    const notificationQuery = this.db('notifications').where(
-      'userRef',
-      user_ref,
-    );
-
+    const notificationQuery = this.getNotificationsBaseQuery(options);
     const notifications = await notificationQuery.select('*');
-
     return notifications;
   }
 
@@ -72,12 +79,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   }
 
   async getStatus(options: NotificationGetOptions) {
-    const { user_ref } = options;
-    const notificationQuery = this.db('notifications').where(
-      'userRef',
-      user_ref,
-    );
-
+    const notificationQuery = this.getNotificationsBaseQuery(options);
     const unreadQuery = await notificationQuery
       .clone()
       .whereNull('read')

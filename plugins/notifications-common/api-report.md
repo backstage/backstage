@@ -21,4 +21,7 @@ export type NotificationStatus = {
   unread: number;
   read: number;
 };
+
+// @public (undocumented)
+export type NotificationType = 'read' | 'unread' | 'saved';
 ```

@@ -17,7 +17,10 @@ import { errorHandler } from '@backstage/backend-common';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { NotificationService } from '@backstage/plugin-notifications-node';
+import {
+  NotificationGetOptions,
+  NotificationService,
+} from '@backstage/plugin-notifications-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 
 /** @public */
@@ -50,7 +53,14 @@ export async function createRouter(
 
   router.get('/notifications', async (req, res) => {
     const user = await getUser(req);
-    const notifications = await store.getNotifications({ user_ref: user });
+    const opts: NotificationGetOptions = {
+      user_ref: user,
+    };
+    if (req.query.type) {
+      opts.type = req.query.type as any;
+    }
+
+    const notifications = await store.getNotifications(opts);
     res.send(notifications);
   });
 

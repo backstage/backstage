@@ -12,13 +12,21 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
+import { NotificationType } from '@backstage/plugin-notifications-common';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
+export type GetNotificationsOptions = {
+  type?: NotificationType;
+};
+
+// @public (undocumented)
 export interface NotificationsApi {
   // (undocumented)
-  getNotifications(): Promise<Notification_2[]>;
+  getNotifications(
+    options?: GetNotificationsOptions,
+  ): Promise<Notification_2[]>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
 }
@@ -30,7 +38,9 @@ export const notificationsApiRef: ApiRef<NotificationsApi>;
 export class NotificationsClient implements NotificationsApi {
   constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi });
   // (undocumented)
-  getNotifications(): Promise<Notification_2[]>;
+  getNotifications(
+    options?: GetNotificationsOptions,
+  ): Promise<Notification_2[]>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotificationsApi } from './NotificationsApi';
+import { GetNotificationsOptions, NotificationsApi } from './NotificationsApi';
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import {
@@ -34,8 +34,17 @@ export class NotificationsClient implements NotificationsApi {
     this.fetchApi = options.fetchApi;
   }
 
-  async getNotifications(): Promise<Notification[]> {
-    return await this.get<Notification[]>('notifications');
+  async getNotifications(
+    options?: GetNotificationsOptions,
+  ): Promise<Notification[]> {
+    const queryString = new URLSearchParams();
+    if (options?.type) {
+      queryString.append('type', options.type);
+    }
+
+    const urlSegment = `notifications?${queryString}`;
+
+    return await this.get<Notification[]>(urlSegment);
   }
 
   async getStatus(): Promise<NotificationStatus> {

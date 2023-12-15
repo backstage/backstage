@@ -5,6 +5,7 @@
 ```ts
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
+import { NotificationType } from '@backstage/plugin-notifications-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
@@ -32,6 +33,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 // @public (undocumented)
 export type NotificationGetOptions = {
   user_ref: string;
+  type?: NotificationType;
 };
 
 // @public (undocumented)

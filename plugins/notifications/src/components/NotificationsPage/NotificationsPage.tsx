@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Content,
   ErrorPanel,
@@ -32,6 +32,7 @@ import {
 import Bookmark from '@material-ui/icons/Bookmark';
 import Check from '@material-ui/icons/Check';
 import Inbox from '@material-ui/icons/Inbox';
+import { NotificationType } from '@backstage/plugin-notifications-common';
 
 const useStyles = makeStyles(_theme => ({
   filterButton: {
@@ -41,32 +42,48 @@ const useStyles = makeStyles(_theme => ({
 }));
 
 export const NotificationsPage = () => {
+  const [type, setType] = useState<NotificationType>('unread');
+
   const {
     loading: _loading,
     error,
     value,
     retry: _retry,
-  } = useNotificationsApi(api => api.getNotifications());
+  } = useNotificationsApi(api => api.getNotifications({ type }), [type]);
 
   const styles = useStyles();
   if (error) {
     return <ErrorPanel error={new Error('Failed to load notifications')} />;
   }
 
-  // TODO: Make the filter buttons work
   // TODO: Add signals listener and refresh data on message
   return (
     <PageWithHeader title="Notifications" themeId="tool">
       <Content>
         <Grid container>
           <Grid item xs={2}>
-            <Button className={styles.filterButton} startIcon={<Inbox />}>
+            <Button
+              className={styles.filterButton}
+              startIcon={<Inbox />}
+              variant={type === 'unread' ? 'contained' : 'text'}
+              onClick={() => setType('unread')}
+            >
               Inbox
             </Button>
-            <Button className={styles.filterButton} startIcon={<Check />}>
+            <Button
+              className={styles.filterButton}
+              startIcon={<Check />}
+              variant={type === 'read' ? 'contained' : 'text'}
+              onClick={() => setType('read')}
+            >
               Done
             </Button>
-            <Button className={styles.filterButton} startIcon={<Bookmark />}>
+            <Button
+              className={styles.filterButton}
+              startIcon={<Bookmark />}
+              variant={type === 'saved' ? 'contained' : 'text'}
+              onClick={() => setType('saved')}
+            >
               Saved
             </Button>
           </Grid>
