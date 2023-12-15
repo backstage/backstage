@@ -67,15 +67,15 @@ import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import {
   TechDocsIndexPage,
-  TechDocsReaderPage,
   techdocsPlugin,
+  TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import {
   ExpandableNavigation,
+  LightBox,
   ReportIssue,
   TextSize,
-  LightBox,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 import {
   SettingsLayout,
@@ -107,6 +107,7 @@ import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
+import { NotificationsPage } from '@backstage/plugin-notifications';
 
 const app = createApp({
   apis,
@@ -272,6 +273,7 @@ const routes = (
     <Route path="/devtools" element={<DevToolsPage />}>
       {customDevToolsPage}
     </Route>
+    <Route path="/notifications" element={<NotificationsPage />} />
   </FlatRoutes>
 );
 
