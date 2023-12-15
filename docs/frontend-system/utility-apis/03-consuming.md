@@ -17,7 +17,7 @@ import { useApi, configApiRef } from '@backstage/frontend-plugin-api';
 
 const MyComponent = () => {
   const configApi = useApi(configApiRef);
-  const baseUrl = configApi.getString('backend.baseUrl');
+  const title = configApi.getString('app.title');
   // ...
 };
 ```
@@ -31,7 +31,7 @@ const MyComponent = () => {
   const apis = useApiHolder();
   const configApi = apis.get(configApiRef); // may return undefined
   if (configApi) {
-    const baseUrl = configApi.getString('backend.baseUrl');
+    const title = configApi.getString('app.title');
     // ...
   }
 };

@@ -12,8 +12,7 @@ If you are migrating your plugins or app over from the old frontend system, ther
 
 - Migrate your repo overall to the latest release of Backstage
 - Follow the plugin migration guide <!-- TODO: Link -->
-- Change your package dependencies from `core-*-api` to `frontend-*-api`
-- Change the imports in your code from `core-*-api` to `frontend-*-api`
+- Optionally change your package dependencies and code from `core-*-api` to `frontend-*-api`
 - Keep the TypeScript interface and API ref exported as they were, except possibly reconsidering the choice of ID of the latter
 - Wrap the old API factory call in an extension using `createApiExtension`
 - Make sure that this extension is referenced by your migrated plugin
@@ -24,25 +23,13 @@ This guide assumes that you first [upgrade your repo](../../getting-started/keep
 
 ## Dependency changes
 
-In this article we will discuss some interfaces that you used to import from the `@backstage/core-plugin-api` package. Those are now generally moved over to `@backstage/frontend-plugin-api`, so you will want to update both your `package.json` and your source code. This applies both in your `-react` package and your main plugin package.
+In this article we will discuss some old interfaces that you used to import from the `@backstage/core-plugin-api` package. Those are now generally lifted over to `@backstage/frontend-plugin-api`, next to the new interfaces that are specific to the new frontend system. If you want to, you can already update your `package.json` and code imports to only use the new plugin API, but for the time being you don't have to. The old core exports will continue to work for the foreseeable future.
 
-First `package.json`. The following commands are examples - note that they refer to `plugins/example`, which you'll have to update to the actual folder name that your package to migrate is in.
+To at least get access to the new interfaces, you'll need to run the following command. Note that it's just an example! It refers to `plugins/example`, which you'll have to change to the actual folder name that your package to migrate is in.
 
 ```bash title="from your repo root"
-yarn --cwd plugins/example remove @backstage/core-plugin-api ;
 yarn --cwd plugins/example add @backstage/frontend-plugin-api
 ```
-
-Now in all of the code files in that package:
-
-```tsx title="in your source code"
-/* highlight-remove-next-line */
-import { createApiRef } from '@backstage/core-plugin-api';
-/* highlight-add-next-line */
-import { createApiRef } from '@backstage/frontend-plugin-api';
-```
-
-These can typically be search-and-replaced wholesale - the interfaces in the new package are mostly identical to the old one. The `createApiRef` is just an example, and the same replacement makes sense for all of the other symbols from the core package as well.
 
 ## React package interface and ref changes
 
@@ -100,7 +87,7 @@ export const catalogPlugin = createPlugin({
 
 The major changes we'll make are
 
-- Change the import to the new package as per the top section of this guide
+- Optionally change the old imports to the new package as per the top section of this guide
 - Wrap the existing API factory in a `createApiExtension`
 - Change to the new version of `createPlugin` which exports this extension
 - Change the plugin export to be the default instead
@@ -116,14 +103,11 @@ import { workApiRef } from '@internal/plugin-example-react';
 import { WorkImpl } from './WorkImpl';
 
 const workApi = createApiExtension({
-  api: workApiRef,
-  factory: () =>
-    // The factory itself is unchanged
-    createApiFactory({
-      api: workApiRef,
-      deps: { storageApi: storageApiRef },
-      factory: ({ storageApi }) => new WorkImpl({ storageApi }),
-    }),
+  factory: createApiFactory({
+    api: workApiRef,
+    deps: { storageApi: storageApiRef },
+    factory: ({ storageApi }) => new WorkImpl({ storageApi }),
+  }),
 });
 
 /** @public */

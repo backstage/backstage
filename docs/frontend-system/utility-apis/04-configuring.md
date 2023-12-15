@@ -33,8 +33,8 @@ interface WorkApiConfig {
 /* highlight-add-end */
 
 const workApi = createApiExtension({
-  api: workApiRef,
   /* highlight-add-start */
+  api: workApiRef,
   configSchema: createSchemaFromZod(z =>
     z.object({
       goSlow: z.boolean().default(false),
@@ -42,24 +42,23 @@ const workApi = createApiExtension({
   ),
   /* highlight-add-end */
   /* highlight-remove-next-line */
-  factory: () =>
+  factory: createApiFactory({
   /* highlight-add-next-line */
-  factory: ({ config }) =>
-    createApiFactory({
-      api: workApiRef,
-      deps: { storageApi: storageApiRef },
-      factory: ({ storageApi }) => {
-        /* highlight-add-start */
-        if (config.goSlow) {
-          /* ... */
-        }
-        /* highlight-add-end */
-      },
-    }),
+  factory: ({ config }) => createApiFactory({
+    api: workApiRef,
+    deps: { storageApi: storageApiRef },
+    factory: ({ storageApi }) => {
+      /* highlight-add-start */
+      if (config.goSlow) {
+        /* ... */
+      }
+      /* highlight-add-end */
+    },
+  }),
 });
 ```
 
-We wanted users to be able to configure a `goSlow` parameter for our API instances. So we added another interface type for holding our various options, and passed in a `configSchema` to `createApiExtension` which matches that interface. This example builds it using [the zod library](https://zod.dev/). The actual config values will then be passed in to the `factory` callback, where we can do what we wish with them.
+We wanted users to be able to configure a `goSlow` parameter for our API instances. So we added another interface type for holding our various options, and passed in a `configSchema` to `createApiExtension` which matches that interface. This example builds it using [the zod library](https://zod.dev/). The actual config values will then be passed in to the `factory` which is now a callback, wherein we can do what we wish with them. When changing to the callback form, we also had to add a top level `api: workApiRef` under `createApiExtension`.
 
 Note that while we use the word "config" here, it's _not_ the same thing as the `configApi` which gives you access to the full app-config. The config discussed here is instead the particular configuration settings given to your utility API instance. This is discussed more [in the section below](#configuring).
 
