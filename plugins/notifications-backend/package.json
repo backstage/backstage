@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-notifications-node": "workspace:^",

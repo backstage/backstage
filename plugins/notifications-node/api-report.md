@@ -8,6 +8,7 @@ import { NotificationStatus } from '@backstage/plugin-notifications-common';
 import { NotificationType } from '@backstage/plugin-notifications-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export class DatabaseNotificationsStore implements NotificationsStore {
@@ -53,6 +54,9 @@ export class NotificationService {
     link: string,
   ): Promise<Notification_2[]>;
 }
+
+// @public (undocumented)
+export const notificationService: ServiceRef<NotificationService, 'plugin'>;
 
 // @public (undocumented)
 export type NotificationServiceOptions = {

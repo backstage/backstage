@@ -7784,6 +7784,7 @@ __metadata:
   resolution: "@backstage/plugin-notifications-backend@workspace:plugins/notifications-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
@@ -7814,6 +7815,7 @@ __metadata:
   resolution: "@backstage/plugin-notifications-node@workspace:plugins/notifications-node"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
