@@ -36,7 +36,7 @@ jest.setTimeout(60_000);
 
 describe('PluginTaskManagerImpl', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
   });
 
   beforeAll(async () => {
