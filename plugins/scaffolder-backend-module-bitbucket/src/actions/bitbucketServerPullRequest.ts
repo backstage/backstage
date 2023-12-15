@@ -21,6 +21,8 @@ import {
 } from '@backstage/integration';
 import {
   createTemplateAction,
+  getRepoSourceDirectory,
+  commitAndPushBranch,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import fetch, { RequestInit, Response } from 'node-fetch';
@@ -152,7 +154,51 @@ const findBranches = async (opts: {
 
   return undefined;
 };
+const createBranch = async (opts: {
+  project: string;
+  repo: string;
+  branchName: string;
+  authorization: string;
+  apiBaseUrl: string;
+  startPoint: string;
+}) => {
+  const { project, repo, branchName, authorization, apiBaseUrl, startPoint } =
+    opts;
 
+  let response: Response;
+  const options: RequestInit = {
+    method: 'POST',
+    body: JSON.stringify({
+      name: branchName,
+      startPoint,
+    }),
+    headers: {
+      Authorization: authorization,
+      'Content-Type': 'application/json',
+    },
+  };
+
+  try {
+    response = await fetch(
+      `${apiBaseUrl}/projects/${encodeURIComponent(
+        project,
+      )}/repos/${encodeURIComponent(repo)}/branches`,
+      options,
+    );
+  } catch (e) {
+    throw new Error(`Unable to create branch, ${e}`);
+  }
+
+  if (response.status !== 200) {
+    throw new Error(
+      `Unable to create branch, ${response.status} ${
+        response.statusText
+      }, ${await response.text()}`,
+    );
+  }
+
+  return await response.json();
+};
 /**
  * Creates a BitbucketServer Pull Request action.
  * @public
@@ -161,7 +207,7 @@ export function createPublishBitbucketServerPullRequestAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
 }) {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   return createTemplateAction<{
     repoUrl: string;
@@ -268,13 +314,60 @@ export function createPublishBitbucketServerPullRequestAction(options: {
         apiBaseUrl,
       });
 
-      const fromRef = await findBranches({
+      let fromRef = await findBranches({
         project,
         repo,
         branchName: sourceBranch,
         authorization,
         apiBaseUrl,
       });
+
+      if (!fromRef) {
+        // create branch
+        ctx.logger.info(
+          `source branch not found -> creating branch named: ${sourceBranch} lastCommit: ${toRef.latestCommit}`,
+        );
+        const latestCommit = toRef.latestCommit;
+
+        fromRef = await createBranch({
+          project,
+          repo,
+          branchName: sourceBranch,
+          authorization,
+          apiBaseUrl,
+          startPoint: latestCommit,
+        });
+
+        const remoteUrl = `https://${host}/scm/${project}/${repo}.git`;
+
+        const auth = authConfig.token
+          ? {
+              token: token!,
+            }
+          : {
+              username: authConfig.username!,
+              password: authConfig.password!,
+            };
+
+        const gitAuthorInfo = {
+          name: config.getOptionalString('scaffolder.defaultAuthor.name'),
+          email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+        };
+
+        await commitAndPushBranch({
+          tempDir: await ctx.createTemporaryDirectory(),
+          dir: getRepoSourceDirectory(ctx.workspacePath, undefined),
+          remoteUrl,
+          auth,
+          logger: ctx.logger,
+          commitMessage:
+            description ??
+            config.getOptionalString('scaffolder.defaultCommitMessage') ??
+            '',
+          gitAuthorInfo,
+          branch: sourceBranch,
+        });
+      }
 
       const pullRequestUrl = await createPullRequest({
         project,
