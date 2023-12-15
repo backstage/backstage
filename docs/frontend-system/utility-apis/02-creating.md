@@ -57,14 +57,12 @@ class WorkImpl implements WorkApi {
   }
 }
 
-const workApi = createApiExtension({
-  api: workApiRef,
-  factory: () =>
-    createApiFactory({
-      api: workApiRef,
-      deps: { storageApi: storageApiRef },
-      factory: ({ storageApi }) => new WorkImpl({ storageApi }),
-    }),
+const exampleWorkApi = createApiExtension({
+  factory: createApiFactory({
+    api: workApiRef,
+    deps: { storageApi: storageApiRef },
+    factory: ({ storageApi }) => new WorkImpl({ storageApi }),
+  }),
 });
 
 /**
