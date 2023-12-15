@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 import { PassThrough } from 'stream';
-/* import {rest} from 'msw';*/
-import { setupServer } from 'msw';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { createPublishGiteaAction } from './gitea';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
+import { setupServer } from 'msw/node';
 
 jest.mock('@backstage/plugin-scaffolder-node', () => {
   return {
