@@ -229,7 +229,7 @@ const navigationExtension = createExtension({
 
 In this case the extension input `items` is an array, where each individual item is an extension that attached itself to the extension inputs of this `id`.
 
-With the `inputs` not only the `output` is passed to the extension, but also the `node`. It is discouraged to consume and/or modify the `node` here. If we are looking at the `factory` function from the example above we could access the `node` like the following:
+With the `inputs` not only the `output` of an extensions item is passed to the extension, but also the `node`. It is discouraged to consume and/or modify the `node` here. If we are looking at the `factory` function from the example above we could access the `node` like the following:
 
 ```tsx
   // ...
@@ -251,21 +251,50 @@ With the `inputs` not only the `output` is passed to the extension, but also the
 
 ## Extension Configuration
 
-<!--
+With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independet of the plugin & initiated several times. Therefor we created a possibility to configure each extension indiviually through config. The config schema is created using the library `zod` (TODO: Link), which enables a stronger type checking on top of TypeScript. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
 
-Introduce the concept of extension configuration, highlight that it's different from app config
+```tsx
+const navigationExtension = createExtension({
+  // ...
+  namespace: 'app',
+  name: 'nav',
+  // [3]: Extension `id` will be `app/nav` following the extension naming pattern
+  configSchema: createSchemaFromZod(z =>
+    z.object({
+      title: z.string().default('Sidebar Title'),
+    }),
+  ),
+  factory({ config }) {
+    return {
+      element: (
+        <nav>
+          <span>{config.title}</span>
+          <ul>{/* ... */}</ul>
+        </nav>
+      ),
+    };
+  },
+  // ...
+});
+```
 
-Show how to define a configuration schema for an extension, talk about it using zod (link to zod), in general explain everything there is to know about the schema
+To now change the text of the title from "Sidebar Title" to "Backstage" we can look at the `id` of the extension & add the following to the `app-config.yaml`:
 
- - Example that creates a configuration schema for an extension
+```yaml
+app:
+  # ...
+  extensions:
+    # ...
+    - app/nav:
+        config:
+          title: 'Backstage'
+```
 
-Show how to provide configuration for an extension - keep this part short, and instead link to the architecture section that talks about writing configuration
-
- - One example of a YAML configurations for the above extension
-
- -->
+For further information on how to write documentation please follow the architecture section on this (TODO: Link).
 
 ## Extension Creators
+
+With creating an extension by using `createExtension(...)` you have the advantage that the extension can be anything in your Backstage application. We realised that this comes with the trade-off of having to repeat boilerplate code for similar building blocks. Here extension creators come into play for covering common building blocks in Backstage like pages using `createPageExtension`, themes using the `createThemeExtension` or items for the navigation using `createNavItemExtension`.
 
 <!--
 
@@ -292,3 +321,7 @@ Any React elements that are rendered by extension creators should be wrapped in 
  - Example of how to use the `ExtensionBoundary` in an extension creator
 
  -->
+
+```
+
+```
