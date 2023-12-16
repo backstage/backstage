@@ -18,7 +18,7 @@ import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { FieldProps } from '@rjsf/core';
+import { FieldProps } from '@rjsf/utils';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { MultiEntityPicker } from './MultiEntityPicker';
