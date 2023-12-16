@@ -42,6 +42,7 @@ import {
   PagedResponse,
   UserTransformer,
   GroupTransformer,
+  GroupNameTransformer,
 } from '../lib/types';
 import {
   defaultGroupNameTransformer,
@@ -71,6 +72,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private userTransformer: UserTransformer;
   private groupTransformer: GroupTransformer;
+  private groupNameTransformer: GroupNameTransformer;
 
   static fromConfig(
     config: Config,
@@ -136,6 +138,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     taskRunner: TaskRunner;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
+    groupNameTransformer?: GroupNameTransformer;
   }) {
     this.config = options.config;
     this.integration = options.integration;
@@ -145,6 +148,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     this.scheduleFn = this.createScheduleFn(options.taskRunner);
     this.userTransformer = options.userTransformer ?? defaultUserTransformer;
     this.groupTransformer = options.groupTransformer ?? defaultGroupTransformer;
+    this.groupNameTransformer =
+      options.groupNameTransformer ?? defaultGroupNameTransformer;
   }
 
   getProviderName(): string {
@@ -287,7 +292,12 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     });
 
     const userEntities = res.matches.map(p =>
-      this.userTransformer(p, this.integration.config, this.config),
+      this.userTransformer(
+        p,
+        this.integration.config,
+        this.config,
+        this.groupNameTransformer,
+      ),
     );
     const groupEntities = this.createGroupEntities(groupsWithUsers);
 
@@ -313,11 +323,15 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     }
 
     for (const group of groupResult) {
-      const entity = this.groupTransformer(group, this.config);
+      const entity = this.groupTransformer(
+        group,
+        this.config,
+        this.groupNameTransformer,
+      );
 
       if (group.parent_id && idMapped.hasOwnProperty(group.parent_id)) {
-        entity.spec.parent = defaultGroupNameTransformer(
-          idMapped[group.parent_id].full_path,
+        entity.spec.parent = this.groupNameTransformer(
+          idMapped[group.parent_id],
           this.config,
         );
       }

@@ -144,6 +144,16 @@ export type GitlabProviderConfig = {
 };
 
 /**
+ * Customize how group names are generated
+ *
+ * @public
+ */
+export type GroupNameTransformer = (
+  group: GitLabGroup,
+  config: GitlabProviderConfig,
+) => string;
+
+/**
  * Customize the ingested User entity
  *
  * @public
@@ -152,6 +162,7 @@ export type UserTransformer = (
   user: GitLabUser,
   intConfig: GitLabIntegrationConfig,
   provConfig: GitlabProviderConfig,
+  groupNameTransformer: GroupNameTransformer,
 ) => UserEntity;
 
 /**
@@ -162,4 +173,5 @@ export type UserTransformer = (
 export type GroupTransformer = (
   group: GitLabGroup,
   provConfig: GitlabProviderConfig,
+  groupNameTransformer: GroupNameTransformer,
 ) => GroupEntity;

@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { GitLabGroup, GitLabUser, GitlabProviderConfig } from './types';
+import {
+  GitLabGroup,
+  GitLabUser,
+  GitlabProviderConfig,
+  GroupNameTransformer,
+} from './types';
 import { GitLabIntegrationConfig } from '@backstage/integration';
 
 export function defaultGroupNameTransformer(
-  full_path: string,
+  group: GitLabGroup,
   config: GitlabProviderConfig,
 ): string {
-  if (config.group && full_path.startsWith(`${config.group}/`)) {
-    return full_path.replace(`${config.group}/`, '').replaceAll('/', '-');
+  if (config.group && group.full_path.startsWith(`${config.group}/`)) {
+    return group.full_path.replace(`${config.group}/`, '').replaceAll('/', '-');
   }
-  return full_path.replaceAll('/', '-');
+  return group.full_path.replaceAll('/', '-');
 }
 
 export function defaultGroupTransformer(
   group: GitLabGroup,
   provConfig: GitlabProviderConfig,
+  groupNameTransformer: GroupNameTransformer,
 ): GroupEntity {
   const annotations: { [annotationName: string]: string } = {};
 
@@ -39,7 +45,7 @@ export function defaultGroupTransformer(
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Group',
     metadata: {
-      name: defaultGroupNameTransformer(group.full_path, provConfig),
+      name: groupNameTransformer(group, provConfig),
       annotations: annotations,
     },
     spec: {
@@ -59,19 +65,6 @@ export function defaultGroupTransformer(
 }
 
 /**
- * If you want the groupId instead of the fullGroupPath as group name
- * @see https://github.com/backstage/backstage/issues/19838
- */
-export function groupIdGroupTransformer(
-  group: GitLabGroup,
-  provConfig: GitlabProviderConfig,
-): GroupEntity {
-  const entity = defaultGroupTransformer(group, provConfig);
-  entity.metadata.name = `${group.id}`;
-  return entity;
-}
-
-/**
  * The default implementation of the transformation from a graph user entry to
  * a User entity.
  *
@@ -81,6 +74,7 @@ export function defaultUserTransformer(
   user: GitLabUser,
   intConfig: GitLabIntegrationConfig,
   provConfig: GitlabProviderConfig,
+  groupNameTransformer: GroupNameTransformer,
 ): UserEntity {
   const annotations: { [annotationName: string]: string } = {};
 
@@ -123,9 +117,7 @@ export function defaultUserTransformer(
       if (!entity.spec.memberOf) {
         entity.spec.memberOf = [];
       }
-      entity.spec.memberOf.push(
-        defaultGroupNameTransformer(group.full_path, provConfig),
-      );
+      entity.spec.memberOf.push(groupNameTransformer(group, provConfig));
     }
   }
 
