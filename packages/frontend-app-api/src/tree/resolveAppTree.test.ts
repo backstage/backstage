@@ -36,19 +36,19 @@ const baseSpec = {
 
 describe('buildAppTree', () => {
   it('should fail to create an empty tree', () => {
-    expect(() => resolveAppTree('core', [])).toThrow(
-      "No root node with id 'core' found in app tree",
+    expect(() => resolveAppTree('app', [])).toThrow(
+      "No root node with id 'app' found in app tree",
     );
   });
 
   it('should create a tree with only one node', () => {
-    const tree = resolveAppTree('core', [{ ...baseSpec, id: 'core' }]);
+    const tree = resolveAppTree('app', [{ ...baseSpec, id: 'app' }]);
     expect(tree.root).toEqual({
-      spec: { ...baseSpec, id: 'core' },
+      spec: { ...baseSpec, id: 'app' },
       edges: { attachments: new Map() },
     });
     expect(Array.from(tree.orphans)).toEqual([]);
-    expect(Array.from(tree.nodes.keys())).toEqual(['core']);
+    expect(Array.from(tree.nodes.keys())).toEqual(['app']);
   });
 
   it('should create a tree', () => {
@@ -159,7 +159,7 @@ describe('buildAppTree', () => {
 
   it('throws an error when duplicated extensions are detected', () => {
     expect(() =>
-      resolveAppTree('core', [
+      resolveAppTree('app', [
         { ...baseSpec, id: 'a' },
         { ...baseSpec, id: 'a' },
       ]),

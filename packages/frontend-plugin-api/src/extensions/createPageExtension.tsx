@@ -67,7 +67,7 @@ export function createPageExtension<
     kind: 'page',
     namespace: options.namespace,
     name: options.name,
-    attachTo: options.attachTo ?? { id: 'core/routes', input: 'routes' },
+    attachTo: options.attachTo ?? { id: 'app/routes', input: 'routes' },
     configSchema,
     inputs: options.inputs,
     disabled: options.disabled,

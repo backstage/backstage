@@ -35,9 +35,9 @@ import { BrowserRouter } from 'react-router-dom';
 import { RouteTracker } from '../routing/RouteTracker';
 
 export const CoreRouter = createExtension({
-  namespace: 'core',
+  namespace: 'app',
   name: 'router',
-  attachTo: { id: 'core', input: 'root' },
+  attachTo: { id: 'app', input: 'root' },
   inputs: {
     signInPage: createExtensionInput(
       {
