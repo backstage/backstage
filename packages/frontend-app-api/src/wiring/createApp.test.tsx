@@ -169,7 +169,7 @@ describe('createApp', () => {
           extensions: [
             createExtension({
               name: 'first',
-              attachTo: { id: 'core', input: 'root' },
+              attachTo: { id: 'app', input: 'root' },
               output: { element: coreExtensionData.reactElement },
               factory() {
                 const Component = () => {
@@ -193,9 +193,9 @@ describe('createApp', () => {
           featureFlags: [{ name: 'test-2' }],
           extensions: [
             createExtension({
-              namespace: 'core',
+              namespace: 'app',
               name: 'router',
-              attachTo: { id: 'core', input: 'root' },
+              attachTo: { id: 'app', input: 'root' },
               disabled: true,
               output: {},
               factory: () => ({}),
@@ -242,24 +242,24 @@ describe('createApp', () => {
     const { tree } = appTreeApi!.getTree();
 
     expect(String(tree.root)).toMatchInlineSnapshot(`
-      "<core out=[core.reactElement]>
+      "<app out=[core.reactElement]>
         root [
-          <core/router out=[core.reactElement]>
+          <app/router out=[core.reactElement]>
             children [
-              <core/layout out=[core.reactElement]>
+              <app/layout out=[core.reactElement]>
                 content [
-                  <core/routes out=[core.reactElement]>
+                  <app/routes out=[core.reactElement]>
                     routes [
                       <page:my-plugin out=[core.routing.path, core.routing.ref, core.reactElement] />
                     ]
-                  </core/routes>
+                  </app/routes>
                 ]
                 nav [
-                  <core/nav out=[core.reactElement] />
+                  <app/nav out=[core.reactElement] />
                 ]
-              </core/layout>
+              </app/layout>
             ]
-          </core/router>
+          </app/router>
         ]
         components [
           <component:core.components.progress out=[core.component.component] />
@@ -289,7 +289,7 @@ describe('createApp', () => {
           <api:core.auth.atlassian out=[core.api.factory] />
           <api:plugin.permission.api out=[core.api.factory] />
         ]
-      </core>"
+      </app>"
     `);
   });
 });

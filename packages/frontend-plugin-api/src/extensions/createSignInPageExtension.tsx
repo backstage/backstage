@@ -50,7 +50,7 @@ export function createSignInPageExtension<
     kind: 'sign-in-page',
     namespace: options?.namespace,
     name: options?.name,
-    attachTo: options.attachTo ?? { id: 'core/router', input: 'signInPage' },
+    attachTo: options.attachTo ?? { id: 'app/router', input: 'signInPage' },
     configSchema: options.configSchema,
     inputs: options.inputs,
     disabled: options.disabled,

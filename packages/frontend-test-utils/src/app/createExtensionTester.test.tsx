@@ -64,7 +64,7 @@ describe('createExtensionTester', () => {
     });
     const tester = createExtensionTester(extension);
     expect(() => tester.render()).toThrow(
-      "Failed to instantiate extension 'core/routes', input 'routes' did not receive required extension data 'core.reactElement' from extension 'test'",
+      "Failed to instantiate extension 'app/routes', input 'routes' did not receive required extension data 'core.reactElement' from extension 'test'",
     );
   });
 
@@ -82,7 +82,7 @@ describe('createExtensionTester', () => {
     const detailsPageExtension = createExtension({
       ...defaultDefinition,
       name: 'details',
-      attachTo: { id: 'core/routes', input: 'routes' },
+      attachTo: { id: 'app/routes', input: 'routes' },
       output: {
         path: coreExtensionData.routePath,
         element: coreExtensionData.reactElement,
@@ -130,7 +130,7 @@ describe('createExtensionTester', () => {
     const detailsPageExtension = createExtension({
       ...defaultDefinition,
       name: 'details',
-      attachTo: { id: 'core/routes', input: 'routes' },
+      attachTo: { id: 'app/routes', input: 'routes' },
       configSchema: createSchemaFromZod(z =>
         z.object({ title: z.string().optional() }),
       ),

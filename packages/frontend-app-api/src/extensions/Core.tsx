@@ -25,7 +25,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 export const Core = createExtension({
-  namespace: 'core',
+  namespace: 'app',
   attachTo: { id: 'root', input: 'default' }, // ignored
   inputs: {
     apis: createExtensionInput({

@@ -26,7 +26,7 @@ export function createTranslationExtension(options: {
     kind: 'translation',
     namespace: options.resource.id,
     name: options.name,
-    attachTo: { id: 'core', input: 'translations' },
+    attachTo: { id: 'app', input: 'translations' },
     output: {
       resource: createTranslationExtension.translationDataRef,
     },

@@ -172,7 +172,7 @@ export function createExtensionTree(options: {
       );
     },
     getRootRoutes(): JSX.Element[] {
-      return this.getExtensionAttachments('core/routes', 'routes').map(node => {
+      return this.getExtensionAttachments('app/routes', 'routes').map(node => {
         const path = node.getData(coreExtensionData.routePath);
         const element = node.getData(coreExtensionData.reactElement);
         const routeRef = node.getData(coreExtensionData.routeRef);
@@ -199,7 +199,7 @@ export function createExtensionTree(options: {
         );
       };
 
-      return this.getExtensionAttachments('core/nav', 'items')
+      return this.getExtensionAttachments('app/nav', 'items')
         .map((node, index) => {
           const target = node.getData(createNavItemExtension.targetDataRef);
           if (!target) {

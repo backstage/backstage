@@ -32,12 +32,12 @@ export interface CreateAppTreeOptions {
 /** @internal */
 export function createAppTree(options: CreateAppTreeOptions): AppTree {
   const tree = resolveAppTree(
-    'core',
+    'app',
     resolveAppNodeSpecs({
       features: options.features,
       builtinExtensions: options.builtinExtensions,
       parameters: readAppExtensionsConfig(options.config),
-      forbidden: new Set(['core']),
+      forbidden: new Set(['app']),
     }),
   );
   instantiateAppNodeTree(tree.root);

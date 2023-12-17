@@ -64,9 +64,9 @@ const NavItem = (props: {
 };
 
 const TestCoreNavExtension = createExtension({
-  namespace: 'core',
+  namespace: 'app',
   name: 'nav',
-  attachTo: { id: 'core/layout', input: 'nav' },
+  attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
     items: createExtensionInput({
       target: createNavItemExtension.targetDataRef,
@@ -150,9 +150,9 @@ const AuthenticationProvider = (props: {
 };
 
 const TestCoreRouterExtension = createExtension({
-  namespace: 'core',
+  namespace: 'app',
   name: 'router',
-  attachTo: { id: 'core', input: 'root' },
+  attachTo: { id: 'app', input: 'root' },
   inputs: {
     signInPage: createExtensionInput(
       {
@@ -195,10 +195,10 @@ export class ExtensionTester {
   ): ExtensionTester {
     const tester = new ExtensionTester();
     const { output, factory, ...rest } = toInternalExtensionDefinition(subject);
-    // attaching to core/routes to render as index route
+    // attaching to app/routes to render as index route
     const extension = createExtension({
       ...rest,
-      attachTo: { id: 'core/routes', input: 'routes' },
+      attachTo: { id: 'app/routes', input: 'routes' },
       output: {
         ...output,
         path: coreExtensionData.routePath,

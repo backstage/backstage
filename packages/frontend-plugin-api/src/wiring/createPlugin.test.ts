@@ -102,7 +102,7 @@ const Child2 = createExtension({
 
 const outputExtension = createExtension({
   name: 'output',
-  attachTo: { id: 'core', input: 'root' },
+  attachTo: { id: 'app', input: 'root' },
   inputs: {
     names: createExtensionInput({
       name: nameExtensionDataRef,
@@ -150,7 +150,7 @@ describe('createPlugin', () => {
     await renderWithEffects(
       createTestAppRoot({
         features: [plugin],
-        config: { app: { extensions: [{ 'core/router': false }] } },
+        config: { app: { extensions: [{ 'app/router': false }] } },
       }),
     );
 
@@ -172,7 +172,7 @@ describe('createPlugin', () => {
         config: {
           app: {
             extensions: [
-              { 'core/router': false },
+              { 'app/router': false },
               {
                 'test/2': {
                   config: { name: 'extension-2-renamed' },
@@ -210,7 +210,7 @@ describe('createPlugin', () => {
         features: [plugin],
         config: {
           app: {
-            extensions: [{ 'core/router': false }],
+            extensions: [{ 'app/router': false }],
           },
         },
       }),
