@@ -42,6 +42,11 @@ export type GitLabProject = {
   forked_from_project?: GitlabProjectForkedFrom;
 };
 
+/**
+ * Representation of a GitLab user in the GitLab API
+ *
+ * @public
+ */
 export type GitLabUser = {
   id: number;
   username: string;
@@ -54,10 +59,18 @@ export type GitLabUser = {
   group_saml_identity?: GitLabGroupSamlIdentity;
 };
 
+/**
+ * @public
+ */
 export type GitLabGroupSamlIdentity = {
   extern_uid: string;
 };
 
+/**
+ * Representation of a GitLab group in the GitLab API
+ *
+ * @public
+ */
 export type GitLabGroup = {
   id: number;
   name: string;
@@ -115,14 +128,25 @@ export type GitLabDescendantGroupsResponse = {
     };
   };
 };
-
+/**
+ * The configuration parameters for the GitlabProvider
+ *
+ * @public
+ */
 export type GitlabProviderConfig = {
+  /**
+   * Identifies one of the hosts set up in the integrations
+   */
   host: string;
   /**
-   * Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned.
-   * If present this if present, the discovered groups won't contain this prefix
+   * Required for gitlab.com when `orgEnabled: true`.
+   * Optional for self managed. Must not end with slash.
+   * Accepts only groups under the provided path (which will be stripped)
    */
   group: string;
+  /**
+   * ???
+   */
   id: string;
   /**
    * The name of the branch to be used, to discover catalog files.
@@ -134,12 +158,31 @@ export type GitlabProviderConfig = {
    * Defaults to: `master`
    */
   fallbackBranch: string;
+  /**
+   * Defaults to `catalog-info.yaml`
+   */
   catalogFile: string;
+  /**
+   * Filters found projects based on provided patter.
+   * Defaults to `[\s\S]*`, which means to not filter anything
+   */
   projectPattern: RegExp;
+  /**
+   * Filters found users based on provided patter.
+   * Defaults to `[\s\S]*`, which means to not filter anything
+   */
   userPattern: RegExp;
+  /**
+   * Filters found groups based on provided patter.
+   * Defaults to `[\s\S]*`, which means to not filter anything
+   */
   groupPattern: RegExp;
+
   orgEnabled?: boolean;
   schedule?: TaskScheduleDefinition;
+  /**
+   * If the project is a fork, skip repository
+   */
   skipForkedRepos?: boolean;
 };
 
@@ -152,6 +195,11 @@ export type GroupNameTransformer = (
   options: GroupNameTransformerOptions,
 ) => string;
 
+/**
+ * The GroupTransformerOptions
+ *
+ * @public
+ */
 export interface GroupNameTransformerOptions {
   group: GitLabGroup;
   providerConfig: GitlabProviderConfig;
@@ -162,6 +210,11 @@ export interface GroupNameTransformerOptions {
  * @public
  */
 export type UserTransformer = (options: UserTransformerOptions) => UserEntity;
+/**
+ * The UserTransformerOptions
+ *
+ * @public
+ */
 export interface UserTransformerOptions {
   user: GitLabUser;
   integrationConfig: GitLabIntegrationConfig;
@@ -177,6 +230,11 @@ export interface UserTransformerOptions {
 export type GroupTransformer = (
   options: GroupTransformerOptions,
 ) => GroupEntity[];
+/**
+ * The GroupTransformer options
+ *
+ * @public
+ */
 export interface GroupTransformerOptions {
   groups: GitLabGroup[];
   providerConfig: GitlabProviderConfig;

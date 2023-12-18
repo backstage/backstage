@@ -58,6 +58,20 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
 }
 
 // @public
+export type GitLabGroup = {
+  id: number;
+  name: string;
+  full_path: string;
+  description?: string;
+  parent_id?: number;
+};
+
+// @public (undocumented)
+export type GitLabGroupSamlIdentity = {
+  extern_uid: string;
+};
+
+// @public
 export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -77,9 +91,75 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   getProviderName(): string;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:23:9 - (ae-forgotten-export) The symbol "UserTransformer" needs to be exported by the entry point index.d.ts
-// src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:24:9 - (ae-forgotten-export) The symbol "GroupTransformer" needs to be exported by the entry point index.d.ts
-// src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:25:9 - (ae-forgotten-export) The symbol "GroupNameTransformer" needs to be exported by the entry point index.d.ts
+// @public
+export type GitlabProviderConfig = {
+  host: string;
+  group: string;
+  id: string;
+  branch?: string;
+  fallbackBranch: string;
+  catalogFile: string;
+  projectPattern: RegExp;
+  userPattern: RegExp;
+  groupPattern: RegExp;
+  orgEnabled?: boolean;
+  schedule?: TaskScheduleDefinition;
+  skipForkedRepos?: boolean;
+};
+
+// @public
+export type GitLabUser = {
+  id: number;
+  username: string;
+  email?: string;
+  name: string;
+  state: string;
+  web_url: string;
+  avatar_url: string;
+  groups?: GitLabGroup[];
+  group_saml_identity?: GitLabGroupSamlIdentity;
+};
+
+// @public
+export type GroupNameTransformer = (
+  options: GroupNameTransformerOptions,
+) => string;
+
+// @public
+export interface GroupNameTransformerOptions {
+  // (undocumented)
+  group: GitLabGroup;
+  // (undocumented)
+  providerConfig: GitlabProviderConfig;
+}
+
+// @public
+export type GroupTransformer = (
+  options: GroupTransformerOptions,
+) => GroupEntity[];
+
+// @public
+export interface GroupTransformerOptions {
+  // (undocumented)
+  groupNameTransformer: GroupNameTransformer;
+  // (undocumented)
+  groups: GitLabGroup[];
+  // (undocumented)
+  providerConfig: GitlabProviderConfig;
+}
+
+// @public
+export type UserTransformer = (options: UserTransformerOptions) => UserEntity;
+
+// @public
+export interface UserTransformerOptions {
+  // (undocumented)
+  groupNameTransformer: GroupNameTransformer;
+  // (undocumented)
+  integrationConfig: GitLabIntegrationConfig;
+  // (undocumented)
+  providerConfig: GitlabProviderConfig;
+  // (undocumented)
+  user: GitLabUser;
+}
 ```
