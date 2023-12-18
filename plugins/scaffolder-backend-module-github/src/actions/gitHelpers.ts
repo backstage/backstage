@@ -129,15 +129,6 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   }
 };
 
-export function getGitCommitMessage(
-  gitCommitMessage: string | undefined,
-  config: Config,
-): string | undefined {
-  return gitCommitMessage
-    ? gitCommitMessage
-    : config.getOptionalString('scaffolder.defaultCommitMessage');
-}
-
 export function entityRefToName(name: string): string {
   return name.replace(/^.*[:/]/g, '');
 }
