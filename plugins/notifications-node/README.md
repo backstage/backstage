@@ -2,4 +2,57 @@
 
 Welcome to the Node.js library package for the notifications plugin!
 
-_This plugin was created through the Backstage CLI_
+## Getting Started
+
+To be able to send notifications from other backend plugins, the `NotificationService` must be initialized for the
+environment. This can be done by adding the following changes to `packages/backend/src/index.ts` and
+`packages/backend/src/types.ts`:
+
+`index.ts`:
+
+```ts
+import { NotificationService } from '@backstage/plugin-notifications-node';
+
+function makeCreateEnv(config: Config) {
+  // ...
+  const notificationService = NotificationService.create({
+    database: databaseManager.forPlugin('notifications'),
+    discovery,
+  });
+  // ...
+  return (plugin: string): PluginEnvironment => {
+    // ...
+    return {
+      // ...
+      notificationService,
+    };
+  };
+}
+```
+
+`types.ts`:
+
+```ts
+import { NotificationService } from '@backstage/plugin-notifications-node';
+export type PluginEnvironment = {
+  // ...
+  notificationService: NotificationService;
+};
+```
+
+You also need to set up the `@backstage/plugin-notifications-backend` and `@backstage/plugin-notifications`
+to be able to show notifications in the UI.
+
+## Sending notifications
+
+To send notifications from backend plugin, use the `NotificationService::send` functionality. This function will
+save the notification and optionally signal the frontend to show the latest status for users.
+
+When sending notifications, you can specify the entity reference of the notification. If the entity reference is
+a user, the notification will be sent to only that user. If it's a group, the notification will be sent to all
+members of the group. If it's some other entity, the notification will be sent to the owner of that entity.
+
+## Extending Notification Service
+
+The `NotificationService` can be extended with `NotificationProcessor`. These processors allow to decorate notifications
+before they are sent or/and send the notifications to external services.

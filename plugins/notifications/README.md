@@ -6,8 +6,36 @@ _This plugin was created through the Backstage CLI_
 
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/notifications](http://localhost:3000/notifications).
+First, install the `@backstage/plugin-notifications-backend` and `@backstage/plugin-notifications-node` packages.
+See the documentation for installation instructions.
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+To add the notifications main menu, add the following to your `packages/app/src/components/Root/Root.tsx`:
+
+```tsx
+import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
+
+<SidebarPage>
+  <Sidebar>
+    <SidebarGroup>
+      // ...
+      <NotificationsSidebarItem />
+    </SidebarGroup>
+  </Sidebar>
+</SidebarPage>;
+```
+
+Also add the route to notifications to `packages/app/src/App.tsx`:
+
+```tsx
+import { NotificationsPage } from '@backstage/plugin-notifications';
+
+<FlatRoutes>
+  // ...
+  <Route path="/notifications" element={<NotificationsPage />} />
+</FlatRoutes>;
+```
+
+## Real-time notifications
+
+To be able to get real-time notifications to the UI without need for the user to refresh the page, you also need to
+add `@backstage/plugin-signals` package to your installation.

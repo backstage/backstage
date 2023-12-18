@@ -2,13 +2,38 @@
 
 Welcome to the notifications backend plugin!
 
-_This plugin was created through the Backstage CLI_
-
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn
-start` in the root directory, and then navigating to [/notifications](http://localhost:3000/notifications).
+First you have to install the `@backstage/plugin-notifications-node` package.
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+Then create a new file to `packages/backend/src/plugins/notifications.ts`:
+
+```ts
+import { createRouter } from '@backstage/plugin-notifications-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    logger: env.logger,
+    identity: env.identity,
+    notificationService: env.notificationService,
+  });
+}
+```
+
+and add it to `packages/backend/src/index.ts`:
+
+```ts
+async function main() {
+  //...
+  const notificationsEnv = useHotMemoize(module, () =>
+    createEnv('notifications'),
+  );
+
+  // ...
+  apiRouter.use('/notifications', await notifications(notificationsEnv));
+}
+```
