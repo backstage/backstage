@@ -32,6 +32,21 @@ export function createGithubActionsDispatchAction(options: {
 >;
 
 // @public
+export function createGithubAutolinksAction(options: {
+  integrations: ScmIntegrations;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}): TemplateAction<
+  {
+    repoUrl: string;
+    keyPrefix: string;
+    urlTemplate: string;
+    isAlphanumeric?: boolean | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
 export function createGithubDeployKeyAction(options: {
   integrations: ScmIntegrationRegistry;
 }): TemplateAction<
