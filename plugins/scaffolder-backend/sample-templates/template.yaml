@@ -6,14 +6,14 @@ metadata:
 spec: 
   parameters:
     - title: Do something
+      required:
+        - myKey
       properties:
         myKey:
           title: My key
           description: asd
           type: string
           ui:field: Secret  
-          ui:options: 
-            required: true
   steps: []
   type: service
     
