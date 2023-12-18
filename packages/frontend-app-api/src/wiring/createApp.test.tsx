@@ -270,6 +270,25 @@ describe('createApp', () => {
           <theme:app/light out=[core.theme.theme] />
           <theme:app/dark out=[core.theme.theme] />
         ]
+        apis [
+          <api:core.discovery out=[core.api.factory] />
+          <api:core.alert out=[core.api.factory] />
+          <api:core.analytics out=[core.api.factory] />
+          <api:core.error out=[core.api.factory] />
+          <api:core.storage out=[core.api.factory] />
+          <api:core.fetch out=[core.api.factory] />
+          <api:core.oauthrequest out=[core.api.factory] />
+          <api:core.auth.google out=[core.api.factory] />
+          <api:core.auth.microsoft out=[core.api.factory] />
+          <api:core.auth.github out=[core.api.factory] />
+          <api:core.auth.okta out=[core.api.factory] />
+          <api:core.auth.gitlab out=[core.api.factory] />
+          <api:core.auth.onelogin out=[core.api.factory] />
+          <api:core.auth.bitbucket out=[core.api.factory] />
+          <api:core.auth.bitbucket-server out=[core.api.factory] />
+          <api:core.auth.atlassian out=[core.api.factory] />
+          <api:plugin.permission.api out=[core.api.factory] />
+        ]
       </core>"
     `);
   });

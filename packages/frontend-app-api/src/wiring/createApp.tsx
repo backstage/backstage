@@ -103,6 +103,8 @@ import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/w
 import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
 import { stringifyError } from '@backstage/errors';
 
+const DefaultApis = defaultApis.map(factory => createApiExtension({ factory }));
+
 export const builtinExtensions = [
   Core,
   CoreRouter,
@@ -114,6 +116,7 @@ export const builtinExtensions = [
   DefaultNotFoundErrorPageComponent,
   LightTheme,
   DarkTheme,
+  ...DefaultApis,
 ].map(def => resolveExtensionDefinition(def));
 
 /** @public */
@@ -418,7 +421,7 @@ function createApiHolder(
         (x): x is typeof createTranslationExtension.translationDataRef.T => !!x,
       ) ?? [];
 
-  for (const factory of [...defaultApis, ...pluginApis]) {
+  for (const factory of pluginApis) {
     factoryRegistry.register('default', factory);
   }
 
@@ -495,15 +498,6 @@ function createApiHolder(
         resources: translationResources,
       }),
   });
-
-  // TODO: ship these as default extensions instead
-  for (const factory of defaultApis as AnyApiFactory[]) {
-    if (!factoryRegistry.register('app', factory)) {
-      throw new Error(
-        `Duplicate or forbidden API factory for ${factory.api} in app`,
-      );
-    }
-  }
 
   ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
 

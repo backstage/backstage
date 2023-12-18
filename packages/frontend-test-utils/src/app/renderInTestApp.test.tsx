@@ -14,14 +14,51 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { screen } from '@testing-library/react';
+import React, { useCallback } from 'react';
+import { screen, fireEvent } from '@testing-library/react';
+import {
+  MockAnalyticsApi,
+  TestApiProvider,
+} from '@backstage/frontend-test-utils';
+import { analyticsApiRef, useAnalytics } from '@backstage/frontend-plugin-api';
 import { renderInTestApp } from './renderInTestApp';
 
 describe('renderInTestApp', () => {
   it('should render the given component in a page', async () => {
-    const Component = () => <div>Test</div>;
-    renderInTestApp(<Component />);
-    expect(screen.getByText('Test')).toBeInTheDocument();
+    const IndexPage = () => <div>Index Page</div>;
+    renderInTestApp(<IndexPage />);
+    expect(screen.getByText('Index Page')).toBeInTheDocument();
+  });
+
+  it('should works with apis provider', async () => {
+    const IndexPage = () => {
+      const analyticsApi = useAnalytics();
+      const handleClick = useCallback(() => {
+        analyticsApi.captureEvent('click', 'See details');
+      }, [analyticsApi]);
+      return (
+        <div>
+          Index Page
+          <a href="/details" onClick={handleClick}>
+            See details
+          </a>
+        </div>
+      );
+    };
+
+    const analyticsApiMock = new MockAnalyticsApi();
+
+    renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, analyticsApiMock]]}>
+        <IndexPage />
+      </TestApiProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: 'See details' }));
+
+    expect(analyticsApiMock.getEvents()[0]).toMatchObject({
+      action: 'click',
+      subject: 'See details',
+    });
   });
 });
