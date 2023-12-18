@@ -37,7 +37,7 @@ jest.mock('@gitbeaker/rest', () => ({
 describe('gitlab:issues:create', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    advanceTo(new Date(1990, 9, 24, 12, 0, 0)); // Set the desired date and time
+    advanceTo(new Date(1988, 5, 3, 12, 0, 0)); // Set the desired date and time
   });
 
   afterEach(() => {
@@ -144,6 +144,63 @@ describe('gitlab:issues:create', () => {
         labels: '',
         createdAt: new Date().toISOString(),
         dueDate: undefined,
+        discussionToResolve: '',
+        mergeRequestToResolveDiscussionsOf: undefined,
+        milestoneId: undefined,
+        weight: undefined,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith('issueId', 42);
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'issueUrl',
+      'https://gitlab.com/hangar18-/issues/42',
+    );
+  });
+
+  it('should return a Gitlab issue when called with several input params', async () => {
+    const mockContext = {
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        projectId: 123,
+        issueType: 'incident',
+        title: 'Computer banks to rule the world',
+        description:
+          'this issue should kickstart research on instruments to sight the stars',
+        dueDate: '1990-08-20T23:59:59Z',
+        token: 'myAwesomeToken',
+        assignees: [3, 14, 15],
+        labels: 'operation:mindcrime',
+      },
+      workspacePath: 'seen2much',
+      logger: getVoidLogger(),
+      logStream: new PassThrough(),
+      output: jest.fn(),
+      createTemporaryDirectory: jest.fn(),
+    };
+
+    mockGitlabClient.Issues.create.mockResolvedValue({
+      id: 42,
+      web_url: 'https://gitlab.com/hangar18-/issues/42',
+    });
+
+    await action.handler({
+      ...mockContext,
+    });
+
+    expect(mockGitlabClient.Issues.create).toHaveBeenCalledWith(
+      123,
+      'Computer banks to rule the world',
+      {
+        issueType: 'incident',
+        description:
+          'this issue should kickstart research on instruments to sight the stars',
+        assigneeIds: [3, 14, 15],
+        confidential: false,
+        epicId: undefined,
+        labels: 'operation:mindcrime',
+        createdAt: new Date().toISOString(),
+        dueDate: '1990-08-20T23:59:59.000Z',
         discussionToResolve: '',
         mergeRequestToResolveDiscussionsOf: undefined,
         milestoneId: undefined,

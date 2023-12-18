@@ -115,7 +115,6 @@ export function getClient(props: {
   };
 
   gitlabOptions[tokenType] = requestToken;
-  console.log({ gitlabOptions });
   return new Gitlab(gitlabOptions);
 }
 
@@ -172,12 +171,10 @@ export async function checkEpicScope(
     if (!topParentGroup) {
       throw new InputError(`Couldn't find a suitable top-level parent group.`);
     }
-
     // Get the epic
     const epic = (await client.Epics.all(topParentGroup.id)).find(
       (x: any) => x.id === epicId,
     );
-
     if (!epic) {
       throw new InputError(
         `Epic with id ${epicId} not found in the top-level parent group ${topParentGroup.name}.`,
@@ -186,7 +183,6 @@ export async function checkEpicScope(
 
     const epicGroup = await client.Groups.show(epic.group_id as number);
     const projectNamespace: string = project.path_with_namespace as string;
-
     return projectNamespace.startsWith(epicGroup.full_path as string);
   } catch (error: any) {
     throw new InputError(`Could not find epic scope: ${error.message}`);
