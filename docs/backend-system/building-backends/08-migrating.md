@@ -325,7 +325,7 @@ catalog:
 
 #### Open API
 
-`InternalOpenApiDocumentationProvider` have not yet been migrated to the new backend system.
+`InternalOpenApiDocumentationProvider` has not yet been migrated to the new backend system.
 See [Other Catalog Extensions](#other-catalog-extensions) for how to use this in the new backend system.
 
 #### Bitbucket
