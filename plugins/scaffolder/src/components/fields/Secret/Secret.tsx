@@ -20,7 +20,7 @@ import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 import { Input, InputLabel } from '@material-ui/core';
 
 export const Secret = (props: ScaffolderRJSFFieldProps) => {
-  const { setSecrets } = useTemplateSecrets();
+  const { setSecrets, secrets } = useTemplateSecrets();
   const {
     name,
     schema: { title, description },
@@ -55,6 +55,7 @@ export const Secret = (props: ScaffolderRJSFFieldProps) => {
           );
           setSecrets({ [name]: e.target?.value });
         }}
+        value={secrets[name] ?? ''}
         type="password"
         autoComplete="off"
       />
