@@ -138,9 +138,9 @@ const useSearchContextValue = (
       pageLimit,
       pageCursor,
     });
-    if (term && resultSet.numberOfResults !== undefined) {
+    if (term) {
       analytics.captureEvent('search', term, {
-        value: resultSet.numberOfResults,
+        value: result.value?.numberOfResults ?? undefined,
       });
     }
     return resultSet;
