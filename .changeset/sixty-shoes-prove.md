@@ -1,5 +1,4 @@
 ---
-'@backstage/plugin-kubernetes-backend': patch
 '@backstage/plugin-kubernetes-react': patch
 ---
 
