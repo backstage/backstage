@@ -138,35 +138,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/avro-schema-parser@npm:^3.0.7":
-  version: 3.0.7
-  resolution: "@asyncapi/avro-schema-parser@npm:3.0.7"
+"@asyncapi/avro-schema-parser@npm:^3.0.9":
+  version: 3.0.9
+  resolution: "@asyncapi/avro-schema-parser@npm:3.0.9"
   dependencies:
-    "@asyncapi/parser": ^3.0.1
+    "@asyncapi/parser": ^3.0.2
     "@types/json-schema": ^7.0.11
     avsc: ^5.7.6
-  checksum: c7755708161f41812ebee90c92fb721176230f0006ddd01683b72c7c1d484a6c5cbe7d7e59c54a5c7221f5f722388642ec26b19a67adc9d30059067cc4276d69
+  checksum: db451bc9413a9caef2e45f577dbc04c0e2f94183793ab791979384e900716b2af9d77db15251128b4316b6a87bdb4be6405fb12d3712a21a6f6d3e71256a18e4
   languageName: node
   linkType: hard
 
-"@asyncapi/openapi-schema-parser@npm:^3.0.8":
-  version: 3.0.8
-  resolution: "@asyncapi/openapi-schema-parser@npm:3.0.8"
+"@asyncapi/openapi-schema-parser@npm:^3.0.10":
+  version: 3.0.10
+  resolution: "@asyncapi/openapi-schema-parser@npm:3.0.10"
   dependencies:
-    "@asyncapi/parser": ^3.0.1
+    "@asyncapi/parser": ^3.0.2
     "@openapi-contrib/openapi-schema-to-json-schema": ~3.2.0
     ajv: ^8.11.0
     ajv-errors: ^3.0.0
     ajv-formats: ^2.1.1
-  checksum: 9c3f49d1a826818b864b2a0b16144d88eb2ecf7ca1d9c1e8554eac30d9875619638924892d093f0270b6b9a04efca1a8918dd5a7eb13fd88c14183d467af5ceb
+  checksum: ddab8b38b86a2ca12dc9345e1a911cfd63bd537524bbb3bc804a137947381eb97e287c6383cf3575a46cadb73f60c2a826a589c54b15ef3881e5a2bb499d2f4c
   languageName: node
   linkType: hard
 
-"@asyncapi/parser@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@asyncapi/parser@npm:3.0.1"
+"@asyncapi/parser@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@asyncapi/parser@npm:3.0.2"
   dependencies:
-    "@asyncapi/specs": ^6.1.0
+    "@asyncapi/specs": ^6.2.0
     "@openapi-contrib/openapi-schema-to-json-schema": ~3.2.0
     "@stoplight/json": ^3.20.2
     "@stoplight/json-ref-readers": ^1.2.2
@@ -185,29 +185,29 @@ __metadata:
     js-yaml: ^4.1.0
     jsonpath-plus: ^7.2.0
     node-fetch: 2.6.7
-  checksum: 6dce457e58dcf9dab8bfb945a7cb9507a2fb686c143d04b77f2f1fe1c1247f9fa76134c872203c3e10398005155f4b9bb4b5e43edfb956c1e9ae4d3d95b6ceb3
+  checksum: 07c82c5fddbc97f5f53a7ab29e0e8b538d325bbd2a15c9f130b79d7f0d253af001207ea9121b7de88d672f23514bdf33d327bb322653281f0cd582ea9f15e962
   languageName: node
   linkType: hard
 
-"@asyncapi/protobuf-schema-parser@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "@asyncapi/protobuf-schema-parser@npm:3.0.4"
+"@asyncapi/protobuf-schema-parser@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "@asyncapi/protobuf-schema-parser@npm:3.0.6"
   dependencies:
-    "@asyncapi/parser": ^3.0.1
+    "@asyncapi/parser": ^3.0.2
     "@types/protocol-buffers-schema": ^3.4.1
     protocol-buffers-schema: ^3.6.0
-  checksum: c176e6d86e53f342ac91067279fb6e1ac3ed9d7f36de197fc723a2ceaf2a2588267c445203d67edcb3cd75308c0c0d6ea401ad69508bfe378c9194420702d3db
+  checksum: 9e185734971c10bcc5155b734939a74f3b87b4fe6173c8e4d404c723611b0257a67e4728c3999ea5d37d9ae89608026f73a9bdc4fb51bfa958eb5eece418aee3
   languageName: node
   linkType: hard
 
-"@asyncapi/react-component@npm:1.2.6":
-  version: 1.2.6
-  resolution: "@asyncapi/react-component@npm:1.2.6"
+"@asyncapi/react-component@npm:1.2.11":
+  version: 1.2.11
+  resolution: "@asyncapi/react-component@npm:1.2.11"
   dependencies:
-    "@asyncapi/avro-schema-parser": ^3.0.7
-    "@asyncapi/openapi-schema-parser": ^3.0.8
-    "@asyncapi/parser": ^3.0.1
-    "@asyncapi/protobuf-schema-parser": ^3.0.4
+    "@asyncapi/avro-schema-parser": ^3.0.9
+    "@asyncapi/openapi-schema-parser": ^3.0.10
+    "@asyncapi/parser": ^3.0.2
+    "@asyncapi/protobuf-schema-parser": ^3.0.6
     highlight.js: ^10.7.2
     isomorphic-dompurify: ^0.13.0
     marked: ^4.0.14
@@ -216,7 +216,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: 4afb34562767771048d0848323adea8d498dc555cc529947d4a45f3ec8d7f172bb454814bcf9c4419e105a743736368b56b3ed54d09b60addc06a287ca0e82b9
+  checksum: 83699b0e3116ccd79c346d1d7782bf2d50838f020f34f276ef18efef7839f572a7c6b80b30cc863d530592c094cb2fffb82ca4328635b0200a27f6112cc067d6
   languageName: node
   linkType: hard
 
@@ -229,12 +229,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/specs@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "@asyncapi/specs@npm:6.1.0"
+"@asyncapi/specs@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "@asyncapi/specs@npm:6.2.0"
   dependencies:
     "@types/json-schema": ^7.0.11
-  checksum: d4ad199ef58b8ef6be081e2e71fd172fdf6720479f3ae6f9b1e58037f833ca177c8af1dadeab4525c2c07e68ea0a4832e0d3dd67c3b033b988ca2435245f6aa6
+  checksum: 9fa959350a75d9d9ab886436720d59bbf1c7bff16ed657fa34cce3a006136d2d853264366c8eee5abf4761f611c305acd5d7fb17e6de92fdc573b32e08f94912
   languageName: node
   linkType: hard
 
@@ -4628,7 +4628,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-api-docs@workspace:plugins/api-docs"
   dependencies:
-    "@asyncapi/react-component": 1.2.6
+    "@asyncapi/react-component": 1.2.11
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
