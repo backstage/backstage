@@ -276,7 +276,7 @@ spec:
 
 ### Hide or mask sensitive data on Review step
 
-> Note: this approach is soon to be deprecated, please mark things as secret by using the `Secret` field extension instead as metioned above.
+> Note: this approach is soon to be deprecated, please mark things as secret by using the `Secret` field extension instead as mentioned above.
 
 Sometimes, specially in custom fields, you collect some data on Create form that
 must not be shown to the user on Review step. To hide or mask this data, you can
