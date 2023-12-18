@@ -8,10 +8,14 @@ import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import { GitLabIntegrationConfig } from '@backstage/integration';
+import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { UserEntity } from '@backstage/catalog-model';
 
 // @public
 export class GitlabDiscoveryEntityProvider implements EntityProvider {
@@ -64,9 +68,18 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
+      userTransformer?: UserTransformer;
+      groupEntitiesTransformer?: GroupTransformer;
+      groupNameTransformer?: GroupNameTransformer;
     },
   ): GitlabOrgDiscoveryEntityProvider[];
   // (undocumented)
   getProviderName(): string;
 }
+
+// Warnings were encountered during analysis:
+//
+// src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:23:9 - (ae-forgotten-export) The symbol "UserTransformer" needs to be exported by the entry point index.d.ts
+// src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:24:9 - (ae-forgotten-export) The symbol "GroupTransformer" needs to be exported by the entry point index.d.ts
+// src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:25:9 - (ae-forgotten-export) The symbol "GroupNameTransformer" needs to be exported by the entry point index.d.ts
 ```
