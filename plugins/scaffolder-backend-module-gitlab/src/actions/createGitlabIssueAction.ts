@@ -177,7 +177,6 @@ export const createGitlabIssueAction = (options: {
             );
           }
         }
-        console.log('After epic test');
         const mappedCreatedAt = convertDate(
           String(createdAt),
           new Date().toISOString(),
@@ -200,11 +199,6 @@ export const createGitlabIssueAction = (options: {
           milestoneId,
           weight,
         };
-        console.log('After setting issues options');
-        console.log({ issueOptions });
-        console.log(`Other options: ${projectId}, ${title}`);
-
-        console.log({ token });
 
         const response = (await api.Issues.create(
           projectId,
@@ -212,14 +206,14 @@ export const createGitlabIssueAction = (options: {
           issueOptions,
         )) as IssueSchema;
 
-        console.log('After calling the issues endpoint');
-
         ctx.output('issueId', response.id);
         ctx.output('issueUrl', response.web_url);
       } catch (error: any) {
         if (error instanceof z.ZodError) {
           // Handling Zod validation errors
-          throw new InputError(`Validation error: ${error.message}`);
+          throw new InputError(`Validation error: ${error.message}`, {
+            validationErrors: error.errors,
+          });
         }
         // Handling other errors
         throw new InputError(`Failed to create GitLab issue: ${error.message}`);

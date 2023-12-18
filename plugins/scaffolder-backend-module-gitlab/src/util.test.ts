@@ -19,23 +19,25 @@ import { Gitlab, GroupSchema } from '@gitbeaker/rest';
 import { InputError } from '@backstage/errors';
 
 // Mock the Gitlab client and its methods
-const setupGitlabMock = () => {
-  jest.mock('@gitbeaker/rest', () => {
-    return {
-      Gitlab: jest.fn().mockImplementation(() => ({
-        Groups: {
-          show: jest.fn(),
-        },
-        Projects: {
-          show: jest.fn(),
-        },
-        Epics: {
-          all: jest.fn(),
-        },
-      })),
-    };
-  });
+const mockGitlabClient = {
+  Groups: {
+    show: jest.fn(),
+  },
+  Projects: {
+    show: jest.fn(),
+  },
+  Epics: {
+    all: jest.fn(),
+  },
 };
+
+jest.mock('@gitbeaker/rest', () => ({
+  Gitlab: class {
+    constructor() {
+      return mockGitlabClient;
+    }
+  },
+}));
 
 const mockConfig = {
   gitlab: [
@@ -51,10 +53,6 @@ const mockConfig = {
   ],
 };
 describe('getTopLevelParentGroup', () => {
-  beforeEach(() => {
-    setupGitlabMock();
-  });
-
   afterEach(() => jest.resetAllMocks());
 
   // Mocked nested groups
@@ -149,7 +147,7 @@ describe('getTopLevelParentGroup', () => {
 
   it('should return the top-level parent group if the input group has a parent in the hierarchy', async () => {
     // Instance with token
-    const mockGitlabClient = new Gitlab({
+    const apiClient = new Gitlab({
       host: mockConfig.gitlab[0].host,
       token: mockConfig.gitlab[0].token!,
     });
@@ -166,7 +164,7 @@ describe('getTopLevelParentGroup', () => {
       },
     );
 
-    const action = util.getTopLevelParentGroup(mockGitlabClient, 123);
+    const action = util.getTopLevelParentGroup(apiClient, 123);
 
     const result = await action;
     expect(result).toEqual(mockTopParentGroup);
@@ -174,7 +172,7 @@ describe('getTopLevelParentGroup', () => {
 
   it('should return the input group if it has no parents in the hierarchy', async () => {
     // Instance with token
-    const mockGitlabClient = new Gitlab({
+    const apiClient = new Gitlab({
       host: mockConfig.gitlab[0].host,
       token: mockConfig.gitlab[0].token!,
     });
@@ -191,7 +189,7 @@ describe('getTopLevelParentGroup', () => {
       },
     );
 
-    const action = util.getTopLevelParentGroup(mockGitlabClient, 789);
+    const action = util.getTopLevelParentGroup(apiClient, 789);
 
     const result = await action;
     expect(result).toEqual(mockTopParentGroup);
@@ -201,8 +199,8 @@ describe('getTopLevelParentGroup', () => {
 describe('checkEpicScope', () => {
   afterEach(() => jest.resetAllMocks());
 
-  it('should return true if the project and epic are found', async () => {
-    const mockGitlabClient = new Gitlab({
+  it('should return true if the project is inside the epic scope', async () => {
+    const apiClient = new Gitlab({
       host: mockConfig.gitlab[0].host,
       token: mockConfig.gitlab[0].token!,
     });
@@ -210,17 +208,25 @@ describe('checkEpicScope', () => {
     const projectId = 123;
     const epicId = 456;
 
-    // Mock project and top-level parent group
-    const mockProject = { namespace: { id: 789 } };
-    const mockTopParentGroup = { id: 789, name: 'MockGroup' };
+    // Mock project, top-level parent group, and epic
+    const mockProject = {
+      id: 123,
+      name: 'You learn',
+      namespace: { id: 789 },
+      path_with_namespace: 'at-once/you-learn',
+    };
+    const mockTopParentGroup = {
+      id: 789,
+      name: 'LivingTwice',
+      full_path: 'at-once/you-learn',
+    };
+    const mockEpic = { id: epicId, group_id: 789 };
 
     mockGitlabClient.Projects.show.mockResolvedValue(mockProject);
     mockGitlabClient.Groups.show.mockResolvedValue(mockTopParentGroup);
-    mockGitlabClient.Epics.all.mockResolvedValue([
-      { id: epicId, group_id: 789 },
-    ]);
+    mockGitlabClient.Epics.all.mockResolvedValue([mockEpic]);
 
-    const result = await checkEpicScope(mockGitlabClient, projectId, epicId);
+    const result = await util.checkEpicScope(apiClient, projectId, epicId);
 
     expect(result).toBe(true);
     expect(mockGitlabClient.Projects.show).toHaveBeenCalledWith(projectId);
@@ -232,26 +238,116 @@ describe('checkEpicScope', () => {
     );
   });
 
-  it('should throw InputError if the project is not found', async () => {
-    const mockClient = new Gitlab();
+  it('should return false if the project is not inside the epic scope', async () => {
+    const apiClient = new Gitlab({
+      host: mockConfig.gitlab[0].host,
+      token: mockConfig.gitlab[0].token!,
+    });
+
+    const projectId = 123;
+    const epicId = 45;
+
+    // Mock project, top-level parent group, and epic
+    const mockProject = {
+      id: 123,
+      name: 'You learn',
+      namespace: { id: 32 },
+      path_with_namespace: 'at-once/you-learn',
+    };
+    const mockTopParentGroup = {
+      id: 32,
+      name: 'TheWalls',
+      full_path: 'you-built/within',
+    };
+
+    const mockEpic = { id: epicId, group_id: 32 };
+
+    mockGitlabClient.Projects.show.mockResolvedValue(mockProject);
+    mockGitlabClient.Groups.show.mockResolvedValue(mockTopParentGroup);
+    mockGitlabClient.Epics.all.mockResolvedValue([mockEpic]);
+
+    const result = await util.checkEpicScope(apiClient, projectId, epicId);
+
+    expect(result).toBe(false);
+    expect(mockGitlabClient.Projects.show).toHaveBeenCalledWith(projectId);
+    expect(mockGitlabClient.Groups.show).toHaveBeenCalledWith(
+      mockProject.namespace.id,
+    );
+    expect(mockGitlabClient.Epics.all).toHaveBeenCalledWith(
+      mockTopParentGroup.id,
+    );
+  });
+
+  it('should throw an InputError if the project is not found', async () => {
+    const apiClient = new Gitlab({
+      host: mockConfig.gitlab[0].host,
+      token: mockConfig.gitlab[0].token!,
+    });
+
     const projectId = 123;
     const epicId = 456;
 
-    // Mocking the absence of the project
-    mockClient.Projects.show.mockResolvedValue(null);
+    mockGitlabClient.Projects.show.mockResolvedValue(null);
 
-    await expect(checkEpicScope(mockClient, projectId, epicId)).rejects.toThrow(
-      new InputError(
-        `Project with id ${projectId} not found. Check your GitLab instance.`,
-      ),
-    );
-
-    expect(mockClient.Projects.show).toHaveBeenCalledWith(projectId);
-    expect(mockClient.Groups.show).not.toHaveBeenCalled();
-    expect(mockClient.Epics.all).not.toHaveBeenCalled();
+    await expect(
+      util.checkEpicScope(apiClient, projectId, epicId),
+    ).rejects.toThrow(InputError);
+    expect(mockGitlabClient.Projects.show).toHaveBeenCalledWith(projectId);
   });
 
-  // Add more test cases as needed for different scenarios
+  it('should throw an InputError if the top-level parent group is not found', async () => {
+    const apiClient = new Gitlab({
+      host: mockConfig.gitlab[0].host,
+      token: mockConfig.gitlab[0].token!,
+    });
+
+    const projectId = 123;
+    const epicId = 456;
+
+    mockGitlabClient.Projects.show.mockResolvedValue({
+      id: 123,
+      name: 'You learn',
+      namespace: { id: 789 },
+      path_with_namespace: 'at-once/you-learn',
+    });
+    mockGitlabClient.Groups.show.mockResolvedValue(null);
+
+    await expect(
+      util.checkEpicScope(apiClient, projectId, epicId),
+    ).rejects.toThrow(InputError);
+    expect(mockGitlabClient.Projects.show).toHaveBeenCalledWith(projectId);
+    expect(mockGitlabClient.Groups.show).toHaveBeenCalledWith(789);
+  });
+
+  it('should throw an InputError if the epic is not found', async () => {
+    const apiClient = new Gitlab({
+      host: mockConfig.gitlab[0].host,
+      token: mockConfig.gitlab[0].token!,
+    });
+
+    const projectId = 123;
+    const epicId = 456;
+
+    mockGitlabClient.Projects.show.mockResolvedValue({
+      id: 123,
+      name: 'You learn',
+      namespace: { id: 789 },
+      path_with_namespace: 'at-once/you-learn',
+    });
+    mockGitlabClient.Groups.show.mockResolvedValue({
+      id: 789,
+      name: 'LivingTwice',
+      full_path: 'at-once/you-learn',
+    });
+    mockGitlabClient.Epics.all.mockResolvedValue([]);
+
+    await expect(
+      util.checkEpicScope(apiClient, projectId, epicId),
+    ).rejects.toThrow(InputError);
+    expect(mockGitlabClient.Projects.show).toHaveBeenCalledWith(projectId);
+    expect(mockGitlabClient.Groups.show).toHaveBeenCalledWith(789);
+    expect(mockGitlabClient.Epics.all).toHaveBeenCalledWith(789);
+  });
 });
 
 describe('convertDate', () => {
