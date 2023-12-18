@@ -74,6 +74,10 @@ import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { metrics } from '@opentelemetry/api';
 import { DefaultSignalService } from '@backstage/plugin-signals-node';
+import dns from 'node:dns';
+
+// Fix https://github.com/backstage/backstage/issues/19931
+dns.setDefaultResultOrder('ipv4first');
 
 // Expose opentelemetry metrics using a Prometheus exporter on
 // http://localhost:9464/metrics . See prometheus.yml in packages/backend for

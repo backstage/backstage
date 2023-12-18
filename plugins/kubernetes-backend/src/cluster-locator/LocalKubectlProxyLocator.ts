@@ -26,7 +26,7 @@ export class LocalKubectlProxyClusterLocator
     this.clusterDetails = [
       {
         name: 'local',
-        url: 'http:/localhost:8001',
+        url: 'http://localhost:8001',
         authMetadata: {
           [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'localKubectlProxy',
         },
