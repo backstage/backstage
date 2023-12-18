@@ -19,6 +19,5 @@ export * from './RepoUrlPicker';
 export * from './OwnedEntityPicker';
 export * from './EntityTagsPicker';
 export * from './MyGroupsPicker';
-export * from './Secret';
 
 export { type FieldSchema, makeFieldSchemaFromZod } from './utils';
