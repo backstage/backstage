@@ -27,6 +27,7 @@ export const Secret = (props: ScaffolderRJSFFieldProps) => {
     rawErrors,
     disabled,
     errors,
+    onChange,
     required,
   } = props;
 
@@ -42,7 +43,18 @@ export const Secret = (props: ScaffolderRJSFFieldProps) => {
       <Input
         id={title}
         aria-describedby={title}
-        onChange={e => setSecrets({ [name]: e.target?.value })}
+        onChange={e => {
+          // TODO(blam): this is a bit of a hack. We need to to probably figure out
+          // how to provide our own validator that can filter out the secrets from the
+          // jsonschema, or merge the secrets with the formData for validation?
+          // Makes the review step a little cleaner with this though.
+          onChange(
+            Array(e.target?.value.length ?? 0)
+              .fill('*')
+              .join(''),
+          );
+          setSecrets({ [name]: e.target?.value });
+        }}
         type="password"
         autoComplete="off"
       />

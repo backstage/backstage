@@ -43,7 +43,7 @@ import {
   MyGroupsPicker,
   MyGroupsPickerSchema,
 } from '../components/fields/MyGroupsPicker/MyGroupsPicker';
-import { Secret, secretFieldValidation } from '../components';
+import { Secret } from '../components';
 
 export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
@@ -86,6 +86,5 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
     component: Secret,
     name: 'Secret',
-    validation: secretFieldValidation,
   },
 ];
