@@ -55,8 +55,6 @@ return await createRouter({
   database: env.database,
   reader: env.reader,
 });
-
-// TODO: incorporate Issues creation in example
 ```
 
 After that you can use the action in your template:
