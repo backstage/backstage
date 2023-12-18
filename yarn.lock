@@ -7576,6 +7576,8 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/plugin-kubernetes-node": "workspace:^"
+    "@backstage/plugin-permission-backend": "workspace:^"
+    "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -7675,6 +7677,7 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
+    "@backstage/types": "workspace:^"
   languageName: unknown
   linkType: soft
 

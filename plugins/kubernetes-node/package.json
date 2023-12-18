@@ -30,6 +30,7 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/plugin-kubernetes-common": "workspace:^"
+    "@backstage/plugin-kubernetes-common": "workspace:^",
+    "@backstage/types": "workspace:^"
   }
 }

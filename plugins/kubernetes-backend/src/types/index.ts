@@ -15,9 +15,3 @@
  */
 
 export * from './types';
-
-export type {
-  CustomResourcesByEntity,
-  KubernetesObjectsByEntity,
-  KubernetesObjectsProvider,
-} from '@backstage/plugin-kubernetes-node';
