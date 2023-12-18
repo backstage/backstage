@@ -173,7 +173,10 @@ export const NotificationsTable = (props: {
       {props.notifications?.map(notification => {
         return (
           <TableRow key={notification.id} className={styles.notificationRow}>
-            <TableCell width="90px" style={{ verticalAlign: 'center' }}>
+            <TableCell
+              width="80px"
+              style={{ verticalAlign: 'center', paddingRight: '0px' }}
+            >
               <Checkbox
                 className={styles.checkBox}
                 size="small"

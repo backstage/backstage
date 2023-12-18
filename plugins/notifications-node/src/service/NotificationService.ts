@@ -32,11 +32,13 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { DatabaseNotificationsStore } from '../database';
+import { NotificationProcessor } from './NotificationProcessor';
 
 /** @public */
 export type NotificationServiceOptions = {
   database: PluginDatabaseManager;
   discovery: PluginEndpointDiscovery;
+  processors?: NotificationProcessor[];
 };
 
 /** @public */
@@ -52,21 +54,31 @@ export type NotificationSendOptions = {
 /** @public */
 export class NotificationService {
   private store: NotificationsStore | null = null;
+  private readonly processors: NotificationProcessor[];
 
   private constructor(
     private readonly database: PluginDatabaseManager,
     private readonly catalog: CatalogApi,
-  ) {}
+    processors?: NotificationProcessor[],
+  ) {
+    this.processors = processors ?? [];
+  }
 
   static create({
     database,
     discovery,
+    processors,
   }: NotificationServiceOptions): NotificationService {
     const catalogClient = new CatalogClient({
       discoveryApi: discovery,
     });
 
-    return new NotificationService(database, catalogClient);
+    return new NotificationService(database, catalogClient, processors);
+  }
+
+  addProcessor(processor: NotificationProcessor) {
+    this.processors.push(processor);
+    return this;
   }
 
   async send(options: NotificationSendOptions): Promise<Notification[]> {
@@ -80,26 +92,34 @@ export class NotificationService {
     }
 
     const store = await this.getStore();
+    const baseNotification = {
+      id: uuid(),
+      title,
+      description,
+      link,
+      created: new Date(),
+      icon,
+      image,
+      saved: false,
+    };
 
     for (const user of users) {
-      const notification = {
-        id: uuid(),
-        userRef: user,
-        title,
-        description,
-        link,
-        created: new Date(),
-        icon,
-        image,
-        saved: false,
-      };
+      let notification: Notification = { ...baseNotification, userRef: user };
+      for (const processor of this.processors) {
+        notification = processor.decorate
+          ? await processor.decorate(notification)
+          : notification;
+      }
 
       await store.saveNotification(notification);
+      for (const processor of this.processors) {
+        if (processor.send) {
+          processor.send(notification);
+        }
+      }
       notifications.push(notification);
+      // TODO: Signal service
     }
-
-    // TODO: Signal service
-    // TODO: Other senders
 
     return notifications;
   }

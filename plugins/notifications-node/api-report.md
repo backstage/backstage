@@ -52,6 +52,12 @@ export type NotificationModifyOptions = {
 } & NotificationGetOptions;
 
 // @public (undocumented)
+export type NotificationProcessor = {
+  decorate?(notification: Notification_2): Promise<Notification_2>;
+  send?(notification: Notification_2): Promise<void>;
+};
+
+// @public (undocumented)
 export type NotificationSendOptions = {
   entityRef: string | string[];
   title: string;
@@ -64,9 +70,12 @@ export type NotificationSendOptions = {
 // @public (undocumented)
 export class NotificationService {
   // (undocumented)
+  addProcessor(processor: NotificationProcessor): this;
+  // (undocumented)
   static create({
     database,
     discovery,
+    processors,
   }: NotificationServiceOptions): NotificationService;
   // (undocumented)
   getStore(): Promise<NotificationsStore>;
@@ -81,6 +90,7 @@ export const notificationService: ServiceRef<NotificationService, 'plugin'>;
 export type NotificationServiceOptions = {
   database: PluginDatabaseManager;
   discovery: PluginEndpointDiscovery;
+  processors?: NotificationProcessor[];
 };
 
 // @public (undocumented)

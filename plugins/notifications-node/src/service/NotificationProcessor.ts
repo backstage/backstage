@@ -13,5 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './NotificationService';
-export * from './NotificationProcessor';
+import { Notification } from '@backstage/plugin-notifications-common';
+
+/** @public */
+export type NotificationProcessor = {
+  /**
+   * Decorate notification before sending it
+   *
+   * @param notification - The notification to decorate
+   * @returns The same notification or a modified version of it
+   */
+  decorate?(notification: Notification): Promise<Notification>;
+
+  /**
+   * Send notification using this processor.
+   *
+   * @param notification - The notification to send
+   */
+  send?(notification: Notification): Promise<void>;
+};
