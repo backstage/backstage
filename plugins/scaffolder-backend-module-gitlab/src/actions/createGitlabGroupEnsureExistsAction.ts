@@ -60,6 +60,7 @@ export const createGitlabGroupEnsureExistsAction = (options: {
 
       const { path } = ctx.input;
       const { token, integrationConfig } = getToken(ctx.input, integrations);
+
       const api = new Gitlab({
         host: integrationConfig.config.baseUrl,
         token: token,
