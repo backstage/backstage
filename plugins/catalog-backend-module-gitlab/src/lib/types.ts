@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { GitLabIntegrationConfig } from '@backstage/integration';
 
 export type PagedResponse<T> = {
   items: T[];
@@ -116,6 +118,10 @@ export type GitLabDescendantGroupsResponse = {
 
 export type GitlabProviderConfig = {
   host: string;
+  /**
+   * Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned.
+   * If present this if present, the discovered groups won't contain this prefix
+   */
   group: string;
   id: string;
   /**
@@ -136,3 +142,36 @@ export type GitlabProviderConfig = {
   schedule?: TaskScheduleDefinition;
   skipForkedRepos?: boolean;
 };
+
+/**
+ * Customize how group names are generated
+ *
+ * @public
+ */
+export type GroupNameTransformer = (
+  group: GitLabGroup,
+  config: GitlabProviderConfig,
+) => string;
+
+/**
+ * Customize the ingested User entity
+ *
+ * @public
+ */
+export type UserTransformer = (
+  user: GitLabUser,
+  intConfig: GitLabIntegrationConfig,
+  provConfig: GitlabProviderConfig,
+  groupNameTransformer: GroupNameTransformer,
+) => UserEntity;
+
+/**
+ * Customize the ingested Group entity
+ *
+ * @public
+ */
+export type GroupTransformer = (
+  group: GitLabGroup,
+  provConfig: GitlabProviderConfig,
+  groupNameTransformer: GroupNameTransformer,
+) => GroupEntity;
