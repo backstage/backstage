@@ -1,6 +1,7 @@
 [![headline](docs/assets/headline.png)](https://backstage.io/)
 
 # [Backstage](https://backstage.io)
+
 English \| [한국어](README-ko_kr.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
