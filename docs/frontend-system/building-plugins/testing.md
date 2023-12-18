@@ -31,7 +31,7 @@ describe('Entity details component', () => {
     await renderInTestApp(<EntityDetails owner="tools" name="test" />);
 
     await expect(
-      screen.getByText('The entity "test" is owned by "tools"'),
+      screen.findByText('The entity "test" is owned by "tools"'),
     ).resolves.toBeInTheDocument();
   });
 });
@@ -75,7 +75,7 @@ describe('Entity details component', () => {
     );
 
     await expect(
-      screen.getByText('The entity "test" is owned by "tools"'),
+      screen.findByText('The entity "test" is owned by "tools"'),
     ).resolves.toBeInTheDocument();
   });
 });
