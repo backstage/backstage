@@ -564,7 +564,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
-      commitMessage: 'initial commit',
+      commitMessage: 'Test commit message',
       gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
