@@ -18,7 +18,7 @@ import {
   SecretsContextProvider,
   useTemplateSecrets,
 } from '@backstage/plugin-scaffolder-react';
-import { Secret } from './Secret';
+import { SecretInput } from './SecretInput';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
@@ -45,7 +45,7 @@ describe('<Secret/>', () => {
             'ui:field': 'Secret',
           }}
           fields={{
-            Secret: Secret,
+            Secret: SecretInput,
           }}
           onSubmit={onSubmit}
         />
@@ -86,7 +86,7 @@ describe('<Secret/>', () => {
             },
           }}
           fields={{
-            Secret: Secret,
+            Secret: SecretInput,
           }}
           onSubmit={onSubmit}
         />
