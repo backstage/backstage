@@ -15,8 +15,7 @@
  */
 
 import React, { ComponentType, ReactNode, useContext, useState } from 'react';
-import { MemoryRouter } from 'react-router-dom';
-import { Link } from '@backstage/core-components';
+import { MemoryRouter, Link } from 'react-router-dom';
 import { RenderResult, render } from '@testing-library/react';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
@@ -40,7 +39,7 @@ import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wir
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createSignInPageExtension } from '../../../frontend-plugin-api/src/extensions/createSignInPageExtension';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { InternalExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/createExtension';
+import { toInternalExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/createExtension';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { InternalAppContext } from '../../../frontend-app-api/src/wiring/InternalAppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -195,8 +194,7 @@ export class ExtensionTester {
     options?: { config?: TConfig },
   ): ExtensionTester {
     const tester = new ExtensionTester();
-    const { output, factory, ...rest } =
-      subject as InternalExtensionDefinition<TConfig>;
+    const { output, factory, ...rest } = toInternalExtensionDefinition(subject);
     // attaching to core/routes to render as index route
     const extension = createExtension({
       ...rest,
