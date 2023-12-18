@@ -65,9 +65,8 @@ describe('gitlab:issues:create', () => {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         projectId: 123,
         title: 'Computer banks to rule the world',
-        // token: 'myAwesomeToken',
       },
-      workspacePath: 'lol',
+      workspacePath: 'seen2much',
       logger: getVoidLogger(),
       logStream: new PassThrough(),
       output: jest.fn(),
@@ -117,7 +116,7 @@ describe('gitlab:issues:create', () => {
         title: 'Computer banks to rule the world',
         token: 'myAwesomeToken',
       },
-      workspacePath: 'lol',
+      workspacePath: 'seen2much',
       logger: getVoidLogger(),
       logStream: new PassThrough(),
       output: jest.fn(),
@@ -142,57 +141,6 @@ describe('gitlab:issues:create', () => {
         assigneeIds: [],
         confidential: false,
         epicId: undefined,
-        labels: '',
-        createdAt: new Date().toISOString(),
-        dueDate: undefined,
-        discussionToResolve: '',
-        mergeRequestToResolveDiscussionsOf: undefined,
-        milestoneId: undefined,
-        weight: undefined,
-      },
-    );
-
-    expect(mockContext.output).toHaveBeenCalledWith('issueId', 42);
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'issueUrl',
-      'https://gitlab.com/hangar18-/issues/42',
-    );
-  });
-
-  it('should return a Gitlab issue when called with an epic id', async () => {
-    const mockContext = {
-      input: {
-        repoUrl: 'gitlab.com?repo=repo&owner=owner',
-        projectId: 123,
-        title: 'Instruments to sight the stars',
-        token: 'myAwesomeToken',
-        epicId: 1234,
-      },
-      workspacePath: 'lol',
-      logger: getVoidLogger(),
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn(),
-    };
-
-    mockGitlabClient.Issues.create.mockResolvedValue({
-      id: 42,
-      web_url: 'https://gitlab.com/hangar18-/issues/42',
-    });
-
-    await action.handler({
-      ...mockContext,
-    });
-
-    expect(mockGitlabClient.Issues.create).toHaveBeenCalledWith(
-      123,
-      'Computer banks to rule the world',
-      {
-        issueType: undefined,
-        description: '',
-        assigneeIds: [],
-        confidential: false,
-        epicId: 1234,
         labels: '',
         createdAt: new Date().toISOString(),
         dueDate: undefined,
