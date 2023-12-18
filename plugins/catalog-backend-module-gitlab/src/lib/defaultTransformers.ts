@@ -16,52 +16,74 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import {
   GitLabGroup,
-  GitLabUser,
-  GitlabProviderConfig,
-  GroupNameTransformer,
+  GroupNameTransformerOptions,
+  GroupTransformerOptions,
+  UserTransformerOptions,
 } from './types';
-import { GitLabIntegrationConfig } from '@backstage/integration';
 
 export function defaultGroupNameTransformer(
-  group: GitLabGroup,
-  config: GitlabProviderConfig,
+  options: GroupNameTransformerOptions,
 ): string {
-  if (config.group && group.full_path.startsWith(`${config.group}/`)) {
-    return group.full_path.replace(`${config.group}/`, '').replaceAll('/', '-');
+  if (
+    options.providerConfig.group &&
+    options.group.full_path.startsWith(`${options.providerConfig.group}/`)
+  ) {
+    return options.group.full_path
+      .replace(`${options.providerConfig.group}/`, '')
+      .replaceAll('/', '-');
   }
-  return group.full_path.replaceAll('/', '-');
+  return options.group.full_path.replaceAll('/', '-');
 }
 
-export function defaultGroupTransformer(
-  group: GitLabGroup,
-  providerConfig: GitlabProviderConfig,
-  groupNameTransformer: GroupNameTransformer,
-): GroupEntity {
-  const annotations: { [annotationName: string]: string } = {};
+export function defaultGroupEntitiesTransformer(
+  options: GroupTransformerOptions,
+): GroupEntity[] {
+  const idMapped: { [groupId: number]: GitLabGroup } = {};
+  const entities: GroupEntity[] = [];
 
-  annotations[`${providerConfig.host}/team-path`] = group.full_path;
-
-  const entity: GroupEntity = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Group',
-    metadata: {
-      name: groupNameTransformer(group, providerConfig),
-      annotations: annotations,
-    },
-    spec: {
-      type: 'team',
-      children: [],
-      profile: {
-        displayName: group.name,
-      },
-    },
-  };
-
-  if (group.description) {
-    entity.metadata.description = group.description;
+  for (const group of options.groups) {
+    idMapped[group.id] = group;
   }
 
-  return entity;
+  for (const group of options.groups) {
+    const annotations: { [annotationName: string]: string } = {};
+
+    annotations[`${options.providerConfig.host}/team-path`] = group.full_path;
+
+    const entity: GroupEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: {
+        name: options.groupNameTransformer({
+          group,
+          providerConfig: options.providerConfig,
+        }),
+        annotations: annotations,
+      },
+      spec: {
+        type: 'team',
+        children: [],
+        profile: {
+          displayName: group.name,
+        },
+      },
+    };
+
+    if (group.description) {
+      entity.metadata.description = group.description;
+    }
+
+    if (group.parent_id && idMapped.hasOwnProperty(group.parent_id)) {
+      entity.spec.parent = options.groupNameTransformer({
+        group: idMapped[group.parent_id],
+        providerConfig: options.providerConfig,
+      });
+    }
+
+    entities.push(entity);
+  }
+
+  return entities;
 }
 
 /**
@@ -71,36 +93,34 @@ export function defaultGroupTransformer(
  * @public
  */
 export function defaultUserTransformer(
-  user: GitLabUser,
-  integrationConfig: GitLabIntegrationConfig,
-  providerConfig: GitlabProviderConfig,
-  groupNameTransformer: GroupNameTransformer,
+  options: UserTransformerOptions,
 ): UserEntity {
   const annotations: { [annotationName: string]: string } = {};
 
-  annotations[`${integrationConfig.host}/user-login`] = user.web_url;
-  if (user?.group_saml_identity?.extern_uid) {
-    annotations[`${integrationConfig.host}/saml-external-uid`] =
-      user.group_saml_identity.extern_uid;
+  annotations[`${options.integrationConfig.host}/user-login`] =
+    options.user.web_url;
+  if (options.user?.group_saml_identity?.extern_uid) {
+    annotations[`${options.integrationConfig.host}/saml-external-uid`] =
+      options.user.group_saml_identity.extern_uid;
   }
 
   const entity: UserEntity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'User',
     metadata: {
-      name: user.username,
+      name: options.user.username,
       annotations: annotations,
     },
     spec: {
       profile: {
-        displayName: user.name || undefined,
-        picture: user.avatar_url || undefined,
+        displayName: options.user.name || undefined,
+        picture: options.user.avatar_url || undefined,
       },
       memberOf: [],
     },
   };
 
-  if (user.email) {
+  if (options.user.email) {
     if (!entity.spec) {
       entity.spec = {};
     }
@@ -109,15 +129,20 @@ export function defaultUserTransformer(
       entity.spec.profile = {};
     }
 
-    entity.spec.profile.email = user.email;
+    entity.spec.profile.email = options.user.email;
   }
 
-  if (user.groups) {
-    for (const group of user.groups) {
+  if (options.user.groups) {
+    for (const group of options.user.groups) {
       if (!entity.spec.memberOf) {
         entity.spec.memberOf = [];
       }
-      entity.spec.memberOf.push(groupNameTransformer(group, providerConfig));
+      entity.spec.memberOf.push(
+        options.groupNameTransformer({
+          group,
+          providerConfig: options.providerConfig,
+        }),
+      );
     }
   }
 

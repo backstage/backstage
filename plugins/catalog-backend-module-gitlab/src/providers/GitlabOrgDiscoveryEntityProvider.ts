@@ -18,7 +18,6 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
-  GroupEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
@@ -41,12 +40,12 @@ import {
   GitLabUser,
   PagedResponse,
   UserTransformer,
-  GroupTransformer,
+  GroupTransformer as GroupEntitiesTransformer,
   GroupNameTransformer,
 } from '../lib/types';
 import {
   defaultGroupNameTransformer,
-  defaultGroupTransformer,
+  defaultGroupEntitiesTransformer,
   defaultUserTransformer,
 } from '../lib/defaultTransformers';
 
@@ -71,7 +70,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
   private userTransformer: UserTransformer;
-  private groupTransformer: GroupTransformer;
+  private groupEntitiesTransformer: GroupEntitiesTransformer;
   private groupNameTransformer: GroupNameTransformer;
 
   static fromConfig(
@@ -81,7 +80,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
       userTransformer?: UserTransformer;
-      groupTransformer?: GroupTransformer;
+      groupEntitiesTransformer?: GroupEntitiesTransformer;
       groupNameTransformer?: GroupNameTransformer;
     },
   ): GitlabOrgDiscoveryEntityProvider[] {
@@ -140,7 +139,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     logger: Logger;
     taskRunner: TaskRunner;
     userTransformer?: UserTransformer;
-    groupTransformer?: GroupTransformer;
+    groupEntitiesTransformer?: GroupEntitiesTransformer;
     groupNameTransformer?: GroupNameTransformer;
   }) {
     this.config = options.config;
@@ -150,7 +149,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     });
     this.scheduleFn = this.createScheduleFn(options.taskRunner);
     this.userTransformer = options.userTransformer ?? defaultUserTransformer;
-    this.groupTransformer = options.groupTransformer ?? defaultGroupTransformer;
+    this.groupEntitiesTransformer =
+      options.groupEntitiesTransformer ?? defaultGroupEntitiesTransformer;
     this.groupNameTransformer =
       options.groupNameTransformer ?? defaultGroupNameTransformer;
   }
@@ -295,14 +295,19 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     });
 
     const userEntities = res.matches.map(p =>
-      this.userTransformer(
-        p,
-        this.integration.config,
-        this.config,
-        this.groupNameTransformer,
-      ),
+      this.userTransformer({
+        user: p,
+        integrationConfig: this.integration.config,
+        providerConfig: this.config,
+        groupNameTransformer: this.groupNameTransformer,
+      }),
     );
-    const groupEntities = this.createGroupEntities(groupsWithUsers);
+
+    const groupEntities = this.groupEntitiesTransformer({
+      groups: groupsWithUsers,
+      providerConfig: this.config,
+      groupNameTransformer: this.groupNameTransformer,
+    });
 
     await this.connection.applyMutation({
       type: 'full',
@@ -315,34 +320,6 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         ),
       })),
     });
-  }
-
-  private createGroupEntities(groupResult: GitLabGroup[]): GroupEntity[] {
-    const idMapped: { [groupId: number]: GitLabGroup } = {};
-    const entities: GroupEntity[] = [];
-
-    for (const group of groupResult) {
-      idMapped[group.id] = group;
-    }
-
-    for (const group of groupResult) {
-      const entity = this.groupTransformer(
-        group,
-        this.config,
-        this.groupNameTransformer,
-      );
-
-      if (group.parent_id && idMapped.hasOwnProperty(group.parent_id)) {
-        entity.spec.parent = this.groupNameTransformer(
-          idMapped[group.parent_id],
-          this.config,
-        );
-      }
-
-      entities.push(entity);
-    }
-
-    return entities;
   }
 
   private withLocations(host: string, baseUrl: string, entity: Entity): Entity {

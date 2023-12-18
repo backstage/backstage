@@ -149,21 +149,25 @@ export type GitlabProviderConfig = {
  * @public
  */
 export type GroupNameTransformer = (
-  group: GitLabGroup,
-  config: GitlabProviderConfig,
+  options: GroupNameTransformerOptions,
 ) => string;
 
+export interface GroupNameTransformerOptions {
+  group: GitLabGroup;
+  providerConfig: GitlabProviderConfig;
+}
 /**
  * Customize the ingested User entity
  *
  * @public
  */
-export type UserTransformer = (
-  user: GitLabUser,
-  intConfig: GitLabIntegrationConfig,
-  provConfig: GitlabProviderConfig,
-  groupNameTransformer: GroupNameTransformer,
-) => UserEntity;
+export type UserTransformer = (options: UserTransformerOptions) => UserEntity;
+export interface UserTransformerOptions {
+  user: GitLabUser;
+  integrationConfig: GitLabIntegrationConfig;
+  providerConfig: GitlabProviderConfig;
+  groupNameTransformer: GroupNameTransformer;
+}
 
 /**
  * Customize the ingested Group entity
@@ -171,7 +175,10 @@ export type UserTransformer = (
  * @public
  */
 export type GroupTransformer = (
-  group: GitLabGroup,
-  provConfig: GitlabProviderConfig,
-  groupNameTransformer: GroupNameTransformer,
-) => GroupEntity;
+  options: GroupTransformerOptions,
+) => GroupEntity[];
+export interface GroupTransformerOptions {
+  groups: GitLabGroup[];
+  providerConfig: GitlabProviderConfig;
+  groupNameTransformer: GroupNameTransformer;
+}
