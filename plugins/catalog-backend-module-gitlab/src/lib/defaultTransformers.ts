@@ -34,18 +34,18 @@ export function defaultGroupNameTransformer(
 
 export function defaultGroupTransformer(
   group: GitLabGroup,
-  provConfig: GitlabProviderConfig,
+  providerConfig: GitlabProviderConfig,
   groupNameTransformer: GroupNameTransformer,
 ): GroupEntity {
   const annotations: { [annotationName: string]: string } = {};
 
-  annotations[`${provConfig.host}/team-path`] = group.full_path;
+  annotations[`${providerConfig.host}/team-path`] = group.full_path;
 
   const entity: GroupEntity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Group',
     metadata: {
-      name: groupNameTransformer(group, provConfig),
+      name: groupNameTransformer(group, providerConfig),
       annotations: annotations,
     },
     spec: {
@@ -72,15 +72,15 @@ export function defaultGroupTransformer(
  */
 export function defaultUserTransformer(
   user: GitLabUser,
-  intConfig: GitLabIntegrationConfig,
-  provConfig: GitlabProviderConfig,
+  integrationConfig: GitLabIntegrationConfig,
+  providerConfig: GitlabProviderConfig,
   groupNameTransformer: GroupNameTransformer,
 ): UserEntity {
   const annotations: { [annotationName: string]: string } = {};
 
-  annotations[`${intConfig.host}/user-login`] = user.web_url;
+  annotations[`${integrationConfig.host}/user-login`] = user.web_url;
   if (user?.group_saml_identity?.extern_uid) {
-    annotations[`${intConfig.host}/saml-external-uid`] =
+    annotations[`${integrationConfig.host}/saml-external-uid`] =
       user.group_saml_identity.extern_uid;
   }
 
@@ -117,7 +117,7 @@ export function defaultUserTransformer(
       if (!entity.spec.memberOf) {
         entity.spec.memberOf = [];
       }
-      entity.spec.memberOf.push(groupNameTransformer(group, provConfig));
+      entity.spec.memberOf.push(groupNameTransformer(group, providerConfig));
     }
   }
 
