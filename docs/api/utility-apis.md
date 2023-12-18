@@ -8,7 +8,7 @@ description: Backstage Utility APIs
 
 Backstage Plugins strive to be self-contained, with as much functionality as
 possible residing within the plugin itself and its backend APIs. There will
-however always be a need for plugins to communicate outside of its boundaries,
+however, there will always be a need for plugins to communicate outside of its boundaries,
 both with other plugins and the app itself.
 
 Backstage provides two primary methods for plugins to communicate across their
