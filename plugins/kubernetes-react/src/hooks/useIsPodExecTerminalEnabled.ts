@@ -13,31 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi } from '@backstage/core-plugin-api';
-import useAsync, { AsyncState } from 'react-use/lib/useAsync';
-
-import { kubernetesApiRef } from '../api/types';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 /**
  * Check if conditions for a pod exec call through the proxy endpoint are met
  *
  * @internal
  */
-export const useIsPodExecTerminalSupported = (): AsyncState<boolean> => {
-  const kubernetesApi = useApi(kubernetesApiRef);
+export const useIsPodExecTerminalEnabled = (): boolean | undefined => {
+  const configApi = useApi(configApiRef);
 
-  return useAsync(async () => {
-    const clusters = await kubernetesApi.getClusters();
-
-    if (clusters.length !== 1) {
-      return false;
-    }
-
-    const { authProvider } = clusters[0];
-    const isClientAuthProvider = ['aks', 'google', 'oidc'].some(
-      authProviderName => authProvider.includes(authProviderName),
-    );
-
-    return !isClientAuthProvider;
-  });
+  return configApi.getOptionalBoolean('kubernetes.podExecTerminal.enable');
 };

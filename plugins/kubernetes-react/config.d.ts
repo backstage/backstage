@@ -1,5 +1,6 @@
+import { PodExecTerminal } from './src/components/PodExecTerminal/PodExecTerminal';
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +15,17 @@
  * limitations under the License.
  */
 
-export * from './useIsPodExecTerminalEnabled';
-export * from './useIsPodExecTerminalSupported';
-export * from './useKubernetesObjects';
-export * from './useCustomResources';
-export * from './PodNamesWithErrors';
-export * from './PodNamesWithMetrics';
-export * from './GroupedResponses';
-export * from './Cluster';
-export * from './usePodMetrics';
-export * from './useMatchingErrors';
+export interface Config {
+  kubernetes?: {
+    /**
+     * Pod Exec Terminal config
+     */
+    podExecTerminal?: {
+      /**
+       * Enable `PodExecTerminal` UI feature
+       * @visibility frontend
+       */
+      enable?: boolean;
+    };
+  };
+}
