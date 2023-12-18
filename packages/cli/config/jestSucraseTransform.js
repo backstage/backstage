@@ -70,7 +70,7 @@ function createTransformer(config) {
   };
 
   const getCacheKey = sourceText => {
-    return createHash('md5')
+    return createHash('sha256')
       .update(sourceText)
       .update(Buffer.alloc(1))
       .update(sucrasePkg.version)
