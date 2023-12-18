@@ -15,6 +15,7 @@
  */
 
 import React, { useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import {
   analyticsApiRef,
@@ -27,7 +28,6 @@ import {
   useAnalytics,
   useApi,
 } from '@backstage/frontend-plugin-api';
-import { Link } from '@backstage/core-components';
 import { MockAnalyticsApi } from '../apis';
 import { createExtensionTester } from './createExtensionTester';
 
@@ -175,7 +175,7 @@ describe('createExtensionTester', () => {
     ).resolves.toBeInTheDocument();
   });
 
-  it('should capture click events in anylitics', async () => {
+  it('should capture click events in analytics', async () => {
     // Mocking the analytics api implementation
     const analyticsApiMock = new MockAnalyticsApi();
 
