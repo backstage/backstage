@@ -37,7 +37,7 @@ describe('Entity details component', () => {
 });
 ```
 
-To mock [Utility APIs](../utility-apis/01-index.md) that are used by your component you can use the `TestApiProvider` to override individual API implementations. In the snippet below, we wrap the component within a `TestApiProvider` in order to mock the catalog client API:
+To mock [Utility APIs](../architecture/06-utility-apis.md) that are used by your component you can use the `TestApiProvider` to override individual API implementations. In the snippet below, we wrap the component within a `TestApiProvider` in order to mock the catalog client API:
 
 ```tsx
 import React from 'react';
