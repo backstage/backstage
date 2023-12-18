@@ -11,5 +11,3 @@ spec:
     picture: https://api.dicebear.com/7.x/identicon/svg?seed=Fluffy&backgroundColor=ffdfbf
   parent: infrastructure
   children: [team-a, team-b]
-
-
