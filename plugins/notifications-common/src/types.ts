@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+import * as muiIcons from '@material-ui/icons';
+
 /** @public */
 export type NotificationType = 'read' | 'unread' | 'saved';
+
+/** @public */
+export type NotificationIcon = keyof typeof muiIcons;
 
 /** @public */
 export type Notification = {
@@ -24,8 +29,7 @@ export type Notification = {
   title: string;
   description: string;
   link: string;
-  // TODO: Icon should be typed so that we know what to render
-  icon?: string;
+  icon?: NotificationIcon;
   image?: string;
   created: Date;
   read?: Date;

@@ -22,13 +22,7 @@ import {
 } from '@backstage/core-components';
 import { NotificationsTable } from '../NotificationsTable';
 import { useNotificationsApi } from '../../hooks';
-import {
-  Button,
-  Grid,
-  makeStyles,
-  Paper,
-  TableContainer,
-} from '@material-ui/core';
+import { Button, Grid, makeStyles } from '@material-ui/core';
 import Bookmark from '@material-ui/icons/Bookmark';
 import Check from '@material-ui/icons/Check';
 import Inbox from '@material-ui/icons/Inbox';
@@ -90,14 +84,12 @@ export const NotificationsPage = () => {
             </Button>
           </Grid>
           <Grid item xs={10}>
-            <TableContainer component={Paper}>
-              <NotificationsTable
-                notifications={value}
-                type={type}
-                loading={loading}
-                onUpdate={onUpdate}
-              />
-            </TableContainer>
+            <NotificationsTable
+              notifications={value}
+              type={type}
+              loading={loading}
+              onUpdate={onUpdate}
+            />
           </Grid>
         </Grid>
       </Content>

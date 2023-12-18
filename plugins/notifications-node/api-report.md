@@ -4,6 +4,7 @@
 
 ```ts
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
+import { NotificationIcon } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
 import { NotificationType } from '@backstage/plugin-notifications-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
@@ -57,7 +58,7 @@ export type NotificationSendOptions = {
   description: string;
   link: string;
   image?: string;
-  icon?: string;
+  icon?: NotificationIcon;
 };
 
 // @public (undocumented)

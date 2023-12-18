@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Notification } from '@backstage/plugin-notifications-common';
+import {
+  Notification,
+  NotificationIcon,
+} from '@backstage/plugin-notifications-common';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { NotificationsStore } from '../database/NotificationsStore';
 import { v4 as uuid } from 'uuid';
@@ -43,7 +46,7 @@ export type NotificationSendOptions = {
   description: string;
   link: string;
   image?: string;
-  icon?: string;
+  icon?: NotificationIcon;
 };
 
 /** @public */
@@ -68,9 +71,16 @@ export class NotificationService {
 
   async send(options: NotificationSendOptions): Promise<Notification[]> {
     const { entityRef, title, description, link, icon, image } = options;
-    const users = await this.getUsersForEntityRef(entityRef);
     const notifications = [];
+    let users = [];
+    try {
+      users = await this.getUsersForEntityRef(entityRef);
+    } catch (e) {
+      return [];
+    }
+
     const store = await this.getStore();
+
     for (const user of users) {
       const notification = {
         id: uuid(),

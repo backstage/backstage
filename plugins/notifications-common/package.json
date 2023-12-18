@@ -28,5 +28,8 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@material-ui/icons": "^4.9.1"
+  }
 }

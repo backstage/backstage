@@ -30,6 +30,7 @@ export default async function createPlugin(
         title: 'Test',
         description: 'This is test notification',
         link: '/catalog',
+        icon: 'SwapHorizRounded',
       });
       notifications++;
     }

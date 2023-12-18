@@ -7807,6 +7807,7 @@ __metadata:
   resolution: "@backstage/plugin-notifications-common@workspace:plugins/notifications-common"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@material-ui/icons": ^4.9.1
   languageName: unknown
   linkType: soft
 

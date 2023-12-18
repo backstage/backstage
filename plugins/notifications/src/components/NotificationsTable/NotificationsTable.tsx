@@ -31,7 +31,6 @@ import {
   NotificationType,
 } from '@backstage/plugin-notifications-common';
 import { useNavigate } from 'react-router-dom';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import Checkbox from '@material-ui/core/Checkbox';
 import Check from '@material-ui/icons/Check';
 import Bookmark from '@material-ui/icons/Bookmark';
@@ -42,6 +41,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import { Skeleton } from '@material-ui/lab';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
+import { NotificationIcon } from './NotificationIcon';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 const useStyles = makeStyles(theme => ({
   notificationRow: {
@@ -53,7 +54,7 @@ const useStyles = makeStyles(theme => ({
       display: 'none',
     },
     '&:hover': {
-      backgroundColor: theme.palette.linkHover,
+      backgroundColor: theme.palette.background.paper,
       '& .hideOnHover': {
         display: 'none',
       },
@@ -110,8 +111,6 @@ export const NotificationsTable = (props: {
     return <Skeleton variant="rect" height={200} />;
   }
 
-  // TODO: Show timestamp relative time (react-relative-time npm package)
-  // TODO: Add signals listener and refresh data on message
   return (
     <Table size="small">
       <TableHead>
@@ -174,16 +173,19 @@ export const NotificationsTable = (props: {
       {props.notifications?.map(notification => {
         return (
           <TableRow key={notification.id} className={styles.notificationRow}>
-            <TableCell width={100} style={{ verticalAlign: 'center' }}>
+            <TableCell width="90px" style={{ verticalAlign: 'center' }}>
               <Checkbox
                 className={styles.checkBox}
                 size="small"
                 checked={isChecked(notification.id)}
                 onClick={() => onCheckBoxClick(notification.id)}
               />
-              {notification.icon ?? <NotificationsIcon fontSize="small" />}
+              <NotificationIcon notification={notification} />
             </TableCell>
-            <TableCell onClick={() => navigate(notification.link)}>
+            <TableCell
+              onClick={() => navigate(notification.link)}
+              style={{ paddingLeft: 0 }}
+            >
               <Typography variant="subtitle2">{notification.title}</Typography>
               <Typography variant="body2">
                 {notification.description}
@@ -194,6 +196,14 @@ export const NotificationsTable = (props: {
                 <RelativeTime value={notification.created} />
               </Box>
               <Box className="showOnHover">
+                <Tooltip title={notification.link}>
+                  <IconButton
+                    className={styles.actionButton}
+                    onClick={() => navigate(notification.link)}
+                  >
+                    <ArrowForwardIcon />
+                  </IconButton>
+                </Tooltip>
                 <Tooltip
                   title={notification.read ? 'Move to inbox' : 'Mark as done'}
                 >
