@@ -21,21 +21,6 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  // TODO: Remove this test code
-  let notifications = 0;
-  setInterval(() => {
-    if (notifications < 10) {
-      env.notificationService.send({
-        entityRef: 'user:default/guest',
-        title: 'Test',
-        description: 'This is test notification',
-        link: '/catalog',
-        icon: 'SwapHorizRounded',
-      });
-      notifications++;
-    }
-  }, 60000);
-
   return await createRouter({
     logger: env.logger,
     identity: env.identity,
