@@ -233,9 +233,9 @@ spec:
 
 ### Using Secrets
 
-You may want to mark thinks as secret and make sure that these values are protected and not available through REST endpoints. You can do this by using the built in `ui:field: Secret`.
+You may want to mark things as secret and make sure that these values are protected and not available through REST endpoints. You can do this by using the built in `ui:field: Secret`.
 
-You can define this property as any normal parameter, however the consumption of this parameter will not be available through `${{ parameters.myKey }}` you will need to use `${{ secrets.myKey }}` instead in the `template.yaml`.
+You can define this property as any normal parameter, however the consumption of this parameter will not be available through `${{ parameters.myKey }}` you will instead need to use `${{ secrets.myKey }}` in your `template.yaml`.
 
 Parameters will be automatically masked in the review step.
 
@@ -269,7 +269,7 @@ spec:
     - id: setupAuthentication
       action: auth:create
       input:
-        # make sure to use ${{ secret.parameterName }} to reference these values
+        # make sure to use ${{ secrets.parameterName }} to reference these values
         username: ${{ secrets.username }}
         password: ${{ secrets.password }}
 ```
