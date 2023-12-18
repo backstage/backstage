@@ -14,7 +14,7 @@ description: Testing plugins in the frontend system
 
 Utilities for testing frontend features and components are available in `@backstage/frontend-test-utils`.
 
-## Testing components
+## Testing React components
 
 A component can be used for more than one extension, and it should be tested independently of an extension environment.
 
@@ -28,7 +28,7 @@ import { EntityDetails } from './plugin';
 
 describe('Entity details component', () => {
   it('should render the entity name and owner', async () => {
-    renderInTestApp(<EntityDetails owner="tools" name="test" />);
+    await renderInTestApp(<EntityDetails owner="tools" name="test" />);
 
     await expect(
       screen.getByText('The entity "test" is owned by "tools"'),
@@ -37,7 +37,7 @@ describe('Entity details component', () => {
 });
 ```
 
-It's important to highlight that mocking APIs for components is different from mocking them for extensions. In the snippet below, we wrapped the component within a `TestApiProvider` for mocking the Catalog API:
+To mock [Utility APIs](../utility-apis/01-index.md) that are used by your component you can use the `TestApiProvider` to override individual API implementations. In the snippet below, we wrap the component within a `TestApiProvider` in order to mock the catalog client API:
 
 ```tsx
 import React from 'react';
@@ -52,14 +52,15 @@ import { EntityDetails } from './plugin';
 
 describe('Entity details component', () => {
   it('should render the entity name and owner', async () => {
-    const catalogApiMock: Partial<CatalogApi> = {
-      getEntityFacets: () =>
-        Promise.resolve({
+    const catalogApiMock = {
+      async getEntityFacets() {
+        return {
           facets: {
             'relations.ownedBy': [{ count: 1, value: 'group:default/tools' }],
           },
-        }),
-    };
+        },
+      }
+    } satisfies Partial<typeof catalogApiRef.T>;
 
     const entityRef = stringifyEntityRef({
       kind: 'Component',
@@ -67,7 +68,7 @@ describe('Entity details component', () => {
       name: 'test',
     });
 
-    renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
         <EntityDetails entitRef={entityRef} />
       </TestApiProvider>,
@@ -80,9 +81,9 @@ describe('Entity details component', () => {
 });
 ```
 
-## Testing features
+## Testing extensions
 
-To facilitate testing of frontend features, the `@backstage/frontend-test-utils` package provides a tester class which starts up an entire frontend harness, complete with a number of default features. You can then provide overrides for extensions whose behavior you need to adjust for the test run.
+To facilitate testing of frontend extensions, the `@backstage/frontend-test-utils` package provides a tester class which starts up an entire frontend harness, complete with a number of default features. You can then provide overrides for extensions whose behavior you need to adjust for the test run.
 
 A number of features (frontend extensions and overrides) are also accepted by the tester. Here are some examples of how these facilities can be useful:
 
@@ -97,9 +98,7 @@ import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
   it('should render a the index page', () => {
-    const tester = createExtensionTester(indexPageExtension);
-
-    tester.render();
+    createExtensionTester(indexPageExtension).render();
 
     expect(screen.getByText('Index Page')).toBeInTheDocument();
   });
@@ -118,17 +117,18 @@ import { indexPageExtension, detailsPageExtension } from './plugin';
 
 describe('Index page', async () => {
   it('should link to the details page', () => {
-    const tester = createExtensionTester(indexPageExtension);
+    createExtensionTester(indexPageExtension)
+      // Adding more extensions to the preset being tested
+      .add(detailsPageExtension)
+      .render();
 
-    // Adding more extensions to the preset being tested
-    tester.add(detailsPageExtension);
-    tester.render();
+    await expect(screen.findByText('Index Page')).toBeInTheDocument();
 
-    expect(screen.getByText('Index Page')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('link', { name: 'See details' }));
 
-    userEvent.click(screen.getByRole('link', { name: 'See details' }));
-
-    await expect(screen.getByText('Details Page')).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText('Details Page'),
+    ).resolves.toBeInTheDocument();
   });
 });
 ```
@@ -154,7 +154,7 @@ import {
 import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should capture click events in anylitics', async () => {
+  it('should capture click events in analytics', async () => {
     // Mocking the analytics api implementation
     const analyticsApiMock = new MockAnalyticsApi();
 
@@ -165,14 +165,14 @@ describe('Index page', () => {
       }),
     });
 
-    const tester = createExtensionTester(indexPageExtension);
+    createExtensionTester(indexPageExtension)
+      // Overriding the analytics api extension
+      .add(analyticsApiOverride)
+      .render();
 
-    // Overriding the analytics api extension
-    tester.add(analyticsApiOverride);
-
-    tester.render();
-
-    userEvent.click(await screen.findByRole('link', { name: 'See details' }));
+    await userEvent.click(
+      await screen.findByRole('link', { name: 'See details' }),
+    );
 
     expect(analyticsApiMock.getEvents()[0]).toMatchObject({
       action: 'click',
@@ -194,24 +194,22 @@ import { indexPageExtension, detailsPageExtension } from './plugin';
 
 describe('Index page', () => {
   it('should accepts a custom title via config', async () => {
-    const tester = createExtensionTester(indexPageExtension, {
+    createExtensionTester(indexPageExtension, {
       // Configuration specific of index page
       config: { title: 'Custom index' },
-    });
-
-    tester.add(detailsExtensionPage, {
-      // Configuration specific of details page
-      config: { title: 'Custom details' },
-    });
-
-    tester.render({
-      // Configuration specific of the instance
-      config: {
-        app: {
-          title: 'Custom app',
+    })
+      .add(detailsExtensionPage, {
+        // Configuration specific of details page
+        config: { title: 'Custom details' },
+      })
+      .render({
+        // Configuration specific of the instance
+        config: {
+          app: {
+            title: 'Custom app',
+          },
         },
-      },
-    });
+      });
 
     await expect(
       screen.findByRole('heading', { name: 'Custom app' }),
@@ -221,7 +219,7 @@ describe('Index page', () => {
       screen.findByRole('heading', { name: 'Custom index' }),
     ).resolves.toBeInTheDocument();
 
-    userEvent.click(screen.getByRole('link', { name: 'See details' }));
+    await userEvent.click(screen.getByRole('link', { name: 'See details' }));
 
     await expect(
       screen.findByText('Custom details'),
