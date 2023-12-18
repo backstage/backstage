@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
 import { assertError } from '@backstage/errors';
 import { Octokit } from 'octokit';
 import { Logger } from 'winston';
