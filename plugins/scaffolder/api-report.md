@@ -40,7 +40,6 @@ import { ScaffolderDryRunResponse as ScaffolderDryRunResponse_2 } from '@backsta
 import { ScaffolderGetIntegrationsListOptions as ScaffolderGetIntegrationsListOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderGetIntegrationsListResponse as ScaffolderGetIntegrationsListResponse_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderOutputLink } from '@backstage/plugin-scaffolder-react';
-import { ScaffolderRJSFFieldProps } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderScaffoldOptions as ScaffolderScaffoldOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderScaffoldResponse as ScaffolderScaffoldResponse_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderStreamLogsOptions as ScaffolderStreamLogsOptions_2 } from '@backstage/plugin-scaffolder-react';
@@ -581,9 +580,6 @@ export type ScaffolderTaskStatus = ScaffolderTaskStatus_2;
 
 // @public @deprecated (undocumented)
 export type ScaffolderUseTemplateSecrets = ScaffolderUseTemplateSecrets_2;
-
-// @public (undocumented)
-export const Secret: (props: ScaffolderRJSFFieldProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const TaskPage: (props: {
