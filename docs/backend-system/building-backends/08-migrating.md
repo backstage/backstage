@@ -523,7 +523,7 @@ backend.add(import('@backstage/plugin-catalog-backend-module-msgraph/alpha'));
 /* highlight-add-end */
 ```
 
-If you were providing a `schedule` in code, this now needs to be set via configuration
+If you were providing a `schedule` in code, this now needs to be set via configuration.
 All other Microsoft Graph configuration in `app-config.yaml` remains the same.
 
 ```yaml title="app-config.yaml"
