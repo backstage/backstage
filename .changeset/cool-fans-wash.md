@@ -2,4 +2,4 @@
 '@backstage/frontend-test-utils': patch
 ---
 
-Accepts rendering more than a route in the test app.
+The `createExtensionTester` helper is now able to render more than one route in the test app.
