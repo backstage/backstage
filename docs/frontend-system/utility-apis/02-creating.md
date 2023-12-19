@@ -88,7 +88,7 @@ The resulting extension ID of the work API will be the kind `api:` followed by t
 
 ## Adding configurability
 
-Here we will describe how to amend a utility API with the capability of being configured in app-config. You do this by giving a config schema to your API extension factory function. Let's make the required additions to our original work example API.
+Here we will describe how to amend a utility API with the capability of having extension config, which is driven by [your app-config](../../conf/writing.md). You do this by giving an extension config schema to your API extension factory function. Let's make the required additions to our original work example API.
 
 ```tsx title="in @internal/plugin-example"
 /* highlight-add-next-line */
@@ -120,11 +120,11 @@ const exampleWorkApi = createApiExtension({
 });
 ```
 
-We wanted users to be able to configure a `goSlow` parameter for our API instances. So we passed in a `configSchema` to `createApiExtension` which matches that interface. This example builds it using [the zod library](https://zod.dev/). The actual config values will then be passed in a type safe manner in to the `factory` which is now a callback, wherein we can do what we wish with them. When changing to the callback form, we also had to add a top level `api: workApiRef` under `createApiExtension`.
+We wanted users to be able to set a `goSlow` extension config parameter for our API instances. So we passed in a `configSchema` to `createApiExtension` which matches that interface. This example builds it using [the zod library](https://zod.dev/). The actual extension config values will then be passed in a type safe manner in to the `factory` which is now a callback, wherein we can do what we wish with them. When changing to the callback form, we also had to add a top level `api: workApiRef` under `createApiExtension`.
 
-Note that while we use the word "config" here, it's _not_ the same thing as the `configApi` which gives you access to the full app-config. The config discussed here is instead the particular configuration settings given to your utility API instance. This is discussed more [in the Configuring section below](./04-configuring.md).
+Note that the expression "extension config" as used here, is _not_ the same thing as the `configApi` which gives you access to the full app-config. The extension config discussed here is instead the particular configuration settings given to your utility API instance. This is discussed more [in the Configuring section](./04-configuring.md).
 
-Note also that the config schema contained a default value fo the `goSlow` field. This is an important consideration. You want users of your API to be able to make maximum use of it, without having to dive deep into how to configure it. For that reason you generally want to provide as many sane defaults as possible, while letting users override them rarely but with purpose, only when called for. If you have a config schema without defaults, the framework will refuse to instantiate the utility API on startup unless the user had configured those values explicitly. Since it had a default value, the TypeScript code and interfaces also don't have to defensively allow `undefined` - we know that it'll have either the default value or an overridden value when we start consuming the config data.
+Note also that the extension config schema contained a default value fo the `goSlow` field. This is an important consideration. You want users of your API to be able to get maximum value out of it, without having to dive deep into how to configure it. For that reason you generally want to provide as many sane defaults as possible, while letting users override them rarely but with purpose, only when called for. If you have an extension config schema without defaults, the framework will refuse to instantiate the utility API on startup unless the user had configured those values explicitly. Since it had a default value, the TypeScript code and interfaces also don't have to defensively allow `undefined` - we know that it'll have either the default value or an overridden value when we start consuming the extension config data.
 
 ## Adding inputs
 
