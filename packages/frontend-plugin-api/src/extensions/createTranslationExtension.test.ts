@@ -44,7 +44,7 @@ describe('createTranslationExtension', () => {
       version: 'v1',
       kind: 'translation',
       namespace: 'test',
-      attachTo: { id: 'core', input: 'translations' },
+      attachTo: { id: 'app', input: 'translations' },
       disabled: false,
       inputs: {},
       output: {
@@ -81,7 +81,7 @@ describe('createTranslationExtension', () => {
       version: 'v1',
       kind: 'translation',
       namespace: 'test',
-      attachTo: { id: 'core', input: 'translations' },
+      attachTo: { id: 'app', input: 'translations' },
       disabled: false,
       inputs: {},
       output: {
@@ -119,7 +119,7 @@ describe('createTranslationExtension', () => {
       kind: 'translation',
       namespace: 'test',
       name: 'sv',
-      attachTo: { id: 'core', input: 'translations' },
+      attachTo: { id: 'app', input: 'translations' },
       disabled: false,
       inputs: {},
       output: {

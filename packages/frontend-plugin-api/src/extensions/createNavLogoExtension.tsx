@@ -31,7 +31,7 @@ export function createNavLogoExtension(options: {
     kind: 'nav-logo',
     name: options?.name,
     namespace: options?.namespace,
-    attachTo: { id: 'core/nav', input: 'logos' },
+    attachTo: { id: 'app/nav', input: 'logos' },
     output: {
       logos: createNavLogoExtension.logoElementsDataRef,
     },

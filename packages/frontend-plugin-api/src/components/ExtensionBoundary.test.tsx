@@ -27,7 +27,7 @@ const wrapInBoundaryExtension = (element: JSX.Element) => {
   const routeRef = createRouteRef();
   return createExtension({
     name: 'test',
-    attachTo: { id: 'core/routes', input: 'routes' },
+    attachTo: { id: 'app/routes', input: 'routes' },
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath,

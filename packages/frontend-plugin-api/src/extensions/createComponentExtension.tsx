@@ -54,7 +54,7 @@ export function createComponentExtension<
     kind: 'component',
     namespace: options.ref.id,
     name: options.name,
-    attachTo: { id: 'core', input: 'components' },
+    attachTo: { id: 'app', input: 'components' },
     inputs: options.inputs,
     disabled: options.disabled,
     configSchema: options.configSchema,

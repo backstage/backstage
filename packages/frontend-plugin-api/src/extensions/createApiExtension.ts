@@ -55,7 +55,7 @@ export function createApiExtension<
     // Since ApiRef IDs use a global namespace we use the namespace here in order to override
     // potential plugin IDs and always end up with the format `api:<api-ref-id>`
     namespace: apiRef.id,
-    attachTo: { id: 'core', input: 'apis' },
+    attachTo: { id: 'app', input: 'apis' },
     inputs: extensionInputs,
     configSchema,
     output: {
