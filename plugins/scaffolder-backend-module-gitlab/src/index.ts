@@ -19,8 +19,4 @@
  *
  * @packageDocumentation
  */
-export * from './actions/createGitlabGroupEnsureExistsAction';
-export * from './actions/createGitlabProjectDeployTokenAction';
-export * from './actions/createGitlabProjectAccessTokenAction';
-export * from './actions/createGitlabProjectVariableAction';
-export * from './actions/createGitlabIssueAction';
+export * from './actions';
