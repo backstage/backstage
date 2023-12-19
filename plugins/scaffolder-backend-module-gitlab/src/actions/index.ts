@@ -20,4 +20,3 @@ export * from './createGitlabProjectVariableAction';
 export * from './createGitlabIssueAction';
 export * from './gitlab';
 export * from './gitlabMergeRequest';
-
