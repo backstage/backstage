@@ -24,7 +24,7 @@ import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
 import { fireEvent, act } from '@testing-library/react';
 
-describe('<Secret/>', () => {
+describe('<SecretInput />', () => {
   const SecretsComponent = () => {
     const { secrets } = useTemplateSecrets();
     return (
