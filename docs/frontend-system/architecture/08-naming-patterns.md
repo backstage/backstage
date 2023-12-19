@@ -6,7 +6,7 @@ sidebar_label: Naming Patterns
 description: Naming patterns in the frontend system
 ---
 
-> **NOTE: The new frontend system is in a highly experimental phase**
+> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 These are the naming patterns to adhere to within the frontend system. They help us keep exports and IDs consistent across packages and make it easier to understand the usage and intent of exports and IDs.
 

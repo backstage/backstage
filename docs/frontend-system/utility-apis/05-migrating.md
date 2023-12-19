@@ -6,6 +6,8 @@ sidebar_label: Migrating
 description: Migrating Utility APIs from the old frontend system
 ---
 
+> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
+
 If you are migrating your plugins or app over from the old frontend system, there are a few things to keep in mind in regards to utility APIs.
 
 ## Overview
