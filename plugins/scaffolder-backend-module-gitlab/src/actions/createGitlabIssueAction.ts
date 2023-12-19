@@ -23,13 +23,6 @@ import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
 import { Gitlab, CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
 
-/**
- * Creates a `gitlab:issues:create` Scaffolder action.
- *
- * @param {} - Templating configuration.
- * @public
- */
-
 const enumIssueType = {
   ISSUE: 'issue',
   INCIDENT: 'incident',
@@ -124,6 +117,12 @@ const issueOutputProperties = z.object({
   issueId: z.number({ description: 'Issue Id' }),
 });
 
+/**
+ * Creates a `gitlab:issues:create` Scaffolder action.
+ *
+ * @param options - Templating configuration.
+ * @public
+ */
 export const createGitlabIssueAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
