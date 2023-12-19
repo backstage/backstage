@@ -22,9 +22,7 @@ export const createGitlabGroupEnsureExistsAction: (options: {
   }
 >;
 
-// Warning: (ae-missing-release-tag) "createGitlabIssueAction" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const createGitlabIssueAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
@@ -169,7 +167,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'update' | 'create' | 'delete' | undefined;
+    commitAction?: 'update' | 'delete' | 'create' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
