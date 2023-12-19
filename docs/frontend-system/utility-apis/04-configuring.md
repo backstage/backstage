@@ -6,7 +6,7 @@ sidebar_label: Configuring
 description: Configuring, extending, and overriding utility APIs
 ---
 
-Utility APIs are extensions and can therefore optionally be amended with configurability, as well as inputs that other extensions attach themselves to. This section describes how to add those capabilities to your own utility APIs, and how to make use of them as a consumer of such utility APIs.
+Utility APIs are extensions and can therefore optionally be amended with configurability, as well as inputs that other extensions attach themselves to. This section describes how to make use of that as a consumer of such utility APIs.
 
 ## Configuring
 
@@ -25,7 +25,7 @@ app:
 
 It's important to note that the `extensions` are a list (mind the initial `-`), and that the `api:plugin.example.work` entry is an object such that the `config` key needs to be indented below it. If you do not get those two pieces right, the application may not start up correctly.
 
-The config schema of the extension will tell you what configuration parameters it supports. Here we override the `goSlow` configuration value, which replaces the default.
+The extension config schema will tell you what parameters it supports. Here we override the `goSlow` extension config value, which replaces the default.
 
 ## Attaching extensions to inputs
 
@@ -71,4 +71,4 @@ export default createApp({
 
 In this example the overriding extension is kept minimal, but just like any other extension it can also have `deps`, configurability, and inputs. Check out [the Creating section](./02-creating.md) for more details about that.
 
-When you create a replacement extension, in general you may want to mimic its config schema or input shapes where applicable. This makes it an easier thing to slot in to an app, since it'll be responding to extensibility the same way as the original one did.
+When you create a replacement extension, in general you may want to mimic its extension config schema or input shapes where applicable. This makes it an easier thing to slot in to an app, since it'll be responding to extensibility the same way as the original one did.
