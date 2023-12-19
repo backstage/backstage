@@ -64,10 +64,8 @@ export const DefaultTemplateOutputs: (props: {
   output?: ScaffolderTaskOutput;
 }) => React_2.JSX.Element | null;
 
-// @alpha
-export const EmbeddableWorkflow: (
-  workflowProps: WorkflowProps,
-) => JSX.Element | null;
+// @alpha (undocumented)
+export const EmbeddableWorkflow: (props: WorkflowProps) => React_2.JSX.Element;
 
 // @alpha
 export const extractSchemaFromStep: (inputStep: JsonObject) => {
