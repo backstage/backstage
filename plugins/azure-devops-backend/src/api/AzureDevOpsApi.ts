@@ -110,7 +110,7 @@ export class AzureDevOpsApi {
     // which is why use them here and not just falling back on them entirely
     const validHost = host ?? this.config.getString('azureDevOps.host');
     const validOrg = org ?? this.config.getString('azureDevOps.organization');
-    const url = `https://${validHost}/${encodeURI(validOrg)}`;
+    const url = `https://${validHost}/${encodeURIComponent(validOrg)}`;
 
     const credentials = await this.credentialsProvider.getCredentials({
       url,
@@ -130,8 +130,8 @@ export class AzureDevOpsApi {
     return webApi;
   }
 
-  public async getProjects(): Promise<Project[]> {
-    const webApi = await this.getWebApi();
+  public async getProjects(host?: string, org?: string): Promise<Project[]> {
+    const webApi = await this.getWebApi(host, org);
     const client = await webApi.getCoreApi();
     const projectList: TeamProjectReference[] = await client.getProjects();
 
@@ -149,12 +149,14 @@ export class AzureDevOpsApi {
   public async getGitRepository(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
   ): Promise<GitRepository> {
     this.logger?.debug(
       `Calling Azure DevOps REST API, getting Repository ${repoName} for Project ${projectName}`,
     );
 
-    const webApi = await this.getWebApi();
+    const webApi = await this.getWebApi(host, org);
     const client = await webApi.getGitApi();
     return client.getRepository(repoName, projectName);
   }
@@ -163,12 +165,14 @@ export class AzureDevOpsApi {
     projectName: string,
     repoId: string,
     top: number,
+    host?: string,
+    org?: string,
   ): Promise<Build[]> {
     this.logger?.debug(
       `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository Id ${repoId} for Project ${projectName}`,
     );
 
-    const webApi = await this.getWebApi();
+    const webApi = await this.getWebApi(host, org);
     const client = await webApi.getBuildApi();
     return client.getBuilds(
       projectName,
@@ -199,16 +203,25 @@ export class AzureDevOpsApi {
     projectName: string,
     repoName: string,
     top: number,
+    host?: string,
+    org?: string,
   ) {
     this.logger?.debug(
       `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository ${repoName} for Project ${projectName}`,
     );
 
-    const gitRepository = await this.getGitRepository(projectName, repoName);
+    const gitRepository = await this.getGitRepository(
+      projectName,
+      repoName,
+      host,
+      org,
+    );
     const buildList = await this.getBuildList(
       projectName,
       gitRepository.id as string,
       top,
+      host,
+      org,
     );
 
     const repoBuilds: RepoBuild[] = buildList.map(build => {
@@ -221,13 +234,20 @@ export class AzureDevOpsApi {
   public async getGitTags(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
   ): Promise<GitTag[]> {
     this.logger?.debug(
       `Calling Azure DevOps REST API, getting Git Tags for Repository ${repoName} for Project ${projectName}`,
     );
 
-    const gitRepository = await this.getGitRepository(projectName, repoName);
-    const webApi = await this.getWebApi();
+    const gitRepository = await this.getGitRepository(
+      projectName,
+      repoName,
+      host,
+      org,
+    );
+    const webApi = await this.getWebApi(host, org);
     const client = await webApi.getGitApi();
     const tagRefs: GitRef[] = await client.getRefs(
       gitRepository.id as string,
@@ -256,13 +276,20 @@ export class AzureDevOpsApi {
     projectName: string,
     repoName: string,
     options: PullRequestOptions,
+    host?: string,
+    org?: string,
   ): Promise<PullRequest[]> {
     this.logger?.debug(
       `Calling Azure DevOps REST API, getting up to ${options.top} Pull Requests for Repository ${repoName} for Project ${projectName}`,
     );
 
-    const gitRepository = await this.getGitRepository(projectName, repoName);
-    const webApi = await this.getWebApi();
+    const gitRepository = await this.getGitRepository(
+      projectName,
+      repoName,
+      host,
+      org,
+    );
+    const webApi = await this.getWebApi(host, org);
     const client = await webApi.getGitApi();
     const searchCriteria: GitPullRequestSearchCriteria = {
       status: options.status,
@@ -397,12 +424,14 @@ export class AzureDevOpsApi {
   public async getBuildDefinitions(
     projectName: string,
     definitionName: string,
+    host?: string,
+    org?: string,
   ): Promise<BuildDefinitionReference[]> {
     this.logger?.debug(
       `Calling Azure DevOps REST API, getting Build Definitions for ${definitionName} in Project ${projectName}`,
     );
 
-    const webApi = await this.getWebApi();
+    const webApi = await this.getWebApi(host, org);
     const client = await webApi.getBuildApi();
     return client.getDefinitions(projectName, definitionName);
   }
@@ -412,12 +441,14 @@ export class AzureDevOpsApi {
     top: number,
     repoId?: string,
     definitions?: number[],
+    host?: string,
+    org?: string,
   ): Promise<Build[]> {
     this.logger?.debug(
       `Calling Azure DevOps REST API, getting up to ${top} Builds for Repository Id ${repoId} for Project ${projectName}`,
     );
 
-    const webApi = await this.getWebApi();
+    const webApi = await this.getWebApi(host, org);
     const client = await webApi.getBuildApi();
     return client.getBuilds(
       projectName,
@@ -449,12 +480,19 @@ export class AzureDevOpsApi {
     top: number,
     repoName?: string,
     definitionName?: string,
+    host?: string,
+    org?: string,
   ) {
     let repoId: string | undefined;
     let definitions: number[] | undefined;
 
     if (repoName) {
-      const gitRepository = await this.getGitRepository(projectName, repoName);
+      const gitRepository = await this.getGitRepository(
+        projectName,
+        repoName,
+        host,
+        org,
+      );
       repoId = gitRepository.id;
     }
 
@@ -462,13 +500,22 @@ export class AzureDevOpsApi {
       const buildDefinitions = await this.getBuildDefinitions(
         projectName,
         definitionName,
+        host,
+        org,
       );
       definitions = buildDefinitions
         .map(bd => bd.id)
         .filter((bd): bd is number => Boolean(bd));
     }
 
-    const builds = await this.getBuilds(projectName, top, repoId, definitions);
+    const builds = await this.getBuilds(
+      projectName,
+      top,
+      repoId,
+      definitions,
+      host,
+      org,
+    );
 
     const buildRuns: BuildRun[] = builds.map(mappedBuildRun);
 

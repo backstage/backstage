@@ -139,7 +139,7 @@ yarn build:api-reports # Build API Reports used for documentation
 
 yarn lint # lint packages that have changed since later commit on origin/master
 yarn lint:all # lint all packages
-yarn lind:docs # lint all the Markdown files
+yarn lint:docs # lint all the Markdown files
 yarn lint:type-deps # verify that @types/* dependencies are placed correctly in packages
 
 yarn test # test packages that have changed since later commit on origin/master

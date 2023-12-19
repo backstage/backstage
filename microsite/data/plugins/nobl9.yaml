@@ -1,0 +1,10 @@
+---
+title: Nobl9
+author: Nobl9
+authorUrl: https://nobl9.com
+category: Reliability
+description: View and drill down into the reliability of your services via Nobl9 SLOs and error budgets.
+documentation: https://github.com/nobl9/nobl9-backstage-plugin/blob/main/README.MD
+iconUrl: /img/nobl9.svg
+npmPackageName: '@nobl9/nobl9-backstage-plugin'
+addedDate: '2023-12-15'

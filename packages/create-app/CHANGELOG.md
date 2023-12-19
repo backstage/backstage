@@ -1,5 +1,21 @@
 # @backstage/create-app
 
+## 0.5.8-next.4
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.8-next.3
+
+### Patch Changes
+
+- a96c2d4: Include the `<EntityLinksCard />` for group entities by default
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.5.8-next.2
 
 ### Patch Changes

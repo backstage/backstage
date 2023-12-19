@@ -14,6 +14,16 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
+export const catalogExtensionData: {
+  entityContentTitle: ConfigurableExtensionDataRef<string, {}>;
+  entityFilterFunction: ConfigurableExtensionDataRef<
+    (entity: Entity) => boolean,
+    {}
+  >;
+  entityFilterExpression: ConfigurableExtensionDataRef<string, {}>;
+};
+
+// @alpha (undocumented)
 export function createEntityCardExtension<
   TInputs extends AnyExtensionInputMap,
 >(options: {
@@ -26,8 +36,8 @@ export function createEntityCardExtension<
   disabled?: boolean;
   inputs?: TInputs;
   filter?:
-    | typeof entityFilterFunctionExtensionDataRef.T
-    | typeof entityFilterExpressionExtensionDataRef.T;
+    | typeof catalogExtensionData.entityFilterFunction.T
+    | typeof catalogExtensionData.entityFilterExpression.T;
   loader: (options: {
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
@@ -51,8 +61,8 @@ export function createEntityContentExtension<
   defaultPath: string;
   defaultTitle: string;
   filter?:
-    | typeof entityFilterFunctionExtensionDataRef.T
-    | typeof entityFilterExpressionExtensionDataRef.T;
+    | typeof catalogExtensionData.entityFilterFunction.T
+    | typeof catalogExtensionData.entityFilterExpression.T;
   loader: (options: {
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
@@ -61,24 +71,6 @@ export function createEntityContentExtension<
   path: string;
   filter?: string | undefined;
 }>;
-
-// @alpha (undocumented)
-export const entityContentTitleExtensionDataRef: ConfigurableExtensionDataRef<
-  string,
-  {}
->;
-
-// @alpha (undocumented)
-export const entityFilterExpressionExtensionDataRef: ConfigurableExtensionDataRef<
-  string,
-  {}
->;
-
-// @alpha (undocumented)
-export const entityFilterFunctionExtensionDataRef: ConfigurableExtensionDataRef<
-  (entity: Entity) => boolean,
-  {}
->;
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;

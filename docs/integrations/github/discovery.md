@@ -40,12 +40,6 @@ export default async function createPlugin(
   builder.addEntityProvider(
     GithubEntityProvider.fromConfig(env.config, {
       logger: env.logger,
-      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-      schedule: env.scheduler.createScheduledTaskRunner({
-        frequency: { minutes: 30 },
-        timeout: { minutes: 3 },
-      }),
-      // optional: alternatively, use schedule
       scheduler: env.scheduler,
     }),
   );
@@ -85,12 +79,6 @@ export default async function createPlugin(
   /* highlight-add-start */
   const githubProvider = GithubEntityProvider.fromConfig(env.config, {
     logger: env.logger,
-    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-    schedule: env.scheduler.createScheduledTaskRunner({
-      frequency: { minutes: 30 },
-      timeout: { minutes: 3 },
-    }),
-    // optional: alternatively, use schedule
     scheduler: env.scheduler,
   });
   env.eventBroker.subscribe(githubProvider);
@@ -122,7 +110,7 @@ catalog:
         filters:
           branch: 'main' # string
           repository: '.*' # Regex
-        schedule: # optional; same options as in TaskScheduleDefinition
+        schedule: # same options as in TaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code
@@ -213,7 +201,7 @@ This provider supports multiple organizations via unique provider IDs.
   Defaults to `false`.
   Due to limitations in the GitHub API's ability to query for repository objects, this option cannot be used in
   conjunction with wildcards in the `catalogPath`.
-- **`schedule`** _(optional)_:
+- **`schedule`**:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.
   - **`timeout`**:
@@ -229,13 +217,12 @@ GitHub [rate limits](https://docs.github.com/en/rest/overview/resources-in-the-r
 accounts). The snippet below refreshes the Backstage catalog data every 35 minutes, which issues an API request for each discovered location.
 
 If your requests are too frequent then you may get throttled by
-rate limiting. You can change the refresh frequency of the catalog in your `packages/backend/src/plugins/catalog.ts` file:
+rate limiting. You can change the refresh frequency of the catalog in your `app-config.yaml` file by controlling the `schedule`.
 
-```typescript
-schedule: env.scheduler.createScheduledTaskRunner({
-  frequency: { minutes: 35 },
-  timeout: { minutes: 30 },
-}),
+```yaml
+schedule:
+  frequency: { minutes: 35 }
+  timeout: { minutes: 3 }
 ```
 
 More information about scheduling can be found on the [TaskScheduleDefinition](https://backstage.io/docs/reference/backend-tasks.taskscheduledefinition) page.

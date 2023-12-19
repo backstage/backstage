@@ -14,30 +14,43 @@
  * limitations under the License.
  */
 
+import React from 'react';
+// TODO: Dependency on MUI should be removed from core packages
+import { Button } from '@material-ui/core';
+
 import {
   createComponentExtension,
-  coreComponentsRefs,
+  coreComponentRefs,
 } from '@backstage/frontend-plugin-api';
+import { ErrorPanel } from '@backstage/core-components';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { components as defaultComponents } from '../../../app-defaults/src/defaults';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 
 export const DefaultProgressComponent = createComponentExtension({
-  ref: coreComponentsRefs.progress,
-  component: { sync: () => defaultComponents.Progress },
-});
-
-export const DefaultBootErrorPageComponent = createComponentExtension({
-  ref: coreComponentsRefs.bootErrorPage,
-  component: { sync: () => defaultComponents.BootErrorPage },
+  ref: coreComponentRefs.progress,
+  loader: { sync: () => defaultComponents.Progress },
 });
 
 export const DefaultNotFoundErrorPageComponent = createComponentExtension({
-  ref: coreComponentsRefs.notFoundErrorPage,
-  component: { sync: () => defaultComponents.NotFoundErrorPage },
+  ref: coreComponentRefs.notFoundErrorPage,
+  loader: { sync: () => defaultComponents.NotFoundErrorPage },
 });
 
 export const DefaultErrorBoundaryComponent = createComponentExtension({
-  ref: coreComponentsRefs.errorBoundaryFallback,
-  component: { sync: () => defaultComponents.ErrorBoundaryFallback },
+  ref: coreComponentRefs.errorBoundaryFallback,
+  loader: {
+    sync: () => props => {
+      const { plugin, error, resetError } = props;
+      const title = `Error in ${plugin?.id}`;
+
+      return (
+        <ErrorPanel title={title} error={error} defaultExpanded>
+          <Button variant="outlined" onClick={resetError}>
+            Retry
+          </Button>
+        </ErrorPanel>
+      );
+    },
+  },
 });

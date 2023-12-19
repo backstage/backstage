@@ -8,6 +8,9 @@ files:
   model.mustache:
     templateType: Model
     destinationFilename: .model.ts
+  models/models_all.mustache:
+    templateType: SupportingFiles
+    destinationFilename: models/index.ts
   types/fetch.ts: {}
   types/discovery.ts: {}
   apis/index.mustache:

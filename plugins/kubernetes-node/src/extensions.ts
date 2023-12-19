@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
+import {
+  AuthenticationStrategy,
+  KubernetesClustersSupplier,
+  KubernetesFetcher,
+  KubernetesObjectsProvider,
+  KubernetesServiceLocator,
+} from '@backstage/plugin-kubernetes-node';
 
 /**
  * The interface for {@link kubernetesObjectsProviderExtensionPoint}.
@@ -33,4 +39,80 @@ export interface KubernetesObjectsProviderExtensionPoint {
 export const kubernetesObjectsProviderExtensionPoint =
   createExtensionPoint<KubernetesObjectsProviderExtensionPoint>({
     id: 'kubernetes.objects-provider',
+  });
+
+/**
+ * The interface for {@link kubernetesClusterSupplierExtensionPoint}.
+ *
+ * @public
+ */
+export interface KubernetesClusterSupplierExtensionPoint {
+  addClusterSupplier(clusterSupplier: KubernetesClustersSupplier): void;
+}
+
+/**
+ * An extension point the exposes the ability to configure a cluster supplier.
+ *
+ * @public
+ */
+export const kubernetesClusterSupplierExtensionPoint =
+  createExtensionPoint<KubernetesClusterSupplierExtensionPoint>({
+    id: 'kubernetes.cluster-supplier',
+  });
+
+/**
+ * The interface for {@link kubernetesAuthStrategyExtensionPoint}.
+ *
+ * @public
+ */
+export interface KubernetesAuthStrategyExtensionPoint {
+  addAuthStrategy(key: string, strategy: AuthenticationStrategy): void;
+}
+
+/**
+ * An extension point the exposes the ability to add an Auth Strategy.
+ *
+ * @public
+ */
+export const kubernetesAuthStrategyExtensionPoint =
+  createExtensionPoint<KubernetesAuthStrategyExtensionPoint>({
+    id: 'kubernetes.auth-strategy',
+  });
+
+/**
+ * The interface for {@link kubernetesFetcherExtensionPoint}.
+ *
+ * @public
+ */
+export interface KubernetesFetcherExtensionPoint {
+  addFetcher(fetcher: KubernetesFetcher): void;
+}
+
+/**
+ * An extension point the exposes the ability to configure a kubernetes fetcher.
+ *
+ * @public
+ */
+export const kubernetesFetcherExtensionPoint =
+  createExtensionPoint<KubernetesFetcherExtensionPoint>({
+    id: 'kubernetes.fetcher',
+  });
+
+/**
+ * The interface for {@link kubernetesServiceLocatorExtensionPoint}.
+ *
+ * @public
+ */
+export interface KubernetesServiceLocatorExtensionPoint {
+  addServiceLocator(serviceLocator: KubernetesServiceLocator): void;
+}
+
+/**
+ * An extension point the exposes the ability to configure a kubernetes service locator.
+ *
+ * @public
+ */
+export const kubernetesServiceLocatorExtensionPoint =
+  createExtensionPoint<KubernetesServiceLocatorExtensionPoint>({
+    id: 'kubernetes.service-locator',
   });

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core-plugin-api';
+import { ComponentType } from 'react';
+import { createApiRef, useApi } from '@backstage/core-plugin-api';
 import { ComponentRef } from '../../components';
 
 /**
@@ -24,7 +25,7 @@ import { ComponentRef } from '../../components';
  */
 export interface ComponentsApi {
   // TODO: Should component refs also provide the default implementation so that we're guaranteed to get a component?
-  getComponent<T>(ref: ComponentRef<T>): T;
+  getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T>;
 }
 
 /**
@@ -35,3 +36,14 @@ export interface ComponentsApi {
 export const componentsApiRef = createApiRef<ComponentsApi>({
   id: 'core.components',
 });
+
+/**
+ * @public
+ * Returns the component associated with the given ref.
+ */
+export function useComponentRef<T extends {}>(
+  ref: ComponentRef<T>,
+): ComponentType<T> {
+  const componentsApi = useApi(componentsApiRef);
+  return componentsApi.getComponent<T>(ref);
+}

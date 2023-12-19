@@ -17,7 +17,7 @@
 import React from 'react';
 import {
   createComponentExtension,
-  coreComponentsRefs,
+  coreComponentRefs,
 } from '@backstage/frontend-plugin-api';
 import { Box, Typography } from '@material-ui/core';
 import { Button } from '@backstage/core-components';
@@ -36,15 +36,9 @@ export function CustomNotFoundErrorPage() {
     >
       <Typography variant="h1">404</Typography>
       <Typography color="textSecondary" paragraph style={{ width: 300 }}>
-        Bowie was unable to locate this page. Please contact your support team
-        if this page used to exist.
+        Unable to locate this page. Please contact your support team if this
+        page used to exist.
       </Typography>
-      <img
-        alt="Backstage bowie"
-        src="https://info.backstage.spotify.com/hs-fs/hubfs/Call%20Bowie%202.png"
-        width="200"
-        style={{ filter: 'grayscale(50%)' }}
-      />
       <Button
         variant="contained"
         to="/"
@@ -57,6 +51,6 @@ export function CustomNotFoundErrorPage() {
 }
 
 export default createComponentExtension({
-  ref: coreComponentsRefs.notFoundErrorPage,
-  component: { sync: () => CustomNotFoundErrorPage },
+  ref: coreComponentRefs.notFoundErrorPage,
+  loader: { sync: () => CustomNotFoundErrorPage },
 });

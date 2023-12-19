@@ -55,7 +55,7 @@ const makeUser = ({
     profile: {
       displayName,
       email,
-      picture: `https://avatars.dicebear.com/api/avataaars/${email}.svg?background=%23fff`,
+      picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=bob${name}`,
     },
   },
   relations: [
@@ -83,7 +83,7 @@ const defaultEntity: GroupEntity = {
       displayName: 'Team A',
       email: 'team-a@example.com',
       picture:
-        'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
+        'https://api.dicebear.com/7.x/identicon/svg?seed=Fluffy&backgroundType=solid,gradientLinear&backgroundColor=ffd5dc,b6e3f4',
     },
     type: 'group',
     children: [],

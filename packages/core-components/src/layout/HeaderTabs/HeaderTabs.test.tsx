@@ -83,4 +83,16 @@ describe('<HeaderTabs />', () => {
     expect(rendered.getByText('Alarms')).toBeInTheDocument();
     expect(rendered.getByText('three new alarms')).toBeInTheDocument();
   });
+
+  it('should trigger onChange only once', async () => {
+    const mockOnChange = jest.fn();
+    const user = userEvent.setup();
+
+    const rendered = await renderInTestApp(
+      <HeaderTabs tabs={mockTabs} onChange={mockOnChange} />,
+    );
+
+    await user.click(rendered.getByText('Docs'));
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
+  });
 });

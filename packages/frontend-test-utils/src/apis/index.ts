@@ -15,7 +15,6 @@
  */
 
 export {
-  MockAnalyticsApi,
   MockConfigApi,
   type ErrorWithContext,
   MockErrorApi,
@@ -26,3 +25,5 @@ export {
   MockStorageApi,
   type MockStorageBucket,
 } from '@backstage/test-utils';
+
+export { MockAnalyticsApi } from './AnalyticsApi/MockAnalyticsApi';

@@ -1,5 +1,39 @@
 # @backstage/plugin-lighthouse-backend
 
+## 0.4.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/backend-tasks@0.5.13-next.3
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.6.0-next.3
+  - @backstage/plugin-lighthouse-common@0.1.4
+
+## 0.4.0-next.2
+
+### Minor Changes
+
+- 7f0dbfd: Fixed crashes faced with custom schedule configuration. The configuration schema has been update to leverage the TaskScheduleDefinition interface. It is highly recommended to move the `lighthouse.shedule` and `lighthouse.timeout` respectively to `lighthouse.schedule.frequency` and `lighthouse.schedule.timeout`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.6.0-next.2
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/backend-tasks@0.5.13-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-lighthouse-common@0.1.4
+
 ## 0.3.5-next.1
 
 ### Patch Changes

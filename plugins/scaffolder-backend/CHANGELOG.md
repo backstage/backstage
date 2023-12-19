@@ -1,5 +1,57 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.19.2-next.3
+
+### Patch Changes
+
+- 219d7f0: Refactor some methods to `-node` instead and use the new external modules
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.11-next.3
+  - @backstage/plugin-scaffolder-node@0.2.9-next.3
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.1.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.0-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/backend-tasks@0.5.13-next.3
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.2-next.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.5-next.3
+  - @backstage/plugin-catalog-node@1.6.0-next.3
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-node@0.7.19-next.3
+  - @backstage/plugin-scaffolder-common@1.4.3
+
+## 1.19.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.6.0-next.2
+  - @backstage/plugin-catalog-backend@1.16.0-next.2
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/plugin-auth-node@0.4.2-next.2
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.5-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/backend-tasks@0.5.13-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-node@0.7.19-next.2
+  - @backstage/plugin-scaffolder-common@1.4.3
+  - @backstage/plugin-scaffolder-node@0.2.9-next.2
+
 ## 1.19.2-next.1
 
 ### Patch Changes

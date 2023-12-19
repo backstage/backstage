@@ -15,7 +15,10 @@
  */
 
 import React from 'react';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
 import {
   createPageExtension,
   coreExtensionData,
@@ -25,11 +28,11 @@ import {
   AsyncEntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { entityContentTitleExtensionDataRef } from '@backstage/plugin-catalog-react/alpha';
+import { catalogExtensionData } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 
-export const CatalogIndexPage = createPageExtension({
+export const catalogPage = createPageExtension({
   defaultPath: '/catalog',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   inputs: {
@@ -40,11 +43,11 @@ export const CatalogIndexPage = createPageExtension({
   loader: async ({ inputs }) => {
     const { BaseCatalogPage } = await import('../components/CatalogPage');
     const filters = inputs.filters.map(filter => filter.output.element);
-    return <BaseCatalogPage filters={<>{filters}</>} />;
+    return compatWrapper(<BaseCatalogPage filters={<>{filters}</>} />);
   },
 });
 
-export const CatalogEntityPage = createPageExtension({
+export const catalogEntityPage = createPageExtension({
   name: 'entity',
   defaultPath: '/catalog/:namespace/:kind/:name',
   routeRef: convertLegacyRouteRef(entityRouteRef),
@@ -53,7 +56,7 @@ export const CatalogEntityPage = createPageExtension({
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
-      title: entityContentTitleExtensionDataRef,
+      title: catalogExtensionData.entityContentTitle,
     }),
   },
   loader: async ({ inputs }) => {
@@ -75,8 +78,8 @@ export const CatalogEntityPage = createPageExtension({
         </AsyncEntityProvider>
       );
     };
-    return <Component />;
+    return compatWrapper(<Component />);
   },
 });
 
-export default [CatalogIndexPage, CatalogEntityPage];
+export default [catalogPage, catalogEntityPage];

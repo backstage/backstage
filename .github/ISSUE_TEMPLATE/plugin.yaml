@@ -14,19 +14,16 @@ body:
     attributes:
       label: '🔖 Summary'
       description: 'Provide a general summary of the plugin and how it should work'
-      placeholder: 'You should add ...'
   - type: textarea
     id: website
     attributes:
       label: '🌐 Project website (if applicable)'
       description: 'Add a link to the open source project or product this plugin will integrate with, if existing'
-      placeholder: 'Website Link is ...'
   - type: textarea
     id: context
     attributes:
       label: '✌️ Context'
-      description: 'A clear and concise description about the Plugin.'
-      placeholder: 'Providing additional context'
+      description: 'A clear and concise description about the Plugin and any additional context.'
   - type: checkboxes
     id: no-duplicate-issues
     attributes:

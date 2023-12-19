@@ -46,8 +46,8 @@ export function usePullRequests(
   const api = useApi(azureDevOpsApiRef);
 
   const { value, loading, error } = useAsync(() => {
-    const { project, repo } = getAnnotationValuesFromEntity(entity);
-    return api.getPullRequests(project, repo as string, options);
+    const { project, repo, host, org } = getAnnotationValuesFromEntity(entity);
+    return api.getPullRequests(project, repo as string, host, org, options);
   }, [api, top, status]);
 
   return {

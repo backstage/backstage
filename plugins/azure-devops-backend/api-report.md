@@ -60,12 +60,16 @@ export class AzureDevOpsApi {
   getBuildDefinitions(
     projectName: string,
     definitionName: string,
+    host?: string,
+    org?: string,
   ): Promise<BuildDefinitionReference[]>;
   // (undocumented)
   getBuildList(
     projectName: string,
     repoId: string,
     top: number,
+    host?: string,
+    org?: string,
   ): Promise<Build[]>;
   // (undocumented)
   getBuildRuns(
@@ -73,6 +77,8 @@ export class AzureDevOpsApi {
     top: number,
     repoName?: string,
     definitionName?: string,
+    host?: string,
+    org?: string,
   ): Promise<BuildRun[]>;
   // (undocumented)
   getBuilds(
@@ -80,6 +86,8 @@ export class AzureDevOpsApi {
     top: number,
     repoId?: string,
     definitions?: number[],
+    host?: string,
+    org?: string,
   ): Promise<Build[]>;
   // (undocumented)
   getDashboardPullRequests(
@@ -90,16 +98,25 @@ export class AzureDevOpsApi {
   getGitRepository(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
   ): Promise<GitRepository>;
   // (undocumented)
-  getGitTags(projectName: string, repoName: string): Promise<GitTag[]>;
+  getGitTags(
+    projectName: string,
+    repoName: string,
+    host?: string,
+    org?: string,
+  ): Promise<GitTag[]>;
   // (undocumented)
-  getProjects(): Promise<Project[]>;
+  getProjects(host?: string, org?: string): Promise<Project[]>;
   // (undocumented)
   getPullRequests(
     projectName: string,
     repoName: string,
     options: PullRequestOptions,
+    host?: string,
+    org?: string,
   ): Promise<PullRequest[]>;
   // (undocumented)
   getReadme(
@@ -116,6 +133,8 @@ export class AzureDevOpsApi {
     projectName: string,
     repoName: string,
     top: number,
+    host?: string,
+    org?: string,
   ): Promise<RepoBuild[]>;
   // (undocumented)
   getTeamMembers(options: {

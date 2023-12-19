@@ -17,7 +17,7 @@
 import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
-import { CustomNotFoundErrorPage } from './examples/notFoundErrorPageExtension';
+import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
@@ -32,11 +32,9 @@ import {
   createExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
+import appVisualizerPlugin from '@backstage/plugin-visualizer';
 import { homePage } from './HomePage';
-import {
-  collectLegacyComponents,
-  collectLegacyRoutes,
-} from '@backstage/core-compat-api';
+import { convertLegacyApp } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
@@ -112,15 +110,11 @@ const scmIntegrationApi = createApiExtension({
   }),
 });
 
-const collectedLegacyPlugins = collectLegacyRoutes(
+const collectedLegacyPlugins = convertLegacyApp(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
   </FlatRoutes>,
 );
-
-const legacyAppComponents = collectLegacyComponents({
-  NotFoundErrorPage: CustomNotFoundErrorPage,
-});
 
 const app = createApp({
   features: [
@@ -130,6 +124,7 @@ const app = createApp({
     techdocsPlugin,
     userSettingsPlugin,
     homePlugin,
+    appVisualizerPlugin,
     ...collectedLegacyPlugins,
     createExtensionOverrides({
       extensions: [
@@ -137,7 +132,7 @@ const app = createApp({
         scmAuthExtension,
         scmIntegrationApi,
         signInPage,
-        ...legacyAppComponents,
+        notFoundErrorPage,
       ],
     }),
   ],

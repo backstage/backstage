@@ -29,9 +29,7 @@ import { deleteOrphanedEntities } from './deleteOrphanedEntities';
 jest.setTimeout(60_000);
 
 describe('deleteOrphanedEntities', () => {
-  const databases = TestDatabases.create({
-    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
-  });
+  const databases = TestDatabases.create();
 
   async function createDatabase(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);

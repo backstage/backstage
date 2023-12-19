@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { coreExtensionData, createExtension } from '../wiring';
+import { createExtension, createExtensionDataRef } from '../wiring';
 
 /**
  * Helper for creating extensions for a nav logos.
@@ -31,9 +31,9 @@ export function createNavLogoExtension(options: {
     kind: 'nav-logo',
     name: options?.name,
     namespace: options?.namespace,
-    attachTo: { id: 'core/nav', input: 'logos' },
+    attachTo: { id: 'app/nav', input: 'logos' },
     output: {
-      logos: coreExtensionData.logoElements,
+      logos: createNavLogoExtension.logoElementsDataRef,
     },
     factory: () => {
       return {
@@ -44,4 +44,12 @@ export function createNavLogoExtension(options: {
       };
     },
   });
+}
+
+/** @public */
+export namespace createNavLogoExtension {
+  export const logoElementsDataRef = createExtensionDataRef<{
+    logoIcon?: JSX.Element;
+    logoFull?: JSX.Element;
+  }>('core.nav-logo.logo-elements');
 }

@@ -11,7 +11,7 @@ const _default: BackstagePlugin<{}, {}>;
 export default _default;
 
 // @alpha (undocumented)
-export const ExploreSearchResultListItemExtension: ExtensionDefinition<{
+export const exploreSearchResultListItem: ExtensionDefinition<{
   noTrack?: boolean | undefined;
 }>;
 

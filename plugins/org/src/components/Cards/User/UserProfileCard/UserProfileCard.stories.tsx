@@ -45,8 +45,6 @@ const defaultEntity: UserEntity = {
     profile: {
       displayName: 'Guest User',
       email: 'guest@example.com',
-      picture:
-        'https://avatars.dicebear.com/api/avataaars/guest@example.com.svg?background=%23fff',
     },
     memberOf: ['team-a'],
   },
@@ -125,8 +123,6 @@ const extraDetailsEntity: UserEntity = {
     profile: {
       displayName: 'Guest User',
       email: 'guest@example.com',
-      picture:
-        'https://avatars.dicebear.com/api/avataaars/guest@example.com.svg?background=%23fff',
     },
     memberOf: ['team-a'],
   },

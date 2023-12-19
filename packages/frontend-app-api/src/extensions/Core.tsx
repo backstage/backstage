@@ -16,22 +16,29 @@
 
 import {
   coreExtensionData,
+  createApiExtension,
+  createComponentExtension,
   createExtension,
   createExtensionInput,
+  createThemeExtension,
+  createTranslationExtension,
 } from '@backstage/frontend-plugin-api';
 
 export const Core = createExtension({
-  namespace: 'core',
+  namespace: 'app',
   attachTo: { id: 'root', input: 'default' }, // ignored
   inputs: {
     apis: createExtensionInput({
-      api: coreExtensionData.apiFactory,
+      api: createApiExtension.factoryDataRef,
     }),
     themes: createExtensionInput({
-      theme: coreExtensionData.theme,
+      theme: createThemeExtension.themeDataRef,
     }),
     components: createExtensionInput({
-      component: coreExtensionData.component,
+      component: createComponentExtension.componentDataRef,
+    }),
+    translations: createExtensionInput({
+      translation: createTranslationExtension.translationDataRef,
     }),
     root: createExtensionInput(
       {

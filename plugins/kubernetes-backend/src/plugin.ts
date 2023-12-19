@@ -26,6 +26,20 @@ import {
   KubernetesObjectsProviderExtensionPoint,
   kubernetesObjectsProviderExtensionPoint,
   KubernetesObjectsProvider,
+  KubernetesClusterSupplierExtensionPoint,
+  kubernetesClusterSupplierExtensionPoint,
+  KubernetesClustersSupplier,
+  KubernetesAuthStrategyExtensionPoint,
+  AuthenticationStrategy,
+  kubernetesAuthStrategyExtensionPoint,
+  KubernetesFetcher,
+  KubernetesServiceLocatorExtensionPoint,
+  KubernetesServiceLocator,
+  kubernetesServiceLocatorExtensionPoint,
+} from '@backstage/plugin-kubernetes-node';
+import {
+  KubernetesFetcherExtensionPoint,
+  kubernetesFetcherExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
@@ -45,6 +59,86 @@ class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
   }
 }
 
+class ClusterSuplier implements KubernetesClusterSupplierExtensionPoint {
+  private clusterSupplier: KubernetesClustersSupplier | undefined;
+
+  getClusterSupplier() {
+    return this.clusterSupplier;
+  }
+
+  addClusterSupplier(clusterSupplier: KubernetesClustersSupplier) {
+    if (this.clusterSupplier) {
+      throw new Error(
+        'Multiple Kubernetes Cluster Suppliers is not supported at this time',
+      );
+    }
+    this.clusterSupplier = clusterSupplier;
+  }
+}
+
+class Fetcher implements KubernetesFetcherExtensionPoint {
+  private fetcher: KubernetesFetcher | undefined;
+
+  getFetcher() {
+    return this.fetcher;
+  }
+
+  addFetcher(fetcher: KubernetesFetcher) {
+    if (this.fetcher) {
+      throw new Error(
+        'Multiple Kubernetes Fetchers is not supported at this time',
+      );
+    }
+    this.fetcher = fetcher;
+  }
+}
+
+class ServiceLocator implements KubernetesServiceLocatorExtensionPoint {
+  private serviceLocator: KubernetesServiceLocator | undefined;
+
+  getServiceLocator() {
+    return this.serviceLocator;
+  }
+
+  addServiceLocator(serviceLocator: KubernetesServiceLocator) {
+    if (this.serviceLocator) {
+      throw new Error(
+        'Multiple Kubernetes Service Locators is not supported at this time',
+      );
+    }
+    this.serviceLocator = serviceLocator;
+  }
+}
+
+class AuthStrategy implements KubernetesAuthStrategyExtensionPoint {
+  private authStrategies: Array<{
+    key: string;
+    strategy: AuthenticationStrategy;
+  }>;
+
+  constructor() {
+    this.authStrategies = new Array<{
+      key: string;
+      strategy: AuthenticationStrategy;
+    }>();
+  }
+
+  static addAuthStrategiesFromArray(
+    authStrategies: Array<{ key: string; strategy: AuthenticationStrategy }>,
+    builder: KubernetesBuilder,
+  ) {
+    authStrategies.forEach(st => builder.addAuthStrategy(st.key, st.strategy));
+  }
+
+  getAuthenticationStrategies() {
+    return this.authStrategies;
+  }
+
+  addAuthStrategy(key: string, authStrategy: AuthenticationStrategy) {
+    this.authStrategies.push({ key, strategy: authStrategy });
+  }
+}
+
 /**
  * This is the backend plugin that provides the Kubernetes integration.
  * @alpha
@@ -53,10 +147,31 @@ class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
 export const kubernetesPlugin = createBackendPlugin({
   pluginId: 'kubernetes',
   register(env) {
-    const extensionPoint = new ObjectsProvider();
+    const extPointObjectsProvider = new ObjectsProvider();
+    const extPointClusterSuplier = new ClusterSuplier();
+    const extPointAuthStrategy = new AuthStrategy();
+    const extPointFetcher = new Fetcher();
+    const extPointServiceLocator = new ServiceLocator();
+
     env.registerExtensionPoint(
       kubernetesObjectsProviderExtensionPoint,
-      extensionPoint,
+      extPointObjectsProvider,
+    );
+    env.registerExtensionPoint(
+      kubernetesClusterSupplierExtensionPoint,
+      extPointClusterSuplier,
+    );
+    env.registerExtensionPoint(
+      kubernetesAuthStrategyExtensionPoint,
+      extPointAuthStrategy,
+    );
+    env.registerExtensionPoint(
+      kubernetesFetcherExtensionPoint,
+      extPointFetcher,
+    );
+    env.registerExtensionPoint(
+      kubernetesServiceLocatorExtensionPoint,
+      extPointServiceLocator,
     );
 
     env.registerInit({
@@ -70,14 +185,22 @@ export const kubernetesPlugin = createBackendPlugin({
       async init({ http, logger, config, catalogApi, permissions }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         // TODO: expose all of the customization & extension points of the builder here
-        const { router } = await KubernetesBuilder.createBuilder({
+        const builder: KubernetesBuilder = KubernetesBuilder.createBuilder({
           logger: winstonLogger,
           config,
           catalogApi,
           permissions,
         })
-          .setObjectsProvider(extensionPoint.getObjectsProvider())
-          .build();
+          .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
+          .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())
+          .setFetcher(extPointFetcher.getFetcher())
+          .setServiceLocator(extPointServiceLocator.getServiceLocator());
+
+        AuthStrategy.addAuthStrategiesFromArray(
+          extPointAuthStrategy.getAuthenticationStrategies(),
+          builder,
+        );
+        const { router } = await builder.build();
         http.use(router);
       },
     });

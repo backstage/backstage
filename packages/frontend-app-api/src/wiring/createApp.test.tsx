@@ -25,7 +25,7 @@ import {
   createThemeExtension,
 } from '@backstage/frontend-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
-import { createApp } from './createApp';
+import { CreateAppFeatureLoader, createApp } from './createApp';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
@@ -33,8 +33,8 @@ import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 describe('createApp', () => {
   it('should allow themes to be installed', async () => {
     const app = createApp({
-      configLoader: async () =>
-        new MockConfigApi({
+      configLoader: async () => ({
+        config: new MockConfigApi({
           app: {
             extensions: [
               { 'theme:app/light': false },
@@ -42,6 +42,7 @@ describe('createApp', () => {
             ],
           },
         }),
+      }),
       features: [
         createPlugin({
           id: 'test',
@@ -65,7 +66,7 @@ describe('createApp', () => {
   it('should deduplicate features keeping the last received one', async () => {
     const duplicatedFeatureId = 'test';
     const app = createApp({
-      configLoader: async () => new MockConfigApi({}),
+      configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
         createPlugin({
           id: duplicatedFeatureId,
@@ -98,9 +99,69 @@ describe('createApp', () => {
     );
   });
 
+  it('should support feature loaders', async () => {
+    const loader: CreateAppFeatureLoader = {
+      getLoaderName() {
+        return 'test-loader';
+      },
+      async load({ config }) {
+        return {
+          features: [
+            createPlugin({
+              id: 'test',
+              extensions: [
+                createPageExtension({
+                  defaultPath: '/',
+                  loader: async () => <div>{config.getString('key')}</div>,
+                }),
+              ],
+            }),
+          ],
+        };
+      },
+    };
+
+    const app = createApp({
+      configLoader: async () => ({
+        config: new MockConfigApi({ key: 'config-value' }),
+      }),
+      features: [loader],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText('config-value'),
+    ).resolves.toBeInTheDocument();
+  });
+
+  it('should propagate errors thrown by feature loaders', async () => {
+    const loader: CreateAppFeatureLoader = {
+      getLoaderName() {
+        return 'test-loader';
+      },
+      async load() {
+        throw new TypeError('boom');
+      },
+    };
+
+    const app = createApp({
+      configLoader: async () => ({
+        config: new MockConfigApi({}),
+      }),
+      features: [loader],
+    });
+
+    await expect(
+      renderWithEffects(app.createRoot()),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Failed to read frontend features from loader 'test-loader', TypeError: boom"`,
+    );
+  });
+
   it('should register feature flags', async () => {
     const app = createApp({
-      configLoader: async () => new MockConfigApi({}),
+      configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
         createPlugin({
           id: 'test',
@@ -108,7 +169,7 @@ describe('createApp', () => {
           extensions: [
             createExtension({
               name: 'first',
-              attachTo: { id: 'core', input: 'root' },
+              attachTo: { id: 'app', input: 'root' },
               output: { element: coreExtensionData.reactElement },
               factory() {
                 const Component = () => {
@@ -132,9 +193,9 @@ describe('createApp', () => {
           featureFlags: [{ name: 'test-2' }],
           extensions: [
             createExtension({
-              namespace: 'core',
+              namespace: 'app',
               name: 'router',
-              attachTo: { id: 'core', input: 'root' },
+              attachTo: { id: 'app', input: 'root' },
               disabled: true,
               output: {},
               factory: () => ({}),
@@ -155,7 +216,7 @@ describe('createApp', () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 
     const app = createApp({
-      configLoader: async () => new MockConfigApi({}),
+      configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
         createPlugin({
           id: 'my-plugin',
@@ -181,36 +242,54 @@ describe('createApp', () => {
     const { tree } = appTreeApi!.getTree();
 
     expect(String(tree.root)).toMatchInlineSnapshot(`
-      "<core out=[core.reactElement]>
+      "<app out=[core.reactElement]>
         root [
-          <core/router out=[core.reactElement]>
+          <app/router out=[core.reactElement]>
             children [
-              <core/layout out=[core.reactElement]>
+              <app/layout out=[core.reactElement]>
                 content [
-                  <core/routes out=[core.reactElement]>
+                  <app/routes out=[core.reactElement]>
                     routes [
                       <page:my-plugin out=[core.routing.path, core.routing.ref, core.reactElement] />
                     ]
-                  </core/routes>
+                  </app/routes>
                 ]
                 nav [
-                  <core/nav out=[core.reactElement] />
+                  <app/nav out=[core.reactElement] />
                 ]
-              </core/layout>
+              </app/layout>
             ]
-          </core/router>
+          </app/router>
         ]
         components [
-          <component:core.components.progress out=[component.ref] />
-          <component:core.components.errorBoundaryFallback out=[component.ref] />
-          <component:core.components.bootErrorPage out=[component.ref] />
-          <component:core.components.notFoundErrorPage out=[component.ref] />
+          <component:core.components.progress out=[core.component.component] />
+          <component:core.components.errorBoundaryFallback out=[core.component.component] />
+          <component:core.components.notFoundErrorPage out=[core.component.component] />
         ]
         themes [
-          <theme:app/light out=[core.theme] />
-          <theme:app/dark out=[core.theme] />
+          <theme:app/light out=[core.theme.theme] />
+          <theme:app/dark out=[core.theme.theme] />
         ]
-      </core>"
+        apis [
+          <api:core.discovery out=[core.api.factory] />
+          <api:core.alert out=[core.api.factory] />
+          <api:core.analytics out=[core.api.factory] />
+          <api:core.error out=[core.api.factory] />
+          <api:core.storage out=[core.api.factory] />
+          <api:core.fetch out=[core.api.factory] />
+          <api:core.oauthrequest out=[core.api.factory] />
+          <api:core.auth.google out=[core.api.factory] />
+          <api:core.auth.microsoft out=[core.api.factory] />
+          <api:core.auth.github out=[core.api.factory] />
+          <api:core.auth.okta out=[core.api.factory] />
+          <api:core.auth.gitlab out=[core.api.factory] />
+          <api:core.auth.onelogin out=[core.api.factory] />
+          <api:core.auth.bitbucket out=[core.api.factory] />
+          <api:core.auth.bitbucket-server out=[core.api.factory] />
+          <api:core.auth.atlassian out=[core.api.factory] />
+          <api:plugin.permission.api out=[core.api.factory] />
+        ]
+      </app>"
     `);
   });
 });

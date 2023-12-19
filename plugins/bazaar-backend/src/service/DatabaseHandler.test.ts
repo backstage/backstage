@@ -36,7 +36,7 @@ jest.setTimeout(60_000);
 
 describe('DatabaseHandler', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3', 'MYSQL_8'],
+    ids: ['POSTGRES_16', 'POSTGRES_12', 'SQLITE_3', 'MYSQL_8'],
   });
 
   function createDatabaseManager(
