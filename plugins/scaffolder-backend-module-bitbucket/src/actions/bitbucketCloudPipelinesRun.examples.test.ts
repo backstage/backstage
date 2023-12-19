@@ -15,313 +15,252 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { createMockDirectory } from '@backstage/backend-test-utils';
-import { Writable } from 'stream';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { PassThrough } from 'stream';
 import { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun';
-import fetch from 'node-fetch';
 import yaml from 'yaml';
 import { examples } from './bitbucketCloudPipelinesRun.examples';
-
-jest.mock('node-fetch');
-const { Response } = jest.requireActual('node-fetch');
-
-const createdResponse = {
-  type: '<string>',
-  uuid: '<string>',
-  build_number: 33,
-  creator: {
-    type: '<string>',
-  },
-  repository: {
-    type: '<string>',
-  },
-  target: {
-    type: '<string>',
-  },
-  trigger: {
-    type: '<string>',
-  },
-  state: {
-    type: '<string>',
-  },
-  created_on: '<string>',
-  completed_on: '<string>',
-  build_seconds_used: 50,
-};
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 
 describe('bitbucket:pipelines:run', () => {
-  const logStream = {
-    write: jest.fn(),
-  } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
-  const mockDir = createMockDirectory();
-  const workspacePath = mockDir.resolve('workspace');
-  let action: TemplateAction<any>;
+  const config = new ConfigReader({
+    integrations: {
+      bitbucketCloud: [
+        {
+          username: 'u',
+          appPassword: 'p',
+        },
+      ],
+    },
+  });
 
+  const integrations = ScmIntegrations.fromConfig(config);
+  const action = createBitbucketPipelinesRunAction({ integrations });
   const mockContext = {
     input: {},
-    baseUrl: 'somebase',
-    workspacePath,
+    workspacePath: 'wsp',
     logger: getVoidLogger(),
-    logStream,
+    logStream: new PassThrough(),
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
   };
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
 
   beforeEach(() => {
     jest.resetAllMocks();
-    action = createBitbucketPipelinesRunAction();
   });
 
   it('should trigger a pipeline for a branch', async () => {
+    expect.assertions(2);
+    worker.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(req.body).toEqual({
+            target: {
+              ref_type: 'branch',
+              type: 'pipeline_ref_target',
+              ref_name: 'master',
+            },
+          });
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({}),
+          );
+        },
+      ),
+    );
     const ctx = Object.assign({}, mockContext, {
       input: yaml.parse(examples[0].example).steps[0].input,
     });
-    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue(
-      new Response(JSON.stringify(createdResponse), {
-        url: 'url',
-        status: 201,
-        statusText: 'Created',
-      }),
-    );
     await action.handler(ctx);
-    expect(fetch).toHaveBeenCalledWith(
-      'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-      {
-        body: JSON.stringify({
-          target: {
-            ref_type: 'branch',
-            type: 'pipeline_ref_target',
-            ref_name: 'master',
-          },
-        }),
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer testToken',
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      },
-    );
-    expect(logStream.write).toHaveBeenCalledTimes(2);
-    expect(logStream.write).toHaveBeenNthCalledWith(1, 'Response: 201 Created');
-    expect(logStream.write).toHaveBeenNthCalledWith(2, createdResponse);
   });
 
   it('should trigger a pipeline for a commit on a branch', async () => {
+    expect.assertions(2);
+    worker.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(req.body).toEqual({
+            target: {
+              commit: {
+                type: 'commit',
+                hash: 'ce5b7431602f7cbba007062eeb55225c6e18e956',
+              },
+              ref_type: 'branch',
+              type: 'pipeline_ref_target',
+              ref_name: 'master',
+            },
+          });
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({}),
+          );
+        },
+      ),
+    );
     const ctx = Object.assign({}, mockContext, {
       input: yaml.parse(examples[1].example).steps[0].input,
     });
-    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue(
-      new Response(JSON.stringify(createdResponse), {
-        url: 'url',
-        status: 201,
-        statusText: 'Created',
-      }),
-    );
     await action.handler(ctx);
-    expect(fetch).toHaveBeenCalledWith(
-      'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-      {
-        body: JSON.stringify({
-          target: {
-            commit: {
-              type: 'commit',
-              hash: 'ce5b7431602f7cbba007062eeb55225c6e18e956',
-            },
-            ref_type: 'branch',
-            type: 'pipeline_ref_target',
-            ref_name: 'master',
-          },
-        }),
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer testToken',
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      },
-    );
-    expect(logStream.write).toHaveBeenCalledTimes(2);
-    expect(logStream.write).toHaveBeenNthCalledWith(1, 'Response: 201 Created');
-    expect(logStream.write).toHaveBeenNthCalledWith(2, createdResponse);
   });
 
   it('should trigger a specific pipeline definition for a commit', async () => {
+    expect.assertions(2);
+    worker.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(req.body).toEqual({
+            target: {
+              commit: {
+                type: 'commit',
+                hash: 'a3c4e02c9a3755eccdc3764e6ea13facdf30f923',
+              },
+              selector: {
+                type: 'custom',
+                pattern: 'Deploy to production',
+              },
+              type: 'pipeline_commit_target',
+            },
+          });
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({}),
+          );
+        },
+      ),
+    );
     const ctx = Object.assign({}, mockContext, {
       input: yaml.parse(examples[2].example).steps[0].input,
     });
-    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue(
-      new Response(JSON.stringify(createdResponse), {
-        url: 'url',
-        status: 201,
-        statusText: 'Created',
-      }),
-    );
     await action.handler(ctx);
-    expect(fetch).toHaveBeenCalledWith(
-      'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-      {
-        body: JSON.stringify({
-          target: {
-            commit: {
-              type: 'commit',
-              hash: 'a3c4e02c9a3755eccdc3764e6ea13facdf30f923',
-            },
-            selector: {
-              type: 'custom',
-              pattern: 'Deploy to production',
-            },
-            type: 'pipeline_commit_target',
-          },
-        }),
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer testToken',
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      },
-    );
-    expect(logStream.write).toHaveBeenCalledTimes(2);
-    expect(logStream.write).toHaveBeenNthCalledWith(1, 'Response: 201 Created');
-    expect(logStream.write).toHaveBeenNthCalledWith(2, createdResponse);
   });
 
   it('should trigger a specific pipeline definition for a commit on a branch or tag', async () => {
+    expect.assertions(2);
+    worker.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(req.body).toEqual({
+            target: {
+              commit: {
+                type: 'commit',
+                hash: 'a3c4e02c9a3755eccdc3764e6ea13facdf30f923',
+              },
+              selector: {
+                type: 'custom',
+                pattern: 'Deploy to production',
+              },
+              type: 'pipeline_ref_target',
+              ref_name: 'master',
+              ref_type: 'branch',
+            },
+          });
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({}),
+          );
+        },
+      ),
+    );
     const ctx = Object.assign({}, mockContext, {
       input: yaml.parse(examples[3].example).steps[0].input,
     });
-    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue(
-      new Response(JSON.stringify(createdResponse), {
-        url: 'url',
-        status: 201,
-        statusText: 'Created',
-      }),
-    );
     await action.handler(ctx);
-    expect(fetch).toHaveBeenCalledWith(
-      'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-      {
-        body: JSON.stringify({
-          target: {
-            commit: {
-              type: 'commit',
-              hash: 'a3c4e02c9a3755eccdc3764e6ea13facdf30f923',
-            },
-            selector: {
-              type: 'custom',
-              pattern: 'Deploy to production',
-            },
-            type: 'pipeline_ref_target',
-            ref_name: 'master',
-            ref_type: 'branch',
-          },
-        }),
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer testToken',
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      },
-    );
-    expect(logStream.write).toHaveBeenCalledTimes(2);
-    expect(logStream.write).toHaveBeenNthCalledWith(1, 'Response: 201 Created');
-    expect(logStream.write).toHaveBeenNthCalledWith(2, createdResponse);
   });
 
   it('should trigger a custom pipeline with variables', async () => {
+    expect.assertions(2);
+    worker.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(req.body).toEqual({
+            target: {
+              type: 'pipeline_ref_target',
+              ref_name: 'master',
+              ref_type: 'branch',
+              selector: {
+                type: 'custom',
+                pattern: 'Deploy to production',
+              },
+            },
+            variables: [
+              { key: 'var1key', value: 'var1value', secured: true },
+              {
+                key: 'var2key',
+                value: 'var2value',
+              },
+            ],
+          });
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({}),
+          );
+        },
+      ),
+    );
     const ctx = Object.assign({}, mockContext, {
       input: yaml.parse(examples[4].example).steps[0].input,
     });
-    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue(
-      new Response(JSON.stringify(createdResponse), {
-        url: 'url',
-        status: 201,
-        statusText: 'Created',
-      }),
-    );
     await action.handler(ctx);
-    expect(fetch).toHaveBeenCalledWith(
-      'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-      {
-        body: JSON.stringify({
-          target: {
-            type: 'pipeline_ref_target',
-            ref_name: 'master',
-            ref_type: 'branch',
-            selector: {
-              type: 'custom',
-              pattern: 'Deploy to production',
-            },
-          },
-          variables: [
-            { key: 'var1key', value: 'var1value', secured: true },
-            {
-              key: 'var2key',
-              value: 'var2value',
-            },
-          ],
-        }),
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer testToken',
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      },
-    );
-    expect(logStream.write).toHaveBeenCalledTimes(2);
-    expect(logStream.write).toHaveBeenNthCalledWith(1, 'Response: 201 Created');
-    expect(logStream.write).toHaveBeenNthCalledWith(2, createdResponse);
   });
 
   it('should trigger a pull request pipeline', async () => {
+    expect.assertions(2);
+    worker.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
+          expect(req.body).toEqual({
+            target: {
+              type: 'pipeline_pullrequest_target',
+              source: 'pull-request-branch',
+              destination: 'master',
+              destination_commit: {
+                hash: '9f848b7',
+              },
+              commit: {
+                hash: '1a372fc',
+              },
+              pull_request: {
+                id: '3',
+              },
+              selector: {
+                type: 'pull-requests',
+                pattern: '**',
+              },
+            },
+          });
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({}),
+          );
+        },
+      ),
+    );
     const ctx = Object.assign({}, mockContext, {
       input: yaml.parse(examples[5].example).steps[0].input,
     });
-    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue(
-      new Response(JSON.stringify(createdResponse), {
-        url: 'url',
-        status: 201,
-        statusText: 'Created',
-      }),
-    );
     await action.handler(ctx);
-    expect(fetch).toHaveBeenCalledWith(
-      'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-      {
-        body: JSON.stringify({
-          target: {
-            type: 'pipeline_pullrequest_target',
-            source: 'pull-request-branch',
-            destination: 'master',
-            destination_commit: {
-              hash: '9f848b7',
-            },
-            commit: {
-              hash: '1a372fc',
-            },
-            pull_request: {
-              id: '3',
-            },
-            selector: {
-              type: 'pull-requests',
-              pattern: '**',
-            },
-          },
-        }),
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer testToken',
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      },
-    );
-    expect(logStream.write).toHaveBeenCalledTimes(2);
-    expect(logStream.write).toHaveBeenNthCalledWith(1, 'Response: 201 Created');
-    expect(logStream.write).toHaveBeenNthCalledWith(2, createdResponse);
   });
 });
