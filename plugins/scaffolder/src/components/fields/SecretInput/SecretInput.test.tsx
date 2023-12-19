@@ -32,43 +32,6 @@ describe('<SecretInput />', () => {
     );
   };
 
-  it('should set the current form value as a mask for the value entered', async () => {
-    const mockSecret = 'backstage';
-    const onSubmit = jest.fn();
-
-    const { getByLabelText, getByRole } = await renderInTestApp(
-      <SecretsContextProvider>
-        <Form
-          validator={validator}
-          schema={{ type: 'string', title: 'secret' }}
-          uiSchema={{
-            'ui:field': 'Secret',
-          }}
-          fields={{
-            Secret: SecretInput,
-          }}
-          onSubmit={onSubmit}
-        />
-        <SecretsComponent />
-      </SecretsContextProvider>,
-    );
-
-    const secretInput = getByLabelText('secret');
-    const submitButton = getByRole('button');
-
-    await act(async () => {
-      fireEvent.change(secretInput, { target: { value: mockSecret } });
-      fireEvent.click(submitButton);
-    });
-
-    expect(onSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        formData: '*********',
-      }),
-      expect.anything(),
-    );
-  });
-
   it('should set the secret value to the unmasked value', async () => {
     const mockSecret = 'backstage';
     const onSubmit = jest.fn();

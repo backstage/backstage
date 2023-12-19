@@ -21,6 +21,7 @@ import { act, fireEvent } from '@testing-library/react';
 import type { RJSFValidationError } from '@rjsf/utils';
 import { JsonValue } from '@backstage/types';
 import { FieldExtensionComponentProps } from '../../../extensions';
+import { SecretsContextProvider } from '../../../secrets';
 import { LayoutTemplate } from '../../../layouts';
 
 describe('Stepper', () => {
@@ -34,7 +35,9 @@ describe('Stepper', () => {
     };
 
     const { getByText } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
     );
 
     for (const step of manifest.steps) {
@@ -52,7 +55,9 @@ describe('Stepper', () => {
     };
 
     const { getByRole } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
     );
 
     expect(getByRole('button', { name: 'Next' })).toBeInTheDocument();
@@ -92,7 +97,9 @@ describe('Stepper', () => {
     };
 
     const { getByRole } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
     );
 
     await fireEvent.change(getByRole('textbox', { name: 'name' }), {
@@ -140,7 +147,9 @@ describe('Stepper', () => {
     };
 
     const { getByRole, getByLabelText } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
     );
 
     await fireEvent.change(getByRole('textbox', { name: 'name' }), {
@@ -219,14 +228,16 @@ describe('Stepper', () => {
     });
 
     const { getByRole } = await renderInTestApp(
-      <Stepper
-        manifest={manifest}
-        onCreate={onCreate}
-        extensions={[
-          { name: 'Repo', component: Repo },
-          { name: 'Owner', component: Owner },
-        ]}
-      />,
+      <SecretsContextProvider>
+        <Stepper
+          manifest={manifest}
+          onCreate={onCreate}
+          extensions={[
+            { name: 'Repo', component: Repo },
+            { name: 'Owner', component: Owner },
+          ]}
+        />
+      </SecretsContextProvider>,
     );
 
     await fireEvent.change(getByRole('textbox', { name: 'repo' }), {
@@ -275,11 +286,13 @@ describe('Stepper', () => {
     };
 
     const { getByText } = await renderInTestApp(
-      <Stepper
-        manifest={manifest}
-        extensions={[{ name: 'Mock', component: MockComponent }]}
-        onCreate={jest.fn()}
-      />,
+      <SecretsContextProvider>
+        <Stepper
+          manifest={manifest}
+          extensions={[{ name: 'Mock', component: MockComponent }]}
+          onCreate={jest.fn()}
+        />
+      </SecretsContextProvider>,
     );
 
     expect(getByText('im a custom field extension')).toBeInTheDocument();
@@ -308,17 +321,19 @@ describe('Stepper', () => {
     };
 
     const { getByRole } = await renderInTestApp(
-      <Stepper
-        manifest={manifest}
-        extensions={[
-          {
-            name: 'Mock',
-            component: MockComponent,
-            validation: async () => new Promise(r => setTimeout(r, 1000)),
-          },
-        ]}
-        onCreate={jest.fn()}
-      />,
+      <SecretsContextProvider>
+        <Stepper
+          manifest={manifest}
+          extensions={[
+            {
+              name: 'Mock',
+              component: MockComponent,
+              validation: async () => new Promise(r => setTimeout(r, 1000)),
+            },
+          ]}
+          onCreate={jest.fn()}
+        />
+      </SecretsContextProvider>,
     );
 
     act(() => {
@@ -356,12 +371,14 @@ describe('Stepper', () => {
     };
 
     const { getByText, getByRole } = await renderInTestApp(
-      <Stepper
-        manifest={manifest}
-        extensions={[]}
-        onCreate={jest.fn()}
-        formProps={{ transformErrors }}
-      />,
+      <SecretsContextProvider>
+        <Stepper
+          manifest={manifest}
+          extensions={[]}
+          onCreate={jest.fn()}
+          formProps={{ transformErrors }}
+        />
+      </SecretsContextProvider>,
     );
 
     await fireEvent.change(getByRole('textbox', { name: 'postcode' }), {
@@ -401,7 +418,9 @@ describe('Stepper', () => {
     });
 
     const { getByRole } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />,
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
     );
 
     expect(getByRole('textbox', { name: 'firstName' })).toHaveValue('John');
@@ -429,7 +448,9 @@ describe('Stepper', () => {
     });
 
     const { getByRole } = await renderInTestApp(
-      <Stepper manifest={manifest} extensions={[]} onCreate={onCreate} />,
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={onCreate} />
+      </SecretsContextProvider>,
     );
 
     await act(async () => {
@@ -464,15 +485,17 @@ describe('Stepper', () => {
     };
 
     const { getByRole } = await renderInTestApp(
-      <Stepper
-        manifest={manifest}
-        onCreate={jest.fn()}
-        extensions={[]}
-        components={{
-          createButtonText: <b>Make</b>,
-          reviewButtonText: <i>Inspect</i>,
-        }}
-      />,
+      <SecretsContextProvider>
+        <Stepper
+          manifest={manifest}
+          onCreate={jest.fn()}
+          extensions={[]}
+          components={{
+            createButtonText: <b>Make</b>,
+            reviewButtonText: <i>Inspect</i>,
+          }}
+        />
+      </SecretsContextProvider>,
     );
 
     await act(async () => {
@@ -516,12 +539,14 @@ describe('Stepper', () => {
       };
 
       const { getByText, getByRole } = await renderInTestApp(
-        <Stepper
-          manifest={manifest}
-          extensions={[]}
-          onCreate={jest.fn()}
-          layouts={[{ name: 'Layout', component: ScaffolderLayout }]}
-        />,
+        <SecretsContextProvider>
+          <Stepper
+            manifest={manifest}
+            extensions={[]}
+            onCreate={jest.fn()}
+            layouts={[{ name: 'Layout', component: ScaffolderLayout }]}
+          />
+        </SecretsContextProvider>,
       );
 
       expect(getByText('A Scaffolder Layout')).toBeInTheDocument();
