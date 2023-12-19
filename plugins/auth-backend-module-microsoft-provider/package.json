@@ -30,7 +30,8 @@
     "jose": "^4.6.0",
     "node-fetch": "^2.6.7",
     "passport": "^0.6.0",
-    "passport-microsoft": "^1.0.0"
+    "passport-microsoft": "^1.0.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
