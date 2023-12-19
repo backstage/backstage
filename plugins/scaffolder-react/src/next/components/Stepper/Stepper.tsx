@@ -24,7 +24,7 @@ import {
   LinearProgress,
 } from '@material-ui/core';
 import { type IChangeEvent } from '@rjsf/core';
-import { ErrorSchema, ValidatorType } from '@rjsf/utils';
+import { ErrorSchema } from '@rjsf/utils';
 import React, {
   useCallback,
   useMemo,
@@ -49,7 +49,6 @@ import {
   LayoutOptions,
   FieldExtensionOptions,
   FormProps,
-  useTemplateSecrets,
 } from '@backstage/plugin-scaffolder-react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 
@@ -103,7 +102,6 @@ export const Stepper = (stepperProps: StepperProps) => {
     reviewButtonText = 'Review',
   } = components;
   const analytics = useAnalytics();
-  const { secrets } = useTemplateSecrets();
   const { presentation, steps } = useTemplateSchema(props.manifest);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
@@ -112,31 +110,6 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
-
-  const stringifiedSecrets = JSON.stringify(secrets);
-
-  // Because secrets can be defined in the schema, we need to make sure that they
-  // are included in the validation process. So we merge the secrets and the formData
-  // together in validation.
-  const customValidator = useMemo<ValidatorType>(
-    () => ({
-      isValid: (schema, formData, rootSchema) =>
-        validator.isValid(schema, { ...formData, ...secrets }, rootSchema),
-      rawValidation: (schema, formData) =>
-        validator.rawValidation(schema, { ...formData, ...secrets }),
-      validateFormData: (formData, schema, customFormats, transformErrors) =>
-        validator.validateFormData(
-          { ...formData, ...secrets },
-          schema,
-          customFormats,
-          transformErrors,
-        ),
-      // @deprecated
-      toErrorList: validator.toErrorList,
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [secrets, stringifiedSecrets],
-  );
 
   const extensions = useMemo(() => {
     return Object.fromEntries(
@@ -247,7 +220,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         {/* eslint-disable-next-line no-nested-ternary */}
         {activeStep < steps.length ? (
           <Form
-            validator={customValidator}
+            validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
             formData={formState}
             formContext={{ formData: formState }}

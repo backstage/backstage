@@ -111,13 +111,11 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
           noPadding
           titleTypographyProps={{ component: 'h2' }}
         >
-          <SecretsContextProvider>
-            <Stepper
-              manifest={sortedManifest}
-              templateName={templateName}
-              {...props}
-            />
-          </SecretsContextProvider>
+          <Stepper
+            manifest={sortedManifest}
+            templateName={templateName}
+            {...props}
+          />
         </InfoCard>
       )}
     </Content>
@@ -125,8 +123,10 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 };
 
 /**
- * TODO(blam): work out what we want to do with these components in the new API.
- * Should we really have EmbeddableWorkflow, Workflow, Stepper and Form, or should we revisit this?
  * @alpha
  */
-export const EmbeddableWorkflow = Workflow;
+export const EmbeddableWorkflow = (props: WorkflowProps) => (
+  <SecretsContextProvider>
+    <Workflow {...props} />
+  </SecretsContextProvider>
+);
