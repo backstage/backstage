@@ -169,8 +169,8 @@ export function createPublishGiteaAction(options: {
         repoUrl,
         description,
         defaultBranch = 'main',
-        gitAuthorName,
-        gitAuthorEmail,
+        gitAuthorName = config.getOptionalString('scaffolder.defaultAuthor.name'),
+        gitAuthorEmail = config.getOptionalString('scaffolder.defaultAuthor.email'),
         gitCommitMessage = 'initial commit',
         sourcePath,
       } = ctx.input;
