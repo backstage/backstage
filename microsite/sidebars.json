@@ -380,6 +380,40 @@
         "items": ["backend-system/core-services/index"]
       }
     ],
+    "New Frontend System": [
+      "frontend-system/index",
+      {
+        "type": "category",
+        "label": "Architecture",
+        "items": [
+          "frontend-system/architecture/index",
+          "frontend-system/architecture/app",
+          "frontend-system/architecture/extensions",
+          "frontend-system/architecture/plugins",
+          "frontend-system/architecture/extension-overrides",
+          "frontend-system/architecture/utility-apis",
+          "frontend-system/architecture/routes",
+          "frontend-system/architecture/naming-patterns",
+          "frontend-system/architecture/references"
+        ]
+      },
+      {
+        "type": "category",
+        "label": "Building Plugins",
+        "items": ["frontend-system/building-plugins/testing"]
+      },
+      {
+        "type": "category",
+        "label": "Utility APIs",
+        "items": [
+          "frontend-system/utility-apis/index",
+          "frontend-system/utility-apis/creating",
+          "frontend-system/utility-apis/consuming",
+          "frontend-system/utility-apis/configuring",
+          "frontend-system/utility-apis/migrating"
+        ]
+      }
+    ],
     "Designing for Backstage": [
       "dls/design",
       "dls/component-design-guidelines",

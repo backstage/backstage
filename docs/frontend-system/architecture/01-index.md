@@ -6,7 +6,7 @@ sidebar_label: Overview
 description: The structure and architecture of the new Frontend System
 ---
 
-> **NOTE: The new frontend system is in a highly experimental phase**
+> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 ## Building Blocks
 
