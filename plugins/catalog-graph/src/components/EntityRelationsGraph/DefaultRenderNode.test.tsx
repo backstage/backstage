@@ -133,6 +133,6 @@ describe('<CustomNode />', () => {
       </svg>,
     );
 
-    expect(screen.getByText('Custom Title')).toBeInTheDocument();
+    expect(screen.getByText('kind:Custom Title')).toBeInTheDocument();
   });
 });
