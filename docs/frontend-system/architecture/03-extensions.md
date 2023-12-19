@@ -296,32 +296,81 @@ For further information on how to write documentation please follow the architec
 
 With creating an extension by using `createExtension(...)` you have the advantage that the extension can be anything in your Backstage application. We realised that this comes with the trade-off of having to repeat boilerplate code for similar building blocks. Here extension creators come into play for covering common building blocks in Backstage like pages using `createPageExtension`, themes using the `createThemeExtension` or items for the navigation using `createNavItemExtension`.
 
+If we follow the example from above all items of the navigation have similarites, like they all want to be attached to the same extension with the same input as well as rendering the same navigation item component. Therefor `createExtension` can be abstracted for this use case to `createNavItemExtension` and if we add the extension to the app it will end up in the right place & looks like we expect a navigation item to look.
+
+```tsx
+export const HomeNavIcon = createNavItemExtension({
+  routeRef: routeRefForTheHomePage,
+  title: 'Home',
+  icon: HomeIcon,
+});
+```
+
+### Extension Kind
+
+With the example `HomeNavIcon` will end up on the extension input `items` of the extensions with the id `app/nav`. It raises the question what the `id` of the `HomeNavIcon` itself is. The extension creator for the navigation item has a defined `kind`, which by convention matches the own name. So in this example `createNavItemExtension` sets the kind to `nav-item`.
+
+The `id` of the extension is then build out of `namespace`, `name` & `kind` like the following - where `namespace` & `name` are optional properties that can be passed to the extension creator:
+
+```
+id: kind:namespace/name
+```
+
+For more information on naming of extension refer to the naming patterns documentation (TODO: Link)
+
+### Extension Creators in libraries
+
+Extension creators should be exported from library packages (e.g. `*-react`, `*-common`) rather than plugin packages.
+
 <!--
-
-Introduce the concept of extension creators, talk about how they are used to provide an opinionated way of creating extensions for specific use cases. Mention a few of the built-in creators, link to the reference section on built-in extension kinds (TBD).
-
- - Example of using an existing extension creator to create an extension
-
-Explain that each extension creator creates a specific "kind" of extensions - introduce the concept of extension kinds. Show an example of how the kind is used to build up the ID.
-
- - Example of creating a new extension creator for creating a specific kind of extension
 
 Explain that extension creators should be exported from library packages (`-react`) rather than plugin packages.
 
+philipph: What is the advantage - not super obvious to me from the comment. We would also need to change this e.g. for the catalog as it currently is exported from `catalog` alpha directly.
  -->
 
 ## Extension Boundary
 
-<!--
+The `ExtensionBoundary` wraps extensions with several React contexts for different purposes
 
-Introduce the need for extension specific React contexts, for example error boundaries and analytics.
+### Suspense
 
-Any React elements that are rendered by extension creators should be wrapped in the `ExtensionBoundary`
+All React elements rendered by extension creators should be wrapped in the extension boundary. With `Suspense` the extension can than load resources asynchronously with having a loading fallback. It also allows to lazy load the whole extension similar to how plugins are currently lazy loaded in Backstage.
 
- - Example of how to use the `ExtensionBoundary` in an extension creator
+### Error Boundary
 
- -->
+Similar to plugins the `ErrorBoundary` for extension allows to pass in a fallback component in case there is an uncatched error inside of the component. With this the error can be isolated & it would prevent the rest of the plugin to crash.
 
-```
+### Analytics
 
+Analytics information are provided through the `AnalyticsContext`, which will give `extensionId` & `pluginId` as context to analytics event fired inside of the extension. Additionally `RouteTracker` will capture an analytics event for routable extension to inform which extension metadata gets associated with a navigation event when the route navigated to is a gathered mountpoint.
+
+The `ExtensionBoundary` can be used like the following in an extension creator:
+
+```tsx
+export function createSomeExtension<
+  TConfig extends {},
+  TInputs extends AnyExtensionInputMap,
+>(options): ExtensionDefinition<TConfig> {
+  return createExtension({
+    // ...
+    factory({ config, inputs, node }) {
+      const ExtensionComponent = lazy(() =>
+        options
+          .loader({ config, inputs })
+          .then(element => ({ default: () => element })),
+      );
+
+      return {
+        path: config.path,
+        routeRef: options.routeRef,
+        element: (
+          <ExtensionBoundary node={node} routable>
+            <ExtensionComponent />
+          </ExtensionBoundary>
+        ),
+      };
+    },
+  });
+}
 ```
