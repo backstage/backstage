@@ -1,5 +1,24 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.25
+
+### Patch Changes
+
+- 3f354e6: Move `@testing-library/react` to be a `peerDependency`
+- 5d79682: Remove unnecessary catalog dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-catalog@1.16.0
+  - @backstage/core-app-api@1.11.2
+  - @backstage/test-utils@1.4.6
+  - @backstage/plugin-techdocs@1.9.2
+  - @backstage/plugin-search-react@1.7.4
+  - @backstage/integration-react@1.1.22
+  - @backstage/plugin-techdocs-react@1.1.14
+
 ## 1.0.25-next.4
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-okta-provider
 
+## 0.0.1
+
+### Patch Changes
+
+- e1c189b: Adds okta-provider backend module for the auth plugin
+- a62764b: Updated dependency `passport` to `^0.7.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-auth-node@0.4.2
+  - @backstage/backend-plugin-api@0.6.8
+
 ## 0.0.1-next.3
 
 ### Patch Changes

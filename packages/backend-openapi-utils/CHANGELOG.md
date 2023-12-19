@@ -1,5 +1,15 @@
 # @backstage/backend-openapi-utils
 
+## 0.1.1
+
+### Patch Changes
+
+- aaa6fb3: Minor updates for TypeScript 5.2.2+ compatibility
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.1-next.3
 
 ### Patch Changes

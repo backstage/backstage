@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-github-org
 
+## 0.1.2
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-catalog-node@1.6.0
+  - @backstage/backend-tasks@0.5.13
+  - @backstage/plugin-catalog-backend-module-github@0.4.6
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+
 ## 0.1.2-next.3
 
 ### Patch Changes

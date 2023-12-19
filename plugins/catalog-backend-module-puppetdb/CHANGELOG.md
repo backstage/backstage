@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-puppetdb
 
+## 0.1.13
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-catalog-node@1.6.0
+  - @backstage/backend-tasks@0.5.13
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.1.13-next.3
 
 ### Patch Changes

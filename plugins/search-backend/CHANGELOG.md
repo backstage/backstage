@@ -1,5 +1,23 @@
 # @backstage/plugin-search-backend
 
+## 1.4.8
+
+### Patch Changes
+
+- 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/backend-openapi-utils@0.1.1
+  - @backstage/plugin-auth-node@0.4.2
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-permission-node@0.7.19
+  - @backstage/plugin-search-backend-node@1.2.12
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-search-common@1.2.9
+
 ## 1.4.8-next.3
 
 ### Patch Changes

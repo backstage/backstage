@@ -1,5 +1,34 @@
 # @backstage/backend-common
 
+## 0.20.0
+
+### Minor Changes
+
+- 870db76: Implemented `readTree` for Gitea provider to support TechDocs functionality
+
+### Patch Changes
+
+- 7f04128: Allow a default cache TTL to be set through the app config
+- 1ad8906: Use `Readable.from` to fix some of the stream issues
+- d86a007: Fixed the AwsS3UrlReader host regex and host to allow the S3 reading for CN AWS domain
+- bc67498: Updated dependency `archiver` to `^6.0.0`.
+  Updated dependency `@types/archiver` to `^6.0.0`.
+- 706fc3a: Updated dependency `@kubernetes/client-node` to `0.20.0`.
+- 2666675: Updated dependency `@google-cloud/storage` to `^7.0.0`.
+- d15d483: Add command `--runAsDefaultUser` for `@techdocs/cli generate` to bypass running the docker builds as host user for macOS and Linux.
+- d1e00aa: Expose an `onAuth` handler for `git` actions to provide custom credentials
+- Updated dependencies
+  - @backstage/config-loader@1.6.0
+  - @backstage/backend-app-api@0.5.9
+  - @backstage/integration@1.8.0
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
 ## 0.20.0-next.3
 
 ### Patch Changes

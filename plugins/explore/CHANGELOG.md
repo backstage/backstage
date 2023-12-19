@@ -1,5 +1,25 @@
 # @backstage/plugin-explore
 
+## 0.4.14
+
+### Patch Changes
+
+- aac659e: Added option to set `Direction` for the graph in the `GroupsDiagram`
+- 5814122: Updated `/alpha` exports to fit new naming patterns.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/frontend-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-search-react@1.7.4
+  - @backstage/plugin-explore-react@0.0.34
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.9
+
 ## 0.4.14-next.3
 
 ### Patch Changes
