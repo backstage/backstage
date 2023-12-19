@@ -23,6 +23,7 @@ export const SecretInput = (props: ScaffolderRJSFFieldProps) => {
   const { setSecrets, secrets } = useTemplateSecrets();
   const {
     name,
+    onChange,
     schema: { title, description },
     rawErrors,
     disabled,
@@ -42,7 +43,10 @@ export const SecretInput = (props: ScaffolderRJSFFieldProps) => {
       <Input
         id={title}
         aria-describedby={title}
-        onChange={e => setSecrets({ [name]: e.target?.value })}
+        onChange={e => {
+          onChange(Array(e.target?.value.length).fill('*').join(''));
+          setSecrets({ [name]: e.target?.value });
+        }}
         value={secrets[name] ?? ''}
         type="password"
         autoComplete="off"
