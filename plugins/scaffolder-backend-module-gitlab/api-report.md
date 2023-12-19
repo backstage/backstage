@@ -22,6 +22,36 @@ export const createGitlabGroupEnsureExistsAction: (options: {
   }
 >;
 
+// Warning: (ae-missing-release-tag) "createGitlabIssueAction" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createGitlabIssueAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    title: string;
+    repoUrl: string;
+    projectId: number;
+    token?: string | undefined;
+    assignees?: number[] | undefined;
+    confidential?: boolean | undefined;
+    description?: string | undefined;
+    createdAt?: string | undefined;
+    dueDate?: string | undefined;
+    discussionToResolve?: string | undefined;
+    epicId?: number | undefined;
+    labels?: string | undefined;
+    issueType?: string | undefined;
+    mergeRequestToResolveDiscussionsOf?: number | undefined;
+    milestoneId?: number | undefined;
+    weight?: number | undefined;
+  },
+  {
+    issueUrl: string;
+    issueId: number;
+  }
+>;
+
 // @public
 export const createGitlabProjectAccessTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
@@ -139,7 +169,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'update' | 'delete' | 'create' | undefined;
+    commitAction?: 'update' | 'create' | 'delete' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
