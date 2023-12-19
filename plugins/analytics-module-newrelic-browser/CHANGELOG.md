@@ -1,5 +1,14 @@
 # @backstage/plugin-analytics-module-newrelic-browser
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/core-components@0.13.9
+  - @backstage/config@1.1.1
+
 ## 0.0.5-next.3
 
 ### Patch Changes

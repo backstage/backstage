@@ -1,5 +1,26 @@
 # @backstage/core-components
 
+## 0.13.9
+
+### Patch Changes
+
+- e8f2ace: Added a new `/testUtils` sub-path that initially exports a `mockBreakpoint` helper.
+- 381ed86: Add missing export for IconLinkVertical
+- 5c8a3e3: Minor improvements to `Table` component.
+- 752df93: Fixes a problem where the `LogViewer` was not able to handle very large logs
+- 4d9e3b3: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- 07dfdf3: Updated dependency `linkifyjs` to `4.1.3`.
+- a518c5a: Updated dependency `@react-hookz/web` to `^23.0.0`.
+- f291757: Update `linkify-react` to version `4.1.3`
+- 175d86b: Fixed an issue where the `onChange` prop within `HeaderTabs` was triggering twice upon tab-switching.
+- 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/theme@0.5.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/version-bridge@1.0.7
+
 ## 0.13.9-next.3
 
 ### Patch Changes

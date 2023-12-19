@@ -1,5 +1,19 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.2.7
+
+### Patch Changes
+
+- 2633d64: Change user settings backend plugin id and fix when using user setting backend home page first will cause edit page loop render
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-auth-node@0.4.2
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.2.7-next.3
 
 ### Patch Changes

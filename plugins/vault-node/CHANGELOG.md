@@ -1,5 +1,12 @@
 # @backstage/plugin-vault-node
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8
+
 ## 0.1.1-next.3
 
 ### Patch Changes

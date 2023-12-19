@@ -1,5 +1,18 @@
 # @backstage/catalog-client
 
+## 1.5.0
+
+### Minor Changes
+
+- 3834067: The internals of `CatalogClient` are now auto-generated using the `backstage-repo-tools schema openapi generate-client` command.
+
+### Patch Changes
+
+- 82fa88b: Fixes a bug where some query parameters were double URL encoded.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
 ## 1.5.0-next.1
 
 ### Patch Changes

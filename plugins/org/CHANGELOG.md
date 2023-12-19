@@ -1,5 +1,20 @@
 # @backstage/plugin-org
 
+## 0.6.18
+
+### Patch Changes
+
+- 59c24b9: Fix issue where members inside of `<EntityMembersListCard>` would be rendered as squished when the card itself was shrunk down.
+- 3a65d9c: Support member list scrollable when parent has specified height
+- 4785d05: Add permission check to catalog create and refresh button
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-catalog-common@1.0.19
+
 ## 0.6.18-next.3
 
 ### Patch Changes

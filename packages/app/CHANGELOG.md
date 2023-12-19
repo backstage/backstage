@@ -1,5 +1,81 @@
 # example-app
 
+## 0.2.90
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/frontend-app-api@0.4.0
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/plugin-api-docs@0.10.2
+  - @backstage/core-components@0.13.9
+  - @backstage/cli@0.25.0
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-scaffolder@1.17.0
+  - @backstage/plugin-home@0.6.0
+  - @backstage/plugin-catalog@1.16.0
+  - @backstage/plugin-scaffolder-react@1.7.0
+  - @backstage/plugin-kubernetes@0.11.3
+  - @backstage/plugin-org@0.6.18
+  - @backstage/plugin-github-actions@0.6.9
+  - @backstage/plugin-azure-devops@0.3.10
+  - @backstage/core-app-api@1.11.2
+  - @backstage/plugin-lighthouse@0.4.13
+  - @backstage/plugin-explore@0.4.14
+  - @backstage/plugin-catalog-import@0.10.4
+  - @backstage/plugin-user-settings@0.7.14
+  - @backstage/plugin-tech-radar@0.6.11
+  - @backstage/plugin-graphiql@0.3.1
+  - @backstage/plugin-techdocs@1.9.2
+  - @backstage/plugin-search@1.4.4
+  - @backstage/plugin-search-react@1.7.4
+  - @backstage/plugin-stack-overflow@0.1.23
+  - @backstage/plugin-adr@0.6.11
+  - @backstage/plugin-gcp-projects@0.3.44
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.3
+  - @backstage/plugin-pagerduty@0.7.0
+  - @backstage/app-defaults@1.4.6
+  - @backstage/integration-react@1.1.22
+  - @backstage/plugin-airbrake@0.3.28
+  - @backstage/plugin-apache-airflow@0.2.18
+  - @backstage/plugin-azure-sites@0.1.17
+  - @backstage/plugin-badges@0.2.52
+  - @backstage/plugin-catalog-graph@0.3.2
+  - @backstage/plugin-catalog-unprocessed-entities@0.1.6
+  - @backstage/plugin-cloudbuild@0.3.28
+  - @backstage/plugin-code-coverage@0.2.21
+  - @backstage/plugin-cost-insights@0.12.17
+  - @backstage/plugin-devtools@0.1.7
+  - @backstage/plugin-dynatrace@8.0.2
+  - @backstage/plugin-entity-feedback@0.2.11
+  - @backstage/plugin-gcalendar@0.3.21
+  - @backstage/plugin-gocd@0.1.34
+  - @backstage/plugin-jenkins@0.9.3
+  - @backstage/plugin-kafka@0.3.28
+  - @backstage/plugin-kubernetes-cluster@0.0.4
+  - @backstage/plugin-linguist@0.1.13
+  - @backstage/plugin-microsoft-calendar@0.1.10
+  - @backstage/plugin-newrelic@0.3.43
+  - @backstage/plugin-newrelic-dashboard@0.3.3
+  - @backstage/plugin-nomad@0.1.9
+  - @backstage/plugin-octopus-deploy@0.2.10
+  - @backstage/plugin-permission-react@0.4.18
+  - @backstage/plugin-playlist@0.2.2
+  - @backstage/plugin-puppetdb@0.1.11
+  - @backstage/plugin-rollbar@0.4.28
+  - @backstage/plugin-sentry@0.5.13
+  - @backstage/plugin-shortcuts@0.3.17
+  - @backstage/plugin-stackstorm@0.1.9
+  - @backstage/plugin-tech-insights@0.3.20
+  - @backstage/plugin-techdocs-react@1.1.14
+  - @backstage/plugin-todo@0.2.32
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-linguist-common@0.1.2
+  - @backstage/plugin-search-common@1.2.9
+
 ## 0.2.90-next.4
 
 ### Patch Changes

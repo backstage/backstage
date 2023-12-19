@@ -1,5 +1,17 @@
 # @backstage/plugin-circleci
 
+## 0.3.28
+
+### Patch Changes
+
+- 375b6f7: CircelCI plugin moved permanently
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/catalog-model@1.4.3
+
 ## 0.3.28-next.3
 
 ### Patch Changes
