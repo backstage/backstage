@@ -126,7 +126,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
 /**
  * TODO(blam): work out what we want to do with these components in the new API.
- * Should we really have EmbeddableWorkflow -> Workflow -> Stepper -> Form, or should we revisit this?
+ * Should we really have EmbeddableWorkflow, Workflow, Stepper and Form, or should we revisit this?
  * @alpha
  */
 export const EmbeddableWorkflow = Workflow;
