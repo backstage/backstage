@@ -91,11 +91,17 @@ export function DefaultRenderNode({
   const paddedWidth = paddedIconWidth + width + padding * 2;
   const paddedHeight = height + padding * 2;
 
-  const displayTitle =
-    title ??
-    (kind && name && namespace
-      ? humanizeEntityRef({ kind, name, namespace })
-      : id);
+  let displayTitle;
+
+  if (title && kind) {
+    displayTitle = `${kind.toLocaleLowerCase('en-US')}:${title}`;
+  } else if (title) {
+    displayTitle = title;
+  } else if (kind && name && namespace) {
+    displayTitle = humanizeEntityRef({ kind, name, namespace });
+  } else {
+    displayTitle = id;
+  }
 
   return (
     <g onClick={onClick} className={classNames(onClick && classes.clickable)}>
