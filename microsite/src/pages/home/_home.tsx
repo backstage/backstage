@@ -100,7 +100,7 @@ const HomePage = () => {
               <img
                 className="laptopScreenGif"
                 src={`${siteConfig.baseUrl}animations/backstage-logos-hero-8.gif`}
-                alt='Animated Backstage Logo'
+                alt="Animated Backstage Logo"
               />
             </div>
           </BannerSectionGrid>
