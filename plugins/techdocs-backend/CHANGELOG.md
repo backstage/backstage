@@ -1,5 +1,24 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.9.1
+
+### Patch Changes
+
+- a402644: Regenerates a fresh token for each call to the search index when collating techdocs.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/catalog-client@1.5.0
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-techdocs-node@1.11.0
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-search-backend-module-techdocs@0.1.12
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-search-common@1.2.9
+
 ## 1.9.1-next.3
 
 ### Patch Changes

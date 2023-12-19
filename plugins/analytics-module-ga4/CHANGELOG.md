@@ -1,5 +1,16 @@
 # @backstage/plugin-analytics-module-ga4
 
+## 0.1.7
+
+### Patch Changes
+
+- af6f227: Disabled `send_page_view` to get rid of events duplication
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/config@1.1.1
+
 ## 0.1.7-next.3
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @techdocs/cli
 
+## 1.8.0
+
+### Minor Changes
+
+- d15d483: Add command `--runAsDefaultUser` for `@techdocs/cli generate` to bypass running the docker builds as host user for macOS and Linux.
+- b2dccad: Support passing additional `mkdocs-server` CLI parameters (`--dirtyreload`, `--strict` and `--clean`) when run in containerized mode.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-techdocs-node@1.11.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+
 ## 1.8.0-next.3
 
 ### Patch Changes

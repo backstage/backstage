@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.1.0
+
+### Minor Changes
+
+- 219d7f0: Create new scaffolder module for external integrations
+
+### Patch Changes
+
+- cb6a65e: The `scaffolder.defaultCommitMessage` config value is now being used if provided and uses "initial commit" when it is not provided.
+- 28949ea: Add a new action for creating github-autolink references for a repository: `github:autolinks:create`
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-scaffolder-node@0.2.9
+  - @backstage/integration@1.8.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.0-next.0
 
 ### Minor Changes

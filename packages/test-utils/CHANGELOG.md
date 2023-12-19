@@ -1,5 +1,19 @@
 # @backstage/test-utils
 
+## 1.4.6
+
+### Patch Changes
+
+- e8f2ace: Deprecated `mockBreakpoint`, as it is now available from `@backstage/core-components/testUtils` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/theme@0.5.0
+  - @backstage/core-app-api@1.11.2
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-permission-react@0.4.18
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 1.4.6-next.2
 
 ### Patch Changes

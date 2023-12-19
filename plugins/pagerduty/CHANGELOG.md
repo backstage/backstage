@@ -1,5 +1,22 @@
 # @backstage/plugin-pagerduty
 
+## 0.7.0
+
+### Minor Changes
+
+- 5fca16f: This package has been deprecated, consider using [@pagerduty/backstage-plugin](https://github.com/pagerduty/backstage-plugin) instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-home-react@0.1.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
 ## 0.7.0-next.3
 
 ### Patch Changes

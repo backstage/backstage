@@ -1,5 +1,15 @@
 # @backstage/theme
 
+## 0.5.0
+
+### Minor Changes
+
+- 4d9e3b3: Added a global `OverrideComponentNameToClassKeys` for other plugins and packages to populate using module augmentation. This will in turn will provide component style override types for `createUnifiedTheme`.
+
+### Patch Changes
+
+- cd0dd4c: Align Material UI v5 `Paper` component background color in dark mode to v4.
+
 ## 0.5.0-next.1
 
 ### Patch Changes

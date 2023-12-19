@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-google-provider
 
+## 0.1.5
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.2
+  - @backstage/backend-plugin-api@0.6.8
+
 ## 0.1.5-next.3
 
 ### Patch Changes

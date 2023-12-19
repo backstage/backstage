@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-sentry
 
+## 0.1.16
+
+### Patch Changes
+
+- 7f8a801: Added examples for `sentry:project:create` scaffolder action and unit tests.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.9
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.16-next.3
 
 ### Patch Changes
