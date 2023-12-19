@@ -95,10 +95,12 @@ const HomePage = () => {
               <img
                 className="laptopSvg"
                 src={`${siteConfig.baseUrl}img/laptop.svg`}
+                alt="Illustration of a laptop"
               />
               <img
                 className="laptopScreenGif"
                 src={`${siteConfig.baseUrl}animations/backstage-logos-hero-8.gif`}
+                alt='Animated Backstage Logo'
               />
             </div>
           </BannerSectionGrid>
