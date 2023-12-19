@@ -17,6 +17,7 @@
 import { examples } from './bitbucketCloudPipelinesRun.examples';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import fetch from 'node-fetch';
+import * as inputProps from './inputProperties';
 
 const id = 'bitbucket:pipelines:run';
 /**
@@ -38,118 +39,9 @@ export const createBitbucketPipelinesRunAction = () => {
         type: 'object',
         required: ['workspace', 'repo_url'],
         properties: {
-          workspace: {
-            title: 'Workspace',
-            description: `This can either be the workspace ID (slug) or the workspace UUID surrounded by curly-braces, for example {workspace UUID}.`,
-            type: 'string',
-          },
-          repo_slug: {
-            title: 'The repository',
-            description: 'The repository name',
-            type: 'string',
-          },
-          body: {
-            title: '',
-            description: '',
-            type: 'object',
-            properties: {
-              target: {
-                title: 'target',
-                type: 'object',
-                properties: {
-                  ref_type: {
-                    title: 'ref_type',
-                    type: 'string',
-                  },
-                  type: {
-                    title: 'type',
-                    type: 'string',
-                  },
-                  ref_name: {
-                    title: 'ref_name',
-                    type: 'string',
-                  },
-                  source: {
-                    title: 'source',
-                    type: 'string',
-                  },
-                  destination: {
-                    title: 'destination',
-                    type: 'string',
-                  },
-                  destination_commit: {
-                    title: 'destination_commit',
-                    type: 'object',
-                    properties: {
-                      hash: {
-                        title: 'hash',
-                        type: 'string',
-                      },
-                    },
-                  },
-                  commit: {
-                    title: 'commit',
-                    type: 'object',
-                    properties: {
-                      type: {
-                        title: 'type',
-                        type: 'string',
-                      },
-                      hash: {
-                        title: 'hash',
-                        type: 'string',
-                      },
-                    },
-                  },
-                  selector: {
-                    title: 'selector',
-                    type: 'object',
-                    properties: {
-                      type: {
-                        title: 'type',
-                        type: 'string',
-                      },
-                      pattern: {
-                        title: 'pattern',
-                        type: 'string',
-                      },
-                    },
-                  },
-                  pull_request: {
-                    title: 'pull_request',
-                    type: 'object',
-                    properties: {
-                      id: {
-                        title: 'id',
-                        type: 'string',
-                      },
-                    },
-                  },
-                },
-              },
-              variables: {
-                title: 'variables',
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    key: {
-                      title: 'key',
-                      type: 'string',
-                    },
-                    value: {
-                      title: 'value',
-                      type: 'string',
-                    },
-                    secured: {
-                      title: 'secured',
-                      type: 'boolean',
-                    },
-                  },
-                },
-              },
-            },
-          },
+          workspace: inputProps.workspace,
+          repo_slug: inputProps.repo_slug,
+          body: inputProps.pipelinesRunBody,
         },
       },
     },
