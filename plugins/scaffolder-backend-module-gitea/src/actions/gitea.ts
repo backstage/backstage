@@ -122,7 +122,7 @@ export function createPublishGiteaAction(options: {
           defaultBranch: {
             title: 'Default Branch',
             type: 'string',
-            description: `Sets the default branch on the repository. The default value is 'master'`,
+            description: `Sets the default branch on the repository. The default value is 'main'`,
           },
           gitCommitMessage: {
             title: 'Git Commit Message',
