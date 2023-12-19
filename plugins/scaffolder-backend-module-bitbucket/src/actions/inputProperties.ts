@@ -76,6 +76,12 @@ const secured = {
   type: 'boolean',
 };
 
+const token = {
+  title: 'Authentication Token',
+  type: 'string',
+  description: 'The token to use for authorization to BitBucket Cloud',
+};
+
 const destination_commit = {
   title: 'destination_commit',
   type: 'object',
@@ -145,4 +151,4 @@ const pipelinesRunBody = {
   },
 };
 
-export { workspace, repo_slug, pipelinesRunBody };
+export { workspace, repo_slug, pipelinesRunBody, token };

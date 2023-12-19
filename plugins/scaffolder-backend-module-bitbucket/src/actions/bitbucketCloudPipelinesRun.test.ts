@@ -15,90 +15,64 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { createMockDirectory } from '@backstage/backend-test-utils';
-import { Writable } from 'stream';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { PassThrough } from 'stream';
 import { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun';
-import fetch from 'node-fetch';
-
-jest.mock('node-fetch');
-const { Response } = jest.requireActual('node-fetch');
-
-const createdResponse = {
-  type: '<string>',
-  uuid: '<string>',
-  build_number: 33,
-  creator: {
-    type: '<string>',
-  },
-  repository: {
-    type: '<string>',
-  },
-  target: {
-    type: '<string>',
-  },
-  trigger: {
-    type: '<string>',
-  },
-  state: {
-    type: '<string>',
-  },
-  created_on: '<string>',
-  completed_on: '<string>',
-  build_seconds_used: 50,
-};
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 
 describe('bitbucket:pipelines:run', () => {
-  const logStream = {
-    write: jest.fn(),
-  } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
-  const mockDir = createMockDirectory();
-  const workspacePath = mockDir.resolve('workspace');
-  let action: TemplateAction<any>;
+  const config = new ConfigReader({
+    integrations: {
+      bitbucketCloud: [
+        {
+          username: 'u',
+          appPassword: 'p',
+        },
+      ],
+    },
+  });
 
+  const integrations = ScmIntegrations.fromConfig(config);
+  const action = createBitbucketPipelinesRunAction({ integrations });
   const mockContext = {
     input: {},
-    baseUrl: 'somebase',
-    workspacePath,
+    workspacePath: 'wsp',
     logger: getVoidLogger(),
-    logStream,
+    logStream: new PassThrough(),
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
   };
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
 
   beforeEach(() => {
-    jest.resetAllMocks();
-    action = createBitbucketPipelinesRunAction();
+    jest.clearAllMocks();
   });
 
   it('should call the bitbucket api for running a pipeline', async () => {
+    expect.assertions(1);
     const workspace = 'test-workspace';
     const repo_slug = 'test-repo-slug';
-    const ctx = Object.assign({}, mockContext, {
+    worker.use(
+      rest.post(
+        `https://api.bitbucket.org/2.0/repositories/${workspace}/${repo_slug}/pipelines`,
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({}),
+          );
+        },
+      ),
+    );
+
+    const testContext = Object.assign({}, mockContext, {
       input: { workspace, repo_slug },
     });
-    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue(
-      new Response(JSON.stringify(createdResponse), {
-        url: 'url',
-        status: 201,
-        statusText: 'Created',
-      }),
-    );
-    await action.handler(ctx);
-    expect(fetch).toHaveBeenCalledWith(
-      'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
-      {
-        body: {},
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer testToken',
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      },
-    );
-    expect(logStream.write).toHaveBeenCalledTimes(2);
-    expect(logStream.write).toHaveBeenNthCalledWith(1, 'Response: 201 Created');
-    expect(logStream.write).toHaveBeenNthCalledWith(2, createdResponse);
+    await action.handler(testContext);
   });
 });
