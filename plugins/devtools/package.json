@@ -34,7 +34,6 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-devtools-common": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
@@ -50,14 +49,9 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.0.0",
-    "cross-fetch": "^4.0.0",
-    "msw": "^1.0.0"
+    "@testing-library/react": "^14.0.0"
   },
   "files": [
     "dist"

@@ -42,7 +42,6 @@
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/plugin-kubernetes-react": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@kubernetes-models/apimachinery": "^1.1.0",
     "@kubernetes-models/base": "^4.0.1",
@@ -68,15 +67,11 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.0.0",
-    "jest-websocket-mock": "^2.4.1",
-    "msw": "^1.0.0"
+    "@testing-library/react": "^14.0.0"
   },
   "files": [
     "dist"

@@ -40,12 +40,9 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
     "@types/express": "*",
     "@types/supertest": "^2.0.8",
-    "msw": "^1.0.0",
-    "openapi3-ts": "^3.1.2",
-    "supertest": "^6.2.4"
+    "openapi3-ts": "^3.1.2"
   },
   "configSchema": "config.d.ts",
   "files": [

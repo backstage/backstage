@@ -59,7 +59,6 @@
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-scaffolder-react": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@codemirror/language": "^6.0.0",
     "@codemirror/legacy-modes": "^6.1.0",

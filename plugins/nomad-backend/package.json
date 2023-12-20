@@ -42,7 +42,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
-    "msw": "^1.0.0",
     "supertest": "^6.2.4"
   },
   "files": [
