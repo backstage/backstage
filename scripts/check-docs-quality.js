@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 const { spawnSync } = require('child_process');
-const { resolve: resolvePath, join: joinPath } = require('path');
+const {
+  resolve: resolvePath,
+  join: joinPath,
+  relative: relativePath,
+} = require('path');
 const fs = require('fs').promises;
 
 const IGNORED = [
@@ -94,9 +98,9 @@ async function runVale(files) {
 }
 
 async function main() {
-  const files = await listFiles();
-
   if (process.argv.includes('--ci-args')) {
+    const files = await listFiles();
+
     process.stdout.write(
       // Workaround for not being able to pass arguments to the vale action
       JSON.stringify([...files]),
@@ -106,7 +110,14 @@ async function main() {
 
   await exitIfMissingVale();
 
-  const success = await runVale(files);
+  const absolutePaths = process.argv
+    .slice(2)
+    .filter(path => !path.startsWith('-'));
+  const relativePaths = absolutePaths.map(path => relativePath(rootDir, path));
+
+  const success = await runVale(
+    relativePaths.length === 0 ? await listFiles() : relativePaths,
+  );
   if (!success) {
     process.exit(2);
   }
