@@ -16,12 +16,12 @@
 
 const workspace = {
   title: 'Workspace',
-  description: `This can either be the workspace ID (slug) or the workspace UUID surrounded by curly-braces, for example {workspace UUID}.`,
+  description: `The workspace name`,
   type: 'string',
 };
 
 const repo_slug = {
-  title: 'The repository',
+  title: 'Repository name',
   description: 'The repository name',
   type: 'string',
 };
@@ -117,8 +117,9 @@ const pull_request = {
 };
 
 const pipelinesRunBody = {
-  title: '',
-  description: '',
+  title: 'Request Body',
+  description:
+    'Request body properties: see Bitbucket Cloud Rest API documentation for more details',
   type: 'object',
   properties: {
     target: {
