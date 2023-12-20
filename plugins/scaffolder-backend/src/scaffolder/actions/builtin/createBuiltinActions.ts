@@ -60,6 +60,7 @@ import {
   createPublishBitbucketCloudAction,
   createPublishBitbucketServerAction,
   createPublishBitbucketServerPullRequestAction,
+  createBitbucketPipelinesRunAction,
 } from '@backstage/plugin-scaffolder-backend-module-bitbucket';
 
 import {
@@ -222,6 +223,9 @@ export const createBuiltinActions = (
     createGithubAutolinksAction({
       integrations,
       githubCredentialsProvider,
+    }),
+    createBitbucketPipelinesRunAction({
+      integrations,
     }),
   ];
 
