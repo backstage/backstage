@@ -34,13 +34,10 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
-    "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-bitbucket-cloud-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
-    "@backstage/types": "workspace:^",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1"

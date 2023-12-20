@@ -32,7 +32,6 @@
     "@backstage/config": "workspace:^",
     "@backstage/plugin-explore-common": "workspace:^",
     "@backstage/plugin-search-backend-module-explore": "workspace:^",
-    "@backstage/plugin-search-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/express": "*",
     "express": "^4.18.1",
