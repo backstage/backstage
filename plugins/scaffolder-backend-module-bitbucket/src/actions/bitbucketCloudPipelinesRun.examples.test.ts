@@ -47,6 +47,14 @@ describe('bitbucket:pipelines:run', () => {
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
   };
+  const responseJson = {
+    repository: {
+      links: {
+        html: { href: 'https://bitbucket.org/test-workspace/test-repo-slug' },
+      },
+    },
+    build_number: 1,
+  };
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
@@ -71,7 +79,7 @@ describe('bitbucket:pipelines:run', () => {
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+            ctx.json(responseJson),
           );
         },
       ),
@@ -103,7 +111,7 @@ describe('bitbucket:pipelines:run', () => {
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+            ctx.json(responseJson),
           );
         },
       ),
@@ -137,7 +145,7 @@ describe('bitbucket:pipelines:run', () => {
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+            ctx.json(responseJson),
           );
         },
       ),
@@ -173,7 +181,7 @@ describe('bitbucket:pipelines:run', () => {
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+            ctx.json(responseJson),
           );
         },
       ),
@@ -212,7 +220,7 @@ describe('bitbucket:pipelines:run', () => {
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+            ctx.json(responseJson),
           );
         },
       ),
@@ -253,7 +261,7 @@ describe('bitbucket:pipelines:run', () => {
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+            ctx.json(responseJson),
           );
         },
       ),

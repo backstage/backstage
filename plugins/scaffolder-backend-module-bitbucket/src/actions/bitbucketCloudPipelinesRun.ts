@@ -16,10 +16,9 @@
 
 import { examples } from './bitbucketCloudPipelinesRun.examples';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 import * as inputProps from './inputProperties';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { InputError } from '@backstage/errors';
 import { getAuthorizationHeader } from './helpers';
 
 const id = 'bitbucket:pipelines:run';
@@ -44,12 +43,29 @@ export const createBitbucketPipelinesRunAction = (options: {
     schema: {
       input: {
         type: 'object',
-        required: ['workspace', 'repo_url'],
+        required: ['workspace', 'repo_slug'],
         properties: {
           workspace: inputProps.workspace,
           repo_slug: inputProps.repo_slug,
           body: inputProps.pipelinesRunBody,
           token: inputProps.token,
+        },
+      },
+      output: {
+        type: 'object',
+        properties: {
+          buildNumber: {
+            title: 'Build number',
+            type: 'number',
+          },
+          repoUrl: {
+            title: 'A URL to the pipeline repositry',
+            type: 'string',
+          },
+          repoContentsUrl: {
+            title: 'A URL to the pipeline',
+            type: 'string',
+          },
         },
       },
     },
@@ -58,18 +74,13 @@ export const createBitbucketPipelinesRunAction = (options: {
       const { workspace, repo_slug, body, token } = ctx.input;
       const host = 'bitbucket.org';
       const integrationConfig = integrations.bitbucketCloud.byHost(host);
-      if (!integrationConfig) {
-        throw new InputError(
-          `No matching integration configuration for host ${host}, please check your integrations config`,
-        );
-      }
 
       const authorization = getAuthorizationHeader(
-        token ? { token } : integrationConfig.config,
+        token ? { token } : integrationConfig!.config,
       );
-
+      let response: Response;
       try {
-        const response = await fetch(
+        response = await fetch(
           `https://api.bitbucket.org/2.0/repositories/${workspace}/${repo_slug}/pipelines`,
           {
             method: 'POST',
@@ -81,10 +92,26 @@ export const createBitbucketPipelinesRunAction = (options: {
             body: JSON.stringify(body) ?? {},
           },
         );
-        const data = await response.json();
       } catch (e) {
         throw new Error(`Unable to run pipeline, ${e}`);
       }
+
+      if (response.status !== 201) {
+        throw new Error(
+          `Unable to run pipeline, ${response.status} ${
+            response.statusText
+          }, ${await response.text()}`,
+        );
+      }
+
+      const responseObject = await response.json();
+
+      ctx.output('buildNumber', responseObject.build_number);
+      ctx.output('repoUrl', responseObject.repository.links.html.href);
+      ctx.output(
+        'pipelinesUrl',
+        `${responseObject.repository.links.html.href}/pipelines`,
+      );
     },
   });
 };

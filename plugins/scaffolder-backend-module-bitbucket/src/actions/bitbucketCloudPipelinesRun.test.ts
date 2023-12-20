@@ -45,6 +45,16 @@ describe('bitbucket:pipelines:run', () => {
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
   };
+  const workspace = 'test-workspace';
+  const repo_slug = 'test-repo-slug';
+  const responseJson = {
+    repository: {
+      links: {
+        html: { href: 'https://bitbucket.org/test-workspace/test-repo-slug' },
+      },
+    },
+    build_number: 1,
+  };
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
@@ -52,10 +62,27 @@ describe('bitbucket:pipelines:run', () => {
     jest.clearAllMocks();
   });
 
-  it('should call the bitbucket api for running a pipeline', async () => {
+  it('should throw if there is no integration credentials or token provided', async () => {
+    const configNoCreds = new ConfigReader({
+      integrations: {
+        bitbucketCloud: [],
+      },
+    });
+
+    const integrationsNoCreds = ScmIntegrations.fromConfig(configNoCreds);
+    const actionNoCreds = createBitbucketPipelinesRunAction({
+      integrations: integrationsNoCreds,
+    });
+    const testContext = Object.assign({}, mockContext, {
+      input: { workspace, repo_slug },
+    });
+    await expect(actionNoCreds.handler(testContext)).rejects.toThrow(
+      /Authorization has not been provided for Bitbucket Cloud/,
+    );
+  });
+
+  it('should call the bitbucket api for running a pipeline with integration credentials', async () => {
     expect.assertions(1);
-    const workspace = 'test-workspace';
-    const repo_slug = 'test-repo-slug';
     worker.use(
       rest.post(
         `https://api.bitbucket.org/2.0/repositories/${workspace}/${repo_slug}/pipelines`,
@@ -64,7 +91,7 @@ describe('bitbucket:pipelines:run', () => {
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+            ctx.json(responseJson),
           );
         },
       ),
@@ -74,5 +101,56 @@ describe('bitbucket:pipelines:run', () => {
       input: { workspace, repo_slug },
     });
     await action.handler(testContext);
+  });
+
+  it('should call the bitbucket api for running a pipeline with input token', async () => {
+    expect.assertions(1);
+    worker.use(
+      rest.post(
+        `https://api.bitbucket.org/2.0/repositories/${workspace}/${repo_slug}/pipelines`,
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Bearer abc');
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json(responseJson),
+          );
+        },
+      ),
+    );
+
+    const testContext = Object.assign({}, mockContext, {
+      input: { workspace, repo_slug, token: 'abc' },
+    });
+    await action.handler(testContext);
+  });
+
+  it('should call outputs with the correct data', async () => {
+    worker.use(
+      rest.post(
+        `https://api.bitbucket.org/2.0/repositories/${workspace}/${repo_slug}/pipelines`,
+        (_, res, ctx) => {
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json(responseJson),
+          );
+        },
+      ),
+    );
+
+    const testContext = Object.assign({}, mockContext, {
+      input: { workspace, repo_slug, token: 'abc' },
+    });
+    await action.handler(testContext);
+    expect(testContext.output).toHaveBeenCalledWith('buildNumber', 1);
+    expect(testContext.output).toHaveBeenCalledWith(
+      'repoUrl',
+      'https://bitbucket.org/test-workspace/test-repo-slug',
+    );
+    expect(testContext.output).toHaveBeenCalledWith(
+      'pipelinesUrl',
+      'https://bitbucket.org/test-workspace/test-repo-slug/pipelines',
+    );
   });
 });
