@@ -49,7 +49,6 @@
     "graphql-config": "^5.0.2",
     "graphql-ws": "^5.4.1",
     "isomorphic-form-data": "^2.0.0",
-    "react-use": "^17.2.4",
     "swagger-ui-react": "^5.0.0"
   },
   "peerDependencies": {

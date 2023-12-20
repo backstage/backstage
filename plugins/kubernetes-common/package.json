@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/errors": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@kubernetes/client-node": "0.20.0",
