@@ -47,7 +47,6 @@ const createGiteaProject = async (
     body: JSON.stringify({
       name: projectName,
       description,
-      owner,
     }),
     headers: {
       ...getGiteaRequestOptions(config).headers,
