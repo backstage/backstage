@@ -56,7 +56,6 @@
     "@types/express": "^4.17.6",
     "dataloader": "^2.0.0",
     "express": "^4.17.1",
-    "express-promise-router": "^4.1.0",
     "lodash": "^4.17.21",
     "qs": "^6.10.1",
     "winston": "^3.2.1",

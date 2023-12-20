@@ -25,7 +25,6 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
-    "express": "^4.18.2",
     "passport": "^0.7.0",
     "passport-oauth2": "^1.6.1"
   },

@@ -39,7 +39,6 @@
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "dependencies": {
-    "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
