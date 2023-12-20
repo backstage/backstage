@@ -50,15 +50,12 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.0.0",
-    "@types/zen-observable": "^0.8.2",
-    "msw": "^1.0.0"
+    "@types/zen-observable": "^0.8.2"
   },
   "files": [
     "dist"

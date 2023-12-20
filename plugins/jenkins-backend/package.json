@@ -52,9 +52,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/jenkins": "^1.0.0",
-    "@types/supertest": "^2.0.8",
-    "msw": "^1.0.0",
-    "supertest": "^6.1.6"
+    "@types/supertest": "^2.0.8"
   },
   "files": [
     "dist",

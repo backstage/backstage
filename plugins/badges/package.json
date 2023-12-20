@@ -35,7 +35,6 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
@@ -49,7 +48,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0"

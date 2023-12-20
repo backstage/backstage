@@ -51,7 +51,6 @@
     "@backstage/cli": "workspace:^",
     "@types/body-parser-xml": "^2.0.2",
     "@types/supertest": "^2.0.8",
-    "msw": "^1.0.0",
     "supertest": "^6.1.6",
     "xml2js": "^0.6.0"
   },

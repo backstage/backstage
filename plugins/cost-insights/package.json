@@ -74,9 +74,7 @@
     "@types/recharts": "^1.8.14",
     "@types/regression": "^2.0.0",
     "@types/yup": "^0.29.13",
-    "canvas": "^2.10.2",
-    "cross-fetch": "^4.0.0",
-    "msw": "^1.0.0"
+    "canvas": "^2.10.2"
   },
   "files": [
     "dist",

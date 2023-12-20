@@ -56,7 +56,6 @@
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "js-yaml": "^4.1.0",
-    "msw": "^1.0.0",
     "supertest": "^6.2.4"
   },
   "files": [

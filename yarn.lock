@@ -4200,7 +4200,6 @@ __metadata:
     express-promise-router: ^4.1.0
     luxon: ^3.0.0
     marked: ^4.0.14
-    msw: ^1.0.0
     node-fetch: ^2.6.5
     supertest: ^6.1.3
     winston: ^3.2.1
@@ -4227,30 +4226,23 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-adr-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/git-url-parse": ^9.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
     lodash: ^4.17.21
-    msw: ^1.0.0
     react-markdown: ^8.0.0
     react-use: ^17.2.4
     remark-gfm: ^3.0.1
@@ -4275,7 +4267,6 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     http-proxy-middleware: ^2.0.0
-    msw: ^1.0.0
     supertest: ^6.1.6
     winston: ^3.2.1
     yn: ^4.0.0
@@ -4294,14 +4285,12 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
@@ -4318,20 +4307,17 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
@@ -4348,19 +4334,14 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/jest": ^29.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    msw: ^1.0.0
     react-ga4: ^2.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -4376,21 +4357,16 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    msw: ^1.0.0
     react-ga: ^3.3.0
     react-use: ^17.2.4
   peerDependencies:
@@ -4406,16 +4382,12 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
     "@newrelic/browser-agent": ^1.236.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -4438,7 +4410,6 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^4.0.0
     msw: ^1.0.0
@@ -4480,7 +4451,6 @@ __metadata:
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@graphiql/react": ^0.20.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -4491,13 +4461,11 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/swagger-ui-react": ^4.18.0
-    cross-fetch: ^4.0.0
     graphiql: 3.0.10
     graphql: ^16.0.0
     graphql-config: ^5.0.2
     graphql-ws: ^5.4.1
     isomorphic-form-data: ^2.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
     swagger-ui-react: ^5.0.0
   peerDependencies:
@@ -4513,20 +4481,15 @@ __metadata:
   dependencies:
     "@apollo/explorer": ^3.0.0
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
     use-deep-compare-effect: ^1.8.1
   peerDependencies:
@@ -4559,7 +4522,6 @@ __metadata:
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.3
     winston: ^3.2.1
@@ -4608,8 +4570,6 @@ __metadata:
     "@backstage/types": "workspace:^"
     express: ^4.18.2
     google-auth-library: ^8.0.0
-    msw: ^1.0.0
-    supertest: ^6.1.3
   languageName: unknown
   linkType: soft
 
@@ -4658,7 +4618,6 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@types/passport-google-oauth20": ^2.0.3
     google-auth-library: ^8.0.0
-    msw: ^1.0.0
     passport-google-oauth20: ^2.0.0
     supertest: ^6.1.3
   languageName: unknown
@@ -4910,7 +4869,6 @@ __metadata:
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
     mime-types: ^2.1.27
-    msw: ^1.0.0
     p-limit: ^3.1.0
     supertest: ^6.1.6
     winston: ^3.2.1
@@ -4932,7 +4890,6 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
@@ -4940,18 +4897,15 @@ __metadata:
     "@backstage/plugin-azure-devops-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     humanize-duration: ^3.27.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -4975,7 +4929,6 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    msw: ^1.0.0
     node-fetch: ^2.6.7
     winston: ^3.2.1
     yn: ^4.0.0
@@ -4996,21 +4949,18 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-azure-sites-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -5038,7 +4988,6 @@ __metadata:
     "@types/express": ^4.17.6
     badge-maker: ^3.3.0
     cors: ^2.8.5
-    cross-fetch: ^4.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^3.0.0
@@ -5056,14 +5005,12 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -5109,7 +5056,6 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@date-io/luxon": 1.x
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5153,7 +5099,6 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -5252,17 +5197,14 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
     "@types/express": "*"
     "@types/supertest": ^2.0.8
     cross-fetch: ^4.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
-    msw: ^1.0.0
     openapi-merge: ^1.3.2
     openapi3-ts: ^3.1.2
-    supertest: ^6.2.4
     uuid: ^9.0.0
     yn: ^4.0.0
   languageName: unknown
@@ -5682,7 +5624,6 @@ __metadata:
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5783,7 +5724,6 @@ __metadata:
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": ^4.12.2
@@ -5817,21 +5757,16 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.60
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -5863,7 +5798,6 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5942,28 +5876,19 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^9.0.0
-    "@testing-library/jest-dom": ^6.0.0
-    "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.25.1
     "@types/react": ^16.13.1 || ^17.0.0
     circleci-api: ^4.0.0
-    cross-fetch: ^4.0.0
     humanize-duration: ^3.27.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -5978,24 +5903,19 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
@@ -6016,20 +5936,17 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.27.1
     "@types/luxon": ^3.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     humanize-duration: ^3.27.1
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -6059,7 +5976,6 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^3.0.0
-    msw: ^1.0.0
     supertest: ^6.1.6
     uuid: ^8.3.2
     winston: ^3.2.1
@@ -6075,14 +5991,11 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -6090,13 +6003,11 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/highlightjs": ^10.1.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.15
     highlight.js: ^10.6.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
     recharts: ^2.5.0
   peerDependencies:
@@ -6118,14 +6029,12 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
     rc-progress: 3.5.1
@@ -6143,13 +6052,10 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -6157,10 +6063,8 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     jsonschema: ^1.2.6
-    msw: ^1.0.0
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
@@ -6208,10 +6112,8 @@ __metadata:
     "@types/yup": ^0.29.13
     canvas: ^2.10.2
     classnames: ^2.2.6
-    cross-fetch: ^4.0.0
     history: ^5.0.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     pluralize: ^8.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
@@ -6253,7 +6155,6 @@ __metadata:
     express-promise-router: ^4.1.0
     fs-extra: ^10.0.0
     lodash: ^4.17.21
-    msw: ^1.0.0
     node-fetch: ^2.6.7
     ping: ^0.4.1
     semver: ^7.5.3
@@ -6278,24 +6179,18 @@ __metadata:
   resolution: "@backstage/plugin-devtools@workspace:plugins/devtools"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-devtools-common": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.57
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
-    cross-fetch: ^4.0.0
-    msw: ^1.0.0
     react-json-view: ^1.21.3
     react-use: ^17.2.4
   peerDependencies:
@@ -6317,17 +6212,14 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     express: ^4.18.1
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     "@backstage/plugin-catalog-react": "workspace:^"
@@ -6355,7 +6247,6 @@ __metadata:
     express: ^4.18.1
     express-promise-router: ^4.1.0
     knex: ^3.0.0
-    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
     winston: ^3.2.1
@@ -6377,15 +6268,12 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-entity-feedback-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -6410,15 +6298,12 @@ __metadata:
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@codemirror/language": ^6.0.0
     "@codemirror/legacy-modes": ^6.1.0
     "@codemirror/view": ^6.0.0
@@ -6429,11 +6314,9 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@uiw/react-codemirror": ^4.9.3
     lodash: ^4.17.21
-    msw: ^1.0.0
     react-use: ^17.2.4
     yaml: ^2.0.0
   peerDependencies:
@@ -6473,7 +6356,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    supertest: ^6.1.3
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -6487,7 +6369,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    supertest: ^6.1.3
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -6501,7 +6382,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    supertest: ^6.1.3
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -6517,7 +6397,6 @@ __metadata:
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@octokit/webhooks-methods": ^3.0.0
-    supertest: ^6.1.3
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -6532,7 +6411,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    supertest: ^6.1.3
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -6590,7 +6468,6 @@ __metadata:
     express: ^4.18.1
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
-    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
     winston: ^3.2.1
@@ -6612,16 +6489,11 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-explore-common": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
-    msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -6648,17 +6520,14 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
-    cross-fetch: ^4.0.0
     msw: ^1.0.0
     pluralize: ^8.0.0
     react-use: ^17.2.4
@@ -6681,17 +6550,14 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -6713,14 +6579,12 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^4.0.0
     luxon: ^3.0.0
@@ -6739,13 +6603,11 @@ __metadata:
   resolution: "@backstage/plugin-gcalendar@workspace:plugins/gcalendar"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -6754,17 +6616,14 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/dompurify": ^2.3.3
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/sanitize-html": ^2.6.2
     classnames: ^2.3.1
-    cross-fetch: ^4.0.0
     dompurify: ^2.3.6
     lodash: ^4.17.21
     luxon: ^3.0.0
     material-ui-popup-state: ^1.9.3
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -6778,12 +6637,9 @@ __metadata:
   resolution: "@backstage/plugin-gcp-projects@workspace:plugins/gcp-projects"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -6791,10 +6647,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
-    msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -6812,8 +6665,6 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/integration": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -6821,11 +6672,9 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/recharts": ^1.8.15
     luxon: ^3.0.0
-    msw: ^1.0.0
     qs: ^6.10.1
     react-use: ^17.2.4
     recharts: ^2.5.0
@@ -6850,7 +6699,6 @@ __metadata:
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -6858,12 +6706,9 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
     git-url-parse: ^13.0.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -6887,7 +6732,6 @@ __metadata:
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -6895,7 +6739,6 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -6913,7 +6756,6 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
@@ -6921,17 +6763,14 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.4
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     octokit: ^2.0.4
     react-use: ^17.4.0
   peerDependencies:
@@ -6949,11 +6788,9 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -6961,10 +6798,8 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     p-limit: ^4.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -6985,17 +6820,13 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7017,7 +6848,6 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -7030,7 +6860,6 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.0.0
     qs: ^6.10.1
     react-use: ^17.2.4
   peerDependencies:
@@ -7045,28 +6874,23 @@ __metadata:
   resolution: "@backstage/plugin-graphiql@workspace:plugins/graphiql"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-compat-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/codemirror": ^5.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
     graphiql: ^3.0.6
     graphql: ^16.0.0
     graphql-ws: ^5.4.1
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7080,22 +6904,17 @@ __metadata:
   resolution: "@backstage/plugin-graphql-voyager@workspace:plugins/graphql-voyager"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     graphql-voyager: ^1.0.0-rc.31
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7109,22 +6928,13 @@ __metadata:
   resolution: "@backstage/plugin-home-react@workspace:plugins/home-react"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@rjsf/utils": 5.15.0
-    "@testing-library/dom": ^9.0.0
-    "@testing-library/jest-dom": ^6.0.0
-    "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/react-grid-layout": ^1.3.2
-    cross-fetch: ^4.0.0
-    msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7166,7 +6976,6 @@ __metadata:
     "@types/react-grid-layout": ^1.3.2
     lodash: ^4.17.21
     luxon: ^3.4.3
-    msw: ^1.0.0
     react-grid-layout: 1.3.4
     react-resizable: ^3.0.4
     react-use: ^17.2.4
@@ -7184,14 +6993,11 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@date-io/luxon": 1.x
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -7200,11 +7006,9 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     humanize-duration: ^3.26.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7235,9 +7039,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     jenkins: ^1.0.0
-    msw: ^1.0.0
     node-fetch: ^2.6.7
-    supertest: ^6.1.6
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -7259,7 +7061,6 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
@@ -7267,19 +7068,15 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-jenkins-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/testing-library__jest-dom": ^5.9.1
-    cross-fetch: ^4.0.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7318,23 +7115,19 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     jest-when: ^3.1.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7404,16 +7197,13 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/plugin-kubernetes-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@kubernetes-models/apimachinery": ^1.1.0
     "@kubernetes-models/base": ^4.0.1
     "@material-ui/core": ^4.12.2
@@ -7422,7 +7212,6 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/node": ^16.11.26
     "@types/react": ^16.13.1 || ^17.0.0
     cronstrue: ^2.2.0
@@ -7430,7 +7219,6 @@ __metadata:
     kubernetes-models: ^4.1.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7445,16 +7233,13 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@kubernetes/client-node": 0.20.0
     kubernetes-models: ^4.3.1
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.3.1
   languageName: unknown
   linkType: soft
 
@@ -7515,7 +7300,6 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
@@ -7524,7 +7308,6 @@ __metadata:
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@backstage/plugin-kubernetes-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@kubernetes-models/apimachinery": ^1.1.0
     "@kubernetes-models/base": ^4.0.1
@@ -7535,15 +7318,12 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     cronstrue: ^2.2.0
-    jest-websocket-mock: ^2.4.1
     js-yaml: ^4.0.0
     kubernetes-models: ^4.1.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
     xterm: ^5.2.1
     xterm-addon-attach: ^0.9.0
@@ -7596,14 +7376,12 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-lighthouse-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
@@ -7640,7 +7418,6 @@ __metadata:
     knex: ^3.0.0
     linguist-js: ^2.5.3
     luxon: ^2.0.2
-    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
     uuid: ^8.3.2
@@ -7663,25 +7440,20 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-linguist-common": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^2.0.2
-    msw: ^1.0.0
     react-use: ^17.2.4
     slugify: ^1.6.4
   peerDependencies:
@@ -7696,13 +7468,10 @@ __metadata:
   resolution: "@backstage/plugin-microsoft-calendar@workspace:plugins/microsoft-calendar"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@microsoft/microsoft-graph-types": ^2.25.0
@@ -7710,14 +7479,12 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.3.1
     dompurify: ^2.3.6
     lodash: ^4.17.21
     luxon: ^3.0.0
     material-ui-popup-state: ^1.9.3
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7755,24 +7522,19 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-newrelic@workspace:plugins/newrelic"
   dependencies:
-    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/parse-link-header": ^2.0.1
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
     msw: ^1.2.3
     parse-link-header: ^2.0.0
     react-use: ^17.2.4
@@ -7796,7 +7558,6 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
     winston: ^3.2.1
@@ -7811,23 +7572,18 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.60
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^4.0.0
     luxon: ^3.3.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7842,22 +7598,17 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7871,12 +7622,9 @@ __metadata:
   resolution: "@backstage/plugin-opencost@workspace:plugins/opencost"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@date-io/luxon": 1.x
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
@@ -7884,14 +7632,10 @@ __metadata:
     "@material-ui/pickers": ^3.3.10
     "@material-ui/styles": ^4.11.5
     "@testing-library/jest-dom": ^6.0.0
-    "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     axios: ^1.4.0
-    cross-fetch: ^4.0.0
     date-fns: ^2.30.0
     lodash: ^4.17.21
-    msw: ^1.0.0
     react-use: ^17.2.4
     recharts: ^2.5.0
   peerDependencies:
@@ -7910,10 +7654,8 @@ __metadata:
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -7922,7 +7664,6 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7947,7 +7688,6 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -7958,7 +7698,6 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
-    msw: ^1.0.0
     p-limit: ^3.1.0
     pluralize: ^8.0.0
     qs: ^6.10.1
@@ -7984,18 +7723,15 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-home-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -8016,7 +7752,6 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.6
     winston: ^3.2.1
@@ -8030,25 +7765,20 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -8149,7 +7879,6 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
     react-use: ^17.2.4
     swr: ^2.0.0
   peerDependencies:
@@ -8180,7 +7909,6 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^3.0.0
-    msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.3
     uuid: ^8.2.0
@@ -8218,14 +7946,12 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
     msw: ^1.0.0
@@ -8283,13 +8009,11 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.57
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.1
     react-use: ^17.2.4
@@ -8331,24 +8055,19 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
     lodash: ^4.17.21
-    msw: ^1.0.0
     react-sparklines: ^1.7.0
     react-use: ^17.2.4
   peerDependencies:
@@ -8428,7 +8147,6 @@ __metadata:
     "@types/fs-extra": ^9.0.1
     command-exists: ^1.2.9
     fs-extra: 10.1.0
-    msw: ^1.0.0
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -8715,7 +8433,6 @@ __metadata:
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-scaffolder-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@codemirror/language": ^6.0.0
     "@codemirror/legacy-modes": ^6.1.0
@@ -9002,7 +8719,6 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": ^4.12.2
@@ -9014,7 +8730,6 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     history: ^5.0.0
-    msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
@@ -9030,13 +8745,11 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@date-io/core": ^1.3.13
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
@@ -9045,12 +8758,9 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-sparklines: ^1.7.0
     react-use: ^17.2.4
   peerDependencies:
@@ -9065,7 +8775,6 @@ __metadata:
   resolution: "@backstage/plugin-shortcuts@workspace:plugins/shortcuts"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
@@ -9078,10 +8787,8 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/zen-observable": ^0.8.2
-    msw: ^1.0.0
     react-hook-form: ^7.12.2
     react-use: ^17.2.4
     uuid: ^8.3.2
@@ -9143,7 +8850,6 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-sonarqube-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -9151,7 +8857,6 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     cross-fetch: ^4.0.0
     luxon: ^3.0.0
@@ -9177,19 +8882,16 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -9207,9 +8909,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-search-backend-module-stack-overflow-collator": "workspace:^"
-    "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    msw: ^1.0.0
     node-fetch: ^2.6.7
     qs: ^6.9.4
     winston: ^3.2.1
@@ -9222,16 +8922,13 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-home-react": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/dom": ^9.0.0
@@ -9262,13 +8959,11 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
@@ -9363,15 +9058,12 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-tech-insights-common": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -9379,9 +9071,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
@@ -9396,7 +9086,6 @@ __metadata:
   resolution: "@backstage/plugin-tech-radar@workspace:plugins/tech-radar"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-compat-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
@@ -9404,7 +9093,6 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -9416,9 +9104,7 @@ __metadata:
     "@types/d3-force": ^3.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     color: ^4.0.1
-    cross-fetch: ^4.0.0
     d3-force: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -9435,7 +9121,6 @@ __metadata:
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
@@ -9443,15 +9128,12 @@ __metadata:
     "@backstage/plugin-techdocs": "workspace:^"
     "@backstage/plugin-techdocs-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
     testing-library__dom: ^7.29.4-beta.1
   peerDependencies:
@@ -9478,7 +9160,6 @@ __metadata:
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
-    "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
     "@types/dockerode": ^3.3.0
@@ -9502,16 +9183,13 @@ __metadata:
   resolution: "@backstage/plugin-techdocs-module-addons-contrib@workspace:plugins/techdocs-module-addons-contrib"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-techdocs-addons-test-utils": "workspace:^"
     "@backstage/plugin-techdocs-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -9519,10 +9197,8 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     git-url-parse: ^13.0.0
-    msw: ^1.0.0
     photoswipe: ^5.3.7
     react-use: ^17.2.4
   peerDependencies:
@@ -9640,13 +9316,11 @@ __metadata:
     "@types/event-source-polyfill": ^1.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     canvas: ^2.10.2
-    cross-fetch: ^4.0.0
     dompurify: ^2.2.9
     event-source-polyfill: 1.0.25
     git-url-parse: ^13.0.0
     jss: ~10.10.0
     lodash: ^4.17.21
-    msw: ^1.0.0
     react-helmet: 6.1.0
     react-use: ^17.2.4
   peerDependencies:
@@ -9675,7 +9349,6 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     leasot: ^12.0.0
-    msw: ^1.0.0
     supertest: ^6.1.3
     winston: ^3.2.1
     yn: ^4.0.0
@@ -9688,23 +9361,19 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -9762,7 +9431,6 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    cross-fetch: ^4.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
     zen-observable: ^0.10.0
@@ -9824,14 +9492,12 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
@@ -9850,7 +9516,6 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -9868,13 +9533,11 @@ __metadata:
   resolution: "@backstage/plugin-xcmetrics@workspace:plugins/xcmetrics"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -9886,7 +9549,6 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
     recharts: ^2.5.0
   peerDependencies:
@@ -11958,7 +11620,6 @@ __metadata:
     "@types/uuid": ^8.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    msw: ^1.0.0
     supertest: ^6.1.6
     uuid: ^8.3.2
     winston: ^3.2.1
@@ -11971,12 +11632,7 @@ __metadata:
   resolution: "@internal/plugin-todo-list-common@workspace:plugins/example-todo-list-common"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    cross-fetch: ^4.0.0
-    msw: ^1.0.0
   languageName: unknown
   linkType: soft
 
@@ -11985,21 +11641,15 @@ __metadata:
   resolution: "@internal/plugin-todo-list@workspace:plugins/example-todo-list"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
-    msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -31255,7 +30905,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-websocket-mock@npm:^2.4.1, jest-websocket-mock@npm:^2.5.0":
+"jest-websocket-mock@npm:^2.5.0":
   version: 2.5.0
   resolution: "jest-websocket-mock@npm:2.5.0"
   dependencies:
