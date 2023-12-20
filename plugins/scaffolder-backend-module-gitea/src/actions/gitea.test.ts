@@ -88,7 +88,7 @@ describe('publish:gitea', () => {
 
   it('should throw if there is no repositoryId returned', async () => {
     server.use(
-      rest.put('https://gitea.com/api/v1/user/repo', (req, res, ctx) => {
+      rest.post('https://gitea.com/api/v1/user/repos', (req, res, ctx) => {
         expect(req.headers.get('Authorization')).toBe(
           'Basic Z2l0ZWFfdXNlcjpnaXRlYV9wYXNzd29yZA==',
         );
