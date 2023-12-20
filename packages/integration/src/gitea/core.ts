@@ -124,7 +124,7 @@ export function getGiteaRequestOptions(config: GiteaIntegrationConfig): {
       `${username}:${password}`,
     ).toString('base64')}`;
   } else {
-    headers.Authorization = `token ${password}`;
+    headers.Authorization = `Token ${password}`;
   }
 
   return {
