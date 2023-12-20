@@ -40,7 +40,7 @@ const createGiteaProject = async (
     description: string;
   },
 ): Promise<void> => {
-  const { projectName, owner, description } = options;
+  const { projectName, description } = options;
 
   const fetchOptions: RequestInit = {
     method: 'POST',
@@ -176,7 +176,7 @@ export function createPublishGiteaAction(options: {
         sourcePath,
       } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
+      const { repo, host } = parseRepoUrl(repoUrl, integrations);
 
       const integrationConfig = integrations.gitea.byHost(host);
       if (!integrationConfig) {
@@ -199,7 +199,7 @@ export function createPublishGiteaAction(options: {
 
       await createGiteaProject(integrationConfig.config, {
         description,
-        owner: owner,
+        // owner: owner,
         projectName: repo,
         // parent: workspace,
       });

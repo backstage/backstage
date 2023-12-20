@@ -88,6 +88,7 @@ describe('publish:gitea', () => {
   it('should throw if there is no repositoryId returned', async () => {
     server.use(
       rest.post('https://gitea.com/api/v1/user/repos', (req, res, ctx) => {
+        // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'Basic Z2l0ZWFfdXNlcjpnaXRlYV9wYXNzd29yZA==',
         );
@@ -107,7 +108,7 @@ describe('publish:gitea', () => {
       ...mockContext,
       input: {
         ...mockContext.input,
-        repoUrl: 'gitea.com?owner=owner&repo=repo',
+        repoUrl: 'gitea.com?repo=repo',
       },
     });
 
