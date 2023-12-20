@@ -38,7 +38,6 @@ describe('publish:gitea', () => {
       gitea: [
         {
           host: 'gitea.com',
-          baseUrl: 'https://gitea.com',
           username: 'gitea_user',
           password: 'gitea_password',
         },
@@ -93,10 +92,8 @@ describe('publish:gitea', () => {
           'Basic Z2l0ZWFfdXNlcjpnaXRlYV9wYXNzd29yZA==',
         );
         expect(req.body).toEqual({
-          create_empty_commit: false,
-          owners: ['owner'],
+          name: 'repo',
           description,
-          parent: 'workspace',
         });
         return res(
           ctx.status(201),
@@ -120,8 +117,11 @@ describe('publish:gitea', () => {
       defaultBranch: 'main',
       auth: { username: 'gitea_user', password: 'gitea_password' },
       logger: mockContext.logger,
-      commitMessage: 'initial commit',
-      gitAuthorInfo: {},
+      commitMessage: expect.stringContaining('initial commit\n\nChange-Id:'),
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
     });
   });
 
