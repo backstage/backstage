@@ -68,8 +68,7 @@
     "@backstage/cli": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0",
-    "@types/git-url-parse": "^9.0.0"
+    "@testing-library/react": "^14.0.0"
   },
   "files": [
     "dist"

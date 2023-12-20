@@ -4237,7 +4237,6 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/git-url-parse": ^9.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
     react-markdown: ^8.0.0
@@ -39458,6 +39457,7 @@ __metadata:
     "@backstage/codemods": "workspace:*"
     "@backstage/create-app": "workspace:*"
     "@backstage/e2e-test-utils": "workspace:*"
+    "@backstage/errors": "workspace:^"
     "@backstage/repo-tools": "workspace:*"
     "@changesets/changelog-github": ^0.4.8
     "@changesets/cli": ^2.14.0
