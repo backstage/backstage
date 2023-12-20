@@ -57,10 +57,12 @@ const createGiteaProject = async (
   // TODO
   // Create a repository in Gitea
   // API request: https://gitea.com/api/swagger#/user/createCurrentUserRepo
-  const response: Response = await fetch(
-    `${config.baseUrl}/api/v1/user/repos`,
-    fetchOptions,
-  );
+  let response: Response;
+  try {
+    response = await fetch(`${config.baseUrl}/api/v1/user/repos`, fetchOptions);
+  } catch (e) {
+    throw new Error(`Unable to create repository, ${e}`);
+  }
   if (response.status !== 201) {
     throw new Error(
       `Unable to create repository, ${response.status} ${
@@ -168,8 +170,12 @@ export function createPublishGiteaAction(options: {
         repoUrl,
         description,
         defaultBranch = 'main',
-        gitAuthorName = config.getOptionalString('scaffolder.defaultAuthor.name'),
-        gitAuthorEmail = config.getOptionalString('scaffolder.defaultAuthor.email'),
+        gitAuthorName = config.getOptionalString(
+          'scaffolder.defaultAuthor.name',
+        ),
+        gitAuthorEmail = config.getOptionalString(
+          'scaffolder.defaultAuthor.email',
+        ),
         gitCommitMessage = 'initial commit',
         sourcePath,
       } = ctx.input;
