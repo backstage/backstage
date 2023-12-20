@@ -1,11 +1,9 @@
 # @backstage/plugin-badges
 
-The badges plugin offers a set of badges that can be used outside of
-your backstage deployment, showing information related to data from
-the catalog, such as entity owner and lifecycle data for instance.
+The badges plugin provides a set of badges that can be utilized beyond your backstage deployment,
+displaying information related to catalog data, such as entity owner and lifecycle details, for instance.
 
-The available badges are setup in the `badges-backend` plugin, see
-link below for more details.
+The available badges are configured in the `badges-backend` plugin; refer to the link below for more details.
 
 ## Entity badges
 
