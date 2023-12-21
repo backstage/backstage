@@ -1,5 +1,13 @@
 # @backstage/repo-tools
 
+## 0.5.1
+
+### Patch Changes
+
+- f1dc48e: Updated the OpenAPI template to export the `TypedResponse` interface so that client code can leverage it
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+
 ## 0.5.0
 
 ### Minor Changes
