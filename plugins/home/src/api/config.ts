@@ -55,6 +55,11 @@ export function readFilterByConfig(config: Config): {
  */
 export function readFilterByConfigs(
   configs: Config[],
-): VisitsApiQueryParams['filterBy'] {
-  return configs.map(readFilterByConfig);
+): VisitsApiQueryParams['filterBy'] | undefined {
+  try {
+    return configs.map(readFilterByConfig);
+  }
+  catch {
+    return undefined;
+  }
 }
