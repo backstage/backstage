@@ -1,15 +1,5 @@
 # @backstage/plugin-home
 
-## 0.6.1
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/catalog-client@1.5.1
-  - @backstage/plugin-catalog-react@1.9.3
-  - @backstage/core-compat-api@0.1.0
-  - @backstage/plugin-home-react@0.1.6
-
 ## 0.6.0
 
 ### Minor Changes

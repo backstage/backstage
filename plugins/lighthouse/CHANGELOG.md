@@ -1,12 +1,5 @@
 # @backstage/plugin-lighthouse
 
-## 0.4.14
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/plugin-catalog-react@1.9.3
-
 ## 0.4.13
 
 ### Patch Changes

@@ -1,13 +1,5 @@
 # @backstage/plugin-explore
 
-## 0.4.15
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/plugin-catalog-react@1.9.3
-  - @backstage/plugin-explore-react@0.0.34
-
 ## 0.4.14
 
 ### Patch Changes

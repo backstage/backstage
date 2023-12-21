@@ -1,13 +1,5 @@
 # @backstage/plugin-nomad-backend
 
-## 0.1.11
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/backend-plugin-api@0.6.9
-  - @backstage/backend-common@0.20.1
-
 ## 0.1.10
 
 ### Patch Changes

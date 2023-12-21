@@ -1,14 +1,5 @@
 # @backstage/plugin-adr-backend
 
-## 0.4.6
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/catalog-client@1.5.1
-  - @backstage/backend-plugin-api@0.6.9
-  - @backstage/backend-common@0.20.1
-
 ## 0.4.5
 
 ### Patch Changes

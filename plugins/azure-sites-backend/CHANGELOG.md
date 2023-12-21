@@ -1,12 +1,5 @@
 # @backstage/plugin-azure-sites-backend
 
-## 0.1.19
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/backend-common@0.20.1
-
 ## 0.1.18
 
 ### Patch Changes

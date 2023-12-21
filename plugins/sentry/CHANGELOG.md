@@ -1,12 +1,5 @@
 # @backstage/plugin-sentry
 
-## 0.5.14
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/plugin-catalog-react@1.9.3
-
 ## 0.5.13
 
 ### Patch Changes
