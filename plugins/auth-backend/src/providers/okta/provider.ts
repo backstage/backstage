@@ -24,6 +24,10 @@ import {
   adaptLegacyOAuthSignInResolver,
 } from '../../lib/legacy';
 import { oktaAuthenticator } from '@backstage/plugin-auth-backend-module-okta-provider';
+import {
+  commonByEmailLocalPartResolver,
+  commonByEmailResolver,
+} from '../resolvers';
 
 /**
  * Auth provider integration for Okta auth
@@ -51,6 +55,17 @@ export const okta = createAuthProviderIntegration({
     });
   },
   resolvers: {
+    /**
+     * Looks up the user by matching their email local part to the entity name.
+     */
+    emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
+    /**
+     * Looks up the user by matching their email to the entity email.
+     */
+    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
+    /**
+     * Looks up the user by matching their email to the `okta.com/email` annotation.
+     */
     emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
       return async (info, ctx) => {
         const { profile } = info;
