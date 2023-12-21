@@ -42,6 +42,7 @@ Add the following to `makeCreateEnv`
 
 ```diff
 // packages/backend/src/index.ts
++   import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 +   const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
 ```
 
@@ -49,6 +50,7 @@ Then update plugin environment to include the event broker.
 
 ```diff
 // packages/backend/src/types.ts
++  import { EventBroker } from '@backstage/plugin-events-node';
 +  eventBroker: EventBroker;
 ```
 
