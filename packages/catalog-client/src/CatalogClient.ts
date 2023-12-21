@@ -43,7 +43,7 @@ import {
   QueryEntitiesResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest } from './utils';
-import { DefaultApiClient } from './generated';
+import { DefaultApiClient, TypedResponse } from './generated';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -112,7 +112,7 @@ export class CatalogClient implements CatalogApi {
       }
     }
 
-    const entities: Entity[] = await this.requestRequired(
+    const entities = await this.requestRequired(
       await this.apiClient.getEntities(
         {
           query: {
@@ -345,8 +345,8 @@ export class CatalogClient implements CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    const all: { data: Location }[] = await this.requestRequired(
-      await this.apiClient.getLocation({ path: { id: locationRef } }, options),
+    const all = await this.requestRequired(
+      await this.apiClient.getLocations({}, options),
     );
     return all
       .map(r => r.data)
@@ -418,7 +418,7 @@ export class CatalogClient implements CatalogApi {
     }
   }
 
-  private async requestRequired<T = any>(response: Response): Promise<T> {
+  private async requestRequired<T>(response: TypedResponse<T>): Promise<T> {
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
