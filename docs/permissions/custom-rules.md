@@ -8,10 +8,11 @@ For some use cases, you may want to define custom [rules](./concepts.md#resource
 
 ## Define a custom rule
 
-Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule and create a condition in `permissions.ts`.
+Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule and create a condition in `packages/backend/src/plugins/permission.ts`.
 
 ```typescript title="packages/backend/src/plugins/permission.ts"
 ...
+
 import type { Entity } from '@backstage/catalog-model';
 import { createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
 import { createConditionFactory } from '@backstage/plugin-permission-node';
@@ -42,14 +43,47 @@ export const isInSystemRule = createCatalogPermissionRule({
 });
 
 const isInSystem = createConditionFactory(isInSystemRule);
+
+...
 ```
 
 For a more detailed explanation on defining rules, refer to the [documentation for plugin authors](./plugin-authors/03-adding-a-resource-permission-check.md#adding-support-for-conditional-decisions).
 
-Still in the `permissions.ts` file, let's use the condition we just created in our `TestPermissionPolicy`.
+Still in the `packages/backend/src/plugins/permission.ts` file, let's use the condition we just created in our `TestPermissionPolicy`.
 
 ```ts title="packages/backend/src/plugins/permission.ts"
 ...
+
+import type { Entity } from '@backstage/catalog-model';
+import { createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
+import { createConditionFactory } from '@backstage/plugin-permission-node';
+import { z } from 'zod';
+
+export const isInSystemRule = createCatalogPermissionRule({
+  name: 'IS_IN_SYSTEM',
+  description: 'Checks if an entity is part of the system provided',
+  resourceType: 'catalog-entity',
+  paramsSchema: z.object({
+    systemRef: z
+      .string()
+      .describe('SystemRef to check the resource is part of'),
+  }),
+  apply: (resource: Entity, { systemRef }) => {
+    if (!resource.relations) {
+      return false;
+    }
+
+    return resource.relations
+      .filter(relation => relation.type === 'partOf')
+      .some(relation => relation.targetRef === systemRef);
+  },
+  toQuery: ({ systemRef }) => ({
+    key: 'relations.partOf',
+    values: [systemRef],
+  }),
+});
+
+const isInSystem = createConditionFactory(isInSystemRule);
 
 class TestPermissionPolicy implements PermissionPolicy {
   async handle(
@@ -68,11 +102,11 @@ class TestPermissionPolicy implements PermissionPolicy {
         {
           anyOf: [
             catalogConditions.isEntityOwner({
-              claims: user?.identity.ownershipEntityRefs ?? []
+              claims: user?.identity.ownershipEntityRefs ?? [],
             }),
             isInSystem({ systemRef: 'interviewing' }),
-          ]
-        }
+          ],
+        },
         /* highlight-add-end */
       );
     }
@@ -80,6 +114,8 @@ class TestPermissionPolicy implements PermissionPolicy {
     return { result: AuthorizeResult.ALLOW };
   }
 }
+
+...
 ```
 
 ## Provide the rule during plugin setup
@@ -91,7 +127,7 @@ The api for providing custom rules may differ between plugins, but there should 
 ```typescript title="packages/backend/src/plugins/catalog.ts"
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 /* highlight-add-next-line */
-import { isInSystemRule } from '../customPermissionRules/isInSystem';
+import { isInSystemRule } from './permissions';
 
 ...
 
@@ -109,4 +145,4 @@ export default async function createPlugin(
 The updated policy will allow catalog entity resource permissions if any of the following are true:
 
 - User owns the target entity
-- Target entity is part of the `'interviewing'` system
+- Target entity is part of the `interviewing` system
