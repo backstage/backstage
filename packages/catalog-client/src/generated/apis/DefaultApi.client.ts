@@ -35,7 +35,12 @@ import { Location } from '../models/Location.model';
 import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
 import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
 
-type TypedResponse<T> = Omit<Response, 'json'> & {
+/**
+ * Wraps the Response type to convey a type on the json call.
+ *
+ * @public
+ */
+export type TypedResponse<T> = Omit<Response, 'json'> & {
   json: () => Promise<T>;
 };
 
