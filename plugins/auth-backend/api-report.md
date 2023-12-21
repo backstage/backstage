@@ -592,6 +592,8 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory_2;
     resolvers: Readonly<{
+      emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
       emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
