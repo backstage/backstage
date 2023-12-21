@@ -16,37 +16,37 @@
 
 import { groupBy } from 'lodash';
 import {
-  resolve as resolvePath,
-  relative as relativePath,
   basename,
   join,
+  relative as relativePath,
+  resolve as resolvePath,
 } from 'path';
 import { execFile } from 'child_process';
 import fs from 'fs-extra';
 import {
+  CompilerState,
   Extractor,
   ExtractorConfig,
-  CompilerState,
   ExtractorLogLevel,
   ExtractorMessage,
 } from '@microsoft/api-extractor';
 import { Program } from 'typescript';
 import {
-  DocNode,
-  IDocNodeContainerParameters,
-  TSDocTagSyntaxKind,
-  TSDocConfiguration,
-  Standardization,
   DocBlockTag,
-  DocPlainText,
   DocLinkTag,
+  DocNode,
+  DocPlainText,
+  IDocNodeContainerParameters,
+  Standardization,
+  TSDocConfiguration,
+  TSDocTagSyntaxKind,
 } from '@microsoft/tsdoc';
 import { TSDocConfigFile } from '@microsoft/tsdoc-config';
 import {
-  ApiPackage,
-  ApiModel,
   ApiItem,
   ApiItemKind,
+  ApiModel,
+  ApiPackage,
 } from '@microsoft/api-extractor-model';
 import {
   IMarkdownDocumenterOptions,
@@ -290,10 +290,10 @@ function logApiReportInstructions() {
     '*************************************************************************************',
   );
   console.log(
-    '* You have uncommitted changes to the public API of a package.                      *',
+    '* You have uncommitted changes to the public API or reports of a package.           *',
   );
   console.log(
-    '* To solve this, run `yarn build:api-reports` and commit all api-report.md changes. *',
+    '* To solve this, run `yarn build:api-reports` and commit all md file changes.       *',
   );
   console.log(
     '*************************************************************************************',
@@ -1439,6 +1439,69 @@ export async function runCliExtraction({
           logApiReportInstructions();
         }
         throw new Error(`CLI report changed for ${packageDir}, `);
+      }
+    }
+  }
+}
+
+interface KnipExtractionOptions {
+  packageDirs: string[];
+  isLocalBuild: boolean;
+}
+
+export async function runKnipReports({
+  packageDirs,
+  isLocalBuild,
+}: KnipExtractionOptions) {
+  const knipDir = cliPaths.resolveTargetRoot('./node_modules/knip/bin/');
+
+  for (const packageDir of packageDirs) {
+    console.log(`## Processing ${packageDir}`);
+    const fullDir = cliPaths.resolveTargetRoot(packageDir);
+    const reportPath = resolvePath(fullDir, 'knip-report.md');
+    const run = createBinRunner(fullDir, '');
+
+    const report = await run(
+      `${knipDir}/knip.js`,
+      `--directory ${fullDir}`, // Run in the package directory
+      '--no-exit-code', // Removing this will end the process in case there are findings by knip
+      '--no-progress', // Remove unnecessary debugging from output
+      // TODO: Add more checks when dependencies start to look ok, see https://knip.dev/reference/cli#--include
+      '--include dependencies,unlisted',
+      '--reporter markdown',
+    );
+
+    const existingReport = await fs
+      .readFile(reportPath, 'utf8')
+      .catch(error => {
+        if (error.code === 'ENOENT') {
+          return undefined;
+        }
+        throw error;
+      });
+
+    if (existingReport !== report) {
+      if (isLocalBuild) {
+        console.warn(`Knip report changed for ${packageDir}`);
+        await fs.writeFile(reportPath, report);
+      } else {
+        logApiReportInstructions();
+
+        if (existingReport) {
+          console.log('');
+          console.log(
+            `The conflicting file is ${relativePath(
+              cliPaths.targetRoot,
+              reportPath,
+            )}, expecting the following content:`,
+          );
+          console.log('');
+
+          console.log(report);
+
+          logApiReportInstructions();
+        }
+        throw new Error(`Knip report changed for ${packageDir}, `);
       }
     }
   }

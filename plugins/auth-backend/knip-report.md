@@ -1,0 +1,32 @@
+# Knip report
+
+## Unused dependencies (10)
+
+| Name                    | Location     |
+|:------------------------|:-------------|
+| yn                      | package.json |
+| cors                    | package.json |
+| morgan                  | package.json |
+| winston                 | package.json |
+| fs-extra                | package.json |
+| compression             | package.json |
+| passport-gitlab2        | package.json |
+| passport-github2        | package.json |
+| google-auth-library     | package.json |
+| passport-google-oauth20 | package.json |
+
+## Unused devDependencies (10)
+
+| Name                           | Location     |
+|:-------------------------------|:-------------|
+| msw                            | package.json |
+| supertest                      | package.json |
+| @types/xml2js                  | package.json |
+| @backstage/cli                 | package.json |
+| @types/body-parser             | package.json |
+| @types/passport-github2        | package.json |
+| @types/passport-strategy       | package.json |
+| @backstage/backend-defaults    | package.json |
+| @backstage/backend-test-utils  | package.json |
+| @types/passport-google-oauth20 | package.json |
+

@@ -20,9 +20,9 @@ import * as pathsLib from '../../lib/paths';
 
 import {
   buildDocs,
-  runCliExtraction,
-  runApiExtraction,
   categorizePackageDirs,
+  runApiExtraction,
+  runCliExtraction,
 } from './api-extractor';
 
 import { buildApiReports } from './api-reports';
@@ -43,6 +43,7 @@ jest.mock('./api-extractor', () => ({
   runApiExtraction: jest.fn(),
   runCliExtraction: jest.fn(),
   buildDocs: jest.fn(),
+  runKnipReports: jest.fn(),
 }));
 
 const projectPaths = pathsLib.paths;
