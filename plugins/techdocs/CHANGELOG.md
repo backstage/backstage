@@ -1,5 +1,49 @@
 # @backstage/plugin-techdocs
 
+## 1.9.2
+
+### Patch Changes
+
+- 03d0b6d: The `convertLegacyRouteRef` utility used by the alpha exports is now imported from `@backstage/core-compat-api`.
+- a1227cc: Wrap `/alpha` export extension elements in backwards compatibility wrapper.
+- 5814122: Updated `/alpha` exports to fit new naming patterns.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.0
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/frontend-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-search-react@1.7.4
+  - @backstage/integration@1.8.0
+  - @backstage/integration-react@1.1.22
+  - @backstage/plugin-techdocs-react@1.1.14
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.9.2-next.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/core-compat-api@0.1.0-next.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/frontend-plugin-api@0.4.0-next.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.3
+  - @backstage/plugin-search-common@1.2.8
+  - @backstage/plugin-search-react@1.7.4-next.3
+  - @backstage/plugin-techdocs-react@1.1.14-next.3
+
 ## 1.9.2-next.3
 
 ### Patch Changes

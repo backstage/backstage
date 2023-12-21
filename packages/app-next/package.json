@@ -1,6 +1,6 @@
 {
   "name": "example-app-next",
-  "version": "0.0.4-next.3",
+  "version": "0.0.4",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -10,7 +10,6 @@
     "@backstage/app-defaults": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
@@ -75,6 +74,7 @@
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/plugin-todo": "workspace:^",
     "@backstage/plugin-user-settings": "workspace:^",
+    "@backstage/plugin-visualizer": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@circleci/backstage-plugin": "^0.1.1",
     "@material-ui/core": "^4.12.2",

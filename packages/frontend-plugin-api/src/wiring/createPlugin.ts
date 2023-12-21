@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import { Extension, ExtensionDefinition } from './createExtension';
-import { ExternalRouteRef, RouteRef } from '../routing';
-import { FeatureFlagConfig } from './types';
-import { resolveExtensionDefinition } from './resolveExtensionDefinition';
-
-/** @public */
-export type AnyRoutes = { [name in string]: RouteRef };
-
-/** @public */
-export type AnyExternalRoutes = { [name in string]: ExternalRouteRef };
+import { ExtensionDefinition } from './createExtension';
+import {
+  Extension,
+  resolveExtensionDefinition,
+} from './resolveExtensionDefinition';
+import {
+  AnyExternalRoutes,
+  AnyRoutes,
+  BackstagePlugin,
+  FeatureFlagConfig,
+} from './types';
 
 /** @public */
 export interface PluginOptions<
@@ -35,17 +36,6 @@ export interface PluginOptions<
   externalRoutes?: ExternalRoutes;
   extensions?: ExtensionDefinition<unknown>[];
   featureFlags?: FeatureFlagConfig[];
-}
-
-/** @public */
-export interface BackstagePlugin<
-  Routes extends AnyRoutes = AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
-> {
-  readonly $$type: '@backstage/BackstagePlugin';
-  readonly id: string;
-  readonly routes: Routes;
-  readonly externalRoutes: ExternalRoutes;
 }
 
 /** @public */

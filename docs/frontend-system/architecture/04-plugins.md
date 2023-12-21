@@ -6,7 +6,7 @@ sidebar_label: Plugins
 description: Frontend plugins
 ---
 
-> **NOTE: The new frontend system is in a highly experimental phase**
+> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 ## Introduction
 

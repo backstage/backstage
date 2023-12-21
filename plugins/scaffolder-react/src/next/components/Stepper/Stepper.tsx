@@ -51,6 +51,7 @@ import {
   FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
+import { ErrorListTemplate } from './ErrorListTemplate';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -228,7 +229,8 @@ export const Stepper = (stepperProps: StepperProps) => {
             uiSchema={currentStep.uiSchema}
             onSubmit={handleNext}
             fields={fields}
-            showErrorList={false}
+            showErrorList="top"
+            templates={{ ErrorListTemplate }}
             onChange={handleChange}
             experimental_defaultFormStateBehavior={{
               allOf: 'populateDefaults',

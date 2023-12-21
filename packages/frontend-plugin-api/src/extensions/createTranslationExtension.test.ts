@@ -41,9 +41,10 @@ describe('createTranslationExtension', () => {
 
     expect(extension).toEqual({
       $$type: '@backstage/ExtensionDefinition',
+      version: 'v1',
       kind: 'translation',
       namespace: 'test',
-      attachTo: { id: 'core', input: 'translations' },
+      attachTo: { id: 'app', input: 'translations' },
       disabled: false,
       inputs: {},
       output: {
@@ -52,7 +53,7 @@ describe('createTranslationExtension', () => {
       factory: expect.any(Function),
     });
 
-    expect(extension.factory({} as any)).toEqual({
+    expect((extension as any).factory({} as any)).toEqual({
       resource: messages,
     });
   });
@@ -77,9 +78,10 @@ describe('createTranslationExtension', () => {
 
     expect(extension).toEqual({
       $$type: '@backstage/ExtensionDefinition',
+      version: 'v1',
       kind: 'translation',
       namespace: 'test',
-      attachTo: { id: 'core', input: 'translations' },
+      attachTo: { id: 'app', input: 'translations' },
       disabled: false,
       inputs: {},
       output: {
@@ -88,7 +90,7 @@ describe('createTranslationExtension', () => {
       factory: expect.any(Function),
     });
 
-    expect(extension.factory({} as any)).toEqual({ resource });
+    expect((extension as any).factory({} as any)).toEqual({ resource });
   });
 
   it('creates a translation resource extension with a name', () => {
@@ -113,10 +115,11 @@ describe('createTranslationExtension', () => {
       }),
     ).toEqual({
       $$type: '@backstage/ExtensionDefinition',
+      version: 'v1',
       kind: 'translation',
       namespace: 'test',
       name: 'sv',
-      attachTo: { id: 'core', input: 'translations' },
+      attachTo: { id: 'app', input: 'translations' },
       disabled: false,
       inputs: {},
       output: {

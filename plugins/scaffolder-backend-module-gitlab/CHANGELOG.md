@@ -1,5 +1,30 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.2.11
+
+### Patch Changes
+
+- 219d7f0: Extract some more actions to this library
+- 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-scaffolder-node@0.2.9
+  - @backstage/integration@1.8.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.2.11-next.3
+
+### Patch Changes
+
+- 219d7f0: Extract some more actions to this library
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.9-next.3
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+
 ## 0.2.11-next.2
 
 ### Patch Changes

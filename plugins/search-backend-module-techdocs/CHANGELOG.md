@@ -1,5 +1,42 @@
 # @backstage/plugin-search-backend-module-techdocs
 
+## 0.1.12
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-catalog-node@1.6.0
+  - @backstage/catalog-client@1.5.0
+  - @backstage/backend-tasks@0.5.13
+  - @backstage/plugin-techdocs-node@1.11.0
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-search-backend-node@1.2.12
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-search-common@1.2.9
+
+## 0.1.12-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/backend-tasks@0.5.13-next.3
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-catalog-node@1.6.0-next.3
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-search-backend-node@1.2.12-next.3
+  - @backstage/plugin-search-common@1.2.8
+  - @backstage/plugin-techdocs-node@1.11.0-next.3
+
 ## 0.1.12-next.2
 
 ### Patch Changes

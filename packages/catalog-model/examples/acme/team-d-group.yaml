@@ -8,7 +8,7 @@ spec:
   profile:
     displayName: Team D
     email: team-d@example.com
-    picture: https://avatars.dicebear.com/api/identicon/team-d@example.com.svg?background=%23fff&margin=25
+    picture: https://api.dicebear.com/7.x/identicon/svg?seed=Bailey&backgroundType=gradientLinear&backgroundColor=b6e3f4,ffd5dc,ffdfbf,c0aede
   parent: boxoffice
   children: []
 ---
@@ -20,7 +20,7 @@ spec:
   profile:
     displayName: Eva MacDowell
     email: eva-macdowell@example.com
-    picture: https://avatars.dicebear.com/api/avataaars/eva-macdowell@example.com.svg?background=%23fff
+    picture: https://api.dicebear.com/7.x/avataaars/svg?seed=Cuddles
   memberOf: [team-d]
 ---
 apiVersion: backstage.io/v1alpha1
@@ -31,5 +31,5 @@ spec:
   profile:
     displayName: Lucy Sheehan
     email: lucy-sheehan@example.com
-    picture: https://avatars.dicebear.com/api/avataaars/lucy-sheehan@example.com.svg?background=%23fff
+    picture: https://api.dicebear.com/7.x/avataaars/svg?seed=Snickers
   memberOf: [team-d]

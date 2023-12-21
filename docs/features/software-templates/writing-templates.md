@@ -231,7 +231,52 @@ spec:
             inputType: tel
 ```
 
+### Using Secrets
+
+You may want to mark things as secret and make sure that these values are protected and not available through REST endpoints. You can do this by using the built in `ui:field: Secret`.
+
+You can define this property as any normal parameter, however the consumption of this parameter will not be available through `${{ parameters.myKey }}` you will instead need to use `${{ secrets.myKey }}` in your `template.yaml`.
+
+Parameters will be automatically masked in the review step.
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: v1beta3-demo
+  title: Test Action template
+  description: scaffolder v1beta3 template demo
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Authenticaion
+      description: Provide authentication for the resource
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          # use the built in Secret field extension
+          ui:field: Secret
+        password:
+          type: string
+          ui:field: Secret
+
+  steps:
+    - id: setupAuthentication
+      action: auth:create
+      input:
+        # make sure to use ${{ secrets.parameterName }} to reference these values
+        username: ${{ secrets.username }}
+        password: ${{ secrets.password }}
+```
+
 ### Hide or mask sensitive data on Review step
+
+> Note: this approach is soon to be deprecated, please mark things as secret by using the `Secret` field extension instead as mentioned above.
 
 Sometimes, specially in custom fields, you collect some data on Create form that
 must not be shown to the user on Review step. To hide or mask this data, you can

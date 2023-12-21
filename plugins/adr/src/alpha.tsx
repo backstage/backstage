@@ -29,7 +29,7 @@ function isAdrDocument(result: any): result is AdrDocument {
 }
 
 /** @alpha */
-export const AdrSearchResultListItemExtension =
+export const adrSearchResultListItemExtension =
   createSearchResultListItemExtension({
     configSchema: createSchemaFromZod(z =>
       z.object({
@@ -53,5 +53,5 @@ export const AdrSearchResultListItemExtension =
 /** @alpha */
 export default createPlugin({
   id: 'adr',
-  extensions: [AdrSearchResultListItemExtension],
+  extensions: [adrSearchResultListItemExtension],
 });

@@ -18,8 +18,8 @@ import React, { lazy, ComponentType } from 'react';
 import {
   AnyExtensionInputMap,
   ResolvedExtensionInputs,
-  coreExtensionData,
   createExtension,
+  createExtensionDataRef,
 } from '../wiring';
 import { Expand } from '../types';
 import { PortableSchema } from '../schema';
@@ -36,7 +36,7 @@ export function createComponentExtension<
   disabled?: boolean;
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
-  component:
+  loader:
     | {
         lazy: (values: {
           config: TConfig;
@@ -54,23 +54,23 @@ export function createComponentExtension<
     kind: 'component',
     namespace: options.ref.id,
     name: options.name,
-    attachTo: { id: 'core', input: 'components' },
+    attachTo: { id: 'app', input: 'components' },
     inputs: options.inputs,
     disabled: options.disabled,
     configSchema: options.configSchema,
     output: {
-      component: coreExtensionData.component,
+      component: createComponentExtension.componentDataRef,
     },
     factory({ config, inputs, node }) {
       let ExtensionComponent: ComponentType<TProps>;
 
-      if ('sync' in options.component) {
-        ExtensionComponent = options.component.sync({ config, inputs });
+      if ('sync' in options.loader) {
+        ExtensionComponent = options.loader.sync({ config, inputs });
       } else {
-        const lazyLoader = options.component.lazy;
+        const lazyLoader = options.loader.lazy;
         ExtensionComponent = lazy(() =>
-          lazyLoader({ config, inputs }).then(component => ({
-            default: component,
+          lazyLoader({ config, inputs }).then(Component => ({
+            default: Component,
           })),
         ) as unknown as ComponentType<TProps>;
       }
@@ -87,4 +87,12 @@ export function createComponentExtension<
       };
     },
   });
+}
+
+/** @public */
+export namespace createComponentExtension {
+  export const componentDataRef = createExtensionDataRef<{
+    ref: ComponentRef;
+    impl: ComponentType;
+  }>('core.component.component');
 }

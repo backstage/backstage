@@ -1,5 +1,25 @@
 # @backstage/create-app
 
+## 0.5.8
+
+### Patch Changes
+
+- 8ece804: Bumped create-app version.
+- 0351e09: Bumped create-app version.
+- 3f1192f: Bumped create-app version.
+- a96c2d4: Include the `<EntityLinksCard />` for group entities by default
+- 375b6f7: CircelCI plugin moved permanently
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.8-next.4
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.5.8-next.3
 
 ### Patch Changes

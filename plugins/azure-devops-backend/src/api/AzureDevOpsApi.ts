@@ -110,7 +110,7 @@ export class AzureDevOpsApi {
     // which is why use them here and not just falling back on them entirely
     const validHost = host ?? this.config.getString('azureDevOps.host');
     const validOrg = org ?? this.config.getString('azureDevOps.organization');
-    const url = `https://${validHost}/${encodeURI(validOrg)}`;
+    const url = `https://${validHost}/${encodeURIComponent(validOrg)}`;
 
     const credentials = await this.credentialsProvider.getCredentials({
       url,

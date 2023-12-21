@@ -1,0 +1,10 @@
+---
+title: Devfile Selector Field Extension
+author: Red Hat
+authorUrl: https://developers.redhat.com
+category: Scaffolder
+description: Devfile Selector Field Extension to use in your Software Templates. Devfile is an open standard defining containerized development environments.
+documentation: https://github.com/redhat-developer/backstage-odo-devfile-plugin/blob/main/packages/devfile-field-extension/README.md
+iconUrl: https://landscape.cncf.io/logos/devfile.svg
+npmPackageName: '@redhat-developer/plugin-scaffolder-frontend-module-devfile-field'
+addedDate: '2023-12-08'

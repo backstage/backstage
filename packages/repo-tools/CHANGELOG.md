@@ -1,5 +1,45 @@
 # @backstage/repo-tools
 
+## 0.5.0
+
+### Minor Changes
+
+- aea8f8d: **BREAKING**: API Reports generated for sub-path exports now place the name as a suffix rather than prefix, for example `api-report-alpha.md` instead of `alpha-api-report.md`. When upgrading to this version you'll need to re-create any such API reports and delete the old ones.
+- 3834067: Adds a new command `schema openapi generate-client` that creates a Typescript client with Backstage flavor, including the discovery API and fetch API. This command doesn't currently generate a complete client and needs to be wrapped or exported manually by a separate Backstage plugin. See `@backstage/catalog-client/src/generated` for example output.
+
+### Patch Changes
+
+- f909e9d: Includes templates in @backstage/repo-tools package and use them in the CLI
+- da3c4db: Updates the `schema openapi generate-client` command to export all generated types from the generated directory.
+- 7959f23: The `api-reports` command now checks for api report files that no longer apply.
+  If it finds such files, it's treated basically the same as report errors do, and
+  the check fails.
+
+  For example, if you had an `api-report-alpha.md` but then removed the alpha
+  export, the reports generator would now report that this file needs to be
+  deleted.
+
+- f49e237: Fixed a bug where `schema openapi init` created an invalid test command.
+- f91be2c: Updated dependency `@stoplight/types` to `^14.0.0`.
+- 45bfb20: Execute `openapi-generator-cli` from `@backstage/repo-tools` directory to force it to use our openapitools.json config file.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/cli-node@0.2.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+
+## 0.5.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.0
+  - @backstage/errors@1.2.3
+
 ## 0.5.0-next.1
 
 ### Patch Changes

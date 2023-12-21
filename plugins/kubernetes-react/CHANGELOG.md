@@ -1,5 +1,38 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.2.0
+
+### Minor Changes
+
+- 899d71a: Change `formatClusterLink` to be an API and make it async for further customization possibilities.
+
+  **BREAKING**
+  If you have a custom k8s page and used `formatClusterLink` directly, you need to migrate to new `kubernetesClusterLinkFormatterApiRef`
+
+### Patch Changes
+
+- b5ae2e5: Add ID property to the table displaying kubernetes pods to avoid closing the info sidebar when the data reloads and needs to rerender.
+- 706fc3a: Updated dependency `@kubernetes/client-node` to `0.20.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/core-components@0.13.9
+  - @backstage/plugin-kubernetes-common@0.7.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.2.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.2-next.1
+
 ## 0.2.0-next.2
 
 ### Minor Changes

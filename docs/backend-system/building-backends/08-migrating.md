@@ -262,9 +262,259 @@ If you have other customizations made to `plugins/catalog.ts`, such as adding
 custom processors or entity providers, read on. Otherwise, you should be able to
 just delete that file at this point.
 
+#### Amazon Web Services
+
+`AwsEksClusterProcessor` and `AwsOrganizationCloudAccountProcessor` have not yet been migrated to the new backend system.
+See [Other Catalog Extensions](#other-catalog-extensions) for how to use these in the new backend system.
+
+For `AwsS3DiscoveryProcessor`, first migrate to `AwsS3EntityProvider`.
+
+To migrate `AwsS3EntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-aws` module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-aws/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other AWS configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    awsS3:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT1H
+          timeout: PT50M
+        /* highlight-add-end */
+```
+
+#### Azure DevOps
+
+For `AzureDevOpsDiscoveryProcessor`, first migrate to `AzureDevOpsEntityProvider`.
+
+To migrate `AzureDevOpsEntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-azure` module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-azure/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Azure DevOps configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    azureDevOps:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT1H
+          timeout: PT50M
+        /* highlight-add-end */
+```
+
+#### Open API
+
+`InternalOpenApiDocumentationProvider` has not yet been migrated to the new backend system.
+See [Other Catalog Extensions](#other-catalog-extensions) for how to use this in the new backend system.
+
+#### Bitbucket
+
+For `BitbucketDiscoveryProcessor`, migrate to `BitbucketCloudEntityProvider` or `BitbucketServerEntityProvider`
+
+To migrate `BitbucketCloudEntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-bitbucket-cloud` module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-bitbucket-cloud/alpha'),
+);
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Bitbucket Cloud configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    bitbucketCloud:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+To migrate `BitbucketServerEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-bitbucket-server`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-bitbucket-server/alpha'),
+);
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Bitbucket Server configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    bitbucketServer:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+#### Google Cloud Platform
+
+To migrate `GkeEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-gcp`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-gcp'));
+/* highlight-add-end */
+```
+
+Configuration in app-config.yaml remains the same.
+
+#### Gerrit
+
+To migrate `GerritEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-gerrit`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-gerrit/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Gerrit configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    gerrit:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+#### Github
+
+For `GithubDiscoveryProcessor`, `GithubMultiOrgReaderProcessor` and `GithubOrgReaderProcessor`, first migrate to the equivalent Entity Provider.
+
+To migrate `GithubEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-github/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Github configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    github:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+To migrate `GithubMultiOrgEntityProvider` and `GithubOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github-org`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Github configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    githubOrg:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+If you were providing transformers, these can be configured by extending `githubOrgEntityProviderTransformsExtensionPoint`
+
+```ts title="packages/backend/src/index.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { githubOrgEntityProviderTransformsExtensionPoint } from '@backstage/plugin-catalog-backend-module-github-org';
+
+backend.add(
+  createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'githubOrgTransformers',
+    register(env) {
+      env.registerInit({
+        deps: {
+          /* highlight-add-start */
+          githubOrgTransformers:
+            githubOrgEntityProviderTransformsExtensionPoint,
+          /* highlight-add-end */
+        },
+        async init({ githubOrgTransformers }) {
+          /* highlight-add-start */
+          githubOrgTransformers.setUserTransformer(myUserTransformer);
+          githubOrgTransformers.setTeamTransformer(myTeamTransformer);
+          /* highlight-add-end */
+        },
+      });
+    },
+  }),
+);
+```
+
 #### Microsoft Graph
 
-Import the Microsoft Graph catalog module
+For `MicrosoftGraphOrgReaderProcessor`, first migrate to `MicrosoftGraphOrgEntityProvider`
+
+To migrate `MicrosoftGraphOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-msgraph`.
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend/alpha'));
@@ -273,7 +523,8 @@ backend.add(import('@backstage/plugin-catalog-backend-module-msgraph/alpha'));
 /* highlight-add-end */
 ```
 
-If you were providng a `schedule` programtically, this now needs to be set via configuration
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Microsoft Graph configuration in `app-config.yaml` remains the same.
 
 ```yaml title="app-config.yaml"
 catalog:
@@ -285,7 +536,6 @@ catalog:
           frequency: PT4H
           timeout: PT30M
         /* highlight-add-end */
-
 ```
 
 If you were providing transformers, these can be configured by extending `microsoftGraphOrgEntityProviderTransformExtensionPoint`

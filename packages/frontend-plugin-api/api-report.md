@@ -347,18 +347,7 @@ export type CoreErrorBoundaryFallbackProps = {
 export const coreExtensionData: {
   reactElement: ConfigurableExtensionDataRef<JSX_2.Element, {}>;
   routePath: ConfigurableExtensionDataRef<string, {}>;
-  apiFactory: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
   routeRef: ConfigurableExtensionDataRef<RouteRef<AnyRouteRefParams>, {}>;
-  navTarget: ConfigurableExtensionDataRef<NavTarget, {}>;
-  theme: ConfigurableExtensionDataRef<AppTheme, {}>;
-  logoElements: ConfigurableExtensionDataRef<LogoElements, {}>;
-  component: ConfigurableExtensionDataRef<
-    {
-      ref: ComponentRef;
-      impl: ComponentType;
-    },
-    {}
-  >;
 };
 
 // @public (undocumented)
@@ -391,6 +380,12 @@ export function createApiExtension<
   },
 ): ExtensionDefinition<TConfig>;
 
+// @public (undocumented)
+export namespace createApiExtension {
+  const // (undocumented)
+    factoryDataRef: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
+}
+
 export { createApiFactory };
 
 export { createApiRef };
@@ -406,7 +401,7 @@ export function createComponentExtension<
   disabled?: boolean;
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
-  component:
+  loader:
     | {
         lazy: (values: {
           config: TConfig;
@@ -420,6 +415,18 @@ export function createComponentExtension<
         }) => ComponentType<TProps>;
       };
 }): ExtensionDefinition<TConfig>;
+
+// @public (undocumented)
+export namespace createComponentExtension {
+  const // (undocumented)
+    componentDataRef: ConfigurableExtensionDataRef<
+      {
+        ref: ComponentRef;
+        impl: ComponentType;
+      },
+      {}
+    >;
+}
 
 // @public (undocumented)
 export function createExtension<
@@ -527,6 +534,39 @@ export function createNavItemExtension(options: {
   title: string;
 }>;
 
+// @public (undocumented)
+export namespace createNavItemExtension {
+  const // (undocumented)
+    targetDataRef: ConfigurableExtensionDataRef<
+      {
+        title: string;
+        icon: IconComponent_2;
+        routeRef: RouteRef<undefined>;
+      },
+      {}
+    >;
+}
+
+// @public
+export function createNavLogoExtension(options: {
+  name?: string;
+  namespace?: string;
+  logoIcon: JSX.Element;
+  logoFull: JSX.Element;
+}): ExtensionDefinition<never>;
+
+// @public (undocumented)
+export namespace createNavLogoExtension {
+  const // (undocumented)
+    logoElementsDataRef: ConfigurableExtensionDataRef<
+      {
+        logoIcon?: JSX.Element | undefined;
+        logoFull?: JSX.Element | undefined;
+      },
+      {}
+    >;
+}
+
 // @public
 export function createPageExtension<
   TConfig extends {
@@ -611,6 +651,15 @@ export function createSignInPageExtension<
   }) => Promise<ComponentType<SignInPageProps>>;
 }): ExtensionDefinition<TConfig>;
 
+// @public (undocumented)
+export namespace createSignInPageExtension {
+  const // (undocumented)
+    componentDataRef: ConfigurableExtensionDataRef<
+      React_2.ComponentType<SignInPageProps>,
+      {}
+    >;
+}
+
 // @public
 export function createSubRouteRef<
   Path extends string,
@@ -624,6 +673,12 @@ export function createSubRouteRef<
 export function createThemeExtension(
   theme: AppTheme,
 ): ExtensionDefinition<never>;
+
+// @public (undocumented)
+export namespace createThemeExtension {
+  const // (undocumented)
+    themeDataRef: ConfigurableExtensionDataRef<AppTheme, {}>;
+}
 
 // @public (undocumented)
 export function createTranslationExtension(options: {
@@ -670,26 +725,16 @@ export interface Extension<TConfig> {
   // (undocumented)
   $$type: '@backstage/Extension';
   // (undocumented)
-  attachTo: {
+  readonly attachTo: {
     id: string;
     input: string;
   };
   // (undocumented)
-  configSchema?: PortableSchema<TConfig>;
+  readonly configSchema?: PortableSchema<TConfig>;
   // (undocumented)
-  disabled: boolean;
+  readonly disabled: boolean;
   // (undocumented)
-  factory(options: {
-    node: AppNode;
-    config: TConfig;
-    inputs: ResolvedExtensionInputs<any>;
-  }): ExtensionDataValues<any>;
-  // (undocumented)
-  id: string;
-  // (undocumented)
-  inputs: AnyExtensionInputMap;
-  // (undocumented)
-  output: AnyExtensionDataMap;
+  readonly id: string;
 }
 
 // @public (undocumented)
@@ -740,30 +785,20 @@ export interface ExtensionDefinition<TConfig> {
   // (undocumented)
   $$type: '@backstage/ExtensionDefinition';
   // (undocumented)
-  attachTo: {
+  readonly attachTo: {
     id: string;
     input: string;
   };
   // (undocumented)
-  configSchema?: PortableSchema<TConfig>;
+  readonly configSchema?: PortableSchema<TConfig>;
   // (undocumented)
-  disabled: boolean;
+  readonly disabled: boolean;
   // (undocumented)
-  factory(options: {
-    node: AppNode;
-    config: TConfig;
-    inputs: ResolvedExtensionInputs<any>;
-  }): ExtensionDataValues<any>;
+  readonly kind?: string;
   // (undocumented)
-  inputs: AnyExtensionInputMap;
+  readonly name?: string;
   // (undocumented)
-  kind?: string;
-  // (undocumented)
-  name?: string;
-  // (undocumented)
-  namespace?: string;
-  // (undocumented)
-  output: AnyExtensionDataMap;
+  readonly namespace?: string;
 }
 
 // @public (undocumented)
@@ -828,6 +863,9 @@ export { FetchApi };
 
 export { fetchApiRef };
 
+// @public (undocumented)
+export type FrontendFeature = BackstagePlugin | ExtensionOverrides;
+
 export { githubAuthApiRef };
 
 export { gitlabAuthApiRef };
@@ -848,20 +886,7 @@ export { IdentityApi };
 
 export { identityApiRef };
 
-// @public (undocumented)
-export type LogoElements = {
-  logoIcon?: JSX_2.Element;
-  logoFull?: JSX_2.Element;
-};
-
 export { microsoftAuthApiRef };
-
-// @public (undocumented)
-export type NavTarget = {
-  title: string;
-  icon: IconComponent_2;
-  routeRef: RouteRef<undefined>;
-};
 
 export { OAuthApi };
 

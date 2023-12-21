@@ -1,5 +1,57 @@
 # @backstage/plugin-catalog-react
 
+## 1.9.2
+
+### Patch Changes
+
+- 8587f06: Added pagination support to `EntityListProvider`.
+- 5360097: Ensure that passed-in icons are taken advantage of in the presentation API
+- fd9863c: Grouped all `/alpha` extension data reference exports under `catalogExtensionData`.
+- 08d9e67: Add default icon for kind resource.
+- aaa6fb3: Minor updates for TypeScript 5.2.2+ compatibility
+- a5a0473: Internal refactor of alpha exports due to a change in how extension factories are defined.
+- 4d9e3b3: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- 8f5d6c1: Updates to the `/alpha` exports to match the extension input wrapping change.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- e223f22: Breaking alpha-API change to entity visibility filter functions to accept a bare entity as their first argument, instead of an object with an entity property.
+
+  Functions that accept such filters now also support the string expression form of filters.
+
+- eee0ff2: Fixed a issue where `CatalogPage` wasn't using the chosen `initiallySelectedFilter` as intended.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/frontend-plugin-api@0.4.0
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/catalog-client@1.5.0
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/integration-react@1.1.22
+  - @backstage/plugin-permission-react@0.4.18
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.19
+
+## 1.9.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/frontend-plugin-api@0.4.0-next.3
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-react@0.4.18-next.1
+
 ## 1.9.2-next.2
 
 ### Patch Changes

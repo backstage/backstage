@@ -22,8 +22,7 @@ import React, {
   isValidElement,
 } from 'react';
 import {
-  BackstagePlugin,
-  ExtensionOverrides,
+  FrontendFeature,
   coreExtensionData,
   createExtension,
   createExtensionInput,
@@ -61,7 +60,11 @@ function selectChildren(
 /** @public */
 export function convertLegacyApp(
   rootElement: React.JSX.Element,
-): (ExtensionOverrides | BackstagePlugin)[] {
+): FrontendFeature[] {
+  if (getComponentData(rootElement, 'core.type') === 'FlatRoutes') {
+    return collectLegacyRoutes(rootElement);
+  }
+
   const appRouterEls = selectChildren(
     rootElement,
     el => getComponentData(el, 'core.type') === 'AppRouter',
@@ -100,9 +103,9 @@ export function convertLegacyApp(
   const [routesEl] = routesEls;
 
   const CoreLayoutOverride = createExtension({
-    namespace: 'core',
+    namespace: 'app',
     name: 'layout',
-    attachTo: { id: 'core', input: 'root' },
+    attachTo: { id: 'app', input: 'root' },
     inputs: {
       content: createExtensionInput(
         {
@@ -126,9 +129,9 @@ export function convertLegacyApp(
     },
   });
   const CoreNavOverride = createExtension({
-    namespace: 'core',
+    namespace: 'app',
     name: 'nav',
-    attachTo: { id: 'core/layout', input: 'nav' },
+    attachTo: { id: 'app/layout', input: 'nav' },
     output: {},
     factory: () => ({}),
     disabled: true,

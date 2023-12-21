@@ -24,18 +24,18 @@ import { createAppTree } from './createAppTree';
 
 const extBase = {
   id: 'test',
-  attachTo: { id: 'core', input: 'root' },
+  attachTo: { id: 'app', input: 'root' },
   output: {},
   factory: () => ({}),
 };
 
 describe('createAppTree', () => {
-  it('throws an error when a core extension is parametrized', () => {
+  it('throws an error when a app extension is parametrized', () => {
     const config = new MockConfigApi({
       app: {
         extensions: [
           {
-            core: {},
+            app: {},
           },
         ],
       },
@@ -48,17 +48,17 @@ describe('createAppTree', () => {
     ];
     expect(() =>
       createAppTree({ features, config, builtinExtensions: [] }),
-    ).toThrow("Configuration of the 'core' extension is forbidden");
+    ).toThrow("Configuration of the 'app' extension is forbidden");
   });
 
-  it('throws an error when a core extension is overridden', () => {
+  it('throws an error when a app extension is overridden', () => {
     const config = new MockConfigApi({});
     const features = [
       createExtensionOverrides({
         extensions: [
           createExtension({
-            name: 'core',
-            attachTo: { id: 'core/routes', input: 'route' },
+            name: 'app',
+            attachTo: { id: 'app/routes', input: 'route' },
             inputs: {},
             output: {},
             factory: () => ({}),
@@ -69,7 +69,7 @@ describe('createAppTree', () => {
     expect(() =>
       createAppTree({ features, config, builtinExtensions: [] }),
     ).toThrow(
-      "It is forbidden to override the following extension(s): 'core', which is done by one or more extension overrides",
+      "It is forbidden to override the following extension(s): 'app', which is done by one or more extension overrides",
     );
   });
 

@@ -1,5 +1,24 @@
 # @backstage/plugin-events-backend-module-gitlab
 
+## 0.1.18
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+  - @backstage/plugin-events-node@0.2.17
+
+## 0.1.18-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-events-node@0.2.17-next.3
+
 ## 0.1.18-next.2
 
 ### Patch Changes

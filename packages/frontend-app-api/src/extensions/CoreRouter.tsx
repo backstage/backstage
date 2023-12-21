@@ -19,6 +19,7 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
+  createSignInPageExtension,
 } from '@backstage/frontend-plugin-api';
 import {
   ConfigApi,
@@ -31,18 +32,16 @@ import { InternalAppContext } from '../wiring/InternalAppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BrowserRouter } from 'react-router-dom';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { signInPageComponentDataRef } from '../../../frontend-plugin-api/src/extensions/createSignInPageExtension';
 import { RouteTracker } from '../routing/RouteTracker';
 
 export const CoreRouter = createExtension({
-  namespace: 'core',
+  namespace: 'app',
   name: 'router',
-  attachTo: { id: 'core', input: 'root' },
+  attachTo: { id: 'app', input: 'root' },
   inputs: {
     signInPage: createExtensionInput(
       {
-        component: signInPageComponentDataRef,
+        component: createSignInPageExtension.componentDataRef,
       },
       { singleton: true, optional: true },
     ),

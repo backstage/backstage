@@ -18,7 +18,7 @@ import React from 'react';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 import { compatWrapper } from '@backstage/core-compat-api';
 
-export const EntityAboutCard = createEntityCardExtension({
+export const catalogAboutEntityCard = createEntityCardExtension({
   name: 'about',
   loader: async () =>
     import('../components/AboutCard').then(m =>
@@ -26,7 +26,7 @@ export const EntityAboutCard = createEntityCardExtension({
     ),
 });
 
-export const EntityLinksCard = createEntityCardExtension({
+export const catalogLinksEntityCard = createEntityCardExtension({
   name: 'links',
   filter: 'has:links',
   loader: async () =>
@@ -35,7 +35,7 @@ export const EntityLinksCard = createEntityCardExtension({
     ),
 });
 
-export const EntityLabelsCard = createEntityCardExtension({
+export const catalogLabelsEntityCard = createEntityCardExtension({
   name: 'labels',
   filter: 'has:labels',
   loader: async () =>
@@ -44,7 +44,7 @@ export const EntityLabelsCard = createEntityCardExtension({
     ),
 });
 
-export const EntityDependsOnComponentsCard = createEntityCardExtension({
+export const catalogDependsOnComponentsEntityCard = createEntityCardExtension({
   name: 'depends-on-components',
   loader: async () =>
     import('../components/DependsOnComponentsCard').then(m =>
@@ -52,7 +52,7 @@ export const EntityDependsOnComponentsCard = createEntityCardExtension({
     ),
 });
 
-export const EntityDependsOnResourcesCard = createEntityCardExtension({
+export const catalogDependsOnResourcesEntityCard = createEntityCardExtension({
   name: 'depends-on-resources',
   loader: async () =>
     import('../components/DependsOnResourcesCard').then(m =>
@@ -60,7 +60,7 @@ export const EntityDependsOnResourcesCard = createEntityCardExtension({
     ),
 });
 
-export const EntityHasComponentsCard = createEntityCardExtension({
+export const catalogHasComponentsEntityCard = createEntityCardExtension({
   name: 'has-components',
   loader: async () =>
     import('../components/HasComponentsCard').then(m =>
@@ -68,7 +68,7 @@ export const EntityHasComponentsCard = createEntityCardExtension({
     ),
 });
 
-export const EntityHasResourcesCard = createEntityCardExtension({
+export const catalogHasResourcesEntityCard = createEntityCardExtension({
   name: 'has-resources',
   loader: async () =>
     import('../components/HasResourcesCard').then(m =>
@@ -76,7 +76,7 @@ export const EntityHasResourcesCard = createEntityCardExtension({
     ),
 });
 
-export const EntityHasSubcomponentsCard = createEntityCardExtension({
+export const catalogHasSubcomponentsEntityCard = createEntityCardExtension({
   name: 'has-subcomponents',
   loader: async () =>
     import('../components/HasSubcomponentsCard').then(m =>
@@ -84,7 +84,7 @@ export const EntityHasSubcomponentsCard = createEntityCardExtension({
     ),
 });
 
-export const EntityHasSystemsCard = createEntityCardExtension({
+export const catalogHasSystemsEntityCard = createEntityCardExtension({
   name: 'has-systems',
   loader: async () =>
     import('../components/HasSystemsCard').then(m =>
@@ -93,13 +93,13 @@ export const EntityHasSystemsCard = createEntityCardExtension({
 });
 
 export default [
-  EntityAboutCard,
-  EntityLinksCard,
-  EntityLabelsCard,
-  EntityDependsOnComponentsCard,
-  EntityDependsOnResourcesCard,
-  EntityHasComponentsCard,
-  EntityHasResourcesCard,
-  EntityHasSubcomponentsCard,
-  EntityHasSystemsCard,
+  catalogAboutEntityCard,
+  catalogLinksEntityCard,
+  catalogLabelsEntityCard,
+  catalogDependsOnComponentsEntityCard,
+  catalogDependsOnResourcesEntityCard,
+  catalogHasComponentsEntityCard,
+  catalogHasResourcesEntityCard,
+  catalogHasSubcomponentsEntityCard,
+  catalogHasSystemsEntityCard,
 ];

@@ -22,9 +22,7 @@ import { DefaultLocationStore } from './DefaultLocationStore';
 jest.setTimeout(60_000);
 
 describe('DefaultLocationStore', () => {
-  const databases = TestDatabases.create({
-    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
-  });
+  const databases = TestDatabases.create();
 
   async function createLocationStore(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
