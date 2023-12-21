@@ -1,5 +1,12 @@
 # @backstage/plugin-kafka
 
+## 0.3.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.3
+
 ## 0.3.28
 
 ### Patch Changes

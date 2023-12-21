@@ -1,5 +1,14 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.6.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/backend-common@0.20.1
+
 ## 0.5.0
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-okta-provider
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.3
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/backend-common@0.20.1
+
 ## 0.0.1
 
 ### Patch Changes
