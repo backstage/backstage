@@ -9,7 +9,12 @@ import * as parser from 'uri-template';
 import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
 {{/imports}}
 
-type TypedResponse<T> = Omit<Response, 'json'> & {
+/**
+ * Wraps the Response type to convey a type on the json call.
+ *
+ * @public
+ */
+export type TypedResponse<T> = Omit<Response, 'json'> & {
   json: () => Promise<T>;
 };
 
@@ -84,9 +89,9 @@ export class {{classname}}Client {
         options?: RequestOptions
     ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
         const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-        
+
         const uriTemplate = `{{{path}}}{{#hasQueryParams}}{?{{#queryParams}}{{baseName}}{{#isArray}}{{#isExplode}}*{{/isExplode}}{{/isArray}}{{^-last}},{{/-last}}{{/queryParams}}}{{/hasQueryParams}}`;
-        
+
         const uri = parser.parse(uriTemplate).expand({
         {{#pathParams}}
             {{baseName}}: request.path.{{paramName}},

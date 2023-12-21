@@ -42,7 +42,7 @@ import { createApiRef } from '@backstage/frontend-plugin-api';
 
 /**
  * Performs some work.
- * @oublic
+ * @public
  */
 export interface WorkApi {
   doWork(): Promise<void>;
