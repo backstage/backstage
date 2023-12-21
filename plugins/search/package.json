@@ -46,8 +46,6 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "workspace:^",
-    "@backstage/config": "workspace:^",
     "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
@@ -56,12 +54,10 @@
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.61",
     "@types/react": "^16.13.1 || ^17.0.0",
     "qs": "^6.9.4",
     "react-use": "^17.2.4"
@@ -80,8 +76,7 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
-    "history": "^5.0.0",
-    "msw": "^1.0.0"
+    "history": "^5.0.0"
   },
   "files": [
     "dist",

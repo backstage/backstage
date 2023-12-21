@@ -35,7 +35,6 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@backstage/types": "workspace:^",
     "fs-extra": "10.1.0",
     "git-url-parse": "^13.1.0",
     "node-fetch": "^2.6.7",

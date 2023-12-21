@@ -55,8 +55,7 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
-    "@backstage/cli": "workspace:^",
-    "cross-fetch": "^4.0.0"
+    "@backstage/cli": "workspace:^"
   },
   "files": [
     "dist",
