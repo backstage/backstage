@@ -124,7 +124,20 @@ export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
           }
         }
       } catch (e: any) {
-        setError(e?.data?.error?.message ?? e.message);
+        let errorMessage;
+
+        if (e?.data?.error?.message) {
+          errorMessage = e.data.error.message;
+        } else {
+          try {
+            const parsedErrorObject = JSON.parse(e.message);
+            errorMessage = parsedErrorObject.error.message;
+          } catch (parseError) {
+            errorMessage = e;
+          }
+        }
+
+        setError(errorMessage);
         setSubmitted(false);
       }
     },
