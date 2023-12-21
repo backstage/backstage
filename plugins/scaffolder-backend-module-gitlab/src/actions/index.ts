@@ -19,3 +19,4 @@ export * from './createGitlabProjectAccessTokenAction';
 export * from './createGitlabProjectVariableAction';
 export * from './gitlab';
 export * from './gitlabMergeRequest';
+export * from './gitlabRepoPush';

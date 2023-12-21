@@ -69,6 +69,7 @@ import {
 
 import {
   createPublishGitlabAction,
+  createGitlabRepoPushAction,
   createPublishGitlabMergeRequestAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
@@ -163,6 +164,9 @@ export const createBuiltinActions = (
       config,
     }),
     createPublishGitlabMergeRequestAction({
+      integrations,
+    }),
+    createGitlabRepoPushAction({
       integrations,
     }),
     createPublishBitbucketAction({
