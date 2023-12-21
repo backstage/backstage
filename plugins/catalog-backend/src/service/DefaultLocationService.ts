@@ -19,6 +19,7 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
+  CompoundEntityRef,
 } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
 import { CatalogProcessingOrchestrator } from '../processing/types';
@@ -66,6 +67,10 @@ export class DefaultLocationService implements LocationService {
   }
   deleteLocation(id: string): Promise<void> {
     return this.store.deleteLocation(id);
+  }
+
+  getLocationByEntity(entityRef: CompoundEntityRef): Promise<Location> {
+    return this.store.getLocationByEntity(entityRef);
   }
 
   private async processEntities(

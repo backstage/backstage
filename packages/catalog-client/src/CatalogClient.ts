@@ -89,6 +89,18 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
+   * {@inheritdoc CatalogApi.getLocationByEntity}
+   */
+  async getLocationByEntity(
+    entityRef: CompoundEntityRef,
+    options?: CatalogRequestOptions,
+  ): Promise<Location | undefined> {
+    return await this.requestOptional(
+      await this.apiClient.getLocationByEntity({ path: entityRef }, options),
+    );
+  }
+
+  /**
    * {@inheritdoc CatalogApi.getEntities}
    */
   async getEntities(
