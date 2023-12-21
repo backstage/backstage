@@ -1,5 +1,14 @@
 # @backstage/backend-common
 
+## 0.20.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.10
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/config-loader@1.6.0
+
 ## 0.20.0
 
 ### Minor Changes

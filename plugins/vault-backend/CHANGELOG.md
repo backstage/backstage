@@ -1,5 +1,15 @@
 # @backstage/plugin-vault-backend
 
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/backend-common@0.20.1
+  - @backstage/plugin-vault-node@0.1.2
+  - @backstage/backend-tasks@0.5.14
+
 ## 0.4.1
 
 ### Patch Changes

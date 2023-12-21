@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend
 
+## 1.16.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.5.1
+  - @backstage/plugin-auth-node@0.4.3
+  - @backstage/plugin-catalog-node@1.6.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.13
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-permission-node@0.7.20
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-openapi-utils@0.1.2
+  - @backstage/plugin-events-node@0.2.18
+  - @backstage/backend-tasks@0.5.14
+
 ## 1.16.0
 
 ### Minor Changes
