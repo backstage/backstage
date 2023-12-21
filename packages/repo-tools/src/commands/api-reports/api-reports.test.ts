@@ -43,6 +43,7 @@ jest.mock('./api-extractor', () => ({
   runApiExtraction: jest.fn(),
   runCliExtraction: jest.fn(),
   buildDocs: jest.fn(),
+  runKnipReports: jest.fn(),
 }));
 
 const projectPaths = pathsLib.paths;

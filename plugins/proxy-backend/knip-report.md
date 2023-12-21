@@ -1,9 +1,17 @@
 # Knip report
 
+<<<<<<< HEAD
 ## Unused dependencies (4)
 
 | Name   | Location     |
 |:-------|:-------------|
+=======
+## Unused dependencies (5)
+
+| Name   | Location     |
+|:-------|:-------------|
+| yn     | package.json |
+>>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 | yup    | package.json |
 | yaml   | package.json |
 | uuid   | package.json |

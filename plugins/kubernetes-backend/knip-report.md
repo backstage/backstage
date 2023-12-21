@@ -1,10 +1,22 @@
 # Knip report
 
+<<<<<<< HEAD
 ## Unused dependencies (3)
 
 | Name               | Location     |
 |:-------------------|:-------------|
 | morgan             | package.json |
+=======
+## Unused dependencies (7)
+
+| Name               | Location     |
+|:-------------------|:-------------|
+| yn                 | package.json |
+| cors               | package.json |
+| morgan             | package.json |
+| helmet             | package.json |
+| compression        | package.json |
+>>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 | stream-buffers     | package.json |
 | @jest-mock/express | package.json |
 

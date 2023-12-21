@@ -1,6 +1,10 @@
 # Knip report
 
+<<<<<<< HEAD
 ## Unused dependencies (64)
+=======
+## Unused dependencies (63)
+>>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 
 | Name                                             | Location     |
 |:-------------------------------------------------|:-------------|
@@ -30,7 +34,10 @@
 | @backstage/plugin-puppetdb                       | package.json |
 | @backstage/plugin-playlist                       | package.json |
 | @backstage/plugin-newrelic                       | package.json |
+<<<<<<< HEAD
 | @backstage/plugin-linguist                       | package.json |
+=======
+>>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 | @backstage/plugin-devtools                       | package.json |
 | @backstage/plugin-api-docs                       | package.json |
 | @backstage/plugin-airbrake                       | package.json |
@@ -69,7 +76,11 @@
 | @roadiehq/backstage-plugin-github-pull-requests  | package.json |
 | @backstage/plugin-techdocs-module-addons-contrib | package.json |
 
+<<<<<<< HEAD
 ## Unused devDependencies (7)
+=======
+## Unused devDependencies (8)
+>>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 
 | Name                        | Location     |
 |:----------------------------|:-------------|
@@ -79,5 +90,9 @@
 | @types/zen-observable       | package.json |
 | @backstage/test-utils       | package.json |
 | @testing-library/react      | package.json |
+<<<<<<< HEAD
+=======
+| @testing-library/jest-dom   | package.json |
+>>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 | @testing-library/user-event | package.json |
 

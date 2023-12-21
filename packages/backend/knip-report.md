@@ -14,7 +14,11 @@
 | pg-connection-string                              | package.json |
 | azure-devops-node-api                             | package.json |
 | @backstage/plugin-tech-insights-node              | package.json |
+<<<<<<< HEAD
 | @backstage/plugin-azure-sites-common              | package.json |
+=======
+| @backstage/plugin-azure-sites-backend             | package.json |
+>>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 | @backstage/plugin-scaffolder-backend-module-rails | package.json |
 
 ## Unused devDependencies (3)

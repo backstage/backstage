@@ -21,6 +21,10 @@ import {
   createTemporaryTsConfig,
   runApiExtraction,
   runCliExtraction,
+<<<<<<< HEAD
+=======
+  runKnipReports,
+>>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 } from './api-extractor';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
@@ -99,6 +103,14 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
     console.log('# Generating package CLI reports');
     await runCliExtraction({
       packageDirs: cliPackageDirs,
+      isLocalBuild: !isCiBuild,
+    });
+  }
+
+  if (selectedPackageDirs.length > 0) {
+    console.log('# Generating package knip reports');
+    await runKnipReports({
+      packageDirs: selectedPackageDirs,
       isLocalBuild: !isCiBuild,
     });
   }
