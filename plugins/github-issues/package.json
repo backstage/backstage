@@ -40,7 +40,7 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "@types/react": "^16.13.1 || ^17.0.0",
     "luxon": "^3.0.0",
-    "octokit": "^2.0.4",
+    "octokit": "^2.1.0",
     "react-use": "^17.4.0"
   },
   "peerDependencies": {

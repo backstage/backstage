@@ -6700,7 +6700,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     luxon: ^3.0.0
-    octokit: ^2.0.4
+    octokit: ^2.1.0
     react-use: ^17.4.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -8073,7 +8073,7 @@ __metadata:
     jest-when: ^3.1.0
     jsonschema: ^1.2.6
     libsodium-wrappers: ^0.7.11
-    octokit: ^2.0.0
+    octokit: ^2.1.0
     octokit-plugin-create-pull-request: ^3.10.0
     winston: ^3.2.1
     yaml: ^2.0.0
@@ -35097,7 +35097,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"octokit@npm:^2.0.0, octokit@npm:^2.0.4":
+"octokit@npm:^2.1.0":
   version: 2.1.0
   resolution: "octokit@npm:2.1.0"
   dependencies:
