@@ -630,6 +630,17 @@ export interface CatalogApi {
   ): Promise<void>;
 
   /**
+   * Gets a location associated with an entity.
+   *
+   * @param entityRef - A reference to an entity
+   * @param options - Additional options
+   */
+  getLocationByEntity(
+    entityRef: CompoundEntityRef,
+    options?: CatalogRequestOptions,
+  ): Promise<Location | undefined>;
+
+  /**
    * Validate entity and its location.
    *
    * @param entity - Entity to validate

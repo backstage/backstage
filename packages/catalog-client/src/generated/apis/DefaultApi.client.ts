@@ -462,6 +462,42 @@ export class DefaultApiClient {
   }
 
   /**
+   * Get a location for entity.
+   * @param kind
+   * @param namespace
+   * @param name
+   */
+  public async getLocationByEntity(
+    // @ts-ignore
+    request: {
+      path: {
+        kind: string;
+        namespace: string;
+        name: string;
+      };
+    },
+    options?: RequestOptions,
+  ): Promise<TypedResponse<Location>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/locations/by-entity/{kind}/{namespace}/{name}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      kind: request.path.kind,
+      namespace: request.path.namespace,
+      name: request.path.name,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'GET',
+    });
+  }
+
+  /**
    * Get all locations
    */
   public async getLocations(
