@@ -48,6 +48,7 @@
     "@backstage/plugin-auth-backend-module-okta-provider": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@google-cloud/firestore": "^7.0.0",
     "@types/express": "^4.17.6",
     "@types/passport": "^1.0.3",

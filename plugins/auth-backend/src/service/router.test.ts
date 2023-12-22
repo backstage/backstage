@@ -15,7 +15,11 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { createOriginFilter } from './router';
+import {
+  createOriginFilter,
+  getDefaultBackstageTokenExpiryTime,
+} from './router';
+import { BACKSTAGE_SESSION_EXPIRATION } from '../lib/session';
 
 describe('Auth origin filtering', () => {
   const config = new ConfigReader({
@@ -50,5 +54,30 @@ describe('Auth origin filtering', () => {
   it("Won't explode, valid origin with chars and numbers", () => {
     const origin = 'https://test-test1234.example.net';
     expect(createOriginFilter(config)(origin)).toBeTruthy();
+  });
+});
+
+describe('Test for default backstage token expiry time', () => {
+  it('Will return default backstage session expiration', () => {
+    const config = new ConfigReader({
+      app: {
+        baseUrl: 'http://example.com/extra-path',
+      },
+    });
+    expect(getDefaultBackstageTokenExpiryTime(config)).toBe(
+      BACKSTAGE_SESSION_EXPIRATION,
+    );
+  });
+
+  it('Will return user defined backstage session expiration', () => {
+    const config = new ConfigReader({
+      app: {
+        baseUrl: 'http://example.com/extra-path',
+      },
+      auth: {
+        backstageTokenExpiration: { minutes: 120 },
+      },
+    });
+    expect(getDefaultBackstageTokenExpiryTime(config)).toBe(7200);
   });
 });

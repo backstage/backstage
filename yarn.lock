@@ -4859,6 +4859,7 @@ __metadata:
     "@backstage/plugin-auth-backend-module-okta-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@google-cloud/firestore": ^7.0.0
     "@types/body-parser": ^1.19.0
     "@types/cookie-parser": ^1.4.2

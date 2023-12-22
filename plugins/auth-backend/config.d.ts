@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
@@ -212,6 +214,10 @@ export interface Config {
       cfaccess?: {
         teamName: string;
       };
+      /**
+       * The backstage token expiration.
+       */
+      backstageTokenExpiration?: HumanDuration;
     };
   };
 }
