@@ -113,4 +113,4 @@ const customSearchPage = createPageExtension({
 });
 ```
 
-We recommend that plugin developes share the extension ids in their plugin documentations, but usually you can infer the id by following the (Naming pattern)[./08-naming-patterns] standars.
+We recommend that plugin developes share the extension IDs in their plugin documentations, but usually you can infer the id by following the (Naming pattern)[./08-naming-patterns] standars.
