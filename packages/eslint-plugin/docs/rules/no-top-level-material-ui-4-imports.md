@@ -1,4 +1,4 @@
-# @backstage/no-top-level-mui4-imports
+# @backstage/no-top-level-material-ui-4-imports
 
 Forbid top level import from Material UI v4 packages.
 
@@ -7,7 +7,7 @@ Forbid top level import from Material UI v4 packages.
 Add the rules as follows, it has no options:
 
 ```js
-"@backstage/no-top-level-mui4-imports": ["error"]
+"@backstage/no-top-level-material-ui-4-imports": ["error"]
 ```
 
 ## Rule Details

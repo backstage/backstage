@@ -37,7 +37,7 @@ module.exports = {
     },
     docs: {
       description: 'Forbid top level import from Material UI v4 packages.',
-      url: 'https://github.com/backstage/backstage/blob/master/packages/eslint-plugin/docs/rules/no-top-level-mui4-imports.md',
+      url: 'https://github.com/backstage/backstage/blob/master/packages/eslint-plugin/docs/rules/no-top-level-material-ui-4-imports.md',
     },
   },
   create: context => ({
