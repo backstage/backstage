@@ -171,7 +171,7 @@ Some more real world usable examples:
 
   `/entities/by-query?fields=kind,metadata.namespace,metadata.name`
 
-### Ordering
+#### Ordering
 
 By default the entities are returned ordered by their internal uid. You can
 customize the `orderField` query parameters to affect that ordering.
@@ -186,7 +186,7 @@ Each parameter can be followed by `asc` for ascending lexicographical order or
 #### Pagination
 
 You may pass the `cursor` query parameters to perform cursor based pagination
-through the set of entities. The value of `cursor` will be returned in the response, under `pageInfo` property:
+through the set of entities. The value of `cursor` will be returned in the response, under the `pageInfo` property:
 
 ```json
   "pageInfo": {
@@ -211,7 +211,9 @@ if `prevCursor` exists, it can be used to retrieve the previous batch of entitie
 ### `GET /entities`
 
 Lists entities.
+
 **NOTE**: This endpoint is deprecated in favor of `GET /entities/by-query`, which provides a more efficient implementation and cursor based pagination.
+
 The endpoint supports the following query parameters, described in sections
 below:
 
