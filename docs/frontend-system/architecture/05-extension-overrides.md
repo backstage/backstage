@@ -101,7 +101,7 @@ Note that it can still be a good idea to split your overrides out into separate 
 
 To override an existing extension (which is already provided by a plugin), you need to provide an extension that has the same ID as the existing extension. That is, all kind, namespaces, and name must match the extension you want to replace. This means that you typically need to provide an explicit namespace when overriding extensions from a plugin.
 
-Imagine that we have a plugin with search id and the plugin provides a search page extension that you want to fully override with your own custom component. To do so, you have to create your page extension and inform to the extension factory that the extension namespace is search to make sure you are overriding the search page of the plugin with id 'search' and not creating a anonymous page that will not override thesearch plugin one.
+Imagine you have a plugin with the ID `'search'`, and the plugin provides a page extension that you want to fully override with your own custom component. To do so, you need to create your page extension with an explicit `namespace` option that matches that of the plugin that you want to override, in this case `'search'`. If the existing extension also has an explicit `name` you'd need to set the `name` of your override extension to the same value as well.
 
 ```tsx
 // packages/app/src/search.ts
