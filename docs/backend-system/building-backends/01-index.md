@@ -6,8 +6,6 @@ sidebar_label: Overview
 description: Building backends using the new backend system
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 > NOTE: If you have an existing backend that is not yet using the new backend
 > system, see [migrating](./08-migrating.md).
 

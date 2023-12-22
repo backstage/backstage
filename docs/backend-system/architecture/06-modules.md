@@ -6,8 +6,6 @@ sidebar_label: Modules
 description: Modules for backend plugins
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 Backend modules are used to extend [plugins](./04-plugins.md) or sometimes other modules with additional features or change existing behavior. They must always be installed in the same backend instance as the plugin that they extend, and may only extend a single plugin. Modules interact with their target plugin using the [extension points](./05-extension-points.md) registered by the plugin, while also being able to depend on the [services](./03-services.md) of that plugin.
 
 Both modules and plugins register an `init` method that is called during startup. In order to ensure that modules have registered all their extensions before the plugin starts up, all modules for each plugin are completely initialized before the plugin itself is initialized. In practice this means that all promises returned by each `init` method of the modules need to resolve before the plugin `init` method is called. This also means that it is not possible to further interact with the extension points once the `init` method has resolved.

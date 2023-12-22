@@ -6,8 +6,6 @@ sidebar_label: Backend
 description: Backend instances
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 ## The Backend Instance
 
 This is the main entry point for creating a backend. It does not have any functionality in and of itself, but is simply responsible for wiring things together.
