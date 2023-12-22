@@ -111,6 +111,11 @@ const Community = () => {
       logo: 'img/partner-logo-frontside.png',
     },
     {
+      name: 'RedHat',
+      url: 'https://www.redhat.com/',
+      logo: 'img/partner-logo-redhat.png',
+    },
+    {
       name: 'Roadie',
       url: 'https://roadie.io/',
       logo: 'img/partner-logo-roadie.png',
