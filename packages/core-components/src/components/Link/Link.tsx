@@ -42,6 +42,7 @@ const useStyles = makeStyles(
       clipPath: 'inset(50%)',
       overflow: 'hidden',
       position: 'absolute',
+      userSelect: 'none',
       whiteSpace: 'nowrap',
       height: 1,
       width: 1,
