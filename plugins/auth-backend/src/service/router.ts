@@ -29,7 +29,6 @@ import {
 } from '@backstage/backend-common';
 import { assertError, NotFoundError } from '@backstage/errors';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
 import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
 import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
@@ -41,6 +40,8 @@ import { BACKSTAGE_SESSION_EXPIRATION } from '../lib/session';
 import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
+import { Config, readDurationFromConfig } from '@backstage/config';
+import { durationToMilliseconds } from '@backstage/types';
 
 /** @public */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
@@ -76,9 +77,8 @@ export async function createRouter(
 
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
-
+  const backstageTokenExpiration = getDefaultBackstageTokenExpiryTime(config);
   const authDb = AuthDatabase.create(database);
-  const sessionExpirationSeconds = BACKSTAGE_SESSION_EXPIRATION;
 
   const keyStore = await KeyStores.fromConfig(config, {
     logger,
@@ -91,7 +91,7 @@ export async function createRouter(
       {
         logger: logger.child({ component: 'token-factory' }),
         issuer: authUrl,
-        sessionExpirationSeconds: sessionExpirationSeconds,
+        sessionExpirationSeconds: backstageTokenExpiration,
       },
       keyStore as StaticKeyStore,
     );
@@ -99,7 +99,7 @@ export async function createRouter(
     tokenIssuer = new TokenFactory({
       issuer: authUrl,
       keyStore,
-      keyDurationSeconds: sessionExpirationSeconds,
+      keyDurationSeconds: backstageTokenExpiration,
       logger: logger.child({ component: 'token-factory' }),
       algorithm:
         tokenFactoryAlgorithm ??
@@ -248,4 +248,23 @@ export function createOriginFilter(
     }
     return allowedOriginPatterns.some(pattern => pattern.match(origin));
   };
+}
+
+/** @internal */
+export function getDefaultBackstageTokenExpiryTime(config: Config) {
+  const processingIntervalKey = 'auth.backstageTokenExpiration';
+
+  if (!config.has(processingIntervalKey)) {
+    return BACKSTAGE_SESSION_EXPIRATION;
+  }
+
+  const duration = readDurationFromConfig(config, {
+    key: processingIntervalKey,
+  });
+  const seconds = Math.max(
+    600,
+    Math.round(durationToMilliseconds(duration) / 1000),
+  );
+
+  return seconds;
 }
