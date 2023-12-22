@@ -21,5 +21,5 @@
  */
 
 export { microsoftAuthenticator } from './authenticator';
-export { authModuleMicrosoftProvider } from './module';
+export { authModuleMicrosoftProvider as default } from './module';
 export { microsoftSignInResolvers } from './resolvers';

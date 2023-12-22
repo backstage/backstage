@@ -21,4 +21,4 @@
  */
 
 export { pinnipedAuthenticator, PinnipedStrategyCache } from './authenticator';
-export { authModulePinnipedProvider } from './module';
+export { authModulePinnipedProvider as default } from './module';
