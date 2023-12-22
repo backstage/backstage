@@ -29,5 +29,6 @@ module.exports = {
     'no-forbidden-package-imports': require('./rules/no-forbidden-package-imports'),
     'no-relative-monorepo-imports': require('./rules/no-relative-monorepo-imports'),
     'no-undeclared-imports': require('./rules/no-undeclared-imports'),
+    'no-top-level-mui4-imports': require('./rules/no-top-level-mui4-imports'),
   },
 };

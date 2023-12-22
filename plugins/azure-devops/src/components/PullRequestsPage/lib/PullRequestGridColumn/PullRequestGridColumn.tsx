@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Paper, Typography, styled, withStyles } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import { styled, withStyles } from '@material-ui/core/styles';
 
 import { PullRequestCard } from '../PullRequestCard';
 import { PullRequestGroup } from '../types';
