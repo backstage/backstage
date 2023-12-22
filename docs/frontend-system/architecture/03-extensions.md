@@ -254,7 +254,7 @@ With the `inputs` not only the `output` of an extensions item is passed to the e
 
 ## Extension Configuration
 
-With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independet of the plugin & initiated several times. Therefor we created a possibility to configure each extension indiviually through config. The extension config schema is created using the [`zod`](https://zod.dev/) library, which in addition to TypeScript type checking also provides runtime validation and coercion. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
+With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independent of the plugin & initiated several times. Therefor we created a possibility to configure each extension individually through config. The extension config schema is created using the [`zod`](https://zod.dev/) library, which in addition to TypeScript type checking also provides runtime validation and coercion. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
 
 ```tsx
 const navigationExtension = createExtension({
@@ -297,7 +297,7 @@ app:
 
 With creating an extension by using `createExtension(...)` you have the advantage that the extension can be anything in your Backstage application. We realised that this comes with the trade-off of having to repeat boilerplate code for similar building blocks. Here extension creators come into play for covering common building blocks in Backstage like pages using `createPageExtension`, themes using the `createThemeExtension` or items for the navigation using `createNavItemExtension`.
 
-If we follow the example from above all items of the navigation have similarites, like they all want to be attached to the same extension with the same input as well as rendering the same navigation item component. Therefor `createExtension` can be abstracted for this use case to `createNavItemExtension` and if we add the extension to the app it will end up in the right place & looks like we expect a navigation item to look.
+If we follow the example from above all items of the navigation have similarities, like they all want to be attached to the same extension with the same input as well as rendering the same navigation item component. Therefor `createExtension` can be abstracted for this use case to `createNavItemExtension` and if we add the extension to the app it will end up in the right place & looks like we expect a navigation item to look.
 
 ```tsx
 export const HomeNavIcon = createNavItemExtension({
@@ -335,11 +335,11 @@ All React elements rendered by extension creators should be wrapped in the exten
 
 ### Error Boundary
 
-Similar to plugins the `ErrorBoundary` for extension allows to pass in a fallback component in case there is an uncatched error inside of the component. With this the error can be isolated & it would prevent the rest of the plugin to crash.
+Similar to plugins the `ErrorBoundary` for extension allows to pass in a fallback component in case there is an uncaught error inside of the component. With this the error can be isolated & it would prevent the rest of the plugin to crash.
 
 ### Analytics
 
-Analytics information are provided through the `AnalyticsContext`, which will give `extensionId` & `pluginId` as context to analytics event fired inside of the extension. Additionally `RouteTracker` will capture an analytics event for routable extension to inform which extension metadata gets associated with a navigation event when the route navigated to is a gathered mountpoint.
+Analytics information are provided through the `AnalyticsContext`, which will give `extensionId` & `pluginId` as context to analytics event fired inside of the extension. Additionally `RouteTracker` will capture an analytics event for routable extension to inform which extension metadata gets associated with a navigation event when the route navigated to is a gathered `mountPoint`.
 
 The `ExtensionBoundary` can be used like the following in an extension creator:
 
