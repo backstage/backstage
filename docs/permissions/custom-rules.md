@@ -10,6 +10,12 @@ For some use cases, you may want to define custom [rules](./concepts.md#resource
 
 Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule and create a condition in `packages/backend/src/plugins/permission.ts`.
 
+We use Zod in our example to create our params schema. To install, run:
+
+```bash
+yarn workspace backend add zod
+```
+
 ```typescript title="packages/backend/src/plugins/permission.ts"
 ...
 
@@ -53,11 +59,19 @@ Still in the `packages/backend/src/plugins/permission.ts` file, let's use the co
 
 ```ts title="packages/backend/src/plugins/permission.ts"
 ...
-
-import type { Entity } from '@backstage/catalog-model';
+/* highlight-remove-next-line */
 import { createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
+/* highlight-add-next-line */
+import { catalogConditions, createCatalogConditionalDecision, createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
+/* highlight-remove-next-line */
 import { createConditionFactory } from '@backstage/plugin-permission-node';
-import { z } from 'zod';
+/* highlight-add-next-line */
+import { PermissionPolicy, PolicyQuery, createConditionFactory } from '@backstage/plugin-permission-node';
+/* highlight-add-start */
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { AuthorizeResult, PolicyDecision, isResourcePermission } from '@backstage/plugin-permission-common';
+/* highlight-add-end */
+
 
 export const isInSystemRule = createCatalogPermissionRule({
   name: 'IS_IN_SYSTEM',
@@ -127,7 +141,7 @@ The api for providing custom rules may differ between plugins, but there should 
 ```typescript title="packages/backend/src/plugins/catalog.ts"
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 /* highlight-add-next-line */
-import { isInSystemRule } from './permissions';
+import { isInSystemRule } from './permission';
 
 ...
 
@@ -145,4 +159,4 @@ export default async function createPlugin(
 The updated policy will allow catalog entity resource permissions if any of the following are true:
 
 - User owns the target entity
-- Target entity is part of the `interviewing` system
+- Target entity is part of the 'interviewing' system
