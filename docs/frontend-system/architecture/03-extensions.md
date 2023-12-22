@@ -293,8 +293,6 @@ app:
           title: 'Backstage'
 ```
 
-For further information on how to write documentation please follow the architecture section on this (TODO: Link).
-
 ## Extension Creators
 
 With creating an extension by using `createExtension(...)` you have the advantage that the extension can be anything in your Backstage application. We realised that this comes with the trade-off of having to repeat boilerplate code for similar building blocks. Here extension creators come into play for covering common building blocks in Backstage like pages using `createPageExtension`, themes using the `createThemeExtension` or items for the navigation using `createNavItemExtension`.
