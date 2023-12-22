@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-auth-backend-module-microsoft-provider': minor
+'@backstage/plugin-auth-backend-module-microsoft-provider': patch
 ---
 
-**BREAKING** The `authModuleMicrosoftProvider` is now the default export and should be used like this in your backend: `backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));`
+Deprecated the `authModuleMicrosoftProvider` export. A default export is now available and should be used like this in your backend: `backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));`

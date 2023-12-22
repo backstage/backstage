@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-auth-backend-module-pinniped-provider': minor
+'@backstage/plugin-auth-backend-module-pinniped-provider': patch
 ---
 
-**BREAKING** The `authModulePinnipedProvider` is now the default export and should be used like this in your backend: `backend.add(import('@backstage/plugin-auth-backend-module-pinniped-provider'));`
+Deprecated the `authModulePinnipedProvider` export. A default export is now available and should be used like this in your backend: `backend.add(import('@backstage/plugin-auth-backend-module-pinniped-provider'));`

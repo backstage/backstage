@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-/**
- * The gitlab-provider backend module for the auth plugin.
- *
- * @packageDocumentation
- */
+import { authModuleMicrosoftProvider as deprecatedAuthModuleMicrosoftProvider } from './module';
 
-export { microsoftAuthenticator } from './authenticator';
-export { authModuleMicrosoftProvider as default } from './module';
-export { microsoftSignInResolvers } from './resolvers';
-export * from './deprecated';
+/**
+ * @public
+ * @deprecated Use default import instead
+ */
+export { deprecatedAuthModuleMicrosoftProvider as authModuleMicrosoftProvider };
