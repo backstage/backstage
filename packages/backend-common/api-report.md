@@ -277,6 +277,12 @@ export class DockerContainerRunner implements ContainerRunner {
 }
 
 // @public
+export function dropDatabase(
+  dbConfig: Config,
+  ...databases: Array<string>
+): Promise<void>;
+
+// @public
 export function ensureDatabaseExists(
   dbConfig: Config,
   ...databases: Array<string>
