@@ -92,6 +92,11 @@ import { styled, withStyles } from '@material-ui/core/styles';`,
       output: `import { styled } from '@material-ui/core/styles';`,
     },
     {
+      code: `import { SvgIcon, SvgIconProps } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';`,
+    },
+    {
       code: `import { TabProps } from '@material-ui/core';`,
       errors: [{ messageId: 'topLevelImport' }],
       output: `import { TabProps } from '@material-ui/core/Tab';`,

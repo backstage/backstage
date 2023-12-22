@@ -84,37 +84,80 @@ module.exports = {
         fix: fixer => {
           const replacements = [];
           const styles = [];
-          const svgIcon = [];
 
           const specifiers = node.specifiers.filter(
             s => s.type === 'ImportSpecifier',
           );
 
-          for (const specifier of specifiers) {
-            const propsMatch = /^([A-Z]\w+)Props$/.exec(specifier.local.name);
+          const specifiersMap = specifiers.map(s => {
+            const propsTest = /^([A-Z]\w+)Props$/.test(s.local.name);
+            const propsMatch = /^([A-Z]\w+)Props$/.exec(s.local.name);
+            let propValue;
             if (propsMatch) {
-              replacements.push(
-                `import { ${specifier.local.name} } from '@material-ui/core/${propsMatch[1]}';`,
-              );
-            } else if (
-              specifier.local.name === 'SvgIcon' ||
-              specifier.local.name === 'SvgIconProps'
-            ) {
-              svgIcon.push(specifier.local.name);
-            } else if (KNOWN_STYLES.includes(specifier.local.name)) {
-              styles.push(specifier.local.name);
-            } else {
-              const replacement = `import ${specifier.local.name} from '${node.source.value}/${specifier.local.name}';`;
-              replacements.push(replacement);
+              propValue = propsMatch[1];
             }
-          }
+            return {
+              emitComponent: !propsTest,
+              emitProp: propsTest,
+              value: s.local.name,
+              propValue,
+            };
+          });
 
-          if (svgIcon.length > 0) {
-            if (svgIcon.every(s => ['SvgIcon', 'SvgIconProps'].includes(s))) {
-              replacements.push(
-                `import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';`,
-              );
+          // We have 3 cases:
+          // 1 - Just Prop: import { TabProps } from '@material-ui/core';
+          // 2 - Just Component: import { Box } from '@material-ui/core';
+          // 3 - Component and Prop: import { SvgIcon, SvgIconProps } from '@material-ui/core';
+
+          const components = specifiersMap
+            .filter(f => {
+              return f.emitComponent;
+            })
+            .map(m => m.value);
+          const props = specifiersMap
+            .filter(f => {
+              return f.emitProp;
+            })
+            .map(m => m.value);
+
+          if (
+            specifiersMap.some(s => s.emitProp) &&
+            !specifiersMap.some(s => s.emitComponent)
+          ) {
+            // 1 - Just Prop
+            const propValue = specifiersMap
+              .filter(f => {
+                return f.emitProp;
+              })
+              .map(m => m.propValue);
+            replacements.push(
+              `import { ${props.join(', ')} } from '@material-ui/core/${
+                propValue[0]
+              }';`,
+            );
+          } else if (
+            !specifiersMap.some(s => s.emitProp) &&
+            specifiersMap.some(s => s.emitComponent)
+          ) {
+            // 2 - Just Component
+            for (const specifier of specifiers) {
+              if (KNOWN_STYLES.includes(specifier.local.name)) {
+                styles.push(specifier.local.name);
+              } else {
+                const replacement = `import ${specifier.local.name} from '${node.source.value}/${specifier.local.name}';`;
+                replacements.push(replacement);
+              }
             }
+          } else if (
+            specifiersMap.some(s => s.emitProp) &&
+            specifiersMap.some(s => s.emitComponent)
+          ) {
+            // 3 - Component and Prop
+            replacements.push(
+              `import ${components[0]}, { ${props.join(
+                ', ',
+              )} } from '@material-ui/core/${components[0]}';`,
+            );
           }
 
           if (styles.length > 0) {
