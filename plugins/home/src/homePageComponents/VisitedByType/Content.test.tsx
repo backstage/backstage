@@ -197,6 +197,47 @@ describe('<Content kind="recent"/>', () => {
       });
     });
   });
+
+  it('allows recent items to have no filter if the filter config is not valid', async () => {
+    const configApiMock = new MockConfigApi({
+      home: {
+        recentVisits: {
+          filterBy: [
+            {
+              operator: '==',
+              value: '/tech-radar',
+            },
+          ],
+        },
+      },
+    });
+
+    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [visitsApiRef, mockVisitsApi],
+        ]}
+      >
+        <ContextProvider>
+          <Content kind="recent" />
+        </ContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() => {
+      expect(listSpy).toHaveBeenCalledWith({
+        limit: 8,
+        orderBy: [
+          {
+            direction: 'desc',
+            field: 'timestamp',
+          },
+        ],
+      });
+    });
+  });
 });
 
 describe('<Content kind="top"/>', () => {
