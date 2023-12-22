@@ -6,8 +6,6 @@ sidebar_label: Services
 description: Services for backend plugins
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 Backend services provide shared functionality available to all backend plugins and modules. They are made available through service references that embed a type that represents the service interface, similar to how [Utility APIs](../../api/utility-apis.md) work in the Backstage frontend system. To use a service in your plugin or module you request an implementation of that service using the service reference.
 
 The system surrounding services exists to provide a level of indirection between the service interfaces and their implementation. It is an implementation of dependency injection, where each backend instance is the dependency injection container. The implementation for each service is provided by a service factory, which encapsulates the logic for how each service instance is created.

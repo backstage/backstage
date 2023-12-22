@@ -6,25 +6,24 @@ description: Details of the new backend system
 
 ## Status
 
-The new backend system is in alpha, and some plugins do not yet fully implement it. But do feel free to try it out! We would love to hear back about your impressions.
+The new backend system is released and ready for production use, and many plugins and modules have already been migrated. We recommend all plugins and deployments to migrate to the new system.
 
 You can find an example backend setup in [the backend-next package](https://github.com/backstage/backstage/tree/master/packages/backend-next).
 
 ## Overview
 
-The new Backstage backend system is being built to help make it simpler to install backend plugins and to keep projects up to date. It also changes the foundation to one that makes it a lot easier to evolve plugins and the system itself with minimal disruption or cause for breaking changes. You can read more about the reasoning in the [original RFC](https://github.com/backstage/backstage/issues/11611).
+The new Backstage backend system was built to help make it simpler to install backend plugins and to keep projects up to date. It also changed the foundation to one that makes it a lot easier to evolve plugins and the system itself with minimal disruption or cause for breaking changes. You can read more about the reasoning in the [original RFC](https://github.com/backstage/backstage/issues/11611).
 
 One of the goals of the new system was to reduce the code needed for setting up a Backstage backend and installing plugins. This is an example of how you create, add features, and start up your backend in the new system:
 
 ```ts
 import { createBackend } from '@backstage/backend-defaults';
-import { catalogPlugin } from '@backstage/plugin-catalog-backend';
 
 // Create your backend instance
 const backend = createBackend();
 
 // Install all desired features
-backend.add(catalogPlugin());
+backend.add(import('@backstage/plugin-catalog-backend'));
 
 // Start up the backend
 await backend.start();

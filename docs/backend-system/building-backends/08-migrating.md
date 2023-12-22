@@ -6,8 +6,6 @@ sidebar_label: Migration Guide
 description: How to migrate existing backends to the new backend system
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 ## Overview
 
 This section describes how to migrate an existing Backstage backend service
