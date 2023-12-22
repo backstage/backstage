@@ -23,9 +23,9 @@ Configuration Details:
 - `AZURE_TOKEN` environment variable must be set to a [Personal Access Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page) with read access to both Code and Build
 - `organization` is your Azure DevOps Services (cloud) Organization name or for Azure DevOps Server (on-premise) this will be your Collection name
 
-#### Multi Organization
+#### Multi Organization & Service Principles
 
-To support cases where you have multiple Azure DevOps organizations you will want to make sure to configure them in the `integrations.azure` section of your `app-config.yaml` as detailed in the [Azure DevOps Locations](https://backstage.io/docs/integrations/azure/locations) documentation.
+To support cases where you have multiple Azure DevOps organizations and/or you want to use a Service Principle you will want to make sure to configure them in the `integrations.azure` section of your `app-config.yaml` as detailed in the [Azure DevOps Locations](https://backstage.io/docs/integrations/azure/locations) documentation.
 
 **Note:** You will still need to define the [configuration above](#configuration).
 
