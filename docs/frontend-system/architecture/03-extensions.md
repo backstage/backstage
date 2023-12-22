@@ -321,14 +321,9 @@ For more information on naming of extension refer to the [naming patterns docume
 
 ### Extension Creators in libraries
 
-Extension creators should be exported from library packages (e.g. `*-react`, `*-common`) rather than plugin packages.
+Extension creators should be exported from frontend library packages (e.g. `*-react`) rather than plugin packages.
 
-<!--
-
-Explain that extension creators should be exported from library packages (`-react`) rather than plugin packages.
-
-philipph: What is the advantage - not super obvious to me from the comment. We would also need to change this e.g. for the catalog as it currently is exported from `catalog` alpha directly.
- -->
+If an extension is only for in-house tweaks, it's okay to put it in the plugin package. But if you want other open source plugins to use it, or you already have a `-react` package, always put extension creators in the `-react` package.
 
 ## Extension Boundary
 
