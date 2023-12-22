@@ -19,8 +19,7 @@ internal plugins and support classes themselves to the backend system first -
 the migration here will mostly deal with wiring and using compatibility wrappers
 where possible in the backend package itself. We hope that you will find that
 you end up with a much smaller, easier to understand, and easier to maintain
-package as a result of these steps, and then being able to [migrate
-plugins](../building-plugins-and-modules/08-migrating.md) as a separate
+package as a result of these steps, and then being able to [migrate plugins](../building-plugins-and-modules/08-migrating.md) as a separate
 endeavour later.
 
 ## Overall Structure
