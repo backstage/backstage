@@ -3,6 +3,8 @@ kind: System
 metadata:
   name: audio-playback
   description: Audio playback system
+  tags:
+    - portal
 spec:
   owner: team-c
   domain: playback
