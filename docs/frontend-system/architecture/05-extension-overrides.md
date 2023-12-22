@@ -10,18 +10,9 @@ description: Frontend extension overrides
 
 ## Introduction
 
-An extension override is another building block in the Frontend System that allows you to programmatically override app or plugin extensions. Extension overrides are recommended in the following cases:
+An extension override is a building block of the Frontend System that allows you to programmatically override app or plugin extensions anywhere in your application. Since the entire application is built mostly out of extensions from the bottom up, this is a powerful feature. You can use it for example to provide your own app root layout, to replace the implementation of a Utility API with your a custom one, to override how the catalog page renders itself, and much more.
 
-- Override the app skeleton layout;
-- Override a default api implementation;
-- Override a default app component;
-- Override a plugin's default page;
-- Etc.
-
-It is also important to clarify when an override isn't needed. Creating an extension override is not recommended when:
-
-- When you just want to configure a plugin, such as changing the attachment point, a path or any other setting. Be sure to read the extension documentation before overriding an extension to make sure you cannot configure it to work the way you want;
-- It is already possible to enable an extension that is already provided by the plugin. Imagine we have a Search plugin that provides a default search result item extension for rendering search results. Consider also that we have a Catalog plugin with a disabled Catalog search result item extension. To change the way Catalog search result items are rendered, you don't need to override the default result item extension. The only thing you need to do is enable the Catalog search result extension via the config file. For other types of search results, the default Search result item will continue to be used.
+Note that in general, most features should have a good level of customizability built into themselves, so that users do not have to leverage extension overrides to achieve common goals. A well written feature often has app-config settings, or uses extension inputs for extensibility where applicable. An example of this is the search plugin which allows you to provide result renderers as inputs rather than replacing the result page wholesale just to tweak how results are shown. Adopters should be taken advantage of those when possible, and only use extension overrides when it's necessary to entirely replace the extension. Check the respective extension documentation if available for guidance.
 
 ## Creating an Extension Override
 
@@ -113,4 +104,4 @@ const customSearchPage = createPageExtension({
 });
 ```
 
-We recommend that plugin developes share the extension IDs in their plugin documentations, but usually you can infer the id by following the (Naming pattern)[./08-naming-patterns] standars.
+We recommend that plugin developes share the extension IDs in their plugin documentation, but usually you can infer the ID by following the (naming patterns)[./08-naming-patterns] documentation.

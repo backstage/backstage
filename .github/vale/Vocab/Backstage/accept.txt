@@ -312,6 +312,8 @@ rebase
 rebasing
 Recharts
 Redash
+renderer
+renderers
 replicasets
 repo
 Repo
