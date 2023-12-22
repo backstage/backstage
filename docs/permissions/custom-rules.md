@@ -71,7 +71,7 @@ import { PermissionPolicy, PolicyQuery, createConditionFactory } from '@backstag
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { AuthorizeResult, PolicyDecision, isResourcePermission } from '@backstage/plugin-permission-common';
 /* highlight-add-end */
-
+...
 
 export const isInSystemRule = createCatalogPermissionRule({
   name: 'IS_IN_SYSTEM',
