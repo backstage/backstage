@@ -135,7 +135,7 @@ const extension = createExtension({
 
 ### Core Extension Data
 
-We provide default `coreExtensionData`, which provides commonly used `ExtensionDataRef`s - e.g. for `React.JSX.Element` and `RouteRef`. They can be used when creating your own extension. For example, the React Element extension data that we defined above is already provided as `coreExtensionData.reactElement`. 
+We provide default `coreExtensionData`, which provides commonly used `ExtensionDataRef`s - e.g. for `React.JSX.Element` and `RouteRef`. They can be used when creating your own extension. For example, the React Element extension data that we defined above is already provided as `coreExtensionData.reactElement`.
 
 <!-- For a full list and explanations of all types of core extension data, see the [core extension data reference](#TODO). -->
 
@@ -151,7 +151,8 @@ const extension = createExtension({
   },
   factory() {
     return {
-      element: <img src="./assets/logo.png" />,
+      element:
+        Math.random() < 0.5 ? <img src="./assets/logo.png" /> : undefined,
     };
   },
 });
