@@ -37,7 +37,7 @@ import {
 // Creating a light theme extension;
 const apertureLightTheme = createThemeApi({ … });
 
-// Creating a light theme extension;
+// Creating a dark theme extension;
 const apertureDarkTheme = createThemeApi({ … });
 
 // Creating an extension overrides preset
