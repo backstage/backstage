@@ -42,6 +42,12 @@ module.exports = {
   },
   create: context => ({
     ImportDeclaration: node => {
+      // Anatomy of a Node
+      // Example: import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
+      // Specifiers are the part between the `import` and `from`, in the example that would be `SvgIcon, { SvgIconProps }`
+      // Source is the part after the `from`, in the example that would be `'@material-ui/core/SvgIcon'`
+      // Source value gets you `@material-ui/core/SvgIcon` without the quotes, where as Source raw gets it as is
+
       // Return if empty import
       if (node.specifiers.length === 0) return;
       // Return if empty source value
@@ -52,11 +58,9 @@ module.exports = {
       if (!node.source.value.startsWith('@material-ui/')) return;
       // Return if import is from '@material-ui/core/styles', as it's valid already
       if (node.source.value === '@material-ui/core/styles') return;
-      // Return if import is from '@material-ui/core/SvgIcon', as it's valid already
-      if (node.source.value === '@material-ui/core/SvgIcon') return;
       // Return if proper import eg. `import Box from '@material-ui/core/Box'`
       if (
-        node.specifiers.length === 1 &&
+        node.specifiers.length >= 1 &&
         node.source.value?.split('/').length === 3
       )
         return;
@@ -87,9 +91,10 @@ module.exports = {
           );
 
           for (const specifier of specifiers) {
-            if (specifier.local.name === 'TabProps') {
+            const propsMatch = /^([A-Z]\w+)Props$/.exec(specifier.local.name);
+            if (propsMatch) {
               replacements.push(
-                `import { TabProps } from '@material-ui/core/Tab';`,
+                `import { ${specifier.local.name} } from '@material-ui/core/${propsMatch[1]}';`,
               );
             } else if (
               specifier.local.name === 'SvgIcon' ||
