@@ -135,7 +135,9 @@ const extension = createExtension({
 
 ### Core Extension Data
 
-We provide default `coreExtensionData`, which provides commonly used `ExtensionDataRef` - e.g. for `React.JSX.Element`, `RouteRef` or `AppTheme`. They can be used when creating your own extension. For example, the React Element extension data that we defined above is already provided as `coreExtensionData.reactElement`. For a full list and explanations of all types of core extension data, see the [core extension data reference](#TODO).
+We provide default `coreExtensionData`, which provides commonly used `ExtensionDataRef`s - e.g. for `React.JSX.Element` and `RouteRef`. They can be used when creating your own extension. For example, the React Element extension data that we defined above is already provided as `coreExtensionData.reactElement`. 
+
+<!-- For a full list and explanations of all types of core extension data, see the [core extension data reference](#TODO). -->
 
 ### Optional Extension Data
 
@@ -182,7 +184,7 @@ const navigationExtension = createExtension({
 });
 ```
 
-The input (see [1] above) is an object with the properties `$$type`, `extensionData` and `config`, where `createExtensionInput` helps creating this object by taking the `extensionData` as the first parameter, and the `config` as the second parameter making sure the `$$type` is set correctly. The extension data ensures the input is of the type & format we expect. With `config` the format & type can be defined even more precisely. The extension input can be converted from an array of inputs to just a single input by setting `singleton` to `true`. If the extension input is optional, `optional: true` converts the type to be optional as well.
+The input (see [1] above) is an object that we create using `createExtensionInput`. The first argument is the set of extension data that we accept via this input, and works just like the `output` option. The second argument is optional, and it allows us to put constraints on the extensions that are attached to our input. If the `singleton: true` option is set, only a single extension can attached at a time, and unless the `optional: true` option is set it will also be required that there is exactly on attached extension.
 
 So how can we now attach the output to the parent extension's input? If we think about a navigation component, like the Sidebar in Backstage, there might be plugins that want to attach a link to their plugin to this navigation component. In this case the plugin only needs to know the extension `id` and the name of the extension `input` to attach the extension `output` returned by the `factory` to the specified extension:
 
@@ -229,7 +231,7 @@ const navigationExtension = createExtension({
 
 In this case the extension input `items` is an array, where each individual item is an extension that attached itself to the extension inputs of this `id`.
 
-With the `inputs` not only the `output` of an extensions item is passed to the extension, but also the `node`. It is discouraged to consume and/or modify the `node` here. If we are looking at the `factory` function from the example above we could access the `node` like the following:
+With the `inputs` not only the `output` of an extensions item is passed to the extension, but also the `node`. However, it is discouraged to consume the `node` here unless needed. If we are looking at the `factory` function from the example above we could access the `node` like the following:
 
 ```tsx
   // ...
@@ -251,7 +253,7 @@ With the `inputs` not only the `output` of an extensions item is passed to the e
 
 ## Extension Configuration
 
-With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independet of the plugin & initiated several times. Therefor we created a possibility to configure each extension indiviually through config. The config schema is created using the library `zod` (TODO: Link), which enables a stronger type checking on top of TypeScript. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
+With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independet of the plugin & initiated several times. Therefor we created a possibility to configure each extension indiviually through config. The extension config schema is created using the [`zod`](https://zod.dev/) library, which in addition to TypeScript type checking also provides runtime validation and coercion. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
 
 ```tsx
 const navigationExtension = createExtension({
@@ -316,7 +318,7 @@ The `id` of the extension is then build out of `namespace`, `name` & `kind` like
 id: kind:namespace/name
 ```
 
-For more information on naming of extension refer to the naming patterns documentation (TODO: Link)
+For more information on naming of extension refer to the [naming patterns documentation](./08-naming-patterns.md).
 
 ### Extension Creators in libraries
 
