@@ -6241,6 +6241,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
     "@codemirror/language": ^6.0.0
     "@codemirror/legacy-modes": ^6.1.0
     "@codemirror/view": ^6.0.0
