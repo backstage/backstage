@@ -18552,11 +18552,11 @@ __metadata:
   linkType: hard
 
 "@types/react-virtualized-auto-sizer@npm:^1.0.1":
-  version: 1.0.3
-  resolution: "@types/react-virtualized-auto-sizer@npm:1.0.3"
+  version: 1.0.4
+  resolution: "@types/react-virtualized-auto-sizer@npm:1.0.4"
   dependencies:
     "@types/react": "*"
-  checksum: 7fcc516241903b937481b567a560c75cd23d27e63222938db725972d93cde0c07f846f98e104c78edcaa765608be156a9d08cf24e2261a3e11463b11343d964c
+  checksum: e0d41ac6cf0f48dfef45c0cd70146578f42ad83dad90911aa0dfe72b0e1ea62ca9ff56d4f43f322ec6dae2e7cb4d025aefe0e85241f7782c249aeface1050512
   languageName: node
   linkType: hard
 
