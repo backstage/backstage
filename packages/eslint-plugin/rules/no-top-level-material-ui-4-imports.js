@@ -32,8 +32,6 @@ module.exports = {
     fixable: 'code',
     messages: {
       topLevelImport: 'Top level imports for Material UI are not allowed',
-      thirdLevelImport:
-        'Third level or deeper imports for Material UI are not allowed',
     },
     docs: {
       description: 'Forbid top level import from Material UI v4 packages.',
@@ -65,15 +63,11 @@ module.exports = {
       )
         return;
 
-      // Report third level or deeper imports
+      // Return if third level or deeper imports
       if (
-        node.specifiers.length === 1 &&
+        node.specifiers.length >= 1 &&
         node.source.value.split('/').length > 3
       ) {
-        context.report({
-          node,
-          messageId: 'thirdLevelImport',
-        });
         return;
       }
 

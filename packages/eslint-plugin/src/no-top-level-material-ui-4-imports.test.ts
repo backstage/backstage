@@ -38,6 +38,12 @@ ruleTester.run('path-imports-rule', rule, {
     {
       code: `import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';`,
     },
+    {
+      code: `import { StyleRules } from '@material-ui/core/styles/withStyles';`,
+    },
+    {
+      code: `import { CreateCSSProperties, StyledComponentProps } from '@material-ui/core/styles/withStyles';`,
+    },
   ],
   invalid: [
     {
@@ -67,10 +73,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';`,
-    },
-    {
-      code: `import { TabIndicator } from '@material-ui/core/Tabs/TabIndicator';`,
-      errors: [{ messageId: 'thirdLevelImport' }],
     },
     {
       code: `import { Box, Button, makeStyles } from '@material-ui/core';`,
