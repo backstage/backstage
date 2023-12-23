@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-gitlab': patch
 ---
 
-add `groupTransformer`, `userTransformer` and `groupNameTransformer` to allow custom transformations when groups and users are created
+Added the option to provide custom `groupTransformer`, `userTransformer` and `groupNameTransformer` to allow custom transformations of groups and users
