@@ -417,6 +417,7 @@ export class Git {
     force?: boolean;
   }): Promise<PushResult>;
   readCommit(options: { dir: string; sha: string }): Promise<ReadCommitResult>;
+  remove(options: { dir: string; filepath: string }): Promise<void>;
   resolveRef(options: { dir: string; ref: string }): Promise<string>;
 }
 
