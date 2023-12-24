@@ -77,7 +77,11 @@ const refCompare = (a: Entity, b: Entity) => {
   return toRef(a).localeCompare(toRef(b));
 };
 
-const defaultColumnsFunc: CatalogTableColumnsFunc = ({ filters, entities }) => {
+/** @public */
+export const defaultColumnsFunc: CatalogTableColumnsFunc = ({
+  filters,
+  entities,
+}) => {
   const showTypeColumn = filters.type === undefined;
 
   return [

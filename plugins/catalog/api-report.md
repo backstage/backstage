@@ -245,6 +245,9 @@ export interface DefaultCatalogPageProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
 }
 
+// @public (undocumented)
+export const defaultColumnsFunc: CatalogTableColumnsFunc;
+
 // @public
 export class DefaultEntityPresentationApi implements EntityPresentationApi {
   static create(
