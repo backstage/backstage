@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { CatalogTable, defaultColumnsFunc } from './CatalogTable';
+export { CatalogTable, defaultCatalogTableColumnsFunc } from './CatalogTable';
 export type { CatalogTableProps } from './CatalogTable';
 export type { CatalogTableRow, CatalogTableColumnsFunc } from './types';

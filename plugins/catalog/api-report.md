@@ -246,7 +246,7 @@ export interface DefaultCatalogPageProps {
 }
 
 // @public (undocumented)
-export const defaultColumnsFunc: CatalogTableColumnsFunc;
+export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc;
 
 // @public
 export class DefaultEntityPresentationApi implements EntityPresentationApi {

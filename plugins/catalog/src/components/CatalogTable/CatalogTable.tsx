@@ -78,7 +78,7 @@ const refCompare = (a: Entity, b: Entity) => {
 };
 
 /** @public */
-export const defaultColumnsFunc: CatalogTableColumnsFunc = ({
+export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc = ({
   filters,
   entities,
 }) => {
@@ -126,7 +126,7 @@ export const defaultColumnsFunc: CatalogTableColumnsFunc = ({
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
   const {
-    columns = defaultColumnsFunc,
+    columns = defaultCatalogTableColumnsFunc,
     tableOptions,
     subtitle,
     emptyContent,
