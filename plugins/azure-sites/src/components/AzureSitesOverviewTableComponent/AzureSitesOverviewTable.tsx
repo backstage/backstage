@@ -18,6 +18,7 @@ import React, { Dispatch, useEffect, useState } from 'react';
 import {
   Box,
   Card,
+  Chip,
   IconButton,
   LinearProgress,
   Menu,
@@ -89,6 +90,18 @@ const Kind = ({ value }: { value: Kinds }) => {
       <Tooltip title={iconValue}>{iconMap[iconValue]}</Tooltip>
     </Box>
   );
+};
+
+const Tags = ({ tags }: { tags: any }) => {
+  return Object.keys(tags).map((key: any) => (
+    <Chip
+      key={key}
+      label={`${key}: ${tags[key]}`}
+      size="small"
+      variant="default"
+      style={{ marginBottom: '1px' }}
+    />
+  ));
 };
 
 type TableProps = {
@@ -222,6 +235,11 @@ export const AzureSitesOverviewTable = ({ data, loading }: TableProps) => {
       title: 'status',
       field: 'status',
       render: (func: AzureSite) => <State value={func.state as States} />,
+    },
+    {
+      title: 'Tags',
+      field: 'tags',
+      render: (func: AzureSite) => (func.tags ? <Tags tags={func.tags} /> : ''),
     },
     {
       title: 'last modified',
