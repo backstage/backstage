@@ -22121,9 +22121,9 @@ __metadata:
   linkType: hard
 
 "classnames@npm:*, classnames@npm:^2.2.5, classnames@npm:^2.2.6, classnames@npm:^2.3.1":
-  version: 2.3.2
-  resolution: "classnames@npm:2.3.2"
-  checksum: 2c62199789618d95545c872787137262e741f9db13328e216b093eea91c85ef2bfb152c1f9e63027204e2559a006a92eb74147d46c800a9f96297ae1d9f96f4e
+  version: 2.3.3
+  resolution: "classnames@npm:2.3.3"
+  checksum: 0cb4db9cc3b8d2363c81f857f85b30351605fe683c89d140939aed4e06895a9570be737494ef3907e7069e2b98ed25ba3960fbf087b33309a18707fc38565e95
   languageName: node
   linkType: hard
 
