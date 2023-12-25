@@ -23,11 +23,11 @@ import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
 import { Gitlab, CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
 
-const enumIssueType = {
-  ISSUE: 'issue',
-  INCIDENT: 'incident',
-  TEST: 'test_case',
-};
+enum IssueType {
+  ISSUE = 'issue',
+  INCIDENT = 'incident',
+  TEST = 'test_case',
+}
 
 const issueInputProperties = z.object({
   projectId: z.number().describe('Project Id'),
@@ -67,27 +67,9 @@ const issueInputProperties = z.object({
     .optional(),
   labels: z.string({ description: 'Labels to apply' }).optional(),
   issueType: z
-    .string({
+    .nativeEnum(IssueType, {
       description: 'Type of the issue',
     })
-    .refine(issueType => {
-      const isValid = Object.values(enumIssueType).includes(issueType);
-      if (!isValid) {
-        throw new z.ZodError([
-          {
-            code: 'invalid_enum_value',
-            options: Object.values(enumIssueType),
-            path: ['issueType'],
-            message: `Invalid value for 'issueType'. Must be one of: ${Object.values(
-              enumIssueType,
-            ).join(', ')}`,
-            received: issueType,
-          },
-        ]);
-      }
-      return isValid;
-    })
-    .default(enumIssueType.ISSUE)
     .optional(),
   mergeRequestToResolveDiscussionsOf: z
     .number({

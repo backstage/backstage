@@ -48,8 +48,7 @@ export const examples: TemplateExample[] = [
             ...commonGitlabConfigExample,
             projectId: 12,
             title: 'Test Issue',
-            assignees: `
-            - 18 `,
+            assignees: [18],
             description: 'This is the description of the issue',
             createdAt: '2022-09-27 18:00:00.000',
             dueDate: '2022-09-28 12:00:00.000',
@@ -70,9 +69,7 @@ export const examples: TemplateExample[] = [
             ...commonGitlabConfigExample,
             projectId: 12,
             title: 'Test Issue',
-            assignees: `
-              - 18
-              - 15 `,
+            assignees: [18, 15],
             description: 'This is the description of the issue',
             confidential: false,
             createdAt: '2022-09-27 18:00:00.000',
