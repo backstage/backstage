@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend-module-stack-overflow-collator
 
+## 0.1.2-next.0
+
+### Patch Changes
+
+- 2e6c56b: Update wording to show that the backend system no longer is in alpha
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/backend-tasks@0.5.14-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-backend-node@1.2.13-next.0
+  - @backstage/plugin-search-common@1.2.9
+
 ## 0.1.1
 
 ### Patch Changes

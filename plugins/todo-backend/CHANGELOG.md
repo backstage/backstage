@@ -1,5 +1,21 @@
 # @backstage/plugin-todo-backend
 
+## 0.3.7-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/backend-openapi-utils@0.1.2-next.0
+  - @backstage/plugin-catalog-node@1.6.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+
 ## 0.3.6
 
 ### Patch Changes

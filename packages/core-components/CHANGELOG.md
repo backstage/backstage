@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.13.10-next.0
+
+### Patch Changes
+
+- d625f66: Fixed bug in Link where it was possible to select and copy a hidden element into clipboard
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0
+  - @backstage/version-bridge@1.0.7
+
 ## 0.13.9
 
 ### Patch Changes

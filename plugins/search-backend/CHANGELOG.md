@@ -1,5 +1,23 @@
 # @backstage/plugin-search-backend
 
+## 1.4.9-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-openapi-utils@0.1.2-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-permission-node@0.7.20-next.0
+  - @backstage/plugin-search-backend-node@1.2.13-next.0
+  - @backstage/plugin-search-common@1.2.9
+
 ## 1.4.8
 
 ### Patch Changes

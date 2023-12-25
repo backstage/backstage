@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-bitbucket
 
+## 0.2.24-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/plugin-catalog-node@1.6.1-next.0
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.15
+
 ## 0.2.23
 
 ### Patch Changes

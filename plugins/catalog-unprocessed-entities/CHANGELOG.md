@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.6
 
 ### Patch Changes
