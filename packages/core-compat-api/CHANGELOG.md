@@ -1,5 +1,15 @@
 # @backstage/core-compat-api
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.1-next.0
+  - @backstage/core-app-api@1.11.2
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/version-bridge@1.0.7
+
 ## 0.1.0
 
 ### Minor Changes

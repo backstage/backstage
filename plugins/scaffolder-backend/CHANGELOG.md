@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.19.3-next.0
+
+### Patch Changes
+
+- e9ab1c4: Fixed an issue where not passing a `value` to any of the action's permission conditions caused an error.
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.1.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.1-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.6-next.0
+  - @backstage/plugin-catalog-node@1.6.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/backend-tasks@0.5.14-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-permission-node@0.7.20-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.12-next.0
+  - @backstage/plugin-scaffolder-common@1.4.4
+  - @backstage/plugin-scaffolder-node@0.2.10-next.0
+
 ## 1.19.2
 
 ### Patch Changes

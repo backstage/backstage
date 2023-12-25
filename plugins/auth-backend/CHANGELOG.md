@@ -1,5 +1,29 @@
 # @backstage/plugin-auth-backend
 
+## 0.20.3-next.0
+
+### Patch Changes
+
+- 004499c: Fixed an issue where some Okta's resolvers were missing
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.1-next.0
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.1-next.0
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.3-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.2-next.0
+  - @backstage/plugin-catalog-node@1.6.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-auth-node@0.4.3-next.0
+
 ## 0.20.1
 
 ### Patch Changes

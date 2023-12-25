@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog
 
+## 1.16.1-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/frontend-plugin-api@0.4.1-next.0
+  - @backstage/plugin-permission-react@0.4.19-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.0
+  - @backstage/integration-react@1.1.22
+  - @backstage/plugin-search-react@1.7.5-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-compat-api@0.1.1-next.0
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-scaffolder-common@1.4.4
+  - @backstage/plugin-search-common@1.2.9
+
 ## 1.16.0
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.41-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/integration@1.8.0
+
 ## 0.3.40
 
 ### Patch Changes

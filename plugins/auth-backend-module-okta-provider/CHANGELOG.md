@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-okta-provider
 
+## 0.0.2-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/plugin-auth-node@0.4.3-next.0
+
 ## 0.0.1
 
 ### Patch Changes

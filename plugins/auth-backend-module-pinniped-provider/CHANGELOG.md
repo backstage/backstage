@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-pinniped-provider
 
+## 0.1.3-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-auth-node@0.4.3-next.0
+
 ## 0.1.2
 
 ### Patch Changes

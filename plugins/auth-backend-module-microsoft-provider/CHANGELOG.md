@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-microsoft-provider
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/plugin-auth-node@0.4.3-next.0
+
 ## 0.1.3
 
 ### Patch Changes

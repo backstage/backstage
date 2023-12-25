@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes
 
+## 0.11.4-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/plugin-kubernetes-common@0.7.3-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.0
+  - @backstage/plugin-kubernetes-react@0.2.1-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+
 ## 0.11.3
 
 ### Patch Changes

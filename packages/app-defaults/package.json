@@ -1,7 +1,7 @@
 {
   "name": "@backstage/app-defaults",
   "description": "Provides the default wiring of a Backstage App",
-  "version": "1.4.6",
+  "version": "1.4.7-next.0",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
