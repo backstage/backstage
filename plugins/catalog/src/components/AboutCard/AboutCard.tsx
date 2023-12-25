@@ -166,7 +166,7 @@ export function AboutCard(props: AboutCardProps) {
   const subHeaderLinks = [viewInSource, viewInTechDocs];
 
   if (isTemplateEntityV1beta3(entity)) {
-    const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
+    const Icon = app.getSystemIcon('kind:template') ?? CreateComponentIcon;
 
     const launchTemplate: IconLinkVerticalProps = {
       label: 'Launch Template',
