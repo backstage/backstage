@@ -16,7 +16,7 @@
 
 import { PassThrough } from 'stream';
 import { getVoidLogger } from '@backstage/backend-common';
-import { createGitlabIssueAction } from './createGitlabIssueAction';
+import { createGitlabIssueAction, IssueType } from './createGitlabIssueAction';
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { advanceTo, clear } from 'jest-date-mock';
@@ -163,7 +163,7 @@ describe('gitlab:issues:create', () => {
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         projectId: 123,
-        issueType: 'incident',
+        issueType: IssueType.INCIDENT,
         title: 'Computer banks to rule the world',
         description:
           'this issue should kickstart research on instruments to sight the stars',
