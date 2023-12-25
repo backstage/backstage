@@ -2,7 +2,7 @@
 '@backstage/plugin-catalog': minor
 ---
 
-Exported `defaultCatalogTableColumnsFunc` to create a seam for defining the columns in [CatalogTable](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogTable/CatalogTable.tsx) of some Kinds while using the default columns for the others.
+Exported `defaultCatalogTableColumnsFunc` to create a seam for defining the columns in `<CatalogTable />` of some Kinds while using the default columns for the others.
 This is useful for defining the columns of a custom Kind or to redefine the columns for a built-in Kind.
 
 ```diff
