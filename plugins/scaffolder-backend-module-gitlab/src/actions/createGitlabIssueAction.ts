@@ -23,6 +23,11 @@ import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
 import { Gitlab, CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
 
+/**
+ * Gitlab issue types
+ *
+ * @public
+ */
 export enum IssueType {
   ISSUE = 'issue',
   INCIDENT = 'incident',
