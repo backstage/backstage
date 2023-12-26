@@ -41,6 +41,9 @@ const ACCOUNTID_ANNOTATION = 'amazonaws.com/account-id';
 const ARN_ANNOTATION = 'amazonaws.com/arn';
 const ORGANIZATION_ANNOTATION = 'amazonaws.com/organization-id';
 
+const ACCOUNT_STATUS_LABEL = 'amazonaws.com/account-status';
+const ACCOUNT_EMAIL_LABEL = 'amazonaws.com/account-email';
+
 /**
  * A processor for ingesting AWS Accounts from AWS Organizations.
  *
@@ -123,6 +126,10 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
       .replace(/[^a-zA-Z0-9\-]/g, '-');
   }
 
+  private normalizeAccountStatus(name: string): string {
+    return name.toLocaleLowerCase('en-US');
+  }
+
   private extractInformationFromArn(arn: string): {
     accountId: string;
     organizationId: string;
@@ -165,7 +172,14 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
           [ARN_ANNOTATION]: account.Arn || '',
           [ORGANIZATION_ANNOTATION]: organizationId,
         },
+        labels: {
+          [ACCOUNT_EMAIL_LABEL]: account.Email || '',
+          [ACCOUNT_STATUS_LABEL]: this.normalizeAccountStatus(
+            account.Status || '',
+          ),
+        },
         name: this.normalizeName(account.Name || ''),
+        title: account.Name || '',
         namespace: 'default',
       },
       spec: {
