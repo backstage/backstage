@@ -164,7 +164,7 @@ const TitleFragment = ({ pageTitle, classes, tooltip }: TitleFragmentProps) => {
       ref={contentRef}
       tabIndex={-1}
       className={classes.title}
-      variant="h1"
+      variant="h3"
     >
       {pageTitle}
     </Typography>
