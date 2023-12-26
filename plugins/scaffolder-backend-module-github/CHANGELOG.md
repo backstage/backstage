@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- bf92ae3: Updated dependency `octokit` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-scaffolder-node@0.2.10-next.0
+
 ## 0.1.0
 
 ### Minor Changes

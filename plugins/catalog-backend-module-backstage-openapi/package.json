@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-backstage-openapi",
-  "version": "0.1.1",
+  "version": "0.1.2-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",

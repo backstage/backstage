@@ -264,5 +264,19 @@
     "@backstage/plugin-visualizer": "0.0.1",
     "@backstage/plugin-xcmetrics": "0.2.46"
   },
-  "changesets": []
+  "changesets": [
+    "afraid-mice-give",
+    "brown-planes-sort",
+    "chilled-seahorses-clean",
+    "create-app-1703547661",
+    "fast-tables-hammer",
+    "funny-rings-fry",
+    "gold-pianos-worry",
+    "large-poets-buy",
+    "lazy-teachers-walk",
+    "orange-planets-suffer",
+    "renovate-126fde4",
+    "renovate-9647667",
+    "rotten-tools-clean"
+  ]
 }

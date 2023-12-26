@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-react
 
+## 0.4.19-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-permission-common@0.7.11
+
 ## 0.4.18
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.41-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/plugin-tech-insights-node@0.4.15-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-tech-insights-common@0.2.12
+
 ## 0.1.40
 
 ### Patch Changes

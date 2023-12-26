@@ -1,5 +1,25 @@
 # @backstage/cli
 
+## 0.25.1-next.0
+
+### Patch Changes
+
+- b6b15b2: Use sha256 instead of md5 in build script cache key calculation
+
+  Makes it possible to build on FIPS nodejs.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.1
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.0
+  - @backstage/errors@1.2.3
+  - @backstage/eslint-plugin@0.1.4
+  - @backstage/integration@1.8.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.25.0
 
 ### Minor Changes

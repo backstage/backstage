@@ -1,5 +1,14 @@
 # @backstage/backend-openapi-utils
 
+## 0.1.2-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/errors@1.2.3
+
 ## 0.1.1
 
 ### Patch Changes

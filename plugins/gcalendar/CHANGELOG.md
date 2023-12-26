@@ -1,5 +1,15 @@
 # @backstage/plugin-gcalendar
 
+## 0.3.22-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/errors@1.2.3
+
 ## 0.3.21
 
 ### Patch Changes
