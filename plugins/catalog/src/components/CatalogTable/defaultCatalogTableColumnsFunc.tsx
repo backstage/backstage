@@ -18,6 +18,8 @@ import { TableColumn } from '@backstage/core-components';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 
+// The defaultCatalogTableColumnsFunc symbol is not directly exported, but through the
+// CatalogTable.defaultColumnsFunc field.
 /** @public */
 export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc = ({
   filters,

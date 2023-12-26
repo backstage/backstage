@@ -226,6 +226,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
 };
 
 CatalogTable.columns = columnFactories;
+CatalogTable.defaultColumnsFunc = defaultCatalogTableColumnsFunc;
 
 function toEntityRow(entity: Entity) {
   const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {

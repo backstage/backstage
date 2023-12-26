@@ -2,7 +2,7 @@
 '@backstage/plugin-catalog': minor
 ---
 
-Exported `defaultCatalogTableColumnsFunc` to create a seam for defining the columns in `<CatalogTable />` of some Kinds while using the default columns for the others.
+Exported `CatalogTable.defaultColumnsFunc` to create a seam for defining the columns in `<CatalogTable />` of some Kinds while using the default columns for the others.
 This is useful for defining the columns of a custom Kind or to redefine the columns for a built-in Kind.
 
 ```diff
@@ -14,7 +14,6 @@ import {
   catalogPlugin,
 +  CatalogTable,
 +  CatalogTableColumnsFunc,
-+  defaultCatalogTableColumnsFunc,
 } from '@backstage/plugin-catalog';
 
 + const myColumnsFunc: CatalogTableColumnsFunc = (entityListContext) => {
@@ -25,7 +24,7 @@ import {
 +     ];
 +   }
 +
-+   return defaultCatalogTableColumnsFunc(entityListContext);
++   return CatalogTable.defaultColumnsFunc(entityListContext);
 + };
 
 ...

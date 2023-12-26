@@ -15,6 +15,5 @@
  */
 
 export { CatalogTable } from './CatalogTable';
-export { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 export type { CatalogTableProps } from './CatalogTable';
 export type { CatalogTableRow, CatalogTableColumnsFunc } from './types';

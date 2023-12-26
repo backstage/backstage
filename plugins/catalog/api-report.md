@@ -182,6 +182,7 @@ export const CatalogTable: {
     ): TableColumn<CatalogTableRow>;
     createNamespaceColumn(): TableColumn<CatalogTableRow>;
   }>;
+  defaultColumnsFunc: CatalogTableColumnsFunc;
 };
 
 // @public
@@ -244,9 +245,6 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
 }
-
-// @public (undocumented)
-export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc;
 
 // @public
 export class DefaultEntityPresentationApi implements EntityPresentationApi {
