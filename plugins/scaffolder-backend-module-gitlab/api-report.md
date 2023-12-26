@@ -39,7 +39,7 @@ export const createGitlabIssueAction: (options: {
     discussionToResolve?: string | undefined;
     epicId?: number | undefined;
     labels?: string | undefined;
-    issueType?: string | undefined;
+    issueType?: IssueType | undefined;
     mergeRequestToResolveDiscussionsOf?: number | undefined;
     milestoneId?: number | undefined;
     weight?: number | undefined;
@@ -174,4 +174,14 @@ export const createPublishGitlabMergeRequestAction: (options: {
   },
   JsonObject
 >;
+
+// @public
+export enum IssueType {
+  // (undocumented)
+  INCIDENT = 'incident',
+  // (undocumented)
+  ISSUE = 'issue',
+  // (undocumented)
+  TEST = 'test_case',
+}
 ```
