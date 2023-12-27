@@ -50,7 +50,7 @@ import {
 } from '@backstage/integration-react';
 import { createSignInPageExtension } from '@backstage/frontend-plugin-api';
 import { SignInPage } from '@backstage/core-components';
-
+import devToolsPlugin from '@backstage/plugin-devtools/alpha';
 import linguistPlugin from '@backstage/plugin-linguist/alpha';
 
 /*
@@ -127,6 +127,7 @@ const app = createApp({
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
+    devToolsPlugin,
     linguistPlugin,
     ...collectedLegacyPlugins,
     createExtensionOverrides({
