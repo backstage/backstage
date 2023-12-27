@@ -43851,8 +43851,8 @@ __metadata:
   linkType: hard
 
 "vite-plugin-html@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "vite-plugin-html@npm:3.2.0"
+  version: 3.2.1
+  resolution: "vite-plugin-html@npm:3.2.1"
   dependencies:
     "@rollup/pluginutils": ^4.2.0
     colorette: ^2.0.16
@@ -43868,7 +43868,7 @@ __metadata:
     pathe: ^0.2.0
   peerDependencies:
     vite: ">=2.0.0"
-  checksum: f5222247b65da1c36215f0b2f509fd3975a7426b8d44546beb49f3ba51ee87b3a6b6e6afc9e7567a0d8bd1016631f2db3f934808f62a7c8f7f83fa83d8561d2d
+  checksum: 6add7cd7a8f9e83b0c58b20cde2d4da7e132ef56db6a60f3d4cc7022c944896236aeca6bde4c6dc2da3d506f756f63de56251adc47f0ae359c07485b24dd64db
   languageName: node
   linkType: hard
 
