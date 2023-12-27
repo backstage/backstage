@@ -116,6 +116,24 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
 }
 
 /**
+ * Remove the circular json reference value
+ * @alpha
+ */
+const getCircularReplacer = (): ((key: string, value: any) => any) => {
+  const seen = new WeakSet();
+  return (_: String, value: any): any => {
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    // eslint-disable-next-line consistent-return
+    return value;
+  };
+};
+
+/**
  * Takes a step from a Backstage Template Manifest and converts it to a JSON Schema and UI Schema for rjsf
  * @alpha
  */
@@ -123,7 +141,9 @@ export const extractSchemaFromStep = (
   inputStep: JsonObject,
 ): { uiSchema: UiSchema; schema: JsonObject } => {
   const uiSchema: UiSchema = {};
-  const returnSchema: JsonObject = JSON.parse(JSON.stringify(inputStep));
+  const returnSchema: JsonObject = JSON.parse(
+    JSON.stringify(inputStep, getCircularReplacer()),
+  );
   extractUiSchema(returnSchema, uiSchema);
   return { uiSchema, schema: returnSchema };
 };
