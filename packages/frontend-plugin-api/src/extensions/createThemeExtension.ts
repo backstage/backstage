@@ -23,7 +23,7 @@ export function createThemeExtension(theme: AppTheme) {
     kind: 'theme',
     namespace: 'app',
     name: theme.id,
-    attachTo: { id: 'core', input: 'themes' },
+    attachTo: { id: 'app', input: 'themes' },
     output: {
       theme: createThemeExtension.themeDataRef,
     },

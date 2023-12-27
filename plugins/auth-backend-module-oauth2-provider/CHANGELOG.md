@@ -1,5 +1,24 @@
 # @backstage/plugin-auth-backend-module-oauth2-provider
 
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/plugin-auth-node@0.4.3-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- a62764b: Updated dependency `passport` to `^0.7.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-auth-node@0.4.2
+  - @backstage/backend-plugin-api@0.6.8
+
 ## 0.1.5-next.3
 
 ### Patch Changes

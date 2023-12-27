@@ -103,9 +103,9 @@ export function convertLegacyApp(
   const [routesEl] = routesEls;
 
   const CoreLayoutOverride = createExtension({
-    namespace: 'core',
+    namespace: 'app',
     name: 'layout',
-    attachTo: { id: 'core', input: 'root' },
+    attachTo: { id: 'app', input: 'root' },
     inputs: {
       content: createExtensionInput(
         {
@@ -129,9 +129,9 @@ export function convertLegacyApp(
     },
   });
   const CoreNavOverride = createExtension({
-    namespace: 'core',
+    namespace: 'app',
     name: 'nav',
-    attachTo: { id: 'core/layout', input: 'nav' },
+    attachTo: { id: 'app/layout', input: 'nav' },
     output: {},
     factory: () => ({}),
     disabled: true,

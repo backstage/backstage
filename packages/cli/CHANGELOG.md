@@ -1,5 +1,60 @@
 # @backstage/cli
 
+## 0.25.1-next.0
+
+### Patch Changes
+
+- b6b15b2: Use sha256 instead of md5 in build script cache key calculation
+
+  Makes it possible to build on FIPS nodejs.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.1
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.0
+  - @backstage/errors@1.2.3
+  - @backstage/eslint-plugin@0.1.4
+  - @backstage/integration@1.8.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.25.0
+
+### Minor Changes
+
+- 3834067: Updates the ESLint config to ignore issues created by generated files in `**/src/generated/**`.
+
+### Patch Changes
+
+- 32018ff: Enable the `tsx` loader to work on Node 18.19 and up
+- 0ffee55: Toned down the warning message when git is not found
+- c6f3743: Added a warning when starting a standalone backend plugin that hasn't been updated to the new backend system.
+- 3e358b0: Added deprecation warning for React Router v6 beta, please make sure you have migrated your apps to use React Router v6 stable as support for the beta version will be removed. See the [migration tutorial](https://backstage.io/docs/tutorials/react-router-stable-migration) for more information.
+- 219d7f0: Updating template generation for scaffolder module
+- 8cda3c7: Tweaked Node.js version check for when to use the new module register API with the new backend `package start` command.
+- a3edc18: Updated dependency `vite-plugin-node-polyfills` to `^0.17.0`.
+- 627554e: Updated dependency `@rollup/plugin-node-resolve` to `^15.0.0`.
+- c07cee5: Updated dependency `@rollup/plugin-json` to `^6.0.0`.
+- bd586a5: Updated dependency `bfj` to `^8.0.0`.
+- 8056425: Updated dependency `@typescript-eslint/eslint-plugin` to `6.12.0`.
+- 017c425: Updated dependency `@typescript-eslint/eslint-plugin` to `6.11.0`.
+- 2565cc8: Updated dependency `@rollup/plugin-commonjs` to `^25.0.0`.
+- 33e96e5: Switched the `@typescript-eslint/eslint-plugin` dependency back to using a `^` version range.
+- 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.4
+  - @backstage/config-loader@1.6.0
+  - @backstage/integration@1.8.0
+  - @backstage/cli-node@0.2.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.25.0-next.3
 
 ### Patch Changes

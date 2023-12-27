@@ -6,7 +6,7 @@ sidebar_label: Extensions
 description: Frontend extensions
 ---
 
-> **NOTE: The new frontend system is in a highly experimental phase**
+> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 As mentioned in the [previous section](./02-app.md), Backstage apps are built up from a tree of extensions. This section will go into more detail about what extensions are, how to create and use them, and how to create your own extensibility patterns.
 

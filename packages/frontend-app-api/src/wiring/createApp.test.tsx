@@ -169,7 +169,7 @@ describe('createApp', () => {
           extensions: [
             createExtension({
               name: 'first',
-              attachTo: { id: 'core', input: 'root' },
+              attachTo: { id: 'app', input: 'root' },
               output: { element: coreExtensionData.reactElement },
               factory() {
                 const Component = () => {
@@ -193,9 +193,9 @@ describe('createApp', () => {
           featureFlags: [{ name: 'test-2' }],
           extensions: [
             createExtension({
-              namespace: 'core',
+              namespace: 'app',
               name: 'router',
-              attachTo: { id: 'core', input: 'root' },
+              attachTo: { id: 'app', input: 'root' },
               disabled: true,
               output: {},
               factory: () => ({}),
@@ -242,24 +242,24 @@ describe('createApp', () => {
     const { tree } = appTreeApi!.getTree();
 
     expect(String(tree.root)).toMatchInlineSnapshot(`
-      "<core out=[core.reactElement]>
+      "<app out=[core.reactElement]>
         root [
-          <core/router out=[core.reactElement]>
+          <app/router out=[core.reactElement]>
             children [
-              <core/layout out=[core.reactElement]>
+              <app/layout out=[core.reactElement]>
                 content [
-                  <core/routes out=[core.reactElement]>
+                  <app/routes out=[core.reactElement]>
                     routes [
                       <page:my-plugin out=[core.routing.path, core.routing.ref, core.reactElement] />
                     ]
-                  </core/routes>
+                  </app/routes>
                 ]
                 nav [
-                  <core/nav out=[core.reactElement] />
+                  <app/nav out=[core.reactElement] />
                 ]
-              </core/layout>
+              </app/layout>
             ]
-          </core/router>
+          </app/router>
         ]
         components [
           <component:core.components.progress out=[core.component.component] />
@@ -270,7 +270,26 @@ describe('createApp', () => {
           <theme:app/light out=[core.theme.theme] />
           <theme:app/dark out=[core.theme.theme] />
         ]
-      </core>"
+        apis [
+          <api:core.discovery out=[core.api.factory] />
+          <api:core.alert out=[core.api.factory] />
+          <api:core.analytics out=[core.api.factory] />
+          <api:core.error out=[core.api.factory] />
+          <api:core.storage out=[core.api.factory] />
+          <api:core.fetch out=[core.api.factory] />
+          <api:core.oauthrequest out=[core.api.factory] />
+          <api:core.auth.google out=[core.api.factory] />
+          <api:core.auth.microsoft out=[core.api.factory] />
+          <api:core.auth.github out=[core.api.factory] />
+          <api:core.auth.okta out=[core.api.factory] />
+          <api:core.auth.gitlab out=[core.api.factory] />
+          <api:core.auth.onelogin out=[core.api.factory] />
+          <api:core.auth.bitbucket out=[core.api.factory] />
+          <api:core.auth.bitbucket-server out=[core.api.factory] />
+          <api:core.auth.atlassian out=[core.api.factory] />
+          <api:plugin.permission.api out=[core.api.factory] />
+        ]
+      </app>"
     `);
   });
 });

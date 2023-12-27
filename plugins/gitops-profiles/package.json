@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-gitops-profiles",
   "description": "A Backstage plugin that helps you manage GitOps profiles",
-  "version": "0.3.43-next.3",
+  "version": "0.3.44-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -34,10 +34,8 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
@@ -56,10 +54,7 @@
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.0.0",
-    "cross-fetch": "^4.0.0",
-    "msw": "^1.0.0"
+    "@testing-library/react": "^14.0.0"
   },
   "files": [
     "dist"

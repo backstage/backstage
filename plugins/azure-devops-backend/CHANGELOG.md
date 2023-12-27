@@ -1,5 +1,44 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.5.1-next.0
+
+### Patch Changes
+
+- d076ee4: Updated dependency `azure-devops-node-api` to `^12.0.0`.
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/plugin-catalog-node@1.6.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-azure-devops-common@0.3.2
+  - @backstage/plugin-catalog-common@1.0.19
+
+## 0.5.0
+
+### Minor Changes
+
+- 844969c: **BREAKING** New `fromConfig` static method must be used now when creating an instance of the `AzureDevOpsApi`
+
+  Added support for using the `AzureDevOpsCredentialsProvider`
+
+### Patch Changes
+
+- c70e4f5: Added multi-org support
+- 646db72: Updated encoding of Org to use `encodeURIComponent` when building URL used to get credentials from credential provider
+- 043b724: Introduced new `AzureDevOpsAnnotatorProcessor` that adds the needed annotations automatically. Also, moved constants to common package so they can be shared more easily
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-catalog-node@1.6.0
+  - @backstage/plugin-azure-devops-common@0.3.2
+  - @backstage/integration@1.8.0
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.19
+
 ## 0.5.0-next.3
 
 ### Patch Changes

@@ -187,7 +187,7 @@ export function createPublishGithubAction(options: {
         protectDefaultBranch = true,
         protectEnforceAdmins = true,
         deleteBranchOnMerge = false,
-        gitCommitMessage = 'initial commit',
+        gitCommitMessage,
         gitAuthorName,
         gitAuthorEmail,
         allowMergeCommit = true,

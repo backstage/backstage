@@ -1,5 +1,24 @@
 # @backstage/plugin-apollo-explorer
 
+## 0.1.19-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/core-plugin-api@1.8.1
+
+## 0.1.18
+
+### Patch Changes
+
+- e296b94: Updated dependency `@apollo/explorer` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+
 ## 0.1.18-next.3
 
 ### Patch Changes

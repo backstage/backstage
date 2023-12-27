@@ -164,7 +164,9 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
 /**
  * Dynamically generates a diagram of groups registered in the catalog.
  */
-export function GroupsDiagram() {
+export function GroupsDiagram(props: {
+  direction?: DependencyGraphTypes.Direction;
+}) {
   const nodes = new Array<{
     id: string;
     kind: string;
@@ -243,7 +245,7 @@ export function GroupsDiagram() {
         nodes={nodes}
         edges={edges}
         nodeMargin={10}
-        direction={DependencyGraphTypes.Direction.RIGHT_LEFT}
+        direction={props.direction || DependencyGraphTypes.Direction.RIGHT_LEFT}
         renderNode={RenderNode}
         className={classes.graph}
         fit="contain"

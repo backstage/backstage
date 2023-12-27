@@ -1,5 +1,30 @@
 # @backstage/plugin-app-backend
 
+## 0.3.57-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.9-next.0
+
+## 0.3.56
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/config-loader@1.6.0
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.8
+
 ## 0.3.56-next.3
 
 ### Patch Changes

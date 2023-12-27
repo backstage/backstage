@@ -27,7 +27,7 @@ import { createExtensionTester } from './createExtensionTester';
 export function renderInTestApp(element: JSX.Element) {
   const extension = createExtension({
     namespace: 'test',
-    attachTo: { id: 'core', input: 'root' },
+    attachTo: { id: 'app', input: 'root' },
     output: {
       element: coreExtensionData.reactElement,
     },

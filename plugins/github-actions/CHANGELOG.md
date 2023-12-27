@@ -1,5 +1,32 @@
 # @backstage/plugin-github-actions
 
+## 0.6.10-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.0
+  - @backstage/integration-react@1.1.22
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/integration@1.8.0
+
+## 0.6.9
+
+### Patch Changes
+
+- 08d7e46: Github Workflow Runs UI is modified to show in optional Card view instead of table, with branch selection option
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/integration@1.8.0
+  - @backstage/integration-react@1.1.22
+  - @backstage/catalog-model@1.4.3
+
 ## 0.6.9-next.3
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @backstage/plugin-auth-backend-module-google-provider
 
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/plugin-auth-node@0.4.3-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.2
+  - @backstage/backend-plugin-api@0.6.8
+
 ## 0.1.5-next.3
 
 ### Patch Changes

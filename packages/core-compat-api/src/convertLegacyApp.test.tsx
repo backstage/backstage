@@ -60,13 +60,13 @@ describe('convertLegacyApp', () => {
         extensions: [
           {
             id: 'page:score-card',
-            attachTo: { id: 'core/routes', input: 'routes' },
+            attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'score-board' },
           },
           {
             id: 'api:plugin.scoringdata.service',
-            attachTo: { id: 'core', input: 'apis' },
+            attachTo: { id: 'app', input: 'apis' },
             disabled: false,
           },
         ],
@@ -76,13 +76,13 @@ describe('convertLegacyApp', () => {
         extensions: [
           {
             id: 'page:stackstorm',
-            attachTo: { id: 'core/routes', input: 'routes' },
+            attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'stackstorm' },
           },
           {
             id: 'api:plugin.stackstorm.service',
-            attachTo: { id: 'core', input: 'apis' },
+            attachTo: { id: 'app', input: 'apis' },
             disabled: false,
           },
         ],
@@ -92,19 +92,19 @@ describe('convertLegacyApp', () => {
         extensions: [
           {
             id: 'page:puppetDb',
-            attachTo: { id: 'core/routes', input: 'routes' },
+            attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
             id: 'page:puppetDb/1',
-            attachTo: { id: 'core/routes', input: 'routes' },
+            attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
             id: 'api:plugin.puppetdb.service',
-            attachTo: { id: 'core', input: 'apis' },
+            attachTo: { id: 'app', input: 'apis' },
             disabled: false,
           },
         ],
@@ -113,13 +113,13 @@ describe('convertLegacyApp', () => {
         id: undefined,
         extensions: [
           {
-            id: 'core/layout',
-            attachTo: { id: 'core', input: 'root' },
+            id: 'app/layout',
+            attachTo: { id: 'app', input: 'root' },
             disabled: false,
           },
           {
-            id: 'core/nav',
-            attachTo: { id: 'core/layout', input: 'nav' },
+            id: 'app/nav',
+            attachTo: { id: 'app/layout', input: 'nav' },
             disabled: true,
           },
         ],

@@ -1,5 +1,86 @@
 # @backstage/plugin-catalog
 
+## 1.16.1-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/frontend-plugin-api@0.4.1-next.0
+  - @backstage/plugin-permission-react@0.4.19-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.0
+  - @backstage/integration-react@1.1.22
+  - @backstage/plugin-search-react@1.7.5-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-compat-api@0.1.1-next.0
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-scaffolder-common@1.4.4
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.16.0
+
+### Minor Changes
+
+- e223f22: Properly support both function- and string-form visibility filter expressions in the new extensions exported via `/alpha`.
+- b8e1eb2: The `columns` prop can be an array or a function that returns an array in order to override the default columns of the `CatalogIndexPage`.
+
+### Patch Changes
+
+- bc7e6d3: Fix copy entity url function in http contexts.
+- 5360097: Ensure that passed-in icons are taken advantage of in the presentation API
+- 4785d05: Add permission check to catalog create and refresh button
+- cd910c4: - Fixes bug where after unregistering an entity you are redirected to `/`.
+  - Adds an optional external route `unregisterRedirect` to override this behaviour to another route.
+- 03d0b6d: The `convertLegacyRouteRef` utility used by the alpha exports is now imported from `@backstage/core-compat-api`.
+- 2d708d8: Internal naming updates for `/alpha` exports.
+- a5a0473: Internal refactor of alpha exports due to a change in how extension factories are defined.
+- 4d9e3b3: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- a1227cc: Wrap `/alpha` export extension elements in backwards compatibility wrapper.
+- 78a10bb: Adding in spec.type chip to search results for clarity
+- 8f5d6c1: Updates to the `/alpha` exports to match the extension input wrapping change.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- 8587f06: Added pagination support to `CatalogIndexPage`
+
+  `CatalogIndexPage` now offers an optional pagination feature, designed to accommodate adopters managing extensive catalogs. This new capability allows for better handling of large amounts of data.
+
+  To activate the pagination mode, simply update your `App.tsx` as follows:
+
+  ```diff
+    const routes = (
+      <FlatRoutes>
+        ...
+  -     <Route path="/catalog" element={<CatalogIndexPage />} />
+  +     <Route path="/catalog" element={<CatalogIndexPage pagination />} />
+        ...
+  ```
+
+  In case you have a custom catalog page and you want to enable pagination, you need to pass the `pagination` prop to `EntityListProvider` instead.
+
+- fb8f3bd: Updated alpha translation message keys to use nested format and camel case.
+- 531e1a2: Updated alpha plugin to include the `unregisterRedirect` external route.
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.0
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/frontend-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/catalog-client@1.5.0
+  - @backstage/plugin-search-react@1.7.4
+  - @backstage/integration-react@1.1.22
+  - @backstage/plugin-permission-react@0.4.18
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-scaffolder-common@1.4.4
+  - @backstage/plugin-search-common@1.2.9
+
 ## 1.16.0-next.4
 
 ### Patch Changes

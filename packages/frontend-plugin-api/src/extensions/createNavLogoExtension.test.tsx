@@ -34,7 +34,7 @@ describe('createNavLogoExtension', () => {
       version: 'v1',
       kind: 'nav-logo',
       name: 'test',
-      attachTo: { id: 'core/nav', input: 'logos' },
+      attachTo: { id: 'app/nav', input: 'logos' },
       disabled: false,
       inputs: {},
       output: {
