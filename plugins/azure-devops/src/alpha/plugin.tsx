@@ -34,6 +34,7 @@ import {
 } from '@backstage/plugin-catalog-react/alpha';
 import { azurePullRequestDashboardRouteRef } from '../routes';
 
+/** @alpha */
 export const azureDevOpsApi = createApiExtension({
   factory: createApiFactory({
     api: azureDevOpsApiRef,
@@ -43,7 +44,8 @@ export const azureDevOpsApi = createApiExtension({
   }),
 });
 
-const azureDevOpsPullRequestPage = createPageExtension({
+/** @alpha */
+export const azureDevOpsPullRequestPage = createPageExtension({
   defaultPath: '/azure-pull-requests',
   routeRef: convertLegacyRouteRef(azurePullRequestDashboardRouteRef),
   loader: () =>
@@ -52,7 +54,8 @@ const azureDevOpsPullRequestPage = createPageExtension({
     ),
 });
 
-const entityAzurePipelinesContent = createEntityContentExtension({
+/** @alpha */
+export const entityAzurePipelinesContent = createEntityContentExtension({
   name: 'pipelines',
   defaultPath: '/pipelines',
   defaultTitle: 'Pipelines',
@@ -62,7 +65,8 @@ const entityAzurePipelinesContent = createEntityContentExtension({
     ),
 });
 
-const entityAzureGitTagsContent = createEntityContentExtension({
+/** @alpha */
+export const entityAzureGitTagsContent = createEntityContentExtension({
   name: 'git-tags',
   defaultPath: '/git-tags',
   defaultTitle: 'Git Tags',
@@ -72,7 +76,8 @@ const entityAzureGitTagsContent = createEntityContentExtension({
     ),
 });
 
-const entityAzurePullRequestsContent = createEntityContentExtension({
+/** @alpha */
+export const entityAzurePullRequestsContent = createEntityContentExtension({
   name: 'pull-requests',
   defaultPath: '/pull-requests',
   defaultTitle: 'Pull Requests',
@@ -82,6 +87,7 @@ const entityAzurePullRequestsContent = createEntityContentExtension({
     ),
 });
 
+/** @alpha */
 export const entityAzureReadmeCard = createEntityCardExtension({
   name: 'readme',
   loader: async () =>

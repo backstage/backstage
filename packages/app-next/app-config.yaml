@@ -24,7 +24,6 @@ app:
     - entity-content:azure-devops/pull-requests
     - entity-content:azure-devops/git-tags
 
-
   # scmAuthExtension: >-
   #   createScmAuthExtension({
   #     id: 'apis.scmAuth.addons.ghe',
@@ -37,7 +36,7 @@ app:
   #   })
 
   # externalRouteRefs:
-  # bind(catalogPlugin.externalRoutes, 
+  # bind(catalogPlugin.externalRoutes, {
   #   createComponent: scaffolderPlugin.routes.root,
   #   viewTechDoc: techdocsPlugin.routes.docRoot,
   #   createFromTemplate: scaffolderPlugin.routes.selectedTemplate,
