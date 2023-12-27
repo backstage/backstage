@@ -17,8 +17,13 @@ app:
         config:
           filter: kind:component has:links
     - entity-card:linguist/languages
+    - entity-card:azure-devops/readme
     # Entity page content
     - entity-content:techdocs
+    - entity-content:azure-devops/pipelines
+    - entity-content:azure-devops/pull-requests
+    - entity-content:azure-devops/git-tags
+
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({
@@ -32,7 +37,7 @@ app:
   #   })
 
   # externalRouteRefs:
-  # bind(catalogPlugin.externalRoutes, {
+  # bind(catalogPlugin.externalRoutes, 
   #   createComponent: scaffolderPlugin.routes.root,
   #   viewTechDoc: techdocsPlugin.routes.docRoot,
   #   createFromTemplate: scaffolderPlugin.routes.selectedTemplate,
