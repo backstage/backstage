@@ -28,6 +28,7 @@ import { FilterType } from './lib/filters';
 import { PullRequestGrid } from './lib/PullRequestGrid';
 import { useDashboardPullRequests } from '../../hooks';
 import { useFilterProcessor } from './lib/hooks';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 type PullRequestsPageContentProps = {
   pullRequestGroups: PullRequestGroup[] | undefined;
@@ -72,15 +73,23 @@ type PullRequestsPageProps = {
 
 export const PullRequestsPage = (props: PullRequestsPageProps) => {
   const { projectName, pollingInterval, defaultColumnConfigs } = props;
+  const config = useApi(configApiRef);
+  const configProjectName = config.getOptionalString(
+    'azureDevOps.repos.projectName',
+  );
+  const configPollingInterval = config.getOptionalNumber(
+    'azureDevOps.repos.pollingInterval',
+  );
+  const configDefaultColumnConfig = config.getOptional<
+    PullRequestColumnConfig[]
+  >('azureDevOps.repos.defaultColumnConfigs');
 
   const { pullRequests, loading, error } = useDashboardPullRequests(
-    projectName,
-    pollingInterval,
+    projectName ?? configProjectName,
+    pollingInterval ?? configPollingInterval,
   );
-
-  const [columnConfigs] = useState(
-    defaultColumnConfigs ?? DEFAULT_COLUMN_CONFIGS,
-  );
+  const colConfigs = defaultColumnConfigs ?? configDefaultColumnConfig;
+  const [columnConfigs] = useState(colConfigs ?? DEFAULT_COLUMN_CONFIGS);
 
   const filterProcessor = useFilterProcessor();
 

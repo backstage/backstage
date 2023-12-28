@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import useInterval from 'react-use/lib/useInterval';
 
@@ -26,7 +26,7 @@ const POLLING_INTERVAL = 10000;
 
 export function useDashboardPullRequests(
   project?: string,
-  pollingInterval: number = POLLING_INTERVAL,
+  pollingInterval?: number,
 ): {
   pullRequests?: DashboardPullRequest[];
   loading: boolean;
@@ -34,6 +34,11 @@ export function useDashboardPullRequests(
 } {
   const api = useApi(azureDevOpsApiRef);
   const errorApi = useApi(errorApiRef);
+  const config = useApi(configApiRef);
+  const configPollingInterval = config.getOptionalNumber(
+    'azureDevOps.repos.pollingInterval',
+  );
+  const polling = pollingInterval ?? configPollingInterval;
 
   const getDashboardPullRequests = useCallback(async (): Promise<
     DashboardPullRequest[]
@@ -63,7 +68,7 @@ export function useDashboardPullRequests(
     [getDashboardPullRequests],
   );
 
-  useInterval(() => retry(), pollingInterval);
+  useInterval(() => retry(), polling ?? POLLING_INTERVAL);
 
   return {
     pullRequests,

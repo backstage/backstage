@@ -24,7 +24,7 @@ import {
 } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
-
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { useReadme } from '../../hooks';
 
 const useStyles = makeStyles(theme => ({
@@ -82,6 +82,11 @@ const ReadmeCardError = ({ error }: ErrorProps) => {
 };
 
 export const ReadmeCard = (props: Props) => {
+  const config = useApi(configApiRef);
+  const configMaxHeight = config.getOptionalNumber(
+    'azureDevOps.repos.maxHeight',
+  );
+  const maxHeight = props.maxHeight ?? configMaxHeight;
   const classes = useStyles();
   const { entity } = useEntity();
 
@@ -101,7 +106,7 @@ export const ReadmeCard = (props: Props) => {
         title: 'Readme',
       }}
     >
-      <Box className={classes.readMe} sx={{ maxHeight: props.maxHeight }}>
+      <Box className={classes.readMe} sx={{ maxHeight: maxHeight }}>
         <MarkdownContent content={value?.content ?? ''} />
       </Box>
     </InfoCard>

@@ -21,7 +21,7 @@ import {
 } from '@backstage/plugin-azure-devops-common';
 
 import { azureDevOpsApiRef } from '../api';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { getAnnotationValuesFromEntity } from '../utils';
 import { Entity } from '@backstage/catalog-model';
@@ -34,12 +34,15 @@ export function useBuildRuns(
   loading: boolean;
   error?: Error;
 } {
-  const top = defaultLimit ?? AZURE_DEVOPS_DEFAULT_TOP;
-  const options: BuildRunOptions = {
-    top: top,
-  };
-
   const api = useApi(azureDevOpsApiRef);
+  const config = useApi(configApiRef);
+  const configDefaultLimit = config.getOptionalNumber(
+    'azureDevOps.pipelines.defaultLimit',
+  );
+  const top = defaultLimit ?? configDefaultLimit;
+  const options: BuildRunOptions = {
+    top: top ?? AZURE_DEVOPS_DEFAULT_TOP,
+  };
 
   const { value, loading, error } = useAsync(() => {
     const { project, repo, definition, host, org } =

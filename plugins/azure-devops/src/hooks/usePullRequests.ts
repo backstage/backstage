@@ -23,7 +23,7 @@ import {
 
 import { Entity } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from '../api';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { getAnnotationValuesFromEntity } from '../utils';
 
@@ -36,14 +36,17 @@ export function usePullRequests(
   loading: boolean;
   error?: Error;
 } {
-  const top = defaultLimit ?? AZURE_DEVOPS_DEFAULT_TOP;
+  const api = useApi(azureDevOpsApiRef);
+  const config = useApi(configApiRef);
+  const configDefaultLimit = config.getOptionalNumber(
+    'azureDevOps.repos.defaultLimit',
+  );
+  const top = defaultLimit ?? configDefaultLimit;
   const status = requestedStatus ?? PullRequestStatus.Active;
   const options: PullRequestOptions = {
-    top,
+    top: top ?? AZURE_DEVOPS_DEFAULT_TOP,
     status,
   };
-
-  const api = useApi(azureDevOpsApiRef);
 
   const { value, loading, error } = useAsync(() => {
     const { project, repo, host, org } = getAnnotationValuesFromEntity(entity);

@@ -21,6 +21,8 @@ import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { TestApiProvider } from '@backstage/test-utils';
 import { AzureDevOpsApi, azureDevOpsApiRef } from '../api';
 import { usePullRequests } from './usePullRequests';
+import { configApiRef } from '@backstage/core-plugin-api';
+import { ConfigReader } from '@backstage/config';
 
 describe('usePullRequests', () => {
   const azureDevOpsApiMock = {
@@ -30,7 +32,15 @@ describe('usePullRequests', () => {
     azureDevOpsApiMock as Partial<AzureDevOpsApi> as AzureDevOpsApi;
 
   const Wrapper = (props: { children?: React.ReactNode }) => (
-    <TestApiProvider apis={[[azureDevOpsApiRef, azureDevOpsApi]]}>
+    <TestApiProvider
+      apis={[
+        [azureDevOpsApiRef, azureDevOpsApi],
+        [
+          configApiRef,
+          new ConfigReader({ azureDevOps: { pipelines: { defaultLimit: 5 } } }),
+        ],
+      ]}
+    >
       {props.children}
     </TestApiProvider>
   );
