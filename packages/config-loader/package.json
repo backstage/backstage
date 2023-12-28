@@ -54,7 +54,6 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/json-schema-merge-allof": "^0.6.0",
-    "@types/mock-fs": "^4.10.0",
     "msw": "^1.0.0",
     "zen-observable": "^0.10.0"
   },

@@ -3725,7 +3725,6 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/json-schema": ^7.0.6
     "@types/json-schema-merge-allof": ^0.6.0
-    "@types/mock-fs": ^4.10.0
     ajv: ^8.10.0
     chokidar: ^3.5.2
     fs-extra: 10.1.0
@@ -4029,7 +4028,6 @@ __metadata:
     fs-extra: 10.1.0
     handlebars: ^4.7.3
     inquirer: ^8.2.0
-    mock-fs: ^5.2.0
     nodemon: ^3.0.1
     ora: ^5.3.0
     recursive-readdir: ^2.2.2
@@ -18337,15 +18335,6 @@ __metadata:
   version: 1.2.5
   resolution: "@types/minimist@npm:1.2.5"
   checksum: 477047b606005058ab0263c4f58097136268007f320003c348794f74adedc3166ffc47c80ec3e94687787f2ab7f4e72c468223946e79892cf0fd9e25e9970a90
-  languageName: node
-  linkType: hard
-
-"@types/mock-fs@npm:^4.10.0":
-  version: 4.13.4
-  resolution: "@types/mock-fs@npm:4.13.4"
-  dependencies:
-    "@types/node": "*"
-  checksum: 9f886d67186da2e5cdabc32835c49ede9749146768e22c7f0f2548587e5201235d3726adef917fa6efbb9b73ad51278858a5d34e7cdc0a4b413c8396b37c350d
   languageName: node
   linkType: hard
 
@@ -34388,20 +34377,6 @@ __metadata:
   bin:
     mkdirp: dist/cjs/src/bin.js
   checksum: 8a1d09ffac585e55f41c54f445051f5bc33a7de99b952bb04c576cafdf1a67bb4bae8cb93736f7da6838771fbf75bc630430a3a59e1252047d2278690bd150ee
-  languageName: node
-  linkType: hard
-
-"mock-fs@npm:5.2.0":
-  version: 5.2.0
-  resolution: "mock-fs@npm:5.2.0"
-  checksum: c25835247bd26fa4e0189addd61f98973f61a72741e4d2a5694b143a2069b84978443a7ac0fdb1a71aead99273ec22ff4e9c968de11bbd076db020264c5b8312
-  languageName: node
-  linkType: hard
-
-"mock-fs@patch:mock-fs@npm%3A5.2.0#./.yarn/patches/mock-fs-npm-5.2.0-5103a7b507.patch::locator=root%40workspace%3A.":
-  version: 5.2.0
-  resolution: "mock-fs@patch:mock-fs@npm%3A5.2.0#./.yarn/patches/mock-fs-npm-5.2.0-5103a7b507.patch::version=5.2.0&hash=920f99&locator=root%40workspace%3A."
-  checksum: 84e306d7a798735ed8ee110b60ed8fc0b5db451df3a990e2a01432fac99decd15e5534c92d87f8067425329dbd9bf5c12e2673d3d770fb40f2936810e02bb07a
   languageName: node
   linkType: hard
 
