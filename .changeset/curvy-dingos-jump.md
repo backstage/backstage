@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-azure-sites': minor
+'@backstage/plugin-azure-sites': patch
 ---
 
-Show Azure site tags in EntityAzureSitesOverviewWidget
+Show Azure site tags in `EntityAzureSitesOverviewWidget`.
