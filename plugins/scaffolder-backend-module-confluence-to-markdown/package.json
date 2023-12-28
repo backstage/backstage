@@ -44,7 +44,6 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "mock-fs": "^5.2.0",
     "msw": "^1.0.0"
   },
   "files": [

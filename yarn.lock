@@ -8168,7 +8168,6 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     fs-extra: 10.1.0
     git-url-parse: ^13.1.0
-    mock-fs: ^5.2.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     node-html-markdown: ^1.3.0
