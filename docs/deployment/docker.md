@@ -39,7 +39,7 @@ package with `yarn build:backend`.
 
 In a CI workflow it might look something like this, from the root:
 
-```sh
+```bash
 yarn install --frozen-lockfile
 
 # tsc outputs type definitions to dist-types/ in the repo root, which are then consumed by the build
@@ -126,7 +126,7 @@ With the project built and the `.dockerignore` and `Dockerfile` in place, we are
 now ready to build the final image. From the root of the repo, execute the
 build:
 
-```sh
+```bash
 docker image build . -f packages/backend/Dockerfile --tag backstage
 ```
 
