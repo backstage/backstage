@@ -60,13 +60,13 @@ describe('collectLegacyRoutes', () => {
         extensions: [
           {
             id: 'page:score-card',
-            attachTo: { id: 'core/routes', input: 'routes' },
+            attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'score-board' },
           },
           {
             id: 'api:plugin.scoringdata.service',
-            attachTo: { id: 'core', input: 'apis' },
+            attachTo: { id: 'app', input: 'apis' },
             disabled: false,
           },
         ],
@@ -76,13 +76,13 @@ describe('collectLegacyRoutes', () => {
         extensions: [
           {
             id: 'page:stackstorm',
-            attachTo: { id: 'core/routes', input: 'routes' },
+            attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'stackstorm' },
           },
           {
             id: 'api:plugin.stackstorm.service',
-            attachTo: { id: 'core', input: 'apis' },
+            attachTo: { id: 'app', input: 'apis' },
             disabled: false,
           },
         ],
@@ -92,19 +92,19 @@ describe('collectLegacyRoutes', () => {
         extensions: [
           {
             id: 'page:puppetDb',
-            attachTo: { id: 'core/routes', input: 'routes' },
+            attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
             id: 'page:puppetDb/1',
-            attachTo: { id: 'core/routes', input: 'routes' },
+            attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'puppetdb' },
           },
           {
             id: 'api:plugin.puppetdb.service',
-            attachTo: { id: 'core', input: 'apis' },
+            attachTo: { id: 'app', input: 'apis' },
             disabled: false,
           },
         ],
@@ -163,13 +163,13 @@ describe('collectLegacyRoutes', () => {
         extensions: [
           {
             id: 'page:catalog',
-            attachTo: { id: 'core/routes', input: 'routes' },
+            attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: { path: 'catalog' },
           },
           {
             id: 'page:catalog/1',
-            attachTo: { id: 'core/routes', input: 'routes' },
+            attachTo: { id: 'app/routes', input: 'routes' },
             defaultConfig: { path: 'catalog/:namespace/:kind/:name' },
             disabled: false,
           },
@@ -203,7 +203,7 @@ describe('collectLegacyRoutes', () => {
           {
             id: 'api:plugin.catalog.service',
             attachTo: {
-              id: 'core',
+              id: 'app',
               input: 'apis',
             },
             defaultConfig: undefined,
@@ -212,7 +212,7 @@ describe('collectLegacyRoutes', () => {
           {
             id: 'api:catalog-react.starred-entities',
             attachTo: {
-              id: 'core',
+              id: 'app',
               input: 'apis',
             },
             defaultConfig: undefined,
@@ -221,7 +221,7 @@ describe('collectLegacyRoutes', () => {
           {
             id: 'api:plugin.catalog.entity-presentation',
             attachTo: {
-              id: 'core',
+              id: 'app',
               input: 'apis',
             },
             defaultConfig: undefined,
@@ -234,7 +234,7 @@ describe('collectLegacyRoutes', () => {
         extensions: [
           {
             id: 'api:plugin.scoringdata.service',
-            attachTo: { id: 'core', input: 'apis' },
+            attachTo: { id: 'app', input: 'apis' },
             disabled: false,
           },
         ],

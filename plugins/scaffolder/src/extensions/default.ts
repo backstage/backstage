@@ -44,6 +44,8 @@ import {
   MyGroupsPickerSchema,
 } from '../components/fields/MyGroupsPicker/MyGroupsPicker';
 
+import { SecretInput } from '../components/fields/SecretInput';
+
 export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
     component: EntityPicker,
@@ -81,5 +83,9 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
     component: MyGroupsPicker,
     name: 'MyGroupsPicker',
     schema: MyGroupsPickerSchema,
+  },
+  {
+    component: SecretInput,
+    name: 'Secret',
   },
 ];

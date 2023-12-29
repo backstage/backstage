@@ -19,7 +19,7 @@ import { PortableSchema } from '../schema';
 import {
   ResolvedExtensionInputs,
   createExtension,
-  coreExtensionData,
+  createExtensionDataRef,
 } from '../wiring';
 import { AnyExtensionInputMap } from '../wiring/createExtension';
 import { Expand } from '../types';
@@ -55,11 +55,11 @@ export function createApiExtension<
     // Since ApiRef IDs use a global namespace we use the namespace here in order to override
     // potential plugin IDs and always end up with the format `api:<api-ref-id>`
     namespace: apiRef.id,
-    attachTo: { id: 'core', input: 'apis' },
+    attachTo: { id: 'app', input: 'apis' },
     inputs: extensionInputs,
     configSchema,
     output: {
-      api: coreExtensionData.apiFactory,
+      api: createApiExtension.factoryDataRef,
     },
     factory({ config, inputs }) {
       if (typeof factory === 'function') {
@@ -68,4 +68,10 @@ export function createApiExtension<
       return { api: factory };
     },
   });
+}
+
+/** @public */
+export namespace createApiExtension {
+  export const factoryDataRef =
+    createExtensionDataRef<AnyApiFactory>('core.api.factory');
 }

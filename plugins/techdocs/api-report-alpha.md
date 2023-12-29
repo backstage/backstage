@@ -23,7 +23,7 @@ const _default: BackstagePlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const TechDocsSearchResultListItemExtension: ExtensionDefinition<{
+export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
   lineClamp: number;
   noTrack: boolean;
   asListItem: boolean;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createExtension, coreExtensionData } from '../wiring';
+import { createExtension, createExtensionDataRef } from '../wiring';
 import { AppTheme } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -23,10 +23,16 @@ export function createThemeExtension(theme: AppTheme) {
     kind: 'theme',
     namespace: 'app',
     name: theme.id,
-    attachTo: { id: 'core', input: 'themes' },
+    attachTo: { id: 'app', input: 'themes' },
     output: {
-      theme: coreExtensionData.theme,
+      theme: createThemeExtension.themeDataRef,
     },
     factory: () => ({ theme }),
   });
+}
+
+/** @public */
+export namespace createThemeExtension {
+  export const themeDataRef =
+    createExtensionDataRef<AppTheme>('core.theme.theme');
 }

@@ -38,13 +38,13 @@ describe('createExtensionOverrides', () => {
         extensions: [
           createExtension({
             name: 'a',
-            attachTo: { id: 'core', input: 'apis' },
+            attachTo: { id: 'app', input: 'apis' },
             output: {},
             factory: () => ({}),
           }),
           createExtension({
             namespace: 'b',
-            attachTo: { id: 'core', input: 'apis' },
+            attachTo: { id: 'app', input: 'apis' },
             output: {},
             factory: () => ({}),
           }),
@@ -52,7 +52,7 @@ describe('createExtensionOverrides', () => {
             kind: 'k',
             namespace: 'c',
             name: 'n',
-            attachTo: { id: 'core', input: 'apis' },
+            attachTo: { id: 'app', input: 'apis' },
             output: {},
             factory: () => ({}),
           }),
@@ -65,7 +65,7 @@ describe('createExtensionOverrides', () => {
           {
             "$$type": "@backstage/Extension",
             "attachTo": {
-              "id": "core",
+              "id": "app",
               "input": "apis",
             },
             "configSchema": undefined,
@@ -74,11 +74,12 @@ describe('createExtensionOverrides', () => {
             "id": "a",
             "inputs": {},
             "output": {},
+            "version": "v1",
           },
           {
             "$$type": "@backstage/Extension",
             "attachTo": {
-              "id": "core",
+              "id": "app",
               "input": "apis",
             },
             "configSchema": undefined,
@@ -87,11 +88,12 @@ describe('createExtensionOverrides', () => {
             "id": "b",
             "inputs": {},
             "output": {},
+            "version": "v1",
           },
           {
             "$$type": "@backstage/Extension",
             "attachTo": {
-              "id": "core",
+              "id": "app",
               "input": "apis",
             },
             "configSchema": undefined,
@@ -100,6 +102,7 @@ describe('createExtensionOverrides', () => {
             "id": "k:c/n",
             "inputs": {},
             "output": {},
+            "version": "v1",
           },
         ],
         "featureFlags": [],
@@ -113,7 +116,7 @@ describe('createExtensionOverrides', () => {
       extensions: [
         createExtension({
           namespace: 'a',
-          attachTo: { id: 'core', input: 'apis' },
+          attachTo: { id: 'app', input: 'apis' },
           output: {},
           factory: () => ({}),
         }),

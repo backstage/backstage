@@ -64,7 +64,7 @@ type TargetRouteMap<
  *
  * @public
  */
-export type AppRouteBinder = <
+export type CreateAppRouteBinder = <
   TExternalRoutes extends { [name: string]: ExternalRouteRef },
 >(
   externalRoutes: TExternalRoutes,
@@ -76,14 +76,14 @@ export type AppRouteBinder = <
 
 /** @internal */
 export function resolveRouteBindings(
-  bindRoutes: ((context: { bind: AppRouteBinder }) => void) | undefined,
+  bindRoutes: ((context: { bind: CreateAppRouteBinder }) => void) | undefined,
   config: Config,
   routesById: RouteRefsById,
 ): Map<ExternalRouteRef, RouteRef | SubRouteRef> {
   const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
 
   if (bindRoutes) {
-    const bind: AppRouteBinder = (
+    const bind: CreateAppRouteBinder = (
       externalRoutes,
       targetRoutes: { [name: string]: RouteRef | SubRouteRef },
     ) => {

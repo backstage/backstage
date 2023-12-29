@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
 import { assertError } from '@backstage/errors';
 import { Octokit } from 'octokit';
 import { Logger } from 'winston';
@@ -128,15 +127,6 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
     await tryOnce();
   }
 };
-
-export function getGitCommitMessage(
-  gitCommitMessage: string | undefined,
-  config: Config,
-): string | undefined {
-  return gitCommitMessage
-    ? gitCommitMessage
-    : config.getOptionalString('scaffolder.defaultCommitMessage');
-}
 
 export function entityRefToName(name: string): string {
   return name.replace(/^.*[:/]/g, '');

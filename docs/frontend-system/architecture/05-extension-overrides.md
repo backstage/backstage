@@ -1,12 +1,12 @@
 ---
-id: extension overrides
+id: extension-overrides
 title: Frontend Extension Overrides
 sidebar_label: Extension Overrides
 # prettier-ignore
 description: Frontend extension overrides
 ---
 
-> **NOTE: The new frontend system is in a highly experimental phase**
+> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 ## Introduction
 

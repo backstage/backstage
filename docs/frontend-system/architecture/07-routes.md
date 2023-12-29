@@ -6,7 +6,7 @@ sidebar_label: Routes
 description: Frontend routes
 ---
 
-> **NOTE: The new frontend system is in a highly experimental phase**
+> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 See [routing system docs](../../plugins/composability.md#routing-system)
 
@@ -98,7 +98,7 @@ Explain all of create, use and provide
  -->
 
 ```ts
-/* 
+/*
 
 Some examples
 

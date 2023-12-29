@@ -21,6 +21,8 @@ import {
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
 import React, { ComponentType, PropsWithChildren } from 'react';
@@ -48,7 +50,7 @@ const defaultEntity: GroupEntity = {
       displayName: 'Team A',
       email: 'team-a@example.com',
       picture:
-        'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
+        'https://api.dicebear.com/7.x/identicon/svg?seed=Fluffy&backgroundType=solid,gradientLinear&backgroundColor=ffd5dc,b6e3f4',
     },
     type: 'group',
     children: [],
@@ -58,6 +60,10 @@ const defaultEntity: GroupEntity = {
 
 const catalogApi: Partial<CatalogApi> = {
   async refreshEntity() {},
+};
+
+const permissionApi: typeof permissionApiRef.T = {
+  authorize: async () => ({ result: AuthorizeResult.ALLOW }),
 };
 
 export const Default = () => (
@@ -76,7 +82,12 @@ export default {
   decorators: [
     (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
-        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, catalogApi],
+            [permissionApiRef, permissionApi],
+          ]}
+        >
           <Story />
         </TestApiProvider>,
         {
@@ -111,7 +122,7 @@ const extraDetailsEntity: GroupEntity = {
       displayName: 'Team A',
       email: 'team-a@example.com',
       picture:
-        'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
+        'https://api.dicebear.com/7.x/identicon/svg?seed=Fluffy&backgroundType=solid,gradientLinear&backgroundColor=ffd5dc,b6e3f4',
     },
     type: 'group',
     children: [],
@@ -141,7 +152,7 @@ const groupWithTitle: GroupEntity = {
     profile: {
       email: 'team-a@example.com',
       picture:
-        'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
+        'https://api.dicebear.com/7.x/identicon/svg?seed=Fluffy&backgroundType=solid,gradientLinear&backgroundColor=ffd5dc,b6e3f4',
     },
     type: 'group',
     children: [],

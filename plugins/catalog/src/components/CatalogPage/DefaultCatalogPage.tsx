@@ -45,6 +45,8 @@ import { catalogTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 /** @internal */
 export type BaseCatalogPageProps = {
@@ -60,15 +62,20 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
   const { t } = useTranslationRef(catalogTranslationRef);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
 
   return (
     <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
       <Content>
         <ContentHeader title="">
-          <CreateButton
-            title={t('indexPage.createButtonTitle')}
-            to={createComponentLink && createComponentLink()}
-          />
+          {allowed && (
+            <CreateButton
+              title={t('indexPage.createButtonTitle')}
+              to={createComponentLink && createComponentLink()}
+            />
+          )}
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <EntityListProvider pagination={pagination}>

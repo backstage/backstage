@@ -32,8 +32,9 @@ import {
   createExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
+import appVisualizerPlugin from '@backstage/plugin-visualizer';
 import { homePage } from './HomePage';
-import { collectLegacyRoutes } from '@backstage/core-compat-api';
+import { convertLegacyApp } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
@@ -109,7 +110,7 @@ const scmIntegrationApi = createApiExtension({
   }),
 });
 
-const collectedLegacyPlugins = collectLegacyRoutes(
+const collectedLegacyPlugins = convertLegacyApp(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
   </FlatRoutes>,
@@ -123,6 +124,7 @@ const app = createApp({
     techdocsPlugin,
     userSettingsPlugin,
     homePlugin,
+    appVisualizerPlugin,
     ...collectedLegacyPlugins,
     createExtensionOverrides({
       extensions: [

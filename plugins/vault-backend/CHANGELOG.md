@@ -1,5 +1,30 @@
 # @backstage/plugin-vault-backend
 
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/backend-tasks@0.5.14-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-vault-node@0.1.2-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- b7de76a: Updated to test using PostgreSQL 12 and 16
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/backend-tasks@0.5.13
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-vault-node@0.1.1
+
 ## 0.4.1-next.3
 
 ### Patch Changes

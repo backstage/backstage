@@ -21,6 +21,7 @@ import { GkeClusterLinksFormatter } from './GkeClusterLinksFormatter';
 import { StandardClusterLinksFormatter } from './StandardClusterLinksFormatter';
 import { OpenshiftClusterLinksFormatter } from './OpenshiftClusterLinksFormatter';
 import { RancherClusterLinksFormatter } from './RancherClusterLinksFormatter';
+import { ProfileInfoApi } from '@backstage/core-plugin-api';
 
 export {
   StandardClusterLinksFormatter,
@@ -35,15 +36,14 @@ export {
 export const DEFAULT_FORMATTER_NAME = 'standard';
 
 /** @public */
-export function getDefaultFormatters(_deps: {}): Record<
-  string,
-  ClusterLinksFormatter
-> {
+export function getDefaultFormatters(deps: {
+  googleAuthApi: ProfileInfoApi;
+}): Record<string, ClusterLinksFormatter> {
   return {
     standard: new StandardClusterLinksFormatter(),
     aks: new AksClusterLinksFormatter(),
     eks: new EksClusterLinksFormatter(),
-    gke: new GkeClusterLinksFormatter(),
+    gke: new GkeClusterLinksFormatter(deps.googleAuthApi),
     openshift: new OpenshiftClusterLinksFormatter(),
     rancher: new RancherClusterLinksFormatter(),
   };

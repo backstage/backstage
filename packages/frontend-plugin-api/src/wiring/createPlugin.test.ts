@@ -18,13 +18,14 @@ import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { screen } from '@testing-library/react';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import { createPlugin, BackstagePlugin } from './createPlugin';
+import { createPlugin } from './createPlugin';
 import { JsonObject } from '@backstage/types';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { coreExtensionData } from './coreExtensionData';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import { createExtensionInput } from './createExtensionInput';
+import { BackstagePlugin } from './types';
 
 const nameExtensionDataRef = createExtensionDataRef<string>('name');
 
@@ -101,7 +102,7 @@ const Child2 = createExtension({
 
 const outputExtension = createExtension({
   name: 'output',
-  attachTo: { id: 'core', input: 'root' },
+  attachTo: { id: 'app', input: 'root' },
   inputs: {
     names: createExtensionInput({
       name: nameExtensionDataRef,
@@ -128,7 +129,7 @@ function createTestAppRoot({
 }) {
   return createApp({
     features,
-    configLoader: async () => new MockConfigApi(config),
+    configLoader: async () => ({ config: new MockConfigApi(config) }),
   }).createRoot();
 }
 
@@ -149,7 +150,7 @@ describe('createPlugin', () => {
     await renderWithEffects(
       createTestAppRoot({
         features: [plugin],
-        config: { app: { extensions: [{ 'core/router': false }] } },
+        config: { app: { extensions: [{ 'app/router': false }] } },
       }),
     );
 
@@ -171,7 +172,7 @@ describe('createPlugin', () => {
         config: {
           app: {
             extensions: [
-              { 'core/router': false },
+              { 'app/router': false },
               {
                 'test/2': {
                   config: { name: 'extension-2-renamed' },
@@ -209,7 +210,7 @@ describe('createPlugin', () => {
         features: [plugin],
         config: {
           app: {
-            extensions: [{ 'core/router': false }],
+            extensions: [{ 'app/router': false }],
           },
         },
       }),

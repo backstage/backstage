@@ -49,7 +49,7 @@ function createTestExtension(options: {
     name: options.name,
     attachTo: options.parent
       ? { id: `test/${options.parent}`, input: 'children' }
-      : { id: 'core/routes', input: 'routes' },
+      : { id: 'app/routes', input: 'routes' },
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath.optional(),

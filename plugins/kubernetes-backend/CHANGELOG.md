@@ -1,5 +1,75 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.14.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/plugin-kubernetes-common@0.7.3-next.0
+  - @backstage/plugin-catalog-node@1.6.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.3-next.0
+  - @backstage/plugin-kubernetes-node@0.1.3-next.0
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-permission-node@0.7.20-next.0
+
+## 0.14.0
+
+### Minor Changes
+
+- 52050ad: You can now select `single` kubernetes cluster that the entity is part-of from all your defined kubernetes clusters, by passing `backstage.io/kubernetes-cluster` annotation with the defined cluster name.
+
+  If you do not specify the annotation by `default it fetches all` defined kubernetes cluster.
+
+  To apply
+
+  catalog-info.yaml
+
+  ```diff
+  annotations:
+    'backstage.io/kubernetes-id': dice-roller
+    'backstage.io/kubernetes-namespace': dice-space
+  + 'backstage.io/kubernetes-cluster': dice-cluster
+    'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end'
+  ```
+
+### Patch Changes
+
+- 6010564: The `kubernetes-node` plugin has been modified to house a new extension points for Kubernetes backend plugin;
+  `KubernetesClusterSupplierExtensionPoint` is introduced .
+  `kubernetesAuthStrategyExtensionPoint` is introduced .
+  `kubernetesFetcherExtensionPoint` is introduced .
+  `kubernetesServiceLocatorExtensionPoint` is introduced .
+
+  The `kubernetes-backend` plugin was modified to use this new extension point.
+
+- 706fc3a: Updated dependency `@kubernetes/client-node` to `0.20.0`.
+- ae94d3c: Updated dependency `@aws-crypto/sha256-js` to `^5.0.0`.
+- 99fb541: Updated dependency `@azure/identity` to `^4.0.0`.
+- 42c1aee: Updated dependency `@google-cloud/container` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-catalog-node@1.6.0
+  - @backstage/catalog-client@1.5.0
+  - @backstage/plugin-kubernetes-node@0.1.2
+  - @backstage/plugin-kubernetes-common@0.7.2
+  - @backstage/plugin-auth-node@0.4.2
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-permission-node@0.7.19
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
 ## 0.14.0-next.3
 
 ### Patch Changes

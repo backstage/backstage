@@ -1,5 +1,25 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.45-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/core-plugin-api@1.8.1
+
+## 0.3.44
+
+### Patch Changes
+
+- a518c5a: Updated dependency `@react-hookz/web` to `^23.0.0`.
+- d2f5662: Fix query parameter for project details page which should point to projectId rather than project name
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+
 ## 0.3.44-next.3
 
 ### Patch Changes

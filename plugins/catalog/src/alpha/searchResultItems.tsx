@@ -16,13 +16,12 @@
 
 import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 
-export const CatalogSearchResultListItemExtension =
-  createSearchResultListItemExtension({
-    predicate: result => result.type === 'software-catalog',
-    component: () =>
-      import('../components/CatalogSearchResultListItem').then(
-        m => m.CatalogSearchResultListItem,
-      ),
-  });
+export const catalogSearchResultListItem = createSearchResultListItemExtension({
+  predicate: result => result.type === 'software-catalog',
+  component: () =>
+    import('../components/CatalogSearchResultListItem').then(
+      m => m.CatalogSearchResultListItem,
+    ),
+});
 
-export default [CatalogSearchResultListItemExtension];
+export default [catalogSearchResultListItem];

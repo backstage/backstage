@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4.1.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/checkout@v4.1.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -153,8 +153,8 @@ jobs:
 
     name: Test ${{ matrix.node-version }}
     services:
-      postgres13:
-        image: postgres:13
+      postgres16:
+        image: postgres:16
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -164,8 +164,8 @@ jobs:
           --health-retries 5
         ports:
           - 5432/tcp
-      postgres9:
-        image: postgres:9
+      postgres12:
+        image: postgres:12
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -201,7 +201,7 @@ jobs:
         run: git fetch origin master
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -218,8 +218,8 @@ jobs:
         run: yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M --since origin/master
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
-          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES16_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres16.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES12_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres12.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
 
       # We run the test cases before verifying the specs to prevent any failing tests from causing errors.

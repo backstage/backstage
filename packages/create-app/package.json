@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.5.8-next.4",
+  "version": "0.5.9-next.0",
   "publishConfig": {
     "access": "public"
   },
@@ -49,7 +49,6 @@
     "@types/inquirer": "^8.1.3",
     "@types/node": "^18.17.8",
     "@types/recursive-readdir": "^2.2.0",
-    "mock-fs": "^5.2.0",
     "nodemon": "^3.0.1",
     "ts-node": "^10.0.0"
   },

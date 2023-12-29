@@ -13,7 +13,7 @@ jobs:
           egress-policy: audit
 
       # Setup node & install deps before checkout, keeping install quick
-      - uses: actions/setup-node@v4.0.0
+      - uses: actions/setup-node@v4.0.1
         with:
           node-version: 18.x
       - name: Install dependencies

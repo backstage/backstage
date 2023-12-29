@@ -17,15 +17,15 @@ const _default: BackstagePlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const SearchApi: ExtensionDefinition<{}>;
+export const searchApi: ExtensionDefinition<{}>;
 
 // @alpha (undocumented)
-export const SearchNavItem: ExtensionDefinition<{
+export const searchNavItem: ExtensionDefinition<{
   title: string;
 }>;
 
 // @alpha (undocumented)
-export const SearchPage: ExtensionDefinition<{
+export const searchPage: ExtensionDefinition<{
   path: string;
   noTrack: boolean;
 }>;

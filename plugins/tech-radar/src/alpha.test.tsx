@@ -16,7 +16,7 @@
 
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { screen } from '@testing-library/react';
-import { TechRadarPage, sampleTechRadarApi } from './alpha';
+import { techRadarPage, techRadarApi } from './alpha';
 
 describe('TechRadarPage', () => {
   beforeAll(() => {
@@ -27,7 +27,7 @@ describe('TechRadarPage', () => {
   });
 
   it('renders without exploding', async () => {
-    createExtensionTester(TechRadarPage).add(sampleTechRadarApi).render();
+    createExtensionTester(techRadarPage).add(techRadarApi).render();
 
     await expect(screen.findByText('Tech Radar')).resolves.toBeInTheDocument();
   });

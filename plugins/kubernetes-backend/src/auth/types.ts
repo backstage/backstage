@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-import { AuthMetadata, ClusterDetails } from '../types/types';
-import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
+import * as k8sAuthTypes from '@backstage/plugin-kubernetes-node';
+
+// TODO remove this re-export as a breaking change after a couple of releases
+/**
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
+ */
+export type AuthenticationStrategy = k8sAuthTypes.AuthenticationStrategy;
 
 /**
- * Authentication data used to make a request to Kubernetes
- * @public
+ * @public @deprecated Import it from \@backstage/plugin-kubernetes-node instead
  */
-export type KubernetesCredential =
-  | { type: 'bearer token'; token: string }
-  | { type: 'anonymous' };
-
-/**
- *
- * @public
- */
-export interface AuthenticationStrategy {
-  getCredential(
-    clusterDetails: ClusterDetails,
-    authConfig: KubernetesRequestAuth,
-  ): Promise<KubernetesCredential>;
-  validateCluster(authMetadata: AuthMetadata): Error[];
-}
+export type KubernetesCredential = k8sAuthTypes.KubernetesCredential;

@@ -1,5 +1,30 @@
 # @backstage/plugin-devtools
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/plugin-permission-react@0.4.19-next.0
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-devtools-common@0.1.7
+
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-permission-react@0.4.18
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-devtools-common@0.1.7
+
 ## 0.1.7-next.3
 
 ### Patch Changes

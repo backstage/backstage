@@ -23,6 +23,9 @@ import {
   hasStringProperty,
   hasTag,
 } from './rules';
+import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
+import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('hasTag', () => {
   describe('apply', () => {
@@ -206,6 +209,84 @@ describe('hasProperty', () => {
         ).toEqual(true);
       },
     );
+
+    it('should throw if params are invalid', () => {
+      const isActionAuthorized = createConditionAuthorizer([hasProperty]);
+
+      expect(() =>
+        isActionAuthorized(
+          {
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+            pluginId: 'scaffolder',
+            result: AuthorizeResult.CONDITIONAL,
+            conditions: {
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+              rule: 'HAS_PROPERTY',
+              params: {
+                key: 1,
+              },
+            },
+          },
+          { action: 'an-action', input: {} },
+        ),
+      ).toThrow();
+      expect(() =>
+        isActionAuthorized(
+          {
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+            pluginId: 'scaffolder',
+            result: AuthorizeResult.CONDITIONAL,
+            conditions: {
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+              rule: 'HAS_PROPERTY',
+              params: {},
+            },
+          },
+          { action: 'an-action', input: {} },
+        ),
+      ).toThrow();
+    });
+
+    it('should not throw if params are valid', () => {
+      const isActionAuthorized = createConditionAuthorizer([hasProperty]);
+
+      expect(() =>
+        isActionAuthorized(
+          {
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+            pluginId: 'scaffolder',
+            result: AuthorizeResult.CONDITIONAL,
+            conditions: {
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+              rule: 'HAS_PROPERTY',
+              params: {
+                key: 'key',
+              },
+            },
+          },
+          { action: 'an-action', input: {} },
+        ),
+      ).not.toThrow();
+
+      expect(() =>
+        isActionAuthorized(
+          {
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+            pluginId: 'scaffolder',
+            result: AuthorizeResult.CONDITIONAL,
+            conditions: {
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+              rule: 'HAS_PROPERTY',
+              params: {
+                key: 'key',
+                value: 'value',
+              },
+            },
+          },
+          { action: 'an-action', input: {} },
+        ),
+      ).not.toThrow();
+    });
   });
 });
 
