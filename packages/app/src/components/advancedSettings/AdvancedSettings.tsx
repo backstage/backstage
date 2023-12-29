@@ -23,6 +23,7 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Switch,
+  Tooltip,
 } from '@material-ui/core';
 import useLocalStorage from 'react-use/lib/useLocalStorage';
 
@@ -47,12 +48,18 @@ export function AdvancedSettings() {
                 secondary="An extra settings tab to further customize the experience"
               />
               <ListItemSecondaryAction>
-                <Switch
-                  color="primary"
-                  value={value}
-                  onChange={toggleValue}
-                  name="advanced"
-                />
+                <Tooltip
+                  placement="top"
+                  arrow
+                  title={value === 'on' ? 'Disable' : 'Enable'}
+                >
+                  <Switch
+                    color="primary"
+                    value={value}
+                    onChange={toggleValue}
+                    name="advanced"
+                  />
+                </Tooltip>
               </ListItemSecondaryAction>
             </ListItem>
           </List>
