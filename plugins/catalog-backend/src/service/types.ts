@@ -49,7 +49,7 @@ export interface LocationService {
     options?: { authorizationToken?: string },
   ): Promise<void>;
   getLocationByEntity(
-    entityRef: CompoundEntityRef,
+    entityRef: CompoundEntityRef | string,
     options?: { authorizationToken?: string },
   ): Promise<Location>;
 }
@@ -86,5 +86,5 @@ export interface LocationStore {
   listLocations(): Promise<Location[]>;
   getLocation(id: string): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
-  getLocationByEntity(entityRef: CompoundEntityRef): Promise<Location>;
+  getLocationByEntity(entityRef: CompoundEntityRef | string): Promise<Location>;
 }

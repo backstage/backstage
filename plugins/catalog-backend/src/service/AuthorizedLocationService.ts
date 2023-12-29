@@ -113,7 +113,7 @@ export class AuthorizedLocationService implements LocationService {
   }
 
   async getLocationByEntity(
-    entityRef: CompoundEntityRef,
+    entityRef: CompoundEntityRef | string,
     options?: { authorizationToken?: string | undefined } | undefined,
   ): Promise<Location> {
     const authorizationResponse = (

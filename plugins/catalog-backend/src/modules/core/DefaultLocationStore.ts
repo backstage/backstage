@@ -33,6 +33,7 @@ import { LocationInput, LocationStore } from '../../service/types';
 import {
   ANNOTATION_ORIGIN_LOCATION,
   CompoundEntityRef,
+  parseLocationRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 
@@ -143,9 +144,8 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         `found no origin annotation for ref ${entityRefString}`,
       );
     }
-    const [type, ...rest] = locationKeyValue.value?.split(':') ?? [];
-    const target = rest.join(':');
 
+    const { type, target } = parseLocationRef(entityRefString);
     // const kind, target = split[0], split[1];
     const [location] = await this.db<DbLocationsRow>('locations')
       .where({ type, target })
