@@ -107,6 +107,7 @@ describe('createRouter', () => {
       title: 'Create React App Template',
       annotations: {
         'backstage.io/managed-by-location': 'url:https://dev.azure.com',
+        'backstage.io/edit-url': 'url:EDIT_URL',
       },
     },
     spec: {
@@ -878,6 +879,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(response.body).toEqual({
           title: 'Create React App Template',
           description: 'Create a new CRA website project',
+          editUrl: 'url:EDIT_URL',
           steps: [
             {
               title: 'Please enter the following information',
@@ -932,6 +934,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(response.body).toEqual({
           title: 'Create React App Template',
           description: 'Create a new CRA website project',
+          editUrl: 'url:EDIT_URL',
           steps: [],
         });
       });
@@ -963,7 +966,58 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(response.body).toEqual({
           title: 'Create React App Template',
           description: 'Create a new CRA website project',
+          editUrl: 'url:EDIT_URL',
           steps: [
+            {
+              title: 'Please enter the following information',
+              schema: {
+                type: 'object',
+                required: ['requiredParameter2'],
+                'backstage:permissions': {
+                  tags: ['parameters-tag'],
+                },
+                properties: {
+                  requiredParameter2: {
+                    type: 'string',
+                    description: 'Required parameter 2',
+                  },
+                },
+              },
+            },
+          ],
+        });
+      });
+      it('should not return editUrl', async () => {
+        jest
+          .spyOn(catalogClient, 'getEntityByRef')
+          .mockImplementationOnce(async () => {
+            const template = getMockTemplate();
+            delete template.metadata.annotations?.['backstage.io/edit-url'];
+            return template;
+          });
+        const response = await request(app)
+          .get(
+            '/v2/templates/default/Template/create-react-app-template/parameter-schema',
+          )
+          .send();
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({
+          title: 'Create React App Template',
+          description: 'Create a new CRA website project',
+          steps: [
+            {
+              title: 'Please enter the following information',
+              schema: {
+                required: ['requiredParameter1'],
+                type: 'object',
+                properties: {
+                  requiredParameter1: {
+                    description: 'Required parameter 1',
+                    type: 'string',
+                  },
+                },
+              },
+            },
             {
               title: 'Please enter the following information',
               schema: {
