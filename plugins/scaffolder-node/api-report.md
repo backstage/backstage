@@ -46,6 +46,41 @@ export type ActionContext<
 };
 
 // @public (undocumented)
+export function commitAndPushBranch({
+  tempDir,
+  dir,
+  remoteUrl,
+  auth,
+  logger,
+  commitMessage,
+  gitAuthorInfo,
+  branch,
+  remoteRef,
+}: {
+  tempDir: string;
+  dir: string;
+  remoteUrl: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger: Logger;
+  commitMessage: string;
+  gitAuthorInfo?: {
+    name?: string;
+    email?: string;
+  };
+  branch?: string;
+  remoteRef?: string;
+}): Promise<{
+  commitHash: string;
+}>;
+
+// @public (undocumented)
 export function commitAndPushRepo(input: {
   dir: string;
   auth:

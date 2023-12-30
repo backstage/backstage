@@ -136,6 +136,9 @@ export async function commitAndPushRepo(input: {
   return { commitHash };
 }
 
+/**
+ * @public
+ */
 export async function commitAndPushBranch({
   tempDir,
   dir,
