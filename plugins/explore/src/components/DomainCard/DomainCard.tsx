@@ -34,7 +34,10 @@ import React from 'react';
 import { LinkButton, ItemCardHeader } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
-/** @public */
+/**
+ * @public
+ * @deprecated You should use EntityCard instead, it's identical
+ */
 export const DomainCard = (props: { entity: DomainEntity }) => {
   const { entity } = props;
 
