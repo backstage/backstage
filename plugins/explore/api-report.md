@@ -41,7 +41,7 @@ export const CatalogKindExploreContent: (props: {
   kind: string;
 }) => React_2.JSX.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const DomainCard: (props: {
   entity: DomainEntity;
 }) => React_2.JSX.Element;
