@@ -2,4 +2,4 @@
 '@backstage/plugin-explore': minor
 ---
 
-Deprecate DomainCard
+Deprecate DomainCard in favor of EntityCard
