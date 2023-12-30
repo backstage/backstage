@@ -3,8 +3,6 @@ kind: Location
 metadata:
   name: example-templates
   description: A collection of all Backstage example templates
-#  annotations:
-#    backstage.io/edit-url: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
 spec:
   targets:
     - ./remote-templates.yaml
