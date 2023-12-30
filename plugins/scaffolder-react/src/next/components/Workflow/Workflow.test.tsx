@@ -20,7 +20,7 @@ import {
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { Workflow } from './Workflow';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
@@ -75,7 +75,7 @@ describe('<Workflow />', () => {
       title: 'React JSON Schema Form Test',
     });
 
-    const { getByRole, getAllByRole, getByText } = await renderInTestApp(
+    const { getByRole, getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
         <Workflow
           title="Different title than template"
@@ -133,12 +133,80 @@ describe('<Workflow />', () => {
     ).toBeDefined();
 
     await act(async () => {
-      fireEvent.click(getAllByRole('button')[1] as HTMLButtonElement);
+      fireEvent.click(getByText('Make') as HTMLButtonElement);
     });
 
     expect(onCreate).toHaveBeenCalledWith({
       name: 'prefilled-name',
       age: '53',
     });
+  });
+  it('renders "edit template" button', async () => {
+    const onCreate = jest.fn();
+    const onError = jest.fn();
+    const expectedUrl = '/EDIT_URL';
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+      editUrl: expectedUrl,
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {},
+        },
+      ],
+      title: 'React JSON Schema Form Test',
+    });
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Workflow
+          title="test"
+          description="test description"
+          onCreate={onCreate}
+          onError={onError}
+          namespace="default"
+          templateName="docs-template"
+          initialState={{
+            name: 'prefilled-name',
+            age: '53',
+          }}
+          extensions={[]}
+        />
+      </ApiProvider>,
+    );
+    const editLink = screen.getByTitle('Edit Template').closest('a');
+    expect(editLink).toHaveAttribute('href', expectedUrl);
+  });
+  it('renders disable "edit template" button', async () => {
+    const onCreate = jest.fn();
+    const onError = jest.fn();
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {},
+        },
+      ],
+      editUrl: undefined,
+      title: 'React JSON Schema Form Test',
+    });
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Workflow
+          title="test"
+          description="test description"
+          onCreate={onCreate}
+          onError={onError}
+          namespace="default"
+          templateName="docs-template"
+          initialState={{
+            name: 'prefilled-name',
+            age: '53',
+          }}
+          extensions={[]}
+        />
+      </ApiProvider>,
+    );
+    const editLink = screen.getByTitle('Edit Template');
+    expect(editLink).toBeVisible();
+    expect(editLink).toHaveAttribute('href', '/');
   });
 });

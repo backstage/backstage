@@ -27,6 +27,7 @@ import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common
 export type TemplateParameterSchema = {
   title: string;
   description?: string;
+  editUrl?: string;
   presentation?: TemplatePresentationV1beta3;
   steps: Array<{
     title: string;

@@ -394,6 +394,7 @@ export async function createRouter(
         res.json({
           title: template.metadata.title ?? template.metadata.name,
           ...(presentation ? { presentation } : {}),
+          editUrl: template.metadata.annotations?.['backstage.io/edit-url'],
           description: template.metadata.description,
           'ui:options': template.metadata['ui:options'],
           steps: parameters.map(schema => ({
