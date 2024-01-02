@@ -27,3 +27,5 @@ export * from './search';
 export * from './service';
 export * from './deprecated';
 export * from './constants';
+
+export { catalogPlugin as default } from './service/CatalogPlugin';

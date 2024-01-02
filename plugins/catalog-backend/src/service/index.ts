@@ -19,4 +19,3 @@ export type {
   CatalogPermissionRuleInput,
 } from './CatalogBuilder';
 export { CatalogBuilder } from './CatalogBuilder';
-export { catalogPlugin as default } from './CatalogPlugin';
