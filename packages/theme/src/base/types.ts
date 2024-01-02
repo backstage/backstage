@@ -82,6 +82,23 @@ export type BackstagePaletteAdditions = {
     closeButtonColor?: string;
     warning?: string;
   };
+  mdCustomColor?: {
+    codeFgColor?: string;
+    codeBgColor?: string;
+    codeHlColor?: string;
+    codeHlKeywordColor?: string;
+    codeHlFunctionColor?: string;
+    codeHlStringColor?: string;
+    codeHlNumberColor?: string;
+    codeHlConstantColor?: string;
+    codeHlSpecialColor?: string;
+    codeHlNameColor?: string;
+    codeHlCommentColor?: string;
+    codeHlGenericColor?: string;
+    codeHlVariableColor?: string;
+    codeHlOperatorColor?: string;
+    codeHlPunctuationColor?: string;
+  };
 };
 
 /**

@@ -17,6 +17,13 @@
 import { alpha, lighten } from '@material-ui/core';
 import { RuleOptions } from './types';
 
+const mdCustomOrGenericColor = (
+  mdCustomColor: string | undefined,
+  genericColor: string,
+) => {
+  return mdCustomColor ?? genericColor;
+};
+
 export default ({ theme }: RuleOptions) => `
 /*==================  Variables  ==================*/
 /*
@@ -98,37 +105,74 @@ export default ({ theme }: RuleOptions) => `
 
 :host > * {
   /* CODE */
-  --md-code-fg-color: ${theme.palette.text.primary};
-  --md-code-bg-color: ${theme.palette.background.paper};
-  --md-code-hl-color: ${alpha(theme.palette.warning.main, 0.5)};
-  --md-code-hl-keyword-color: ${
+  --md-code-fg-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeFgColor,
+    theme.palette.text.primary,
+  )};
+  --md-code-bg-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeBgColor,
+    theme.palette.background.paper,
+  )};
+  --md-code-hl-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlColor,
+    alpha(theme.palette.warning.main, 0.5),
+  )};
+  --md-code-hl-keyword-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlKeywordColor,
     theme.palette.type === 'dark'
       ? theme.palette.primary.light
-      : theme.palette.primary.dark
-  };
-  --md-code-hl-function-color: ${
+      : theme.palette.primary.dark,
+  )};
+  --md-code-hl-function-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlFunctionColor,
     theme.palette.type === 'dark'
       ? theme.palette.secondary.light
-      : theme.palette.secondary.dark
-  };
-  --md-code-hl-string-color: ${
+      : theme.palette.secondary.dark,
+  )};
+  --md-code-hl-string-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlStringColor,
     theme.palette.type === 'dark'
       ? theme.palette.success.light
-      : theme.palette.success.dark
-  };
-  --md-code-hl-number-color: ${
+      : theme.palette.success.dark,
+  )};
+  --md-code-hl-number-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlNumberColor,
     theme.palette.type === 'dark'
       ? theme.palette.error.light
-      : theme.palette.error.dark
-  };
-  --md-code-hl-constant-color: var(--md-code-hl-function-color);
-  --md-code-hl-special-color: var(--md-code-hl-function-color);
-  --md-code-hl-name-color: var(--md-code-fg-color);
-  --md-code-hl-comment-color: var(--md-default-fg-color--light);
-  --md-code-hl-generic-color: var(--md-default-fg-color--light);
-  --md-code-hl-variable-color: var(--md-default-fg-color--light);
-  --md-code-hl-operator-color: var(--md-default-fg-color--light);
-  --md-code-hl-punctuation-color: var(--md-default-fg-color--light);
+      : theme.palette.error.dark,
+  )};
+  --md-code-hl-constant-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlConstantColor,
+    'var(--md-code-hl-function-color)',
+  )};
+  --md-code-hl-special-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlSpecialColor,
+    'var(--md-code-hl-function-color)',
+  )};
+  --md-code-hl-name-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlNameColor,
+    'var(--md-code-fg-color)',
+  )};
+  --md-code-hl-comment-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlCommentColor,
+    'var(--md-default-fg-color--light)',
+  )};
+  --md-code-hl-generic-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlGenericColor,
+    'var(--md-default-fg-color--light)',
+  )};
+  --md-code-hl-variable-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlVariableColor,
+    'var(--md-default-fg-color--light)',
+  )};
+  --md-code-hl-operator-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlOperatorColor,
+    'var(--md-default-fg-color--light)',
+  )};
+  --md-code-hl-punctuation-color: ${mdCustomOrGenericColor(
+    theme.palette.mdCustomColor?.codeHlPunctuationColor,
+    'var(--md-default-fg-color--light)',
+  )};
 
   /* TYPESET */
   --md-typeset-font-size: 1rem;
