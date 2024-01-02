@@ -6,7 +6,14 @@
   --ifm-color-primary-dark: #31a792;
   --ifm-color-primary-darker: #2e9e8a;
   --ifm-color-primary-darkest: #268271;
-  --ifm-link-decoration: underline;
+}
+
+#__docusaurus {
+  .theme-doc-markdown {
+    a {
+      text-decoration: underline;
+    }
+  }
 }
 
 .footerLogo {
