@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-export { catalogServiceRef } from './catalogService';
-export type { CatalogProcessingExtensionPoint } from './extensions';
-export { catalogProcessingExtensionPoint } from './extensions';
-export type { CatalogAnalysisExtensionPoint } from './extensions';
-export { catalogAnalysisExtensionPoint } from './extensions';
-export type { CatalogPermissionRuleInput } from './extensions';
-export type { CatalogPermissionExtensionPoint } from './extensions';
-export { catalogPermissionExtensionPoint } from './extensions';
+import { catalogServiceRef as _catalogServiceRef } from './catalogService';
+
+/**
+ * @alpha
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export const catalogServiceRef = _catalogServiceRef;
+
+export * from './alpha-extensions';

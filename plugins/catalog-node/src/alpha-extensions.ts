@@ -27,7 +27,8 @@ import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 
 /**
- * @public
+ * @alpha
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export interface CatalogProcessingExtensionPoint {
   addProcessor(
@@ -40,7 +41,8 @@ export interface CatalogProcessingExtensionPoint {
 }
 
 /**
- * @public
+ * @alpha
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export const catalogProcessingExtensionPoint =
   createExtensionPoint<CatalogProcessingExtensionPoint>({
@@ -48,14 +50,16 @@ export const catalogProcessingExtensionPoint =
   });
 
 /**
- * @public
+ * @alpha
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export interface CatalogAnalysisExtensionPoint {
   addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void;
 }
 
 /**
- * @public
+ * @alpha
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export const catalogAnalysisExtensionPoint =
   createExtensionPoint<CatalogAnalysisExtensionPoint>({
@@ -63,14 +67,16 @@ export const catalogAnalysisExtensionPoint =
   });
 
 /**
- * @public
+ * @alpha
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 /**
- * @public
+ * @alpha
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export interface CatalogPermissionExtensionPoint {
   addPermissionRules(
@@ -81,7 +87,8 @@ export interface CatalogPermissionExtensionPoint {
 }
 
 /**
- * @public
+ * @alpha
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export const catalogPermissionExtensionPoint =
   createExtensionPoint<CatalogPermissionExtensionPoint>({

@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
+import { catalogPlugin as _catalogPlugin } from './service/CatalogPlugin';
+
+/**
+ * @alpha
+ * @deprecated import from `@backstage/plugin-catalog-backend` instead
+ */
+const catalogPlugin = _catalogPlugin;
+
 export * from './permissions';
-export { catalogPlugin as default } from './service/CatalogPlugin';
+export { catalogPlugin as default };

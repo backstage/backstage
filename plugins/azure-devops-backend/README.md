@@ -122,7 +122,7 @@ To use this with the New Backend System you'll want to create a [backend module 
 
 ```diff
    import { createBackend } from '@backstage/backend-defaults';
-+  import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
++  import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 +  import { coreServices, createBackendModule } from '@backstage/backend-plugin-api';
 +  import { AzureDevOpsAnnotatorProcessor } from '@backstage/plugin-azure-devops-backend';
 

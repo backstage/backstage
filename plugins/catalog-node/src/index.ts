@@ -21,5 +21,7 @@
  */
 
 export * from './api';
+export * from './catalogService';
 export * from './conversion';
+export * from './extensions';
 export * from './processing';

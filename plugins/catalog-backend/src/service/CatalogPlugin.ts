@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createBackendPlugin,
   coreServices,
@@ -29,10 +30,10 @@ import {
 import {
   CatalogProcessor,
   EntityProvider,
+  PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { PlaceholderResolver } from '../modules';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -107,8 +108,8 @@ class CatalogPermissionExtensionPointImpl
 }
 
 /**
- * Catalog plugin
- * @alpha
+ * Catalog backend plugin
+ * @public
  */
 export const catalogPlugin = createBackendPlugin({
   pluginId: 'catalog',

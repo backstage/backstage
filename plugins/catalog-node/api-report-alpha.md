@@ -15,16 +15,16 @@ import { PlaceholderResolver } from '@backstage/plugin-catalog-node';
 import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export interface CatalogAnalysisExtensionPoint {
   // (undocumented)
   addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void;
 }
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const catalogAnalysisExtensionPoint: ExtensionPoint<CatalogAnalysisExtensionPoint>;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export interface CatalogPermissionExtensionPoint {
   // (undocumented)
   addPermissionRules(
@@ -34,15 +34,15 @@ export interface CatalogPermissionExtensionPoint {
   ): void;
 }
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const catalogPermissionExtensionPoint: ExtensionPoint<CatalogPermissionExtensionPoint>;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export interface CatalogProcessingExtensionPoint {
   // (undocumented)
   addEntityProvider(
@@ -56,10 +56,10 @@ export interface CatalogProcessingExtensionPoint {
   ): void;
 }
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const catalogProcessingExtensionPoint: ExtensionPoint<CatalogProcessingExtensionPoint>;
 
-// @alpha
+// @alpha @deprecated (undocumented)
 export const catalogServiceRef: ServiceRef<CatalogApi, 'plugin'>;
 
 // (No @packageDocumentation comment for this package)

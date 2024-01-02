@@ -6,17 +6,71 @@
 /// <reference types="node" />
 
 import { AnalyzeLocationExistingEntity } from '@backstage/plugin-catalog-common';
+import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogProcessor as CatalogProcessor_2 } from '@backstage/plugin-catalog-node';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { EntitiesSearchFilter as EntitiesSearchFilter_2 } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
+import { EntityProvider as EntityProvider_2 } from '@backstage/plugin-catalog-node';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { PlaceholderResolver as PlaceholderResolver_2 } from '@backstage/plugin-catalog-node';
+import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export type AnalyzeOptions = {
   url: string;
   catalogFilename?: string;
 };
+
+// @public (undocumented)
+export interface CatalogAnalysisExtensionPoint {
+  // (undocumented)
+  addLocationAnalyzer(analyzer: ScmLocationAnalyzer_2): void;
+}
+
+// @public (undocumented)
+export const catalogAnalysisExtensionPoint: ExtensionPoint<CatalogAnalysisExtensionPoint>;
+
+// @public (undocumented)
+export interface CatalogPermissionExtensionPoint {
+  // (undocumented)
+  addPermissionRules(
+    ...rules: Array<
+      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
+    >
+  ): void;
+}
+
+// @public (undocumented)
+export const catalogPermissionExtensionPoint: ExtensionPoint<CatalogPermissionExtensionPoint>;
+
+// @public (undocumented)
+export type CatalogPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<Entity, EntitiesSearchFilter_2, 'catalog-entity', TParams>;
+
+// @public (undocumented)
+export interface CatalogProcessingExtensionPoint {
+  // (undocumented)
+  addEntityProvider(
+    ...providers: Array<EntityProvider_2 | Array<EntityProvider_2>>
+  ): void;
+  // (undocumented)
+  addPlaceholderResolver(key: string, resolver: PlaceholderResolver_2): void;
+  // (undocumented)
+  addProcessor(
+    ...processors: Array<CatalogProcessor_2 | Array<CatalogProcessor_2>>
+  ): void;
+}
+
+// @public (undocumented)
+export const catalogProcessingExtensionPoint: ExtensionPoint<CatalogProcessingExtensionPoint>;
 
 // @public (undocumented)
 export type CatalogProcessor = {
@@ -98,6 +152,9 @@ export type CatalogProcessorResult =
   | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult
   | CatalogProcessorRefreshKeysResult;
+
+// @public
+export const catalogServiceRef: ServiceRef<CatalogApi, 'plugin'>;
 
 // @public
 export type DeferredEntity = {

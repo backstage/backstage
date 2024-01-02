@@ -74,7 +74,7 @@ export type CatalogPermissionRule<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
-// @alpha
+// @alpha @deprecated (undocumented)
 const catalogPlugin: () => BackendFeature;
 export default catalogPlugin;
 

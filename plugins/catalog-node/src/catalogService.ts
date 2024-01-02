@@ -23,7 +23,7 @@ import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 
 /**
  * The catalogService provides the catalog API.
- * @alpha
+ * @public
  */
 export const catalogServiceRef = createServiceRef<CatalogApi>({
   id: 'catalog-client',
