@@ -1,5 +1,17 @@
 # @backstage/repo-tools
 
+## 0.5.2-next.1
+
+### Patch Changes
+
+- 7acbb5a: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/cli-node@0.2.2-next.0
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+
 ## 0.5.2-next.0
 
 ### Patch Changes

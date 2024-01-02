@@ -1,5 +1,18 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/frontend-plugin-api@0.4.1-next.1
+  - @backstage/plugin-home-react@0.1.7-next.1
+  - @backstage/plugin-search-react@1.7.5-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.9
+
 ## 0.1.24-next.0
 
 ### Patch Changes
