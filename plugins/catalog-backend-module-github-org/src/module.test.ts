@@ -17,7 +17,7 @@
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { Duration } from 'luxon';
 import { catalogModuleGithubOrgEntityProvider } from './module';
 

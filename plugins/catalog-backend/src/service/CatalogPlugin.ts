@@ -26,7 +26,7 @@ import {
   catalogProcessingExtensionPoint,
   CatalogPermissionExtensionPoint,
   catalogPermissionExtensionPoint,
-} from '@backstage/plugin-catalog-node/alpha';
+} from '@backstage/plugin-catalog-node';
 import {
   CatalogProcessor,
   EntityProvider,

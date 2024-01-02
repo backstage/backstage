@@ -25,7 +25,7 @@ import {
   createServiceRef,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 import { TodoReader, todoReaderServiceRef } from '../lib';
 import { ListTodosRequest, ListTodosResponse, TodoService } from './types';

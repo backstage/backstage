@@ -244,7 +244,7 @@ A basic installation of the catalog plugin looks as follows.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
@@ -269,7 +269,7 @@ For `AwsS3DiscoveryProcessor`, first migrate to `AwsS3EntityProvider`.
 To migrate `AwsS3EntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-aws` module.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-catalog-backend-module-aws/alpha'));
 /* highlight-add-end */
@@ -298,7 +298,7 @@ For `AzureDevOpsDiscoveryProcessor`, first migrate to `AzureDevOpsEntityProvider
 To migrate `AzureDevOpsEntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-azure` module.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-catalog-backend-module-azure/alpha'));
 /* highlight-add-end */
@@ -332,7 +332,7 @@ For `BitbucketDiscoveryProcessor`, migrate to `BitbucketCloudEntityProvider` or 
 To migrate `BitbucketCloudEntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-bitbucket-cloud` module.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(
   import('@backstage/plugin-catalog-backend-module-bitbucket-cloud/alpha'),
@@ -359,7 +359,7 @@ catalog:
 To migrate `BitbucketServerEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-bitbucket-server`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(
   import('@backstage/plugin-catalog-backend-module-bitbucket-server/alpha'),
@@ -388,7 +388,7 @@ catalog:
 To migrate `GkeEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-gcp`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-catalog-backend-module-gcp'));
 /* highlight-add-end */
@@ -401,7 +401,7 @@ Configuration in app-config.yaml remains the same.
 To migrate `GerritEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-gerrit`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-catalog-backend-module-gerrit/alpha'));
 /* highlight-add-end */
@@ -430,7 +430,7 @@ For `GithubDiscoveryProcessor`, `GithubMultiOrgReaderProcessor` and `GithubOrgRe
 To migrate `GithubEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-catalog-backend-module-github/alpha'));
 /* highlight-add-end */
@@ -455,7 +455,7 @@ catalog:
 To migrate `GithubMultiOrgEntityProvider` and `GithubOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github-org`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 /* highlight-add-end */
@@ -514,7 +514,7 @@ For `MicrosoftGraphOrgReaderProcessor`, first migrate to `MicrosoftGraphOrgEntit
 To migrate `MicrosoftGraphOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-msgraph`.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-catalog-backend-module-msgraph/alpha'));
 /* highlight-add-end */
@@ -603,7 +603,7 @@ const catalogModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );

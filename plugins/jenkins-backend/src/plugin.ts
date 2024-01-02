@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DefaultJenkinsInfoProvider } from './service/jenkinsInfoProvider';
 import { createRouter } from './service/router';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 /**
  * Jenkins backend plugin

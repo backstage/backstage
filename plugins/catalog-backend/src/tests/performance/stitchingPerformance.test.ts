@@ -24,7 +24,7 @@ import {
   startTestBackend,
   TestDatabases,
 } from '@backstage/backend-test-utils';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import {
@@ -180,7 +180,7 @@ describePerformanceTest('stitchingPerformance', () => {
 
       const backend = await startTestBackend({
         features: [
-          import('@backstage/plugin-catalog-backend/alpha'),
+          import('@backstage/plugin-catalog-backend'),
           mockServices.rootConfig.factory({ data: config }),
           createServiceFactory({
             service: coreServices.database,
@@ -237,7 +237,7 @@ describePerformanceTest('stitchingPerformance', () => {
 
       const backend = await startTestBackend({
         features: [
-          import('@backstage/plugin-catalog-backend/alpha'),
+          import('@backstage/plugin-catalog-backend'),
           mockServices.rootConfig.factory({ data: config }),
           createServiceFactory({
             service: coreServices.database,

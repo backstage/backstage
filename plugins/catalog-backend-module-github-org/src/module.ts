@@ -30,7 +30,7 @@ import {
   TeamTransformer,
   UserTransformer,
 } from '@backstage/plugin-catalog-backend-module-github';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 
 /**
  * Interface for {@link githubOrgEntityProviderTransformsExtensionPoint}.

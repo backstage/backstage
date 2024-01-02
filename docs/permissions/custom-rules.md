@@ -12,7 +12,7 @@ Plugins should export a rule factory that provides type-safety that ensures comp
 
 ```typescript title="packages/backend/src/customPermissionRules/isInSystem.ts"
 import type { Entity } from '@backstage/catalog-model';
-import { createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
+import { createCatalogPermissionRule } from '@backstage/plugin-catalog-backend';
 import { createConditionFactory } from '@backstage/plugin-permission-node';
 import { z } from 'zod';
 

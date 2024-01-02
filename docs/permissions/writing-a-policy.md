@@ -53,7 +53,7 @@ import {
 import {
   catalogConditions,
   createCatalogConditionalDecision,
-} from '@backstage/plugin-catalog-backend/alpha';
+} from '@backstage/plugin-catalog-backend';
 import {
   catalogEntityDeletePermission,
 } from '@backstage/plugin-catalog-common/alpha';
@@ -115,7 +115,7 @@ import {
 import {
   catalogConditions,
   createCatalogConditionalDecision,
-} from '@backstage/plugin-catalog-backend/alpha';
+} from '@backstage/plugin-catalog-backend';
 /* highlight-remove-start */
 import {
   catalogEntityDeletePermission,

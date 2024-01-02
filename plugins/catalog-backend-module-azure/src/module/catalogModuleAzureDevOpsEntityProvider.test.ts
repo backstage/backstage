@@ -16,7 +16,7 @@
 
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { Duration } from 'luxon';
 import { catalogModuleAzureDevOpsEntityProvider } from './catalogModuleAzureDevOpsEntityProvider';
 import { AzureDevOpsEntityProvider } from '../providers';

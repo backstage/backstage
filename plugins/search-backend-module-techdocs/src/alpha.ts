@@ -26,7 +26,7 @@ import {
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 import { TechDocsCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-techdocs';

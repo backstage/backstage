@@ -62,7 +62,7 @@ async function main() {
       factory: () => new ConfigReader(config),
     }),
   );
-  backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+  backend.add(import('@backstage/plugin-catalog-backend'));
   backend.add(catalogModuleIncrementalIngestionEntityProvider());
   backend.add(
     createBackendModule({

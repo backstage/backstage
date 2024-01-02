@@ -19,7 +19,7 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
 import {

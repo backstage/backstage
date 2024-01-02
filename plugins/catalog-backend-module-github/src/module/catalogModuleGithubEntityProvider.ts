@@ -19,7 +19,7 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { GithubEntityProvider } from '../providers/GithubEntityProvider';
 
 /**
