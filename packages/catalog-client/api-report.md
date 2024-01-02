@@ -51,7 +51,7 @@ export interface CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<GetEntityFacetsResponse>;
   getLocationByEntity(
-    entityRef: CompoundEntityRef,
+    entityRef: string | CompoundEntityRef,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   getLocationById(
@@ -125,7 +125,7 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<GetEntityFacetsResponse>;
   getLocationByEntity(
-    entityRef: CompoundEntityRef,
+    entityRef: CompoundEntityRef | string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   getLocationById(
