@@ -29,7 +29,7 @@ import {
   Theme,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
 import DescriptionIcon from '@material-ui/icons/Description';
@@ -38,7 +38,6 @@ import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
-import { useSignalApi } from '@backstage/plugin-signals-react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -73,17 +72,7 @@ const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
 /** @public */
 export const InfoContent = () => {
   const classes = useStyles();
-  const [resources, setResources] = useState<string | undefined>(undefined);
   const { about, loading, error } = useInfo();
-  useSignalApi('devtools:resources', message => {
-    setResources(message.resources as string);
-  });
-
-  useEffect(() => {
-    if (!loading && !error && about) {
-      setResources(about.resourceUtilization);
-    }
-  }, [about, loading, error]);
 
   if (loading) {
     return <Progress />;
@@ -113,7 +102,7 @@ export const InfoContent = () => {
             </ListItemAvatar>
             <ListItemText
               primary="Resource utilization"
-              secondary={resources}
+              secondary={about?.resourceUtilization}
             />
           </ListItem>
           <ListItem>

@@ -62,7 +62,10 @@ export class SignalClient implements SignalApi {
     private reconnectTimeout: number,
   ) {}
 
-  subscribe(topic: string, onMessage: (message: JsonObject) => void): string {
+  subscribe(
+    topic: string,
+    onMessage: (message: JsonObject) => void,
+  ): { unsubscribe: () => void } {
     const subscriptionId = uuid();
     const exists = [...this.subscriptions.values()].find(
       sub => sub.topic === topic,
@@ -79,30 +82,30 @@ export class SignalClient implements SignalApi {
       .catch(() => {
         this.reconnect();
       });
-    return subscriptionId;
-  }
 
-  unsubscribe(subscription: string): void {
-    const sub = this.subscriptions.get(subscription);
-    if (!sub) {
-      return;
-    }
-    const topic = sub.topic;
-    this.subscriptions.delete(subscription);
-    const exists = [...this.subscriptions.values()].find(
-      s => s.topic === topic,
-    );
-    // If there are subscriptions still listening to this topic, do not
-    // unsubscribe from the server
-    if (!exists) {
-      this.send({ action: 'unsubscribe', topic: sub.topic });
-    }
+    const unsubscribe = () => {
+      const sub = this.subscriptions.get(subscriptionId);
+      if (!sub) {
+        return;
+      }
+      this.subscriptions.delete(subscriptionId);
+      const multipleExists = [...this.subscriptions.values()].find(
+        s => s.topic === topic,
+      );
+      // If there are subscriptions still listening to this topic, do not
+      // unsubscribe from the server
+      if (!multipleExists) {
+        this.send({ action: 'unsubscribe', topic: sub.topic });
+      }
 
-    // If there are no subscriptions, close the connection
-    if (this.subscriptions.size === 0) {
-      this.ws?.close(WS_CLOSE_NORMAL);
-      this.ws = null;
-    }
+      // If there are no subscriptions, close the connection
+      if (this.subscriptions.size === 0) {
+        this.ws?.close(WS_CLOSE_NORMAL);
+        this.ws = null;
+      }
+    };
+
+    return { unsubscribe };
   }
 
   private send(data?: JsonObject): void {

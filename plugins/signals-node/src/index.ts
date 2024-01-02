@@ -15,5 +15,6 @@
  */
 
 export * from './lib';
+export * from './DefaultSignalService';
 export * from './SignalService';
 export * from './types';

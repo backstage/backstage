@@ -5,7 +5,7 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import express from 'express';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { SignalService } from '@backstage/plugin-signals-node';
 
 // @public (undocumented)
@@ -14,7 +14,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   // (undocumented)
   service: SignalService;
 }

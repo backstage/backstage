@@ -56,13 +56,9 @@ all subscribers, you can use `*` as `to` parameter.
 ```ts
 // Periodic sending example
 setInterval(async () => {
-  // You can use hasSubscribers to check if the message will be sent to anyone
-  // in case you need some heavy processing before that
-  if (signalService.hasSubscribers('plugin:topic')) {
-    await signalService.publish('*', 'plugin:topic', {
-      message: 'hello world',
-    });
-  }
+  await signalService.publish('*', 'plugin:topic', {
+    message: 'hello world',
+  });
 }, 5000);
 ```
 

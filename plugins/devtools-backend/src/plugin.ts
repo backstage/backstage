@@ -20,7 +20,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
-import { signalService } from '@backstage/plugin-signals-node';
 
 /**
  * DevTools backend plugin
@@ -36,15 +35,13 @@ export const devtoolsPlugin = createBackendPlugin({
         logger: coreServices.logger,
         permissions: coreServices.permissions,
         httpRouter: coreServices.httpRouter,
-        signals: signalService,
       },
-      async init({ config, logger, permissions, httpRouter, signals }) {
+      async init({ config, logger, permissions, httpRouter }) {
         httpRouter.use(
           await createRouter({
             config,
             logger: loggerToWinstonLogger(logger),
             permissions,
-            signalService: signals,
           }),
         );
       },

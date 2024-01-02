@@ -73,7 +73,7 @@ import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { metrics } from '@opentelemetry/api';
-import { SignalService } from '@backstage/plugin-signals-node';
+import { DefaultSignalService } from '@backstage/plugin-signals-node';
 
 // Expose opentelemetry metrics using a Prometheus exporter on
 // http://localhost:9464/metrics . See prometheus.yml in packages/backend for
@@ -100,7 +100,7 @@ function makeCreateEnv(config: Config) {
   });
 
   const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
-  const signalService = SignalService.create({
+  const signalService = DefaultSignalService.create({
     logger: root,
     eventBroker,
     identity,

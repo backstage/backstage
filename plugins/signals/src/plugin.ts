@@ -22,8 +22,6 @@ import {
 import { signalApiRef } from '@backstage/plugin-signals-react';
 import { SignalClient } from './api/SignalClient';
 
-let clientInstance: SignalClient | undefined = undefined;
-
 /** @public */
 export const signalsPlugin = createPlugin({
   id: 'signals',
@@ -35,13 +33,10 @@ export const signalsPlugin = createPlugin({
         discoveryApi: discoveryApiRef,
       },
       factory: ({ identity, discoveryApi }) => {
-        if (!clientInstance) {
-          clientInstance = SignalClient.create({
-            identity,
-            discoveryApi,
-          });
-        }
-        return clientInstance;
+        return SignalClient.create({
+          identity,
+          discoveryApi,
+        });
       },
     }),
   ],

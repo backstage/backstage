@@ -37,7 +37,6 @@
     "@backstage/types": "workspace:^",
     "express": "^4.17.1",
     "uuid": "^8.0.0",
-    "winston": "^3.2.1",
     "ws": "^8.14.2"
   }
 }

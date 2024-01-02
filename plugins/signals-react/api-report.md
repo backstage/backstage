@@ -8,18 +8,21 @@ import { JsonObject } from '@backstage/types';
 
 // @public (undocumented)
 export type SignalApi = {
-  subscribe(topic: string, onMessage: (message: JsonObject) => void): string;
-  unsubscribe(subscription: string): void;
+  subscribe(
+    topic: string,
+    onMessage: (message: JsonObject) => void,
+  ): {
+    unsubscribe: () => void;
+  };
 };
 
 // @public (undocumented)
 export const signalApiRef: ApiRef<SignalApi>;
 
 // @public (undocumented)
-export const useSignalApi: (
-  topic: string,
-  onMessage: (message: JsonObject) => void,
-) => void;
+export const useSignal: (topic: string) => {
+  lastSignal: JsonObject | null;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

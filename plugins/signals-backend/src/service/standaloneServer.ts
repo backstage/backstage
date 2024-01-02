@@ -21,7 +21,7 @@ import {
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
-import { SignalService } from '@backstage/plugin-signals-node';
+import { DefaultSignalService } from '@backstage/plugin-signals-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 
 export interface ServerOptions {
@@ -43,7 +43,7 @@ export async function startStandaloneServer(
     issuer: await discovery.getExternalBaseUrl('auth'),
   });
 
-  const signals = SignalService.create({
+  const signals = DefaultSignalService.create({
     logger: logger,
     identity,
   });

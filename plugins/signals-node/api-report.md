@@ -7,13 +7,25 @@
 
 import { Duplex } from 'stream';
 import { EventBroker } from '@backstage/plugin-events-node';
-import { EventParams } from '@backstage/plugin-events-node';
-import { EventSubscriber } from '@backstage/plugin-events-node';
+import http from 'http';
+import https from 'https';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { IncomingMessage } from 'http';
 import { JsonObject } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+
+// @public (undocumented)
+export class DefaultSignalService implements SignalService {
+  // (undocumented)
+  static create(options: ServiceOptions): DefaultSignalService;
+  handleUpgrade(options: SignalServiceUpgradeOptions): Promise<void>;
+  publish(
+    to: string | string[],
+    topic: string,
+    message: JsonObject,
+  ): Promise<void>;
+}
 
 // @public (undocumented)
 export type ServiceOptions = {
@@ -30,28 +42,25 @@ export type SignalEventBrokerPayload = {
 };
 
 // @public (undocumented)
-export class SignalService implements EventSubscriber {
-  // (undocumented)
-  static create(options: ServiceOptions): SignalService;
-  handleUpgrade: (
-    req: IncomingMessage,
-    socket: Duplex,
-    head: Buffer,
-  ) => Promise<void>;
-  hasSubscribers(topic: string): boolean;
-  // (undocumented)
-  onEvent(params: EventParams<SignalEventBrokerPayload>): Promise<void>;
+export type SignalService = {
   publish(
     to: string | string[],
     topic: string,
     message: JsonObject,
   ): Promise<void>;
-  // (undocumented)
-  supportsEventTopics(): string[];
-}
+  handleUpgrade(options: SignalServiceUpgradeOptions): Promise<void>;
+};
 
 // @public (undocumented)
 export const signalService: ServiceRef<SignalService, 'plugin'>;
+
+// @public (undocumented)
+export type SignalServiceUpgradeOptions = {
+  server: https.Server | http.Server;
+  request: IncomingMessage;
+  socket: Duplex;
+  head: Buffer;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

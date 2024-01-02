@@ -18,6 +18,7 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
+import { DefaultSignalService } from './DefaultSignalService';
 import { SignalService } from './SignalService';
 
 /** @public */
@@ -33,7 +34,7 @@ export const signalService = createServiceRef<SignalService>({
         // TODO: EventBroker
       },
       factory({ logger, identity }) {
-        return SignalService.create({ identity, logger });
+        return DefaultSignalService.create({ identity, logger });
       },
     }),
 });

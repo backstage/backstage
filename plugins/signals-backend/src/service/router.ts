@@ -16,14 +16,14 @@
 import { errorHandler } from '@backstage/backend-common';
 import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { SignalService } from '@backstage/plugin-signals-node';
 import * as https from 'https';
 import http from 'http';
 
 /** @public */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   service: SignalService;
 }
 
@@ -48,9 +48,9 @@ export async function createRouter(
     if (!subscribed) {
       subscribed = true;
       server.on('upgrade', async (request, socket, head) => {
-        // Only upgrade if request to root of the signals plugin
+        // TODO: Find a way to make this more generic
         if (request.url === '/api/signals') {
-          await service.handleUpgrade(request, socket, head);
+          await service.handleUpgrade({ server, request, socket, head });
         }
       });
     }

@@ -44,7 +44,7 @@ describe('SignalsClient', () => {
   it('should handle single subscription correctly', async () => {
     const messageMock = jest.fn();
     const client = SignalClient.create({ discoveryApi, identity });
-    const sub = client.subscribe('topic', messageMock);
+    const { unsubscribe } = client.subscribe('topic', messageMock);
     await server.connected;
 
     await expect(server).toReceiveMessage({
@@ -54,7 +54,8 @@ describe('SignalsClient', () => {
     server.send({ topic: 'topic', message: { hello: 'world' } });
     expect(messageMock).toHaveBeenCalledWith({ hello: 'world' });
 
-    client.unsubscribe(sub);
+    await unsubscribe();
+
     await expect(server).toReceiveMessage({
       action: 'unsubscribe',
       topic: 'topic',
@@ -66,8 +67,14 @@ describe('SignalsClient', () => {
     const messageMock2 = jest.fn();
     const client1 = SignalClient.create({ discoveryApi, identity });
     const client2 = SignalClient.create({ discoveryApi, identity });
-    const sub1 = client1.subscribe('topic', messageMock1);
-    const sub2 = client2.subscribe('topic', messageMock2);
+    const { unsubscribe: unsubscribe1 } = client1.subscribe(
+      'topic',
+      messageMock1,
+    );
+    const { unsubscribe: unsubscribe2 } = client2.subscribe(
+      'topic',
+      messageMock2,
+    );
 
     await server.connected;
 
@@ -79,13 +86,13 @@ describe('SignalsClient', () => {
     expect(messageMock1).toHaveBeenCalledWith({ hello: 'world' });
     expect(messageMock2).toHaveBeenCalledWith({ hello: 'world' });
 
-    client1.unsubscribe(sub1);
+    await unsubscribe1();
     await expect(server).not.toReceiveMessage({
       action: 'unsubscribe',
       topic: 'topic',
     });
 
-    client2.unsubscribe(sub2);
+    await unsubscribe2();
     await expect(server).toReceiveMessage({
       action: 'unsubscribe',
       topic: 'topic',

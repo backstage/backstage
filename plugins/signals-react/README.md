@@ -20,15 +20,12 @@ of connections to the backend and also to allow multiple subscriptions using the
 Example of using the hook:
 
 ```ts
-import { useSignalApi } from '@backstage/plugin-signals-react';
+import { useSignal } from '@backstage/plugin-signals-react';
 
-const [message, setMessage] = useState<JsonObject | undefined>(undefined);
-useSignalApi('myplugin:topic', message => {
-  setMessage(message);
-});
+const { lastSignal } = useSignal('myplugin:topic');
 ```
 
-Whenever backend publishes new message to the topic `myplugin:topic`, the state of this component is changed.
+Whenever backend publishes new message to the topic `myplugin:topic`, the lastSignal is changed.
 
 ## Using API directly
 
@@ -39,9 +36,12 @@ subscriptions.
 import { signalsApiRef } from '@backstage/plugin-signals-react';
 
 const signals = useApi(signalsApiRef);
-signals.subscribe('myplugin:topic', (message: JsonObject) => {
-  console.log(message);
-});
+const { unsubscribe } = signals.subscribe(
+  'myplugin:topic',
+  (message: JsonObject) => {
+    console.log(message);
+  },
+);
 // Remember to unsubscribe
-signals.unsubscribe('myplugin:topic');
+unsubscribe();
 ```
