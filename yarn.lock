@@ -3988,7 +3988,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@^1.3.0, @backstage/core-plugin-api@^1.5.0, @backstage/core-plugin-api@^1.8.0, @backstage/core-plugin-api@^1.8.1, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
+"@backstage/core-plugin-api@npm:^1.3.0, @backstage/core-plugin-api@npm:^1.5.0, @backstage/core-plugin-api@npm:^1.8.0, @backstage/core-plugin-api@npm:^1.8.1":
+  version: 1.8.1
+  resolution: "@backstage/core-plugin-api@npm:1.8.1"
+  dependencies:
+    "@backstage/config": ^1.1.1
+    "@backstage/types": ^1.1.1
+    "@backstage/version-bridge": ^1.0.7
+    "@types/react": ^16.13.1 || ^17.0.0
+    history: ^5.0.0
+    i18next: ^22.4.15
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: 8fa85beb719f65b2dc2ab69df7e7354d280ce63ca163ce820dec43ac7ffe95ce1c3ae1175774f034ea3787cb997e0bc630f42b644b166b7f9929f6166e7c2607
+  languageName: node
+  linkType: hard
+
+"@backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-plugin-api@workspace:packages/core-plugin-api"
   dependencies:
@@ -4216,7 +4234,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-react@^1.1.21, @backstage/integration-react@^1.1.22, @backstage/integration-react@workspace:^, @backstage/integration-react@workspace:packages/integration-react":
+"@backstage/integration-react@npm:^1.1.21, @backstage/integration-react@npm:^1.1.22":
+  version: 1.1.22
+  resolution: "@backstage/integration-react@npm:1.1.22"
+  dependencies:
+    "@backstage/config": ^1.1.1
+    "@backstage/core-plugin-api": ^1.8.1
+    "@backstage/integration": ^1.8.0
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: 76fb82f1f947574259d393406bdc30919636e451dbbab357b640f70b2b8b869564fad10da74088f12b497996b84b8e3f55ddea355a9ee61c27f549a2805773a5
+  languageName: node
+  linkType: hard
+
+"@backstage/integration-react@workspace:^, @backstage/integration-react@workspace:packages/integration-react":
   version: 0.0.0-use.local
   resolution: "@backstage/integration-react@workspace:packages/integration-react"
   dependencies:
@@ -4240,7 +4276,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration@workspace:^, @backstage/integration@workspace:packages/integration":
+"@backstage/integration@^1.8.0, @backstage/integration@workspace:^, @backstage/integration@workspace:packages/integration":
   version: 0.0.0-use.local
   resolution: "@backstage/integration@workspace:packages/integration"
   dependencies:
