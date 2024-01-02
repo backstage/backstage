@@ -34,7 +34,7 @@ import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
 import classnames from 'classnames';
-import { Location } from 'history';
+import type { Location } from 'history';
 import React, {
   ComponentProps,
   ComponentType,

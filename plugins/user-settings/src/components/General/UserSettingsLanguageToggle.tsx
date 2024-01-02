@@ -19,24 +19,16 @@ import {
   useTranslationRef,
   appLanguageApiRef,
 } from '@backstage/core-plugin-api/alpha';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Tooltip,
   makeStyles,
 } from '@material-ui/core';
 import { userSettingsTranslationRef } from '../../translation';
 import { useApi } from '@backstage/core-plugin-api';
 import useObservable from 'react-use/lib/useObservable';
-
-type TooltipToggleButtonProps = {
-  children: JSX.Element;
-  title: string;
-  value: string;
-};
+import { Select } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -71,21 +63,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-// ToggleButtonGroup uses React.children.map instead of context
-// so wrapping with Tooltip breaks ToggleButton functionality.
-const TooltipToggleButton = ({
-  children,
-  title,
-  value,
-  ...props
-}: TooltipToggleButtonProps) => (
-  <Tooltip placement="top" arrow title={title}>
-    <ToggleButton value={value} {...props}>
-      {children}
-    </ToggleButton>
-  </Tooltip>
-);
-
 /** @public */
 export const UserSettingsLanguageToggle = () => {
   const classes = useStyles();
@@ -104,11 +81,19 @@ export const UserSettingsLanguageToggle = () => {
     return null;
   }
 
-  const handleSetLanguage = (
-    _event: React.MouseEvent<HTMLElement>,
-    newLanguage: string | undefined,
-  ) => {
+  const handleSetLanguage = (newLanguage: string | undefined) => {
     languageApi.setLanguage(newLanguage);
+  };
+
+  const getLanguageDisplayName = (language: string) => {
+    try {
+      const names = new Intl.DisplayNames([language], {
+        type: 'language',
+      });
+      return names.of(language) || language;
+    } catch (err) {
+      return language;
+    }
   };
 
   return (
@@ -122,24 +107,15 @@ export const UserSettingsLanguageToggle = () => {
         secondary={t('languageToggle.description')}
       />
       <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
-        <ToggleButtonGroup
-          exclusive
-          size="small"
-          value={currentLanguage}
-          onChange={handleSetLanguage}
-        >
-          {languages.map(language => {
-            return (
-              <TooltipToggleButton
-                key={language}
-                title={t('languageToggle.select', { language })}
-                value={language}
-              >
-                <>{language}</>
-              </TooltipToggleButton>
-            );
-          })}
-        </ToggleButtonGroup>
+        <Select
+          label=""
+          selected={currentLanguage}
+          items={languages.map(language => ({
+            label: getLanguageDisplayName(language),
+            value: language,
+          }))}
+          onChange={selectedItems => handleSetLanguage(selectedItems as string)}
+        />
       </ListItemSecondaryAction>
     </ListItem>
   );

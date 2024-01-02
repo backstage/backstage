@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Location, Path } from 'history';
+import type { Location, Path } from 'history';
 import { isLocationMatch } from './utils';
 
 describe('isLocationMatching', () => {

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/repo-tools",
   "description": "CLI for Backstage repo tooling ",
-  "version": "0.5.2-next.0",
+  "version": "0.5.2-next.1",
   "publishConfig": {
     "access": "public"
   },
@@ -63,13 +63,12 @@
     "yaml-diff-patch": "^2.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
-    "@types/mock-fs": "^4.13.0",
     "@types/node": "^18.17.8",
-    "@types/prettier": "^2.0.0",
-    "mock-fs": "^5.2.0"
+    "@types/prettier": "^2.0.0"
   },
   "peerDependencies": {
     "@microsoft/api-extractor-model": "*",

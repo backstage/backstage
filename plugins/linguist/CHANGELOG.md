@@ -1,5 +1,17 @@
 # @backstage/plugin-linguist
 
+## 0.1.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/plugin-catalog-react@1.9.3-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-linguist-common@0.1.2
+
 ## 0.1.14-next.0
 
 ### Patch Changes
