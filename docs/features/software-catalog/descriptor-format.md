@@ -782,7 +782,7 @@ Describes the following entity kind:
 
 An API describes an interface that can be exposed by a component. The API can be
 defined in different formats, like [OpenAPI](https://swagger.io/specification/),
-[AsyncAPI](https://www.asyncapi.com/docs/reference/specification/v3.0.0),
+[AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest),
 [GraphQL](https://graphql.org/learn/schema/),
 [gRPC](https://developers.google.com/protocol-buffers), or other formats.
 
@@ -838,7 +838,7 @@ The current set of well-known and common values for this field is:
 - `openapi` - An API definition in YAML or JSON format based on the
   [OpenAPI](https://swagger.io/specification/) version 2 or version 3 spec.
 - `asyncapi` - An API definition based on the
-  [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/v3.0.0) spec.
+  [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest) spec.
 - `graphql` - An API definition based on
   [GraphQL schemas](https://spec.graphql.org/) for consuming
   [GraphQL](https://graphql.org/) based APIs.
