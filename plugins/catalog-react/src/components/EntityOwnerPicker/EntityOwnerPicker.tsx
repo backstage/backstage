@@ -26,6 +26,7 @@ import {
   TextField,
   Typography,
   makeStyles,
+  Tooltip,
 } from '@material-ui/core';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -161,7 +162,10 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
           filterOptions={x => x}
           renderOption={(entity, { selected }) => {
             const isGroup = entity.kind.toLocaleLowerCase('en-US') === 'group';
-
+            const humanizedName = humanizeEntity(
+              entity,
+              humanizeEntityRef(entity, { defaultKind: entity.kind }),
+            );
             return (
               <FormControlLabel
                 control={
@@ -173,18 +177,25 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
                 }
                 onClick={event => event.preventDefault()}
                 label={
-                  <Box display="flex" flexWrap="wrap" alignItems="center">
-                    {isGroup ? (
-                      <GroupIcon fontSize="small" />
-                    ) : (
-                      <PersonIcon fontSize="small" />
-                    )}
-                    &nbsp;
-                    {humanizeEntity(
-                      entity,
-                      humanizeEntityRef(entity, { defaultKind: entity.kind }),
-                    )}
-                  </Box>
+                  <Tooltip title={humanizedName}>
+                    <Box display="flex" flexWrap="wrap" alignItems="center">
+                      {isGroup ? (
+                        <GroupIcon fontSize="small" />
+                      ) : (
+                        <PersonIcon fontSize="small" />
+                      )}
+                      &nbsp;
+                      <Box
+                        style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          width: '11rem',
+                        }}
+                      >
+                        <Typography noWrap>{humanizedName}</Typography>
+                      </Box>
+                    </Box>
+                  </Tooltip>
                 }
               />
             );
