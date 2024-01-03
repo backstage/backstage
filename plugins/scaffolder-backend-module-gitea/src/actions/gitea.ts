@@ -216,6 +216,8 @@ export function createPublishGiteaAction(options: {
         sourcePath,
       } = ctx.input;
 
+      const sleep = (ms: number | undefined) =>
+        new Promise(r => setTimeout(r, ms));
       const { repo, host, owner } = parseRepoUrl(repoUrl, integrations);
 
       const integrationConfig = integrations.gitea.byHost(host);
@@ -268,6 +270,9 @@ export function createPublishGiteaAction(options: {
         commitMessage: generateCommitMessage(config, gitCommitMessage),
         gitAuthorInfo,
       });
+
+      // TODO: As mentioned by Ben lambert, we should poll an endpoint to see if it's ready yet instead of hard coding a sleep
+      await sleep(2000);
 
       const repoContentsUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}/+/refs/${defaultBranch}`;
       ctx.output('remoteUrl', remoteUrl);
