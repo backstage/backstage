@@ -34,7 +34,7 @@ const permissionSchema = z.union([
 ]);
 ```
 
-Adopters of Backstage may want to create an RBAC frontend interface for the permission framework, which would require to work with the `Permission` data type. They would benefit from aligning with the validation function from the permission plugin, and be able to compose additional schemas from it. For example.
+Adopters of Backstage may want to create an RBAC frontend interface for the permission framework, which would require to work with the `Permission` data type. They would benefit from being able to use the validation function from the permission plugin, and being able to compose additional schemas from it. For example.
 
 ```ts
 import { permissionSchema } from '@backstage/permission-node';
