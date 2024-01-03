@@ -33,9 +33,12 @@ Now you can utilize the API from other plugins using the `@backstage/plugin-sign
 import { signalsApiRef } from '@backstage/plugin-signals-react';
 
 const signals = useApi(signalsApiRef);
-signals.subscribe('myplugin:topic', (message: JsonObject) => {
-  console.log(message);
-});
+const { unsubscribe } = signals.subscribe(
+  'myplugin:topic',
+  (message: JsonObject) => {
+    console.log(message);
+  },
+);
 // Remember to unsubscribe
-signals.unsubscribe('myplugin:topic');
+unsubscribe();
 ```
