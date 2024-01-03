@@ -38,7 +38,7 @@ export const createBitbucketPipelinesRunAction = (options: {
     token?: string;
   }>({
     id,
-    description: '',
+    description: 'Run a bitbucket cloud pipeline',
     examples,
     schema: {
       input: {
