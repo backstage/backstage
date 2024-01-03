@@ -20881,14 +20881,14 @@ __metadata:
   linkType: hard
 
 "aws-sdk-client-mock-jest@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "aws-sdk-client-mock-jest@npm:3.0.0"
+  version: 3.0.1
+  resolution: "aws-sdk-client-mock-jest@npm:3.0.1"
   dependencies:
     "@types/jest": ^28.1.3
     tslib: ^2.1.0
   peerDependencies:
-    aws-sdk-client-mock: 3.0.0
-  checksum: 83f49e1d048bf32bb88b6a2ac8b3d14761a14dd699adc7c0e4bd9397b4771dd3e23779ec180bf63c03be7e85b2322840373a4c4d9840722ab15d409d6f4e8bd1
+    aws-sdk-client-mock: 3.0.1
+  checksum: c5c72ae63c9d3862636b833c66ebc708a1c170ba1159508f9a1e56c8e71ba82f7f85a00e68148b72cc699ab3e7ce6945d29bfd23151ae62c3f78133d56585ddd
   languageName: node
   linkType: hard
 
