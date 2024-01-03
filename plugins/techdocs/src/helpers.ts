@@ -24,3 +24,10 @@ export function toLowerMaybe(str: string, config: Config) {
     ? str
     : str.toLocaleLowerCase('en-US');
 }
+
+export const customOrGenericColor = (
+  customColor: string | undefined,
+  genericColor: string,
+): string => {
+  return customColor ?? genericColor;
+};

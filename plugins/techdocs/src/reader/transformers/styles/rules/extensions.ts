@@ -15,6 +15,7 @@
  */
 
 import { RuleOptions } from './types';
+import { customOrGenericColor } from '../../../../helpers';
 
 export default ({ theme }: RuleOptions) => `
 /*==================  Extensions  ==================*/
@@ -25,7 +26,10 @@ export default ({ theme }: RuleOptions) => `
 }
 
 .highlight .nx {
-  color: ${theme.palette.type === 'dark' ? '#ff53a3' : '#ec407a'};
+  color: ${customOrGenericColor(
+    theme.palette.mdCustomColor?.codeFgColor,
+    theme.palette.type === 'dark' ? '#ff53a3' : '#ec407a',
+  )};
 }
 
 /* CODE HILITE */

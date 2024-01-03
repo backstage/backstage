@@ -16,13 +16,7 @@
 
 import { alpha, lighten } from '@material-ui/core';
 import { RuleOptions } from './types';
-
-const mdCustomOrGenericColor = (
-  mdCustomColor: string | undefined,
-  genericColor: string,
-) => {
-  return mdCustomColor ?? genericColor;
-};
+import { customOrGenericColor } from '../../../../helpers';
 
 export default ({ theme }: RuleOptions) => `
 /*==================  Variables  ==================*/
@@ -105,71 +99,71 @@ export default ({ theme }: RuleOptions) => `
 
 :host > * {
   /* CODE */
-  --md-code-fg-color: ${mdCustomOrGenericColor(
+  --md-code-fg-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeFgColor,
     theme.palette.text.primary,
   )};
-  --md-code-bg-color: ${mdCustomOrGenericColor(
+  --md-code-bg-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeBgColor,
     theme.palette.background.paper,
   )};
-  --md-code-hl-color: ${mdCustomOrGenericColor(
+  --md-code-hl-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlColor,
     alpha(theme.palette.warning.main, 0.5),
   )};
-  --md-code-hl-keyword-color: ${mdCustomOrGenericColor(
+  --md-code-hl-keyword-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlKeywordColor,
     theme.palette.type === 'dark'
       ? theme.palette.primary.light
       : theme.palette.primary.dark,
   )};
-  --md-code-hl-function-color: ${mdCustomOrGenericColor(
+  --md-code-hl-function-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlFunctionColor,
     theme.palette.type === 'dark'
       ? theme.palette.secondary.light
       : theme.palette.secondary.dark,
   )};
-  --md-code-hl-string-color: ${mdCustomOrGenericColor(
+  --md-code-hl-string-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlStringColor,
     theme.palette.type === 'dark'
       ? theme.palette.success.light
       : theme.palette.success.dark,
   )};
-  --md-code-hl-number-color: ${mdCustomOrGenericColor(
+  --md-code-hl-number-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlNumberColor,
     theme.palette.type === 'dark'
       ? theme.palette.error.light
       : theme.palette.error.dark,
   )};
-  --md-code-hl-constant-color: ${mdCustomOrGenericColor(
+  --md-code-hl-constant-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlConstantColor,
     'var(--md-code-hl-function-color)',
   )};
-  --md-code-hl-special-color: ${mdCustomOrGenericColor(
+  --md-code-hl-special-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlSpecialColor,
     'var(--md-code-hl-function-color)',
   )};
-  --md-code-hl-name-color: ${mdCustomOrGenericColor(
+  --md-code-hl-name-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlNameColor,
     'var(--md-code-fg-color)',
   )};
-  --md-code-hl-comment-color: ${mdCustomOrGenericColor(
+  --md-code-hl-comment-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlCommentColor,
     'var(--md-default-fg-color--light)',
   )};
-  --md-code-hl-generic-color: ${mdCustomOrGenericColor(
+  --md-code-hl-generic-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlGenericColor,
     'var(--md-default-fg-color--light)',
   )};
-  --md-code-hl-variable-color: ${mdCustomOrGenericColor(
+  --md-code-hl-variable-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlVariableColor,
     'var(--md-default-fg-color--light)',
   )};
-  --md-code-hl-operator-color: ${mdCustomOrGenericColor(
+  --md-code-hl-operator-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlOperatorColor,
     'var(--md-default-fg-color--light)',
   )};
-  --md-code-hl-punctuation-color: ${mdCustomOrGenericColor(
+  --md-code-hl-punctuation-color: ${customOrGenericColor(
     theme.palette.mdCustomColor?.codeHlPunctuationColor,
     'var(--md-default-fg-color--light)',
   )};
