@@ -34577,8 +34577,8 @@ __metadata:
   linkType: hard
 
 "msw@npm:^2.0.0, msw@npm:^2.0.8":
-  version: 2.0.10
-  resolution: "msw@npm:2.0.10"
+  version: 2.0.11
+  resolution: "msw@npm:2.0.11"
   dependencies:
     "@bundled-es-modules/cookie": ^2.0.0
     "@bundled-es-modules/js-levenshtein": ^2.0.1
@@ -34608,7 +34608,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 1f18c835019a0c7c24280777885a9e8878bba0de3be2e7dcc2362c0850e69b18198fb9774ac1cf39690ca7e82b9e59b318b753f79761a91ce55d6659c2289d61
+  checksum: a87175f53e3b510dfdfb16e11f2b0d399a9859ce1f249a70741045ce6325b3512075878921d4bd30ad6cb0789cd6fc4f9eac5db68ae425777e96ad208285242d
   languageName: node
   linkType: hard
 
