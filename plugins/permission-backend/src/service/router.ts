@@ -47,7 +47,12 @@ import { memoize } from 'lodash';
 import DataLoader from 'dataloader';
 import { Config } from '@backstage/config';
 
-const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
+/**
+ * Permission attributes zod schema
+ *
+ * @public
+ */
+export const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
   action: z
     .union([
       z.literal('create'),
@@ -58,7 +63,12 @@ const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
     .optional(),
 });
 
-const permissionSchema = z.union([
+/**
+ * Permission zod schema
+ *
+ * @public
+ */
+export const permissionSchema = z.union([
   z.object({
     type: z.literal('basic'),
     name: z.string(),

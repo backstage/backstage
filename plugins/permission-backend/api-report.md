@@ -7,11 +7,71 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Logger } from 'winston';
+import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { z } from 'zod';
+
+// @public
+export const attributesSchema: z.ZodSchema<PermissionAttributes>;
 
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
+
+// @public
+export const permissionSchema: z.ZodUnion<
+  [
+    z.ZodObject<
+      {
+        type: z.ZodLiteral<'basic'>;
+        name: z.ZodString;
+        attributes: z.ZodType<
+          PermissionAttributes,
+          z.ZodTypeDef,
+          PermissionAttributes
+        >;
+      },
+      'strip',
+      z.ZodTypeAny,
+      {
+        type: 'basic';
+        name: string;
+        attributes: PermissionAttributes;
+      },
+      {
+        type: 'basic';
+        name: string;
+        attributes: PermissionAttributes;
+      }
+    >,
+    z.ZodObject<
+      {
+        type: z.ZodLiteral<'resource'>;
+        name: z.ZodString;
+        attributes: z.ZodType<
+          PermissionAttributes,
+          z.ZodTypeDef,
+          PermissionAttributes
+        >;
+        resourceType: z.ZodString;
+      },
+      'strip',
+      z.ZodTypeAny,
+      {
+        type: 'resource';
+        name: string;
+        attributes: PermissionAttributes;
+        resourceType: string;
+      },
+      {
+        type: 'resource';
+        name: string;
+        attributes: PermissionAttributes;
+        resourceType: string;
+      }
+    >,
+  ]
+>;
 
 // @public
 export interface RouterOptions {

@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { createRouter } from './router';
+export { createRouter, attributesSchema, permissionSchema } from './router';
 export type { RouterOptions } from './router';
