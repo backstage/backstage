@@ -9,7 +9,7 @@ description: Architecture Decision Record (ADR) for treating Zod as a first clas
 
 Backstage currently uses the [Zod](https://zod.dev) library extensively for creating schemas to validate data types and use these schemas as TypeScript types within a plugin (and sometimes as parameters to public APIs). However, we are currently not exposing these schemas directly as part of plugin public APIs.
 
-Plugins that are working with the data types of other plugin, can benefit from these schemas for performing their own validation and composing more complex types. As an example, the permission framework has the concept of a `Permission` data type, which internally is validated with a Zod schema.
+Plugins that are working with the data types of other plugins, can benefit from these schemas for performing their own validation and composing more complex types. As an example, the permission framework has the concept of a `Permission` data type, which internally is validated with a Zod schema.
 
 ```ts
 const permissionSchema = z.union([
