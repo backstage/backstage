@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "pipeline": {
+    "tsc": {
+      "outputs": ["../../dist-types/plugins/notifications-backend/**"],
+      "dependsOn": ["^tsc"]
+    }
+  }
+}

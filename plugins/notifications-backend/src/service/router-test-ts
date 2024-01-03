@@ -1,0 +1,53 @@
+import { getVoidLogger } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
+import { CatalogClient } from '@backstage/catalog-client';
+
+import express from 'express';
+import * as Knex from 'knex';
+import { MockClient } from 'knex-mock-client';
+//import request from 'supertest';
+
+import { createRouter } from './router';
+
+const db = Knex.knex({ client: MockClient });
+db.client = {
+  config: {
+    connection: {
+      database: 'test-database',
+    },
+  },
+};
+
+describe('createRouter', () => {
+  let app: express.Express;
+
+  beforeAll(async () => {
+    const router = await createRouter({
+      logger: getVoidLogger(),
+      dbConfig: mockServices.rootConfig(),
+      catalogClient: new CatalogClient({
+        discoveryApi: {
+          getBaseUrl: jest
+            .fn()
+            .mockImplementation(async (s: string): Promise<string> => {
+              return s;
+            }),
+        },
+      }),
+    });
+    app = express().use(router);
+  });
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  /* describe('GET /health', () => {
+    it('returns ok', async () => {
+      const response = await request(app).get('/health');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ status: 'ok' });
+    });
+  }); */
+});

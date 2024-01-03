@@ -1,0 +1,66 @@
+{
+  "name": "@backstage/plugin-notifications-frontend",
+  "description": "Frontend part of the notifications providing the Notifications API, Notifications page, left-side menu item and other REACT components.",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "private": true,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "frontend-plugin"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "tsc": "tsc",
+    "openapi:generate": "openapi-generator-cli generate -i ../notifications-backend/src/openapi.yaml --enable-post-process-file -g typescript-fetch -o ./src/openapi && find ./src/openapi -name '*.ts' -exec sed  -i '1i // @ts-nocheck' {} \\;"
+  },
+  "dependencies": {
+    "@backstage/core-components": "^0.13.6",
+    "@backstage/core-plugin-api": "^1.7.0",
+    "@backstage/theme": "^0.4.3",
+    "@material-table/core": "^3.1.0",
+    "@material-ui/core": "^4.9.13",
+    "@material-ui/icons": "^4.11.3",
+    "@material-ui/lab": "^4.0.0-alpha.45",
+    "@mui/material": "^5.12.2",
+    "lodash": "^4.17.21",
+    "react-use": "^17.4.0"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "^6.11.2"
+  },
+  "devDependencies": {
+    "@backstage/cli": "0.23.0",
+    "@backstage/core-app-api": "1.11.0",
+    "@backstage/dev-utils": "1.0.22",
+    "@backstage/test-utils": "^1.4.4",
+    "@openapitools/openapi-generator-cli": "^2.7.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^12.1.5",
+    "@testing-library/user-event": "^14.5.1",
+    "@types/node": "*",
+    "msw": "1.3.2"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": "github:janus-idp/backstage-plugins",
+  "keywords": [
+    "backstage",
+    "plugin"
+  ],
+  "homepage": "https://janus-idp.io/",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
+}
