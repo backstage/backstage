@@ -15,7 +15,7 @@
  */
 
 import { RuleOptions } from './types';
-import { customOrGenericColor } from '../../../../helpers';
+import { customOrDefaultColor } from '../../../../helpers';
 
 export default ({ theme }: RuleOptions) => `
 /*==================  Extensions  ==================*/
@@ -26,7 +26,7 @@ export default ({ theme }: RuleOptions) => `
 }
 
 .highlight .nx {
-  color: ${customOrGenericColor(
+  color: ${customOrDefaultColor(
     theme.palette.mdCustomColor?.codeFgColor,
     theme.palette.type === 'dark' ? '#ff53a3' : '#ec407a',
   )};
