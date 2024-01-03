@@ -31,18 +31,60 @@ import { examples } from './gitea.examples';
 import fetch, { RequestInit, Response } from 'node-fetch';
 import crypto from 'crypto';
 
+const checkGiteaOrg = async (
+  config: GiteaIntegrationConfig,
+  options: {
+    owner: string;
+  },
+): Promise<void> => {
+  const { owner } = options;
+  let response: Response;
+  // check first if the org = owner exists
+  const getOptions: RequestInit = {
+    method: 'GET',
+    headers: {
+      ...getGiteaRequestOptions(config).headers,
+      'Content-Type': 'application/json',
+    },
+  };
+  try {
+    response = await fetch(
+      `${config.baseUrl}/api/v1/orgs/${owner}`,
+      getOptions,
+    );
+  } catch (e) {
+    throw new Error(`Unable to get the Organization: ${owner}, ${e}`);
+  }
+  if (response.status !== 200) {
+    throw new Error(
+      `Organization ${owner} do not exist. Please create it first !`,
+    );
+  }
+};
+
 const createGiteaProject = async (
   config: GiteaIntegrationConfig,
   options: {
     projectName: string;
-    // parent: string;
     owner?: string;
     description: string;
   },
 ): Promise<void> => {
-  const { projectName, description } = options;
+  const { projectName, description, owner } = options;
 
-  const fetchOptions: RequestInit = {
+  /*
+    Several options exist to create a repository using either the user or organisation
+    User: https://gitea.com/api/swagger#/user/createCurrentUserRepo
+    Api: URL/api/v1/user/repos
+    Remark: The user is the username defined part of the backstage integration config for the gitea URL !
+
+    Org: https://gitea.com/api/swagger#/organization/createOrgRepo
+    Api: URL/api/v1/orgs/${org_owner}/repos
+    This is the default scenario that we support currently
+  */
+  let response: Response;
+
+  const postOptions: RequestInit = {
     method: 'POST',
     body: JSON.stringify({
       name: projectName,
@@ -53,13 +95,11 @@ const createGiteaProject = async (
       'Content-Type': 'application/json',
     },
   };
-
-  // TODO
-  // Create a repository in Gitea
-  // API request: https://gitea.com/api/swagger#/user/createCurrentUserRepo
-  let response: Response;
   try {
-    response = await fetch(`${config.baseUrl}/api/v1/user/repos`, fetchOptions);
+    response = await fetch(
+      `${config.baseUrl}/api/v1/orgs/${owner}/repos`,
+      postOptions,
+    );
   } catch (e) {
     throw new Error(`Unable to create repository, ${e}`);
   }
@@ -176,7 +216,7 @@ export function createPublishGiteaAction(options: {
         sourcePath,
       } = ctx.input;
 
-      const { repo, host } = parseRepoUrl(repoUrl, integrations);
+      const { repo, host, owner } = parseRepoUrl(repoUrl, integrations);
 
       const integrationConfig = integrations.gitea.byHost(host);
       if (!integrationConfig) {
@@ -194,14 +234,15 @@ export function createPublishGiteaAction(options: {
         );
       }
 
-      // TODO
-      // Check if the integration config includes a baseUrl
+      // check if the org exists within the gitea server
+      if (owner) {
+        await checkGiteaOrg(integrationConfig.config, { owner });
+      }
 
       await createGiteaProject(integrationConfig.config, {
         description,
-        // owner: owner,
+        owner: owner,
         projectName: repo,
-        // parent: workspace,
       });
 
       const auth = {
@@ -216,8 +257,8 @@ export function createPublishGiteaAction(options: {
           ? gitAuthorEmail
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
-      // TODO
-      const remoteUrl = `${integrationConfig.config.baseUrl}/api/v1/user/${repo}`;
+      // The owner to be used should be either the org name or user authenticated with the gitea server
+      const remoteUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}.git`;
       const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, sourcePath),
         remoteUrl,
@@ -228,7 +269,7 @@ export function createPublishGiteaAction(options: {
         gitAuthorInfo,
       });
 
-      const repoContentsUrl = `${integrationConfig.config.baseUrl}/${repo}/+/refs/heads/${defaultBranch}`;
+      const repoContentsUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}/+/refs/${defaultBranch}`;
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('repoContentsUrl', repoContentsUrl);

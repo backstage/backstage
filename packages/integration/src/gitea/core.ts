@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { GiteaIntegrationConfig } from './config';
+import { Logger } from 'winston';
 
 /**
  * Given a URL pointing to a file, returns a URL

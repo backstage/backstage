@@ -87,7 +87,20 @@ describe('publish:gitea', () => {
 
   it('should throw if there is no repositoryId returned', async () => {
     server.use(
-      rest.post('https://gitea.com/api/v1/user/repos', (req, res, ctx) => {
+      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.json({
+            id: 1,
+            name: 'org1',
+            visibility: 'public',
+            repo_admin_change_team_access: false,
+            username: 'org1',
+          }),
+        );
+      }),
+      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'Basic Z2l0ZWFfdXNlcjpnaXRlYV9wYXNzd29yZA==',
@@ -108,13 +121,13 @@ describe('publish:gitea', () => {
       ...mockContext,
       input: {
         ...mockContext.input,
-        repoUrl: 'gitea.com?repo=repo',
+        repoUrl: 'gitea.com?repo=repo&owner=org1',
       },
     });
 
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
-      remoteUrl: 'https://gitea.com/api/v1/user/repo',
+      remoteUrl: 'https://gitea.com/org1/repo.git',
       defaultBranch: 'main',
       auth: { username: 'gitea_user', password: 'gitea_password' },
       logger: mockContext.logger,
