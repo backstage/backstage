@@ -128,6 +128,10 @@ nav:
       - Composability System: 'plugins/composability.md'
       - Plugin Analytics: 'plugins/analytics.md'
       - Feature Flags: 'plugins/feature-flags.md'
+      - OpenAPI:
+          - Schema-first plugins with OpenAPI (Experimental): 'openapi/01-getting-started.md'
+          - Generate a client from your OpenAPI spec: 'openapi/generate-client.md'
+          - Validate your OpenAPI spec against test data: 'openapi/test-case-validation.md'
       - Backends and APIs:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'
