@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-kubernetes-react': patch
+'@backstage/plugin-kubernetes-react': minor
 ---
 
 Make PodExecTerminal UI OptIn
