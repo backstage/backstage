@@ -31,6 +31,36 @@ import { examples } from './gitea.examples';
 import fetch, { RequestInit, Response } from 'node-fetch';
 import crypto from 'crypto';
 
+const checkGiteaOrgRepo = async (
+  config: GiteaIntegrationConfig,
+  options: {
+    owner?: string;
+    repo: string;
+    defaultBranch?: string;
+  },
+): Promise<Response> => {
+  const { owner, repo, defaultBranch } = options;
+  let response: Response;
+  const getOptions: RequestInit = {
+    method: 'GET',
+    headers: {
+      ...getGiteaRequestOptions(config).headers,
+      'Content-Type': 'application/json',
+    },
+  };
+
+  try {
+    response = await fetch(
+      `${config.baseUrl}/api/v1/repos/${owner}/${repo}/contents?ref=${defaultBranch}`,
+      getOptions,
+    );
+  } catch (e) {
+    throw new Error(
+      `Unable to get the repository: ${owner}/${repo} metadata , ${e}`,
+    );
+  }
+  return response;
+};
 const checkGiteaOrg = async (
   config: GiteaIntegrationConfig,
   options: {
@@ -218,6 +248,7 @@ export function createPublishGiteaAction(options: {
 
       const sleep = (ms: number | undefined) =>
         new Promise(r => setTimeout(r, ms));
+
       const { repo, host, owner } = parseRepoUrl(repoUrl, integrations);
 
       const integrationConfig = integrations.gitea.byHost(host);
@@ -271,8 +302,21 @@ export function createPublishGiteaAction(options: {
         gitAuthorInfo,
       });
 
-      // TODO: As mentioned by Ben lambert, we should poll an endpoint to see if it's ready yet instead of hard coding a sleep
-      await sleep(2000);
+      // Check if the repo is available
+      let response: Response;
+      response = await checkGiteaOrgRepo(integrationConfig.config, {
+        owner,
+        repo,
+        defaultBranch,
+      });
+      while (response.status !== 200) {
+        await sleep(1000);
+        response = await checkGiteaOrgRepo(integrationConfig.config, {
+          owner,
+          repo,
+          defaultBranch,
+        });
+      }
 
       const repoContentsUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}/+/refs/${defaultBranch}`;
       ctx.output('remoteUrl', remoteUrl);
