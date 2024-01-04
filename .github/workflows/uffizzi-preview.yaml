@@ -12,6 +12,8 @@ jobs:
     name: Cache Manifests File
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      actions: read
     outputs:
       manifests-cache-key: ${{ steps.hash.outputs.MANIFESTS_FILE_HASH }}
       git-ref: ${{ steps.event.outputs.GIT_REF }}
@@ -84,14 +86,14 @@ jobs:
           cat event.json
 
   deploy-uffizzi-preview:
-    permissions:
-      contents: read
-      pull-requests: write
-      id-token: write
     name: Deploy to Uffizzi Virtual Cluster
     needs:
       - cache-manifests-file
     if: ${{ github.event.workflow_run.conclusion == 'success' && needs.cache-manifests-file.outputs.action != 'closed' }}
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
