@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-notifications-frontend
+  title: '@backstage/plugin-notifications-frontend'
+  description: >-
+    Frontend part of the notifications providing the Notifications API,
+    Notifications page, left-side menu item and other REACT components.
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers
