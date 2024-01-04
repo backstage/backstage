@@ -220,7 +220,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     if (this.isServiceAccountAuthentication(authProvider, clusterDetails)) {
       [url, requestInit] = this.fetchArgsInCluster(credential);
     } else if (
-      this.isTokenOrClientCertificateAuthentication(authProvider, credential)
+      !this.isCredentialMissing(authProvider, credential)
     ) {
       [url, requestInit] = this.fetchArgs(clusterDetails, credential);
     } else {
