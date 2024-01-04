@@ -31,6 +31,7 @@ import { examples } from './gitea.examples';
 import fetch, { RequestInit, Response } from 'node-fetch';
 import crypto from 'crypto';
 
+/* NOT USED. See TODO hereafter
 const checkGiteaOrgRepo = async (
   config: GiteaIntegrationConfig,
   options: {
@@ -61,6 +62,8 @@ const checkGiteaOrgRepo = async (
   }
   return response;
 };
+*/
+
 const checkGiteaOrg = async (
   config: GiteaIntegrationConfig,
   options: {
@@ -330,7 +333,7 @@ export function createPublishGiteaAction(options: {
       */
       await sleep(3000);
 
-      const repoContentsUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}/src/branch/${defaultBranch}`;
+      const repoContentsUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}/src/branch/${defaultBranch}/`;
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('repoContentsUrl', repoContentsUrl);
