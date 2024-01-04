@@ -6,7 +6,15 @@ It's backed by a relational database, so far tested with PostgreSQL.
 
 ## Getting started
 
-### Prerequisites
+The plugin uses a relational database to persist messages, it has been tested with the SQLite and PostgreSQL.
+
+Upon backend's plugin start, the `backstage_plugin_notifications` database and its tables are created automatically.
+
+### Optional: PostgreSQL
+
+**To use the Backstage's default SQLite, no specific configuration is needed.**
+
+Following steps describe requirements for PostgreSQL:
 
 - Install [PostgresSQL DB](https://www.postgresql.org/download/)
 - Configure Postgres for tcp/ip
@@ -28,7 +36,27 @@ host   all             postgres       127.0.0.1/32                          pass
 sudo systemctl enable --now postgresql.service
 ```
 
-A new DB will be created: backstage_plugin_notifications
+#### Backstage's configuration for PostgreSQL
+
+If PostgreSQL is used, additional configuration in the in the `app-config.yaml` or `app-config.local.yaml` is needed. Example:
+
+```
+  database:
+    client: pg
+    connection:
+      host: 127.0.0.1
+      port: 5432
+      user: postgres
+      password: your_secret
+    knexConfig:
+      pool:
+        min: 3
+        max: 12
+        acquireTimeoutMillis: 60000
+        idleTimeoutMillis: 60000
+  cache:
+    store: memory
+```
 
 ### Add NPM dependency
 
@@ -90,29 +118,7 @@ apiRouter.use('/notifications', await notifications(notificationsEnv));
 
 ### Configure
 
-In the `app-config.yaml` or `app-config.local.yaml`:
-
-#### Database
-
-```
-  database:
-    client: pg
-    connection:
-      host: 127.0.0.1
-      port: 5432
-      user: postgres
-      password: secret
-    knexConfig:
-      pool:
-        min: 3
-        max: 12
-        acquireTimeoutMillis: 60000
-        idleTimeoutMillis: 60000
-  cache:
-    store: memory
-```
-
-#### Other configuration (optional):
+#### Optional: Plugin's configuration
 
 If you have issues to create valid JWT tokens by an external caller, use following option to bypass the service-to-service configuration for them:
 
@@ -135,8 +141,8 @@ curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-T
 
 Notes:
 
-- The `externalCallerSecret` is an workaround and will be probably replaced by proper use of JWT tokens.
-- Sharing the same shared secret with the "auth.secret" option is not recommended
+- The `externalCallerSecret` is an workaround, exclusive use of JWT tokens will probably be required in the future.
+- Sharing the same shared secret with the "auth.secret" option is not recommended.
 
 #### Authentication
 
@@ -144,7 +150,7 @@ Please refer https://backstage.io/docs/auth/ to set-up authentication.
 
 The Notifications flows are based on the identity of the user.
 
-All targetUsers, targetGroups or signed-in users receiving notifications must have corresponding entities created in the Catalog.
+All `targetUsers`, `targetGroups`` or signed-in users receiving notifications must have corresponding entities created in the Catalog.
 Refer https://backstage.io/docs/auth/identity-resolver for details.
 
 For the purpose of development, there is `users.yaml` listing example data created.
@@ -220,15 +226,14 @@ User parameter is mandatory because it is needed for message status and filterin
 
 Query parameters:
 
-- pageSize. 0 means no paging.
-- pageNumber. first page is 1. 0 means no paging.
-- orderBy.
-- orderByDirec. asc/desc
-- user. name of user to retrieve notification for
-- containsText. filter title and message containing this text (case insensitive)
-- createdAfter. fetch notifications created after this point in time
-- messageScope. all/user/system. fetch notifications intended for specific user or system notifications or both
-- read. true/false (read/unread)
+- `pageSize`. 0 means no paging.
+- `pageNumber`. first page is 1. 0 means no paging.
+- `orderBy`.
+- `orderByDirec`. asc/desc
+- `containsText`. filter title and message containing this text (case insensitive)
+- `createdAfter`. fetch notifications created after this point in time
+- `messageScope`. all/user/system. fetch notifications intended for specific user or system notifications or both
+- `read`. true/false (read/unread)
 
 Request:
 
@@ -267,10 +272,10 @@ Optionally add `-H "Authorization: Bearer eyJh.....` with a valid JWT token to t
 
 Query parameters:
 
-- containsText. filter title and message containing this text (case insensitive)
-- createdAfter. fetch notifications created after this point in time
-- messageScope. all/user/system. fetch notifications intended for specific user or system notifications or both
-- read. true/false (read/unread)
+- `containsText`. filter title and message containing this text (case insensitive)
+- `createdAfter`. fetch notifications created after this point in time
+- `messageScope`. all/user/system. fetch notifications intended for specific user or system notifications or both
+- `read`. true/false (read/unread)
 
 Request:
 
