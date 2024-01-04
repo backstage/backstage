@@ -75,9 +75,13 @@ In your `launch.json`, add a new entry with the following,
 ### WebStorm
 
 Select `Edit Configurations` in the `Run` dropdown menu. Click the plus sign to add a new configuration, then select `Node.js`.
+
 In `Working directory`, input `${workspaceFolder}/packages/backend`.
+
 In `JavaScript file`, input `${workspaceFolder}/node_modules/@backstage/cli/bin/backstage-cli`.
+
 In `Application parameters`, input `package start`.
+
 Optionally, for `Environment Variables`, input `LOG_LEVEL=debug`.
 
 Finally, click `Apply` to save the changes. The debugging icon can then be used to execute the new configuration and enable the use of breakpoints.
