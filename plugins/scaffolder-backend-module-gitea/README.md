@@ -1,5 +1,161 @@
-# backstage-plugin-scaffolder-backend-module-gitea
+# scaffolder-backend-module-gitea
 
-The gitea module for [@backstage/plugin-scaffolder-backend](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend).
+Welcome to the `publish:gitea` action of the `scaffolder-gitea-backend`.
 
-_This plugin was created through the Backstage CLI_
+## Getting started
+
+To use this action, you will have to add the package using the following command to be executed at the root of your backstage project:
+
+```bash
+yarn add --cwd packages/backend
+@backstage/plugin-scaffolder-backend-module-gitea
+```
+
+Configure the action (if not yet done):
+(you can check the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to see all options):
+
+```typescript
+// plugins/scaffolder-backend/src/scaffolder/actions/builtin/createBuiltinActions.ts
+
+export const createBuiltinActions = (
+...
+  const actions = [
+    ...
+    createPublishGiteaAction({
+      integrations,
+      config,
+    }),
+    ...
+  ];
+  return actions as TemplateAction[];
+};
+```
+
+Before to create a template, include to your `app-config.yaml` file the
+gitea host and credentials under the `integrations:` section
+
+```yaml
+integrations:
+  gitea:
+    - host: gitea.com
+      username: '<GITEA_USER>'
+      password: '<GITEA_PASSWORD>'
+    - host: localhost:3333
+      username: '<GITEA_LOCALHOST_USER>'
+      password: '<GITEA_LOCALHOST_PASSWORD>'
+```
+
+**NOTE**: As backstage will issue HTTPS/TLS requests to the gitea instance, it is needed to configure `gitea` with a valid certificate or at least with a
+self-signed certificate `gitea cert --host localhost -ca`. Don't forget to set the env var `NODE_EXTRA_CA_CERTS` to point to the CA pem file before to launch backstage !
+
+When done, you can use the action in your template:
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: quarkus-web-template
+  title: Quarkus Hello world
+  description: Create a simple microservice using Quarkus
+  tags:
+    - java
+    - quarkus
+spec:
+  owner: quarkus
+  type: service
+  parameters:
+    - title: Provide Information for Application
+      required:
+        - component_id
+        - owner
+        - java_package_name
+      properties:
+        component_id:
+          title: Name
+          type: string
+          description: Unique name of the component
+          default: my-quarkus-app
+          ui:field: EntityNamePicker
+        group_id:
+          title: Group Id
+          type: string
+          default: io.quarkus
+          description: Maven Group Id
+        artifact_id:
+          title: Artifact Id
+          type: string
+          default: quarkus-app
+          description: Maven Artifact Id
+        java_package_name:
+          title: Java Package Name
+          default: io.quarkus.demo
+          type: string
+          description: Name for the java package. eg (io.quarkus.blah)
+        owner:
+          title: Owner
+          type: string
+          description: IdP owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds:
+              - Group
+
+    - title: Application git repository Information
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - localhost:3333
+              - gitea.<YOUR_DOMAIN>:<PORT>
+
+  steps:
+    - id: template
+      name: Generating component
+      action: fetch:template
+      input:
+        url: ./skeleton
+        copyWithoutTemplating:
+          - .github/workflows/*
+        values:
+          component_id: ${{ parameters.component_id }}
+          namespace: ${{ parameters.component_id }}-dev
+          description: ${{ parameters.description }}
+          group_id: ${{ parameters.group_id }}
+          artifact_id: ${{ parameters.artifact_id }}
+          java_package_name: ${{ parameters.java_package_name }}
+          owner: ${{ parameters.owner }}
+          destination: ${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
+          quay_destination: ${{ parameters.image_organization }}/${{ parameters.component_id }}
+          port: 8080
+
+    - id: publish
+      name: Publishing to a gitea git repository
+      action: publish:gitea
+      input:
+        description: This is ${{ parameters.component_id }}
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: main
+
+    - id: register
+      if: ${{ parameters.dryRun !== true }}
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+  output:
+    links:
+      - title: Source Code Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open Component in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
+```
+
+Enjoy ;-)
