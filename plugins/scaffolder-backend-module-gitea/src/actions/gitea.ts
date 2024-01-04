@@ -31,8 +31,8 @@ import { examples } from './gitea.examples';
 import fetch, { RequestInit, Response } from 'node-fetch';
 import crypto from 'crypto';
 
-/* NOT USED. See TODO hereafter
-const checkGiteaOrgRepo = async (
+/* NOT USED. See TODO hereafter */
+const checkGiteaContentUrl = async (
   config: GiteaIntegrationConfig,
   options: {
     owner?: string;
@@ -44,15 +44,11 @@ const checkGiteaOrgRepo = async (
   let response: Response;
   const getOptions: RequestInit = {
     method: 'GET',
-    headers: {
-      ...getGiteaRequestOptions(config).headers,
-      'Content-Type': 'application/json',
-    },
   };
 
   try {
     response = await fetch(
-      `${config.baseUrl}/api/v1/repos/${owner}/${repo}/contents?ref=${defaultBranch}`,
+      `${config.baseUrl}/${owner}/${repo}/src/branch/${defaultBranch}`,
       getOptions,
     );
   } catch (e) {
@@ -62,7 +58,6 @@ const checkGiteaOrgRepo = async (
   }
   return response;
 };
-*/
 
 const checkGiteaOrg = async (
   config: GiteaIntegrationConfig,
@@ -305,33 +300,21 @@ export function createPublishGiteaAction(options: {
         gitAuthorInfo,
       });
 
-      /*
-      TODO: This code is commented till it will be fixed.
-      When we use the code hereafter, we got the following error:
-      "Unable to read url, Error: Unknown encoding: undefined\n    at DefaultLocationService.processEntities"
-      as commented here: Still getting the error: https://github.com/backstage/backstage/pull/21890#issuecomment-1876733870
-
-      Such an issue do not exist using sleep 3s.
-
-      WARNING: To allow to register within the catalog the new project, it is also needed to pass within the catalogInfoPath the branch name (e.g: main/catalog-info.yaml)
-
-      // Check if the repo is available
+      // Check if the gitea repo URL is available before to exit
       let response: Response;
-      response = await checkGiteaOrgRepo(integrationConfig.config, {
+      response = await checkGiteaContentUrl(integrationConfig.config, {
         owner,
         repo,
         defaultBranch,
       });
       while (response.status !== 200) {
         await sleep(1000);
-        response = await checkGiteaOrgRepo(integrationConfig.config, {
+        response = await checkGiteaContentUrl(integrationConfig.config, {
           owner,
           repo,
           defaultBranch,
         });
       }
-      */
-      await sleep(3000);
 
       const repoContentsUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}/src/branch/${defaultBranch}/`;
       ctx.output('remoteUrl', remoteUrl);
