@@ -302,6 +302,16 @@ export function createPublishGiteaAction(options: {
         gitAuthorInfo,
       });
 
+      /*
+      TODO: This code is commented till it will be fixed.
+      When we use the code hereafter, we got the following error:
+      "Unable to read url, Error: Unknown encoding: undefined\n    at DefaultLocationService.processEntities"
+      as commented here: Still getting the error: https://github.com/backstage/backstage/pull/21890#issuecomment-1876733870
+
+      Such an issue do not exist using sleep 3s.
+
+      WARNING: To allow to register within the catalog the new project, it is also needed to pass within the catalogInfoPath the branch name (e.g: main/catalog-info.yaml)
+
       // Check if the repo is available
       let response: Response;
       response = await checkGiteaOrgRepo(integrationConfig.config, {
@@ -317,6 +327,8 @@ export function createPublishGiteaAction(options: {
           defaultBranch,
         });
       }
+      */
+      await sleep(3000);
 
       const repoContentsUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}/+/refs/${defaultBranch}`;
       ctx.output('remoteUrl', remoteUrl);

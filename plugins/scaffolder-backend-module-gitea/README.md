@@ -48,6 +48,8 @@ integrations:
 **NOTE**: As backstage will issue HTTPS/TLS requests to the gitea instance, it is needed to configure `gitea` with a valid certificate or at least with a
 self-signed certificate `gitea cert --host localhost -ca`. Don't forget to set the env var `NODE_EXTRA_CA_CERTS` to point to the CA pem file before to launch backstage !
 
+**WARNING**: Please pass the branch name part of the `catalogInfoPath` for the action `register` till we will fix this issue (e.g `main/catalog-info.yaml`) !
+
 When done, you can use the action in your template:
 
 ```yaml
@@ -147,7 +149,7 @@ spec:
       action: catalog:register
       input:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
+        catalogInfoPath: 'main/catalog-info.yaml'
 
   output:
     links:
