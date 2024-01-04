@@ -219,9 +219,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
     if (this.isServiceAccountAuthentication(authProvider, clusterDetails)) {
       [url, requestInit] = this.fetchArgsInCluster(credential);
-    } else if (
-      !this.isCredentialMissing(authProvider, credential)
-    ) {
+    } else if (!this.isCredentialMissing(authProvider, credential)) {
       [url, requestInit] = this.fetchArgs(clusterDetails, credential);
     } else {
       return Promise.reject(
@@ -255,14 +253,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     );
   }
 
-  private isTokenOrClientCertificateAuthentication(
+  private isCredentialMissing(
     authProvider: string,
     credential: KubernetesCredential,
   ) {
     return (
-      credential.type === 'bearer token' ||
-      credential.type === 'x509 client certificate' ||
-      authProvider === 'localKubectlProxy'
+      authProvider !== 'localKubectlProxy' && credential.type === 'anonymous'
     );
   }
 
