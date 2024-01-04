@@ -32,7 +32,7 @@ describe('useIsPodExecTerminalEnabled', () => {
           configApiRef,
           new ConfigReader({
             kubernetes: {
-              podExecTerminal: { enable: isPodExecTerminalEnabled },
+              podExecTerminal: { enabled: isPodExecTerminalEnabled },
             },
           }),
         ],

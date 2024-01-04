@@ -23,5 +23,5 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 export const useIsPodExecTerminalEnabled = (): boolean | undefined => {
   const configApi = useApi(configApiRef);
 
-  return configApi.getOptionalBoolean('kubernetes.podExecTerminal.enable');
+  return configApi.getOptionalBoolean('kubernetes.podExecTerminal.enabled');
 };

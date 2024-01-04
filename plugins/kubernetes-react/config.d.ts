@@ -25,7 +25,7 @@ export interface Config {
        * Enable `PodExecTerminal` UI feature
        * @visibility frontend
        */
-      enable?: boolean;
+      enabled?: boolean;
     };
   };
 }
