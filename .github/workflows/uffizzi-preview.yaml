@@ -13,7 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
-      actions: read
+      # "If you specify the access for any of these scopes, all of those that are not specified are set to none."
+      # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+      actions: read # Access cache
     outputs:
       manifests-cache-key: ${{ steps.hash.outputs.MANIFESTS_FILE_HASH }}
       git-ref: ${{ steps.event.outputs.GIT_REF }}
@@ -23,7 +25,10 @@ jobs:
       - name: Harden Runner
         uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
         with:
-          egress-policy: audit
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
 
       - name: 'Download artifacts'
         # Fetch output (zip archive) from the workflow run that triggered this workflow.
