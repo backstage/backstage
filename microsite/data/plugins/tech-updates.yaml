@@ -3,7 +3,7 @@ title: 'Tech Updates'
 author: Infosys
 authorUrl: https://www.infosys.com/
 category: Information
-description: A tech news updates is to keep users informed about the latest developments in the technology industry.
+description: A tech news updates is to keep users informed about the latest developments in the technology industry
 documentation: https://github.com/AmbrishRamachandiran/tech-updates/blob/main/README.md
 iconUrl: https://github.com/AmbrishRamachandiran/Tech-updates-assets/blob/main/tech-updates-icon.png
 npmPackageName: '@backstage/plugin-tech-updates'
