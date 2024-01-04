@@ -163,7 +163,7 @@ Backstage 앱의 기능 대부분은 플러그인에서 비롯됩니다. 핵심 
 - [`microsite/`](https://github.com/backstage/backstage/blob/master/microsite) -
   이 폴더에는 backstage.io의 소스 코드가 포함되어 있습니다. [Docusaurus](https://docusaurus.io/)를 기반으로 제작되었습니다.
   이 폴더는 종속성 문제로 인해 monorepo의 일부가 아닙니다. 로컬에서 실행하는 방법에 대한 지침은 
-  [microsice READE](https://github.com/backstage/backstage/blob/master/microsite/README.md)를 참조하세요.
+  [microsite READE](https://github.com/backstage/backstage/blob/master/microsite/README.md)를 참조하세요.
 
 ## `app`에서 특별히 사용되는 루트 파일
 

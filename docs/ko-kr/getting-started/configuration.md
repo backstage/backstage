@@ -16,7 +16,7 @@ description: 초기 Backstage 구성 시작하기
 
 ### 요구사항
 
-- Linux, MacOS 또는 [Windows Sybsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)와 
+- Linux, MacOS 또는 [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)와 
   같은 Linux 기반 운영체제에서 작동합니다.
 - 운영 체제에 필수 구성 요소를 설치할 수 있는 높은 권한이 있는 계정이 필요합니다.
 - 데이터베이스가 Backstage 앱과 동일한 서버에서 호스팅되지 않는 경우 PostgreSQL 포트에 액세스할 수 
@@ -46,7 +46,7 @@ Type "help" for help.
 postgres=#
 ```
 
-이 튜토리얼에서는 기존 postres 사용자를 사용합니다. 다음 단계는 이 사용자의 비밀번호를 설정합니다:
+이 튜토리얼에서는 기존 postgres 사용자를 사용합니다. 다음 단계는 이 사용자의 비밀번호를 설정합니다:
 
 ```shell
 postgres=# ALTER USER postgres PASSWORD 'secret';
