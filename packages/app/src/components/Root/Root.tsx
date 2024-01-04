@@ -53,6 +53,7 @@ import Score from '@material-ui/icons/Score';
 import { useApp } from '@backstage/core-plugin-api';
 import BuildIcon from '@material-ui/icons/Build';
 import { ExtensionTree } from '@backstage/frontend-app-api';
+import { NotificationsSidebarItem } from '@backstage/plugin-notifications-frontend';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -174,6 +175,7 @@ export const Root = ({
         </SidebarScrollWrapper>
         <SidebarDivider />
         <Shortcuts allowExternalLinks />
+        <NotificationsSidebarItem pollingInterval={5000} />
       </SidebarGroup>
       <SidebarSpace />
       <SidebarDivider />

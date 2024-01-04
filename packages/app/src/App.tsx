@@ -121,6 +121,7 @@ import {
   createExtensionTree,
   ExtensionTree,
 } from '@backstage/frontend-app-api';
+import { NotificationsPage } from '@backstage/plugin-notifications-frontend';
 
 const app = createApp({
   apis,
@@ -323,6 +324,7 @@ const routes = (
     <Route path="/devtools" element={<DevToolsPage />}>
       {customDevToolsPage}
     </Route>
+    <Route path="/notifications" element={<NotificationsPage />} />
   </FlatRoutes>
 );
 
