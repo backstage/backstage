@@ -21,15 +21,15 @@ The authors of the BEP are also responsible for driving the BEP forward all the 
 
 ### Do I have to use the BEP process?
 
-No, but it is recommended for larger changes and contributions where you want to make design decisions upfront and iterate on them across several PRs.
+No, but it is recommended for larger changes and contributions that affect the Backstage framework or core features where you want to make design decisions upfront and iterate on them across several PRs.
 
 ### What is the difference between a BEP and an RFC issue?
 
-An RFC issue is a good way to receive feedback on an idea, while the BEP process is intended to make it easier to iterate on the design of a new feature, get them approved by the owning project area maintainers, and track the implementation.
+An RFC issue is a good way to receive feedback on an idea. The BEP process may involve getting feedback on an idea, but it takes things further by making it easier to iterate on the design of a new feature, getting it approved by the owning project area maintainers, and tracking its implementation.
 
-While anyone can open an RFC issue, the features added by a BEP needs to be approved by the owners before it can be merged. The BEP will also contain the latest agreed upon design, whereas an RFC issue is more of a discussion forum.
+While anyone can open an RFC issue, the features added by a BEP need to be approved by the owners before it can be merged. The BEP will also contain the latest agreed upon design, whereas an RFC issue is more of a discussion forum.
 
-Often a BEP can start out as an RFC issue, which is then be converted into a BEP once the idea has received an owner and been approved.
+Often a BEP can start out as an RFC issue, which may then be converted into a BEP once the idea has received an owner and been approved.
 
 ### Should I use the BEP process for new or existing Backstage plugins?
 
