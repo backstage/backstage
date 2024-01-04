@@ -17,7 +17,8 @@ import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
-  identityApiRef,
+  fetchApiRef,
+  // identityApiRef,
 } from '@backstage/core-plugin-api';
 
 import { NotificationsApiImpl, notificationsApiRef } from './api';
@@ -31,10 +32,10 @@ export const notificationsPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: notificationsApiRef,
-      deps: { identityApi: identityApiRef },
-      factory({ identityApi }) {
+      deps: { fetchApi: fetchApiRef },
+      factory({ fetchApi }) {
         return new NotificationsApiImpl({
-          identityApi,
+          fetchApi,
         });
       },
     }),

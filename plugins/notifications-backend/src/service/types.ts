@@ -13,6 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TokenManager } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
+import { Config } from '@backstage/config';
+import { IdentityApi } from '@backstage/plugin-auth-node';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+
+import { Logger } from 'winston';
+
+export interface RouterOptions {
+  logger: Logger;
+  dbConfig: Config;
+  catalogClient: CatalogClient;
+  identity: IdentityApi;
+  permissions: PermissionEvaluator;
+  tokenManager: TokenManager;
+
+  // Workaround - see auth.ts
+  externalCallerSecret?: string;
+}
+
 export type NotificationsFilterRequest = {
   /**
    * Filter notifications whose either title or message contains the provided string.
@@ -30,12 +50,6 @@ export type NotificationsFilterRequest = {
    */
   messageScope?: string;
 
-  /**
-   * The user the query is executed for. Default: DefaultUser
-   * Its entity must be present in the catalog.
-   * Conforms IdentityApi.getBackstageIdentity()
-   */
-  user?: string;
   /**
    * 'false' for user's unread messages, 'true' for read ones.
    * If undefined, then both marks.
@@ -68,10 +82,3 @@ export const NotificationsOrderByDirections: string[] = ['asc', 'desc'];
  * When 'all' is requests then fetch both system and user messages
  */
 export const MessageScopes = ['all', 'user', 'system'];
-
-export const DefaultUser = 'default/guest';
-export const DefaultMessageScope = 'user';
-export const DefaultPageNumber = 1;
-export const DefaultPageSize = 20;
-export const DefaultOrderBy = 'created';
-export const DefaultOrderDirection = 'desc';

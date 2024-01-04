@@ -92,7 +92,7 @@ paths:
             format: date-time
         - name: messageScope
           in: query
-          description: retrieve either user messages, system messages or both
+          description: retrieve either logged-in user messages, system messages or both
           required: false
           schema:
             type: string
@@ -100,12 +100,6 @@ paths:
               - all
               - user
               - system
-        - name: user
-          in: query
-          description: User for whom notifications will be fetched
-          required: false
-          schema:
-            type: string
         - name: read
           in: query
           description: Notifications read or not
@@ -142,7 +136,7 @@ paths:
             format: date-time
         - name: messageScope
           in: query
-          description: retrieve either user messages, system messages or both
+          description: retrieve either logged-in user messages, system messages or both
           required: false
           schema:
             type: string
@@ -150,12 +144,6 @@ paths:
               - all
               - user
               - system
-        - name: user
-          in: query
-          description: User for whom notifications will be fetched
-          required: false
-          schema:
-            type: string
         - name: read
           in: query
           description: Notifications read or not
@@ -184,12 +172,6 @@ paths:
         - name: messageId
           in: query
           description: The message ID
-          required: true
-          schema:
-            type: string
-        - name: user
-          in: query
-          description: The user
           required: true
           schema:
             type: string

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IdentityApi } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 
 import {
+  Configuration,
   CreateBody,
-  DefaultConfig,
   GetNotificationsRequest,
   Notification,
   NotificationsApi as NotificationsOpenApi,
@@ -29,26 +29,17 @@ import {
 } from './notificationsApi';
 
 export type NotificationsApiOptions = {
-  identityApi: IdentityApi;
+  fetchApi: FetchApi;
 };
 
 export class NotificationsApiImpl implements NotificationsApi {
-  private readonly identityApi: IdentityApi;
   private readonly backendRestApi: NotificationsOpenApi;
 
   constructor(options: NotificationsApiOptions) {
-    this.identityApi = options.identityApi;
-
-    const configuration = DefaultConfig;
+    const configuration = new Configuration({
+      fetchApi: options.fetchApi.fetch,
+    });
     this.backendRestApi = new NotificationsOpenApi(configuration);
-  }
-
-  private async getLogedInUsername(): Promise<string> {
-    const { userEntityRef } = await this.identityApi.getBackstageIdentity();
-    if (!userEntityRef.startsWith('user:')) {
-      throw new Error('The logged-in user is not of an user entity type.');
-    }
-    return userEntityRef.slice('start:'.length - 1);
   }
 
   async createNotification(notification: CreateBody): Promise<string> {
@@ -58,25 +49,16 @@ export class NotificationsApiImpl implements NotificationsApi {
     return data.messageId;
   }
 
-  async getNotifications(
-    query: GetNotificationsRequest,
-  ): Promise<Notification[]> {
-    const user = await this.getLogedInUsername();
-    return this.backendRestApi.getNotifications({ ...query, user });
+  getNotifications(query: GetNotificationsRequest): Promise<Notification[]> {
+    return this.backendRestApi.getNotifications(query);
   }
 
   async getNotificationsCount(query: NotificationsCountQuery): Promise<number> {
-    const user = await this.getLogedInUsername();
-    const data = await this.backendRestApi.getNotificationsCount({
-      ...query,
-      user,
-    });
+    const data = await this.backendRestApi.getNotificationsCount(query);
     return data.count;
   }
 
   async markAsRead(params: NotificationMarkAsRead): Promise<void> {
-    const user = await this.getLogedInUsername();
-
-    return this.backendRestApi.setRead({ ...params, user });
+    return this.backendRestApi.setRead(params);
   }
 }

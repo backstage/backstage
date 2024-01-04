@@ -43,7 +43,6 @@ export interface GetNotificationsRequest {
   containsText?: string;
   createdAfter?: Date;
   messageScope?: GetNotificationsMessageScopeEnum;
-  user?: string;
   read?: boolean;
 }
 
@@ -51,13 +50,11 @@ export interface GetNotificationsCountRequest {
   containsText?: string;
   createdAfter?: Date;
   messageScope?: GetNotificationsCountMessageScopeEnum;
-  user?: string;
   read?: boolean;
 }
 
 export interface SetReadRequest {
   messageId: string;
-  user: string;
   read: boolean;
 }
 
@@ -150,10 +147,6 @@ export class NotificationsApi extends runtime.BaseAPI {
       queryParameters['messageScope'] = requestParameters.messageScope;
     }
 
-    if (requestParameters.user !== undefined) {
-      queryParameters['user'] = requestParameters.user;
-    }
-
     if (requestParameters.read !== undefined) {
       queryParameters['read'] = requestParameters.read;
     }
@@ -214,10 +207,6 @@ export class NotificationsApi extends runtime.BaseAPI {
       queryParameters['messageScope'] = requestParameters.messageScope;
     }
 
-    if (requestParameters.user !== undefined) {
-      queryParameters['user'] = requestParameters.user;
-    }
-
     if (requestParameters.read !== undefined) {
       queryParameters['read'] = requestParameters.read;
     }
@@ -273,16 +262,6 @@ export class NotificationsApi extends runtime.BaseAPI {
     }
 
     if (
-      requestParameters.user === null ||
-      requestParameters.user === undefined
-    ) {
-      throw new runtime.RequiredError(
-        'user',
-        'Required parameter requestParameters.user was null or undefined when calling setRead.',
-      );
-    }
-
-    if (
       requestParameters.read === null ||
       requestParameters.read === undefined
     ) {
@@ -296,10 +275,6 @@ export class NotificationsApi extends runtime.BaseAPI {
 
     if (requestParameters.messageId !== undefined) {
       queryParameters['messageId'] = requestParameters.messageId;
-    }
-
-    if (requestParameters.user !== undefined) {
-      queryParameters['user'] = requestParameters.user;
     }
 
     if (requestParameters.read !== undefined) {

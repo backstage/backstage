@@ -6,7 +6,7 @@ It's backed by a relational database, so far tested with PostgreSQL.
 
 ## Getting started
 
-### Prerequisities
+### Prerequisites
 
 - Install [PostgresSQL DB](https://www.postgresql.org/download/)
 - Configure Postgres for tcp/ip
@@ -54,10 +54,19 @@ export default async function createPlugin(
 ): Promise<Router> {
   const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
   const dbConfig = env.config.getConfig('backend.database');
+  // Following is optional
+  const externalCallerSecret = env.config.getOptionalString(
+    'notifications.externalCallerSecret',
+  );
+
   return await createRouter({
+    identity: env.identity,
     logger: env.logger,
+    permissions: env.permissions,
+    tokenManager: env.tokenManager,
     dbConfig,
     catalogClient,
+    externalCallerSecret,
   });
 }
 ```
@@ -103,9 +112,61 @@ In the `app-config.yaml` or `app-config.local.yaml`:
     store: memory
 ```
 
+#### Other configuration (optional):
+
+If you have issues to create valid JWT tokens by an external caller, use following option to bypass the service-to-service configuration for them:
+
+```
+notifications:
+  # Workaround for issues with external caller JWT token creation.
+  # When following config option is not provided and the request "authentication" header is missing, the request is ALLOWED by default
+  # When following option is present, the request must contain either a valid JWT token or that provided shared secret in the "notifications-secret" header
+  externalCallerSecret: your-secret-token-shared-with-external-services
+```
+
+Mind using HTTPS to help preventing leaking the shared secret.
+
+Example of the request then:
+
+```
+curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-Type: application/json" -H "notifications-secret: your-secret-token-shared-with-external-services" -d '{"title":"my-title","origin":"my-origin","message":"message one","topic":"my-topic"}'
+
+```
+
+Notes:
+
+- The `externalCallerSecret` is an workaround and will be probably replaced by proper use of JWT tokens.
+- Sharing the same shared secret with the "auth.secret" option is not recommended
+
+#### Authentication
+
+Please refer https://backstage.io/docs/auth/ to set-up authentication.
+
+The Notifications flows are based on the identity of the user.
+
+All targetUsers, targetGroups or signed-in users receiving notifications must have corresponding entities created in the Catalog.
+Refer https://backstage.io/docs/auth/identity-resolver for details.
+
+For the purpose of development, there is `users.yaml` listing example data created.
+
+#### Authorization
+
+Every service endpoint is guarded by a permission check, enabled by default.
+
+It is up to particular deployment to provide corresponding permission policies based on https://backstage.io/docs/permissions/writing-a-policy. To register your permission policies, refer https://backstage.io/docs/permissions/getting-started#integrating-the-permission-framework-with-your-backstage-instance.
+
+#### Service-to-service and External Calls
+
+The notification-backend is expected to be called by FE plugins (including the notifications-frontend), other backend plugins or external services.
+
+To configure those two flows, refer
+
+- https://backstage.io/docs/auth/service-to-service-auth.
+- https://backstage.io/docs/auth/service-to-service-auth#usage-in-external-callers
+
 #### Catalog
 
-The notifications require affected users or groups (as receivers) to be listed in the Catalog.
+The notifications require target users or groups (as receivers) to be listed in the Catalog.
 
 As an example how to do it, add following to the config:
 
@@ -132,7 +193,7 @@ See `src/openapi.yaml` for full OpenAPI spec.
 
 ### Posting a notification
 
-A notification without users or groups is considered a system notification. That means it is is intended for all users.
+A notification without target users or groups is considered a system notification. That means it is intended for all users (listed among Updates in the UI).
 
 Request (User message and then system message):
 
@@ -143,6 +204,8 @@ curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-T
 ```bash
 curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-Type: application/json" -d '{"title": "My message title", "message": "I have nothing to say", "origin": "my-origin", "actions": [{"title": "my-title", "url": "http://foo.bar"}, {"title": "another action", "url": "https://foo.foo.bar"}]}'
 ```
+
+Optionally add `-H "Authorization: Bearer eyJh.....` with a valid JWT token if the service-to-service authorization is enabled (see above).
 
 Response:
 
@@ -170,7 +233,7 @@ Query parameters:
 Request:
 
 ```bash
-curl 'http://localhost:7007/api/notifications/notifications?user=loggedinuser&read=false&pageNumber=0&pageSize=0'
+curl 'http://localhost:7007/api/notifications/notifications?read=false&pageNumber=0&pageSize=0'
 ```
 
 Response:
@@ -195,9 +258,15 @@ Response:
 
 User parameter is mandatory because it is needed for filtering (read/unread).
 
+**Important: Logged-in user:**
+
+The query requires a signed-in user whose entity is listed in the Catalog.
+With this condition is met, the HTTP `Authorization` header contains a JWT token with the user's identity.
+
+Optionally add `-H "Authorization: Bearer eyJh.....` with a valid JWT token to the `curl` commands bellow.
+
 Query parameters:
 
-- user. name of user to retrieve notification for
 - containsText. filter title and message containing this text (case insensitive)
 - createdAfter. fetch notifications created after this point in time
 - messageScope. all/user/system. fetch notifications intended for specific user or system notifications or both
@@ -206,7 +275,7 @@ Query parameters:
 Request:
 
 ```bash
-curl http://localhost:7007/api/notifications/notifications/count?user=loggedinuser
+curl http://localhost:7007/api/notifications/notifications/count
 ```
 
 Response:
@@ -220,17 +289,10 @@ Response:
 Request:
 
 ```bash
-curl -X PUT 'http://localhost:7007/api/notifications/notifications/read?messageID=48bbf896-4b7c-4b68-a446-246b6a801000&user=dummy&read=true'
+curl -X PUT 'http://localhost:7007/api/notifications/notifications/read?messageID=48bbf896-4b7c-4b68-a446-246b6a801000&read=true'
 ```
 
 Response: just HTTP status
-
-## Users
-
-A user the notifications are filtered for, all targetUsers or targetGroups must have corresponding entities created in the Catalog.
-Refer [Backstage documentation](https://backstage.io/docs/auth/) for details.
-
-For the purpose of development, there is `users.yaml` listing example data.
 
 ## Building a client for the API
 

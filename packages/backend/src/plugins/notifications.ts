@@ -23,9 +23,19 @@ export default async function createPlugin(
 ): Promise<Router> {
   const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
   const dbConfig = env.config.getConfig('backend.database');
+
+  // Following is optional - if missing, no shared-secret check is applied for external connections
+  const externalCallerSecret = env.config.getOptionalString(
+    'notifications.externalCallerSecret',
+  );
+
   return await createRouter({
+    identity: env.identity,
     logger: env.logger,
+    permissions: env.permissions,
+    tokenManager: env.tokenManager,
     dbConfig,
     catalogClient,
+    externalCallerSecret,
   });
 }
