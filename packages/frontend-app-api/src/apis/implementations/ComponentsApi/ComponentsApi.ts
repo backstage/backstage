@@ -18,7 +18,7 @@ import { ComponentType } from 'react';
 import { ComponentRef, ComponentsApi } from '@backstage/frontend-plugin-api';
 
 /**
- * Implementation for the {@linkComponentApi}
+ * Implementation for the {@link ComponentApi}
  *
  * @internal
  */

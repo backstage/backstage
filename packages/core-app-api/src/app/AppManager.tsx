@@ -15,6 +15,27 @@
  */
 
 import { Config } from '@backstage/config';
+import {
+  AnyApiFactory,
+  ApiHolder,
+  AppTheme,
+  AppThemeApi,
+  BackstagePlugin,
+  ConfigApi,
+  FeatureFlag,
+  IconComponent,
+  appThemeApiRef,
+  configApiRef,
+  featureFlagsApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
+import {
+  AppLanguageApi,
+  TranslationMessages,
+  TranslationResource,
+  appLanguageApiRef,
+  translationApiRef,
+} from '@backstage/core-plugin-api/alpha';
 import React, {
   ComponentType,
   PropsWithChildren,
@@ -29,46 +50,35 @@ import {
   ConfigReader,
   LocalStorageFeatureFlags,
 } from '../apis';
-import {
-  AnyApiFactory,
-  ApiHolder,
-  IconComponent,
-  AppTheme,
-  appThemeApiRef,
-  configApiRef,
-  AppThemeApi,
-  ConfigApi,
-  featureFlagsApiRef,
-  identityApiRef,
-  BackstagePlugin,
-  FeatureFlag,
-} from '@backstage/core-plugin-api';
-import {
-  AppLanguageApi,
-  appLanguageApiRef,
-  translationApiRef,
-  TranslationMessages,
-  TranslationResource,
-} from '@backstage/core-plugin-api/alpha';
+import { AppLanguageSelector } from '../apis/implementations/AppLanguageApi';
+import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
+import { I18nextTranslationApi } from '../apis/implementations/TranslationApi';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
+import { ApiRegistry } from '../apis/system/ApiRegistry';
 import {
   childDiscoverer,
   routeElementDiscoverer,
   traverseElementTree,
 } from '../extensions/traversal';
 import { pluginCollector } from '../plugins/collectors';
+import { RoutingProvider } from '../routing/RoutingProvider';
 import {
   featureFlagCollector,
   routingV1Collector,
   routingV2Collector,
 } from '../routing/collectors';
-import { RoutingProvider } from '../routing/RoutingProvider';
 import {
-  validateRouteParameters,
   validateRouteBindings,
+  validateRouteParameters,
 } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
-import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
+import { AppRouter, getBasePath } from './AppRouter';
+import { AppThemeProvider } from './AppThemeProvider';
+import { InternalAppContext } from './InternalAppContext';
+import { defaultConfigLoader } from './defaultConfigLoader';
+import { isReactRouterBeta } from './isReactRouterBeta';
+import { overrideBaseUrlConfigs } from './overrideBaseUrlConfigs';
+import { resolveRouteBindings } from './resolveRouteBindings';
 import {
   AppComponents,
   AppConfigLoader,
@@ -76,16 +86,13 @@ import {
   AppOptions,
   BackstageApp,
 } from './types';
-import { AppThemeProvider } from './AppThemeProvider';
-import { defaultConfigLoader } from './defaultConfigLoader';
-import { ApiRegistry } from '../apis/system/ApiRegistry';
-import { resolveRouteBindings } from './resolveRouteBindings';
-import { isReactRouterBeta } from './isReactRouterBeta';
-import { InternalAppContext } from './InternalAppContext';
-import { AppRouter, getBasePath } from './AppRouter';
-import { AppLanguageSelector } from '../apis/implementations/AppLanguageApi';
-import { I18nextTranslationApi } from '../apis/implementations/TranslationApi';
-import { overrideBaseUrlConfigs } from './overrideBaseUrlConfigs';
+// eslint-disable-next-line @backstage/no-undeclared-imports
+import {
+  componentsApiRef,
+  coreComponentRefs,
+} from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import { DefaultComponentsApi } from '@backstage/frontend-app-api/src/apis/implementations/ComponentsApi';
 
 type CompatiblePlugin =
   | BackstagePlugin
@@ -425,10 +432,29 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       deps: {},
       factory: () => this.appIdentityProxy,
     });
+
     this.apiFactoryRegistry.register('static', {
       api: appLanguageApiRef,
       deps: {},
       factory: () => this.appLanguageApi,
+    });
+
+    this.apiFactoryRegistry.register('static', {
+      api: componentsApiRef,
+      deps: {},
+      factory: () => {
+        const map = new Map();
+        map.set(coreComponentRefs.progress, this.components.Progress);
+        map.set(
+          coreComponentRefs.errorBoundaryFallback,
+          this.components.ErrorBoundaryFallback,
+        );
+        map.set(
+          coreComponentRefs.notFoundErrorPage,
+          this.components.NotFoundErrorPage,
+        );
+        return new DefaultComponentsApi(map);
+      },
     });
 
     // The translation API is registered as a default API so that it can be overridden.
