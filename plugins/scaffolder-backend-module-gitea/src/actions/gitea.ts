@@ -330,7 +330,7 @@ export function createPublishGiteaAction(options: {
       */
       await sleep(3000);
 
-      const repoContentsUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}/+/refs/${defaultBranch}`;
+      const repoContentsUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}/src/branch/${defaultBranch}`;
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('repoContentsUrl', repoContentsUrl);

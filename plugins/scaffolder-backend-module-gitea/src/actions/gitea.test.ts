@@ -137,6 +137,11 @@ describe('publish:gitea', () => {
         name: undefined,
       },
     });
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'repoContentsUrl',
+      'https://gitea.com/org1/repo/src/branch/main',
+    );
   });
 
   afterEach(() => {
