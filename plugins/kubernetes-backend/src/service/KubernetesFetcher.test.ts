@@ -862,7 +862,7 @@ describe('KubernetesFetcher', () => {
         expect(agent.options.key).toEqual(myKey);
       });
 
-      it('should use a x509 client cert authentication strategy to consume kubeapi when backstage-kubernetes-auth field is not provided and the authStrategy enables x509 client cert authentication - fetchPodMetricsByNamespaces', async () => {
+      it('fetchPodMetricsByNamespaces authenticates with k8s using x509 client cert from authentication strategy', async () => {
         worker.use(
           rest.get(
             'https://localhost:9999/api/v1/namespaces/:namespace/pods',
