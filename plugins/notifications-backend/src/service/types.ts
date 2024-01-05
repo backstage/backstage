@@ -18,11 +18,10 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   dbConfig: Config;
   catalogClient: CatalogClient;
   identity: IdentityApi;

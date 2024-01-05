@@ -27,6 +27,7 @@
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-openapi-utils": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
@@ -42,7 +43,6 @@
     "node-fetch": "^3.3.2",
     "openapi": "^1.0.1",
     "openapi-backend": "^5.10.5",
-    "winston": "^3.11.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {
