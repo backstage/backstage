@@ -26,7 +26,7 @@ export interface RouterOptions {
   dbConfig: Config;
   catalogClient: CatalogClient;
   identity: IdentityApi;
-  permissions: PermissionEvaluator;
+  permissions?: PermissionEvaluator;
   tokenManager: TokenManager;
 
   // Workaround - see auth.ts

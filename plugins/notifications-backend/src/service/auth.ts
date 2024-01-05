@@ -85,10 +85,14 @@ export const getLoggedInUser = async (
 
 export const checkPermission = async (
   request: express.Request,
-  permissions: PermissionEvaluator,
   permission: BasicPermission,
   loggedInUser: string,
+  permissions?: PermissionEvaluator,
 ) => {
+  if (!permissions) {
+    return;
+  }
+
   const token = getBearerTokenFromAuthorizationHeader(
     request.header('authorization'),
   );
@@ -117,9 +121,9 @@ export const checkUserPermission = async (
   const loggedInUser = await getLoggedInUser(request, options);
   await checkPermission(
     request,
-    options.permissions,
     requiredPermission,
     loggedInUser,
+    options.permissions,
   );
   return loggedInUser;
 };
