@@ -100,6 +100,16 @@ describe('publish:gitea', () => {
           }),
         );
       }),
+      rest.get(
+        'https://gitea.com/org1/repo/src/branch/main',
+        (_req, res, ctx) => {
+          return res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({}),
+          );
+        },
+      ),
       rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
@@ -140,7 +150,7 @@ describe('publish:gitea', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://gitea.com/org1/repo/src/branch/main',
+      'https://gitea.com/org1/repo/src/branch/main/',
     );
   });
 
