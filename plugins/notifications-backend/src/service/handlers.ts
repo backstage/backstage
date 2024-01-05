@@ -47,29 +47,31 @@ export async function createNotification(
   // validate users
   if (Array.isArray(req.targetGroups) && req.targetGroups.length > 0) {
     isUser = true;
-    const promises = req.targetGroups.map(group => {
-      return catalogClient.getEntityByRef(`group:${group}`).then(groupRef => {
-        if (!groupRef) {
-          throw new Error(`group '${group}' does not exist`);
-        }
-      });
+
+    const groupEntityRefs = req.targetGroups.map(group => `group:${group}`);
+    const groupRefs = await catalogClient.getEntitiesByRefs({
+      entityRefs: groupEntityRefs,
     });
 
-    await Promise.all(promises);
+    const missingIdx = groupRefs.items?.findIndex(groupRef => !groupRef);
+    if (missingIdx >= 0) {
+      throw new Error(`Group '${req.targetGroups[missingIdx]}' does not exist`);
+    }
   }
 
   // validate groups
   if (Array.isArray(req.targetUsers) && req.targetUsers.length > 0) {
     isUser = true;
-    const promises = req.targetUsers.map(user => {
-      return catalogClient.getEntityByRef(`user:${user}`).then(userRef => {
-        if (!userRef) {
-          throw new Error(`user '${user}' does not exist`);
-        }
-      });
+
+    const userEntityRefs = req.targetUsers.map(user => `user:${user}`);
+    const userRefs = await catalogClient.getEntitiesByRefs({
+      entityRefs: userEntityRefs,
     });
 
-    await Promise.all(promises);
+    const missingIdx = userRefs.items?.findIndex(userRef => !userRef);
+    if (missingIdx >= 0) {
+      throw new Error(`User '${req.targetUsers[missingIdx]}' does not exist`);
+    }
   }
 
   // validate actions
