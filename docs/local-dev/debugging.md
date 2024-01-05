@@ -74,14 +74,16 @@ In your `launch.json`, add a new entry with the following,
 
 ### WebStorm
 
-Select `Edit Configurations` in the `Run` dropdown menu. Click the plus sign to add a new configuration, then select `Node.js`.
+This section describes the process for enabling run configurations for Backstage in WebStorm.
+Run configurations enable the use of debugging functionality such as steppers and breakpoints.
 
-In `Working directory`, input `${workspaceFolder}/packages/backend`.
-
-In `JavaScript file`, input `${workspaceFolder}/node_modules/@backstage/cli/bin/backstage-cli`.
-
-In `Application parameters`, input `package start`.
-
-Optionally, for `Environment Variables`, input `LOG_LEVEL=debug`.
-
-Finally, click `Apply` to save the changes. The debugging icon can then be used to execute the new configuration and enable the use of breakpoints.
+1. Select `Edit Configurations` in the `Run` dropdown menu. Click the plus sign to add a new configuration, then select `Node.js`.
+2. In `Working directory`, input `{PROJECT_DIR}/packages/backend`.
+   Replace `{PROJECT_DIR}` with the path to your Backstage repo.
+4. In `JavaScript file`, input `{PROJECT_DIR}/node_modules/@backstage/cli/bin/backstage-cli`.
+   Replace `{PROJECT_DIR}` with the path to your Backstage repo.
+5. In `Application parameters`, input `package start`.
+6. Optionally, for `Environment Variables`, input `LOG_LEVEL=debug`.
+7. Click `Apply` to save the changes.
+8. With the newly-created configuration selected, use the `Run` or `Debug` icons on the toolbar to execute the newly created configuration.
+   
