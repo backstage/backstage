@@ -27,6 +27,7 @@ Commands:
   build-workspace [options] <workspace-dir> [packages...]
   create-github-app <github-org>
   info
+  i18n:scan [options]
   help [command]
 ```
 
@@ -108,6 +109,17 @@ Options:
 Usage: backstage-cli create-github-app [options] <github-org>
 
 Options:
+  -h, --help
+```
+
+### `backstage-cli i18n:scan`
+
+```
+Usage: backstage-cli i18n:scan [options]
+
+Options:
+  --src <pathToScan>
+  --out <pathToOutputFile>
   -h, --help
 ```
 

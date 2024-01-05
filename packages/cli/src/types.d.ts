@@ -52,6 +52,7 @@ declare module 'react-dev-utils/ModuleScopePlugin' {
       appSrc: string | ReadonlyArray<string>,
       allowedFiles?: ReadonlyArray<string>,
     );
+
     apply: (resolver: any) => void;
   }
 }
@@ -159,6 +160,7 @@ declare module 'mini-css-extract-plugin' {
        */
       linkType?: string | false | 'text/css';
     }
+
     interface LoaderOptions {
       /**
        * Overrides [`output.publicPath`](https://webpack.js.org/configuration/output/#outputpublicpath).
@@ -205,6 +207,7 @@ declare module 'webpack-node-externals' {
     type ImportTypeCallback = (moduleName: string) => string;
     /** a function that accepts the module name and returns whether it should be included */
     type AllowlistFunctionType = (moduleName: string) => boolean;
+
     interface ModulesFromFileType {
       exclude?: string | string[];
       include?: string | string[];
@@ -260,3 +263,36 @@ declare module 'webpack-node-externals' {
 }
 
 declare module '@esbuild-kit/cjs-loader' {}
+
+declare module 'i18next-scanner' {
+  type ParserOptions = {
+    debug?: boolean;
+    sort?: boolean;
+    nsSeparator?: string | boolean;
+    keySeparator?: string | boolean;
+  };
+  type ParseOptions = {
+    list: string | string[];
+  };
+
+  export class Parser {
+    constructor(options: ParserOptions);
+
+    parseFuncFromString: (
+      content: string,
+      opts?: ParseOptions,
+      customHandler?: () => {},
+    ) => Parser;
+    parseAttrFromString: (
+      content: string,
+      opts?: ParseOptions,
+      customHandler?: () => {},
+    ) => Parser;
+
+    get(): {
+      en: {
+        translation: {};
+      };
+    };
+  }
+}

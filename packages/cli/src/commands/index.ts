@@ -428,6 +428,17 @@ export function registerCommands(program: Command) {
     )
     .description('Install a Backstage plugin [EXPERIMENTAL]')
     .action(lazy(() => import('./install/install').then(m => m.default)));
+
+  program
+    .command('i18n:scan')
+    .description('i18n scan for translation keys')
+    .option('--src <pathToScan>', 'glob expression to scan', './**/*.tsx')
+    .option(
+      '--out <pathToOutputFile>',
+      'Output file location',
+      'i18n-output.csv',
+    )
+    .action(lazy(() => import('./i18n/i18nScan').then(m => m.default)));
 }
 
 // Wraps an action function so that it always exits and handles errors
