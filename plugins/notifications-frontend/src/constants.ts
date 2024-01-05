@@ -13,6 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const NOTIFICATIONS_ROUTE = 'notifications';
-
 export const DebounceDelayMs = 1000;

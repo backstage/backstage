@@ -16,7 +16,7 @@
 import React from 'react';
 
 import { SidebarItem } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 import {
   IconButton,
@@ -30,9 +30,9 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import NotificationsOffIcon from '@material-ui/icons/NotificationsOff';
 
 import { notificationsApiRef } from '../api';
-import { NOTIFICATIONS_ROUTE } from '../constants';
 import { Notification } from '../openapi';
 import { usePollingEffect } from './usePollingEffect';
+import { notificationsRootRouteRef } from '../routes';
 
 const NotificationsErrorIcon = () => (
   <Tooltip title="Failed to load notifications">
@@ -60,6 +60,7 @@ export const NotificationsSidebarItem = ({
 }: NotificationsSidebarItemProps) => {
   const styles = useStyles();
   const notificationsApi = useApi(notificationsApiRef);
+  const notificationsRoute = useRouteRef(notificationsRootRouteRef);
 
   const [error, setError] = React.useState<Error | undefined>(undefined);
   const [unreadCount, setUnreadCount] = React.useState(0);
@@ -104,7 +105,7 @@ export const NotificationsSidebarItem = ({
     <>
       <SidebarItem
         icon={icon}
-        to={NOTIFICATIONS_ROUTE}
+        to={notificationsRoute()}
         text="Notifications"
         hasNotifications={!error && !!unreadCount}
       />
@@ -116,7 +117,7 @@ export const NotificationsSidebarItem = ({
           action={
             <>
               <Link
-                href={`/${NOTIFICATIONS_ROUTE}/updates`}
+                href={`/${notificationsRoute()}/updates`}
                 className={styles.systemAlertAction}
               >
                 Show

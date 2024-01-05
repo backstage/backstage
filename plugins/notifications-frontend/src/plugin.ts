@@ -22,12 +22,12 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { NotificationsApiImpl, notificationsApiRef } from './api';
-import { rootRouteRef } from './routes';
+import { notificationsRootRouteRef } from './routes';
 
 export const notificationsPlugin = createPlugin({
   id: 'notifications',
   routes: {
-    root: rootRouteRef,
+    root: notificationsRootRouteRef,
   },
   apis: [
     createApiFactory({
@@ -47,6 +47,6 @@ export const NotificationsPage = notificationsPlugin.provide(
     name: 'NotificationsPage',
     component: () =>
       import('./components/NotificationsPage').then(m => m.NotificationsPage),
-    mountPoint: rootRouteRef,
+    mountPoint: notificationsRootRouteRef,
   }),
 );
