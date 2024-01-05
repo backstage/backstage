@@ -140,9 +140,9 @@ integration:
   - `Secrets`: `Read & write` (if templates include GitHub Action Repository Secrets)
   - `Environments`: `Read & write` (if templates include GitHub Environments)
 
-  ### Troubleshooting
+### Troubleshooting
 
-  `HttpError: This endpoint requires you to be authenticated.`
+`HttpError: This endpoint requires you to be authenticated.`
 
 This message tends to wrap a `NotFoundError: No app installation found` under the hood, which
 is the reuslt of not installing the app in your organization. Even if created via the `backstage-cli`
