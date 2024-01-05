@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TokenManager } from '@backstage/backend-common';
+import { TokenManager, PluginDatabaseManager } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface RouterOptions {
   logger: LoggerService;
-  dbConfig: Config;
+  database: PluginDatabaseManager;
   catalogClient: CatalogClient;
   identity: IdentityApi;
   permissions?: PermissionEvaluator;

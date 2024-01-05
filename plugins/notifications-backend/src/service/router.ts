@@ -20,7 +20,6 @@ import { Context, OpenAPIBackend, Request } from 'openapi-backend';
 
 import { Paths } from '../openapi';
 import { checkUserPermission } from './auth';
-import { initDB } from './db';
 import {
   createNotification,
   getNotifications,
@@ -33,19 +32,15 @@ import {
   notificationsSetReadPermission,
 } from './permissions';
 import { RouterOptions } from './types';
+import { NotificationsDatabase } from './notificationsDatabase';
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, dbConfig, catalogClient } = options;
+  const { database, catalogClient } = options;
 
-  // create DB client and tables
-  if (!dbConfig) {
-    logger.error('Missing dbConfig');
-    throw new Error('Missing database config');
-  }
-
-  const dbClient = await initDB(dbConfig);
+  const notificationsDatabase = NotificationsDatabase.create(database);
+  const dbClient = await notificationsDatabase.get();
 
   // create openapi requests handler
   const api = new OpenAPIBackend({
