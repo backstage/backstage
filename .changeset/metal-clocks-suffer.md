@@ -5,4 +5,4 @@
 '@backstage/integration': patch
 ---
 
-Added support to create a git repository and publish a scaffolded project using a new action "publish:gitea" for gitea. The action currently supports to create a gitea org's repository - https://gitea.com/api/swagger#/organization/createOrgRepo
+Added support to create a git repository and publish a scaffolded project using a new action "publish:gitea" for gitea. The action currently supports to create a gitea repository owned by an organization. See: https://gitea.com/api/swagger#/organization/createOrgRepo
