@@ -15,29 +15,22 @@
  */
 
 import { AuthHandler, SignInResolver } from '../types';
-import { OAuthResult } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { createOAuthProviderFactory } from '@backstage/plugin-auth-node';
 import {
-  adaptLegacyOAuthHandler,
-  adaptLegacyOAuthSignInResolver,
-} from '../../lib/legacy';
-import { oidcAuthenticator } from '@backstage/plugin-auth-backend-module-oidc-provider';
-import { TokenSet, UserinfoResponse } from 'openid-client';
+  createOAuthProviderFactory,
+  AuthResolverContext,
+  BackstageSignInResult,
+  OAuthAuthenticatorResult,
+  SignInInfo,
+} from '@backstage/plugin-auth-node';
+import {
+  oidcAuthenticator,
+  OidcAuthResult,
+} from '@backstage/plugin-auth-backend-module-oidc-provider';
 import {
   commonByEmailLocalPartResolver,
   commonByEmailResolver,
 } from '../resolvers';
-
-/**
- * authentication result for the OIDC which includes the token set and user information (a profile response sent by OIDC server)
- * @public
- * @deprecated No longer used
- */
-export type OidcAuthResult = {
-  tokenset: TokenSet;
-  userinfo: UserinfoResponse;
-};
 
 /**
  * Auth provider integration for generic OpenID Connect auth
@@ -50,19 +43,39 @@ export const oidc = createAuthProviderIntegration({
      * The profile transformation function used to verify and convert the auth response
      * into the profile that will be presented to the user.
      */
-    authHandler?: AuthHandler<OAuthResult>;
+    authHandler?: AuthHandler<OidcAuthResult>;
 
     /**
-     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     * Configure sign-in for this provider; convert user profile respones into
+     * Backstage identities.
      */
     signIn?: {
-      resolver: SignInResolver<OAuthResult>;
+      resolver: SignInResolver<OidcAuthResult>;
     };
   }) {
+    const authHandler = options?.authHandler;
+    const signInResolver = options?.signIn?.resolver;
     return createOAuthProviderFactory({
       authenticator: oidcAuthenticator,
-      profileTransform: adaptLegacyOAuthHandler(options?.authHandler),
-      signInResolver: adaptLegacyOAuthSignInResolver(options?.signIn?.resolver),
+      profileTransform:
+        authHandler &&
+        ((
+          result: OAuthAuthenticatorResult<OidcAuthResult>,
+          context: AuthResolverContext,
+        ) => authHandler(result.fullProfile, context)),
+      signInResolver:
+        signInResolver &&
+        ((
+          info: SignInInfo<OAuthAuthenticatorResult<OidcAuthResult>>,
+          context: AuthResolverContext,
+        ): Promise<BackstageSignInResult> =>
+          signInResolver(
+            {
+              result: info.result.fullProfile,
+              profile: info.profile,
+            },
+            context,
+          )),
     });
   },
   resolvers: {

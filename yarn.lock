@@ -4819,7 +4819,6 @@ __metadata:
     passport-auth0: ^1.4.3
     passport-bitbucket-oauth2: ^0.1.2
     passport-github2: ^0.1.12
-    passport-gitlab2: ^5.0.0
     passport-google-oauth20: ^2.0.0
     passport-microsoft: ^1.0.0
     passport-oauth2: ^1.6.1

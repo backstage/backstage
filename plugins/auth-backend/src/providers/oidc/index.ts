@@ -15,4 +15,3 @@
  */
 
 export { oidc } from './provider';
-export type { OidcAuthResult } from './provider';

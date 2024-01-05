@@ -23,15 +23,35 @@ import {
 } from 'openid-client';
 import {
   createOAuthAuthenticator,
+  OAuthAuthenticatorResult,
+  PassportDoneCallback,
+  PassportHelpers,
   PassportOAuthAuthenticatorHelper,
-  PassportOAuthDoneCallback,
+  PassportOAuthPrivateInfo,
 } from '@backstage/plugin-auth-node';
+
+/**
+ * authentication result for the OIDC which includes the token set and user
+ * profile response
+ * @public
+ */
+export type OidcAuthResult = {
+  tokenset: TokenSet;
+  userinfo: UserinfoResponse;
+};
 
 /** @public */
 export const oidcAuthenticator = createOAuthAuthenticator({
-  defaultProfileTransform:
-    PassportOAuthAuthenticatorHelper.defaultProfileTransform,
-  async initialize({ callbackUrl, config }) {
+  defaultProfileTransform: async (
+    input: OAuthAuthenticatorResult<OidcAuthResult>,
+  ) => ({
+    profile: {
+      email: input.fullProfile.userinfo.email,
+      picture: input.fullProfile.userinfo.picture,
+      displayName: input.fullProfile.userinfo.name,
+    },
+  }),
+  initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
     const metadataUrl = config.getString('metadataUrl');
@@ -45,81 +65,53 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     const initializedScope = config.getOptionalString('scope');
     const initializedPrompt = config.getOptionalString('prompt');
 
-    const issuer = await Issuer.discover(metadataUrl);
-    const client = new issuer.Client({
-      access_type: 'offline', // this option must be passed to provider to receive a refresh token
-      client_id: clientId,
-      client_secret: clientSecret,
-      redirect_uris: [customCallbackUrl || callbackUrl],
-      response_types: ['code'],
-      token_endpoint_auth_method:
-        tokenEndpointAuthMethod || 'client_secret_basic',
-      id_token_signed_response_alg: tokenSignedResponseAlg || 'RS256',
-      scope: initializedScope || '',
+    const promise = Issuer.discover(metadataUrl).then(issuer => {
+      const client = new issuer.Client({
+        access_type: 'offline', // this option must be passed to provider to receive a refresh token
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uris: [customCallbackUrl || callbackUrl],
+        response_types: ['code'],
+        token_endpoint_auth_method:
+          tokenEndpointAuthMethod || 'client_secret_basic',
+        id_token_signed_response_alg: tokenSignedResponseAlg || 'RS256',
+        scope: initializedScope || '',
+      });
+
+      const strategy = new OidcStrategy(
+        {
+          client,
+          passReqToCallback: false,
+        },
+        (
+          tokenset: TokenSet,
+          userinfo: UserinfoResponse,
+          done: PassportDoneCallback<OidcAuthResult, PassportOAuthPrivateInfo>,
+        ) => {
+          if (typeof done !== 'function') {
+            throw new Error(
+              'OIDC IdP must provide a userinfo_endpoint in the metadata response',
+            );
+          }
+
+          done(
+            undefined,
+            { tokenset, userinfo },
+            { refreshToken: tokenset.refresh_token },
+          );
+        },
+      );
+
+      const helper = PassportOAuthAuthenticatorHelper.from(strategy);
+      return { helper, client, strategy };
     });
 
-    const strategy = new OidcStrategy(
-      {
-        client,
-        passReqToCallback: false,
-      },
-      (
-        tokenset: TokenSet,
-        userinfo: UserinfoResponse,
-        done: PassportOAuthDoneCallback,
-      ) => {
-        if (typeof done !== 'function') {
-          throw new Error(
-            'OIDC IdP must provide a userinfo_endpoint in the metadata response',
-          );
-        }
-
-        const emails = userinfo.email ? [{ value: userinfo.email }] : undefined;
-        const photos = userinfo.picture
-          ? [{ value: userinfo.picture }]
-          : undefined;
-        const name =
-          userinfo.family_name && userinfo.given_name
-            ? {
-                familyName: userinfo.family_name,
-                givenName: userinfo.given_name,
-              }
-            : undefined;
-
-        done(
-          undefined,
-          {
-            fullProfile: {
-              provider: 'oidc',
-              id: userinfo.sub,
-              displayName: userinfo.name!,
-              username: userinfo.preferred_username,
-              name,
-              emails,
-              photos,
-            },
-            accessToken: tokenset.access_token!,
-            params: {
-              id_token: tokenset.id_token,
-              scope: tokenset.scope!,
-              expires_in: tokenset.expires_in!,
-              token_type: tokenset.token_type,
-            },
-          },
-          {
-            refreshToken: tokenset.refresh_token,
-          },
-        );
-      },
-    );
-
-    const helper = PassportOAuthAuthenticatorHelper.from(strategy);
-
-    return { helper, client, initializedScope, initializedPrompt, strategy };
+    return { initializedScope, initializedPrompt, promise };
   },
 
   async start(input, ctx) {
-    const { initializedScope, initializedPrompt, helper, strategy } = await ctx;
+    const { initializedScope, initializedPrompt, promise } = ctx;
+    const { helper, strategy } = await promise;
     const options: Record<string, string> = {
       scope: input.scope || initializedScope || 'openid profile email',
       state: input.state,
@@ -140,12 +132,32 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     });
   },
 
-  async authenticate(input, ctx) {
-    return (await ctx).helper.authenticate(input);
+  async authenticate(
+    input,
+    ctx,
+  ): Promise<OAuthAuthenticatorResult<OidcAuthResult>> {
+    const { strategy } = await ctx.promise;
+    const { result, privateInfo } =
+      await PassportHelpers.executeFrameHandlerStrategy<
+        OidcAuthResult,
+        PassportOAuthPrivateInfo
+      >(input.req, strategy);
+
+    return {
+      fullProfile: result,
+      session: {
+        accessToken: result.tokenset.access_token!,
+        tokenType: result.tokenset.token_type ?? 'bearer',
+        scope: result.tokenset.scope!,
+        expiresInSeconds: result.tokenset.expires_in,
+        idToken: result.tokenset.id_token,
+        refreshToken: privateInfo.refreshToken,
+      },
+    };
   },
 
   async refresh(input, ctx) {
-    const { client } = await ctx;
+    const { client } = await ctx.promise;
     const tokenset = await client.refresh(input.refreshToken);
     if (!tokenset.access_token) {
       throw new Error('Refresh failed');
@@ -160,11 +172,7 @@ export const oidcAuthenticator = createOAuthAuthenticator({
         reject(new Error('Refresh Failed'));
       }
       resolve({
-        fullProfile: {
-          provider: 'oidc',
-          id: userinfo.sub,
-          displayName: userinfo.name!,
-        },
+        fullProfile: { userinfo, tokenset },
         session: {
           accessToken: tokenset.access_token!,
           tokenType: tokenset.token_type ?? 'bearer',

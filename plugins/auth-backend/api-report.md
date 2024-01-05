@@ -25,6 +25,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { OAuth2ProxyResult as OAuth2ProxyResult_2 } from '@backstage/plugin-auth-backend-module-oauth2-proxy-provider';
 import { OAuthEnvironmentHandler as OAuthEnvironmentHandler_2 } from '@backstage/plugin-auth-node';
 import { OAuthState as OAuthState_2 } from '@backstage/plugin-auth-node';
+import { OidcAuthResult } from '@backstage/plugin-auth-backend-module-oidc-provider';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { prepareBackstageIdentityResponse as prepareBackstageIdentityResponse_2 } from '@backstage/plugin-auth-node';
@@ -34,9 +35,7 @@ import { SignInInfo as SignInInfo_2 } from '@backstage/plugin-auth-node';
 import { SignInResolver as SignInResolver_2 } from '@backstage/plugin-auth-node';
 import { TokenManager } from '@backstage/backend-common';
 import { TokenParams as TokenParams_2 } from '@backstage/plugin-auth-node';
-import { TokenSet } from 'openid-client';
 import { UserEntity } from '@backstage/catalog-model';
-import { UserinfoResponse } from 'openid-client';
 import { WebMessageResponse as WebMessageResponse_2 } from '@backstage/plugin-auth-node';
 
 // @public @deprecated
@@ -340,12 +339,6 @@ export type OAuthStartResponse = {
 // @public @deprecated (undocumented)
 export type OAuthState = OAuthState_2;
 
-// @public @deprecated
-export type OidcAuthResult = {
-  tokenset: TokenSet;
-  userinfo: UserinfoResponse;
-};
-
 // @public @deprecated (undocumented)
 export const postMessageResponse: (
   res: express.Response,
@@ -564,10 +557,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OAuthResult> | undefined;
+            authHandler?: AuthHandler<OidcAuthResult> | undefined;
             signIn?:
               | {
-                  resolver: SignInResolver<OAuthResult>;
+                  resolver: SignInResolver<OidcAuthResult>;
                 }
               | undefined;
           }

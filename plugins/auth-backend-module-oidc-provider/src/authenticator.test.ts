@@ -281,81 +281,75 @@ describe('oidcAuthenticator', () => {
     });
 
     it('exchanges authorization code for access token', async () => {
-      const handlerResponse = await oidcAuthenticator.authenticate(
+      const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
       );
-      const accessToken = handlerResponse.session.accessToken;
+      const accessToken = authenticatorResult.session.accessToken;
 
       expect(accessToken).toEqual('accessToken');
     });
 
     it('exchanges authorization code for refresh token', async () => {
-      const handlerResponse = await oidcAuthenticator.authenticate(
+      const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
       );
-      const refreshToken = handlerResponse.session.refreshToken;
+      const refreshToken = authenticatorResult.session.refreshToken;
 
       expect(refreshToken).toEqual('refreshToken');
     });
 
     it('returns granted scope', async () => {
-      const handlerResponse = await oidcAuthenticator.authenticate(
+      const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
       );
-      const responseScope = handlerResponse.session.scope;
+      const responseScope = authenticatorResult.session.scope;
 
       expect(responseScope).toEqual('testScope');
     });
 
     it('returns a default session.tokentype field', async () => {
-      const handlerResponse = await oidcAuthenticator.authenticate(
+      const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
       );
-      const tokenType = handlerResponse.session.tokenType;
+      const tokenType = authenticatorResult.session.tokenType;
 
       expect(tokenType).toEqual('bearer');
     });
 
-    it('returns defined fullProfile with picture and email', async () => {
-      const handlerResponse = await oidcAuthenticator.authenticate(
+    it('returns picture and email', async () => {
+      const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
       );
-      const displayName = handlerResponse.fullProfile.displayName;
-      const email = handlerResponse.fullProfile.emails![0].value;
-      const picture = handlerResponse.fullProfile.photos![0].value;
 
-      expect(displayName).toEqual('Alice Adams');
-      expect(email).toEqual('alice@test.com');
-      expect(picture).toEqual('http://testPictureUrl/photo.jpg');
+      expect(authenticatorResult).toMatchObject({
+        fullProfile: {
+          userinfo: {
+            email: 'alice@test.com',
+            picture: 'http://testPictureUrl/photo.jpg',
+            name: 'Alice Adams',
+          },
+        },
+      });
     });
 
-    it('returns defined response with an idToken', async () => {
-      const handlerResponse = await oidcAuthenticator.authenticate(
+    it('returns idToken', async () => {
+      const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
       );
 
-      expect(handlerResponse).toMatchObject({
-        fullProfile: {
-          displayName: 'Alice Adams',
-          id: 'test',
-          provider: 'oidc',
-        },
+      expect(authenticatorResult).toMatchObject({
         session: {
-          accessToken: 'accessToken',
           idToken,
-          refreshToken: 'refreshToken',
-          scope: 'testScope',
-          tokenType: 'bearer',
         },
       });
       expect(
-        Math.abs(handlerResponse.session.expiresInSeconds! - 3600),
+        Math.abs(authenticatorResult.session.expiresInSeconds! - 3600),
       ).toBeLessThan(5);
     });
 

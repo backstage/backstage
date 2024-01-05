@@ -7,10 +7,10 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BaseClient } from 'openid-client';
 import { OAuthAuthenticator } from '@backstage/plugin-auth-node';
 import { PassportOAuthAuthenticatorHelper } from '@backstage/plugin-auth-node';
-import { PassportOAuthResult } from '@backstage/plugin-auth-node';
-import { PassportProfile } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 import { Strategy } from 'openid-client';
+import { TokenSet } from 'openid-client';
+import { UserinfoResponse } from 'openid-client';
 
 // @public (undocumented)
 const authModuleOidcProvider: () => BackendFeature;
@@ -18,15 +18,23 @@ export default authModuleOidcProvider;
 
 // @public (undocumented)
 export const oidcAuthenticator: OAuthAuthenticator<
-  Promise<{
-    helper: PassportOAuthAuthenticatorHelper;
-    client: BaseClient;
+  {
     initializedScope: string | undefined;
     initializedPrompt: string | undefined;
-    strategy: Strategy<PassportOAuthResult, BaseClient>;
-  }>,
-  PassportProfile
+    promise: Promise<{
+      helper: PassportOAuthAuthenticatorHelper;
+      client: BaseClient;
+      strategy: Strategy<OidcAuthResult, BaseClient>;
+    }>;
+  },
+  OidcAuthResult
 >;
+
+// @public
+export type OidcAuthResult = {
+  tokenset: TokenSet;
+  userinfo: UserinfoResponse;
+};
 
 // @public
 export namespace oidcSignInResolvers {
