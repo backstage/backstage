@@ -19,13 +19,19 @@ import { PluginEnvironment } from '../types';
 import { CatalogClient } from '@backstage/catalog-client';
 
 export default async function createPlugin(env: PluginEnvironment) {
-  const { logger, scheduler, config } = env;
+  const { logger, scheduler, config, tokenManager } = env;
 
   const catalogClient = new CatalogClient({
     discoveryApi: env.discovery,
   });
 
-  await createScheduler({ logger, scheduler, config, catalogClient });
+  await createScheduler({
+    logger,
+    scheduler,
+    config,
+    catalogClient,
+    tokenManager,
+  });
 }
 ```
 
@@ -80,5 +86,8 @@ You can define how often and when the scheduler should run the audits:
 ```yaml
 lighthouse:
   schedule:
-    days: 1
+    frequency:
+      hours: 12 # Default: 1 day
+    timeout:
+      minutes: 30 # Default: 10 minutes
 ```

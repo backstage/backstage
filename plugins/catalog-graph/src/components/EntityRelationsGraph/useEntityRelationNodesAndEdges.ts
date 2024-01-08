@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { MouseEvent, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
 import { EntityEdge, EntityNode } from './types';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
+import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 /**
  * Generate nodes and edges to render the entity graph.
@@ -71,13 +71,15 @@ export function useEntityRelationNodesAndEdges({
         const focused = rootEntityRefs.includes(entityRef);
         const node: EntityNode = {
           id: entityRef,
-          title: entity.metadata?.title ?? undefined,
-          kind: entity.kind,
-          name: entity.metadata.name,
-          namespace: entity.metadata.namespace ?? DEFAULT_NAMESPACE,
-          spec: entity.spec ?? undefined,
+          entity,
           focused,
           color: focused ? 'secondary' : 'primary',
+          // @deprecated
+          kind: entity.kind,
+          name: entity.metadata.name,
+          namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+          title: entity.metadata.title,
+          spec: entity.spec,
         };
 
         if (onNodeClick) {

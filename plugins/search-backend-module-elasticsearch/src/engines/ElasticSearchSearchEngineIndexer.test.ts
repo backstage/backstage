@@ -34,6 +34,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
   let createSpy: jest.Mock;
   let aliasesSpy: jest.Mock;
   let deleteSpy: jest.Mock;
+  let refreshSpy: jest.Mock;
 
   beforeEach(() => {
     // Instantiate the indexer to be tested.
@@ -45,6 +46,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       logger: getVoidLogger(),
       elasticSearchClientWrapper: clientWrapper,
       batchSize: 1000,
+      skipRefresh: false,
     });
 
     // Set up all requisite Elastic mocks.
@@ -57,12 +59,13 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       },
       bulkSpy,
     );
+    refreshSpy = jest.fn().mockReturnValue({});
     mock.add(
       {
         method: 'GET',
         path: '/:index/_refresh',
       },
-      jest.fn().mockReturnValue({}),
+      refreshSpy,
     );
 
     catSpy = jest.fn().mockReturnValue([
@@ -212,6 +215,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
 
     // Ensure multiple bulk requests were made.
     expect(bulkSpy).toHaveBeenCalledTimes(2);
+    expect(refreshSpy).toHaveBeenCalledTimes(1);
 
     // Ensure the first and last documents were included in the payloads.
     const docLocations: string[] = [
@@ -269,6 +273,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       logger: getVoidLogger(),
       elasticSearchClientWrapper: mockClientWrapper,
       batchSize: 1000,
+      skipRefresh: false,
     });
 
     // When the indexer is run in the test pipeline
@@ -278,5 +283,38 @@ describe('ElasticSearchSearchEngineIndexer', () => {
 
     // Then the pipeline should have received the expected error
     expect(error).toBe(expectedError);
+  });
+
+  it('indexes documents, skip refresh', async () => {
+    // Instantiate the indexer to be tested.
+    indexer = new ElasticSearchSearchEngineIndexer({
+      type: 'some-type',
+      indexPrefix: '',
+      indexSeparator: '-index__',
+      alias: 'some-type-index__search',
+      logger: getVoidLogger(),
+      elasticSearchClientWrapper: clientWrapper,
+      batchSize: 1000,
+      skipRefresh: true,
+    });
+
+    const documents = [
+      {
+        title: 'testTerm',
+        text: 'testText',
+        location: 'test/location',
+      },
+      {
+        title: 'Another test',
+        text: 'Some more text',
+        location: 'test/location/2',
+      },
+    ];
+
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
+
+    // Ensure bulk called but refresh not
+    expect(bulkSpy).toHaveBeenCalledTimes(1);
+    expect(refreshSpy).toHaveBeenCalledTimes(0);
   });
 });

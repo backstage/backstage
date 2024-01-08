@@ -18,3 +18,5 @@ export type { ToolkitContentProps, Tool } from './Toolkit';
 export type { ClockConfig } from './HeaderWorldClock';
 export type { WelcomeTitleLanguageProps } from './WelcomeTitle';
 export type { VisitedByTypeProps, VisitedByTypeKind } from './VisitedByType';
+export type { FeaturedDocsCardProps } from './FeaturedDocsCard';
+export type { StarredEntitiesProps } from './StarredEntities';

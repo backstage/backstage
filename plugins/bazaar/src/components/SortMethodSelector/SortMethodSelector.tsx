@@ -50,7 +50,8 @@ export const SortMethodSelector = ({
       >
         <MenuItem value={0}>Latest updated</MenuItem>
         <MenuItem value={1}>A-Z</MenuItem>
-        <MenuItem value={2}>Most members</MenuItem>
+        <MenuItem value={2}>Z-A</MenuItem>
+        <MenuItem value={3}>Most members</MenuItem>
       </Select>
     </FormControl>
   );

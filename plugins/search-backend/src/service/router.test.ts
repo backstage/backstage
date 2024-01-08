@@ -22,6 +22,8 @@ import { SearchEngine } from '@backstage/plugin-search-common';
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
+import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
+import { Server } from 'http';
 
 const mockPermissionEvaluator: PermissionEvaluator = {
   authorize: () => {
@@ -33,7 +35,7 @@ const mockPermissionEvaluator: PermissionEvaluator = {
 };
 
 describe('createRouter', () => {
-  let app: express.Express;
+  let app: express.Express | Server;
   let mockSearchEngine: jest.Mocked<SearchEngine>;
 
   beforeAll(async () => {
@@ -65,7 +67,7 @@ describe('createRouter', () => {
       permissions: mockPermissionEvaluator,
       logger,
     });
-    app = express().use(router);
+    app = wrapInOpenApiTestServer(express().use(router));
   });
 
   beforeEach(() => {
@@ -78,6 +80,7 @@ describe('createRouter', () => {
       mockSearchEngine.query.mockRejectedValueOnce(error);
 
       const response = await request(app).get('/query');
+      console.log((response as any).text);
 
       expect(response.status).toEqual(500);
       expect(response.body).toMatchObject(

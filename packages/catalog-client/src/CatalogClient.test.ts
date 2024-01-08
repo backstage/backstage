@@ -86,9 +86,12 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe(
-            '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c',
-          );
+          const queryParams = new URLSearchParams(req.url.search);
+          expect(queryParams.getAll('filter')).toEqual([
+            'a=1,b=2,b=3,ö==',
+            'a=2',
+            'c',
+          ]);
           return res(ctx.json([]));
         }),
       );
@@ -120,7 +123,8 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?filter=a=1,b=2,b=3,%C3%B6=%3D,c');
+          const queryParams = new URLSearchParams(req.url.search);
+          expect(queryParams.getAll('filter')).toEqual(['a=1,b=2,b=3,ö==,c']);
           return res(ctx.json([]));
         }),
       );
@@ -140,12 +144,45 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
+    it('builds search filters property even those with URL unsafe values', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities(
+        {
+          filter: [
+            {
+              '!@#$%': 't?i=1&a:2',
+              '^&*(){}[]': ['t%^url*encoded2', 'url'],
+            },
+          ],
+        },
+        { token },
+      );
+
+      expect(response).toEqual({ items: [], totalItems: 0 });
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+
+      const queryParams = new URLSearchParams(
+        mockedEndpoint.mock.calls[0][0].url.search,
+      );
+      expect(queryParams.getAll('filter')).toEqual([
+        '!@#$%=t?i=1&a:2,^&*(){}[]=t%^url*encoded2,^&*(){}[]=url',
+      ]);
+    });
+
     it('builds entity field selectors properly', async () => {
       expect.assertions(2);
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?fields=a.b,%C3%B6');
+          const queryParams = new URLSearchParams(req.url.search);
+          expect(queryParams.getAll('fields')).toEqual(['a.b,ö']);
           return res(ctx.json([]));
         }),
       );
@@ -185,7 +222,7 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?offset=1&limit=2&after=%3D');
+          expect(req.url.search).toBe('?limit=2&offset=1&after=%3D');
           return res(ctx.json([]));
         }),
       );
@@ -203,9 +240,11 @@ describe('CatalogClient', () => {
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe(
-            '?order=asc:kind&order=desc:metadata.name',
-          );
+          const queryParams = new URLSearchParams(req.url.search);
+          expect(queryParams.getAll('order')).toEqual([
+            'asc:kind',
+            'desc:metadata.name',
+          ]);
           return res(ctx.json([]));
         }),
       );
@@ -326,9 +365,46 @@ describe('CatalogClient', () => {
 
       expect(response).toEqual({ items: [], totalItems: 0 });
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
-      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
-        '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2&filter=c',
+
+      const queryParams = new URLSearchParams(
+        mockedEndpoint.mock.calls[0][0].url.search,
       );
+      expect(queryParams.getAll('filter')).toEqual([
+        'a=1,b=2,b=3,ö==',
+        'a=2',
+        'c',
+      ]);
+    });
+
+    it('builds search filters property even those with URL unsafe values', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) =>
+          res(ctx.json({ items: [], totalItems: 0 })),
+        );
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities(
+        {
+          filter: [
+            {
+              '!@#$%': 't?i=1&a:2',
+              '^&*(){}[]': ['t%^url*encoded2', 'url'],
+            },
+          ],
+        },
+        { token },
+      );
+
+      expect(response).toEqual({ items: [], totalItems: 0 });
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+      const queryParams = new URLSearchParams(
+        mockedEndpoint.mock.calls[0][0].url.search,
+      );
+      expect(queryParams.getAll('filter')).toEqual([
+        '!@#$%=t?i=1&a:2,^&*(){}[]=t%^url*encoded2,^&*(){}[]=url',
+      ]);
     });
 
     it('should send query params correctly on initial request', async () => {
@@ -351,9 +427,17 @@ describe('CatalogClient', () => {
           { field: 'metadata.uid', order: 'desc' },
         ],
       });
-      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
-        '?limit=100&orderField=metadata.name,asc&orderField=metadata.uid,desc&fields=a,b&fullTextFilterTerm=query',
+
+      const queryParams = new URLSearchParams(
+        mockedEndpoint.mock.calls[0][0].url.search,
       );
+      expect(queryParams.getAll('fields')).toEqual(['a,b']);
+      expect(queryParams.getAll('limit')).toEqual(['100']);
+      expect(queryParams.getAll('fullTextFilterTerm')).toEqual(['query']);
+      expect(queryParams.getAll('orderField')).toEqual([
+        'metadata.name,asc',
+        'metadata.uid,desc',
+      ]);
     });
 
     it('should ignore initial query params if cursor is passed', async () => {
@@ -375,7 +459,7 @@ describe('CatalogClient', () => {
         cursor: 'cursor',
       });
       expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
-        '?cursor=cursor&limit=100&fields=a,b',
+        '?fields=a,b&limit=100&cursor=cursor',
       );
     });
 

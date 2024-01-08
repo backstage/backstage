@@ -44,9 +44,7 @@ describe('MicrosoftAuth', () => {
             return res(
               ctx.json({
                 providerInfo: {
-                  accessToken: scopeParam
-                    ? 'tokenForOtherResource'
-                    : 'tokenForGrantScopes',
+                  accessToken: `token:${scopeParam}`,
                   scope: scopeParam || 'grant-resource/scope',
                 },
               }),
@@ -59,7 +57,9 @@ describe('MicrosoftAuth', () => {
     it('gets access token with requested scopes for grant', async () => {
       const accessToken = await microsoftAuth.getAccessToken();
 
-      expect(accessToken).toEqual('tokenForGrantScopes');
+      expect(accessToken).toEqual(
+        'token:openid offline_access profile email User.Read',
+      );
     });
 
     it('gets access token for other consented scopes besides those directly granted', async () => {
@@ -67,7 +67,7 @@ describe('MicrosoftAuth', () => {
         'azure-resource/scope',
       );
 
-      expect(accessToken).toEqual('tokenForOtherResource');
+      expect(accessToken).toEqual('token:azure-resource/scope offline_access');
     });
 
     it('fails when requesting scopes for multiple resources at once', async () => {
@@ -86,7 +86,7 @@ describe('MicrosoftAuth', () => {
       );
 
       await expect(accessTokenPromise).resolves.toEqual(
-        'tokenForOtherResource',
+        'token:same-resource/one-scope same-resource/other-scope offline_access',
       );
     });
   });

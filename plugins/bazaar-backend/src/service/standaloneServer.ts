@@ -15,15 +15,15 @@
  */
 
 import {
+  DatabaseManager,
   createServiceBuilder,
   loadBackendConfig,
-  useHotMemoize,
 } from '@backstage/backend-common';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
-import knexFactory from 'knex';
+import { ConfigReader } from '@backstage/config';
 
 export interface ServerOptions {
   port: number;
@@ -37,23 +37,18 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'bazaar-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
 
-  const db = useHotMemoize(module, () => {
-    const knex = knexFactory({
-      client: 'better-sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
-
-    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-      resource.run('PRAGMA foreign_keys = ON', () => {});
-    });
-
-    return knex;
-  });
+  const manager = DatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: { client: 'better-sqlite3', connection: ':memory:' },
+      },
+    }),
+  );
+  const database = manager.forPlugin('bazaar');
 
   const router = await createRouter({
     logger,
-    database: { getClient: async () => db },
+    database,
     config: config,
     identity: {} as IdentityApi,
   });

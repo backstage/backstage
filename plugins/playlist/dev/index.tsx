@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { playlistPlugin, PlaylistIndexPage } from '../src/plugin';
+import { PlaylistIndexPage, PlaylistPage, playlistPlugin } from '../src/plugin';
 
 createDevApp()
   .registerPlugin(playlistPlugin)
@@ -23,5 +23,10 @@ createDevApp()
     element: <PlaylistIndexPage />,
     title: 'Root Page',
     path: '/playlist',
+  })
+  .addPage({
+    element: <PlaylistPage />,
+    title: 'Root Page',
+    path: '/playlist/:playlistId',
   })
   .render();

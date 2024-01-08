@@ -88,6 +88,6 @@ export class DefaultCacheClient implements CacheService {
       return wellFormedKey;
     }
 
-    return createHash('md5').update(candidateKey).digest('base64');
+    return createHash('sha256').update(candidateKey).digest('base64');
   }
 }

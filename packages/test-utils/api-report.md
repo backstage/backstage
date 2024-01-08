@@ -74,7 +74,7 @@ export class MockAnalyticsApi implements AnalyticsApi {
   getEvents(): AnalyticsEvent[];
 }
 
-// @public
+// @public @deprecated
 export function mockBreakpoint(options: { matches: boolean }): void;
 
 // @public

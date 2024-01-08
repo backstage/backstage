@@ -210,6 +210,8 @@ export interface Team {
 export interface ReadmeConfig {
   project: string;
   repo: string;
+  host?: string;
+  org?: string;
 }
 
 /** @public */

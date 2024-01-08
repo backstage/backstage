@@ -37,7 +37,7 @@ import {
   EntityNode,
   EntityRelationsGraph,
 } from '../EntityRelationsGraph';
-import { EntityRelationsGraphProps } from '../EntityRelationsGraph/EntityRelationsGraph';
+import { EntityRelationsGraphProps } from '../EntityRelationsGraph';
 
 const useStyles = makeStyles<Theme, { height: number | undefined }>(
   {
@@ -97,7 +97,7 @@ export const CatalogGraphCard = (
       });
       analytics.captureEvent(
         'click',
-        node.title ?? humanizeEntityRef(nodeEntityName),
+        node.entity.metadata.title ?? humanizeEntityRef(nodeEntityName),
         { attributes: { to: path } },
       );
       navigate(path);

@@ -15,3 +15,4 @@
  */
 
 export { Git } from './git';
+export type { StaticAuthOptions, AuthCallbackOptions } from './git';

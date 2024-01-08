@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiFactory, createRouteRef } from '@backstage/core-plugin-api';
+import { createApiFactory } from '@backstage/core-plugin-api';
 import {
   createApiExtension,
   createPageExtension,
@@ -24,14 +24,16 @@ import {
 import React from 'react';
 import { techRadarApiRef } from './api';
 import { SampleTechRadarApi } from './sample';
-
-const techRadarRouteRef = createRouteRef({ id: 'plugin.techradar.page' });
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
+import { rootRouteRef } from './plugin';
 
 /** @alpha */
-export const TechRadarPage = createPageExtension({
-  id: 'plugin.techradar.page',
+export const techRadarPage = createPageExtension({
   defaultPath: '/tech-radar',
-  routeRef: techRadarRouteRef,
+  routeRef: convertLegacyRouteRef(rootRouteRef),
   configSchema: createSchemaFromZod(z =>
     z.object({
       title: z.string().default('Tech Radar'),
@@ -45,18 +47,21 @@ export const TechRadarPage = createPageExtension({
     }),
   ),
   loader: ({ config }) =>
-    import('./components').then(m => <m.RadarPage {...config} />),
+    import('./components').then(m =>
+      compatWrapper(<m.RadarPage {...config} />),
+    ),
 });
 
-const sampleTechRadarApi = createApiExtension({
-  api: techRadarApiRef,
-  factory() {
-    return createApiFactory(techRadarApiRef, new SampleTechRadarApi());
-  },
+/** @alpha */
+export const techRadarApi = createApiExtension({
+  factory: createApiFactory(techRadarApiRef, new SampleTechRadarApi()),
 });
 
 /** @alpha */
 export default createPlugin({
   id: 'tech-radar',
-  extensions: [TechRadarPage, sampleTechRadarApi],
+  extensions: [techRadarPage, techRadarApi],
+  routes: {
+    root: convertLegacyRouteRef(rootRouteRef),
+  },
 });

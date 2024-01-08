@@ -18,7 +18,7 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntityList: jest.fn(),
 }));
 
-jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
+jest.mock('../TemplateGroup/TemplateGroup', () => ({
   TemplateGroup: jest.fn(() => null),
 }));
 
@@ -27,7 +27,7 @@ import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateGroups } from './TemplateGroups';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
-import { TemplateGroup } from '@backstage/plugin-scaffolder-react/alpha';
+import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
 
 describe('TemplateGroups', () => {
   beforeEach(() => jest.clearAllMocks());

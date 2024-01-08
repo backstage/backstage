@@ -17,15 +17,41 @@
 import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
+import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
 import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
+import homePlugin, {
+  titleExtensionDataRef,
+} from '@backstage/plugin-home/alpha';
+
 import {
+  coreExtensionData,
+  createExtension,
+  createApiExtension,
   createExtensionOverrides,
-  createPageExtension,
 } from '@backstage/frontend-plugin-api';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
+import appVisualizerPlugin from '@backstage/plugin-visualizer';
+import { homePage } from './HomePage';
+import { convertLegacyApp } from '@backstage/core-compat-api';
+import { FlatRoutes } from '@backstage/core-app-api';
+import { Route } from 'react-router';
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import {
+  createApiFactory,
+  configApiRef,
+  SignInPageProps,
+} from '@backstage/core-plugin-api';
+import {
+  ScmAuth,
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
+import { createSignInPageExtension } from '@backstage/frontend-plugin-api';
+import { SignInPage } from '@backstage/core-components';
+
+import linguistPlugin from '@backstage/plugin-linguist/alpha';
 
 /*
 
@@ -56,12 +82,41 @@ TODO:
 
 /* app.tsx */
 
-const entityPageExtension = createPageExtension({
-  id: 'catalog:entity',
-  defaultPath: '/catalog/:namespace/:kind/:name',
-  routeRef: entityRouteRef,
-  loader: async () => <div>Just a temporary mocked entity page</div>,
+const homePageExtension = createExtension({
+  name: 'myhomepage',
+  attachTo: { id: 'home', input: 'props' },
+  output: {
+    children: coreExtensionData.reactElement,
+    title: titleExtensionDataRef,
+  },
+  factory() {
+    return { children: homePage, title: 'just a title' };
+  },
 });
+
+const signInPage = createSignInPageExtension({
+  name: 'guest',
+  loader: async () => (props: SignInPageProps) =>
+    <SignInPage {...props} providers={['guest']} />,
+});
+
+const scmAuthExtension = createApiExtension({
+  factory: ScmAuth.createDefaultApiFactory(),
+});
+
+const scmIntegrationApi = createApiExtension({
+  factory: createApiFactory({
+    api: scmIntegrationsApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+  }),
+});
+
+const collectedLegacyPlugins = convertLegacyApp(
+  <FlatRoutes>
+    <Route path="/catalog-import" element={<CatalogImportPage />} />
+  </FlatRoutes>,
+);
 
 const app = createApp({
   features: [
@@ -70,13 +125,24 @@ const app = createApp({
     techRadarPlugin,
     techdocsPlugin,
     userSettingsPlugin,
+    homePlugin,
+    appVisualizerPlugin,
+    linguistPlugin,
+    ...collectedLegacyPlugins,
     createExtensionOverrides({
-      extensions: [entityPageExtension],
+      extensions: [
+        homePageExtension,
+        scmAuthExtension,
+        scmIntegrationApi,
+        signInPage,
+        notFoundErrorPage,
+      ],
     }),
   ],
-  bindRoutes({ bind }) {
-    bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });
-  },
+  /* Handled through config instead */
+  // bindRoutes({ bind }) {
+  //   bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });
+  // },
 });
 
 // const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });

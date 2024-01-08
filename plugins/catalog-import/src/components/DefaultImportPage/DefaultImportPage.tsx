@@ -39,11 +39,11 @@ export const DefaultImportPage = () => {
   const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
 
   const contentItems = [
-    <Grid item xs={12} md={4} lg={6} xl={8}>
+    <Grid key={0} item xs={12} md={4} lg={6} xl={8}>
       <ImportInfoCard />
     </Grid>,
 
-    <Grid item xs={12} md={8} lg={6} xl={4}>
+    <Grid key={1} item xs={12} md={8} lg={6} xl={4}>
       <ImportStepper />
     </Grid>,
   ];

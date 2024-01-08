@@ -140,6 +140,10 @@ module.exports = {
             from: '/docs/getting-started/running-backstage-locally',
             to: '/docs/getting-started/',
           },
+          {
+            from: '/docs/features/software-templates/testing-scaffolder-alpha',
+            to: '/docs/features/software-templates/migrating-to-rjsf-v5',
+          },
         ],
       },
     ],
@@ -178,7 +182,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.18.0',
+            to: 'docs/releases/v1.21.0',
             label: 'Releases',
             position: 'left',
           },
@@ -287,6 +291,9 @@ module.exports = {
       },
       prism: {
         theme: prismTheme,
+        // Supported languages: https://prismjs.com/#supported-languages
+        // Default languages: https://github.com/FormidableLabs/prism-react-renderer/blob/master/packages/generate-prism-languages/index.ts#L9-L23
+        additionalLanguages: ['docker', 'bash'],
         magicComments: [
           // Extend the default highlight class name
           {

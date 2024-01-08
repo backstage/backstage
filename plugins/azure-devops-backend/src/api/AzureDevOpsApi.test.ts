@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,560 +14,751 @@
  * limitations under the License.
  */
 
+jest.mock('azure-devops-node-api', () => ({
+  WebApi: jest.fn(),
+  getHandlerFromToken: jest.fn().mockReturnValue(() => {}),
+}));
+
+import { UrlReader, getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
+import { AzureDevOpsApi } from './AzureDevOpsApi';
+import { WebApi } from 'azure-devops-node-api';
+import { TeamProjectReference } from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import { GitRepository } from 'azure-devops-node-api/interfaces/TfvcInterfaces';
 import {
   Build,
-  DefinitionReference,
-} from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import {
   BuildResult,
   BuildStatus,
-  GitTag,
-  PullRequest,
-  PullRequestStatus,
-  RepoBuild,
-} from '@backstage/plugin-azure-devops-common';
+} from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import {
   GitPullRequest,
   GitRef,
-  GitRepository,
+  PullRequestStatus,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
-import {
-  mappedBuildRun,
-  mappedGitTag,
-  mappedPullRequest,
-  mappedRepoBuild,
-} from './AzureDevOpsApi';
-
-import { IdentityRef } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
+import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
 
 describe('AzureDevOpsApi', () => {
-  describe('mappedRepoBuild', () => {
-    describe('mappedRepoBuild happy path', () => {
-      it('should return RepoBuild from Build', () => {
-        const inputBuildDefinition: DefinitionReference = {
-          name: 'My Build Definition',
-        };
-
-        const inputLinks: any = {
-          web: {
-            href: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          },
-        };
-
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
-
-        const inputBuild: Build = {
-          id: 1,
-          buildNumber: 'Build-1',
-          status: BuildStatus.Completed,
-          result: BuildResult.Succeeded,
-          queueTime: new Date('2020-09-12T06:10:23.932Z'),
-          startTime: new Date('2020-09-12T06:15:23.932Z'),
-          finishTime: new Date('2020-09-12T06:20:23.932Z'),
-          sourceBranch: 'refs/heads/develop',
-          sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
-          definition: inputBuildDefinition,
-          _links: inputLinks,
-          requestedFor: inputIdentityRef,
-        };
-
-        const outputRepoBuild: RepoBuild = {
-          id: 1,
-          title: 'My Build Definition - Build-1',
-          link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          status: BuildStatus.Completed,
-          result: BuildResult.Succeeded,
-          queueTime: '2020-09-12T06:10:23.932Z',
-          startTime: '2020-09-12T06:15:23.932Z',
-          finishTime: '2020-09-12T06:20:23.932Z',
-          source: 'refs/heads/develop (f4f78b31)',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
-
-        expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
-      });
-    });
-
-    describe('mappedRepoBuild with no Build definition name', () => {
-      it('should return RepoBuild with only Build Number for title', () => {
-        const inputLinks: any = {
-          web: {
-            href: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          },
-        };
-
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
-
-        const inputBuild: Build = {
-          id: 1,
-          buildNumber: 'Build-1',
-          status: BuildStatus.Completed,
-          result: BuildResult.Succeeded,
-          queueTime: new Date('2020-09-12T06:10:23.932Z'),
-          startTime: new Date('2020-09-12T06:15:23.932Z'),
-          finishTime: new Date('2020-09-12T06:20:23.932Z'),
-          sourceBranch: 'refs/heads/develop',
-          sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
-          definition: undefined,
-          _links: inputLinks,
-          requestedFor: inputIdentityRef,
-        };
-
-        const outputRepoBuild: RepoBuild = {
-          id: 1,
-          title: 'Build-1',
-          link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          status: BuildStatus.Completed,
-          result: BuildResult.Succeeded,
-          queueTime: '2020-09-12T06:10:23.932Z',
-          startTime: '2020-09-12T06:15:23.932Z',
-          finishTime: '2020-09-12T06:20:23.932Z',
-          source: 'refs/heads/develop (f4f78b31)',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
-
-        expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
-      });
-    });
-
-    describe('mappedRepoBuild with undefined status', () => {
-      it('should return BuildStatus of None for status', () => {
-        const inputLinks: any = {
-          web: {
-            href: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          },
-        };
-
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
-
-        const inputBuild: Build = {
-          id: 1,
-          buildNumber: 'Build-1',
-          status: undefined,
-          result: BuildResult.Succeeded,
-          queueTime: new Date('2020-09-12T06:10:23.932Z'),
-          startTime: new Date('2020-09-12T06:15:23.932Z'),
-          finishTime: new Date('2020-09-12T06:20:23.932Z'),
-          sourceBranch: 'refs/heads/develop',
-          sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
-          definition: undefined,
-          _links: inputLinks,
-          requestedFor: inputIdentityRef,
-        };
-
-        const outputRepoBuild: RepoBuild = {
-          id: 1,
-          title: 'Build-1',
-          link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          status: BuildStatus.None,
-          result: BuildResult.Succeeded,
-          queueTime: '2020-09-12T06:10:23.932Z',
-          startTime: '2020-09-12T06:15:23.932Z',
-          finishTime: '2020-09-12T06:20:23.932Z',
-          source: 'refs/heads/develop (f4f78b31)',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
-
-        expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
-      });
-    });
-
-    describe('mappedRepoBuild with undefined result', () => {
-      it('should return BuildResult of None for result', () => {
-        const inputLinks: any = {
-          web: {
-            href: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          },
-        };
-
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
-
-        const inputBuild: Build = {
-          id: 1,
-          buildNumber: 'Build-1',
-          status: BuildStatus.InProgress,
-          result: undefined,
-          queueTime: new Date('2020-09-12T06:10:23.932Z'),
-          startTime: new Date('2020-09-12T06:15:23.932Z'),
-          finishTime: new Date('2020-09-12T06:20:23.932Z'),
-          sourceBranch: 'refs/heads/develop',
-          sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
-          definition: undefined,
-          _links: inputLinks,
-          requestedFor: inputIdentityRef,
-        };
-
-        const outputRepoBuild: RepoBuild = {
-          id: 1,
-          title: 'Build-1',
-          link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          status: BuildStatus.InProgress,
-          result: BuildResult.None,
-          queueTime: '2020-09-12T06:10:23.932Z',
-          startTime: '2020-09-12T06:15:23.932Z',
-          finishTime: '2020-09-12T06:20:23.932Z',
-          source: 'refs/heads/develop (f4f78b31)',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
-
-        expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
-      });
-    });
-
-    describe('mappedRepoBuild with undefined link', () => {
-      it('should return empty string for link', () => {
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
-
-        const inputBuild: Build = {
-          id: 1,
-          buildNumber: 'Build-1',
-          status: BuildStatus.InProgress,
-          result: undefined,
-          queueTime: new Date('2020-09-12T06:10:23.932Z'),
-          startTime: new Date('2020-09-12T06:15:23.932Z'),
-          finishTime: new Date('2020-09-12T06:20:23.932Z'),
-          sourceBranch: 'refs/heads/develop',
-          sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
-          definition: undefined,
-          _links: undefined,
-          requestedFor: inputIdentityRef,
-        };
-
-        const outputRepoBuild: RepoBuild = {
-          id: 1,
-          title: 'Build-1',
-          link: '',
-          status: BuildStatus.InProgress,
-          result: BuildResult.None,
-          queueTime: '2020-09-12T06:10:23.932Z',
-          startTime: '2020-09-12T06:15:23.932Z',
-          finishTime: '2020-09-12T06:20:23.932Z',
-          source: 'refs/heads/develop (f4f78b31)',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
-
-        expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
-      });
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  describe('mappedGitTag', () => {
-    describe('mappedGitTag happy path', () => {
-      it('should return GitTag from GitRef', () => {
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-        };
-        const inputGitRef: GitRef = {
-          name: 'refs/tags/v1.1.2',
-          creator: inputIdentityRef,
-          objectId: '1111aaaa2222bbbb3333cccc4444dddd5555eeee',
-          peeledObjectId: '1234567890abcdef1234567890abcdef12345678',
-        };
-        const inputLinkBaseUrl =
-          'https://host.com/myOrg/_git/super-feature-repo?version=GT';
-        const inputCommitBaseUrl =
-          'https://host.com/myOrg/_git/super-feature-repo/commit';
-        const outputGitTag: GitTag = {
-          name: 'v1.1.2',
-          createdBy: 'Jane Doe',
-          commitLink:
-            'https://host.com/myOrg/_git/super-feature-repo/commit/1234567890abcdef1234567890abcdef12345678',
-          objectId: '1111aaaa2222bbbb3333cccc4444dddd5555eeee',
-          peeledObjectId: '1234567890abcdef1234567890abcdef12345678',
-          link: 'https://host.com/myOrg/_git/super-feature-repo?version=GTv1.1.2',
-        };
-        expect(
-          mappedGitTag(inputGitRef, inputLinkBaseUrl, inputCommitBaseUrl),
-        ).toEqual(outputGitTag);
-      });
-    });
+  const mockConfig = new ConfigReader({
+    azureDevOps: {
+      host: 'dev.azure.com',
+      token: 'token',
+      organization: 'org',
+    },
+    integrations: {
+      azure: [
+        {
+          host: 'dev.azure.com',
+          credentials: [
+            {
+              personalAccessToken: 'pat',
+            },
+          ],
+        },
+      ],
+    },
   });
 
-  describe('mappedPullRequest', () => {
-    describe('mappedPullRequest happy path', () => {
-      it('should return PullRequest from GitPullRequest', () => {
-        const inputGitRepository: GitRepository = {
-          name: 'super-feature-repo',
-        };
+  const mockLogger = getVoidLogger();
 
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
+  const mockUrlReader: UrlReader = {
+    readUrl: url =>
+      Promise.resolve({
+        buffer: async () => Buffer.from(url),
+        etag: 'buffer',
+        stream: jest.fn(),
+      }),
+    readTree: jest.fn(),
+    search: jest.fn(),
+  };
 
-        const inputPullRequest: GitPullRequest = {
-          pullRequestId: 7181,
-          repository: inputGitRepository,
-          title: 'My Awesome New Feature',
-          createdBy: inputIdentityRef,
-          creationDate: new Date('2020-09-12T06:10:23.932Z'),
-          sourceRefName: 'refs/heads/topic/super-awesome-feature',
-          targetRefName: 'refs/heads/main',
-          status: PullRequestStatus.Active,
-          isDraft: false,
-        };
+  it('should get projects', async () => {
+    const mockProjects: TeamProjectReference[] = [
+      {
+        id: 'one',
+        name: 'one',
+        description: 'one',
+      },
+      {
+        id: 'two',
+        name: 'two',
+        description: 'two',
+      },
+      {
+        id: 'three',
+        name: 'three',
+        description: 'three',
+      },
+    ];
 
-        const inputBaseUrl =
-          'https://host.com/myOrg/_git/super-feature-repo/pullrequest';
+    const mockCoreApiClient = {
+      getProjects: jest.fn().mockResolvedValue(mockProjects),
+    };
 
-        const outputPullRequest: PullRequest = {
-          pullRequestId: 7181,
-          repoName: 'super-feature-repo',
-          title: 'My Awesome New Feature',
-          uniqueName: 'DOMAIN\\jdoe',
-          createdBy: 'Jane Doe',
-          creationDate: '2020-09-12T06:10:23.932Z',
-          sourceRefName: 'refs/heads/topic/super-awesome-feature',
-          targetRefName: 'refs/heads/main',
-          status: PullRequestStatus.Active,
-          isDraft: false,
-          link: 'https://host.com/myOrg/_git/super-feature-repo/pullrequest/7181',
-        };
+    const mockCoreApi = {
+      getCoreApi: jest.fn().mockResolvedValue(mockCoreApiClient),
+    };
 
-        expect(mappedPullRequest(inputPullRequest, inputBaseUrl)).toEqual(
-          outputPullRequest,
-        );
-      });
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockCoreApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
     });
+
+    const result = await api.getProjects();
+
+    expect(result).toEqual([
+      {
+        id: 'one',
+        name: 'one',
+        description: 'one',
+      },
+      {
+        id: 'three',
+        name: 'three',
+        description: 'three',
+      },
+      {
+        id: 'two',
+        name: 'two',
+        description: 'two',
+      },
+    ]);
   });
 
-  describe('mappedBuildRun', () => {
-    describe('mappedBuildRun happy path', () => {
-      it('should return RepoBuild from Build', () => {
-        const inputBuildDefinition: DefinitionReference = {
-          name: 'My Build Definition',
-        };
+  it('should get git repository', async () => {
+    const mockGitRepository: GitRepository = {
+      id: 'repo',
+    };
 
-        const inputLinks: any = {
-          web: {
-            href: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          },
-        };
+    const mockGitClient = {
+      getRepository: jest.fn().mockResolvedValue(mockGitRepository),
+    };
+    const mockGitApi = {
+      getGitApi: jest.fn().mockReturnValue(mockGitClient),
+    };
 
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockGitApi);
 
-        const inputBuild: Build = {
-          id: 1,
-          buildNumber: 'Build-1',
-          status: BuildStatus.Completed,
-          result: BuildResult.Succeeded,
-          queueTime: new Date('2020-09-12T06:10:23.932Z'),
-          startTime: new Date('2020-09-12T06:15:23.932Z'),
-          finishTime: new Date('2020-09-12T06:20:23.932Z'),
-          sourceBranch: 'refs/heads/develop',
-          sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
-          definition: inputBuildDefinition,
-          _links: inputLinks,
-          requestedFor: inputIdentityRef,
-        };
-
-        const outputRepoBuild: RepoBuild = {
-          id: 1,
-          title: 'My Build Definition - Build-1',
-          link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          status: BuildStatus.Completed,
-          result: BuildResult.Succeeded,
-          queueTime: '2020-09-12T06:10:23.932Z',
-          startTime: '2020-09-12T06:15:23.932Z',
-          finishTime: '2020-09-12T06:20:23.932Z',
-          source: 'refs/heads/develop (f4f78b31)',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
-
-        expect(mappedBuildRun(inputBuild)).toEqual(outputRepoBuild);
-      });
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
     });
 
-    describe('mappedBuildRun with no Build definition name', () => {
-      it('should return RepoBuild with only Build Number for title', () => {
-        const inputLinks: any = {
-          web: {
-            href: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          },
-        };
+    const result = await api.getGitRepository('project', 'repo');
 
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
+    expect(result).toEqual({ id: 'repo' });
+  });
 
-        const inputBuild: Build = {
-          id: 1,
-          buildNumber: 'Build-1',
-          status: BuildStatus.Completed,
-          result: BuildResult.Succeeded,
-          queueTime: new Date('2020-09-12T06:10:23.932Z'),
-          startTime: new Date('2020-09-12T06:15:23.932Z'),
-          finishTime: new Date('2020-09-12T06:20:23.932Z'),
-          sourceBranch: 'refs/heads/develop',
-          sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
-          definition: undefined,
-          _links: inputLinks,
-          requestedFor: inputIdentityRef,
-        };
+  it('should get build list', async () => {
+    const mockBuilds: Build[] = [
+      {
+        id: 1,
+      },
+      {
+        id: 2,
+      },
+      {
+        id: 3,
+      },
+    ];
 
-        const outputRepoBuild: RepoBuild = {
-          id: 1,
-          title: 'Build-1',
-          link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          status: BuildStatus.Completed,
-          result: BuildResult.Succeeded,
-          queueTime: '2020-09-12T06:10:23.932Z',
-          startTime: '2020-09-12T06:15:23.932Z',
-          finishTime: '2020-09-12T06:20:23.932Z',
-          source: 'refs/heads/develop (f4f78b31)',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
+    const mockBuildClient = {
+      getBuilds: jest.fn().mockResolvedValue(mockBuilds),
+    };
+    const mockBuildApi = {
+      getBuildApi: jest.fn().mockReturnValue(mockBuildClient),
+    };
 
-        expect(mappedBuildRun(inputBuild)).toEqual(outputRepoBuild);
-      });
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockBuildApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
     });
 
-    describe('mappedBuildRun with undefined status', () => {
-      it('should return BuildStatus of None for status', () => {
-        const inputLinks: any = {
-          web: {
-            href: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          },
-        };
+    const result = await api.getBuildList('project', 'repo', 10);
 
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
+    expect(result).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
+  });
 
-        const inputBuild: Build = {
-          id: 1,
-          buildNumber: 'Build-1',
-          status: undefined,
-          result: BuildResult.Succeeded,
-          queueTime: new Date('2020-09-12T06:10:23.932Z'),
-          startTime: new Date('2020-09-12T06:15:23.932Z'),
-          finishTime: new Date('2020-09-12T06:20:23.932Z'),
-          sourceBranch: 'refs/heads/develop',
-          sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
-          definition: undefined,
-          _links: inputLinks,
-          requestedFor: inputIdentityRef,
-        };
+  it('should get repo builds', async () => {
+    const mockGitRepository: GitRepository = {
+      id: 'repo',
+    };
 
-        const outputRepoBuild: RepoBuild = {
-          id: 1,
-          title: 'Build-1',
-          link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          status: BuildStatus.None,
-          result: BuildResult.Succeeded,
-          queueTime: '2020-09-12T06:10:23.932Z',
-          startTime: '2020-09-12T06:15:23.932Z',
-          finishTime: '2020-09-12T06:20:23.932Z',
-          source: 'refs/heads/develop (f4f78b31)',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
+    const mockBuilds: Build[] = [
+      {
+        id: 1,
+        buildNumber: 'Build-1',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
+        sourceBranch: 'main',
+        sourceVersion: 'abcd',
+      },
+      {
+        id: 2,
+        buildNumber: 'Build-2',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
+        sourceBranch: 'main',
+        sourceVersion: 'abcd',
+      },
+      {
+        id: 3,
+        buildNumber: 'Build-3',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
+        sourceBranch: 'main',
+        sourceVersion: 'abcd',
+      },
+    ];
 
-        expect(mappedBuildRun(inputBuild)).toEqual(outputRepoBuild);
-      });
+    const mockBuildClient = {
+      getBuilds: jest.fn().mockResolvedValue(mockBuilds),
+    };
+    const mockGitClient = {
+      getRepository: jest.fn().mockResolvedValue(mockGitRepository),
+    };
+    const mockApi = {
+      getGitApi: jest.fn().mockReturnValue(mockGitClient),
+      getBuildApi: jest.fn().mockReturnValue(mockBuildClient),
+    };
+
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
     });
 
-    describe('mappedBuildRun with undefined result', () => {
-      it('should return BuildResult of None for result', () => {
-        const inputLinks: any = {
-          web: {
-            href: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          },
-        };
+    const result = await api.getRepoBuilds('project', 'repo', 10);
 
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
+    expect(result).toEqual([
+      {
+        id: 1,
+        title: 'Build-1',
+        link: '',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
+        source: 'main (abcd)',
+        uniqueName: 'N/A',
+      },
+      {
+        id: 2,
+        title: 'Build-2',
+        link: '',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
+        source: 'main (abcd)',
+        uniqueName: 'N/A',
+      },
+      {
+        id: 3,
+        title: 'Build-3',
+        link: '',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
+        source: 'main (abcd)',
+        uniqueName: 'N/A',
+      },
+    ]);
+  });
 
-        const inputBuild: Build = {
-          id: 1,
-          buildNumber: 'Build-1',
-          status: BuildStatus.InProgress,
-          result: undefined,
-          queueTime: new Date('2020-09-12T06:10:23.932Z'),
-          startTime: new Date('2020-09-12T06:15:23.932Z'),
-          finishTime: new Date('2020-09-12T06:20:23.932Z'),
-          sourceBranch: 'refs/heads/develop',
-          sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
-          definition: undefined,
-          _links: inputLinks,
-          requestedFor: inputIdentityRef,
-        };
+  it('should get git tags', async () => {
+    const mockGitRepository: GitRepository = {
+      id: 'repo',
+    };
 
-        const outputRepoBuild: RepoBuild = {
-          id: 1,
-          title: 'Build-1',
-          link: 'https://host.com/myOrg/0bcc0c0d-2d02/_build/results?buildId=1',
-          status: BuildStatus.InProgress,
-          result: BuildResult.None,
-          queueTime: '2020-09-12T06:10:23.932Z',
-          startTime: '2020-09-12T06:15:23.932Z',
-          finishTime: '2020-09-12T06:20:23.932Z',
-          source: 'refs/heads/develop (f4f78b31)',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
+    const mockGitRefs: GitRef[] = [
+      {
+        objectId: '1.0',
+        peeledObjectId: '1.0',
+        name: 'v1.0',
+      },
+      {
+        objectId: '2.0',
+        peeledObjectId: '2.0',
+        name: 'v2.0',
+      },
+      {
+        objectId: '3.0',
+        peeledObjectId: '3.0',
+        name: 'v3.0',
+      },
+    ];
 
-        expect(mappedBuildRun(inputBuild)).toEqual(outputRepoBuild);
-      });
+    const mockGitClient = {
+      getRepository: jest.fn().mockResolvedValue(mockGitRepository),
+      getRefs: jest.fn().mockResolvedValue(mockGitRefs),
+    };
+    const mockApi = {
+      getGitApi: jest.fn().mockReturnValue(mockGitClient),
+      serverUrl: 'serverUrl',
+    };
+
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
     });
 
-    describe('mappedBuildRun with undefined link', () => {
-      it('should return empty string for link', () => {
-        const inputIdentityRef: IdentityRef = {
-          displayName: 'Jane Doe',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
+    const result = await api.getGitTags('project', 'repo');
 
-        const inputBuild: Build = {
-          id: 1,
-          buildNumber: 'Build-1',
-          status: BuildStatus.InProgress,
-          result: undefined,
-          queueTime: new Date('2020-09-12T06:10:23.932Z'),
-          startTime: new Date('2020-09-12T06:15:23.932Z'),
-          finishTime: new Date('2020-09-12T06:20:23.932Z'),
-          sourceBranch: 'refs/heads/develop',
-          sourceVersion: 'f4f78b3100b2923982bdf60c89c57ce6fd2d9a1c',
-          definition: undefined,
-          _links: undefined,
-          requestedFor: inputIdentityRef,
-        };
+    expect(result).toEqual([
+      {
+        objectId: '1.0',
+        peeledObjectId: '1.0',
+        name: 'v1.0',
+        commitLink: 'serverUrl/project/_git/repo/commit/1.0',
+        createdBy: 'N/A',
+        link: 'serverUrl/project/_git/repo?version=GTv1.0',
+      },
+      {
+        objectId: '2.0',
+        peeledObjectId: '2.0',
+        name: 'v2.0',
+        commitLink: 'serverUrl/project/_git/repo/commit/2.0',
+        createdBy: 'N/A',
+        link: 'serverUrl/project/_git/repo?version=GTv2.0',
+      },
+      {
+        objectId: '3.0',
+        peeledObjectId: '3.0',
+        name: 'v3.0',
+        commitLink: 'serverUrl/project/_git/repo/commit/3.0',
+        createdBy: 'N/A',
+        link: 'serverUrl/project/_git/repo?version=GTv3.0',
+      },
+    ]);
+  });
 
-        const outputRepoBuild: RepoBuild = {
-          id: 1,
-          title: 'Build-1',
-          link: '',
-          status: BuildStatus.InProgress,
-          result: BuildResult.None,
-          queueTime: '2020-09-12T06:10:23.932Z',
-          startTime: '2020-09-12T06:15:23.932Z',
-          finishTime: '2020-09-12T06:20:23.932Z',
-          source: 'refs/heads/develop (f4f78b31)',
-          uniqueName: 'DOMAIN\\jdoe',
-        };
+  it('should get pull requests', async () => {
+    const mockGitRepository: GitRepository = {
+      id: 'repo',
+      name: 'repo',
+    };
 
-        expect(mappedBuildRun(inputBuild)).toEqual(outputRepoBuild);
-      });
+    const mockGitPullRequests: GitPullRequest[] = [
+      {
+        pullRequestId: 1,
+        repository: mockGitRepository,
+        title: 'PR1',
+        creationDate: new Date('2020-09-12T06:10:23.932Z'),
+        sourceRefName: 'refs/heads/topic/pr1',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+      },
+      {
+        pullRequestId: 2,
+        repository: mockGitRepository,
+        title: 'PR2',
+        creationDate: new Date('2020-09-12T06:10:23.932Z'),
+        sourceRefName: 'refs/heads/topic/pr2',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+      },
+      {
+        pullRequestId: 3,
+        repository: mockGitRepository,
+        title: 'PR3',
+        creationDate: new Date('2020-09-12T06:10:23.932Z'),
+        sourceRefName: 'refs/heads/topic/pr3',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+      },
+    ];
+
+    const mockGitClient = {
+      getRepository: jest.fn().mockResolvedValue(mockGitRepository),
+      getPullRequests: jest.fn().mockResolvedValue(mockGitPullRequests),
+    };
+    const mockApi = {
+      getGitApi: jest.fn().mockReturnValue(mockGitClient),
+      serverUrl: 'serverUrl',
+    };
+
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
     });
+
+    const pullRequestOptions: PullRequestOptions = {
+      top: 10,
+      status: PullRequestStatus.Active,
+    };
+
+    const result = await api.getPullRequests(
+      'project',
+      'repo',
+      pullRequestOptions,
+    );
+
+    expect(result).toEqual([
+      {
+        pullRequestId: 1,
+        repoName: 'repo',
+        title: 'PR1',
+        uniqueName: 'N/A',
+        createdBy: 'N/A',
+        creationDate: '2020-09-12T06:10:23.932Z',
+        sourceRefName: 'refs/heads/topic/pr1',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'serverUrl/project/_git/repo/pullrequest/1',
+      },
+      {
+        pullRequestId: 2,
+        repoName: 'repo',
+        title: 'PR2',
+        uniqueName: 'N/A',
+        createdBy: 'N/A',
+        creationDate: '2020-09-12T06:10:23.932Z',
+        sourceRefName: 'refs/heads/topic/pr2',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'serverUrl/project/_git/repo/pullrequest/2',
+      },
+      {
+        pullRequestId: 3,
+        repoName: 'repo',
+        title: 'PR3',
+        uniqueName: 'N/A',
+        createdBy: 'N/A',
+        creationDate: '2020-09-12T06:10:23.932Z',
+        sourceRefName: 'refs/heads/topic/pr3',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'serverUrl/project/_git/repo/pullrequest/3',
+      },
+    ]);
+  });
+
+  it('should get build definitions', async () => {
+    const mockBuilds: Build[] = [
+      {
+        id: 1,
+      },
+      {
+        id: 2,
+      },
+      {
+        id: 3,
+      },
+    ];
+
+    const mockBuildClient = {
+      getDefinitions: jest.fn().mockResolvedValue(mockBuilds),
+    };
+    const mockBuildApi = {
+      getBuildApi: jest.fn().mockReturnValue(mockBuildClient),
+    };
+
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockBuildApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
+    });
+
+    const result = await api.getBuildDefinitions('project', 'definition');
+
+    expect(result).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
+  });
+
+  it('should get build builds with repoId', async () => {
+    const mockBuilds: Build[] = [
+      {
+        id: 1,
+      },
+      {
+        id: 2,
+      },
+      {
+        id: 3,
+      },
+    ];
+
+    const mockBuildClient = {
+      getBuilds: jest.fn().mockResolvedValue(mockBuilds),
+    };
+    const mockBuildApi = {
+      getBuildApi: jest.fn().mockReturnValue(mockBuildClient),
+    };
+
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockBuildApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
+    });
+
+    const result = await api.getBuilds('project', 10, 'repo', undefined);
+
+    expect(result).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
+  });
+
+  it('should get build builds with definitions', async () => {
+    const mockBuilds: Build[] = [
+      {
+        id: 1,
+      },
+      {
+        id: 2,
+      },
+      {
+        id: 3,
+      },
+    ];
+
+    const mockBuildClient = {
+      getBuilds: jest.fn().mockResolvedValue(mockBuilds),
+    };
+    const mockBuildApi = {
+      getBuildApi: jest.fn().mockReturnValue(mockBuildClient),
+    };
+
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockBuildApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
+    });
+
+    const result = await api.getBuilds('project', 10, undefined, [1, 2, 3]);
+
+    expect(result).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
+  });
+
+  it('should get build runs with repoName', async () => {
+    const mockGitRepository: GitRepository = {
+      id: 'repo',
+    };
+
+    const mockBuilds: Build[] = [
+      {
+        id: 1,
+        buildNumber: 'Build-1',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
+        sourceBranch: 'main',
+        sourceVersion: 'abcd',
+      },
+      {
+        id: 2,
+        buildNumber: 'Build-2',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
+        sourceBranch: 'main',
+        sourceVersion: 'abcd',
+      },
+      {
+        id: 3,
+        buildNumber: 'Build-3',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
+        sourceBranch: 'main',
+        sourceVersion: 'abcd',
+      },
+    ];
+
+    const mockBuildClient = {
+      getBuilds: jest.fn().mockResolvedValue(mockBuilds),
+    };
+    const mockGitClient = {
+      getRepository: jest.fn().mockResolvedValue(mockGitRepository),
+    };
+    const mockApi = {
+      getGitApi: jest.fn().mockReturnValue(mockGitClient),
+      getBuildApi: jest.fn().mockReturnValue(mockBuildClient),
+    };
+
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
+    });
+
+    const result = await api.getBuildRuns('project', 10, 'repo', undefined);
+
+    expect(result).toEqual([
+      {
+        id: 1,
+        title: 'Build-1',
+        link: '',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
+        source: 'main (abcd)',
+        uniqueName: 'N/A',
+      },
+      {
+        id: 2,
+        title: 'Build-2',
+        link: '',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
+        source: 'main (abcd)',
+        uniqueName: 'N/A',
+      },
+      {
+        id: 3,
+        title: 'Build-3',
+        link: '',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
+        source: 'main (abcd)',
+        uniqueName: 'N/A',
+      },
+    ]);
+  });
+
+  it('should get build runs with definitionName', async () => {
+    const mockBuilds: Build[] = [
+      {
+        id: 1,
+        buildNumber: 'Build-1',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
+        sourceBranch: 'main',
+        sourceVersion: 'abcd',
+      },
+      {
+        id: 2,
+        buildNumber: 'Build-2',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
+        sourceBranch: 'main',
+        sourceVersion: 'abcd',
+      },
+      {
+        id: 3,
+        buildNumber: 'Build-3',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: new Date('2020-09-12T06:10:23.932Z'),
+        startTime: new Date('2020-09-12T06:15:23.932Z'),
+        finishTime: new Date('2020-09-12T06:20:23.932Z'),
+        sourceBranch: 'main',
+        sourceVersion: 'abcd',
+      },
+    ];
+
+    const mockBuildClient = {
+      getBuilds: jest.fn().mockResolvedValue(mockBuilds),
+      getDefinitions: jest.fn().mockResolvedValue(mockBuilds),
+    };
+
+    const mockApi = {
+      getBuildApi: jest.fn().mockReturnValue(mockBuildClient),
+    };
+
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
+    });
+
+    const result = await api.getBuildRuns(
+      'project',
+      10,
+      undefined,
+      'definition',
+    );
+
+    expect(result).toEqual([
+      {
+        id: 1,
+        title: 'Build-1',
+        link: '',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
+        source: 'main (abcd)',
+        uniqueName: 'N/A',
+      },
+      {
+        id: 2,
+        title: 'Build-2',
+        link: '',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
+        source: 'main (abcd)',
+        uniqueName: 'N/A',
+      },
+      {
+        id: 3,
+        title: 'Build-3',
+        link: '',
+        status: BuildStatus.Completed,
+        result: BuildResult.Succeeded,
+        queueTime: '2020-09-12T06:10:23.932Z',
+        startTime: '2020-09-12T06:15:23.932Z',
+        finishTime: '2020-09-12T06:20:23.932Z',
+        source: 'main (abcd)',
+        uniqueName: 'N/A',
+      },
+    ]);
   });
 });

@@ -1,5 +1,174 @@
 # @backstage/core-components
 
+## 0.13.10-next.1
+
+### Patch Changes
+
+- 6878b1d: Removed unnecessary `history` and `immer` dependencies.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0
+  - @backstage/version-bridge@1.0.7
+
+## 0.13.10-next.0
+
+### Patch Changes
+
+- d625f66: Fixed bug in Link where it was possible to select and copy a hidden element into clipboard
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0
+  - @backstage/version-bridge@1.0.7
+
+## 0.13.9
+
+### Patch Changes
+
+- e8f2ace: Added a new `/testUtils` sub-path that initially exports a `mockBreakpoint` helper.
+- 381ed86: Add missing export for IconLinkVertical
+- 5c8a3e3: Minor improvements to `Table` component.
+- 752df93: Fixes a problem where the `LogViewer` was not able to handle very large logs
+- 4d9e3b3: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- 07dfdf3: Updated dependency `linkifyjs` to `4.1.3`.
+- a518c5a: Updated dependency `@react-hookz/web` to `^23.0.0`.
+- f291757: Update `linkify-react` to version `4.1.3`
+- 175d86b: Fixed an issue where the `onChange` prop within `HeaderTabs` was triggering twice upon tab-switching.
+- 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/theme@0.5.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/version-bridge@1.0.7
+
+## 0.13.9-next.3
+
+### Patch Changes
+
+- 175d86b: Fixed an issue where the `onChange` prop within `HeaderTabs` was triggering twice upon tab-switching.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.13.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/version-bridge@1.0.7
+
+## 0.13.9-next.1
+
+### Patch Changes
+
+- e8f2acef80: Added a new `/testUtils` sub-path that initially exports a `mockBreakpoint` helper.
+- 07dfdf3702: Updated dependency `linkifyjs` to `4.1.3`.
+- a518c5a25b: Updated dependency `@react-hookz/web` to `^23.0.0`.
+- f291757e70: Update `linkify-react` to version `4.1.3`
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/version-bridge@1.0.7
+
+## 0.13.9-next.0
+
+### Patch Changes
+
+- 381ed86d5e: Add missing export for IconLinkVertical
+- 5c8a3e3960: Minor improvements to `Table` component.
+- 4d9e3b39e4: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/version-bridge@1.0.7
+
+## 0.13.8
+
+### Patch Changes
+
+- 81c8db2088: Fix `RoutedTabs` so that it does not explode without tabs.
+- eb817ee6d4: Fix spacing inconsistency with links and labels in headers
+- f28c11743a: Add a possibility to use a formatter on a warning panel. Applied it for a scaffolder template
+- 6c2b872153: Add official support for React 18.
+- e07570a740: Fixed an issue causing the `Select` component to show empty chips when some of the selected values did not match any item
+- 7bdc1b0a12: Fixed compatibility with Safari <16.3 by eliminating RegEx lookbehind in `extractInitials`.
+
+  This PR also changed how initials are generated resulting in _John Jonathan Doe_ => _JD_ instead of _JJ_.
+
+- 66071b42c0: Make the `options.titleFormat` prop of `<StructuredMetadataTable />` apply to all keys including nested ones. Previously, this option would only apply to the root keys of the `metadata` prop.
+
+  Document and improve the props of `<StructuredMetadataTable />`. Previously, the `options` prop was `any`.
+
+- 71c97e7d73: Fixed the type declaration of `DependencyGraphProps`, the `defs` prop now expects `JSX.Element`s.
+- 0c5b78650c: Reverting the `MissingAnnotationEmptyState` component due to cyclical dependency. This component is now deprecated, please use the import from `@backstage/plugin-catalog-react` instead to use the new functionality
+- 4b7d341746: Updated dependency `linkify-react` to `4.1.2`.
+- 0ef24425c1: Updated dependency `linkifyjs` to `4.1.2`.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/version-bridge@1.0.7
+  - @backstage/theme@0.4.4
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.13.8-next.2
+
+### Patch Changes
+
+- [#20777](https://github.com/backstage/backstage/pull/20777) [`eb817ee6d4`](https://github.com/backstage/backstage/commit/eb817ee6d4720322773389dbe6ed20d6fc80a541) Thanks [@is343](https://github.com/is343)! - Fix spacing inconsistency with links and labels in headers
+
+- [#20357](https://github.com/backstage/backstage/pull/20357) [`f28c11743a`](https://github.com/backstage/backstage/commit/f28c11743a97c972c0c14b58f24696448810dcc5) Thanks [@acierto](https://github.com/acierto)! - Add a possibility to use a formatter on a warning panel. Applied it for a scaffolder template
+
+- [#20842](https://github.com/backstage/backstage/pull/20842) [`0c5b78650c`](https://github.com/backstage/backstage/commit/0c5b78650c97b574b89b323d33728ed1e827bcb3) Thanks [@benjdlambert](https://github.com/benjdlambert)! - Reverting the `MissingAnnotationEmptyState` component due to cyclical dependency. This component is now deprecated, please use the import from `@backstage/plugin-catalog-react` instead to use the new functionality
+
+## 0.13.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/version-bridge@1.0.7-next.0
+
+## 0.13.7-next.0
+
+### Patch Changes
+
+- 81c8db2088: Fix `RoutedTabs` so that it does not explode without tabs.
+- 6c2b872153: Add official support for React 18.
+- 7bdc1b0a12: Fixed compatibility with Safari <16.3 by eliminating RegEx lookbehind in `extractInitials`.
+
+  This PR also changed how initials are generated resulting in _John Jonathan Doe_ => _JD_ instead of _JJ_.
+
+- 71c97e7d73: Fixed the type declaration of `DependencyGraphProps`, the `defs` prop now expects `JSX.Element`s.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.13.6
 
 ### Patch Changes

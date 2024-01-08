@@ -18,7 +18,6 @@ import React from 'react';
 import * as d3Shape from 'd3-shape';
 import isFinite from 'lodash/isFinite';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { BackstageTheme } from '@backstage/theme';
 import { DependencyGraphTypes as Types } from './types';
 import { EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
@@ -42,7 +41,7 @@ export type GraphEdge<T> = Types.DependencyEdge<T> &
 export type DependencyGraphEdgeClassKey = 'path' | 'label';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+  theme => ({
     path: {
       strokeWidth: 1,
       stroke: theme.palette.textSubtle,

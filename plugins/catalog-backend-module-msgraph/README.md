@@ -2,7 +2,7 @@
 
 This is an extension module to the `plugin-catalog-backend` plugin, providing a `MicrosoftGraphOrgEntityProvider`
 that can be used to ingest organization data from the Microsoft Graph API.
-This provider is useful if you want to import users and groups from Azure Active Directory or Office 365.
+This provider is useful if you want to import users and groups from Entra Id (formerly Azure Active Directory) or Office 365.
 
 ## Getting Started
 

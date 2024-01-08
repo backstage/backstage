@@ -258,7 +258,7 @@ describe('DocsSynchronizer', () => {
       expect(mockResponseHandler.log).toHaveBeenCalledTimes(1);
       expect(mockResponseHandler.log).toHaveBeenCalledWith(
         expect.stringMatching(
-          /error.*: Failed to build the docs page: Some random error/,
+          /error.*: Failed to build the docs page for entity component:default\/test: Some random error/,
         ),
       );
       expect(mockResponseHandler.finish).toHaveBeenCalledTimes(0);

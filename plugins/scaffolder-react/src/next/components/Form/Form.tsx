@@ -14,26 +14,54 @@
  * limitations under the License.
  */
 
-import { FormProps, withTheme } from '@rjsf/core-v5';
+import { withTheme } from '@rjsf/core';
 import React from 'react';
 import { PropsWithChildren } from 'react';
 import { FieldTemplate } from './FieldTemplate';
 import { DescriptionFieldTemplate } from './DescriptionFieldTemplate';
+import { FieldProps } from '@rjsf/utils';
+import { ScaffolderRJSFFormProps } from '@backstage/plugin-scaffolder-react';
+import { Theme as MuiTheme } from '@rjsf/material-ui';
 
-// TODO(blam): We require here, as the types in this package depend on @rjsf/core explicitly
-// which is what we're using here as the default types, it needs to depend on @rjsf/core-v5 because
-// of the re-writing we're doing. Once we've migrated, we can import this the exact same as before.
-const WrappedForm = withTheme(require('@rjsf/material-ui-v5').Theme);
+const WrappedForm = withTheme(MuiTheme);
 
 /**
  * The Form component
  * @alpha
  */
-export const Form = (props: PropsWithChildren<FormProps>) => {
-  const templates = {
-    FieldTemplate,
-    DescriptionFieldTemplate,
-    ...props.templates,
-  };
-  return <WrappedForm {...props} templates={templates} />;
+export const Form = (props: PropsWithChildren<ScaffolderRJSFFormProps>) => {
+  // This is where we unbreak the changes from RJSF, and make it work with our custom fields so we don't pass on this
+  // breaking change to our users. We will look more into a better API for this in scaffolderv2.
+  const wrappedFields = React.useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(props.fields ?? {}).map(([key, Component]) => [
+          key,
+          (wrapperProps: FieldProps) => {
+            return (
+              <Component
+                {...wrapperProps}
+                uiSchema={wrapperProps.uiSchema ?? {}}
+                formData={wrapperProps.formData}
+                rawErrors={wrapperProps.rawErrors ?? []}
+              />
+            );
+          },
+        ]),
+      ),
+    [props.fields],
+  );
+
+  const templates = React.useMemo(
+    () => ({
+      FieldTemplate,
+      DescriptionFieldTemplate,
+      ...props.templates,
+    }),
+    [props.templates],
+  );
+
+  return (
+    <WrappedForm {...props} templates={templates} fields={wrappedFields} />
+  );
 };

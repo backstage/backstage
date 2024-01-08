@@ -5,7 +5,7 @@ sidebar_label: Azure Easy Auth
 description: Adding Azure's EasyAuth Proxy as an authentication provider in Backstage
 ---
 
-The Backstage `core-plugin-api` package comes with a Microsoft authentication provider that can authenticate users using Azure Active Directory for PaaS service hosted in Azure that support Easy Auth, such as Azure App Services.
+The Backstage `core-plugin-api` package comes with a Microsoft authentication provider that can authenticate users using Microsoft Entra ID (formerly Azure Active Directory) for PaaS service hosted in Azure that support Easy Auth, such as Azure App Services.
 
 ## Backstage Changes
 
@@ -101,11 +101,11 @@ const app = createApp({
 
 ## Azure Configuration
 
-How to configure azure depends on the service you're enable AAD auth on the app service.
+How to configure azure depends on the Azure service you're using to host Backstage.
 
 ### Azure App Services
 
-To use EasyAuth with App Services, turn on Active Directory authentication
+To use EasyAuth with App Services, turn on Entra ID (formerly Azure Active Directory) authentication
 You must also enable the token store.
 
 The following example shows how to do this via a bicep template:

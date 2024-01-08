@@ -16,7 +16,10 @@
 import React, { useCallback, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import {
   Card,
   CardContent,
@@ -40,7 +43,6 @@ import {
   EmptyState,
   HeaderIconLinkRow,
   IconLinkVerticalProps,
-  MissingAnnotationEmptyState,
   Progress,
 } from '@backstage/core-components';
 

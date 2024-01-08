@@ -157,14 +157,14 @@ export const CatalogGraphPage = (
 
         analytics.captureEvent(
           'click',
-          node.title ?? humanizeEntityRef(nodeEntityName),
+          node.entity.metadata.title ?? humanizeEntityRef(nodeEntityName),
           { attributes: { to: path } },
         );
         navigate(path);
       } else {
         analytics.captureEvent(
           'click',
-          node.title ?? humanizeEntityRef(nodeEntityName),
+          node.entity.metadata.title ?? humanizeEntityRef(nodeEntityName),
         );
         setRootEntityNames([nodeEntityName]);
       }

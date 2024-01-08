@@ -6,8 +6,6 @@ sidebar_label: Overview
 description: Building backends using the new backend system
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 > NOTE: If you have an existing backend that is not yet using the new backend
 > system, see [migrating](./08-migrating.md).
 
@@ -24,9 +22,9 @@ import { createBackend } from '@backstage/backend-defaults'; // Omitted in the e
 
 const backend = createBackend();
 
-backend.add(import('@backstage/plugin-app-backend'));
-backend.add(import('@backstage/plugin-catalog-backend'));
-backend.add(import('@backstage/plugin-scaffolder-backend'));
+backend.add(import('@backstage/plugin-app-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
@@ -103,8 +101,6 @@ This example touches on the fact that services can have different scopes, being 
 
 ## Split Into Multiple Backends
 
-> NOTE: Splitting into multiple backends is an advanced deployment pattern that requires significant effort and there are not yet many built-in tools in the framework to help you out. Only use this if necessary.
-
 A more advanced way to deploy Backstage is to split the backend plugins into multiple different backend deployments. Both the [deployment documentation](../../deployment/scaling.md) and [Threat Model](../../overview/threat-model.md#trust-model) explain the benefits of this, so here we'll focus on how to do it.
 
 To create a separate backend we need to create an additional backend package. This package will be built and deployed separately from your existing backend. There is currently no template to create a backend via `yarn new`, so the quickest way is to copy the new package and modify. The naming is up to you and it depends on how you are splitting things and up. For this example we'll just use a simple suffix. You might end up with a directory structure like this:
@@ -126,8 +122,8 @@ You can now trim down the `src/index.ts` files to only include the plugins and m
 ```ts
 const backend = createBackend();
 
-backend.add(import('@backstage/plugin-app-backend'));
-backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(import('@backstage/plugin-app-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
@@ -139,7 +135,7 @@ And `backend-b`, don't forget to clean up dependencies in `package.json` as well
 ```ts
 const backend = createBackend();
 
-backend.add(import('@backstage/plugin-scaffolder-backend'));
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 backend.start();
 ```
 

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { Breadcrumbs, Link } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core/styles';
@@ -27,11 +28,10 @@ import {
   Typography,
   Tabs,
 } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
 import { ReportDetailsEventsTable } from './ReportDetailsEventsTable';
 import { ReportDetailsLogsTable } from './ReportDetailsLogsTable';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   cards: {
     marginTop: theme.spacing(2),
   },

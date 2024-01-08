@@ -40,5 +40,12 @@ export interface Config {
      * @visibility secret
      */
     apiAccessToken?: string;
+
+    /**
+     * Type representing the request parameters.
+     */
+    requestParams?: {
+      [key: string]: string | string[] | number;
+    };
   };
 }

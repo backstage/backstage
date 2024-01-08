@@ -185,7 +185,7 @@ function validateAppServiceConfiguration(env: NodeJS.ProcessEnv) {
   if (
     env.WEBSITE_AUTH_DEFAULT_PROVIDER?.toLowerCase() !== 'azureactivedirectory'
   ) {
-    throw new Error('Authentication provider is not Azure Active Directory');
+    throw new Error('Authentication provider is not Entra ID');
   }
   if (process.env.WEBSITE_AUTH_TOKEN_STORE?.toLowerCase() !== 'true') {
     throw new Error('Token Store is not enabled');

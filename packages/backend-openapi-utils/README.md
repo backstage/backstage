@@ -65,7 +65,7 @@ export function createRouter() {
 
 ### Why am I getting `unknown` as the type for a response?
 
-This can happen when you have a `charset` defined in your `response.content` section. Something like `response.content[    'application/json; charset=utf-8:']` will cause this issue.
+This can happen when you have a `charset` defined in your `response.content` section. Something like `response.content['application/json; charset=utf-8:']` will cause this issue.
 
 ## INTERNAL
 

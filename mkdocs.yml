@@ -128,6 +128,10 @@ nav:
       - Composability System: 'plugins/composability.md'
       - Plugin Analytics: 'plugins/analytics.md'
       - Feature Flags: 'plugins/feature-flags.md'
+      - OpenAPI:
+          - Schema-first plugins with OpenAPI (Experimental): 'openapi/01-getting-started.md'
+          - Generate a client from your OpenAPI spec: 'openapi/generate-client.md'
+          - Validate your OpenAPI spec against test data: 'openapi/test-case-validation.md'
       - Backends and APIs:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'
@@ -193,6 +197,8 @@ nav:
       - Switching Backstage from SQLite to PostgreSQL: 'tutorials/switching-sqlite-postgres.md'
       - Using the Backstage Proxy from Within a Plugin: 'tutorials/using-backstage-proxy-within-plugin.md'
       - Migration to Yarn 3: 'tutorials/yarn-migration.md'
+      - Migration to Material UI v5: 'tutorials/migrate-to-mui5.md'
+      - Setup OpenTelemetry: 'tutorials/setup-opentelemetry.md'
   - Architecture Decision Records (ADRs):
       - Overview: 'architecture-decisions/index.md'
       - ADR001 - Architecture Decision Record (ADR) log: 'architecture-decisions/adr001-add-adr-log.md'

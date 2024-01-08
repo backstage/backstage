@@ -75,7 +75,7 @@ describe('<RecentWorkflowRunsCard />', () => {
   });
 
   const renderSubject = async (props: any = {}) => {
-    renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [errorApiRef, mockErrorApi],

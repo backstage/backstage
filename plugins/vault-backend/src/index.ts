@@ -17,3 +17,4 @@
 export * from './service/router';
 export * from './service/VaultBuilder';
 export * from './service/vaultApi';
+export { vaultPlugin as default } from './service/plugin';

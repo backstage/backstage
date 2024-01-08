@@ -16,6 +16,7 @@
 
 import React, { useContext, ReactNode, ComponentType, useState } from 'react';
 import {
+  attachComponentData,
   ConfigApi,
   configApiRef,
   IdentityApi,
@@ -186,3 +187,5 @@ export function AppRouter(props: AppRouterProps) {
     </RouterComponent>
   );
 }
+
+attachComponentData(AppRouter, 'core.type', 'AppRouter');

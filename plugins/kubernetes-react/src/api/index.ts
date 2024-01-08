@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-export { kubernetesApiRef, kubernetesProxyApiRef } from './types';
-export type { KubernetesApi, KubernetesProxyApi } from './types';
+export {
+  kubernetesApiRef,
+  kubernetesProxyApiRef,
+  kubernetesClusterLinkFormatterApiRef,
+} from './types';
+export type {
+  KubernetesApi,
+  KubernetesProxyApi,
+  FormatClusterLinkOptions,
+  KubernetesClusterLinkFormatterApi,
+} from './types';
 export { KubernetesBackendClient } from './KubernetesBackendClient';
+export { KubernetesClusterLinkFormatter } from './KubernetesClusterLinkFormatter';
 export { KubernetesProxyClient } from './KubernetesProxyClient';
+export * from './formatters';

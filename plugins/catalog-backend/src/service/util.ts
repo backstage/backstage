@@ -20,11 +20,11 @@ import lodash from 'lodash';
 import { z } from 'zod';
 import {
   Cursor,
-  EntityFilter,
   QueryEntitiesCursorRequest,
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
 } from '../catalog/types';
+import { EntityFilter } from '@backstage/plugin-catalog-node';
 
 export async function requireRequestBody(req: Request): Promise<unknown> {
   const contentType = req.header('content-type');

@@ -161,7 +161,7 @@ export class ConfigSources {
       }
       return FileConfigSource.create({
         watch: options.watch,
-        path: arg.target,
+        path: resolvePath(arg.target),
         substitutionFunc: options.substitutionFunc,
       });
     });

@@ -398,7 +398,7 @@ describe('AzureBlobStoragePublish', () => {
 
       expect(logger.error).toHaveBeenCalledWith(
         expect.stringContaining(
-          `Unable to upload file(s) to Azure. Error: Upload failed for ${path.join(
+          `Upload failed for ${path.join(
             directory,
             '404.html',
           )} with status code 500`,

@@ -33,16 +33,8 @@ export function getGiteaEditContentsUrl(
   config: GiteaIntegrationConfig,
   url: string,
 ) {
-  try {
-    const baseUrl = config.baseUrl ?? `https://${config.host}`;
-    const [_blank, owner, name, _src, _branch, ref, ...path] = url
-      .replace(baseUrl, '')
-      .split('/');
-    const pathWithoutSlash = path.join('/').replace(/^\//, '');
-    return `${baseUrl}/${owner}/${name}/_edit/${ref}/${pathWithoutSlash}`;
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${url}, ${e}`);
-  }
+  const giteaUrl = parseGiteaUrl(config, url);
+  return `${giteaUrl.url}/${giteaUrl.owner}/${giteaUrl.name}/_edit/${giteaUrl.ref}/${giteaUrl.path}`;
 }
 
 /**
@@ -63,17 +55,52 @@ export function getGiteaFileContentsUrl(
   config: GiteaIntegrationConfig,
   url: string,
 ) {
-  try {
-    const baseUrl = config.baseUrl ?? `https://${config.host}`;
-    const [_blank, owner, name, _src, _branch, ref, ...path] = url
-      .replace(baseUrl, '')
-      .split('/');
-    const pathWithoutSlash = path.join('/').replace(/^\//, '');
+  const giteaUrl = parseGiteaUrl(config, url);
+  return `${giteaUrl.url}/api/v1/repos/${giteaUrl.owner}/${giteaUrl.name}/contents/${giteaUrl.path}?ref=${giteaUrl.ref}`;
+}
 
-    return `${baseUrl}/api/v1/repos/${owner}/${name}/contents/${pathWithoutSlash}?ref=${ref}`;
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${url}, ${e}`);
-  }
+/**
+ * Given a URL pointing to a repository/path, returns a URL
+ * for archive contents of the repository.
+ *
+ * @remarks
+ *
+ * Converts
+ * from: https://gitea.com/a/b/src/branchname
+ * or:   https://gitea.com/api/v1/repos/a/b/archive/branchname.tar.gz
+ *
+ * @param url - A URL pointing to a repository/path
+ * @param config - The relevant provider config
+ * @public
+ */
+export function getGiteaArchiveUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+) {
+  const giteaUrl = parseGiteaUrl(config, url);
+  return `${giteaUrl.url}/api/v1/repos/${giteaUrl.owner}/${giteaUrl.name}/archive/${giteaUrl.ref}.tar.gz`;
+}
+
+/**
+ * Given a URL pointing to a repository branch, returns a URL
+ * for latest commit information.
+ *
+ * @remarks
+ *
+ * Converts
+ * from: https://gitea.com/a/b/src/branchname
+ * or:   https://gitea.com/api/v1/repos/a/b/git/commits/branchname
+ *
+ * @param url - A URL pointing to a repository branch
+ * @param config - The relevant provider config
+ * @public
+ */
+export function getGiteaLatestCommitUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+) {
+  const giteaUrl = parseGiteaUrl(config, url);
+  return `${giteaUrl.url}/api/v1/repos/${giteaUrl.owner}/${giteaUrl.name}/git/commits/${giteaUrl.ref}`;
 }
 
 /**
@@ -103,4 +130,40 @@ export function getGiteaRequestOptions(config: GiteaIntegrationConfig): {
   return {
     headers,
   };
+}
+
+/**
+ * Return parsed git url properties.
+ *
+ * @param config - A Gitea provider config
+ * @param url - A URL pointing to a repository
+ * @public
+ */
+export function parseGiteaUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+): {
+  url: string;
+  owner: string;
+  name: string;
+  ref: string;
+  path: string;
+} {
+  const baseUrl = config.baseUrl ?? `https://${config.host}`;
+  try {
+    const [_blank, owner, name, _src, _branch, ref, ...path] = url
+      .replace(baseUrl, '')
+      .split('/');
+    const pathWithoutSlash = path.join('/').replace(/^\//, '');
+
+    return {
+      url: baseUrl,
+      owner: owner,
+      name: name,
+      ref: ref,
+      path: pathWithoutSlash,
+    };
+  } catch (e) {
+    throw new Error(`Incorrect URL: ${url}, ${e}`);
+  }
 }

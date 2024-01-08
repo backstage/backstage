@@ -121,6 +121,39 @@ function getAddFlagForDepsField(depsField) {
   }
 }
 
+/**
+ * Looks up the most common version range for a dependency if it already exists in the repo.
+ *
+ * @param {string} name
+ * @param {string} flag
+ * @param {getPackageMap.PackageMap} packages
+ * @returns {string}
+ */
+function addVersionQuery(name, flag, packages) {
+  const rangeCounts = new Map();
+
+  for (const pkg of packages.list) {
+    const deps =
+      flag === '--dev'
+        ? pkg.packageJson.devDependencies
+        : flag === '--peer'
+        ? pkg.packageJson.peerDependencies
+        : pkg.packageJson.dependencies;
+    const range = deps?.[name];
+    if (range) {
+      rangeCounts.set(range, (rangeCounts.get(range) ?? 0) + 1);
+    }
+  }
+
+  const mostCommonRange = [...rangeCounts.entries()].sort(
+    (a, b) => b[1] - a[1],
+  )[0]?.[0];
+  if (!mostCommonRange) {
+    return name;
+  }
+  return `${name}@${mostCommonRange}`;
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -177,13 +210,22 @@ module.exports = {
         }
 
         for (const [flag, names] of Object.entries(byFlag)) {
+          // Look up existing version queries in the repo for the same dependency
+          const namesWithQuery = [...names].map(name =>
+            addVersionQuery(name, flag, packages),
+          );
+
           // The security implication of this is a bit interesting, as crafted add-import
           // directives could be used to install malicious packages. However, the same is true
-          // for adding malicious packages to package.json, so there's significant difference.
-          execFileSync('yarn', ['add', ...(flag ? [flag] : []), ...names], {
-            cwd: localPkg.dir,
-            stdio: 'inherit',
-          });
+          // for adding malicious packages to package.json, so there's no significant difference.
+          execFileSync(
+            'yarn',
+            ['add', ...(flag ? [flag] : []), ...namesWithQuery],
+            {
+              cwd: localPkg.dir,
+              stdio: 'inherit',
+            },
+          );
         }
 
         // This switches all import directives back to the original import.

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import { Button, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import { CodeSnippet } from '@backstage/core-components';
@@ -24,7 +23,7 @@ const ENTITY_YAML = `metadata:
   labels:
     javaVersion: 1.2.3`;
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     code: {
       borderRadius: 6,

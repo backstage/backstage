@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,8 @@ import fetch from 'node-fetch';
 import pLimit from 'p-limit';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
+import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
+import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
 
 interface MkSearchIndexDoc {
   title: string;
@@ -59,6 +61,7 @@ export type TechDocsCollatorFactoryOptions = {
   catalogClient?: CatalogApi;
   parallelismLimit?: number;
   legacyPathCasing?: boolean;
+  entityTransformer?: TechDocsCollatorEntityTransformer;
 };
 
 type EntityInfo = {
@@ -85,6 +88,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   private readonly tokenManager: TokenManager;
   private readonly parallelismLimit: number;
   private readonly legacyPathCasing: boolean;
+  private entityTransformer: TechDocsCollatorEntityTransformer;
 
   private constructor(options: TechDocsCollatorFactoryOptions) {
     this.discovery = options.discovery;
@@ -97,6 +101,8 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     this.parallelismLimit = options.parallelismLimit ?? 10;
     this.legacyPathCasing = options.legacyPathCasing ?? false;
     this.tokenManager = options.tokenManager;
+    this.entityTransformer =
+      options.entityTransformer ?? defaultTechDocsCollatorEntityTransformer;
   }
 
   static fromConfig(config: Config, options: TechDocsCollatorFactoryOptions) {
@@ -142,17 +148,6 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
               'metadata.annotations.backstage.io/techdocs-ref':
                 CATALOG_FILTER_EXISTS,
             },
-            fields: [
-              'kind',
-              'namespace',
-              'metadata.annotations',
-              'metadata.name',
-              'metadata.title',
-              'metadata.namespace',
-              'spec.type',
-              'spec.lifecycle',
-              'relations',
-            ],
             limit: batchSize,
             offset: entitiesRetrieved,
           },
@@ -204,6 +199,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
               ]);
 
               return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
+                ...this.entityTransformer(entity),
                 title: unescape(doc.title),
                 text: unescape(doc.text || ''),
                 location: this.applyArgsToFormat(

@@ -15,7 +15,8 @@
  */
 import React from 'react';
 import { RepoUrlPicker } from './RepoUrlPicker';
-import Form from '@rjsf/core';
+import { Form } from '@backstage/plugin-scaffolder-react/alpha';
+import validator from '@rjsf/validator-ajv8';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   scmIntegrationsApiRef,
@@ -29,6 +30,7 @@ import {
   scaffolderApiRef,
   ScaffolderApi,
   useTemplateSecrets,
+  ScaffolderRJSFField,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
 
@@ -73,9 +75,12 @@ describe('RepoUrlPicker', () => {
         >
           <SecretsContextProvider>
             <Form
+              validator={validator}
               schema={{ type: 'string' }}
               uiSchema={{ 'ui:field': 'RepoUrlPicker' }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
               onSubmit={onSubmit}
             />
           </SecretsContextProvider>
@@ -109,12 +114,15 @@ describe('RepoUrlPicker', () => {
         >
           <SecretsContextProvider>
             <Form
+              validator={validator}
               schema={{ type: 'string' }}
               uiSchema={{
                 'ui:field': 'RepoUrlPicker',
                 'ui:options': { allowedHosts: ['dev.azure.com'] },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
             />
           </SecretsContextProvider>
         </TestApiProvider>,
@@ -123,6 +131,38 @@ describe('RepoUrlPicker', () => {
       expect(
         getByRole('option', { name: 'dev.azure.com' }),
       ).toBeInTheDocument();
+    });
+
+    it('should render properly with title and description', async () => {
+      const { getByText } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, {}],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              validator={validator}
+              schema={{
+                type: 'string',
+                title: 'test title',
+                description: 'test description',
+              }}
+              uiSchema={{
+                'ui:field': 'RepoUrlPicker',
+              }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      expect(getByText('test title')).toBeInTheDocument();
+      expect(getByText('test description')).toBeInTheDocument();
     });
   });
 
@@ -144,6 +184,7 @@ describe('RepoUrlPicker', () => {
         >
           <SecretsContextProvider>
             <Form
+              validator={validator}
               schema={{ type: 'string' }}
               uiSchema={{
                 'ui:field': 'RepoUrlPicker',
@@ -154,7 +195,9 @@ describe('RepoUrlPicker', () => {
                   },
                 },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
             />
             <SecretsComponent />
           </SecretsContextProvider>
@@ -206,6 +249,7 @@ describe('RepoUrlPicker', () => {
         >
           <SecretsContextProvider>
             <Form
+              validator={validator}
               schema={{ type: 'string' }}
               uiSchema={{
                 'ui:field': 'RepoUrlPicker',
@@ -216,7 +260,9 @@ describe('RepoUrlPicker', () => {
                   },
                 },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
             />
             <SecretsComponent />
           </SecretsContextProvider>
@@ -259,6 +305,7 @@ describe('RepoUrlPicker', () => {
         >
           <SecretsContextProvider>
             <Form
+              validator={validator}
               schema={{ type: 'string' }}
               uiSchema={{
                 'ui:field': 'RepoUrlPicker',
@@ -269,7 +316,9 @@ describe('RepoUrlPicker', () => {
                   },
                 },
               }}
-              fields={{ RepoUrlPicker: RepoUrlPicker }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
             />
             <SecretsComponent />
           </SecretsContextProvider>

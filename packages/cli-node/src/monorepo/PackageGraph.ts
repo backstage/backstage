@@ -56,8 +56,6 @@ export interface BackstagePackageJson {
     access?: 'public' | 'restricted';
     directory?: string;
     registry?: string;
-    alphaTypes?: string;
-    betaTypes?: string;
   };
 
   dependencies?: {

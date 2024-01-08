@@ -17,11 +17,10 @@
 import AsyncApi from '@asyncapi/react-component';
 import '@asyncapi/react-component/styles/default.css';
 import { makeStyles, alpha, darken } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
 import React from 'react';
 import { useTheme } from '@material-ui/core';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     fontFamily: 'inherit',
     '& .bg-white': {

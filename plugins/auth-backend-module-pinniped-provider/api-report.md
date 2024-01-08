@@ -5,6 +5,7 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BaseClient } from 'openid-client';
+import { Config } from '@backstage/config';
 import { OAuthAuthenticator } from '@backstage/plugin-auth-node';
 import { Strategy } from 'openid-client';
 import { TokenSet } from 'openid-client';
@@ -14,7 +15,15 @@ export const authModulePinnipedProvider: () => BackendFeature;
 
 // @public (undocumented)
 export const pinnipedAuthenticator: OAuthAuthenticator<
-  Promise<{
+  PinnipedStrategyCache,
+  unknown
+>;
+
+// @public (undocumented)
+export class PinnipedStrategyCache {
+  constructor(callbackUrl: string, config: Config);
+  // (undocumented)
+  getStrategy(): Promise<{
     providerStrategy: Strategy<
       {
         tokenset: TokenSet;
@@ -22,7 +31,6 @@ export const pinnipedAuthenticator: OAuthAuthenticator<
       BaseClient
     >;
     client: BaseClient;
-  }>,
-  unknown
->;
+  }>;
+}
 ```

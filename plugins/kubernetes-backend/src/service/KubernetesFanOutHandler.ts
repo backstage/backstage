@@ -17,7 +17,6 @@
 import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import {
-  ClusterDetails,
   KubernetesFetcher,
   KubernetesObjectsProviderOptions,
   KubernetesServiceLocator,
@@ -26,7 +25,6 @@ import {
   ObjectToFetch,
   CustomResource,
 } from '../types/types';
-import { AuthenticationStrategy, KubernetesCredential } from '../auth/types';
 import {
   ClientContainerStatus,
   ClientCurrentResourceUsage,
@@ -45,7 +43,10 @@ import {
   PodStatus,
 } from '@kubernetes/client-node';
 import {
+  AuthenticationStrategy,
+  ClusterDetails,
   CustomResourcesByEntity,
+  KubernetesCredential,
   KubernetesObjectsByEntity,
 } from '@backstage/plugin-kubernetes-node';
 
@@ -77,6 +78,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     apiVersion: 'v1',
     plural: 'limitranges',
     objectType: 'limitranges',
+  },
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'resourcequotas',
+    objectType: 'resourcequotas',
   },
   {
     group: 'apps',

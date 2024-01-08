@@ -20,13 +20,17 @@
  * @packageDocumentation
  */
 
+import { Entity } from '@backstage/catalog-model';
+import {
+  DocsBuildStrategy as _DocsBuildStrategy,
+  TechDocsDocument as _TechDocsDocument,
+} from '@backstage/plugin-techdocs-node';
+
 export { createRouter } from './service';
 export type {
   RouterOptions,
   RecommendedDeploymentOptions,
   OutOfTheBoxDeploymentOptions,
-  DocsBuildStrategy,
-  ShouldBuildParameters,
 } from './service';
 
 export {
@@ -39,8 +43,21 @@ export type {
 } from './search';
 
 /**
- * @deprecated Use directly from @backstage/plugin-techdocs-node
+ * @public
+ * @deprecated import from `@backstage/plugin-techdocs-node` instead
  */
-export type { TechDocsDocument } from '@backstage/plugin-techdocs-node';
+export type DocsBuildStrategy = _DocsBuildStrategy;
+/**
+ * @public
+ * @deprecated use direct type definition instead
+ */
+export type ShouldBuildParameters = {
+  entity: Entity;
+};
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-techdocs-node` instead
+ */
+export type TechDocsDocument = _TechDocsDocument;
 
 export * from '@backstage/plugin-techdocs-node';

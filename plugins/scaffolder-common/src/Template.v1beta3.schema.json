@@ -14,6 +14,7 @@
       },
       "spec": {
         "owner": "artist-relations-team",
+        "type": "website",
         "parameters": {
           "required": ["name", "description", "repoUrl"],
           "backstage:permissions": {

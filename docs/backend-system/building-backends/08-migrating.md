@@ -6,8 +6,6 @@ sidebar_label: Migration Guide
 description: How to migrate existing backends to the new backend system
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 ## Overview
 
 This section describes how to migrate an existing Backstage backend service
@@ -21,8 +19,7 @@ internal plugins and support classes themselves to the backend system first -
 the migration here will mostly deal with wiring and using compatibility wrappers
 where possible in the backend package itself. We hope that you will find that
 you end up with a much smaller, easier to understand, and easier to maintain
-package as a result of these steps, and then being able to [migrate
-plugins](../building-plugins-and-modules/08-migrating.md) as a separate
+package as a result of these steps, and then being able to [migrate plugins](../building-plugins-and-modules/08-migrating.md) as a separate
 endeavour later.
 
 ## Overall Structure
@@ -177,11 +174,10 @@ custom API, so we use a helper function to transform that particular one.
 To make additions as mentioned above to the environment, you will start to get
 into the weeds of how the backend system wiring works. You'll need to have a
 service reference and a service factory that performs the actual creation of
-your service. Please see [the services
-article](../architecture/03-services.md#defining-a-service) to learn how to
-create a service ref and its default factory. You can place that code directly
-in the index file for now if you want, or near the actual implementation class
-in question.
+your service. Please see [the services article](../architecture/03-services.md)
+to learn how to create a service ref and its default factory. You can place that
+code directly in the index file for now if you want, or near the actual implementation
+class in question.
 
 In this example, we'll assume that your added environment field is named
 `example`, and the created ref is named `exampleServiceRef`.
@@ -233,7 +229,7 @@ be used in its new form.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(import('@backstage/plugin-app-backend'));
+backend.add(import('@backstage/plugin-app-backend/alpha'));
 ```
 
 If you need to override the app package name, which otherwise defaults to `"app"`,
@@ -248,7 +244,7 @@ A basic installation of the catalog plugin looks as follows.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
@@ -263,6 +259,317 @@ If you have other customizations made to `plugins/catalog.ts`, such as adding
 custom processors or entity providers, read on. Otherwise, you should be able to
 just delete that file at this point.
 
+#### Amazon Web Services
+
+`AwsEksClusterProcessor` and `AwsOrganizationCloudAccountProcessor` have not yet been migrated to the new backend system.
+See [Other Catalog Extensions](#other-catalog-extensions) for how to use these in the new backend system.
+
+For `AwsS3DiscoveryProcessor`, first migrate to `AwsS3EntityProvider`.
+
+To migrate `AwsS3EntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-aws` module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-aws/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other AWS configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    awsS3:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT1H
+          timeout: PT50M
+        /* highlight-add-end */
+```
+
+#### Azure DevOps
+
+For `AzureDevOpsDiscoveryProcessor`, first migrate to `AzureDevOpsEntityProvider`.
+
+To migrate `AzureDevOpsEntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-azure` module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-azure/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Azure DevOps configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    azureDevOps:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT1H
+          timeout: PT50M
+        /* highlight-add-end */
+```
+
+#### Open API
+
+`InternalOpenApiDocumentationProvider` has not yet been migrated to the new backend system.
+See [Other Catalog Extensions](#other-catalog-extensions) for how to use this in the new backend system.
+
+#### Bitbucket
+
+For `BitbucketDiscoveryProcessor`, migrate to `BitbucketCloudEntityProvider` or `BitbucketServerEntityProvider`
+
+To migrate `BitbucketCloudEntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-bitbucket-cloud` module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-bitbucket-cloud/alpha'),
+);
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Bitbucket Cloud configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    bitbucketCloud:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+To migrate `BitbucketServerEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-bitbucket-server`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-bitbucket-server/alpha'),
+);
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Bitbucket Server configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    bitbucketServer:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+#### Google Cloud Platform
+
+To migrate `GkeEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-gcp`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-gcp'));
+/* highlight-add-end */
+```
+
+Configuration in app-config.yaml remains the same.
+
+#### Gerrit
+
+To migrate `GerritEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-gerrit`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-gerrit/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Gerrit configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    gerrit:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+#### Github
+
+For `GithubDiscoveryProcessor`, `GithubMultiOrgReaderProcessor` and `GithubOrgReaderProcessor`, first migrate to the equivalent Entity Provider.
+
+To migrate `GithubEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-github/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Github configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    github:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+To migrate `GithubMultiOrgEntityProvider` and `GithubOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github-org`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Github configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    githubOrg:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+If you were providing transformers, these can be configured by extending `githubOrgEntityProviderTransformsExtensionPoint`
+
+```ts title="packages/backend/src/index.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { githubOrgEntityProviderTransformsExtensionPoint } from '@backstage/plugin-catalog-backend-module-github-org';
+
+backend.add(
+  createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'githubOrgTransformers',
+    register(env) {
+      env.registerInit({
+        deps: {
+          /* highlight-add-start */
+          githubOrgTransformers:
+            githubOrgEntityProviderTransformsExtensionPoint,
+          /* highlight-add-end */
+        },
+        async init({ githubOrgTransformers }) {
+          /* highlight-add-start */
+          githubOrgTransformers.setUserTransformer(myUserTransformer);
+          githubOrgTransformers.setTeamTransformer(myTeamTransformer);
+          /* highlight-add-end */
+        },
+      });
+    },
+  }),
+);
+```
+
+#### Microsoft Graph
+
+For `MicrosoftGraphOrgReaderProcessor`, first migrate to `MicrosoftGraphOrgEntityProvider`
+
+To migrate `MicrosoftGraphOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-msgraph`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-msgraph/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Microsoft Graph configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    microsoftGraphOrg:
+      provider:
+        /* highlight-add-start */
+        schedule:
+          frequency: PT4H
+          timeout: PT30M
+        /* highlight-add-end */
+```
+
+If you were providing transformers, these can be configured by extending `microsoftGraphOrgEntityProviderTransformExtensionPoint`
+
+```ts title="packages/backend/src/index.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { microsoftGraphOrgEntityProviderTransformExtensionPoint } from '@backstage/plugin-catalog-backend-module-msgraph/alpha';
+
+backend.add(
+  createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'microsoft-graph-extensions',
+    register(env) {
+      env.registerInit({
+        deps: {
+          /* highlight-add-start */
+          microsoftGraphTransformers:
+            microsoftGraphOrgEntityProviderTransformExtensionPoint,
+          /* highlight-add-end */
+        },
+        async init({ microsoftGraphTransformers }) {
+          /* highlight-add-start */
+          microsoftGraphTransformers.setUserTransformer(myUserTransformer);
+          microsoftGraphTransformers.setGroupTransformer(myGroupTransformer);
+          microsoftGraphTransformers.setOrganizationTransformer(
+            myOrganizationTransformer,
+          );
+          /* highlight-add-end */
+        },
+      });
+    },
+  }),
+);
+```
+
+#### Other Catalog Extensions
+
 You will use the [extension points](../architecture/05-extension-points.md)
 mechanism to extend or tweak the functionality of the plugin. To do that,
 you'll make your own bespoke [module](../architecture/06-modules.md) which
@@ -270,21 +577,21 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 
 /* highlight-add-start */
 const catalogModuleCustomExtensions = createBackendModule({
   pluginId: 'catalog', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
         // ... and other dependencies as needed
       },
-      init({ catalog /* ..., other dependencies */ }) {
+      async init({ catalog /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
         catalog.addEntityProvider(new MyEntityProvider()); // just an example
@@ -296,7 +603,7 @@ const catalogModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
@@ -339,21 +646,21 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 
 /* highlight-add-start */
 const eventsModuleCustomExtensions = createBackendModule({
   pluginId: 'events', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {
         events: eventsExtensionPoint,
         // ... and other dependencies as needed
       },
-      init({ events /* ..., other dependencies */ }) {
+      async init({ events /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
         events.addSubscribers(new MySubscriber()); // just an example
@@ -390,7 +697,7 @@ A basic installation of the scaffolder plugin looks as follows.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(import('@backstage/plugin-scaffolder-backend'));
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 ```
 
 If you have other customizations made to `plugins/scaffolder.ts`, such as adding
@@ -404,21 +711,21 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
-import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 
 /* highlight-add-start */
 const scaffolderModuleCustomExtensions = createBackendModule({
   pluginId: 'scaffolder', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {
         scaffolder: scaffolderActionsExtensionPoint,
         // ... and other dependencies as needed
       },
-      init({ scaffolder /* ..., other dependencies */ }) {
+      async init({ scaffolder /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
         scaffolder.addActions(new MyAction()); // just an example
@@ -429,7 +736,7 @@ const scaffolderModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-scaffolder-backend'));
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 /* highlight-add-next-line */
 backend.add(scaffolderModuleCustomExtensions());
 ```

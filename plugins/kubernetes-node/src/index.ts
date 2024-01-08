@@ -29,9 +29,5 @@
  * @packageDocumentation
  */
 
-export {
-  kubernetesObjectsProviderExtensionPoint,
-  type KubernetesObjectsProviderExtensionPoint,
-} from './extensions';
-
+export * from './extensions';
 export * from './types';

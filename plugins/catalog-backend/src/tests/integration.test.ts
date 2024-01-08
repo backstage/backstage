@@ -215,6 +215,11 @@ class TestHarness {
             connection: ':memory:',
           },
         },
+        catalog: {
+          stitchingStrategy: {
+            mode: 'immediate',
+          },
+        },
       },
     );
     const logger = options?.logger ?? getVoidLogger();

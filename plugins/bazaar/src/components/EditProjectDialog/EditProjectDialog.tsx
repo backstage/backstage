@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
 import { BazaarProject, FormValues } from '../../types';
 import { bazaarApiRef } from '../../api';
@@ -52,6 +52,7 @@ export const EditProjectDialog = ({
 }: Props) => {
   const classes = useStyles();
   const bazaarApi = useApi(bazaarApiRef);
+  const alertApi = useApi(alertApiRef);
   const [openDelete, setOpenDelete] = useState(false);
   const [defaultValues, setDefaultValues] = useState<FormValues>({
     ...bazaarProject,
@@ -71,6 +72,11 @@ export const EditProjectDialog = ({
 
     handleDeleteClose();
     fetchBazaarProject();
+    alertApi.post({
+      message: `Deleted project '${bazaarProject.title}' from the Bazaar list`,
+      severity: 'success',
+      display: 'transient',
+    });
   };
 
   useEffect(() => {
@@ -97,6 +103,11 @@ export const EditProjectDialog = ({
 
     if (updateResponse.status === 'ok') fetchBazaarProject();
     handleEditClose();
+    alertApi.post({
+      message: `Updated project '${formValues.title}' in the Bazaar list`,
+      severity: 'success',
+      display: 'transient',
+    });
   };
 
   return (

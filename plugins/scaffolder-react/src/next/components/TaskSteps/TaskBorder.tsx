@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { LinearProgress, makeStyles } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   failed: {
     backgroundColor: theme.palette.error.main,
   },

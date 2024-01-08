@@ -26,12 +26,11 @@ import {
   scaffolderApiRef,
   useTemplateSecrets,
   type LayoutOptions,
-} from '@backstage/plugin-scaffolder-react';
-import {
   FormProps,
-  Workflow,
-  NextFieldExtensionOptions,
-} from '@backstage/plugin-scaffolder-react/alpha';
+  FieldExtensionOptions,
+  ReviewStepProps,
+} from '@backstage/plugin-scaffolder-react';
+import { Workflow } from '@backstage/plugin-scaffolder-react/alpha';
 import { JsonValue } from '@backstage/types';
 import { Header, Page } from '@backstage/core-components';
 
@@ -45,9 +44,17 @@ import {
  * @alpha
  */
 export type TemplateWizardPageProps = {
-  customFieldExtensions: NextFieldExtensionOptions<any, any>[];
+  customFieldExtensions: FieldExtensionOptions<any, any>[];
+  components?: {
+    ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
+  };
   layouts?: LayoutOptions[];
-  FormProps?: FormProps;
+  formProps?: FormProps;
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
+  };
 };
 
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
@@ -85,14 +92,16 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           pageTitleOverride="Create a new component"
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
+          {...props.headerOptions}
         />
         <Workflow
           namespace={namespace}
           templateName={templateName}
           onCreate={onCreate}
+          components={props.components}
           onError={onError}
           extensions={props.customFieldExtensions}
-          FormProps={props.FormProps}
+          formProps={props.formProps}
           layouts={props.layouts}
         />
       </Page>

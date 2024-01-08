@@ -18,10 +18,39 @@ import git, {
   ProgressCallback,
   MergeResult,
   ReadCommitResult,
+  AuthCallback,
 } from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
 import { LoggerService } from '@backstage/backend-plugin-api';
+
+function isAuthCallbackOptions(
+  options: StaticAuthOptions | AuthCallbackOptions,
+): options is AuthCallbackOptions {
+  return 'onAuth' in options;
+}
+
+/**
+ * Configure static credential for authentication
+ *
+ * @public
+ */
+export type StaticAuthOptions = {
+  username?: string;
+  password?: string;
+  token?: string;
+  logger?: LoggerService;
+};
+
+/**
+ * Configure an authentication callback that can provide credentials on demand
+ *
+ * @public
+ */
+export type AuthCallbackOptions = {
+  onAuth: AuthCallback;
+  logger?: LoggerService;
+};
 
 /*
 provider          username         password
@@ -42,6 +71,7 @@ instead of Basic Auth (e.g., Bitbucket Server).
  *
  * @public
  */
+
 export class Git {
   private readonly headers: {
     [x: string]: string;
@@ -49,12 +79,13 @@ export class Git {
 
   private constructor(
     private readonly config: {
-      username?: string;
-      password?: string;
+      onAuth: AuthCallback;
       token?: string;
       logger?: LoggerService;
     },
   ) {
+    this.onAuth = config.onAuth;
+
     this.headers = {
       'user-agent': 'git/@isomorphic-git',
       ...(config.token ? { Authorization: `Bearer ${config.token}` } : {}),
@@ -288,10 +319,7 @@ export class Git {
     });
   }
 
-  private onAuth = () => ({
-    username: this.config.username,
-    password: this.config.password,
-  });
+  private onAuth: AuthCallback;
 
   private onProgressHandler = (): ProgressCallback => {
     let currentPhase = '';
@@ -308,13 +336,13 @@ export class Git {
     };
   };
 
-  static fromAuth = (options: {
-    username?: string;
-    password?: string;
-    token?: string;
-    logger?: LoggerService;
-  }) => {
+  static fromAuth = (options: StaticAuthOptions | AuthCallbackOptions) => {
+    if (isAuthCallbackOptions(options)) {
+      const { onAuth, logger } = options;
+      return new Git({ onAuth, logger });
+    }
+
     const { username, password, token, logger } = options;
-    return new Git({ username, password, token, logger });
+    return new Git({ onAuth: () => ({ username, password }), token, logger });
   };
 }

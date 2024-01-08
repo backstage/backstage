@@ -1,5 +1,24 @@
 # @backstage/plugin-azure-devops-common
 
+## 0.3.2
+
+### Patch Changes
+
+- c70e4f5: Added multi-org support
+- 043b724: Introduced new `AzureDevOpsAnnotatorProcessor` that adds the needed annotations automatically. Also, moved constants to common package so they can be shared more easily
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- c70e4f5: Added multi-org support
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- 043b724c56: Introduced new `AzureDevOpsAnnotatorProcessor` that adds the needed annotations automatically. Also, moved constants to common package so they can be shared more easily
+
 ## 0.3.1
 
 ### Patch Changes

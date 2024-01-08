@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-let ReactDOM:
-  | typeof import('react-dom')
-  // TODO: replace with import('react-dom/client') when repo is migrated to 18
-  | { createRoot(el: HTMLElement): { render(el: JSX.Element): void } };
+let ReactDOMPromise: Promise<
+  typeof import('react-dom') | typeof import('react-dom/client')
+>;
 if (process.env.HAS_REACT_DOM_CLIENT) {
-  ReactDOM = require('react-dom/client');
+  ReactDOMPromise = import('react-dom/client');
 } else {
-  ReactDOM = require('react-dom');
+  ReactDOMPromise = import('react-dom');
 }
 
 /** @internal */
 export function renderReactElement(element: JSX.Element, root: HTMLElement) {
-  if ('createRoot' in ReactDOM) {
-    ReactDOM.createRoot(root).render(element);
-  } else {
-    ReactDOM.render(element, root);
-  }
+  ReactDOMPromise.then(ReactDOM => {
+    if ('createRoot' in ReactDOM) {
+      ReactDOM.createRoot(root).render(element);
+    } else {
+      ReactDOM.render(element, root);
+    }
+  });
 }

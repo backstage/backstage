@@ -151,7 +151,7 @@ export async function makeRollupConfigs(
     });
   }
 
-  if (options.outputs.has(Output.types) && !options.useApiExtractor) {
+  if (options.outputs.has(Output.types)) {
     const input = Object.fromEntries(
       scriptEntryPoints.map(e => [
         e.name,

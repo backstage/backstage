@@ -42,26 +42,35 @@ import {
 } from './filesystem';
 import {
   createGithubActionsDispatchAction,
+  createGithubAutolinksAction,
   createGithubDeployKeyAction,
   createGithubEnvironmentAction,
   createGithubIssuesLabelAction,
   createGithubRepoCreateAction,
   createGithubRepoPushAction,
   createGithubWebhookAction,
-} from './github';
+  createPublishGithubAction,
+  createPublishGithubPullRequestAction,
+} from '@backstage/plugin-scaffolder-backend-module-github';
+
+import { createPublishAzureAction } from '@backstage/plugin-scaffolder-backend-module-azure';
+
 import {
-  createPublishAzureAction,
   createPublishBitbucketAction,
   createPublishBitbucketCloudAction,
   createPublishBitbucketServerAction,
   createPublishBitbucketServerPullRequestAction,
+} from '@backstage/plugin-scaffolder-backend-module-bitbucket';
+
+import {
   createPublishGerritAction,
   createPublishGerritReviewAction,
-  createPublishGithubAction,
-  createPublishGithubPullRequestAction,
+} from '@backstage/plugin-scaffolder-backend-module-gerrit';
+
+import {
   createPublishGitlabAction,
   createPublishGitlabMergeRequestAction,
-} from './publish';
+} from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 /**
  * The options passed to {@link createBuiltinActions}
@@ -96,8 +105,11 @@ export interface CreateBuiltInActionsOptions {
  * A function to generate create a list of default actions that the scaffolder provides.
  * Is called internally in the default setup, but can be used when adding your own actions or overriding the default ones
  *
+ * TODO(blam): version 2 of the scaffolder shouldn't ship with the additional modules. We should ship the basics, and let people install
+ * modules for the providers they want to use.
  * @public
  * @returns A list of actions that can be used in the scaffolder
+ *
  */
 export const createBuiltinActions = (
   options: CreateBuiltInActionsOptions,
@@ -206,6 +218,10 @@ export const createBuiltinActions = (
     }),
     createGithubDeployKeyAction({
       integrations,
+    }),
+    createGithubAutolinksAction({
+      integrations,
+      githubCredentialsProvider,
     }),
   ];
 

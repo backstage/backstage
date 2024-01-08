@@ -22,6 +22,7 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
+  DocsBuildStrategy,
   GeneratorBuilder,
   PreparerBuilder,
   PublisherBase,
@@ -32,7 +33,6 @@ import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
-import { DocsBuildStrategy } from './DocsBuildStrategy';
 
 jest.mock('@backstage/catalog-client');
 jest.mock('@backstage/config');

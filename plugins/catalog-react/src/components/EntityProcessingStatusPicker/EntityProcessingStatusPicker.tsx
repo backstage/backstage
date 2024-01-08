@@ -72,7 +72,7 @@ export const EntityProcessingStatusPicker = () => {
     <Box pb={1} pt={1}>
       <Typography variant="button" component="label">
         Processing Status
-        <Autocomplete
+        <Autocomplete<string, true>
           multiple
           disableCloseOnSelect
           options={availableAdvancedItems}

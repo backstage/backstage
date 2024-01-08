@@ -196,12 +196,14 @@ describe('ZipArchiveResponse', () => {
     const fileSize = 1000 * 1000;
     const filePath = await new Promise<string>((resolve, reject) => {
       const outFile = targetDir.resolve('large-archive.zip');
-      const archive = createArchive('zip');
 
+      const outStream = fs.createWriteStream(outFile);
+      outStream.on('close', () => resolve(outFile));
+
+      const archive = createArchive('zip');
       archive.on('error', reject);
-      archive.on('end', () => resolve(outFile));
-      archive.pipe(fs.createWriteStream(outFile));
       archive.on('warning', w => console.warn('WARN', w));
+      archive.pipe(outStream);
 
       for (let i = 0; i < fileCount; i++) {
         // Workaround for https://github.com/archiverjs/node-archiver/issues/542

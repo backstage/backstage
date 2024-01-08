@@ -77,24 +77,28 @@ async function detectPackages(
       return [];
     }
 
-    const depPackageJson: BackstagePackageJson = require(require.resolve(
-      `${depName}/package.json`,
-      { paths: [targetPath] },
-    ));
-    if (
-      ['frontend-plugin', 'frontend-plugin-module'].includes(
-        depPackageJson.backstage?.role ?? '',
-      )
-    ) {
-      // Include alpha entry point if available. If there's no default export it will be ignored
-      const exp = depPackageJson.exports;
-      if (exp && typeof exp === 'object' && './alpha' in exp) {
-        return [
-          { name: depName, import: depName },
-          { name: depName, export: './alpha', import: `${depName}/alpha` },
-        ];
+    try {
+      const depPackageJson: BackstagePackageJson = require(require.resolve(
+        `${depName}/package.json`,
+        { paths: [targetPath] },
+      ));
+      if (
+        ['frontend-plugin', 'frontend-plugin-module'].includes(
+          depPackageJson.backstage?.role ?? '',
+        )
+      ) {
+        // Include alpha entry point if available. If there's no default export it will be ignored
+        const exp = depPackageJson.exports;
+        if (exp && typeof exp === 'object' && './alpha' in exp) {
+          return [
+            { name: depName, import: depName },
+            { name: depName, export: './alpha', import: `${depName}/alpha` },
+          ];
+        }
+        return [{ name: depName, import: depName }];
       }
-      return [{ name: depName, import: depName }];
+    } catch {
+      /* ignore packages that don't make package.json available */
     }
     return [];
   });

@@ -6,8 +6,6 @@ sidebar_label: Backend
 description: Backend instances
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 ## The Backend Instance
 
 This is the main entry point for creating a backend. It does not have any functionality in and of itself, but is simply responsible for wiring things together.
@@ -23,7 +21,7 @@ import scaffolderPlugin from '@backstage/plugin-scaffolder-backend';
 const backend = createBackend();
 
 // Install desired features
-backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 
 // Features can also be installed using an explicit reference
 backend.add(scaffolderPlugin());

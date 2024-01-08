@@ -16,8 +16,8 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
-import { WrapperComponent, renderHook } from '@testing-library/react-hooks';
-import React, { PropsWithChildren } from 'react';
+import { renderHook, waitFor } from '@testing-library/react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { catalogApiRef } from '../api';
 import { useRelatedEntities } from './useRelatedEntities';
 
@@ -50,7 +50,7 @@ describe('useRelatedEntities', () => {
     getEntitiesByRefs: jest.fn(),
   };
 
-  const wrapper: WrapperComponent<PropsWithChildren<{}>> = ({ children }) => {
+  const wrapper: ComponentType<PropsWithChildren<{}>> = ({ children }) => {
     return (
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         {children}
@@ -70,7 +70,9 @@ describe('useRelatedEntities', () => {
 
     expect(rendered.result.current).toEqual({ loading: true });
 
-    await rendered.waitForValueToChange(() => rendered.result.current.loading);
+    await waitFor(() => {
+      expect(rendered.result.current.loading).toBe(false);
+    });
 
     expect(catalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
       entityRefs: ['group:default/the-owners-1', 'group:default/the-owners-2'],

@@ -11,7 +11,7 @@ add custom providers there if needed.
 
 These providers are configured so your Kubernetes plugin can locate and access the
 clusters you have access to, some of them have special requirements in the third party in
-question, like Azure's Managed AAD subscription or Azure RBAC support active on the cluster.
+question, like Microsoft Entra ID (formerly Azure Active Directory) subscription or Azure RBAC support active on the cluster.
 
 The providers currently available are divided into server side and client side.
 
@@ -78,7 +78,7 @@ You get both, the cluster `url` and `caData` directly from the AWS console by go
 ### Azure
 
 The Azure server side authentication provider works by authenticating on the server with
-the Azure CLI, please note that [Azure AD Authentication][1] is a requirement and has to
+the Azure CLI, please note that [Microsoft Entra authentication][1] is a requirement and has to
 be enabled in your AKS cluster, then follow these steps:
 
 - [Install the Azure CLI][2] in the environment where the backstage application will run.

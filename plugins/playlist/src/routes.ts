@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
+import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
   id: 'playlist:index-page',
 });
 
-export const playlistRouteRef = createSubRouteRef({
+export const playlistRouteRef = createRouteRef({
   id: 'playlist:playlist-page',
-  parent: rootRouteRef,
-  path: '/:playlistId',
+  params: ['playlistId'],
 });

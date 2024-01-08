@@ -44,6 +44,51 @@ import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { catalogTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
+import { CatalogTableColumnsFunc } from '../CatalogTable/types';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import { usePermission } from '@backstage/plugin-permission-react';
+
+/** @internal */
+export type BaseCatalogPageProps = {
+  filters: ReactNode;
+  content?: ReactNode;
+  pagination?: boolean | { limit?: number };
+};
+
+/** @internal */
+export function BaseCatalogPage(props: BaseCatalogPageProps) {
+  const { filters, content = <CatalogTable />, pagination } = props;
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
+  const createComponentLink = useRouteRef(createComponentRouteRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
+
+  return (
+    <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
+      <Content>
+        <ContentHeader title="">
+          {allowed && (
+            <CreateButton
+              title={t('indexPage.createButtonTitle')}
+              to={createComponentLink && createComponentLink()}
+            />
+          )}
+          <SupportButton>All your software catalog entities</SupportButton>
+        </ContentHeader>
+        <EntityListProvider pagination={pagination}>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
+        </EntityListProvider>
+      </Content>
+    </PageWithHeader>
+  );
+}
+
 /**
  * Props for root catalog pages.
  *
@@ -51,12 +96,13 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
  */
 export interface DefaultCatalogPageProps {
   initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<CatalogTableRow>[];
+  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   actions?: TableProps<CatalogTableRow>['actions'];
   initialKind?: string;
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  pagination?: boolean | { limit?: number };
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -67,46 +113,33 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     initialKind = 'component',
     tableOptions = {},
     emptyContent,
+    pagination,
     ownerPickerMode,
   } = props;
-  const orgName =
-    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
-  const createComponentLink = useRouteRef(createComponentRouteRef);
-  const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
-    <PageWithHeader title={t('catalog_page_title', { orgName })} themeId="home">
-      <Content>
-        <ContentHeader title="">
-          <CreateButton
-            title={t('catalog_page_create_button_title')}
-            to={createComponentLink && createComponentLink()}
-          />
-          <SupportButton>All your software catalog entities</SupportButton>
-        </ContentHeader>
-        <EntityListProvider>
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>
-              <EntityKindPicker initialFilter={initialKind} />
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker mode={ownerPickerMode} />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
-              <EntityProcessingStatusPicker />
-              <EntityNamespacePicker />
-            </CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <CatalogTable
-                columns={columns}
-                actions={actions}
-                tableOptions={tableOptions}
-                emptyContent={emptyContent}
-              />
-            </CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </EntityListProvider>
-      </Content>
-    </PageWithHeader>
+    <BaseCatalogPage
+      filters={
+        <>
+          <EntityKindPicker initialFilter={initialKind} />
+          <EntityTypePicker />
+          <UserListPicker initialFilter={initiallySelectedFilter} />
+          <EntityOwnerPicker mode={ownerPickerMode} />
+          <EntityLifecyclePicker />
+          <EntityTagPicker />
+          <EntityProcessingStatusPicker />
+          <EntityNamespacePicker />
+        </>
+      }
+      content={
+        <CatalogTable
+          columns={columns}
+          actions={actions}
+          tableOptions={tableOptions}
+          emptyContent={emptyContent}
+        />
+      }
+      pagination={pagination}
+    />
   );
 }

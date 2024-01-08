@@ -16,8 +16,37 @@
 
 import { TechDocsNotFound } from './TechDocsNotFound';
 import React from 'react';
-import { screen } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { render, screen, waitFor } from '@testing-library/react';
+import {
+  MockAnalyticsApi,
+  TestApiProvider,
+  renderInTestApp,
+  wrapInTestApp,
+} from '@backstage/test-utils';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
+
+jest.mock('@backstage/plugin-techdocs-react', () => {
+  const actualModule = jest.requireActual('@backstage/plugin-techdocs-react');
+  return {
+    ...actualModule,
+    useTechDocsReaderPage: () => ({
+      entityRef: { name: 'name', namespace: 'namespace', kind: 'kind' },
+    }),
+  };
+});
+
+jest.mock('react-router-dom', () => {
+  const actualModule = jest.requireActual('react-router-dom');
+  return {
+    ...actualModule,
+    useLocation: () =>
+      ({
+        pathname: '/the/pathname',
+        search: '?the=search',
+        hash: '#the-anchor',
+      } as Location),
+  };
+});
 
 describe('<TechDocsNotFound />', () => {
   it('should render with status code, status message and go back link', async () => {
@@ -27,21 +56,33 @@ describe('<TechDocsNotFound />', () => {
     screen.getByText(/Looks like someone dropped the mic!/i);
     expect(screen.getByTestId('go-back-link')).toBeDefined();
   });
-});
 
-describe('<TechDocsNotFound errorMessage="This is a custom error message" />', () => {
-  it('should render with status code, custom error message and go back link', async () => {
-    await renderInTestApp(
-      <TechDocsNotFound errorMessage="This is a custom error message" />,
+  it('should trigger analytics event not-found', async () => {
+    const mockAnalyticsApi = new MockAnalyticsApi();
+
+    render(
+      wrapInTestApp(
+        <TestApiProvider apis={[[analyticsApiRef, mockAnalyticsApi]]}>
+          <TechDocsNotFound />
+        </TestApiProvider>,
+      ),
     );
-    screen.getByText(/This is a custom error message/i);
-    screen.getByText(/404/i);
-    screen.getByText(/Looks like someone dropped the mic!/i);
-    expect(screen.getByTestId('go-back-link')).toBeDefined();
+
+    await waitFor(() => {
+      expect(mockAnalyticsApi.getEvents()[0]).toMatchObject({
+        action: 'not-found',
+        subject: '/the/pathname?the=search#the-anchor',
+        attributes: {
+          name: 'name',
+          namespace: 'namespace',
+          kind: 'kind',
+        },
+      });
+    });
   });
 });
 
-describe('<TechDocsNotFound statusCode={500} errorMessage="This is a custom error message" />', () => {
+describe('<TechDocsNotFound errorMessage="This is a custom error message" />', () => {
   it('should render with a 404 code, custom error message and go back link', async () => {
     await renderInTestApp(
       <TechDocsNotFound errorMessage="This is a custom error message" />,

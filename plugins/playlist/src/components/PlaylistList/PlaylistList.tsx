@@ -26,6 +26,9 @@ import { Typography } from '@material-ui/core';
 import { useTitle, usePlaylistList } from '../../hooks';
 import { PlaylistCard } from '../PlaylistCard';
 
+/**
+ * @public
+ */
 export const PlaylistList = () => {
   const { loading, error, playlists } = usePlaylistList();
   const pluralTitleLowerCase = useTitle({

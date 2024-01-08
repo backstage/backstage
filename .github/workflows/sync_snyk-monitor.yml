@@ -14,13 +14,24 @@ on:
 # ignore policies in the .snyk files and then have them show up in the snyk web
 # UI, and also automatically adds any new packages that are created.
 
+permissions:
+  contents: read
+
 jobs:
   sync:
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Harden Runner
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@v4.1.1
       - name: Monitor and Synchronize Snyk Policies
-        uses: snyk/actions/node@master
+        uses: snyk/actions/node@3e2680e8df93a24b52d119b1305fb7cedc60ceae # master
         with:
           command: monitor
           args: >
@@ -35,7 +46,7 @@ jobs:
       # Above we run the `monitor` command, this runs the `test` command which is
       # the one that generates the SARIF report that we can upload to GitHub.
       - name: Create Snyk report
-        uses: snyk/actions/node@master
+        uses: snyk/actions/node@3e2680e8df93a24b52d119b1305fb7cedc60ceae # master
         continue-on-error: true # To make sure that SARIF upload gets called
         with:
           args: >
@@ -47,6 +58,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           NODE_OPTIONS: --max-old-space-size=7168
       - name: Upload Snyk report
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v2.22.12
         with:
           sarif_file: snyk.sarif

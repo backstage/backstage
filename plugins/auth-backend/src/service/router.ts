@@ -38,6 +38,9 @@ import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers';
 import { AuthDatabase } from '../database/AuthDatabase';
 import { BACKSTAGE_SESSION_EXPIRATION } from '../lib/session';
+import { TokenIssuer } from '../identity/types';
+import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
+import { StaticKeyStore } from '../identity/StaticKeyStore';
 
 /** @public */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
@@ -75,22 +78,34 @@ export async function createRouter(
   const authUrl = await discovery.getExternalBaseUrl('auth');
 
   const authDb = AuthDatabase.create(database);
+  const sessionExpirationSeconds = BACKSTAGE_SESSION_EXPIRATION;
+
   const keyStore = await KeyStores.fromConfig(config, {
     logger,
     database: authDb,
   });
-  const keyDurationSeconds = BACKSTAGE_SESSION_EXPIRATION;
 
-  const tokenIssuer = new TokenFactory({
-    issuer: authUrl,
-    keyStore,
-    keyDurationSeconds,
-    logger: logger.child({ component: 'token-factory' }),
-    algorithm:
-      tokenFactoryAlgorithm ??
-      config.getOptionalString('auth.identityTokenAlgorithm'),
-  });
-
+  let tokenIssuer: TokenIssuer;
+  if (keyStore instanceof StaticKeyStore) {
+    tokenIssuer = new StaticTokenIssuer(
+      {
+        logger: logger.child({ component: 'token-factory' }),
+        issuer: authUrl,
+        sessionExpirationSeconds: sessionExpirationSeconds,
+      },
+      keyStore as StaticKeyStore,
+    );
+  } else {
+    tokenIssuer = new TokenFactory({
+      issuer: authUrl,
+      keyStore,
+      keyDurationSeconds: sessionExpirationSeconds,
+      logger: logger.child({ component: 'token-factory' }),
+      algorithm:
+        tokenFactoryAlgorithm ??
+        config.getOptionalString('auth.identityTokenAlgorithm'),
+    });
+  }
   const secret = config.getOptionalString('auth.session.secret');
   if (secret) {
     router.use(cookieParser(secret));

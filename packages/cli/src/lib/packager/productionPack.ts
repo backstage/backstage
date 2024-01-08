@@ -23,7 +23,7 @@ import { readEntryPoints } from '../entryPoints';
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
 
-const SKIPPED_KEYS = ['access', 'registry', 'tag', 'alphaTypes', 'betaTypes'];
+const SKIPPED_KEYS = ['access', 'registry', 'tag'];
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 
 interface ProductionPackOptions {
@@ -40,14 +40,6 @@ export async function productionPack(options: ProductionPackOptions) {
   // If we're making the update in-line, back up the package.json
   if (!targetDir) {
     await fs.writeFile(PKG_BACKUP_PATH, pkgContent);
-  }
-
-  const hasStageEntry =
-    !!pkg.publishConfig?.alphaTypes || !!pkg.publishConfig?.betaTypes;
-  if (pkg.exports && hasStageEntry) {
-    throw new Error(
-      'Combining both exports and alpha/beta types is not supported',
-    );
   }
 
   // This mutates pkg to fill in index exports, so call it before applying publishConfig
@@ -99,12 +91,6 @@ export async function productionPack(options: ProductionPackOptions) {
     await fs.writeJson(pkgPath, pkg, { encoding: 'utf8', spaces: 2 });
   }
 
-  if (publishConfig.alphaTypes) {
-    await writeReleaseStageEntrypoint(pkg, 'alpha', targetDir ?? packageDir);
-  }
-  if (publishConfig.betaTypes) {
-    await writeReleaseStageEntrypoint(pkg, 'beta', targetDir ?? packageDir);
-  }
   if (writeCompatibilityEntryPoints) {
     await writeCompatibilityEntryPoints(targetDir ?? packageDir);
   }
@@ -118,12 +104,6 @@ export async function revertProductionPack(packageDir: string) {
 
     // Check if we're shipping types for other release stages, clean up in that case
     const pkg = await fs.readJson(PKG_PATH);
-    if (pkg.publishConfig?.alphaTypes) {
-      await fs.remove(resolvePath(packageDir, 'alpha'));
-    }
-    if (pkg.publishConfig?.betaTypes) {
-      await fs.remove(resolvePath(packageDir, 'beta'));
-    }
 
     // Remove any extra entrypoint backwards compatibility directories
     const entryPoints = readEntryPoints(pkg);
@@ -138,32 +118,6 @@ export async function revertProductionPack(packageDir: string) {
         'Your package will be fine but you may have ended up with some garbage in the repo.',
     );
   }
-}
-
-function resolveEntrypoint(pkg: any, name: string) {
-  const targetEntry = pkg.publishConfig[name] || pkg[name];
-  return targetEntry && posixPath.join('..', targetEntry);
-}
-
-// Writes e.g. alpha/package.json
-async function writeReleaseStageEntrypoint(
-  pkg: BackstagePackageJson,
-  stage: 'alpha' | 'beta',
-  targetDir: string,
-) {
-  await fs.ensureDir(resolvePath(targetDir, stage));
-  await fs.writeJson(
-    resolvePath(targetDir, stage, PKG_PATH),
-    {
-      name: pkg.name,
-      version: pkg.version,
-      main: resolveEntrypoint(pkg, 'main'),
-      module: resolveEntrypoint(pkg, 'module'),
-      browser: resolveEntrypoint(pkg, 'browser'),
-      types: posixPath.join('..', pkg.publishConfig![`${stage}Types`]!),
-    },
-    { encoding: 'utf8', spaces: 2 },
-  );
 }
 
 const EXPORT_MAP = {

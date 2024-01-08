@@ -85,7 +85,7 @@ const DefaultCustomResourceAccordion = ({
         />
       </AccordionSummary>
       <AccordionDetails>
-        {customResource.hasOwnProperty('status') && (
+        {Object.prototype.hasOwnProperty.call(customResource, 'status') && (
           <StructuredMetadataTable metadata={customResource.status} />
         )}
       </AccordionDetails>

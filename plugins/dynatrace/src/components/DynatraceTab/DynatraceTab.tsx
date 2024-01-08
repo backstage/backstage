@@ -15,12 +15,11 @@
  */
 import React from 'react';
 import { Grid } from '@material-ui/core';
+import { Page, Content } from '@backstage/core-components';
 import {
-  Page,
-  Content,
+  useEntity,
   MissingAnnotationEmptyState,
-} from '@backstage/core-components';
-import { useEntity } from '@backstage/plugin-catalog-react';
+} from '@backstage/plugin-catalog-react';
 import { ProblemsList } from '../Problems/ProblemsList';
 import { SyntheticsCard } from '../Synthetics/SyntheticsCard';
 import { isDynatraceAvailable } from '../../plugin';

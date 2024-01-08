@@ -15,7 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
 import { WebsiteListResponse } from '@backstage/plugin-lighthouse-common';
 import { lighthouseApiRef } from '../api';
@@ -77,9 +77,10 @@ describe('useWebsiteForEntity', () => {
   });
 
   it('returns the lighthouse information for the website url in annotations', async () => {
-    const { result, waitForNextUpdate } = subject();
-    await waitForNextUpdate();
-    expect(result.current?.value).toBe(website);
+    const { result } = subject();
+    await waitFor(() => {
+      expect(result.current?.value).toBe(website);
+    });
   });
 
   describe('where there is an error', () => {
@@ -92,10 +93,11 @@ describe('useWebsiteForEntity', () => {
     });
 
     it('posts the error to the error api and returns the error to the caller', async () => {
-      const { result, waitForNextUpdate } = subject();
-      await waitForNextUpdate();
-      expect(result.current?.error).toBe(error);
-      expect(mockErrorApi.post).toHaveBeenCalledWith(error);
+      const { result } = subject();
+      await waitFor(() => {
+        expect(result.current?.error).toBe(error);
+        expect(mockErrorApi.post).toHaveBeenCalledWith(error);
+      });
     });
   });
 
@@ -109,10 +111,11 @@ describe('useWebsiteForEntity', () => {
     });
 
     it('does not post the error to the error api and returns the error to the caller', async () => {
-      const { result, waitForNextUpdate } = subject();
-      await waitForNextUpdate();
-      expect(result.current?.error).toBe(error);
-      expect(mockErrorApi.post).not.toHaveBeenCalledWith(error);
+      const { result } = subject();
+      await waitFor(() => {
+        expect(result.current?.error).toBe(error);
+        expect(mockErrorApi.post).not.toHaveBeenCalledWith(error);
+      });
     });
   });
 });

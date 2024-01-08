@@ -19,8 +19,10 @@ import { Routes, Route } from 'react-router-dom';
 import { puppetDbReportRouteRef } from '../routes';
 import { ANNOTATION_PUPPET_CERTNAME } from '../constants';
 import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import { ReportsPage } from './ReportsPage';
 import { ReportDetailsPage } from './ReportDetailsPage';
 

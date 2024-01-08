@@ -51,6 +51,7 @@ export class SubRouteRefImpl<Params extends AnyParams>
 /**
  * Used in {@link PathParams} type declaration.
  * @public
+ * @deprecated this type is deprecated and will be removed in the future
  */
 export type ParamPart<S extends string> = S extends `:${infer Param}`
   ? Param
@@ -59,6 +60,7 @@ export type ParamPart<S extends string> = S extends `:${infer Param}`
 /**
  * Used in {@link PathParams} type declaration.
  * @public
+ * @deprecated this type is deprecated and will be removed in the future
  */
 export type ParamNames<S extends string> =
   S extends `${infer Part}/${infer Rest}`
@@ -68,12 +70,14 @@ export type ParamNames<S extends string> =
  * This utility type helps us infer a Param object type from a string path
  * For example, `/foo/:bar/:baz` inferred to `{ bar: string, baz: string }`
  * @public
+ * @deprecated this type is deprecated and will be removed in the future
  */
 export type PathParams<S extends string> = { [name in ParamNames<S>]: string };
 
 /**
  * Merges a param object type with an optional params type into a params object.
  * @public
+ * @deprecated this type is deprecated and will be removed in the future
  */
 export type MergeParams<
   P1 extends { [param in string]: string },
@@ -85,6 +89,7 @@ export type MergeParams<
  * The parameters types are merged together while ensuring that there is no overlap between the two.
  *
  * @public
+ * @deprecated this type is deprecated and will be removed in the future
  */
 export type MakeSubRouteRef<
   Params extends { [param in string]: string },

@@ -7,6 +7,7 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
@@ -26,6 +27,10 @@ export const OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION = 'octopus.com/project-id';
 // @public (undocumented)
 export interface OctopusDeployApi {
   // (undocumented)
+  getConfig(): Promise<OctopusPluginConfig>;
+  // (undocumented)
+  getProjectInfo(projectReference: ProjectReference): Promise<OctopusProject>;
+  // (undocumented)
   getReleaseProgression(opts: {
     projectReference: ProjectReference;
     releaseHistoryCount: number;
@@ -38,10 +43,15 @@ export const octopusDeployApiRef: ApiRef<OctopusDeployApi>;
 // @public (undocumented)
 export class OctopusDeployClient implements OctopusDeployApi {
   constructor(options: {
+    configApi: ConfigApi;
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
     proxyPathBase?: string;
   });
+  // (undocumented)
+  getConfig(): Promise<OctopusPluginConfig>;
+  // (undocumented)
+  getProjectInfo(projectReference: ProjectReference): Promise<OctopusProject>;
   // (undocumented)
   getReleaseProgression(opts: {
     projectReference: ProjectReference;
@@ -64,9 +74,27 @@ export type OctopusEnvironment = {
 };
 
 // @public (undocumented)
+export type OctopusLinks = {
+  Self: string;
+  Web: string;
+};
+
+// @public (undocumented)
+export type OctopusPluginConfig = {
+  WebUiBaseUrl: string;
+};
+
+// @public (undocumented)
 export type OctopusProgression = {
   Environments: OctopusEnvironment[];
   Releases: OctopusReleaseProgression[];
+};
+
+// @public (undocumented)
+export type OctopusProject = {
+  Name: string;
+  Slug: string;
+  Links: OctopusLinks;
 };
 
 // @public (undocumented)

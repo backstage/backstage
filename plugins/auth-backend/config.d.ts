@@ -43,7 +43,7 @@ export interface Config {
 
     /** To control how to store JWK data in auth-backend */
     keyStore?: {
-      provider?: 'database' | 'memory' | 'firestore';
+      provider?: 'database' | 'memory' | 'firestore' | 'static';
       firestore?: {
         /** The host to connect to */
         host?: string;
@@ -64,6 +64,21 @@ export interface Config {
         path?: string;
         /** Timeout used for database operations. Defaults to 10000ms */
         timeout?: number;
+      };
+      static?: {
+        /** Must be declared at least once and the first one will be used for signing */
+        keys: Array<{
+          /** Path to the public key file in the SPKI format */
+          publicKeyFile: string;
+          /** Path to the matching private key file in the PKCS#8 format */
+          privateKeyFile: string;
+          /** id to uniquely identify this key within the JWK set */
+          keyId: string;
+          /** JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
+           * Must match the algorithm used to generate the keys in the provided files
+           */
+          algorithm?: string;
+        }>;
       };
     };
 
@@ -120,20 +135,6 @@ export interface Config {
         acceptedClockSkewMs?: number;
       };
       /** @visibility frontend */
-      okta?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          audience: string;
-          authServerId?: string;
-          idp?: string;
-          callbackUrl?: string;
-        };
-      };
-      /** @visibility frontend */
       oauth2?: {
         [authEnv: string]: {
           clientId: string;
@@ -176,6 +177,18 @@ export interface Config {
           audience?: string;
           connection?: string;
           connectionScope?: string;
+        };
+      };
+      /** @visibility frontend */
+      microsoft?: {
+        [authEnv: string]: {
+          clientId: string;
+          /**
+           * @visibility secret
+           */
+          clientSecret: string;
+          tenantId: string;
+          callbackUrl?: string;
         };
       };
       /** @visibility frontend */

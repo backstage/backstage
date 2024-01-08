@@ -14,40 +14,52 @@
  * limitations under the License.
  */
 
-import { IconComponent, RouteRef } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import { coreExtensionData, createExtension } from '../wiring';
+import { createExtension, createExtensionDataRef } from '../wiring';
+import { RouteRef } from '../routing';
 
 /**
  * Helper for creating extensions for a nav item.
  * @public
  */
 export function createNavItemExtension(options: {
-  id: string;
-  routeRef: RouteRef;
+  namespace?: string;
+  name?: string;
+  routeRef: RouteRef<undefined>;
   title: string;
   icon: IconComponent;
 }) {
-  const { id, routeRef, title, icon } = options;
+  const { routeRef, title, icon, namespace, name } = options;
   return createExtension({
-    id,
-    attachTo: { id: 'core.nav', input: 'items' },
+    namespace,
+    name,
+    kind: 'nav-item',
+    attachTo: { id: 'app/nav', input: 'items' },
     configSchema: createSchemaFromZod(z =>
       z.object({
         title: z.string().default(title),
       }),
     ),
     output: {
-      navTarget: coreExtensionData.navTarget,
+      navTarget: createNavItemExtension.targetDataRef,
     },
-    factory: ({ bind, config }) => {
-      bind({
-        navTarget: {
-          title: config.title,
-          icon,
-          routeRef,
-        },
-      });
-    },
+    factory: ({ config }) => ({
+      navTarget: {
+        title: config.title,
+        icon,
+        routeRef,
+      },
+    }),
   });
+}
+
+/** @public */
+export namespace createNavItemExtension {
+  // TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
+  export const targetDataRef = createExtensionDataRef<{
+    title: string;
+    icon: IconComponent;
+    routeRef: RouteRef<undefined>;
+  }>('core.nav-item.target');
 }

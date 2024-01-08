@@ -20,6 +20,7 @@ import {
 } from '@backstage/integration-react';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { GithubRepoPicker } from './GithubRepoPicker';
+import { GiteaRepoPicker } from './GiteaRepoPicker';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
 import { AzureRepoPicker } from './AzureRepoPicker';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
@@ -31,6 +32,7 @@ import { RepoUrlPickerProps } from './schema';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
+import { Box, Divider, Typography } from '@material-ui/core';
 
 export { RepoUrlPickerSchema } from './schema';
 
@@ -41,7 +43,7 @@ export { RepoUrlPickerSchema } from './schema';
  * @public
  */
 export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
-  const { uiSchema, onChange, rawErrors, formData } = props;
+  const { uiSchema, onChange, rawErrors, formData, schema } = props;
   const [state, setState] = useState<RepoUrlPickerState>(
     parseRepoPickerUrl(formData),
   );
@@ -157,9 +159,17 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
 
   const hostType =
     (state.host && integrationApi.byHost(state.host)?.type) ?? null;
-
   return (
     <>
+      {schema.title && (
+        <Box my={1}>
+          <Typography variant="h5">{schema.title}</Typography>
+          <Divider />
+        </Box>
+      )}
+      {schema.description && (
+        <Typography variant="body1">{schema.description}</Typography>
+      )}
       <RepoUrlPickerHost
         host={state.host}
         hosts={allowedHosts}
@@ -172,6 +182,15 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           onChange={updateLocalState}
           rawErrors={rawErrors}
           state={state}
+        />
+      )}
+      {hostType === 'gitea' && (
+        <GiteaRepoPicker
+          allowedOwners={allowedOwners}
+          allowedRepos={allowedRepos}
+          rawErrors={rawErrors}
+          state={state}
+          onChange={updateLocalState}
         />
       )}
       {hostType === 'gitlab' && (

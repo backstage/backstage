@@ -7,11 +7,17 @@
 
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
+import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
+import { EntityRefPresentation } from '@backstage/plugin-catalog-react';
+import { EntityRefPresentationSnapshot } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { HumanDuration } from '@backstage/types';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { InfoCardVariants } from '@backstage/core-components';
@@ -117,6 +123,7 @@ export const catalogPlugin: BackstagePlugin<
       },
       true
     >;
+    unregisterRedirect: ExternalRouteRef<undefined, true>;
   }
 >;
 
@@ -151,7 +158,9 @@ export const CatalogTable: {
     createSystemColumn(): TableColumn<CatalogTableRow>;
     createOwnerColumn(): TableColumn<CatalogTableRow>;
     createSpecTargetsColumn(): TableColumn<CatalogTableRow>;
-    createSpecTypeColumn(): TableColumn<CatalogTableRow>;
+    createSpecTypeColumn(options?: {
+      hidden: boolean;
+    }): TableColumn<CatalogTableRow>;
     createSpecLifecycleColumn(): TableColumn<CatalogTableRow>;
     createMetadataDescriptionColumn(): TableColumn<CatalogTableRow>;
     createTagsColumn(): TableColumn<CatalogTableRow>;
@@ -176,11 +185,16 @@ export const CatalogTable: {
 };
 
 // @public
+export type CatalogTableColumnsFunc = (
+  entityListContext: EntityListContextProps,
+) => TableColumn<CatalogTableRow>[];
+
+// @public
 export interface CatalogTableProps {
   // (undocumented)
   actions?: TableProps<CatalogTableRow>['actions'];
   // (undocumented)
-  columns?: TableColumn<CatalogTableRow>[];
+  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
@@ -196,6 +210,7 @@ export interface CatalogTableRow {
   // (undocumented)
   resolved: {
     name: string;
+    entityRef: string;
     partOfSystemRelationTitle?: string;
     partOfSystemRelations: CompoundEntityRef[];
     ownedByRelationsTitle?: string;
@@ -211,7 +226,7 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   actions?: TableProps<CatalogTableRow>['actions'];
   // (undocumented)
-  columns?: TableColumn<CatalogTableRow>[];
+  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
@@ -221,7 +236,54 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   // (undocumented)
+  pagination?:
+    | boolean
+    | {
+        limit?: number;
+      };
+  // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
+}
+
+// @public
+export class DefaultEntityPresentationApi implements EntityPresentationApi {
+  static create(
+    options: DefaultEntityPresentationApiOptions,
+  ): EntityPresentationApi;
+  static createLocal(): EntityPresentationApi;
+  // (undocumented)
+  forEntity(
+    entityOrRef: Entity | string,
+    context?: {
+      defaultKind?: string;
+      defaultNamespace?: string;
+    },
+  ): EntityRefPresentation;
+}
+
+// @public
+export interface DefaultEntityPresentationApiOptions {
+  batchDelay?: HumanDuration;
+  cacheTtl?: HumanDuration;
+  catalogApi?: CatalogApi;
+  kindIcons?: Record<string, IconComponent>;
+  renderer?: DefaultEntityPresentationApiRenderer;
+}
+
+// @public
+export interface DefaultEntityPresentationApiRenderer {
+  async?: boolean;
+  render: (options: {
+    entityRef: string;
+    loading: boolean;
+    entity: Entity | undefined;
+    context: {
+      defaultKind?: string;
+      defaultNamespace?: string;
+    };
+  }) => {
+    snapshot: Omit<EntityRefPresentationSnapshot, 'entityRef'>;
+  };
 }
 
 // @public

@@ -15,14 +15,13 @@
  */
 
 import React from 'react';
-import { makeStyles, useTheme } from '@material-ui/core';
+import { Theme, makeStyles, useTheme } from '@material-ui/core';
 import { ItemCardHeader } from '@backstage/core-components';
-import { BackstageTheme } from '@backstage/theme';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { FavoriteEntity } from '@backstage/plugin-catalog-react';
 
 const useStyles = makeStyles<
-  BackstageTheme,
+  Theme,
   {
     cardFontColor: string;
     cardBackgroundImage: string;
@@ -55,7 +54,7 @@ export const CardHeader = (props: CardHeaderProps) => {
       spec: { type },
     },
   } = props;
-  const { getPageTheme } = useTheme<BackstageTheme>();
+  const { getPageTheme } = useTheme();
   const themeForType = getPageTheme({ themeId: type });
 
   const styles = useStyles({

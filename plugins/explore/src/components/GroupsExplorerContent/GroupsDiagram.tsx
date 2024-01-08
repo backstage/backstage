@@ -34,7 +34,6 @@ import {
   humanizeEntityRef,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
-import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, Typography, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import classNames from 'classnames';
@@ -42,7 +41,7 @@ import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles(
-  (theme: BackstageTheme) => ({
+  theme => ({
     graph: {
       minHeight: '100%',
       flex: 1,
@@ -165,7 +164,9 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
 /**
  * Dynamically generates a diagram of groups registered in the catalog.
  */
-export function GroupsDiagram() {
+export function GroupsDiagram(props: {
+  direction?: DependencyGraphTypes.Direction;
+}) {
   const nodes = new Array<{
     id: string;
     kind: string;
@@ -244,7 +245,7 @@ export function GroupsDiagram() {
         nodes={nodes}
         edges={edges}
         nodeMargin={10}
-        direction={DependencyGraphTypes.Direction.RIGHT_LEFT}
+        direction={props.direction || DependencyGraphTypes.Direction.RIGHT_LEFT}
         renderNode={RenderNode}
         className={classes.graph}
         fit="contain"

@@ -639,26 +639,24 @@ describe('Integration Test', () => {
     const Provider = app.getProvider();
     const Router = app.getRouter();
     const { error: errorLogs } = withLogCollector(() => {
-      expect(() =>
-        render(
-          <Provider>
-            <Router>
-              <Routes>
-                <Route path="/test/:thing" element={<ExposedComponent />}>
-                  <Route path="/some/:thing" element={<HiddenComponent />} />
-                </Route>
-              </Routes>
-            </Router>
-          </Provider>,
-        ),
-      ).toThrow(
-        'Parameter :thing is duplicated in path test/:thing/some/:thing',
+      render(
+        <Provider>
+          <Router>
+            <Routes>
+              <Route path="/test/:thing" element={<ExposedComponent />}>
+                <Route path="/some/:thing" element={<HiddenComponent />} />
+              </Route>
+            </Routes>
+          </Router>
+        </Provider>,
       );
     });
     expect(errorLogs).toEqual([
-      expect.stringContaining(
-        'The above error occurred in the <Provider> component',
-      ),
+      expect.objectContaining({
+        message: expect.stringContaining(
+          'Parameter :thing is duplicated in path test/:thing/some/:thing',
+        ),
+      }),
     ]);
   });
 
@@ -676,24 +674,22 @@ describe('Integration Test', () => {
     const Provider = app.getProvider();
     const Router = app.getRouter();
     const { error: errorLogs } = withLogCollector(() => {
-      expect(() =>
-        render(
-          <Provider>
-            <Router>
-              <Routes>
-                <Route path="/test/:thing" element={<ExposedComponent />} />
-              </Routes>
-            </Router>
-          </Provider>,
-        ),
-      ).toThrow(
-        /^External route 'extRouteRef1' of the 'blob' plugin must be bound to a target route/,
+      render(
+        <Provider>
+          <Router>
+            <Routes>
+              <Route path="/test/:thing" element={<ExposedComponent />} />
+            </Routes>
+          </Router>
+        </Provider>,
       );
     });
     expect(errorLogs).toEqual([
-      expect.stringContaining(
-        'The above error occurred in the <Provider> component',
-      ),
+      expect.objectContaining({
+        message: expect.stringMatching(
+          /^External route 'extRouteRef1' of the 'blob' plugin must be bound to a target route/,
+        ),
+      }),
     ]);
   });
 

@@ -16,6 +16,9 @@
 
 import type { JsonObject } from '@backstage/types';
 
+/**
+ * @public
+ */
 export interface ClusterLinksFormatterOptions {
   dashboardUrl?: URL;
   dashboardParameters?: JsonObject;
@@ -23,6 +26,9 @@ export interface ClusterLinksFormatterOptions {
   kind: string;
 }
 
-export type ClusterLinksFormatter = (
-  options: ClusterLinksFormatterOptions,
-) => URL;
+/**
+ * @public
+ */
+export interface ClusterLinksFormatter {
+  formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL>;
+}

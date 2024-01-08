@@ -18,10 +18,18 @@ on:
       - 'packages/core-components/src/**'
       - '**/*.stories.tsx'
 
+permissions:
+  contents: read
+
 jobs:
   noop:
     runs-on: ubuntu-latest
 
     name: Storybook
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        with:
+          egress-policy: audit
+
       - run: echo NOOP

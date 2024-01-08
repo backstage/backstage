@@ -21,3 +21,4 @@
  */
 
 export * from './wiring';
+export * from './routing';

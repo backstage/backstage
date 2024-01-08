@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { useTemplateSecrets, SecretsContextProvider } from './SecretsContext';
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 
 describe('SecretsContext', () => {
   it('should allow the setting of secrets in the context', async () => {

@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { UseFormReset, UseFormGetValues } from 'react-hook-form';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 import { ProjectDialog } from '../ProjectDialog';
 import { ProjectSelector } from '../ProjectSelector';
 import { BazaarProject, FormValues, Size, Status } from '../../types';
@@ -39,6 +39,7 @@ export const AddProjectDialog = ({
   fetchCatalogEntities,
 }: Props) => {
   const bazaarApi = useApi(bazaarApiRef);
+  const alertApi = useApi(alertApiRef);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
 
   const defaultValues = {
@@ -76,6 +77,11 @@ export const AddProjectDialog = ({
     if (response.status === 'ok') {
       fetchBazaarProjects();
       fetchCatalogEntities();
+      alertApi.post({
+        message: `Added project '${formValues.title}' to the Bazaar list`,
+        severity: 'success',
+        display: 'transient',
+      });
     }
 
     handleClose();

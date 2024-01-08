@@ -19,18 +19,16 @@ import { Link } from '@backstage/core-components';
 import {
   createPageExtension,
   createPlugin,
-} from '@backstage/frontend-plugin-api';
-import {
-  useRouteRef,
   createRouteRef,
   createExternalRouteRef,
-} from '@backstage/core-plugin-api';
+  useRouteRef,
+} from '@backstage/frontend-plugin-api';
 import { Route, Routes } from 'react-router-dom';
 
-const indexRouteRef = createRouteRef({ id: 'index' });
-const page1RouteRef = createRouteRef({ id: 'page1' });
-export const externalPageXRouteRef = createExternalRouteRef({ id: 'pageX' });
-export const pageXRouteRef = createRouteRef({ id: 'pageX' });
+const indexRouteRef = createRouteRef();
+const page1RouteRef = createRouteRef();
+export const externalPageXRouteRef = createExternalRouteRef();
+export const pageXRouteRef = createRouteRef();
 // const page2RouteRef = createSubRouteRef({
 //   id: 'page2',
 //   parent: page1RouteRef,
@@ -38,7 +36,7 @@ export const pageXRouteRef = createRouteRef({ id: 'pageX' });
 // });
 
 const IndexPage = createPageExtension({
-  id: 'index',
+  name: 'index',
   defaultPath: '/',
   routeRef: indexRouteRef,
   loader: async () => {
@@ -49,6 +47,9 @@ const IndexPage = createPageExtension({
           op
           <div>
             <Link to={page1Link()}>Page 1</Link>
+          </div>
+          <div>
+            <Link to="/home">Home</Link>
           </div>
           <div>
             <Link to="/graphiql">GraphiQL</Link>
@@ -67,7 +68,7 @@ const IndexPage = createPageExtension({
 });
 
 const Page1 = createPageExtension({
-  id: 'page1',
+  name: 'page1',
   defaultPath: '/page1',
   routeRef: page1RouteRef,
   loader: async () => {
@@ -101,7 +102,7 @@ const Page1 = createPageExtension({
 });
 
 const ExternalPage = createPageExtension({
-  id: 'pageX',
+  name: 'pageX',
   defaultPath: '/pageX',
   routeRef: pageXRouteRef,
   loader: async () => {

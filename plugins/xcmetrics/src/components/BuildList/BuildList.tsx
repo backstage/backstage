@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useRef, useState } from 'react';
 import { Table } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
@@ -22,9 +23,8 @@ import { BuildListFilter as Filters } from '../BuildListFilter';
 import { DateTime } from 'luxon';
 import { buildPageColumns } from '../BuildTableColumns';
 import { BuildDetails, withRequest } from '../BuildDetails';
-import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles((theme: BackstageTheme) =>
+const useStyles = makeStyles(theme =>
   createStyles({
     detailPanel: {
       padding: theme.spacing(2),

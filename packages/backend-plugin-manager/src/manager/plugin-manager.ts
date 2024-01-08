@@ -15,10 +15,11 @@
  */
 import { Config } from '@backstage/config';
 import {
-  BackendPluginProvider,
+  DynamicPluginProvider,
   BackendDynamicPlugin,
   isBackendDynamicPluginInstaller,
   DynamicPlugin,
+  FrontendDynamicPlugin,
 } from './types';
 import { ScannedPluginPackage } from '../scanner';
 import { PluginScanner } from '../scanner/plugin-scanner';
@@ -44,24 +45,37 @@ import {
 /**
  * @public
  */
-export class PluginManager implements BackendPluginProvider {
-  static async fromConfig(
-    config: Config,
-    logger: LoggerService,
-    preferAlpha: boolean = false,
-    mooduleLoader: ModuleLoader = new CommonJSModuleLoader(logger),
-  ): Promise<PluginManager> {
+export interface DynamicPluginManagerOptions {
+  config: Config;
+  logger: LoggerService;
+  preferAlpha?: boolean;
+  moduleLoader?: ModuleLoader;
+}
+
+/**
+ * @public
+ */
+export class DynamicPluginManager implements DynamicPluginProvider {
+  static async create(
+    options: DynamicPluginManagerOptions,
+  ): Promise<DynamicPluginManager> {
     /* eslint-disable-next-line no-restricted-syntax */
     const backstageRoot = findPaths(__dirname).targetRoot;
-    const scanner = new PluginScanner(
-      config,
-      logger,
+    const scanner = PluginScanner.create({
+      config: options.config,
+      logger: options.logger,
       backstageRoot,
-      preferAlpha,
-    );
-    const scannedPlugins = await scanner.scanRoot();
+      preferAlpha: options.preferAlpha,
+    });
+    const scannedPlugins = (await scanner.scanRoot()).packages;
     scanner.trackChanges();
-    const manager = new PluginManager(logger, scannedPlugins, mooduleLoader);
+    const moduleLoader =
+      options.moduleLoader || new CommonJSModuleLoader(options.logger);
+    const manager = new DynamicPluginManager(
+      options.logger,
+      scannedPlugins,
+      moduleLoader,
+    );
 
     const dynamicPluginsPaths = scannedPlugins.map(p =>
       fs.realpathSync(
@@ -73,18 +87,18 @@ export class PluginManager implements BackendPluginProvider {
       ),
     );
 
-    mooduleLoader.bootstrap(backstageRoot, dynamicPluginsPaths);
+    moduleLoader.bootstrap(backstageRoot, dynamicPluginsPaths);
 
     scanner.subscribeToRootDirectoryChange(async () => {
-      manager._availablePackages = await scanner.scanRoot();
+      manager._availablePackages = (await scanner.scanRoot()).packages;
       // TODO: do not store _scannedPlugins again, but instead store a diff of the changes
     });
-    manager.plugins.push(...(await manager.loadPlugins()));
+    manager._plugins.push(...(await manager.loadPlugins()));
 
     return manager;
   }
 
-  readonly plugins: DynamicPlugin[];
+  private readonly _plugins: DynamicPlugin[];
   private _availablePackages: ScannedPluginPackage[];
 
   private constructor(
@@ -92,7 +106,7 @@ export class PluginManager implements BackendPluginProvider {
     private packages: ScannedPluginPackage[],
     private readonly moduleLoader: ModuleLoader,
   ) {
-    this.plugins = [];
+    this._plugins = [];
     this._availablePackages = packages;
   }
 
@@ -101,7 +115,7 @@ export class PluginManager implements BackendPluginProvider {
   }
 
   addBackendPlugin(plugin: BackendDynamicPlugin): void {
-    this.plugins.push(plugin);
+    this._plugins.push(plugin);
   }
 
   private async loadPlugins(): Promise<DynamicPlugin[]> {
@@ -140,12 +154,25 @@ export class PluginManager implements BackendPluginProvider {
       `${plugin.location}/${plugin.manifest.main}`,
     );
     try {
-      const { dynamicPluginInstaller } = await this.moduleLoader.load(
-        packagePath,
-      );
+      const pluginModule = await this.moduleLoader.load(packagePath);
+
+      let dynamicPluginInstaller;
+      if (isBackendFeature(pluginModule.default)) {
+        dynamicPluginInstaller = {
+          kind: 'new',
+          install: () => pluginModule.default,
+        };
+      } else if (isBackendFeatureFactory(pluginModule.default)) {
+        dynamicPluginInstaller = {
+          kind: 'new',
+          install: pluginModule.default,
+        };
+      } else {
+        dynamicPluginInstaller = pluginModule.dynamicPluginInstaller;
+      }
       if (!isBackendDynamicPluginInstaller(dynamicPluginInstaller)) {
         this.logger.error(
-          `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${plugin.location}': the module should export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field.`,
+          `dynamic backend plugin '${plugin.manifest.name}' could not be loaded from '${plugin.location}': the module should either export a 'BackendFeature' or 'BackendFeatureFactory' as default export, or export a 'const dynamicPluginInstaller: BackendDynamicPluginInstaller' field as dynamic loading entrypoint.`,
         );
         return undefined;
       }
@@ -169,16 +196,26 @@ export class PluginManager implements BackendPluginProvider {
   }
 
   backendPlugins(): BackendDynamicPlugin[] {
-    return this.plugins.filter(
+    return this._plugins.filter(
       (p): p is BackendDynamicPlugin => p.platform === 'node',
     );
+  }
+
+  frontendPlugins(): FrontendDynamicPlugin[] {
+    return this._plugins.filter(
+      (p): p is FrontendDynamicPlugin => p.platform === 'web',
+    );
+  }
+
+  plugins(): DynamicPlugin[] {
+    return this._plugins;
   }
 }
 
 /**
  * @public
  */
-export const dynamicPluginsServiceRef = createServiceRef<BackendPluginProvider>(
+export const dynamicPluginsServiceRef = createServiceRef<DynamicPluginProvider>(
   {
     id: 'core.dynamicplugins',
     scope: 'root',
@@ -203,15 +240,12 @@ export const dynamicPluginsServiceFactory = createServiceFactory(
       logger: coreServices.rootLogger,
     },
     async factory({ config, logger }) {
-      if (options?.moduleLoader) {
-        return await PluginManager.fromConfig(
-          config,
-          logger,
-          true,
-          options.moduleLoader(logger),
-        );
-      }
-      return await PluginManager.fromConfig(config, logger, true);
+      return await DynamicPluginManager.create({
+        config,
+        logger,
+        preferAlpha: true,
+        moduleLoader: options?.moduleLoader?.(logger),
+      });
     },
   }),
 );
@@ -220,7 +254,7 @@ class DynamicPluginsEnabledFeatureDiscoveryService
   implements FeatureDiscoveryService
 {
   constructor(
-    private readonly dynamicPlugins: BackendPluginProvider,
+    private readonly dynamicPlugins: DynamicPluginProvider,
     private readonly featureDiscoveryService?: FeatureDiscoveryService,
   ) {}
 
@@ -263,3 +297,21 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory =
       return new DynamicPluginsEnabledFeatureDiscoveryService(dynamicPlugins);
     },
   });
+
+function isBackendFeature(value: unknown): value is BackendFeature {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    (value as BackendFeature).$$type === '@backstage/BackendFeature'
+  );
+}
+
+function isBackendFeatureFactory(
+  value: unknown,
+): value is () => BackendFeature {
+  return (
+    !!value &&
+    typeof value === 'function' &&
+    (value as any).$$type === '@backstage/BackendFeatureFactory'
+  );
+}

@@ -27,11 +27,17 @@ import { isAbsolute as isAbsolutePath } from 'path';
 import { paths } from '../paths';
 import spawn from 'cross-spawn';
 
+const [nodeMajor, nodeMinor] = process.versions.node.split('.').map(Number);
+const supportsModuleLoaderRegister =
+  nodeMajor > 20 ||
+  (nodeMajor === 20 && nodeMinor >= 6) ||
+  (nodeMajor === 18 && nodeMinor >= 19);
+
 const loaderArgs = [
   '--require',
-  require.resolve('@esbuild-kit/cjs-loader'),
-  '--loader',
-  pathToFileURL(require.resolve('@esbuild-kit/esm-loader')).toString(), // Windows prefers a URL here
+  require.resolve('tsx/preflight'),
+  supportsModuleLoaderRegister ? '--import' : '--loader',
+  pathToFileURL(require.resolve('tsx')).toString(), // Windows prefers a URL here
 ];
 
 export async function startBackendExperimental(options: BackendServeOptions) {
@@ -95,7 +101,7 @@ export async function startBackendExperimental(options: BackendServeOptions) {
       process.execPath,
       [...loaderArgs, ...optionArgs, options.entry, ...userArgs],
       {
-        stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
+        stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
         env: {
           ...process.env,
           BACKSTAGE_CLI_CHANNEL: '1',

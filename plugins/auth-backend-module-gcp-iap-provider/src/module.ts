@@ -26,7 +26,7 @@ import { gcpIapSignInResolvers } from './resolvers';
 /** @public */
 export const authModuleGcpIapProvider = createBackendModule({
   pluginId: 'auth',
-  moduleId: 'gcpIapProvider',
+  moduleId: 'gcp-iap-provider',
   register(reg) {
     reg.registerInit({
       deps: {

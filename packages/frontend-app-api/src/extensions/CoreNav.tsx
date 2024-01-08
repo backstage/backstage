@@ -19,9 +19,10 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
-  NavTarget,
+  useRouteRef,
+  createNavItemExtension,
+  createNavLogoExtension,
 } from '@backstage/frontend-plugin-api';
-import { useRouteRef } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core';
 import {
   Sidebar,
@@ -51,48 +52,64 @@ const useSidebarLogoStyles = makeStyles({
   },
 });
 
-const SidebarLogo = () => {
+const SidebarLogo = (
+  props: (typeof createNavLogoExtension.logoElementsDataRef)['T'],
+) => {
   const classes = useSidebarLogoStyles();
   const { isOpen } = useSidebarOpenState();
 
   return (
     <div className={classes.root}>
       <Link to="/" underline="none" className={classes.link} aria-label="Home">
-        {isOpen ? <LogoFull /> : <LogoIcon />}
+        {isOpen
+          ? props?.logoFull ?? <LogoFull />
+          : props?.logoIcon ?? <LogoIcon />}
       </Link>
     </div>
   );
 };
 
-const SidebarNavItem = (props: NavTarget) => {
+const SidebarNavItem = (
+  props: (typeof createNavItemExtension.targetDataRef)['T'],
+) => {
   const { icon: Icon, title, routeRef } = props;
-  const to = useRouteRef(routeRef)({});
+  const to = useRouteRef(routeRef)();
   // TODO: Support opening modal, for example, the search one
   return <SidebarItem to={to} icon={Icon} text={title} />;
 };
 
 export const CoreNav = createExtension({
-  id: 'core.nav',
-  attachTo: { id: 'core.layout', input: 'nav' },
+  namespace: 'app',
+  name: 'nav',
+  attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
     items: createExtensionInput({
-      target: coreExtensionData.navTarget,
+      target: createNavItemExtension.targetDataRef,
     }),
+    logos: createExtensionInput(
+      {
+        elements: createNavLogoExtension.logoElementsDataRef,
+      },
+      {
+        singleton: true,
+        optional: true,
+      },
+    ),
   },
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory({ bind, inputs }) {
-    bind({
+  factory({ inputs }) {
+    return {
       element: (
         <Sidebar>
-          <SidebarLogo />
+          <SidebarLogo {...inputs.logos?.output.elements} />
           <SidebarDivider />
           {inputs.items.map((item, index) => (
-            <SidebarNavItem {...item.target} key={index} />
+            <SidebarNavItem {...item.output.target} key={index} />
           ))}
         </Sidebar>
       ),
-    });
+    };
   },
 });

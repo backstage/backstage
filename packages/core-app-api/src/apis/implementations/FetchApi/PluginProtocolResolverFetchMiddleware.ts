@@ -34,11 +34,15 @@ export class PluginProtocolResolverFetchMiddleware implements FetchMiddleware {
 
   apply(next: typeof fetch): typeof fetch {
     return async (input, init) => {
-      const request = new Request(input, init);
+      // NOTE(freben): The "as any" casts here and below are because of subtle
+      // undici type differences that happened in a node types bump. Those are
+      // immaterial to the code at hand at runtime, as the global fetch and
+      // Request are always taken from the same place.
+      const request = new Request(input as any, init);
       const prefix = 'plugin://';
 
       if (!request.url.startsWith(prefix)) {
-        return next(input, init);
+        return next(input as any, init);
       }
 
       // Switch to a known protocol, since browser URL parsing misbehaves wildly
@@ -57,7 +61,7 @@ export class PluginProtocolResolverFetchMiddleware implements FetchMiddleware {
       const target = `${join(base, pathname)}${search}${hash}`;
       return next(
         target,
-        typeof input === 'string' || isUrl(input) ? init : input,
+        typeof input === 'string' || isUrl(input) ? init : (input as any),
       );
     };
   }

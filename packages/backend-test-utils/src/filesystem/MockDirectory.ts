@@ -311,7 +311,7 @@ class MockDirectoryImpl {
   };
 
   remove = (): void => {
-    fs.removeSync(this.#root);
+    fs.rmSync(this.#root, { recursive: true, force: true, maxRetries: 10 });
   };
 
   #transformInput(input: MockDirectoryContent[string]): MockEntry[] {

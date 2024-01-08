@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { fireEvent, waitFor, screen } from '@testing-library/react';
+import React, { ComponentType } from 'react';
+import { fireEvent, waitFor, screen, renderHook } from '@testing-library/react';
 import {
   MockAnalyticsApi,
   TestApiProvider,
@@ -24,7 +24,6 @@ import {
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { isExternalUri, Link, useResolvedPath } from './Link';
 import { Route, Routes } from 'react-router-dom';
-import { renderHook, WrapperComponent } from '@testing-library/react-hooks';
 import { ConfigReader } from '@backstage/config';
 
 describe('<Link />', () => {
@@ -128,7 +127,7 @@ describe('<Link />', () => {
   });
 
   describe('useResolvedPath', () => {
-    const wrapper: WrapperComponent<React.PropsWithChildren<{}>> = ({
+    const wrapper: ComponentType<React.PropsWithChildren<{}>> = ({
       children,
     }) => {
       const configApi = new ConfigReader({

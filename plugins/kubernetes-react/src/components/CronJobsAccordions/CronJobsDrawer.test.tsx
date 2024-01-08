@@ -15,16 +15,20 @@
  */
 import React from 'react';
 import * as oneCronJobsFixture from '../../__fixtures__/1-cronjobs.json';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { CronJobDrawer } from './CronJobsDrawer';
+import { kubernetesClusterLinkFormatterApiRef } from '../../api';
 
 describe('CronJobDrawer', () => {
   it('should render cronJob drawer', async () => {
     const { getByText, getAllByText } = await renderInTestApp(
-      <CronJobDrawer
-        cronJob={(oneCronJobsFixture as any).cronJobs[0]}
-        expanded
-      />,
+      <TestApiProvider apis={[[kubernetesClusterLinkFormatterApiRef, {}]]}>
+        <CronJobDrawer
+          cronJob={(oneCronJobsFixture as any).cronJobs[0]}
+          expanded
+        />
+        ,
+      </TestApiProvider>,
     );
 
     expect(getAllByText('dice-roller-cronjob')).toHaveLength(2);

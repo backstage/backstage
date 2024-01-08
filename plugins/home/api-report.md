@@ -14,6 +14,7 @@ import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
 import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
+import { EntityFilterQuery } from '@backstage/catalog-client';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -102,6 +103,20 @@ export type CustomHomepageGridProps = {
 };
 
 // @public
+export const FeaturedDocsCard: (
+  props: CardExtensionProps_2<FeaturedDocsCardProps>,
+) => JSX_2.Element;
+
+// @public
+export type FeaturedDocsCardProps = {
+  filter: EntityFilterQuery;
+  emptyState?: React_2.JSX.Element;
+  linkDestination?: string;
+  responseLimit?: number;
+  subLinkText?: string;
+};
+
+// @public
 export const HeaderWorldClock: (props: {
   clockConfigs: ClockConfig[];
   customTimeFormat?: Intl.DateTimeFormatOptions | undefined;
@@ -133,7 +148,7 @@ export const HomePageRecentlyVisited: (
 
 // @public
 export const HomePageStarredEntities: (
-  props: CardExtensionProps_2<unknown>,
+  props: CardExtensionProps_2<Partial<StarredEntitiesProps>>,
 ) => JSX_2.Element;
 
 // @public
@@ -176,6 +191,12 @@ export const SettingsModal: (props: {
   componentName?: string | undefined;
   children: JSX.Element;
 }) => JSX_2.Element;
+
+// @public
+export type StarredEntitiesProps = {
+  noStarredEntitiesMessage?: React_2.ReactNode | undefined;
+  groupByKind?: boolean;
+};
 
 // @public (undocumented)
 export const TemplateBackstageLogo: (props: {

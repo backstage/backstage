@@ -256,7 +256,7 @@ describe('easyAuth factory', () => {
     });
 
     expect(() => factory({} as any)).toThrow(
-      'Authentication provider is not Azure Active Directory',
+      'Authentication provider is not Entra ID',
     );
   });
 

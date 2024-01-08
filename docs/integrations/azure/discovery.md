@@ -71,7 +71,7 @@ The parameters available are:
 - **`repository:`** _(optional)_ The repository name. Wildcards are supported as show on the examples above. If not set, all repositories will be searched.
 - **`path:`** _(optional)_ Where to find catalog-info.yaml files. Defaults to /catalog-info.yaml.
 - **`branch:`** _(optional)_ The branch name to use.
-- **`schedule`** _(optional)_:
+- **`schedule`**:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.
   - **`timeout`**:

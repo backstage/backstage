@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import {
   sonarQubeApiRef,
   useProjectInfo,
@@ -38,7 +41,6 @@ import {
   EmptyState,
   InfoCard,
   InfoCardVariants,
-  MissingAnnotationEmptyState,
   Progress,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';

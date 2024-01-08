@@ -46,7 +46,7 @@ action is logged for further investigation.
 
 ### Local File (`type: file`) Configurations
 
-In addition to url locations, you can use the `file` location type to bring in content from the local file system. You should only use this for local development, test setups and example data, not for production data.
+In addition to url locations, you can use the `file` location type to bring in content from the local file system. You should only use this for local development, test setups, and example data, not for production data.
 You are also not able to use placeholders in them like `$text`. You can however reference other files relative to the current file. See the full [catalog example data set here](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples) for an extensive example.
 
 Here is an example pulling in the `all.yaml` file from the examples folder. Note the use of `../../` to go up two levels from the current execution path of the backend. This is typically `packages/backend/`.
@@ -61,7 +61,7 @@ catalog:
 ### Integration Processors
 
 Integrations may simply provide a mechanism to handle `url` location type for an
-external provider, or they may also include additional processors out of the
+external provider or they may also include additional processors out of the
 box, such as the GitHub [discovery](../../integrations/github/discovery.md)
 processor that scans a GitHub organization for
 [entity descriptor files](descriptor-format.md).
@@ -78,10 +78,10 @@ Backstage's descriptor format. This is documented in
 
 ## Catalog Rules
 
-By default the catalog will only allow ingestion of entities with the kind
-`Component`, `API` and `Location`. In order to allow entities of other kinds to
+By default, the catalog will only allow the ingestion of entities with the kind
+`Component`, `API`, and `Location`. In order to allow entities of other kinds to
 be added, you need to add rules to the catalog. Rules are added either in a
-separate `catalog.rules` key, or added to statically configured locations.
+separate `catalog.rules` key or added to statically configured locations.
 
 For example, given the following configuration:
 
@@ -99,7 +99,7 @@ catalog:
 
 We are able to add entities of kind `Component`, `API`, `Location`, or
 `Template` from any location, and `Group` entities from the `org-data.yaml`,
-which will also be read as statically configured location.
+which will also be read as a statically configured location.
 
 Note that if the `catalog.rules` key is present it will replace the default
 value, meaning that you need to add rules for the default kinds if you want
@@ -115,10 +115,10 @@ catalog:
 
 ## Readonly mode
 
-Processors provides a good way to automate ingestion of entities when combined
+Processors provide a good way to automate the ingestion of entities when combined
 with [Static Location Configuration](#static-location-configuration) or a
 discovery processor like
-[GitHub Discovery](../../integrations/github/discovery.md). To enforce usage of
+[GitHub Discovery](../../integrations/github/discovery.md). To enforce the usage of
 processors to locate entities we can configure the catalog into `readonly` mode.
 This configuration disables registering and deleting locations with the catalog APIs.
 
@@ -127,7 +127,7 @@ catalog:
   readonly: true
 ```
 
-> **Note that any plugin relying on the catalog API for creating, updating and
+> **Note that any plugin relying on the catalog API for creating, updating, and
 > deleting entities will not work in this mode.**
 
 Deleting an entity by UUID, `DELETE /entities/by-uid/:uid`, is allowed when using this mode. It may be rediscovered as noted in [explicit deletion](life-of-an-entity.md#explicit-deletion).
@@ -140,9 +140,9 @@ plugin.
 
 ## Clean up orphaned entities
 
-In short entities can become orphaned through multiple means, such as when a catalog-info YAML file is moved from one place to another in the version control system without updating the registration in the catalog. For safety reasons the default behavior is to just tag the orphaned entities, and keep them around. You can read more about orphaned entities [here](life-of-an-entity.md#orphaning).
+In short, entities can become orphaned through multiple means, such as when a catalog-info YAML file is moved from one place to another in the version control system without updating the registration in the catalog. For safety reasons, the default behavior is to just tag the orphaned entities, and keep them around. You can read more about orphaned entities [here](life-of-an-entity.md#orphaning).
 
-However, if you do with to automatically remove the orphaned entities, you can use the following configuration, and everything with an orphaned entity tag will be eventually deleted.
+However, if you do wish to automatically remove the orphaned entities, you can use the following configuration, and everything with an orphaned entity tag will be eventually deleted.
 
 ```yaml
 catalog:

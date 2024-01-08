@@ -17,10 +17,9 @@
 import React from 'react';
 import { CodeClimateData } from '../../api';
 import { Link } from '@backstage/core-components';
-import { Box, makeStyles, Typography } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
+import { Box, makeStyles, Theme, Typography } from '@material-ui/core';
 
-const letterStyle = (theme: BackstageTheme) => ({
+const letterStyle = (theme: Theme) => ({
   color: theme.palette.common.white,
   border: 0,
   borderRadius: '3px',
@@ -32,7 +31,7 @@ const fontSize = {
   fontSize: '25px',
 };
 
-const letterColor = (letter: string, theme: BackstageTheme) => {
+const letterColor = (letter: string, theme: Theme) => {
   if (letter === 'A') {
     return theme.palette.success.main || '#45d298';
   } else if (letter === 'B') {
@@ -49,7 +48,7 @@ const letterColor = (letter: string, theme: BackstageTheme) => {
 };
 
 const useStyles = makeStyles<
-  BackstageTheme,
+  Theme,
   {
     maintainabilityLetter: string;
     testCoverageLetter: string;

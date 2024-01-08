@@ -16,16 +16,16 @@
 import React from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { allureApiRef } from '../../api';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import {
   ALLURE_PROJECT_ID_ANNOTATION,
   isAllureReportAvailable,
   getAllureProjectId,
 } from '../annotationHelpers';
-import {
-  MissingAnnotationEmptyState,
-  Progress,
-} from '@backstage/core-components';
+import { Progress } from '@backstage/core-components';
 import useAsync from 'react-use/lib/useAsync';
 import { Entity } from '@backstage/catalog-model';
 

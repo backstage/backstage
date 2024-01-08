@@ -4,5 +4,5 @@ This module provides an GitLab auth provider implementation for `@backstage/plug
 
 ## Links
 
-- [Repository](https://gitlab.com/backstage/backstage/tree/master/plugins/auth-backend-module-gitlab-provider)
+- [Repository](https://github.com/backstage/backstage/tree/master/plugins/auth-backend-module-gitlab-provider)
 - [Backstage Project Homepage](https://backstage.io)

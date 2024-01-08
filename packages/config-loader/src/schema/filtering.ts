@@ -68,7 +68,7 @@ export function filterByVisibility(
     if (typeof jsonVal !== 'object') {
       if (isVisible) {
         if (transformFunc) {
-          return transformFunc(jsonVal, { visibility });
+          return transformFunc(jsonVal, { visibility, path: filterPath });
         }
         return jsonVal;
       }

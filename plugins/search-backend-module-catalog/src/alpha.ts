@@ -61,8 +61,8 @@ export const catalogCollatorExtensionPoint =
  * @alpha
  */
 export default createBackendModule({
-  moduleId: 'catalogCollator',
   pluginId: 'search',
+  moduleId: 'catalog-collator',
   register(env) {
     let entityTransformer: CatalogCollatorEntityTransformer | undefined;
 

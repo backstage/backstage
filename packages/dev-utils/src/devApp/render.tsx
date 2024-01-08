@@ -49,14 +49,13 @@ import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 import 'react-dom';
 
-let ReactDOM:
-  | typeof import('react-dom')
-  // TODO: replace with import('react-dom/client') when repo is migrated to 18
-  | { createRoot(el: HTMLElement): { render(el: JSX.Element): void } };
+let ReactDOMPromise: Promise<
+  typeof import('react-dom') | typeof import('react-dom/client')
+>;
 if (process.env.HAS_REACT_DOM_CLIENT) {
-  ReactDOM = require('react-dom/client');
+  ReactDOMPromise = import('react-dom/client');
 } else {
-  ReactDOM = require('react-dom');
+  ReactDOMPromise = import('react-dom');
 }
 
 export function isReactRouterBeta(): boolean {
@@ -245,11 +244,15 @@ export class DevAppBuilder {
       window.location.pathname = this.defaultPage;
     }
 
-    if ('createRoot' in ReactDOM) {
-      ReactDOM.createRoot(document.getElementById('root')!).render(<DevApp />);
-    } else {
-      ReactDOM.render(<DevApp />, document.getElementById('root'));
-    }
+    ReactDOMPromise.then(ReactDOM => {
+      if ('createRoot' in ReactDOM) {
+        ReactDOM.createRoot(document.getElementById('root')!).render(
+          <DevApp />,
+        );
+      } else {
+        ReactDOM.render(<DevApp />, document.getElementById('root'));
+      }
+    });
   }
 }
 

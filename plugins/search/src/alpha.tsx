@@ -28,7 +28,6 @@ import {
   useSidebarPinState,
 } from '@backstage/core-components';
 import {
-  createRouteRef,
   useApi,
   DiscoveryApi,
   IdentityApi,
@@ -62,14 +61,19 @@ import {
 } from '@backstage/plugin-search-react';
 import { SearchResult } from '@backstage/plugin-search-common';
 import { searchApiRef } from '@backstage/plugin-search-react';
-import { searchResultItemExtensionData } from '@backstage/plugin-search-react/alpha';
+import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 
+import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
 import { SearchType } from './components/SearchType';
 import { UrlUpdater } from './components/SearchPage/SearchPage';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
 
 /** @alpha */
-export const SearchApi = createApiExtension({
+export const searchApi = createApiExtension({
   factory: {
     api: searchApiRef,
     deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
@@ -95,12 +99,9 @@ const useSearchPageStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const searchRouteRef = createRouteRef({ id: 'plugin.search.page' });
-
 /** @alpha */
-export const SearchPage = createPageExtension({
-  id: 'plugin.search.page',
-  routeRef: searchRouteRef,
+export const searchPage = createPageExtension({
+  routeRef: convertLegacyRouteRef(rootRouteRef),
   configSchema: createSchemaFromZod(z =>
     z.object({
       path: z.string().default('/search'),
@@ -109,13 +110,15 @@ export const SearchPage = createPageExtension({
   ),
   inputs: {
     items: createExtensionInput({
-      item: searchResultItemExtensionData,
+      item: createSearchResultListItemExtension.itemDataRef,
     }),
   },
   loader: async ({ config, inputs }) => {
     const getResultItemComponent = (result: SearchResult) => {
-      const value = inputs.items.find(({ item }) => item?.predicate?.(result));
-      return value?.item.component ?? DefaultResultListItem;
+      const value = inputs.items.find(item =>
+        item?.output.item.predicate?.(result),
+      );
+      return value?.output.item.component ?? DefaultResultListItem;
     };
 
     const Component = () => {
@@ -225,25 +228,27 @@ export const SearchPage = createPageExtension({
       );
     };
 
-    return (
+    return compatWrapper(
       <SearchContextProvider>
         <UrlUpdater />
         <Component />
-      </SearchContextProvider>
+      </SearchContextProvider>,
     );
   },
 });
 
 /** @alpha */
-export const SearchNavItem = createNavItemExtension({
-  id: 'plugin.search.nav.index',
-  routeRef: searchRouteRef,
+export const searchNavItem = createNavItemExtension({
+  routeRef: convertLegacyRouteRef(rootRouteRef),
   title: 'Search',
   icon: SearchIcon,
 });
 
 /** @alpha */
 export default createPlugin({
-  id: 'plugin.search',
-  extensions: [SearchApi, SearchPage, SearchNavItem],
+  id: 'search',
+  extensions: [searchApi, searchPage, searchNavItem],
+  routes: {
+    root: convertLegacyRouteRef(rootRouteRef),
+  },
 });

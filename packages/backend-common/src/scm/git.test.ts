@@ -190,7 +190,7 @@ describe('Git', () => {
       });
     });
 
-    it('should pass a function that returns the authorization as the onAuth handler', async () => {
+    it('should pass a function that returns the authorization as the onAuth handler when username and password are specified', async () => {
       const url = 'http://github.com/some/repo';
       const dir = '/some/mock/dir';
       const auth = {
@@ -198,6 +198,25 @@ describe('Git', () => {
         password: 'hunter2',
       };
       const git = Git.fromAuth(auth);
+
+      await git.clone({ url, dir });
+
+      const { onAuth } = (
+        isomorphic.clone as unknown as jest.Mock<(typeof isomorphic)['clone']>
+      ).mock.calls[0][0]!;
+
+      expect(onAuth()).toEqual(auth);
+    });
+
+    it('should pass the provided callback as the onAuth handler when on auth is specified', async () => {
+      const url = 'http://github.com/some/repo';
+      const dir = '/some/mock/dir';
+      const auth = {
+        username: 'from',
+        password: 'callback',
+      };
+
+      const git = Git.fromAuth({ onAuth: () => auth });
 
       await git.clone({ url, dir });
 

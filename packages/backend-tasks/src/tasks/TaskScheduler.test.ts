@@ -25,9 +25,7 @@ jest.setTimeout(60_000);
 
 describe('TaskScheduler', () => {
   const logger = getVoidLogger();
-  const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3', 'MYSQL_8'],
-  });
+  const databases = TestDatabases.create();
   const testScopedSignal = createTestScopedSignal();
 
   async function createDatabase(

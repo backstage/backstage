@@ -277,30 +277,32 @@ describe('collectConfigSchemas', () => {
     });
     process.chdir(mockDir.path);
 
-    await expect(collectConfigSchemas(['a'], [])).resolves.toEqual([
-      {
-        path: path.join('node_modules', 'a', 'package.json'),
-        value: mockSchema,
-      },
-      {
-        path: path.join('node_modules', 'b', 'package.json'),
-        value: { ...mockSchema, title: 'b' },
-      },
-      {
-        path: path.join('node_modules', 'c', 'package.json'),
-        value: { ...mockSchema, title: 'c1' },
-      },
-      {
-        path: path.join(
-          'node_modules',
-          'b',
-          'node_modules',
-          'c',
-          'package.json',
-        ),
-        value: { ...mockSchema, title: 'c2' },
-      },
-    ]);
+    await expect(collectConfigSchemas(['a'], [])).resolves.toEqual(
+      expect.arrayContaining([
+        {
+          path: path.join('node_modules', 'a', 'package.json'),
+          value: mockSchema,
+        },
+        {
+          path: path.join('node_modules', 'b', 'package.json'),
+          value: { ...mockSchema, title: 'b' },
+        },
+        {
+          path: path.join('node_modules', 'c', 'package.json'),
+          value: { ...mockSchema, title: 'c1' },
+        },
+        {
+          path: path.join(
+            'node_modules',
+            'b',
+            'node_modules',
+            'c',
+            'package.json',
+          ),
+          value: { ...mockSchema, title: 'c2' },
+        },
+      ]),
+    );
   });
 
   it('should not allow unknown schema file types', async () => {

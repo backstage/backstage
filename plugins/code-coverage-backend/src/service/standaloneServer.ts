@@ -16,17 +16,17 @@
 
 import {
   createServiceBuilder,
+  DatabaseManager,
   HostDiscovery,
   loadBackendConfig,
   UrlReaders,
-  useHotMemoize,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { Server } from 'http';
-import knexFactory from 'knex';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+import { ConfigReader } from '@backstage/config';
 
 export interface ServerOptions {
   port: number;
@@ -40,19 +40,14 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'code-coverage-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
 
-  const db = useHotMemoize(module, () => {
-    const knex = knexFactory({
-      client: 'better-sqlite3',
-      connection: ':memory:',
-      useNullAsDefault: true,
-    });
-
-    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
-      resource.run('PRAGMA foreign_keys = ON', () => {});
-    });
-
-    return knex;
-  });
+  const manager = DatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: { client: 'better-sqlite3', connection: ':memory:' },
+      },
+    }),
+  );
+  const database = manager.forPlugin('code-coverage');
 
   const catalogApi = {
     async getEntityByRef(entityRef: string | CompoundEntityRef) {
@@ -69,7 +64,7 @@ export async function startStandaloneServer(
   logger.debug('Starting application server...');
 
   const router = await createRouter({
-    database: { getClient: async () => db },
+    database,
     config,
     discovery: HostDiscovery.fromConfig(config),
     urlReader: UrlReaders.default({ logger, config }),

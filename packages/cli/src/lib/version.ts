@@ -44,8 +44,8 @@ import { version as coreComponents } from '../../../../packages/core-components/
 import { version as corePluginApi } from '../../../../packages/core-plugin-api/package.json';
 import { version as devUtils } from '../../../../packages/dev-utils/package.json';
 import { version as testUtils } from '../../../../packages/test-utils/package.json';
+import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
 import { version as theme } from '../../../../packages/theme/package.json';
-import { version as scaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
 
 export const packageVersions: Record<string, string> = {
   '@backstage/backend-common': backendCommon,
@@ -59,7 +59,7 @@ export const packageVersions: Record<string, string> = {
   '@backstage/dev-utils': devUtils,
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
-  '@backstage/plugin-scaffolder-backend': scaffolderBackend,
+  '@backstage/plugin-scaffolder-node': scaffolderNode,
 };
 
 export function findVersion() {

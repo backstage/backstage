@@ -1,5 +1,139 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.3.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-backend-node@1.2.13-next.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.3.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.13-next.0
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.3.11
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-search-backend-node@1.2.12
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.3.11-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.12-next.3
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.11-next.2
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.12-next.2
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.12-next.1
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/plugin-search-backend-node@1.2.12-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.10
+
+### Patch Changes
+
+- 006df4a581: Support AWS OpenSearch Serverless search backend. Does not support `_refresh` endpoint.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.2.11
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.10-next.2
+
+### Patch Changes
+
+- [#20212](https://github.com/backstage/backstage/pull/20212) [`006df4a581`](https://github.com/backstage/backstage/commit/006df4a58152be772fbbc9acc312195625fcd83a) Thanks [@aochsner](https://github.com/aochsner)! - Support AWS OpenSearch Serverless search backend. Does not support `_refresh` endpoint.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-search-backend-node@1.2.11-next.2
+
+## 1.3.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/plugin-search-backend-node@1.2.11-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/plugin-search-common@1.2.7
+
+## 1.3.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.2.11-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.7
+
 ## 1.3.9
 
 ### Patch Changes

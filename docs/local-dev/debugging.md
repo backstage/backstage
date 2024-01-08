@@ -47,3 +47,27 @@ The resulting log should now have more information available for debugging:
 [1] 2023-04-12T00:51:44.118Z search info Collating documents for tools succeeded type=plugin documentType=tools
 [1] 2023-04-12T00:51:44.119Z backstage debug task: search_index_tools will next occur around 2023-04-11T21:01:44.118-04:00 type=taskManager task=search_index_tools
 ```
+
+## Debugger
+
+### VSCode
+
+In your `launch.json`, add a new entry with the following,
+
+```jsonc
+{
+    "name": "Start Backend",
+    "type": "node",
+    "request": "launch",
+    "args": [
+        "package",
+        "start"
+    ],
+    "cwd": "${workspaceFolder}/packages/backend",
+    "program": "${workspaceFolder}/node_modules/.bin/backstage-cli",
+    "skipFiles": [
+        "<node_internals>/**"
+    ],
+    "console": "integratedTerminal"
+},
+```

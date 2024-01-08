@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+
+export type PagedResponse<T> = {
+  items: T[];
+  nextPage?: number;
+};
 
 export type GitlabGroupDescription = {
   id: number;

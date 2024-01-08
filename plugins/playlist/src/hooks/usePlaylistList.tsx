@@ -21,12 +21,18 @@ import { PlaylistOwnerFilter } from '../components/PlaylistOwnerPicker';
 import { PlaylistTextFilter } from '../components/PlaylistSearchBar';
 import { PlaylistFilter, PlaylistSortCompareFunction } from '../types';
 
+/**
+ * @public
+ */
 export class NoopFilter implements PlaylistFilter {
   getBackendFilters() {
     return { '': null };
   }
 }
 
+/**
+ * @public
+ */
 export type DefaultPlaylistFilters = {
   noop?: NoopFilter;
   owners?: PlaylistOwnerFilter;

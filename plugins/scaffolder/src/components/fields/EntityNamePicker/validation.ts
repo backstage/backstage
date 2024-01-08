@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FieldValidation } from '@rjsf/core';
+import { FieldValidation } from '@rjsf/utils';
 import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
 
 export const entityNamePickerValidation = (

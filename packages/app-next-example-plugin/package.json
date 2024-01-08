@@ -1,7 +1,7 @@
 {
   "name": "app-next-example-plugin",
   "description": "Backstage internal example plugin",
-  "version": "0.0.2",
+  "version": "0.0.5-next.1",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -39,13 +39,13 @@
     "@material-ui/icons": "^4.9.1"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "cross-fetch": "^3.1.5",
+    "cross-fetch": "^4.0.0",
     "msw": "^1.0.0"
   },
   "files": [

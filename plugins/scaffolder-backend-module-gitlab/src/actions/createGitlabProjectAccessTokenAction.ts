@@ -19,6 +19,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import commonGitlabConfig from '../commonGitlabConfig';
 import { getToken } from '../util';
 import { z } from 'zod';
+import { examples } from './createGitlabProjectAccessTokenAction.examples';
 
 /**
  * Creates a `gitlab:projectAccessToken:create` Scaffolder action.
@@ -32,6 +33,7 @@ export const createGitlabProjectAccessTokenAction = (options: {
   const { integrations } = options;
   return createTemplateAction({
     id: 'gitlab:projectAccessToken:create',
+    examples,
     schema: {
       input: commonGitlabConfig.merge(
         z.object({

@@ -139,7 +139,7 @@ export class GerritUrlReader implements UrlReader {
           return Buffer.from(responseBody, 'base64');
         },
         stream: () => {
-          const readable = new Readable().wrap(response.body);
+          const readable = Readable.from(response.body);
           return readable.pipe(new Base64Decode());
         },
       };

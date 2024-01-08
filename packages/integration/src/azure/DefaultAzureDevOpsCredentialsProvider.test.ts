@@ -49,6 +49,19 @@ const MockedDefaultAzureCredential = DefaultAzureCredential as jest.MockedClass<
 jest.mock('@azure/identity');
 
 describe('DefaultAzureDevOpsCredentialProvider', () => {
+  const fromAzureDevOpsCredential = jest.spyOn(
+    CachedAzureDevOpsCredentialsProvider,
+    'fromAzureDevOpsCredential',
+  );
+  const fromTokenCredential = jest.spyOn(
+    CachedAzureDevOpsCredentialsProvider,
+    'fromTokenCredential',
+  );
+  const fromPersonalAccessTokenCredential = jest.spyOn(
+    CachedAzureDevOpsCredentialsProvider,
+    'fromPersonalAccessTokenCredential',
+  );
+
   const buildProvider = (azureIntegrations: AzureIntegrationConfigLike[]) =>
     DefaultAzureDevOpsCredentialsProvider.fromIntegrations(
       ScmIntegrations.fromConfig(
@@ -61,8 +74,7 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
     );
 
   beforeEach(() => {
-    jest.resetAllMocks();
-
+    jest.clearAllMocks();
     MockedClientSecretCredential.prototype.getToken.mockImplementation(() =>
       Promise.resolve({
         expiresOnTimestamp: DateTime.local().plus({ days: 1 }).toSeconds(),
@@ -83,18 +95,6 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
         token: 'fake-default-azure-credential-token',
       } as AccessToken),
     );
-
-    jest.spyOn(
-      CachedAzureDevOpsCredentialsProvider,
-      'fromAzureDevOpsCredential',
-    );
-
-    jest.spyOn(CachedAzureDevOpsCredentialsProvider, 'fromTokenCredential');
-
-    jest.spyOn(
-      CachedAzureDevOpsCredentialsProvider,
-      'fromPersonalAccessTokenCredential',
-    );
   });
 
   describe('fromIntegrations', () => {
@@ -111,9 +111,7 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
       ]);
 
       expect(provider).toBeDefined();
-      expect(
-        CachedAzureDevOpsCredentialsProvider.fromAzureDevOpsCredential,
-      ).toHaveBeenCalledTimes(1);
+      expect(fromAzureDevOpsCredential).toHaveBeenCalledTimes(1);
     });
 
     it('Should create a single credential provider per credential', async () => {
@@ -134,9 +132,7 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
       ]);
 
       expect(provider).toBeDefined();
-      expect(
-        CachedAzureDevOpsCredentialsProvider.fromAzureDevOpsCredential,
-      ).toHaveBeenCalledTimes(2);
+      expect(fromAzureDevOpsCredential).toHaveBeenCalledTimes(2);
     });
 
     it('Should create a default credential provider for Azure DevOps when no credential is specified', async () => {
@@ -148,13 +144,11 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
       ]);
 
       expect(provider).toBeDefined();
-      expect(
-        CachedAzureDevOpsCredentialsProvider.fromTokenCredential,
-      ).toHaveBeenCalledTimes(1);
+      expect(fromTokenCredential).toHaveBeenCalledTimes(1);
 
-      expect(
-        CachedAzureDevOpsCredentialsProvider.fromTokenCredential,
-      ).toHaveBeenCalledWith(new DefaultAzureCredential());
+      expect(fromTokenCredential).toHaveBeenCalledWith(
+        new DefaultAzureCredential(),
+      );
     });
 
     it('Should create a default credential provider for Azure DevOps when no default credential is specified', async () => {
@@ -173,13 +167,11 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
       ]);
 
       expect(provider).toBeDefined();
-      expect(
-        CachedAzureDevOpsCredentialsProvider.fromTokenCredential,
-      ).toHaveBeenCalledTimes(2);
+      expect(fromTokenCredential).toHaveBeenCalledTimes(2);
 
-      expect(
-        CachedAzureDevOpsCredentialsProvider.fromTokenCredential,
-      ).toHaveBeenCalledWith(new DefaultAzureCredential());
+      expect(fromTokenCredential).toHaveBeenCalledWith(
+        new DefaultAzureCredential(),
+      );
     });
 
     it('Should not create a default credential provider for Azure DevOps when another default credential is specified', async () => {
@@ -197,13 +189,11 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
       ]);
 
       expect(provider).toBeDefined();
-      expect(
-        CachedAzureDevOpsCredentialsProvider.fromTokenCredential,
-      ).toHaveBeenCalledTimes(1);
+      expect(fromTokenCredential).toHaveBeenCalledTimes(1);
 
-      expect(
-        CachedAzureDevOpsCredentialsProvider.fromTokenCredential,
-      ).toHaveBeenCalledWith(expect.any(ClientSecretCredential));
+      expect(fromTokenCredential).toHaveBeenCalledWith(
+        expect.any(ClientSecretCredential),
+      );
     });
 
     it('Should not create a default credential provider for on-premise Azure DevOps server when no credential is specified', async () => {
@@ -215,18 +205,12 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
       ]);
 
       expect(provider).toBeDefined();
-      expect(
-        CachedAzureDevOpsCredentialsProvider.fromAzureDevOpsCredential,
-      ).toHaveBeenCalledTimes(0);
+      expect(fromAzureDevOpsCredential).toHaveBeenCalledTimes(0);
 
       // expect 1 call because the Azure integration adds a default integration for dev.azure.com when it is not configured
-      expect(
-        CachedAzureDevOpsCredentialsProvider.fromTokenCredential,
-      ).toHaveBeenCalledTimes(1);
+      expect(fromTokenCredential).toHaveBeenCalledTimes(1);
 
-      expect(
-        CachedAzureDevOpsCredentialsProvider.fromPersonalAccessTokenCredential,
-      ).toHaveBeenCalledTimes(0);
+      expect(fromPersonalAccessTokenCredential).toHaveBeenCalledTimes(0);
     });
   });
 

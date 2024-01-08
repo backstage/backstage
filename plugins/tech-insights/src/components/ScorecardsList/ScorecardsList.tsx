@@ -19,11 +19,10 @@ import { useApi } from '@backstage/core-plugin-api';
 import { makeStyles, List, ListItem, ListItemText } from '@material-ui/core';
 import { techInsightsApiRef } from '../../api';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { BackstageTheme } from '@backstage/theme';
 import { Alert } from '@material-ui/lab';
 import { MarkdownContent } from '@backstage/core-components';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   listItemText: {
     paddingRight: theme.spacing(0.5),
   },

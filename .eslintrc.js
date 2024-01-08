@@ -45,13 +45,12 @@ module.exports = {
           "CallExpression[arguments.length=0] > MemberExpression[property.name='toUpperCase']",
       },
     ],
-    'testing-library/await-async-query': 'error',
+    'testing-library/await-async-queries': 'error',
     'testing-library/await-async-utils': 'error',
-    'testing-library/no-await-sync-query': 'error',
-    'testing-library/prefer-wait-for': 'error',
+    'testing-library/no-await-sync-queries': 'error',
     'testing-library/no-dom-import': 'error',
     'testing-library/no-wait-for-side-effects': 'error',
-    'testing-library/no-wait-for-empty-callback': 'error',
+    'testing-library/await-async-events': 'error',
     'no-restricted-globals': [
       'error',
       [

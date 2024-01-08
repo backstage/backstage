@@ -295,7 +295,8 @@ Webpack configuration itself varies very little between the frontend development
 and production bundling, so we'll dive more into the configuration in the
 production section below. The main differences are that `process.env.NODE_ENV`
 is set to `'development'`, minification is disabled, cheap source maps are used,
-and [React Hot Loader](https://github.com/gaearon/react-hot-loader) is enabled.
+and [React Refresh](https://github.com/pmmmwh/react-refresh-webpack-plugin#readme)
+is enabled.
 
 If you prefer to run type checking and linting as part of the Webpack process,
 you can enable usage of the
@@ -589,22 +590,25 @@ For your productivity working with unit tests it's quite essential to have your 
 
 A complete launch configuration for VS Code debugging may look like this:
 
-```json
+```jsonc
 {
   "type": "node",
-  "name": "vscode-jest-tests",
+  "name": "vscode-jest-tests.v2",
   "request": "launch",
+  "args": [
+    "repo",
+    "test",
+    "--runInBand",
+    "--watchAll=false",
+    "--testNamePattern",
+    "${jest.testNamePattern}",
+    "--runTestsByPath",
+    "${jest.testFile}"
+  ],
   "console": "integratedTerminal",
   "internalConsoleOptions": "neverOpen",
   "disableOptimisticBPs": true,
-  "program": "${workspaceFolder}/node_modules/.bin/jest",
-  "cwd": "${workspaceFolder}",
-  "args": [
-    "--config",
-    "node_modules/@backstage/cli/config/jest.js",
-    "--runInBand",
-    "--watchAll=false"
-  ]
+  "program": "${workspaceFolder}/node_modules/.bin/backstage-cli"
 }
 ```
 
@@ -674,38 +678,3 @@ To add subpath exports to an existing package, simply add the desired `"exports"
 ```bash
 yarn backstage-cli migrate package-exports
 ```
-
-## Experimental Type Build
-
-> Note: Experimental type builds are deprecated and will be removed in the future. They have been replaced by [subpath exports](#subpath-exports).
-
-The Backstage CLI has an experimental feature where multiple different type definition files can be generated for different release stages. The release stages are marked in the [TSDoc](https://tsdoc.org/) for each individual export, using either `@public`, `@alpha`, or `@beta`. Rather than just building a single `index.d.ts` file, the build process will instead output `index.d.ts`, `index.beta.d.ts`, and `index.alpha.d.ts`. Each of these files will have exports from more unstable release stages stripped, meaning that `index.d.ts` will omit all exports marked with `@alpha` or `@beta`, while `index.beta.d.ts` will omit all exports marked with `@alpha`.
-
-This feature is aimed at projects that publish to package registries and wish to maintain different levels of API stability within each package. There is no need to use this within a single monorepo, as it has no effect due to only applying to built and published packages.
-
-In order for the experimental type build to work, `@microsoft/api-extractor` must be installed in your project, as it is an optional peer dependency of the Backstage CLI. There are then three steps that need to be taken for each package where you want to enable this feature:
-
-- Add the `--experimental-type-build` flag to the `"build"` script of the package.
-- Add either one or both of `"alphaTypes"` and `"betaTypes"` to the `"publishConfig"` of the package:
-  ```json
-  "publishConfig": {
-    ...
-    "types": "dist/index.d.ts",
-    "alphaTypes": "dist/index.alpha.d.ts",
-    "betaTypes": "dist/index.beta.d.ts"
-  },
-  ```
-- Add either one or both of `"alpha"` and `"beta"` to the `"files"` of the package:
-  ```json
-  "files": [
-    "dist",
-    "alpha",
-    "beta"
-  ]
-  ```
-
-Once this setup is complete, users of the published packages will only be able to access the stable API via the main package entry point, for example `@acme/my-plugin`. Exports marked with `@alpha` or `@beta` will only be available via the `/alpha` entry point, for example `@acme/my-plugin/alpha`, and exports marked with `@beta` will only be available via `/beta`. This does not apply within the monorepo that contains the package. There all exports still have to be imported via the main entry point.
-
-Note that these different entry points are only separated during type checking. At runtime they all share the same code which contains the exports from all releases stages.
-
-An example of this setup can be seen in the [`@backstage/catalog-model`](https://github.com/backstage/backstage/blob/da0675bf9f28ed1460f03635a22d3c26abd14707/packages/catalog-model/package.json#L14) package, which has enabled `alpha` type exports. With this setup, exports marked as `@alpha` are only available for import via `@backstage/catalog-model/alpha`. The `@backstage/catalog-model` package currently does not have any exports marked as `@beta`, or a `/beta` entry point.

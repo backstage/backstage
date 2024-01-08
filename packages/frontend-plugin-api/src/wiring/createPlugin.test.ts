@@ -18,58 +18,45 @@ import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { screen } from '@testing-library/react';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import { createPlugin, BackstagePlugin } from './createPlugin';
+import { createPlugin } from './createPlugin';
 import { JsonObject } from '@backstage/types';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { coreExtensionData } from './coreExtensionData';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import { createExtensionInput } from './createExtensionInput';
+import { BackstagePlugin } from './types';
 
 const nameExtensionDataRef = createExtensionDataRef<string>('name');
 
-const TechRadarPage = createExtension({
-  id: 'plugin.techradar.page',
-  attachTo: { id: 'test.output', input: 'names' },
+const Extension1 = createExtension({
+  name: '1',
+  attachTo: { id: 'test/output', input: 'names' },
   output: {
     name: nameExtensionDataRef,
   },
-  factory({ bind }) {
-    bind({ name: 'TechRadar' });
+  factory() {
+    return { name: 'extension-1' };
   },
 });
 
-const CatalogPage = createExtension({
-  id: 'plugin.catalog.page',
-  attachTo: { id: 'test.output', input: 'names' },
-  output: {
-    name: nameExtensionDataRef,
-  },
-  configSchema: createSchemaFromZod(z =>
-    z.object({ name: z.string().default('Catalog') }),
-  ),
-  factory({ bind, config }) {
-    bind({ name: config.name });
-  },
-});
-
-const TechDocsAddon = createExtension({
-  id: 'plugin.techdocs.addon.example',
-  attachTo: { id: 'plugin.techdocs.page', input: 'addons' },
+const Extension2 = createExtension({
+  name: '2',
+  attachTo: { id: 'test/output', input: 'names' },
   output: {
     name: nameExtensionDataRef,
   },
   configSchema: createSchemaFromZod(z =>
-    z.object({ name: z.string().default('TechDocsAddon') }),
+    z.object({ name: z.string().default('extension-2') }),
   ),
-  factory({ bind, config }) {
-    bind({ name: config.name });
+  factory({ config }) {
+    return { name: config.name };
   },
 });
 
-const TechDocsPage = createExtension({
-  id: 'plugin.techdocs.page',
-  attachTo: { id: 'test.output', input: 'names' },
+const Extension3 = createExtension({
+  name: '3',
+  attachTo: { id: 'test/output', input: 'names' },
   inputs: {
     addons: createExtensionInput({
       name: nameExtensionDataRef,
@@ -78,14 +65,44 @@ const TechDocsPage = createExtension({
   output: {
     name: nameExtensionDataRef,
   },
-  factory({ bind, inputs }) {
-    bind({ name: `TechDocs-${inputs.addons.map(n => n.name).join('-')}` });
+  factory({ inputs }) {
+    return {
+      name: `extension-3:${inputs.addons.map(n => n.output.name).join('-')}`,
+    };
+  },
+});
+
+const Child = createExtension({
+  name: 'child',
+  attachTo: { id: 'test/3', input: 'addons' },
+  output: {
+    name: nameExtensionDataRef,
+  },
+  configSchema: createSchemaFromZod(z =>
+    z.object({ name: z.string().default('child') }),
+  ),
+  factory({ config }) {
+    return { name: config.name };
+  },
+});
+
+const Child2 = createExtension({
+  name: 'child2',
+  attachTo: { id: 'test/3', input: 'addons' },
+  output: {
+    name: nameExtensionDataRef,
+  },
+  configSchema: createSchemaFromZod(z =>
+    z.object({ name: z.string().default('child2') }),
+  ),
+  factory({ config }) {
+    return { name: config.name };
   },
 });
 
 const outputExtension = createExtension({
-  id: 'test.output',
-  attachTo: { id: 'core', input: 'root' },
+  name: 'output',
+  attachTo: { id: 'app', input: 'root' },
   inputs: {
     names: createExtensionInput({
       name: nameExtensionDataRef,
@@ -94,12 +111,12 @@ const outputExtension = createExtension({
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory({ bind, inputs }) {
-    bind({
+  factory({ inputs }) {
+    return {
       element: React.createElement('span', {}, [
-        `Names: ${inputs.names.map(n => n.name).join(', ')}`,
+        `Names: ${inputs.names.map(n => n.output.name).join(', ')}`,
       ]),
-    });
+    };
   },
 });
 
@@ -112,46 +129,40 @@ function createTestAppRoot({
 }) {
   return createApp({
     features,
-    configLoader: async () => new MockConfigApi(config),
+    configLoader: async () => ({ config: new MockConfigApi(config) }),
   }).createRoot();
 }
 
 describe('createPlugin', () => {
   it('should create an empty plugin', () => {
-    const plugin = createPlugin({ id: 'empty' });
+    const plugin = createPlugin({ id: 'test' });
 
     expect(plugin).toBeDefined();
   });
 
   it('should create a plugin with extension instances', async () => {
     const plugin = createPlugin({
-      id: 'empty',
-      extensions: [TechRadarPage, CatalogPage, outputExtension],
+      id: 'test',
+      extensions: [Extension1, Extension2, outputExtension],
     });
     expect(plugin).toBeDefined();
 
     await renderWithEffects(
       createTestAppRoot({
         features: [plugin],
-        config: { app: { extensions: [{ 'core.layout': false }] } },
+        config: { app: { extensions: [{ 'app/router': false }] } },
       }),
     );
 
     await expect(
-      screen.findByText('Names: TechRadar, Catalog'),
+      screen.findByText('Names: extension-1, extension-2'),
     ).resolves.toBeInTheDocument();
   });
 
   it('should create a plugin with nested extension instances', async () => {
     const plugin = createPlugin({
-      id: 'empty',
-      extensions: [
-        TechRadarPage,
-        CatalogPage,
-        TechDocsPage,
-        TechDocsAddon,
-        outputExtension,
-      ],
+      id: 'test',
+      extensions: [Extension1, Extension2, Extension3, Child, outputExtension],
     });
     expect(plugin).toBeDefined();
 
@@ -161,10 +172,10 @@ describe('createPlugin', () => {
         config: {
           app: {
             extensions: [
-              { 'core.layout': false },
+              { 'app/router': false },
               {
-                'plugin.catalog.page': {
-                  config: { name: 'CatalogRenamed' },
+                'test/2': {
+                  config: { name: 'extension-2-renamed' },
                 },
               },
             ],
@@ -175,8 +186,63 @@ describe('createPlugin', () => {
 
     await expect(
       screen.findByText(
-        'Names: TechRadar, CatalogRenamed, TechDocs-TechDocsAddon',
+        'Names: extension-1, extension-2-renamed, extension-3:child',
       ),
     ).resolves.toBeInTheDocument();
+  });
+
+  it('should create a plugin with nested extension instances and multiple children', async () => {
+    const plugin = createPlugin({
+      id: 'test',
+      extensions: [
+        Extension1,
+        Extension2,
+        Extension3,
+        Child,
+        Child2,
+        outputExtension,
+      ],
+    });
+    expect(plugin).toBeDefined();
+
+    await renderWithEffects(
+      createTestAppRoot({
+        features: [plugin],
+        config: {
+          app: {
+            extensions: [{ 'app/router': false }],
+          },
+        },
+      }),
+    );
+
+    await expect(
+      screen.findByText(
+        'Names: extension-1, extension-2, extension-3:child-child2',
+      ),
+    ).resolves.toBeInTheDocument();
+  });
+
+  it('should throw on duplicate extensions', async () => {
+    expect(() =>
+      createPlugin({
+        id: 'test',
+        extensions: [Extension1, Extension1],
+      }),
+    ).toThrow("Plugin 'test' provided duplicate extensions: test/1");
+
+    expect(() =>
+      createPlugin({
+        id: 'test',
+        extensions: [
+          Extension1,
+          Extension2,
+          Extension2,
+          Extension3,
+          Extension3,
+          Extension3,
+        ],
+      }),
+    ).toThrow("Plugin 'test' provided duplicate extensions: test/2, test/3");
   });
 });

@@ -2,15 +2,15 @@
 
 ### What is the Bazaar?
 
-The Bazaar is a place where teams can propose projects for cross-functional team development. Essentially a marketplace for internal projects suitable for [Inner Sourcing](https://en.wikipedia.org/wiki/Inner_source). With "Inner Sourcing", we mean projects that are developed internally within a company, but with Open Source best practices.
+The Bazaar is a place where teams can propose projects for cross-functional team development. Essentially, it’s a marketplace for internal projects suitable for [Inner Sourcing](https://en.wikipedia.org/wiki/Inner_source). By “Inner Sourcing,” we mean projects that are developed internally within a company but follow Open Source best practices.
 
 ### Why?
 
-Many companies today are of high need to increase the ease of cross-team cooperation. In large organizations, engineers often have limited ways of discovering or announcing the projects which could benefit from a wider development effort in terms of different expertise, experiences, and teams spread across the organization. With no good way to find these existing internal projects to join, the possibility of working with Inner Sourcing practices suffers.
+Many companies today have a high need to increase the ease of cross-team cooperation. In large organizations, engineers often have limited ways of discovering or announcing projects that could benefit from a wider development effort in terms of different expertise, experiences, and teams spread across the organization. With no good way to find these existing internal projects to join, the possibility of working with Inner Sourcing practices suffers.
 
 ### How?
 
-The Bazaar allows engineers and teams to open up and announce their new and exciting projects for transparent cooperation in other parts of larger organizations. The Bazaar ensures that new Inner Sourcing friendly projects gain visibility through Backstage and a way for interested engineers to show their interest and in the future contribute with their specific skill set. The Bazaar also provides an easy way to manage, catalog, and browse these Inner Sourcing friendly projects and components.
+The Bazaar allows engineers and teams to open up and announce their new and exciting projects for transparent cooperation in other parts of larger organizations. The Bazaar ensures that new Inner Sourcing-friendly projects gain visibility through Backstage and a way for interested engineers to show their interest and, in the future, contribute with their specific skill set. The Bazaar also provides an easy way to manage, catalog, and browse these Inner Sourcing-friendly projects and components.
 
 # Note
 

@@ -236,6 +236,12 @@ export default async function createPlugin(
         // an entity you will need to replace this step as well.
         //
         // You might also replace it if you for example want to filter out certain groups.
+        //
+        // Note that `getDefaultOwnershipEntityRefs` only includes groups to which the
+        // user has a direct MEMBER_OF relationship. It's perfectly fine to include
+        // groups that the user is transitively part of in the claims array, but the
+        // catalog doesn't currently provide a direct way of accessing this list of
+        // groups.
         const ownershipRefs = getDefaultOwnershipEntityRefs(entity);
 
         // The last step is to issue the token, where we might provide more options in the future.

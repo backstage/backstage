@@ -149,6 +149,8 @@ export interface Config {
     cache?:
       | {
           store: 'memory';
+          /** An optional default TTL (in milliseconds). */
+          defaultTtl?: number;
         }
       | {
           store: 'redis';
@@ -157,6 +159,8 @@ export interface Config {
            * @visibility secret
            */
           connection: string;
+          /** An optional default TTL (in milliseconds). */
+          defaultTtl?: number;
         }
       | {
           store: 'memcache';
@@ -165,6 +169,8 @@ export interface Config {
            * @visibility secret
            */
           connection: string;
+          /** An optional default TTL (in milliseconds). */
+          defaultTtl?: number;
         };
 
     cors?: {

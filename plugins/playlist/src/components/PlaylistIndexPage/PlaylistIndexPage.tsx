@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,50 +15,11 @@
  */
 
 import React from 'react';
-import {
-  PageWithHeader,
-  Content,
-  ContentHeader,
-  SupportButton,
-} from '@backstage/core-components';
-import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
-
-import { CreatePlaylistButton } from '../CreatePlaylistButton';
-import { PersonalListPicker } from '../PersonalListPicker';
-import { PlaylistList } from '../PlaylistList';
-import { PlaylistOwnerPicker } from '../PlaylistOwnerPicker';
-import { PlaylistSearchBar } from '../PlaylistSearchBar';
-import { PlaylistSortPicker } from '../PlaylistSortPicker';
-import { PlaylistListProvider } from '../../hooks/PlaylistListProvider';
-import { useTitle } from '../../hooks/useTitle';
+import { useOutlet } from 'react-router-dom';
+import { DefaultPlaylistIndexPage } from './DefaultPlaylistIndexPage';
 
 export const PlaylistIndexPage = () => {
-  const pluralTitle = useTitle({
-    pluralize: true,
-    lowerCase: false,
-  });
+  const outlet = useOutlet();
 
-  return (
-    <PageWithHeader themeId="home" title={pluralTitle}>
-      <PlaylistListProvider>
-        <Content>
-          <ContentHeader title="">
-            <PlaylistSortPicker />
-            <CreatePlaylistButton />
-            <SupportButton />
-          </ContentHeader>
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>
-              <PlaylistSearchBar />
-              <PersonalListPicker />
-              <PlaylistOwnerPicker />
-            </CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <PlaylistList />
-            </CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </Content>
-      </PlaylistListProvider>
-    </PageWithHeader>
-  );
+  return outlet || <DefaultPlaylistIndexPage />;
 };

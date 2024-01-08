@@ -24,28 +24,39 @@ import debounce from 'lodash/debounce';
 import { PackagePlatform, PackageRoles } from '@backstage/cli-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
+export interface DynamicPluginScannerOptions {
+  config: Config;
+  backstageRoot: string;
+  logger: LoggerService;
+  preferAlpha?: boolean;
+}
+
+export interface ScanRootResponse {
+  packages: ScannedPluginPackage[];
+}
+
 export class PluginScanner {
-  private readonly logger: LoggerService;
-  private backstageRoot: string;
-  readonly #config: Config;
   private _rootDirectory?: string;
-  private readonly preferAlpha: boolean;
   private configUnsubscribe?: () => void;
   private rootDirectoryWatcher?: chokidar.FSWatcher;
   private subscribers: (() => void)[] = [];
 
-  constructor(
-    config: Config,
-    logger: LoggerService,
-    backstageRoot: string,
-    preferAlpha: boolean = false,
-  ) {
-    this.backstageRoot = backstageRoot;
-    this.logger = logger;
-    this.preferAlpha = preferAlpha;
-    this.#config = config;
+  private constructor(
+    private readonly config: Config,
+    private readonly logger: LoggerService,
+    private readonly backstageRoot: string,
+    private readonly preferAlpha: boolean,
+  ) {}
 
-    this.applyConfig();
+  static create(options: DynamicPluginScannerOptions): PluginScanner {
+    const scanner = new PluginScanner(
+      options.config,
+      options.logger,
+      options.backstageRoot,
+      options.preferAlpha || false,
+    );
+    scanner.applyConfig();
+    return scanner;
   }
 
   subscribeToRootDirectoryChange(subscriber: () => void) {
@@ -57,7 +68,7 @@ export class PluginScanner {
   }
 
   private applyConfig(): void | never {
-    const dynamicPlugins = this.#config.getOptional('dynamicPlugins');
+    const dynamicPlugins = this.config.getOptional('dynamicPlugins');
     if (!dynamicPlugins) {
       this.logger.info("'dynamicPlugins' config entry not found.");
       this._rootDirectory = undefined;
@@ -114,9 +125,9 @@ export class PluginScanner {
     this._rootDirectory = dynamicPluginsRootPath;
   }
 
-  async scanRoot(): Promise<ScannedPluginPackage[]> {
+  async scanRoot(): Promise<ScanRootResponse> {
     if (!this._rootDirectory) {
-      return [];
+      return { packages: [] };
     }
 
     const dynamicPluginsLocation = this._rootDirectory;
@@ -189,7 +200,7 @@ export class PluginScanner {
 
       scannedPlugins.push(scannedPlugin);
     }
-    return scannedPlugins;
+    return { packages: scannedPlugins };
   }
 
   private async scanDir(pluginHome: string): Promise<ScannedPluginPackage> {
@@ -217,6 +228,8 @@ export class PluginScanner {
           .watch(this._rootDirectory, {
             ignoreInitial: true,
             followSymlinks: true,
+            depth: 1,
+            disableGlobbing: true,
           })
           .on(
             'all',
@@ -261,30 +274,28 @@ export class PluginScanner {
     };
 
     await setupRootDirectoryWatcher();
-    if (this.#config.subscribe) {
-      const { unsubscribe } = this.#config.subscribe(
-        async (): Promise<void> => {
-          const oldRootDirectory = this._rootDirectory;
-          try {
-            this.applyConfig();
-          } catch (e) {
-            this.logger.error(
-              'failed to apply new config for dynamic plugins',
-              e,
-            );
+    if (this.config.subscribe) {
+      const { unsubscribe } = this.config.subscribe(async (): Promise<void> => {
+        const oldRootDirectory = this._rootDirectory;
+        try {
+          this.applyConfig();
+        } catch (e) {
+          this.logger.error(
+            'failed to apply new config for dynamic plugins',
+            e,
+          );
+        }
+        if (oldRootDirectory !== this._rootDirectory) {
+          this.logger.info(
+            `rootDirectory changed in Config from '${oldRootDirectory}' to '${this._rootDirectory}'`,
+          );
+          this.subscribers.forEach(s => s());
+          if (this.rootDirectoryWatcher) {
+            await this.rootDirectoryWatcher.close();
           }
-          if (oldRootDirectory !== this._rootDirectory) {
-            this.logger.info(
-              `rootDirectory changed in Config from '${oldRootDirectory}' to '${this._rootDirectory}'`,
-            );
-            this.subscribers.forEach(s => s());
-            if (this.rootDirectoryWatcher) {
-              await this.rootDirectoryWatcher.close();
-            }
-            await setupRootDirectoryWatcher();
-          }
-        },
-      );
+          await setupRootDirectoryWatcher();
+        }
+      });
       this.configUnsubscribe = unsubscribe;
     }
   }

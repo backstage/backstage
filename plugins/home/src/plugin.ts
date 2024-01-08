@@ -23,9 +23,14 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import { createCardExtension } from '@backstage/plugin-home-react';
-import { ToolkitContentProps, VisitedByTypeProps } from './homePageComponents';
+import {
+  ToolkitContentProps,
+  VisitedByTypeProps,
+  FeaturedDocsCardProps,
+} from './homePageComponents';
 import { rootRouteRef } from './routes';
 import { VisitsStorageApi, visitsApiRef } from './api';
+import { StarredEntitiesProps } from './homePageComponents/StarredEntities/Content';
 
 /** @public */
 export const homePlugin = createPlugin({
@@ -164,7 +169,7 @@ export const HomePageToolkit = homePlugin.provide(
  * @public
  */
 export const HomePageStarredEntities = homePlugin.provide(
-  createCardExtension({
+  createCardExtension<Partial<StarredEntitiesProps>>({
     name: 'HomePageStarredEntities',
     title: 'Your Starred Entities',
     components: () => import('./homePageComponents/StarredEntities'),
@@ -208,5 +213,18 @@ export const HomePageRecentlyVisited = homePlugin.provide(
     name: 'HomePageRecentlyVisited',
     components: () =>
       import('./homePageComponents/VisitedByType/RecentlyVisited'),
+  }),
+);
+
+/**
+ * A component to display specific Featured Docs.
+ *
+ * @public
+ */
+export const FeaturedDocsCard = homePlugin.provide(
+  createCardExtension<FeaturedDocsCardProps>({
+    name: 'FeaturedDocsCard',
+    title: 'Featured Docs',
+    components: () => import('./homePageComponents/FeaturedDocsCard'),
   }),
 );

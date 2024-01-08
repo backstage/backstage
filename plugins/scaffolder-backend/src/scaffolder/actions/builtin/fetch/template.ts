@@ -207,19 +207,13 @@ export function createFetchTemplateAction(options: {
       });
 
       const nonTemplatedEntries = new Set(
-        (
-          await Promise.all(
-            (copyOnlyPatterns || []).map(pattern =>
-              globby(pattern, {
-                cwd: templateDir,
-                dot: true,
-                onlyFiles: false,
-                markDirectories: true,
-                followSymbolicLinks: false,
-              }),
-            ),
-          )
-        ).flat(),
+        await globby(copyOnlyPatterns || [], {
+          cwd: templateDir,
+          dot: true,
+          onlyFiles: false,
+          markDirectories: true,
+          followSymbolicLinks: false,
+        }),
       );
 
       // Cookiecutter prefixes all parameters in templates with

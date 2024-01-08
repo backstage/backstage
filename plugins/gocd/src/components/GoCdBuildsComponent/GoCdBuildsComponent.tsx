@@ -15,11 +15,13 @@
  */
 import React, { useState } from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import {
   Content,
   ContentHeader,
-  MissingAnnotationEmptyState,
   EmptyState,
   Page,
 } from '@backstage/core-components';

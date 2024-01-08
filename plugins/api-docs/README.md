@@ -13,7 +13,7 @@ The plugin provides a standalone list of APIs, as well as an integration into th
 Right now, the following API formats are supported:
 
 - [OpenAPI](https://swagger.io/specification/) 2 & 3
-- [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/)
+- [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest)
 - [GraphQL](https://graphql.org/learn/schema/)
 
 Other formats are displayed as plain text, but this can easily be extended.
@@ -261,3 +261,5 @@ createApiFactory({
     },
   })
 ```
+
+In the same way as the `requestInterceptor` you can override any property of Swagger UI

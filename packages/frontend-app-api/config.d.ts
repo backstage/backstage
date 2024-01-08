@@ -24,20 +24,27 @@ export interface Config {
       packages?: 'all' | { include?: string[]; exclude?: string[] };
     };
 
+    routes?: {
+      /**
+       * @deepVisibility frontend
+       */
+      bindings?: { [externalRouteRefId: string]: string };
+    };
+
     /**
      * @deepVisibility frontend
      */
-    extensions?:
+    extensions?: Array<
       | string
       | {
           [extensionId: string]:
             | boolean
-            | string
             | {
-                at?: string;
-                extension?: string;
+                attachTo?: { id: string; input: string };
+                disabled?: boolean;
                 config?: unknown;
               };
-        };
+        }
+    >;
   };
 }

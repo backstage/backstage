@@ -22,14 +22,16 @@ import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
-  scaffolderActionsExtensionPoint,
-  scaffolderTaskBrokerExtensionPoint,
-  scaffolderTemplatingExtensionPoint,
   TaskBroker,
   TemplateAction,
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
+import {
+  scaffolderActionsExtensionPoint,
+  scaffolderTaskBrokerExtensionPoint,
+  scaffolderTemplatingExtensionPoint,
+} from '@backstage/plugin-scaffolder-node/alpha';
 import { createBuiltinActions } from './scaffolder';
 import { createRouter } from './service/router';
 

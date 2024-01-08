@@ -1,5 +1,240 @@
 # @backstage/frontend-app-api
 
+## 0.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/core-app-api@1.11.3-next.0
+  - @backstage/frontend-plugin-api@0.4.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/frontend-plugin-api@0.4.1-next.0
+  - @backstage/config@1.1.1
+  - @backstage/core-app-api@1.11.2
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.4.0
+
+### Minor Changes
+
+- e539735: Updated core extension structure to make space for the sign-in page by adding `core.router`.
+- 44735df: Removed `featureLoader` from `createApp`, `features` instead accepts both `FrontendFeature` and `CreateAppFeatureLoader`
+- af7bc3e: Switched all core extensions to instead use the namespace `'app'`.
+- ea06590: The app no longer provides the `AppContext` from `@backstage/core-plugin-api`. Components that require this context to be available should use the `compatWrapper` helper from `@backstage/core-compat-api`.
+
+### Patch Changes
+
+- 5eb6b8a: Added the nav logo extension for customization of sidebar logo
+- aeb8008: Add support for translation extensions.
+- 1f12fb7: Create a core components extension that allows adopters to override core app components such as `Progress`, `BootErrorPage`, `NotFoundErrorPage` and `ErrorBoundaryFallback`.
+- a379243: Leverage the new `FrontendFeature` type to simplify interfaces
+- 60d6eb5: Removed `@backstage/plugin-graphiql` dependency.
+- b7adf24: Use the new plugin type for error boundary components.
+- 5970928: Collect and register feature flags from plugins and extension overrides.
+- 9ad4039: Bringing over apis from core-plugin-api
+- 8f5d6c1: Updates to match the new extension input wrapping.
+- c35036b: A `configLoader` passed to `createApp` now returns an object, to make room for future expansion
+- f27ee7d: Migrate analytics route tracker component.
+- b8cb780: Added `createSpecializedApp`, which is a synchronous version of `createApp` where config and features already need to be loaded.
+- c36e0b9: Renamed `AppRouteBinder` to `CreateAppRouteBinder`
+- cb4197a: Forward ` node`` instead of  `extensionId` to resolved extension inputs.
+- 8837a96: Updates to match the introduction of `ExtensionDefinition` and new extension ID naming patterns.
+- a5a0473: Updates to provide `node` to extension factories instead of `id` and `source`.
+- 5cdf2b3: Updated usage of `Extension` and `ExtensionDefinition` as they are now opaque.
+- f9ef632: Updates to match the new `coreExtensionData` structure.
+- f1183b7: Renamed the `component` option of `createComponentExtension` to `loader`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/frontend-plugin-api@0.4.0
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/core-app-api@1.11.2
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.4.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/config@1.1.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/frontend-plugin-api@0.4.0-next.3
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.4.0-next.2
+
+### Minor Changes
+
+- ea06590: The app no longer provides the `AppContext` from `@backstage/core-plugin-api`. Components that require this context to be available should use the `compatWrapper` helper from `@backstage/core-compat-api`.
+
+### Patch Changes
+
+- aeb8008: Add support for translation extensions.
+- b7adf24: Use the new plugin type for error boundary components.
+- 8f5d6c1: Updates to match the new extension input wrapping.
+- cb4197a: Forward ` node`` instead of  `extensionId` to resolved extension inputs.
+- 8837a96: Updates to match the introduction of `ExtensionDefinition` and new extension ID naming patterns.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.2
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.4.0-next.1
+
+### Minor Changes
+
+- e539735435: Updated core extension structure to make space for the sign-in page by adding `core.router`.
+
+### Patch Changes
+
+- 5eb6b8a7bc: Added the nav logo extension for customization of sidebar logo
+- 1f12fb762c: Create a core components extension that allows adopters to override core app components such as `Progress`, `BootErrorPage`, `NotFoundErrorPage` and `ErrorBoundaryFallback`.
+- 59709286b3: Collect and register feature flags from plugins and extension overrides.
+- f27ee7d937: Migrate analytics route tracker component.
+- a5a04739e1: Updates to provide `node` to extension factories instead of `id` and `source`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/config@1.1.1
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 60d6eb544e: Removed `@backstage/plugin-graphiql` dependency.
+- 9ad4039efa: Bringing over apis from core-plugin-api
+- b8cb7804c8: Added `createSpecializedApp`, which is a synchronous version of `createApp` where config and features already need to be loaded.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/core-app-api@1.11.2-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.3.0
+
+### Minor Changes
+
+- 68fc9dc60e: Added the ability to configure bound routes through `app.routes.bindings`. The routing system used by `createApp` has been replaced by one that only supports route refs of the new format from `@backstage/frontend-plugin-api`. The requirement for route refs to have the same ID as their associated extension has been removed.
+
+### Patch Changes
+
+- e28d379e32: Refactor internal extension instance system into an app graph.
+- fdc348d5d3: The options parameter of `createApp` is now optional.
+- 6c2b872153: Add official support for React 18.
+- dc613f9bcf: Updated `app.extensions` configuration schema.
+- 733bd95746: Implement new `AppTreeApi`
+- 685a4c8901: Installed features are now deduplicated both by reference and ID when available. Features passed to `createApp` now override both discovered and loaded features.
+- fa28d4e6df: No longer throw error on invalid input if the child is disabled.
+- bb98953cb9: Register default implementation for the `Translation API` on the new `createApp`.
+- fe6d09953d: Fix for app node output IDs not being serialized correctly.
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- 4d6fa921db: Internal refactor to rename the app graph to app tree
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/plugin-graphiql@0.3.0
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/version-bridge@1.0.7
+  - @backstage/core-app-api@1.11.1
+  - @backstage/theme@0.4.4
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.3.0-next.2
+
+### Patch Changes
+
+- [#20999](https://github.com/backstage/backstage/pull/20999) [`fdc348d5d3`](https://github.com/backstage/backstage/commit/fdc348d5d30a98b52d8a756daba29d616418da93) Thanks [@Rugvip](https://github.com/Rugvip)! - The options parameter of `createApp` is now optional.
+
+- [#20888](https://github.com/backstage/backstage/pull/20888) [`733bd95746`](https://github.com/backstage/backstage/commit/733bd95746b99ad8cdb4a7b87e8dc3e16d3b764a) Thanks [@Rugvip](https://github.com/Rugvip)! - Implement new `AppTreeApi`
+
+- [#20999](https://github.com/backstage/backstage/pull/20999) [`fa28d4e6df`](https://github.com/backstage/backstage/commit/fa28d4e6dfcbee2bc8695b7b24289a401df96acd) Thanks [@Rugvip](https://github.com/Rugvip)! - No longer throw error on invalid input if the child is disabled.
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/frontend-plugin-api@0.3.0-next.2
+  - @backstage/plugin-graphiql@0.3.0-next.2
+
+## 0.3.0-next.1
+
+### Patch Changes
+
+- fe6d09953d: Fix for app node output IDs not being serialized correctly.
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- 4d6fa921db: Internal refactor to rename the app graph to app tree
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.3.0-next.1
+  - @backstage/plugin-graphiql@0.3.0-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/core-app-api@1.11.1-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7-next.0
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 68fc9dc60e: Added the ability to configure bound routes through `app.routes.bindings`. The routing system used by `createApp` has been replaced by one that only supports route refs of the new format from `@backstage/frontend-plugin-api`. The requirement for route refs to have the same ID as their associated extension has been removed.
+
+### Patch Changes
+
+- e28d379e32: Refactor internal extension instance system into an app graph.
+- 6c2b872153: Add official support for React 18.
+- dc613f9bcf: Updated `app.extensions` configuration schema.
+- 685a4c8901: Installed features are now deduplicated both by reference and ID when available. Features passed to `createApp` now override both discovered and loaded features.
+- bb98953cb9: Register default implementation for the `Translation API` on the new `createApp`.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/frontend-plugin-api@0.3.0-next.0
+  - @backstage/plugin-graphiql@0.3.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/core-app-api@1.11.1-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
 ## 0.2.0
 
 ### Minor Changes

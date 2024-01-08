@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
+import React, { lazy } from 'react';
 
 import { ListItemProps } from '@material-ui/core';
 
@@ -25,7 +25,6 @@ import {
   createExtensionDataRef,
   createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
-import { Progress } from '@backstage/core-components';
 import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
 
 import { SearchResultListItemExtension } from './extensions';
@@ -49,19 +48,17 @@ export type SearchResultItemExtensionPredicate = (
 ) => boolean;
 
 /** @alpha */
-export const searchResultItemExtensionData = createExtensionDataRef<{
-  predicate?: SearchResultItemExtensionPredicate;
-  component: SearchResultItemExtensionComponent;
-}>('plugin.search.result.item.data');
-
-/** @alpha */
 export type SearchResultItemExtensionOptions<
   TConfig extends { noTrack?: boolean },
 > = {
   /**
-   * The extension id.
+   * The extension namespace.
    */
-  id: string;
+  namespace?: string;
+  /**
+   * The extension name.
+   */
+  name?: string;
   /**
    * The extension attachment point (e.g., search modal or page).
    */
@@ -95,38 +92,50 @@ export function createSearchResultListItemExtension<
             noTrack: z.boolean().default(false),
           }),
         ) as PortableSchema<TConfig>);
+
   return createExtension({
-    id: `plugin.search.result.item.${options.id}`,
-    attachTo: options.attachTo ?? { id: 'plugin.search.page', input: 'items' },
+    kind: 'search-result-list-item',
+    namespace: options.namespace,
+    name: options.name,
+    attachTo: options.attachTo ?? {
+      id: 'page:search',
+      input: 'items',
+    },
     configSchema,
     output: {
-      item: searchResultItemExtensionData,
+      item: createSearchResultListItemExtension.itemDataRef,
     },
-    factory({ bind, config, source }) {
-      const LazyComponent = lazy(() =>
+    factory({ config, node }) {
+      const ExtensionComponent = lazy(() =>
         options
           .component({ config })
           .then(component => ({ default: component })),
       ) as unknown as SearchResultItemExtensionComponent;
 
-      bind({
+      return {
         item: {
           predicate: options.predicate,
           component: props => (
-            <ExtensionBoundary source={source}>
-              <Suspense fallback={<Progress />}>
-                <SearchResultListItemExtension
-                  rank={props.rank}
-                  result={props.result}
-                  noTrack={config.noTrack}
-                >
-                  <LazyComponent {...props} />
-                </SearchResultListItemExtension>
-              </Suspense>
+            <ExtensionBoundary node={node}>
+              <SearchResultListItemExtension
+                rank={props.rank}
+                result={props.result}
+                noTrack={config.noTrack}
+              >
+                <ExtensionComponent {...props} />
+              </SearchResultListItemExtension>
             </ExtensionBoundary>
           ),
         },
-      });
+      };
     },
   });
+}
+
+/** @alpha */
+export namespace createSearchResultListItemExtension {
+  export const itemDataRef = createExtensionDataRef<{
+    predicate?: SearchResultItemExtensionPredicate;
+    component: SearchResultItemExtensionComponent;
+  }>('search.search-result-list-item.item');
 }

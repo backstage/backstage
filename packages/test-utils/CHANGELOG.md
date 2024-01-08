@@ -1,5 +1,114 @@
 # @backstage/test-utils
 
+## 1.4.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-app-api@1.11.3-next.0
+  - @backstage/plugin-permission-react@0.4.19-next.1
+  - @backstage/config@1.1.1
+  - @backstage/theme@0.5.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.11
+
+## 1.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.19-next.0
+  - @backstage/config@1.1.1
+  - @backstage/core-app-api@1.11.2
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/theme@0.5.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.11
+
+## 1.4.6
+
+### Patch Changes
+
+- e8f2ace: Deprecated `mockBreakpoint`, as it is now available from `@backstage/core-components/testUtils` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/theme@0.5.0
+  - @backstage/core-app-api@1.11.2
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-permission-react@0.4.18
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.4.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-react@0.4.18-next.1
+
+## 1.4.6-next.1
+
+### Patch Changes
+
+- e8f2acef80: Deprecated `mockBreakpoint`, as it is now available from `@backstage/core-components/testUtils` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/plugin-permission-react@0.4.18-next.1
+  - @backstage/config@1.1.1
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.10
+
+## 1.4.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/core-app-api@1.11.2-next.0
+  - @backstage/plugin-permission-react@0.4.18-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.10
+
+## 1.4.5
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-permission-react@0.4.17
+  - @backstage/core-app-api@1.11.1
+  - @backstage/theme@0.4.4
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.4.5-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/plugin-permission-react@0.4.17-next.0
+  - @backstage/core-app-api@1.11.1-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
 ## 1.4.4
 
 ### Patch Changes

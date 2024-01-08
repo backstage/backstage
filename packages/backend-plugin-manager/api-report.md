@@ -66,6 +66,44 @@ export interface BaseDynamicPlugin {
 export type DynamicPlugin = FrontendDynamicPlugin | BackendDynamicPlugin;
 
 // @public (undocumented)
+export class DynamicPluginManager implements DynamicPluginProvider {
+  // (undocumented)
+  addBackendPlugin(plugin: BackendDynamicPlugin): void;
+  // (undocumented)
+  get availablePackages(): ScannedPluginPackage[];
+  // (undocumented)
+  backendPlugins(): BackendDynamicPlugin[];
+  // (undocumented)
+  static create(
+    options: DynamicPluginManagerOptions,
+  ): Promise<DynamicPluginManager>;
+  // (undocumented)
+  frontendPlugins(): FrontendDynamicPlugin[];
+  // (undocumented)
+  plugins(): DynamicPlugin[];
+}
+
+// @public (undocumented)
+export interface DynamicPluginManagerOptions {
+  // (undocumented)
+  config: Config;
+  // (undocumented)
+  logger: LoggerService;
+  // (undocumented)
+  moduleLoader?: ModuleLoader;
+  // (undocumented)
+  preferAlpha?: boolean;
+}
+
+// @public (undocumented)
+export interface DynamicPluginProvider
+  extends FrontendPluginProvider,
+    BackendPluginProvider {
+  // (undocumented)
+  plugins(): DynamicPlugin[];
+}
+
+// @public (undocumented)
 export interface DynamicPluginsFactoryOptions {
   // (undocumented)
   moduleLoader?(logger: LoggerService): ModuleLoader;
@@ -80,11 +118,11 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory: () => ServiceFactory<
 // @public (undocumented)
 export const dynamicPluginsServiceFactory: (
   options?: DynamicPluginsFactoryOptions | undefined,
-) => ServiceFactory<BackendPluginProvider, 'root'>;
+) => ServiceFactory<DynamicPluginProvider, 'root'>;
 
 // @public (undocumented)
 export const dynamicPluginsServiceRef: ServiceRef<
-  BackendPluginProvider,
+  DynamicPluginProvider,
   'root'
 >;
 
@@ -92,6 +130,12 @@ export const dynamicPluginsServiceRef: ServiceRef<
 export interface FrontendDynamicPlugin extends BaseDynamicPlugin {
   // (undocumented)
   platform: 'web';
+}
+
+// @public (undocumented)
+export interface FrontendPluginProvider {
+  // (undocumented)
+  frontendPlugins(): FrontendDynamicPlugin[];
 }
 
 // @public (undocumented)
@@ -159,25 +203,6 @@ export interface NewBackendPluginInstaller {
   install(): BackendFeature | BackendFeature[];
   // (undocumented)
   kind: 'new';
-}
-
-// @public (undocumented)
-export class PluginManager implements BackendPluginProvider {
-  // (undocumented)
-  addBackendPlugin(plugin: BackendDynamicPlugin): void;
-  // (undocumented)
-  get availablePackages(): ScannedPluginPackage[];
-  // (undocumented)
-  backendPlugins(): BackendDynamicPlugin[];
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    logger: LoggerService,
-    preferAlpha?: boolean,
-    mooduleLoader?: ModuleLoader,
-  ): Promise<PluginManager>;
-  // (undocumented)
-  readonly plugins: DynamicPlugin[];
 }
 
 // @public (undocumented)

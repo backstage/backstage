@@ -123,7 +123,6 @@ describe('KubernetesProxy', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
     authStrategy = {
       getCredential: jest
         .fn<

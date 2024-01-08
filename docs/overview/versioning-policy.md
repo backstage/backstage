@@ -158,7 +158,7 @@ package export.
 
 The Backstage project uses [Node.js](https://nodejs.org/) for both its development
 tooling and backend runtime. In order for expectations to be clear we use the
-following schedule for determining the [Node.js releases](https://nodejs.org/en/about/releases/) that we support:
+following schedule for determining the [Node.js releases](https://nodejs.org/en/about/previous-releases) that we support:
 
 - At any given point in time we support exactly two adjacent even-numbered
   releases of Node.js, for example v12 and v14.
@@ -182,3 +182,11 @@ The TypeScript release cadence is roughly every three months. An important aspec
 Our policy is to support the last 3 TypeScript versions, for example 4.8, 4.9, and 5.0. Converted to time, this means that we typically support the TypeScript version from the last six to nine months, depending on where in the TypeScript release window we are. This policy applies as a snapshot at the time of any given Backstage release, new TypeScript releases only apply to the following Backstage main-line release, not to the current one.
 
 For anyone maintaining their own Backstage project, this means that you should strive to bump to the latest TypeScript version at least every 6 months, or you may encounter breakages as you upgrade Backstage packages. If you encounter any issues in doing so, please [file an issue in the main Backstage repository](https://github.com/backstage/backstage/issues/new/choose), as per this policy we should always support the latest version. In order to ensure that we do not start using new TypeScript features too early, the Backstage project itself uses the version at the beginning of the currently supported window, in the above example that would be version 4.8.
+
+## PostgreSQL Releases
+
+The Backstage project recommends and supports using PostgreSQL for persistent storage.
+
+The PostgreSQL [versioning policy](https://www.postgresql.org/support/versioning/) is to release a new major version every year with new features which is then supported for 5 years after its initial release.
+
+Our policy mirrors the PostgreSQL versioning policy - we will support the last 5 major versions. We will also test the newest and oldest versions in that range. For example, if the range we support is currently 12 to 16, then we would only test 12 and 16 explicitly.
