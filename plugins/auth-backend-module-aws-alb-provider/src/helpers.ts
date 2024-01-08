@@ -82,7 +82,7 @@ export const provisionKeyCache = (region: string, keyCache: NodeCache) => {
       )}.amazonaws.com/${encodeURIComponent(header.kid)}`,
     ).then(response => response.text());
     const keyValue = crypto.createPublicKey(keyText);
-    keyCache.set(header.kid, keyValue.export());
+    keyCache.set(header.kid, keyValue.export({ format: 'pem', type: 'spki' }));
     return keyValue;
   };
 };

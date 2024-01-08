@@ -33,7 +33,7 @@ export const authModuleAwsAlbProvider = createBackendModule({
       },
       async init({ providers }) {
         providers.registerProvider({
-          providerId: 'awsAlb',
+          providerId: 'awsalb',
           factory: createProxyAuthProviderFactory({
             authenticator: awsAlbAuthenticator,
             signInResolverFactories: {
