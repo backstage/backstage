@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-exports.up = async function (knex) {
+exports.up = async function up(knex) {
   await knex.schema.createTable('relations_search', table => {
     table.comment(
       'Flattened key-values from the relations, used for quick filtering',
@@ -64,7 +64,7 @@ exports.up = async function (knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = async function (knex) {
+exports.down = async function down(knex) {
   await knex.schema.alterTable('relations_search', table => {
     table.dropIndex([], 'relations_search_source_entity_ref_idx');
     table.dropIndex([], 'relations_search_target_entity_ref_idx');
