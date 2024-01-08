@@ -46,7 +46,7 @@ By default this implementation comes with an in-memory storage to store checks. 
 
 ```
 
-## Adding checks
+## Adding checks in code
 
 Checks for this FactChecker are constructed as [`json-rules-engine` compatible JSON rules](https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#conditions). A check could look like the following for example:
 
@@ -84,6 +84,28 @@ export const exampleCheck: TechInsightJsonRuleCheck = {
     link: 'https://sonar.mysonarqube.com/increasing-number-value',
   },
 };
+```
+
+## Adding checks in config
+
+Example:
+
+```yaml title="app-config.yaml"
+techInsights:
+  factChecker:
+    checks:
+      groupOwnerCheck:
+        type: json-rules-engine
+        name: Group Owner Check
+        description: Verifies that a group has been set as the spec.owner for this entity
+        factIds:
+          - entityOwnershipFactRetriever
+        rule:
+          conditions:
+            all:
+              - fact: hasGroupOwner
+                operator: equal
+                value: true
 ```
 
 ### More than one `factIds` for a check.

@@ -6,6 +6,7 @@
 import { BooleanCheckResult } from '@backstage/plugin-tech-insights-common';
 import { CheckResponse } from '@backstage/plugin-tech-insights-common';
 import { CheckValidationResponse } from '@backstage/plugin-tech-insights-node';
+import { Config } from '@backstage/config';
 import { FactChecker } from '@backstage/plugin-tech-insights-node';
 import { Logger } from 'winston';
 import { Operator } from 'json-rules-engine';
@@ -63,6 +64,11 @@ export class JsonRulesEngineFactCheckerFactory {
   constructor(options: JsonRulesEngineFactCheckerFactoryOptions);
   // (undocumented)
   construct(repository: TechInsightsStore): JsonRulesEngineFactChecker;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: Omit<JsonRulesEngineFactCheckerFactoryOptions, 'checks'>,
+  ): JsonRulesEngineFactCheckerFactory;
 }
 
 // @public
