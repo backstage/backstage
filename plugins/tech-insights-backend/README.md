@@ -15,6 +15,31 @@ yarn add --cwd packages/backend @backstage/plugin-tech-insights-backend
 
 ### Adding the plugin to your `packages/backend`
 
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-tech-insights-backend'));
+```
+
+You can use the extension points [@backstage/plugin-tech-insights-node](../tech-insights-node)
+to add your `FactRetriever` or set a `FactCheckerFactory`.
+
+The built-in `FactRetrievers`:
+
+- `entityMetadataFactRetriever`
+- `entityOwnershipFactRetriever`
+- `techdocsFactRetriever`
+
+`FactRetrievers` only get registered if they get configured:
+
+```yaml title="app-config.yaml"
+techInsights:
+  factRetrievers:
+    entityOwnershipFactRetriever:
+      cadence: '*/15 * * * *'
+      lifecycle: { timeToLive: { weeks: 2 } }
+```
+
+### Adding the plugin to your `packages/backend` (old)
+
 You'll need to add the plugin to the router in your `backend` package. You can
 do this by creating a file called `packages/backend/src/plugins/techInsights.ts`. An example content for `techInsights.ts` could be something like this.
 

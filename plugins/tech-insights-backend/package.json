@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
@@ -63,7 +64,9 @@
     "wait-for-expect": "^3.0.2"
   },
   "files": [
+    "config.d.ts",
     "dist",
     "migrations/**/*.{js,d.ts}"
-  ]
+  ],
+  "configSchema": "config.d.ts"
 }

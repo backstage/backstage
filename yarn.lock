@@ -9089,9 +9089,11 @@ __metadata:
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-tech-insights-common": "workspace:^"
     "@backstage/plugin-tech-insights-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     ajv: ^8.10.0
     json-rules-engine: ^6.1.2
     lodash: ^4.17.21
@@ -9105,6 +9107,7 @@ __metadata:
   resolution: "@backstage/plugin-tech-insights-backend@workspace:plugins/tech-insights-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
@@ -9149,6 +9152,7 @@ __metadata:
   resolution: "@backstage/plugin-tech-insights-node@workspace:plugins/tech-insights-node"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-tech-insights-common": "workspace:^"
