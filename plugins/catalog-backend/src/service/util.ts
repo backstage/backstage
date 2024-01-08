@@ -106,6 +106,12 @@ export const cursorParser: z.ZodSchema<Cursor> = z.object({
   orderFields: z.array(
     z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
   ),
+  fullTextFilter: z
+    .object({
+      term: z.string(),
+      fields: z.array(z.string()).optional(),
+    })
+    .optional(),
   orderFieldValues: z.array(z.string().or(z.null())),
   filter: entityFilterParser.optional(),
   isPrevious: z.boolean(),

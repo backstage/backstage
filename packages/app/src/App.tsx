@@ -177,7 +177,10 @@ const routes = (
     <Route path="/home" element={<HomepageCompositionRoot />}>
       {homePage}
     </Route>
-    <Route path="/catalog" element={<CatalogIndexPage />} />
+    <Route
+      path="/catalog"
+      element={<CatalogIndexPage pagination={{ limit: 3 }} />}
+    />
     <Route
       path="/catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}
