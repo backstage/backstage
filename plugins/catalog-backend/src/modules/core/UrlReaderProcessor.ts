@@ -124,7 +124,9 @@ export class UrlReaderProcessor implements CatalogProcessor {
   ): Promise<{ response: { data: Buffer; url: string }[]; etag?: string }> {
     // Does it contain globs? I.e. does it contain asterisks or question marks
     // (no curly braces for now)
-    const getUrlReaderGCs = location.includes('storage.cloud.google.com');
+    const getUrlReaderGCs = location.includes(
+      'https://storage.cloud.google.com',
+    );
     if (getUrlReaderGCs) {
       const limiter = limiterFactory(50);
       const getGoogleCloudStorage = await this.options.reader.search(location);
