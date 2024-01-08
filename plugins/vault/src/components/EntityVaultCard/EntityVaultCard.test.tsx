@@ -16,9 +16,12 @@
 
 import React from 'react';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  setupRequestMockHandlers,
+} from '@backstage/test-utils';
 import { ComponentEntity } from '@backstage/catalog-model';
-import { render, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { EntityVaultCard } from './EntityVaultCard';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 
@@ -40,7 +43,7 @@ describe('EntityVaultCard', () => {
   };
 
   it('should render missing entity annotation', async () => {
-    const rendered = render(
+    const rendered = await renderInTestApp(
       <EntityProvider entity={entityAnnotationMissing}>
         <EntityVaultCard />
       </EntityProvider>,

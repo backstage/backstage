@@ -22,6 +22,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import React, { useEffect } from 'react';
 import { IIdleTimer } from 'react-idle-timer';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export interface StillTherePromptProps {
   idleTimer: IIdleTimer;
@@ -41,6 +43,7 @@ export const StillTherePrompt = (props: StillTherePromptProps) => {
     remainingTime,
     setRemainingTime,
   } = props;
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -61,18 +64,18 @@ export const StillTherePrompt = (props: StillTherePromptProps) => {
     remainingTime - promptTimeoutMillis / 1000,
     0,
   );
-  const seconds = timeTillPrompt > 1 ? 'seconds' : 'second';
 
   return (
     <Dialog open={open} data-testid="inactivity-prompt-dialog">
-      <DialogTitle>Logging out due to inactivity</DialogTitle>
+      <DialogTitle>{t('autoLogout.stillTherePrompt.title')}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          You are about to be disconnected in{' '}
+          {t('autoLogout.stillTherePrompt.description')}{' '}
           <b>
-            {Math.ceil(remainingTime / 1000)} {seconds}
+            {Math.ceil(remainingTime / 1000)}{' '}
+            {t('autoLogout.stillTherePrompt.second', { count: timeTillPrompt })}
           </b>
-          . Are you still there?
+          . {t('autoLogout.stillTherePrompt.descriptionSuffix')}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -82,7 +85,7 @@ export const StillTherePrompt = (props: StillTherePromptProps) => {
           variant="contained"
           size="small"
         >
-          Yes! Don't log me out
+          {t('autoLogout.stillTherePrompt.buttonText')}
         </Button>
       </DialogActions>
     </Dialog>
