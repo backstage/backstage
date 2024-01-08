@@ -34,9 +34,11 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-tech-insights-common": "workspace:^",
     "@backstage/plugin-tech-insights-node": "workspace:^",
+    "@backstage/types": "workspace:^",
     "ajv": "^8.10.0",
     "json-rules-engine": "^6.1.2",
     "lodash": "^4.17.21",
@@ -47,6 +49,8 @@
     "@backstage/cli": "workspace:^"
   },
   "files": [
+    "config.json",
     "dist"
-  ]
+  ],
+  "configSchema": "config.json"
 }
