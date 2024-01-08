@@ -32,6 +32,14 @@ import { Route, Routes } from 'react-router-dom';
 import { collectLegacyRoutes } from './collectLegacyRoutes';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalBackstagePlugin } from '../../frontend-plugin-api/src/wiring/createPlugin';
+import {
+  createPlugin,
+  createRoutableExtension,
+  createRouteRef,
+  useApp,
+} from '@backstage/core-plugin-api';
+import { createSpecializedApp } from '@backstage/frontend-app-api';
+import { render, screen } from '@testing-library/react';
 
 describe('collectLegacyRoutes', () => {
   it('should collect legacy routes', () => {
@@ -240,5 +248,35 @@ describe('collectLegacyRoutes', () => {
         ],
       },
     ]);
+  });
+
+  it('should make legacy APIs available', async () => {
+    const plugin = createPlugin({
+      id: 'test',
+    });
+    const routeRef = createRouteRef({ id: 'test' });
+    const Page = plugin.provide(
+      createRoutableExtension({
+        name: 'Test',
+        mountPoint: routeRef,
+        component: () =>
+          Promise.resolve(() => {
+            const app = useApp();
+            return <div>plugins: {app.getPlugins().map(p => p.getId())}</div>;
+          }),
+      }),
+    );
+
+    const features = collectLegacyRoutes(
+      <FlatRoutes>
+        <Route path="/" element={<Page />} />
+      </FlatRoutes>,
+    );
+
+    render(createSpecializedApp({ features }).createRoot());
+
+    await expect(
+      screen.findByText('plugins: test'),
+    ).resolves.toBeInTheDocument();
   });
 });
