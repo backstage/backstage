@@ -13,7 +13,17 @@ To add this FactChecker into your Tech Insights you need to install the module i
 yarn add --cwd packages/backend @backstage/plugin-tech-insights-backend-module-jsonfc
 ```
 
-and modify the `techInsights.ts` file to contain a reference to the FactCheckers implementation.
+### Add to the backend
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-tech-insights-backend-module-jsonfc'));
+```
+
+This setup requires checks to be provided using the config.
+
+### Add to the backend (old)
+
+Modify the `techInsights.ts` file to contain a reference to the FactCheckers implementation.
 
 ```diff
 +import { JsonRulesEngineFactCheckerFactory } from '@backstage/plugin-tech-insights-backend-module-jsonfc';
@@ -34,7 +44,7 @@ and modify the `techInsights.ts` file to contain a reference to the FactCheckers
  });
 ```
 
-By default this implementation comes with an in-memory storage to store checks. You can inject an additional data store by adding an implementation of `TechInsightCheckRegistry` into the constructor options when creating a `JsonRulesEngineFactCheckerFactory`. That can be done as follows
+By default, this implementation comes with an in-memory storage to store checks. You can inject an additional data store by adding an implementation of `TechInsightCheckRegistry` into the constructor options when creating a `JsonRulesEngineFactCheckerFactory`. That can be done as follows
 
 ```diff
  const myTechInsightCheckRegistry: TechInsightCheckRegistry<MyCheckType> = // snip
