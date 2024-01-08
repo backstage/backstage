@@ -134,9 +134,9 @@
         },
         {
           "type": "object",
-          "required": ["entityRef"],
+          "required": ["targetRef"],
           "properties": {
-            "entityRef": {
+            "targetRef": {
               "type": "string"
             },
             "metadata": {

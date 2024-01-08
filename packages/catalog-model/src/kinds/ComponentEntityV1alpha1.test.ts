@@ -144,7 +144,7 @@ describe('ComponentV1alpha1Validator', () => {
   it('accepts complex providesApis', async () => {
     (entity as ComponentEntityV1alpha1).spec.providesApis = [
       {
-        entityRef: '123',
+        targetRef: '123',
       },
     ];
     await expect(validator.check(entity)).resolves.toBe(true);
@@ -153,7 +153,7 @@ describe('ComponentV1alpha1Validator', () => {
   it('accepts complex providesApis with metadata', async () => {
     (entity as ComponentEntityV1alpha1).spec.providesApis = [
       {
-        entityRef: '123',
+        targetRef: '123',
         metadata: {
           test: '123',
         },
@@ -162,7 +162,7 @@ describe('ComponentV1alpha1Validator', () => {
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 
-  it('rejects complex providesApis without entityRef', async () => {
+  it('rejects complex providesApis without targetRef', async () => {
     (entity as any).spec.providesApis = [
       {
         metadata: {
@@ -194,7 +194,7 @@ describe('ComponentV1alpha1Validator', () => {
   it('accepts complex consumesApis', async () => {
     (entity as ComponentEntityV1alpha1).spec.consumesApis = [
       {
-        entityRef: '123',
+        targetRef: '123',
       },
     ];
     await expect(validator.check(entity)).resolves.toBe(true);
@@ -203,7 +203,7 @@ describe('ComponentV1alpha1Validator', () => {
   it('accepts complex consumesApis with metadata', async () => {
     (entity as ComponentEntityV1alpha1).spec.consumesApis = [
       {
-        entityRef: '123',
+        targetRef: '123',
         metadata: {
           test: '123',
         },
@@ -212,7 +212,7 @@ describe('ComponentV1alpha1Validator', () => {
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 
-  it('rejects complex consumesApis without entityRef', async () => {
+  it('rejects complex consumesApis without targetRef', async () => {
     (entity as any).spec.consumesApis = [
       {
         metadata: {

@@ -138,7 +138,7 @@ export const RELATION_PART_OF = 'partOf';
 export const RELATION_HAS_PART = 'hasPart';
 
 export type ComplexEntityRelationReference = {
-  entityRef: string;
+  targetRef: string;
   metadata?: Record<string, number | boolean | string>;
 };
 

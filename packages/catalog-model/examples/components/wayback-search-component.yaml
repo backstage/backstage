@@ -8,7 +8,7 @@ spec:
   lifecycle: production
   owner: team-a
   providesApis:
-    - entityRef: wayback-search
+    - targetRef: wayback-search
       metadata:
         version: '1'
         apis: '/test,/123'
