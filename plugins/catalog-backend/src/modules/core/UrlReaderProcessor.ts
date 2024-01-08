@@ -124,6 +124,20 @@ export class UrlReaderProcessor implements CatalogProcessor {
   ): Promise<{ response: { data: Buffer; url: string }[]; etag?: string }> {
     // Does it contain globs? I.e. does it contain asterisks or question marks
     // (no curly braces for now)
+    const getUrlReaderGCs = location.includes('storage.cloud.google.com');
+    if (getUrlReaderGCs) {
+      const limiter = limiterFactory(50);
+      const getGoogleCloudStorage = await this.options.reader.search(location);
+      const output = getGoogleCloudStorage.files.map(async file => ({
+        url: file.url,
+        data: await limiter(file.content),
+      }));
+      return {
+        response: await Promise.all(output),
+        etag: getGoogleCloudStorage.etag,
+      };
+    }
+
     const { filepath } = parseGitUrl(location);
     if (filepath?.match(/[*?]/)) {
       const limiter = limiterFactory(5);
