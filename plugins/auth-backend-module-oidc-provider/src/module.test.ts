@@ -15,30 +15,21 @@
  */
 
 import request from 'supertest';
-import {
-  AuthProviderRouteHandlers,
-  createOAuthRouteHandlers,
-  decodeOAuthState,
-} from '@backstage/plugin-auth-node';
+import { decodeOAuthState } from '@backstage/plugin-auth-node';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
 import { Server } from 'http';
-import { AddressInfo } from 'net';
-import express from 'express';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
-import cookieParser from 'cookie-parser';
-import passport from 'passport';
-import session from 'express-session';
-import { oidcAuthenticator } from './authenticator';
-import { ConfigReader } from '@backstage/config';
-import Router from 'express-promise-router';
+import { authModuleOidcProvider } from './module';
 
 describe('authModuleOidcProvider', () => {
-  let app: express.Express;
   let backstageServer: Server;
   let appUrl: string;
-  let providerRouteHandler: AuthProviderRouteHandlers;
   let idToken: string;
   let publicKey: JWK;
 
@@ -142,65 +133,35 @@ describe('authModuleOidcProvider', () => {
       ),
     );
 
-    const secret = 'secret';
-    app = express()
-      .use(cookieParser(secret))
-      .use(
-        session({
-          secret,
-          saveUninitialized: false,
-          resave: false,
-          cookie: { secure: false },
-        }),
-      )
-      .use(passport.initialize())
-      .use(passport.session());
-    await new Promise(resolve => {
-      backstageServer = app.listen(0, '0.0.0.0', () => {
-        appUrl = `http://127.0.0.1:${
-          (backstageServer.address() as AddressInfo).port
-        }`;
-        resolve(null);
-      });
-    });
-
-    mswServer.use(rest.all(`${appUrl}/*`, req => req.passthrough()));
-
-    providerRouteHandler = createOAuthRouteHandlers({
-      authenticator: oidcAuthenticator,
-      appUrl,
-      baseUrl: `${appUrl}/api/auth`,
-      isOriginAllowed: _ => true,
-      providerId: 'oidc',
-      config: new ConfigReader({
-        metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
-        clientId: 'clientId',
-        clientSecret: 'clientSecret',
-      }),
-      resolverContext: {
-        issueToken: async _ => ({ token: '' }),
-        findCatalogUser: async _ => ({
-          entity: {
-            apiVersion: '',
-            kind: '',
-            metadata: { name: '' },
+    const backend = await startTestBackend({
+      features: [
+        authModuleOidcProvider,
+        import('@backstage/plugin-auth-backend'),
+        mockServices.rootConfig.factory({
+          data: {
+            app: { baseUrl: 'http://localhost' },
+            auth: {
+              session: { secret: 'test' },
+              providers: {
+                oidc: {
+                  development: {
+                    metadataUrl:
+                      'https://oidc.test/.well-known/openid-configuration',
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                  },
+                },
+              },
+            },
           },
         }),
-        signInWithCatalogUser: async _ => ({ token: '' }),
-      },
+      ],
     });
 
-    const router = Router();
-    router
-      .use(
-        '/api/auth/oidc/start',
-        providerRouteHandler.start.bind(providerRouteHandler),
-      )
-      .use(
-        '/api/auth/oidc/handler/frame',
-        providerRouteHandler.frameHandler.bind(providerRouteHandler),
-      );
-    app.use(router);
+    backstageServer = backend.server;
+    const port = backend.server.port();
+    appUrl = `http://localhost:${port}`;
+    mswServer.use(rest.all(`http://*:${port}/*`, req => req.passthrough()));
   });
 
   afterEach(() => {
@@ -216,7 +177,7 @@ describe('authModuleOidcProvider', () => {
     expect(startResponse.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('oidc-nonce', {
-      domain: '127.0.0.1',
+      domain: 'localhost',
       path: '/api/auth/oidc/handler',
       script: false,
       secure: false,
