@@ -33,6 +33,7 @@ import {
 import React, { Children, ReactNode, isValidElement } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { convertLegacyRouteRef } from './convertLegacyRouteRef';
+import { compatWrapper } from './compatWrapper';
 
 /*
 
@@ -207,14 +208,16 @@ export function collectLegacyRoutes(
             }),
           },
           loader: async () =>
-            route.props.children ? (
-              <Routes>
-                <Route path="*" element={routeElement}>
-                  <Route path="*" element={route.props.children} />
-                </Route>
-              </Routes>
-            ) : (
-              routeElement
+            compatWrapper(
+              route.props.children ? (
+                <Routes>
+                  <Route path="*" element={routeElement}>
+                    <Route path="*" element={route.props.children} />
+                  </Route>
+                </Routes>
+              ) : (
+                routeElement
+              ),
             ),
         }),
       );
