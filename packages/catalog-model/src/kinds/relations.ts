@@ -137,9 +137,20 @@ export const RELATION_PART_OF = 'partOf';
  */
 export const RELATION_HAS_PART = 'hasPart';
 
+/**
+ * A way of defining relations that has supports defining metadata on the relation.
+ *
+ * @public
+ */
 export type ComplexEntityRelationReference = {
   targetRef: string;
   metadata?: Record<string, number | boolean | string>;
 };
 
+/**
+ * The way relations are defined in `yaml`. Currently, only used by relations that require
+ *  metadata on relation support.
+ *
+ * @public
+ */
 export type RelationReference = string | ComplexEntityRelationReference;

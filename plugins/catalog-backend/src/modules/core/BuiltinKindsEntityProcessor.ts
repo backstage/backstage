@@ -96,7 +96,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
       relation: RelationReference,
     ): ComplexEntityRelationReference {
       if (typeof relation === 'string') {
-        return { entityRef: relation };
+        return { targetRef: relation };
       }
       return relation;
     }
@@ -122,7 +122,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         ? parseRelationArray(targets)
         : parseRelation(targets);
       for (const target of [convertedTargets].flat()) {
-        const targetRef = parseEntityRef(target.entityRef, context);
+        const targetRef = parseEntityRef(target.targetRef, context);
         emit(
           processingResult.relation({
             source: selfRef,

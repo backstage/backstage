@@ -8,6 +8,7 @@
 import { AnalyzeLocationExistingEntity } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { JsonPrimitive } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
@@ -163,6 +164,7 @@ export type EntityProviderRefreshOptions = {
 export type EntityRelationSpec = {
   source: CompoundEntityRef;
   type: string;
+  metadata?: Record<string, JsonPrimitive>;
   target: CompoundEntityRef;
 };
 

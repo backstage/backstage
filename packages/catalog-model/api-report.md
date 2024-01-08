@@ -4,6 +4,7 @@
 
 ```ts
 import { JsonObject } from '@backstage/types';
+import { JsonPrimitive } from '@backstage/types';
 
 // @public
 export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';
@@ -73,6 +74,12 @@ export class CommonValidatorFunctions {
 }
 
 // @public
+export type ComplexEntityRelationReference = {
+  targetRef: string;
+  metadata?: Record<string, number | boolean | string>;
+};
+
+// @public
 interface ComponentEntityV1alpha1 extends Entity {
   // (undocumented)
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
@@ -84,8 +91,8 @@ interface ComponentEntityV1alpha1 extends Entity {
     lifecycle: string;
     owner: string;
     subcomponentOf?: string;
-    providesApis?: string[];
-    consumesApis?: string[];
+    providesApis?: RelationReference[];
+    consumesApis?: RelationReference[];
     dependsOn?: string[];
     system?: string;
   };
@@ -196,6 +203,7 @@ export type EntityPolicy = {
 export type EntityRelation = {
   type: string;
   targetRef: string;
+  metadata?: Record<string, JsonPrimitive>;
 };
 
 // @public
@@ -398,6 +406,9 @@ export const RELATION_PART_OF = 'partOf';
 
 // @public
 export const RELATION_PROVIDES_API = 'providesApi';
+
+// @public
+export type RelationReference = string | ComplexEntityRelationReference;
 
 // @public
 interface ResourceEntityV1alpha1 extends Entity {
