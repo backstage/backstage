@@ -171,6 +171,7 @@ export type DbRelationsRow = {
   source_entity_ref: string;
   target_entity_ref: string;
   type: string;
+  metadata?: string;
 };
 
 export type DbFinalEntitiesRow = {

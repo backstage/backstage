@@ -16,6 +16,7 @@
 
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Component.v1alpha1.schema.json';
+import { RelationReference } from './relations';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
 /**
@@ -35,8 +36,8 @@ export interface ComponentEntityV1alpha1 extends Entity {
     lifecycle: string;
     owner: string;
     subcomponentOf?: string;
-    providesApis?: string[];
-    consumesApis?: string[];
+    providesApis?: RelationReference[];
+    consumesApis?: RelationReference[];
     dependsOn?: string[];
     system?: string;
   };

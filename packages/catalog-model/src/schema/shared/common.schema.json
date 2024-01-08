@@ -124,6 +124,43 @@
           "description": "An error stack trace"
         }
       }
+    },
+    "complexEntityRelation": {
+      "$id": "#complexEntityRelation",
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "object",
+          "required": ["entityRef"],
+          "properties": {
+            "entityRef": {
+              "type": "string"
+            },
+            "metadata": {
+              "type": "object",
+              "additionalProperties": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

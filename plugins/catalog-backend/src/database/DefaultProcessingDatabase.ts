@@ -130,11 +130,12 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     // Batch insert new relations
     const relationRows: DbRelationsRow[] = relations.map(
-      ({ source, target, type }) => ({
+      ({ source, target, type, metadata }) => ({
         originating_entity_id: id,
         source_entity_ref: stringifyEntityRef(source),
         target_entity_ref: stringifyEntityRef(target),
         type,
+        metadata: metadata ? JSON.stringify(metadata) : undefined,
       }),
     );
 

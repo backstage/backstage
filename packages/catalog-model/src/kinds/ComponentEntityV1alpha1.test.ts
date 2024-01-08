@@ -141,9 +141,99 @@ describe('ComponentV1alpha1Validator', () => {
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 
+  it('accepts complex providesApis', async () => {
+    (entity as ComponentEntityV1alpha1).spec.providesApis = [
+      {
+        entityRef: '123',
+      },
+    ];
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts complex providesApis with metadata', async () => {
+    (entity as ComponentEntityV1alpha1).spec.providesApis = [
+      {
+        entityRef: '123',
+        metadata: {
+          test: '123',
+        },
+      },
+    ];
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects complex providesApis without entityRef', async () => {
+    (entity as any).spec.providesApis = [
+      {
+        metadata: {
+          test: '123',
+        },
+      },
+    ];
+    await expect(validator.check(entity)).rejects.toThrow(/providesApis/);
+  });
+
+  it('rejects complex providesApis with invalid metadata', async () => {
+    (entity as any).spec.providesApis = [
+      {
+        metadata: {
+          test: {
+            myNestedValue: true,
+          },
+        },
+      },
+    ];
+    await expect(validator.check(entity)).rejects.toThrow(/providesApis/);
+  });
+
   it('accepts missing consumesApis', async () => {
     delete (entity as any).spec.consumesApis;
     await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts complex consumesApis', async () => {
+    (entity as ComponentEntityV1alpha1).spec.consumesApis = [
+      {
+        entityRef: '123',
+      },
+    ];
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts complex consumesApis with metadata', async () => {
+    (entity as ComponentEntityV1alpha1).spec.consumesApis = [
+      {
+        entityRef: '123',
+        metadata: {
+          test: '123',
+        },
+      },
+    ];
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects complex consumesApis without entityRef', async () => {
+    (entity as any).spec.consumesApis = [
+      {
+        metadata: {
+          test: '123',
+        },
+      },
+    ];
+    await expect(validator.check(entity)).rejects.toThrow(/consumesApis/);
+  });
+
+  it('rejects complex consumesApis with invalid metadata', async () => {
+    (entity as any).spec.consumesApis = [
+      {
+        metadata: {
+          test: {
+            myNestedValue: true,
+          },
+        },
+      },
+    ];
+    await expect(validator.check(entity)).rejects.toThrow(/consumesApis/);
   });
 
   it('rejects empty consumesApis', async () => {

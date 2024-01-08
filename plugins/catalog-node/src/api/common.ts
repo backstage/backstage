@@ -16,6 +16,7 @@
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { LocationSpec as NonDeprecatedLocationSpec } from '@backstage/plugin-catalog-common';
+import { JsonPrimitive } from '@backstage/types';
 
 /**
  * Holds the entity location information.
@@ -46,6 +47,11 @@ export type EntityRelationSpec = {
    * The type of the relation.
    */
   type: string;
+
+  /**
+   * Metadata to attach to this relation.
+   */
+  metadata?: Record<string, JsonPrimitive>;
 
   /**
    * The target entity of this relation.

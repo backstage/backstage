@@ -104,6 +104,7 @@ export async function performStitching(options: {
         relationType: 'type',
         relationTarget: 'target_entity_ref',
       })
+      .select('metadata')
       .from('relations')
       .where({ source_entity_ref: entityRef })
       .orderBy('relationType', 'asc')
@@ -180,6 +181,7 @@ export async function performStitching(options: {
     .map<EntityRelation>(row => ({
       type: row.relationType!,
       targetRef: row.relationTarget!,
+      metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
     }));
   if (statusItems.length) {
     entity.status = {

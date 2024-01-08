@@ -81,6 +81,14 @@ describe('performStitching', () => {
           type: 'looksAt',
           target_entity_ref: 'k:ns/other',
         },
+        // handles metadata on relations.
+        {
+          originating_entity_id: 'my-id',
+          source_entity_ref: 'k:ns/n',
+          type: 'looksAt',
+          target_entity_ref: 'k:ns/other2',
+          metadata: JSON.stringify({ version: '1' }),
+        },
       ]);
 
       await performStitching({
@@ -103,6 +111,13 @@ describe('performStitching', () => {
           {
             type: 'looksAt',
             targetRef: 'k:ns/other',
+          },
+          {
+            type: 'looksAt',
+            targetRef: 'k:ns/other2',
+            metadata: {
+              version: '1',
+            },
           },
         ],
         apiVersion: 'a',

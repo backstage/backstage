@@ -136,3 +136,10 @@ export const RELATION_PART_OF = 'partOf';
  * @public
  */
 export const RELATION_HAS_PART = 'hasPart';
+
+export type ComplexEntityRelationReference = {
+  entityRef: string;
+  metadata?: Record<string, number | boolean | string>;
+};
+
+export type RelationReference = string | ComplexEntityRelationReference;

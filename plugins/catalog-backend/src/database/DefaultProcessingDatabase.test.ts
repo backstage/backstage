@@ -243,6 +243,7 @@ describe('DefaultProcessingDatabase', () => {
           source_entity_ref: 'component:default/foo',
           type: 'memberOf',
           target_entity_ref: 'component:default/foo',
+          metadata: null,
         });
         expect(updateResult.previous.relations).toEqual([]);
 
@@ -266,9 +267,102 @@ describe('DefaultProcessingDatabase', () => {
           source_entity_ref: 'component:default/foo',
           type: 'memberOf',
           target_entity_ref: 'component:default/foo',
+          metadata: null,
         });
         expect(updateResult.previous.relations).toEqual([
           {
+            metadata: null,
+            originating_entity_id: expect.any(String),
+            source_entity_ref: 'component:default/foo',
+            type: 'memberOf',
+            target_entity_ref: 'component:default/foo',
+          },
+        ]);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'stores metadata on relations if present, %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+        await insertRefreshStateRow(knex, {
+          entity_id: id,
+          entity_ref: 'location:default/fakelocation',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        const relations = [
+          {
+            source: {
+              kind: 'Component',
+              namespace: 'Default',
+              name: 'foo',
+            },
+            target: {
+              kind: 'Component',
+              namespace: 'Default',
+              name: 'foo',
+            },
+            type: 'memberOf',
+            metadata: {
+              version: '1',
+            },
+          },
+        ];
+
+        let updateResult = await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id,
+            processedEntity,
+            resultHash: '',
+            relations: relations,
+            deferredEntities: [],
+            refreshKeys: [],
+          }),
+        );
+
+        let savedRelations = await knex<DbRelationsRow>('relations')
+          .where({ originating_entity_id: id })
+          .select();
+        expect(savedRelations.length).toBe(1);
+        expect(savedRelations[0]).toEqual({
+          originating_entity_id: id,
+          source_entity_ref: 'component:default/foo',
+          type: 'memberOf',
+          target_entity_ref: 'component:default/foo',
+          metadata: JSON.stringify({ version: '1' }),
+        });
+        expect(updateResult.previous.relations).toEqual([]);
+
+        updateResult = await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id,
+            processedEntity,
+            resultHash: '',
+            relations: relations,
+            deferredEntities: [],
+            refreshKeys: [],
+          }),
+        );
+
+        savedRelations = await knex<DbRelationsRow>('relations')
+          .where({ originating_entity_id: id })
+          .select();
+        expect(savedRelations.length).toBe(1);
+        expect(savedRelations[0]).toEqual({
+          originating_entity_id: id,
+          source_entity_ref: 'component:default/foo',
+          type: 'memberOf',
+          target_entity_ref: 'component:default/foo',
+          metadata: JSON.stringify({ version: '1' }),
+        });
+        expect(updateResult.previous.relations).toEqual([
+          {
+            metadata: JSON.stringify({ version: '1' }),
             originating_entity_id: expect.any(String),
             source_entity_ref: 'component:default/foo',
             type: 'memberOf',

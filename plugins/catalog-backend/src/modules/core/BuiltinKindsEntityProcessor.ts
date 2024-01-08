@@ -17,6 +17,7 @@
 import {
   ApiEntity,
   apiEntityV1alpha1Validator,
+  ComplexEntityRelationReference,
   ComponentEntity,
   componentEntityV1alpha1Validator,
   DomainEntity,
@@ -41,6 +42,7 @@ import {
   RELATION_PARENT_OF,
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
+  RelationReference,
   ResourceEntity,
   resourceEntityV1alpha1Validator,
   SystemEntity,
@@ -90,12 +92,25 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
   ): Promise<Entity> {
     const selfRef = getCompoundEntityRef(entity);
 
+    function parseRelation(
+      relation: RelationReference,
+    ): ComplexEntityRelationReference {
+      if (typeof relation === 'string') {
+        return { entityRef: relation };
+      }
+      return relation;
+    }
+
+    function parseRelationArray(arr: RelationReference[]) {
+      return arr?.map(parseRelation);
+    }
+
     /*
      * Utilities
      */
 
     function doEmit(
-      targets: string | string[] | undefined,
+      targets: RelationReference | RelationReference[] | undefined,
       context: { defaultKind?: string; defaultNamespace: string },
       outgoingRelation: string,
       incomingRelation: string,
@@ -103,8 +118,11 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
       if (!targets) {
         return;
       }
-      for (const target of [targets].flat()) {
-        const targetRef = parseEntityRef(target, context);
+      const convertedTargets = Array.isArray(targets)
+        ? parseRelationArray(targets)
+        : parseRelation(targets);
+      for (const target of [convertedTargets].flat()) {
+        const targetRef = parseEntityRef(target.entityRef, context);
         emit(
           processingResult.relation({
             source: selfRef,
@@ -114,6 +132,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
               namespace: targetRef.namespace,
               name: targetRef.name,
             },
+            metadata: target.metadata,
           }),
         );
         emit(
@@ -125,6 +144,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
             },
             type: incomingRelation,
             target: selfRef,
+            metadata: target.metadata,
           }),
         );
       }

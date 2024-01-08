@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonPrimitive } from '@backstage/types';
 
 /**
  * The parts of the format that's common to all versions/kinds of entity.
@@ -168,6 +168,8 @@ export type EntityRelation = {
    * The entity ref of the target of this relation.
    */
   targetRef: string;
+
+  metadata?: Record<string, JsonPrimitive>;
 };
 
 /**

@@ -73,16 +73,14 @@
               "type": "array",
               "description": "An array of entity references to the APIs that are provided by the component.",
               "items": {
-                "type": "string",
-                "minLength": 1
+                "$ref": "common#complexEntityRelation"
               }
             },
             "consumesApis": {
               "type": "array",
               "description": "An array of entity references to the APIs that are consumed by the component.",
               "items": {
-                "type": "string",
-                "minLength": 1
+                "$ref": "common#complexEntityRelation"
               }
             },
             "dependsOn": {
