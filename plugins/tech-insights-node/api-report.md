@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import { DateTime } from 'luxon';
 import { Duration } from 'luxon';
 import { DurationLike } from 'luxon';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { FactSchema } from '@backstage/plugin-tech-insights-common';
 import { HumanDuration } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -136,6 +137,29 @@ export type TechInsightFact = {
   >;
   timestamp?: DateTime;
 };
+
+// @public (undocumented)
+export interface TechInsightsFactCheckerFactoryExtensionPoint {
+  // (undocumented)
+  setFactCheckerFactory<
+    CheckType extends TechInsightCheck,
+    CheckResultType extends CheckResult,
+  >(
+    factory: FactCheckerFactory<CheckType, CheckResultType>,
+  ): void;
+}
+
+// @public
+export const techInsightsFactCheckerFactoryExtensionPoint: ExtensionPoint<TechInsightsFactCheckerFactoryExtensionPoint>;
+
+// @public (undocumented)
+export interface TechInsightsFactRetrieversExtensionPoint {
+  // (undocumented)
+  addFactRetrievers(factRetrievers: Record<string, FactRetriever>): void;
+}
+
+// @public
+export const techInsightsFactRetrieversExtensionPoint: ExtensionPoint<TechInsightsFactRetrieversExtensionPoint>;
 
 // @public
 export interface TechInsightsStore {
