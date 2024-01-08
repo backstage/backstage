@@ -3,8 +3,8 @@ title: Backchat Gen AI
 author: benwilcock
 authorUrl: https://github.com/benwilcock
 category: Services
-description: Private generative AI chat integrated into Backstage (PoC)
+description: Use private generative AI without leaving Backstage (PoC). Potential OSS UIs include Ollama Web UI, Text Gen Web UI, ChatBot UI and Big AGI UI. See the plugin repo on NPMjs.com or GitHub for details. Run your inferencing servers wherever you like - local or remote - it's up to you!
 documentation: https://github.com/benwilcock/backstage-plugin-backchat
 iconUrl: /img/backchat-logo.png
 npmPackageName: '@benbravo73/backstage-plugin-backchat'
-addedDate: '2023-10-17'
+addedDate: '2024-01-08'
