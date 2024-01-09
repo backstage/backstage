@@ -1,5 +1,13 @@
 # @backstage/frontend-app-api
 
+## 0.4.1-next.2
+
+### Patch Changes
+
+- 516fd3e: Updated README to reflect release status
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+
 ## 0.4.1-next.1
 
 ### Patch Changes

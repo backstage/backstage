@@ -1,5 +1,14 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.23-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-auth-node@0.4.3-next.2
+
 ## 0.2.23-next.1
 
 ### Patch Changes

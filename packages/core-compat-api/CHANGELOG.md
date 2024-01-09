@@ -1,5 +1,13 @@
 # @backstage/core-compat-api
 
+## 0.1.1-next.2
+
+### Patch Changes
+
+- 4c1f50c: Make `convertLegacyApp` wrap discovered routes with `compatWrapper`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+
 ## 0.1.1-next.1
 
 ### Patch Changes

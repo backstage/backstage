@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-stack-overflow",
-  "version": "0.1.24-next.1",
+  "version": "0.1.24-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
