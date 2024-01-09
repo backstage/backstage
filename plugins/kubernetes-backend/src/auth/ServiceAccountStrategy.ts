@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+import {
+  AuthMetadata,
+  AuthenticationStrategy,
+  ClusterDetails,
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 import { KubeConfig, User } from '@kubernetes/client-node';
 import fs from 'fs-extra';
-import { AuthenticationStrategy, KubernetesCredential } from './types';
-import { ClusterDetails } from '../types/types';
 
 /**
  *
@@ -44,5 +48,9 @@ export class ServiceAccountStrategy implements AuthenticationStrategy {
 
   public validateCluster(): Error[] {
     return [];
+  }
+
+  public presentAuthMetadata(_authMetadata: AuthMetadata): AuthMetadata {
+    return {};
   }
 }

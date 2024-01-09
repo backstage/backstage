@@ -32,6 +32,7 @@ describe('ConfigClusterLocator', () => {
     authStrategy = {
       getCredential: jest.fn(),
       validateCluster: jest.fn().mockReturnValue([]),
+      presentAuthMetadata: jest.fn(),
     };
   });
 

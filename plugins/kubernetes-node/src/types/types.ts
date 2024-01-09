@@ -151,6 +151,7 @@ export interface AuthenticationStrategy {
     authConfig: KubernetesRequestAuth,
   ): Promise<KubernetesCredential>;
   validateCluster(authMetadata: AuthMetadata): Error[];
+  presentAuthMetadata(authMetadata: AuthMetadata): AuthMetadata;
 }
 
 /**
