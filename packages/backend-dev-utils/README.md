@@ -1,7 +1,5 @@
 # @backstage/backend-dev-utils
 
-**This package is EXPERIMENTAL, but we encourage use of it to add support for the new backend system in your own plugins**
-
 This package helps set up local development environments for Backstage backend packages.
 
 ## Installation
