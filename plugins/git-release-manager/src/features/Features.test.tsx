@@ -23,7 +23,7 @@ import { TEST_IDS } from '../test-helpers/test-ids';
 import { mockApiClient } from '../test-helpers/mock-api-client';
 import { MockErrorApi, TestApiProvider } from '@backstage/test-utils';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
-import { MockTranslationApi } from '@backstage/test-utils';
+import { MockTranslationApi } from '@backstage/test-utils/alpha';
 import { errorApiRef } from '@backstage/core-plugin-api';
 
 jest.mock('@backstage/core-plugin-api', () => ({
