@@ -72,7 +72,7 @@ import { createPlugin, createPageExtension } from '@backstage/frontend-plugin-ap
 import { rootRouteRef } from './routes';
 
 const rootPage = createPageExtension({ // [2]
-  // Ommiting name since it is the root page
+  // The `name` option is omitted since this is the root page
   defaultPath: '/'
   routeRef: rootRouteRef,
   loader: async () => <Page>Root Page</Page>
