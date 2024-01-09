@@ -10,6 +10,10 @@ description: Frontend plugins
 
 ## Introduction
 
+In addition to the existing [`plugins`](../../plugins/index.md) documentation we now want to take a look at plugins in the new frontend system. If you already created a plugin yourself you will recognise a lot of similarity in the new architecture with the existing one.
+
+Backstage is a single-page application composed of a set of plugins. Each of this plugin extends & customises your specific
+
 <!--
 
 Introduce frontend plugins and how each of them is shipped as a separate package. Highlight that each package should only export a single plugin instance.
