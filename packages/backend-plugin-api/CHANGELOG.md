@@ -1,5 +1,36 @@
 # @backstage/backend-plugin-api
 
+## 0.6.9-next.2
+
+### Patch Changes
+
+- 516fd3e: Updated README to reflect release status
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.3-next.2
+  - @backstage/backend-tasks@0.5.14-next.2
+
+## 0.6.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/backend-tasks@0.5.14-next.1
+  - @backstage/plugin-auth-node@0.4.3-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.11
+
+## 0.6.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.14-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.11
+
 ## 0.6.8
 
 ### Patch Changes

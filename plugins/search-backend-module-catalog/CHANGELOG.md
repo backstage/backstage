@@ -1,5 +1,53 @@
 # @backstage/plugin-search-backend-module-catalog
 
+## 0.1.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-catalog-node@1.6.1-next.2
+  - @backstage/plugin-search-backend-node@1.2.13-next.2
+  - @backstage/backend-tasks@0.5.14-next.2
+
+## 0.1.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/backend-tasks@0.5.14-next.1
+  - @backstage/plugin-search-backend-node@1.2.13-next.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-catalog-node@1.6.1-next.1
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-search-common@1.2.9
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- 2e6c56b: Update wording to show that the backend system no longer is in alpha
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/plugin-catalog-node@1.6.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/backend-tasks@0.5.14-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-search-backend-node@1.2.13-next.0
+  - @backstage/plugin-search-common@1.2.9
+
 ## 0.1.12
 
 ### Patch Changes

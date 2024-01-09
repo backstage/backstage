@@ -6,8 +6,6 @@ sidebar_label: Testing
 description: Learn how to test your backend plugins and modules
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 Utilities for testing backend plugins and modules are available in
 `@backstage/backend-test-utils`. This section describes those facilities.
 

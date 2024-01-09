@@ -1,5 +1,30 @@
 # @backstage/plugin-events-backend-module-azure
 
+## 0.1.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/plugin-events-node@0.2.18-next.2
+
+## 0.1.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/plugin-events-node@0.2.18-next.1
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/plugin-events-node@0.2.18-next.0
+
 ## 0.1.18
 
 ### Patch Changes

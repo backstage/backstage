@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: setup-node
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: 18.x
           registry-url: https://registry.npmjs.org/

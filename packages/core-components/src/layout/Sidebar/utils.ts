@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Location, Path } from 'history';
+import type { Location, Path } from 'history';
 import { isEqual, isMatch } from 'lodash';
 import qs from 'qs';
 

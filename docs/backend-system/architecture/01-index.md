@@ -6,8 +6,6 @@ sidebar_label: Overview
 description: The structure and architecture of the new Backend System and its component parts
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 ## Building Blocks
 
 This section introduces the high-level building blocks upon which this new

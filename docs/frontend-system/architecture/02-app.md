@@ -45,4 +45,35 @@ A common type of data that is shared between extensions is React elements and co
 
 ## Feature Discovery
 
-TODO
+App feature discovery lets you automatically discover and install features provided by dependencies in your app. In practice, it means that you don't need to manually `import` features in code, but they are instead installed as soon as you add them as a dependency in your `package.json`.
+
+Because feature discovery needs to interact with the compilation process, it is only available when using the `@backstage/cli` to build your app. It is hooked into the WebPack compilation process by scanning your app package for compatible dependencies, which are then made part of the app compilation bundle.
+
+Since the `@backstage/cli` is a more stable component than the new frontend system, feature discovery is currently marked as an experimental feature of the CLI and needs to be enabled manually. To enable it, add the following configuration to your `app-config.yaml`:
+
+```yaml
+app:
+  experimental:
+    packages: all
+```
+
+This will cause all dependencies in your app package to be installed automatically. If this is not desired, you can use include or exclude filters to narrow down the set of packages:
+
+```yaml
+app:
+  experimental:
+    packages:
+      # Only the following packages will be included
+      include:
+        - '@backstage/plugin-catalog'
+        - '@backstage/plugin-scaffolder'
+---
+app:
+  experimental:
+    packages:
+      # All but the following package will be included
+      exclude:
+        - '@backstage/plugin-catalog'
+```
+
+Note that you do not need to manually exclude packages that you also import explicitly in code, since plugin instances are deduplicated by the app. You will never end up with duplicate plugin installations except if they are in fact two different plugin instances with different IDs.

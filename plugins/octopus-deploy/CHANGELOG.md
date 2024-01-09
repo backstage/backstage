@@ -1,5 +1,34 @@
 # @backstage/plugin-octopus-deploy
 
+## 0.2.11-next.2
+
+### Patch Changes
+
+- 7d96ba8: added install path and fixed import on plugin-octopus-deploy
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
+## 0.2.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/plugin-catalog-react@1.9.3-next.1
+  - @backstage/catalog-model@1.4.3
+
+## 0.2.11-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+
 ## 0.2.10
 
 ### Patch Changes

@@ -106,7 +106,9 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
       key: z
         .string()
         .describe(`Property within the action parameters to match on`),
-      value: valueSchema.describe(`Value of the given property to match on`),
+      value: valueSchema
+        .optional()
+        .describe(`Value of the given property to match on`),
     }) as unknown as z.ZodType<{ key: string; value?: z.infer<Schema> }>,
     apply: (resource, { key, value }) => {
       const foundValue = get(resource.input, key);

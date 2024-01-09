@@ -103,7 +103,7 @@ export const kubernetesPlugin = createPlugin({
     }),
     createApiFactory({
       api: kubernetesClusterLinkFormatterApiRef,
-      deps: {},
+      deps: { googleAuthApi: googleAuthApiRef },
       factory: deps => {
         const formatters = getDefaultFormatters(deps);
         return new KubernetesClusterLinkFormatter({

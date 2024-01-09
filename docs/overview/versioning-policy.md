@@ -158,7 +158,7 @@ package export.
 
 The Backstage project uses [Node.js](https://nodejs.org/) for both its development
 tooling and backend runtime. In order for expectations to be clear we use the
-following schedule for determining the [Node.js releases](https://nodejs.org/en/about/releases/) that we support:
+following schedule for determining the [Node.js releases](https://nodejs.org/en/about/previous-releases) that we support:
 
 - At any given point in time we support exactly two adjacent even-numbered
   releases of Node.js, for example v12 and v14.

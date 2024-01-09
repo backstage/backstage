@@ -21,6 +21,8 @@ import {
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
 import React, { ComponentType, PropsWithChildren } from 'react';
@@ -60,6 +62,10 @@ const catalogApi: Partial<CatalogApi> = {
   async refreshEntity() {},
 };
 
+const permissionApi: typeof permissionApiRef.T = {
+  authorize: async () => ({ result: AuthorizeResult.ALLOW }),
+};
+
 export const Default = () => (
   <EntityProvider entity={defaultEntity}>
     <Grid container spacing={4}>
@@ -76,7 +82,12 @@ export default {
   decorators: [
     (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
-        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, catalogApi],
+            [permissionApiRef, permissionApi],
+          ]}
+        >
           <Story />
         </TestApiProvider>,
         {

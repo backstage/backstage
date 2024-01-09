@@ -1,5 +1,33 @@
 # @backstage/backend-defaults
 
+## 0.2.9-next.2
+
+### Patch Changes
+
+- 516fd3e: Updated README to reflect release status
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-app-api@0.5.10-next.2
+  - @backstage/backend-common@0.20.1-next.2
+
+## 0.2.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.10-next.1
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-app-api@0.5.10-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+
 ## 0.2.8
 
 ### Patch Changes

@@ -17,6 +17,7 @@ import {
   ClusterLinksFormatter,
   ClusterLinksFormatterOptions,
 } from '../../types';
+import { ProfileInfoApi } from '@backstage/core-plugin-api';
 
 const kindMappings: Record<string, string> = {
   deployment: 'deployment',
@@ -28,6 +29,7 @@ const kindMappings: Record<string, string> = {
 
 /** @public */
 export class GkeClusterLinksFormatter implements ClusterLinksFormatter {
+  constructor(private readonly googleAuthApi: ProfileInfoApi | undefined) {}
   async formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL> {
     if (!options.dashboardParameters) {
       throw new Error('GKE dashboard requires a dashboardParameters option');
@@ -68,6 +70,12 @@ export class GkeClusterLinksFormatter implements ClusterLinksFormatter {
     }
     const result = new URL(path, basePath);
     result.searchParams.set('project', args.projectId);
+    if (this.googleAuthApi) {
+      const profile = await this.googleAuthApi.getProfile({ optional: true });
+      if (profile?.email) {
+        result.searchParams.set('authuser', profile.email);
+      }
+    }
     return result;
   }
 }

@@ -275,8 +275,8 @@ otherwise something went terribly wrong.
 
   ![Software template main screen, with a blue button to add an existing component](../assets/getting-started/b-existing-1.png)
 
-- As URL use `https://github.com/backstage/demo/blob/master/catalog-info.yaml`.
-  This is used by our [demo site](https://demo.backstage.io).
+- As URL use `https://github.com/backstage/backstage/blob/master/catalog-info.yaml`.
+  This is used in our [demo site](https://demo.backstage.io) catalog.
 
   ![Register a new component wizard, asking for an URL to the existing component YAML file](../assets/getting-started/b-existing-2.png)
 
@@ -285,7 +285,7 @@ otherwise something went terribly wrong.
   ![Register a new component wizard, showing the metadata for the component YAML we use in this tutorial](../assets/getting-started/b-existing-3.png)
 
 - You should receive a message that your entities have been added.
-- If you go back to `Home`, you should be able to find `demo`. You should be
+- If you go back to `Home`, you should be able to find `backstage`. You should be
   able to click it and see the details
 
 ## Create a new component using a software template

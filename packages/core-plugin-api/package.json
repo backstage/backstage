@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-plugin-api",
   "description": "Core API used by Backstage plugins",
-  "version": "1.8.1",
+  "version": "1.8.2-next.0",
   "publishConfig": {
     "access": "public"
   },
@@ -50,8 +50,7 @@
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@types/react": "^16.13.1 || ^17.0.0",
-    "history": "^5.0.0",
-    "i18next": "^22.4.15"
+    "history": "^5.0.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",

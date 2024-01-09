@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 1.5.2-next.0
+
+### Patch Changes
+
+- 883782e: Fix a bug in `getLocationByRef` that led to invalid backend calls
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
 ## 1.5.0
 
 ### Minor Changes
