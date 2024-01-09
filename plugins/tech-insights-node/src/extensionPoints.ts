@@ -16,8 +16,9 @@
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { FactRetriever } from './facts';
 import { FactCheckerFactory, TechInsightCheck } from './checks';
+import { FactRetriever, FactRetrieverRegistry } from './facts';
+import { PersistenceContext } from './persistence';
 
 /**
  * @public
@@ -56,4 +57,38 @@ export interface TechInsightsFactCheckerFactoryExtensionPoint {
 export const techInsightsFactCheckerFactoryExtensionPoint =
   createExtensionPoint<TechInsightsFactCheckerFactoryExtensionPoint>({
     id: 'tech-insights.fact-checker-factory',
+  });
+
+/**
+ * @public
+ */
+export interface TechInsightsFactRetrieverRegistryExtensionPoint {
+  setFactRetrieverRegistry(registry: FactRetrieverRegistry): void;
+}
+
+/**
+ * An extension point that allows other plugins or modules to set a custom FactRetrieverRegistry.
+ *
+ * @public
+ */
+export const techInsightsFactRetrieverRegistryExtensionPoint =
+  createExtensionPoint<TechInsightsFactRetrieverRegistryExtensionPoint>({
+    id: 'tech-insights.fact-retriever-registry',
+  });
+
+/**
+ * @public
+ */
+export interface TechInsightsPersistenceContextExtensionPoint {
+  setPersistenceContext(context: PersistenceContext): void;
+}
+
+/**
+ * An extension point that allows other plugins or modules to set a custom PersistenceContext.
+ *
+ * @public
+ */
+export const techInsightsPersistenceContextExtensionPoint =
+  createExtensionPoint<TechInsightsPersistenceContextExtensionPoint>({
+    id: 'tech-insights.persistence-context',
   });
