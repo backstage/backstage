@@ -59,7 +59,7 @@ export const detailsRouteRef = createRouteRef<DetailsRouteParams>({
 
 Route refs do not have any behavior, in other words, they are an opaque type that represents route targets in an app, which are bound to specific paths at runtime, but they provide a level of indirection to help mix together different plugins that otherwise wouldn't know how to route to each other.
 
-The code snippet of the previous section does not indicate which plugin the route belongs to. To do so, we have to extend Backstage with a new page extension associated with the newly created `RouteRef` and provide the extension through our plugin. Here's what we need to do:
+The code snippet of the previous section does not indicate which plugin the route belongs to. To do so, you have to use it in the creation of any kind of routable extension, such as a page extension. When this extension is installed in the app it will become associated with the newly created `RouteRef`, making it possible to use the route ref to navigate the the extension. Here's what we need to do:
 
 ```tsx
 // plugins/catalog/src/routes.ts
