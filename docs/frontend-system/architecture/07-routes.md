@@ -340,7 +340,7 @@ const catalogEntityListPage = createPageExtension({
   defaultPath: '/'
   routeRef: rootRouteRef,
   loader: async () => {
-    const href = useRouteRef(catalogCreateComponentRouteRef)();
+    const href = useRouteRef(catalogCreateComponentRouteRef);
 
     return (
       <div>
