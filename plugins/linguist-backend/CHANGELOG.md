@@ -1,5 +1,16 @@
 # @backstage/plugin-linguist-backend
 
+## 0.5.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-auth-node@0.4.3-next.2
+  - @backstage/plugin-catalog-node@1.6.1-next.2
+  - @backstage/backend-tasks@0.5.14-next.2
+
 ## 0.5.6-next.1
 
 ### Patch Changes

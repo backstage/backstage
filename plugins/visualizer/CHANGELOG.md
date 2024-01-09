@@ -1,5 +1,12 @@
 # @backstage/plugin-visualizer
 
+## 0.0.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+
 ## 0.0.2-next.1
 
 ### Patch Changes
