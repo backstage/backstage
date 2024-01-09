@@ -102,7 +102,7 @@ describe('usePullRequests', () => {
       renderHook(() => usePullRequests(entity), {
         wrapper: Wrapper,
       }),
-    ).toThrow('Value for annotation "dev.azure.com/project" was not found');
+    ).toThrow('"dev.azure.com" annotations are missing');
   });
 
   it('should return throw when annotation invalid', async () => {
