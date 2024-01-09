@@ -411,7 +411,10 @@
       {
         "type": "category",
         "label": "Building Plugins",
-        "items": ["frontend-system/building-plugins/testing"]
+        "items": [
+          "frontend-system/building-plugins/index",
+          "frontend-system/building-plugins/testing"
+        ]
       },
       {
         "type": "category",
