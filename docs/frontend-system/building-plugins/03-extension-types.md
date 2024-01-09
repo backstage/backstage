@@ -41,3 +41,19 @@ Theme extensions provide custom themes for the app. They are always attached to 
 ### Translation - [Reference](../../reference/frontend-plugin-api.createtranslationextension.md)
 
 Translation extension provide custom translation messages for the app. They can be used both to override the default english messages to custom ones, as well as provide translations for additional languages.
+
+## Core feature extension types
+
+These are the extension types provided by the Backstage core feature plugins.
+
+### EntityCard - [Reference](../../reference/plugin-catalog-react.createentitycardextension.md)
+
+Creates entity cards to be displayed on the entity pages of the catalog plugin.
+
+### EntityContent - [Reference](../../reference/plugin-catalog-react.createentitycontentextension.md)
+
+Creates entity content to be displayed on the entity pages of the catalog plugin.
+
+### SearchResultListItem - [Reference](../../reference/plugin-search-react.createsearchresultlistitemextension.md)
+
+Creates search result list items for different types of search results, to be displayed in search result lists.

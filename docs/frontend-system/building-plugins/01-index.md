@@ -199,3 +199,5 @@ const exampleEntityContent = createEntityContentExtension({
 ```
 
 The `ExampleEntityContent` itself is again a regular React component where you can implement any functionality you want. To access the entity that the content is being rendered for, you can use the `useEntity` hook from `@backstage/plugin-catalog-react`. You can see a full list of API provided by the catalog React library in [the API reference](../../reference/plugin-catalog-react.md).
+
+For a more complete list of the different types of extensions that you can create for your plugin, see the [extension types](./03-extension-types.md) section.
