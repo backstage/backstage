@@ -400,13 +400,13 @@ const rootPage = createPageExtension({
   defaultPath: '/'
   routeRef: rootRouteRef,
   loader: async () => {
-    const { path } = useRouteRef(detailsRouteRef)();
+    const detailsRouteRef = useRouteRef(detailsRouteRef)();
 
     return (
       <div>
         <h1>Index Page</h1>
         <Routes>
-          <Route path={path} element={<DetailsPage />} />
+          <Route path={detailsRouteRef.path} element={<DetailsPage />} />
         </Routes>
       </div>
     );
