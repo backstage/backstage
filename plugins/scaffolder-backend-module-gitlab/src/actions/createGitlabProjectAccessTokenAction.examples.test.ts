@@ -187,7 +187,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
     });
 
     expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
-      '77777',
+      '123',
       'tokenname',
       ['read_repository'],
       {

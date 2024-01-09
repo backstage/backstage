@@ -95,7 +95,7 @@ export const examples: TemplateExample[] = [
           name: 'Create GitLab Project Access Token',
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
-            projectId: '77777',
+            projectId: '123',
             expiresAt: '2024-06-25',
           },
         },

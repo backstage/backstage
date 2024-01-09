@@ -17,6 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import { AccessTokenScopes } from '@gitbeaker/core';
 import { Gitlab } from '@gitbeaker/rest';
 import { DateTime } from 'luxon';
 import { z } from 'zod';
@@ -29,6 +30,9 @@ import { examples } from './createGitlabProjectAccessTokenAction.examples';
  * @param options - Templating configuration.
  * @public
  */
+
+const gitbeakerAccessTokenScopesType: z.ZodType<AccessTokenScopes[]> = z.any();
+
 export const createGitlabProjectAccessTokenAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
@@ -49,24 +53,7 @@ export const createGitlabProjectAccessTokenAction = (options: {
               'Access Level of the Token, 10 (Guest), 20 (Reporter), 30 (Developer), 40 (Maintainer), and 50 (Owner)',
           })
           .optional(),
-        scopes: z
-          .array(
-            z.enum(
-              [
-                'api',
-                'read_api',
-                'create_runner',
-                'read_registry',
-                'write_registry',
-                'read_repository',
-                'write_repository',
-              ],
-              {
-                description: 'Scopes for a project access token',
-              },
-            ),
-          )
-          .optional(),
+        scopes: gitbeakerAccessTokenScopesType,
         expiresAt: z
           .string({
             description:

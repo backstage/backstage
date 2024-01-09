@@ -35,6 +35,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
+    "@gitbeaker/core": "^39.25.0",
     "@gitbeaker/node": "^35.8.0",
     "@gitbeaker/rest": "^39.24.0",
     "luxon": "^3.4.4",

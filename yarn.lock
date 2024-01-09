@@ -8597,7 +8597,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab":
+"@backstage/plugin-scaffolder-backend-module-gitlab@workspace:^, @backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab"
   dependencies:
@@ -8608,7 +8608,10 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@gitbeaker/core": ^39.25.0
     "@gitbeaker/node": ^35.8.0
+    "@gitbeaker/rest": ^39.24.0
+    luxon: ^3.4.4
     yaml: ^2.0.0
     zod: ^3.21.4
   languageName: unknown
@@ -10215,6 +10218,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@changesets/changelog-github@npm:^0.4.8":
+  version: 0.4.8
+  resolution: "@changesets/changelog-github@npm:0.4.8"
+  dependencies:
+    "@changesets/get-github-info": ^0.5.2
+    "@changesets/types": ^5.2.1
+    dotenv: ^8.1.0
+  checksum: 8a357cc08757e0eeca267ee05141f68bef936582abef8b78a5d30d99f5a86e41b7d3debba70992b73b2f57b0fc6201ec1cc3c65116930167ee3197b427b865c5
+  languageName: node
+  linkType: hard
+
 "@changesets/cli@npm:^2.14.0":
   version: 2.26.2
   resolution: "@changesets/cli@npm:2.26.2"
@@ -10292,6 +10306,16 @@ __metadata:
     fs-extra: ^7.0.1
     semver: ^7.5.3
   checksum: d2cbbc5041063b939899502d1b264a0d9edb655acefd7f6197883229156bb7cfd1ace642ae4a1f7f7b432f2c51429f5dc9851ff5a9ed47f1c0159916e66627a9
+  languageName: node
+  linkType: hard
+
+"@changesets/get-github-info@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@changesets/get-github-info@npm:0.5.2"
+  dependencies:
+    dataloader: ^1.4.0
+    node-fetch: ^2.5.0
+  checksum: 067e07eeaecdbedbd1c715513c4aa6206a941bd1d3af292d067792808c6fa6644caad2b35fba614a44892559c031c234df8028f8d2abd4cb2682d48080ef5df3
   languageName: node
   linkType: hard
 
@@ -11440,6 +11464,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gitbeaker/core@npm:^39.24.0, @gitbeaker/core@npm:^39.25.0":
+  version: 39.25.0
+  resolution: "@gitbeaker/core@npm:39.25.0"
+  dependencies:
+    "@gitbeaker/requester-utils": ^39.25.0
+    qs: ^6.11.2
+    xcase: ^2.0.1
+  checksum: 56ebe3c6ba1078c47a6cae0abcd5ae4fd928dc73c9eb7dc462894d497d6fa5373c0d09a7a7a0583097cffa641eeb0b28b1764d33a085a7b95f0115399240bc7e
+  languageName: node
+  linkType: hard
+
 "@gitbeaker/node@npm:^35.1.0, @gitbeaker/node@npm:^35.8.0":
   version: 35.8.1
   resolution: "@gitbeaker/node@npm:35.8.1"
@@ -11461,6 +11496,28 @@ __metadata:
     qs: ^6.10.1
     xcase: ^2.0.1
   checksum: c3c94ad90dab481887380f5bcff0416c1e1eee935fc3ca4f12d8db83d85c5f0d47f7f35cee6f2b05491bda99c03fb7eb88b849c986822eae3b1bfc26641ec899
+  languageName: node
+  linkType: hard
+
+"@gitbeaker/requester-utils@npm:^39.24.0, @gitbeaker/requester-utils@npm:^39.25.0":
+  version: 39.25.0
+  resolution: "@gitbeaker/requester-utils@npm:39.25.0"
+  dependencies:
+    async-sema: ^3.1.1
+    micromatch: ^4.0.5
+    qs: ^6.11.2
+    xcase: ^2.0.1
+  checksum: 1ca90f5ac705d5ef9df682b3051106326bc660427b9b2a88762992690981ce0b6bed4b22bc08af0ba97043766f9898605ba58ed6c1a08b6711af34032f013ed2
+  languageName: node
+  linkType: hard
+
+"@gitbeaker/rest@npm:^39.22.0, @gitbeaker/rest@npm:^39.24.0":
+  version: 39.24.0
+  resolution: "@gitbeaker/rest@npm:39.24.0"
+  dependencies:
+    "@gitbeaker/core": ^39.24.0
+    "@gitbeaker/requester-utils": ^39.24.0
+  checksum: 8f3cc5cd4c72f6648db01c92b40b9d4a099f530a880423fe719eff7a7e2c96c8863943a4b206c4970cdc77e93276cd173cb6de6bc3c50ef66d60d09c00053f10
   languageName: node
   linkType: hard
 
@@ -21531,6 +21588,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"async-sema@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "async-sema@npm:3.1.1"
+  checksum: 07b8c51f6cab107417ecdd8126b7a9fe5a75151b7f69fdd420dcc8ee08f9e37c473a217247e894b56e999b088b32e902dbe41637e4e9b594d3f8dfcdddfadc5e
+  languageName: node
+  linkType: hard
+
 "async@npm:^2.6.2, async@npm:^2.6.4":
   version: 2.6.4
   resolution: "async@npm:2.6.4"
@@ -25017,6 +25081,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dataloader@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "dataloader@npm:1.4.0"
+  checksum: e2c93d43afde68980efc0cd9ff48e9851116e27a9687f863e02b56d46f7e7868cc762cd6dcbaf4197e1ca850a03651510c165c2ae24b8e9843fd894002ad0e20
+  languageName: node
+  linkType: hard
+
 "dataloader@npm:^2.0.0, dataloader@npm:^2.2.2":
   version: 2.2.2
   resolution: "dataloader@npm:2.2.2"
@@ -25798,6 +25869,13 @@ __metadata:
   version: 16.3.1
   resolution: "dotenv@npm:16.3.1"
   checksum: 15d75e7279018f4bafd0ee9706593dd14455ddb71b3bcba9c52574460b7ccaf67d5cf8b2c08a5af1a9da6db36c956a04a1192b101ee102a3e0cf8817bbcf3dfd
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^8.1.0":
+  version: 8.6.0
+  resolution: "dotenv@npm:8.6.0"
+  checksum: 38e902c80b0666ab59e9310a3d24ed237029a7ce34d976796349765ac96b8d769f6df19090f1f471b77a25ca391971efde8a1ea63bb83111bd8bec8e5cc9b2cd
   languageName: node
   linkType: hard
 
@@ -27465,6 +27543,7 @@ __metadata:
     "@backstage/plugin-rollbar-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-gitlab": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-rails": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"
     "@backstage/plugin-search-backend-module-catalog": "workspace:^"
@@ -27480,6 +27559,7 @@ __metadata:
     "@backstage/plugin-techdocs-backend": "workspace:^"
     "@backstage/plugin-todo-backend": "workspace:^"
     "@gitbeaker/node": ^35.1.0
+    "@gitbeaker/rest": ^39.22.0
     "@octokit/rest": ^19.0.3
     "@opentelemetry/api": ^1.4.1
     "@opentelemetry/exporter-prometheus": ^0.45.0
@@ -34109,7 +34189,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.0.0, luxon@npm:^3.3.0, luxon@npm:^3.4.3":
+"luxon@npm:^3.0.0, luxon@npm:^3.3.0, luxon@npm:^3.4.3, luxon@npm:^3.4.4":
   version: 3.4.4
   resolution: "luxon@npm:3.4.4"
   checksum: 36c1f99c4796ee4bfddf7dc94fa87815add43ebc44c8934c924946260a58512f0fd2743a629302885df7f35ccbd2d13f178c15df046d0e3b6eb71db178f1c60c
@@ -35979,7 +36059,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.5, node-fetch@npm:^2.6.7":
+"node-fetch@npm:^2.5.0, node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.5, node-fetch@npm:^2.6.7":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -39049,7 +39129,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.11.0, qs@npm:^6.9.1, qs@npm:^6.9.4, qs@npm:^6.9.6":
+"qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.11.0, qs@npm:^6.11.2, qs@npm:^6.9.1, qs@npm:^6.9.4, qs@npm:^6.9.6":
   version: 6.11.2
   resolution: "qs@npm:6.11.2"
   dependencies:
@@ -41084,6 +41164,7 @@ __metadata:
     "@backstage/e2e-test-utils": "workspace:*"
     "@backstage/errors": "workspace:^"
     "@backstage/repo-tools": "workspace:*"
+    "@changesets/changelog-github": ^0.4.8
     "@changesets/cli": ^2.14.0
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
