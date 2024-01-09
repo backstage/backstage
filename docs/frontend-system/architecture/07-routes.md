@@ -10,11 +10,11 @@ description: Frontend routes
 
 ## Introduction
 
-This page describes the composability system that helps bring together content from a multitude of plugins into one Backstage application.
+This page describes the frontend system that helps bring together content from a multitude of plugins into one Backstage application.
 
-The core principle of the composability system is that plugins should have clear boundaries and connections. It should isolate crashes within a plugin, but allow navigation between them. It should allow for plugins to be loaded only when needed, and enable plugins to provide extension points for other plugins to build upon. The composability system is also built with an app-first mindset, prioritizing simplicity and clarity in the app over that in the plugins and core APIs.
+The core principle of the frontend system is that plugins should have clear boundaries and connections. It should isolate crashes within a plugin, but allow navigation between them. It should allow for plugins to be loaded only when needed, and enable plugins to provide extension points for other plugins to build upon. The frontend system is also built with an app-first mindset, prioritizing simplicity and clarity in the app over that in the plugins and core APIs.
 
-The composability system isn't a single API surface. It is a collection of patterns, primitives, and APIs. At the core is the concept of extensions, which are exported by plugins for use in the app. One of the concepts is `RouteRef` which enables us route between pages in a flexible way, and it is especially important when bringing together different open source plugins.
+The frontend system isn't a single API surface. It is a collection of patterns, primitives, and APIs. At the core is the concept of extensions, which are exported by plugins for use in the app. One of the concepts is `RouteRef` which enables us route between pages in a flexible way, and it is especially important when bringing together different open source plugins.
 
 ## Route References
 
