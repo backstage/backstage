@@ -35,16 +35,15 @@ export type PinnipedClientCerts = {
  * @public
  */
 export type PinnipedParameters = {
-  clusterIdToken: string;
-  JWTAuthenticatorName: string;
-};
-
-type ApiResourcePinniped = {
+  clusterScopedIdToken: string;
   authenticator: {
     apiGroup: string;
     kind: string;
+    name: string;
   };
-  apiVersion: string;
+  tokenCredentialRequest?: {
+    apiGroup?: string;
+  };
 };
 
 /**
@@ -52,14 +51,7 @@ type ApiResourcePinniped = {
  * @public
  */
 export class PinnipedHelper {
-  readonly flavour: 'pinniped' | 'pinniped-tmc';
-
-  constructor(
-    private readonly logger: Logger,
-    flavour: 'pinniped' | 'pinniped-tmc' = 'pinniped',
-  ) {
-    this.flavour = flavour;
-  }
+  constructor(private readonly logger: Logger) {}
 
   public async tokenCredentialRequest(
     clusterDetails: ClusterDetails,
@@ -77,16 +69,16 @@ export class PinnipedHelper {
     pinnipedParams: PinnipedParameters,
   ): Promise<PinnipedClientCerts> {
     const url: URL = new URL(clusterDetails.url);
-    const apiResourcePinniped: ApiResourcePinniped =
-      this.getApiResourcePinniped();
+    const apiGroup =
+      pinnipedParams.tokenCredentialRequest?.apiGroup ??
+      'login.concierge.pinniped.dev/v1alpha1';
 
-    url.pathname = `/apis/${apiResourcePinniped.apiVersion}/tokencredentialrequests`;
+    url.pathname = `/apis/${apiGroup}/tokencredentialrequests`;
 
     const requestInit: RequestInit = this.buildRequestForPinniped(
       url,
       clusterDetails,
       pinnipedParams,
-      apiResourcePinniped,
     );
 
     this.logger.info(
@@ -119,18 +111,15 @@ export class PinnipedHelper {
     url: URL,
     clusterDetails: ClusterDetails,
     pinnipedParams: PinnipedParameters,
-    apiResourcePinniped: ApiResourcePinniped,
   ): RequestInit {
     const body = {
-      apiVersion: apiResourcePinniped.apiVersion,
+      apiVersion:
+        pinnipedParams.tokenCredentialRequest?.apiGroup ??
+        'login.concierge.pinniped.dev/v1alpha1',
       kind: 'TokenCredentialRequest',
       spec: {
-        authenticator: {
-          apiGroup: apiResourcePinniped.authenticator.apiGroup,
-          kind: apiResourcePinniped.authenticator.kind,
-          name: pinnipedParams.JWTAuthenticatorName,
-        },
-        token: pinnipedParams.clusterIdToken,
+        authenticator: pinnipedParams.authenticator,
+        token: pinnipedParams.clusterScopedIdToken,
       },
     };
     const requestInit: RequestInit = {
@@ -154,24 +143,5 @@ export class PinnipedHelper {
     }
 
     return requestInit;
-  }
-
-  private getApiResourcePinniped(): ApiResourcePinniped {
-    if (this.flavour === 'pinniped') {
-      return {
-        authenticator: {
-          apiGroup: 'authentication.concierge.pinniped.dev',
-          kind: 'JWTAuthenticator',
-        },
-        apiVersion: 'login.concierge.pinniped.dev/v1alpha1',
-      };
-    }
-    return {
-      authenticator: {
-        apiGroup: 'authentication.concierge.pinniped.tmc.cloud.vmware.com',
-        kind: 'WebhookAuthenticator',
-      },
-      apiVersion: 'login.concierge.pinniped.tmc.cloud.vmware.com/v1alpha1',
-    };
   }
 }

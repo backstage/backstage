@@ -117,10 +117,14 @@ describe('Pinniped - tokenCredentialRequest', () => {
                   ) => {
                     const pinnipedHelper = new PinnipedHelper(logger);
                     const pinnipedParams: PinnipedParameters = {
-                      clusterIdToken:
+                      clusterScopedIdToken:
                         ((authConfig.pinniped as JsonObject)
                           ?.clusteridtoken as string) || '',
-                      JWTAuthenticatorName: 'supervisor',
+                      authenticator: {
+                        apiGroup: 'authentication.concierge.pinniped.dev',
+                        kind: 'JWTAuthenticator',
+                        name: 'supervisor',
+                      },
                     };
                     const clientCerts =
                       await pinnipedHelper.tokenCredentialRequest(
@@ -134,6 +138,7 @@ describe('Pinniped - tokenCredentialRequest', () => {
                     };
                   },
                   validateCluster: jest.fn().mockReturnValue([]),
+                  presentAuthMetadata: jest.fn().mockReturnValue({}),
                 });
               },
             });
@@ -281,15 +286,21 @@ describe('Pinniped - tokenCredentialRequest', () => {
                       clusterDetails: ClusterDetails,
                       authConfig: KubernetesRequestAuth,
                     ) => {
-                      const pinnipedHelper = new PinnipedHelper(
-                        logger,
-                        'pinniped-tmc',
-                      );
+                      const pinnipedHelper = new PinnipedHelper(logger);
                       const pinnipedParams: PinnipedParameters = {
-                        clusterIdToken:
+                        clusterScopedIdToken:
                           ((authConfig.pinniped as JsonObject)
                             ?.clusteridtoken as string) || '',
-                        JWTAuthenticatorName: 'supervisor',
+                        authenticator: {
+                          apiGroup:
+                            'authentication.concierge.pinniped.tmc.cloud.vmware.com',
+                          kind: 'WebhookAuthenticator',
+                          name: 'supervisor',
+                        },
+                        tokenCredentialRequest: {
+                          apiGroup:
+                            'login.concierge.pinniped.tmc.cloud.vmware.com/v1alpha1',
+                        },
                       };
                       const clientCerts =
                         await pinnipedHelper.tokenCredentialRequest(
@@ -303,6 +314,7 @@ describe('Pinniped - tokenCredentialRequest', () => {
                       };
                     },
                     validateCluster: jest.fn().mockReturnValue([]),
+                    presentAuthMetadata: jest.fn().mockReturnValue({}),
                   });
                 },
               });

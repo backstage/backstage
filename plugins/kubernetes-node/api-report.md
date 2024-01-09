@@ -242,9 +242,7 @@ export type PinnipedClientCerts = {
 
 // @public (undocumented)
 export class PinnipedHelper {
-  constructor(logger: Logger, flavour?: 'pinniped' | 'pinniped-tmc');
-  // (undocumented)
-  readonly flavour: 'pinniped' | 'pinniped-tmc';
+  constructor(logger: Logger);
   // (undocumented)
   tokenCredentialRequest(
     clusterDetails: ClusterDetails_2,
@@ -254,8 +252,15 @@ export class PinnipedHelper {
 
 // @public (undocumented)
 export type PinnipedParameters = {
-  clusterIdToken: string;
-  JWTAuthenticatorName: string;
+  clusterScopedIdToken: string;
+  authenticator: {
+    apiGroup: string;
+    kind: string;
+    name: string;
+  };
+  tokenCredentialRequest?: {
+    apiGroup?: string;
+  };
 };
 
 // @public (undocumented)
