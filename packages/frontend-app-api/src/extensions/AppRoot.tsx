@@ -34,9 +34,9 @@ import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations
 import { BrowserRouter } from 'react-router-dom';
 import { RouteTracker } from '../routing/RouteTracker';
 
-export const CoreRouter = createExtension({
+export const AppRoot = createExtension({
   namespace: 'app',
-  name: 'router',
+  name: 'root',
   attachTo: { id: 'app', input: 'root' },
   inputs: {
     signInPage: createExtensionInput(
