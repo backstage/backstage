@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.7.1-next.2
+
+### Patch Changes
+
+- 98ac5ab: Updated dependency `@rjsf/utils` to `5.15.1`.
+  Updated dependency `@rjsf/core` to `5.15.1`.
+  Updated dependency `@rjsf/material-ui` to `5.15.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.15.1`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
 ## 1.7.1-next.1
 
 ### Patch Changes

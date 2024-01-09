@@ -1,5 +1,14 @@
 # @backstage/backend-plugin-api
 
+## 0.6.9-next.2
+
+### Patch Changes
+
+- 516fd3e: Updated README to reflect release status
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.3-next.2
+  - @backstage/backend-tasks@0.5.14-next.2
+
 ## 0.6.9-next.1
 
 ### Patch Changes
