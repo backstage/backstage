@@ -369,7 +369,7 @@ export { default } from './plugin';
 
 ## Sub Route References
 
-The last kind of route refs that can be created are `SubRouteRefs`, which can be used to create a route ref with a fixed path relative to an absolute `RouteRef`. They are useful if you have a page that internally is mounted at a sub route of a page extension component, and you want other plugins to be able to route to that page.
+The last kind of route refs that can be created are `SubRouteRef`s, which can be used to create a route ref with a fixed path relative to an absolute `RouteRef`. They are useful if you have a page that internally is mounted at a sub route of a page extension component, and you want other plugins to be able to route to that page. And they can be a useful utility to handle routing within a plugin itself as well.
 
 For example:
 
