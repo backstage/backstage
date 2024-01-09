@@ -15,3 +15,4 @@
  */
 
 export { eventsModuleBitbucketCloudEventRouter } from './service/eventsModuleBitbucketCloudEventRouter';
+export { eventsModuleBitbucketCloudEventRouter as default } from './service/eventsModuleBitbucketCloudEventRouter';
