@@ -24,9 +24,13 @@ import {
   FactCheckerFactory,
   FactRetriever,
   FactRetrieverRegistration,
+  FactRetrieverRegistry,
+  PersistenceContext,
   TechInsightCheck,
   techInsightsFactCheckerFactoryExtensionPoint,
+  techInsightsFactRetrieverRegistryExtensionPoint,
   techInsightsFactRetrieversExtensionPoint,
+  techInsightsPersistenceContextExtensionPoint,
 } from '@backstage/plugin-tech-insights-node';
 import {
   buildTechInsightsContext,
@@ -57,6 +61,16 @@ export const techInsightsPlugin = createBackendPlugin({
       },
     });
 
+    let factRetrieverRegistry: FactRetrieverRegistry | undefined = undefined;
+    env.registerExtensionPoint(
+      techInsightsFactRetrieverRegistryExtensionPoint,
+      {
+        setFactRetrieverRegistry(registry: FactRetrieverRegistry): void {
+          factRetrieverRegistry = registry;
+        },
+      },
+    );
+
     // initialized with built-in fact retrievers
     // only added as registration if there is config for them
     const addedFactRetrievers: Record<string, FactRetriever> = {
@@ -69,6 +83,13 @@ export const techInsightsPlugin = createBackendPlugin({
         Object.entries(factRetrievers).forEach(([key, value]) => {
           addedFactRetrievers[key] = value;
         });
+      },
+    });
+
+    let persistenceContext: PersistenceContext | undefined = undefined;
+    env.registerExtensionPoint(techInsightsPersistenceContextExtensionPoint, {
+      setPersistenceContext(context: PersistenceContext): void {
+        persistenceContext = context;
       },
     });
 
@@ -109,8 +130,10 @@ export const techInsightsPlugin = createBackendPlugin({
           database,
           discovery,
           factCheckerFactory,
+          factRetrieverRegistry,
           factRetrievers,
           logger: winstonLogger,
+          persistenceContext,
           scheduler,
           tokenManager,
         });

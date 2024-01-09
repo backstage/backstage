@@ -15,7 +15,4 @@
  */
 
 export { initializePersistenceContext } from './persistenceContext';
-export type {
-  PersistenceContext,
-  PersistenceContextOptions,
-} from './persistenceContext';
+export type { PersistenceContextOptions } from './persistenceContext';

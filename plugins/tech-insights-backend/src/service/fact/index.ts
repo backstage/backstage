@@ -17,5 +17,4 @@
 export { createFactRetrieverRegistration } from './createFactRetriever';
 export type { FactRetrieverRegistrationOptions } from './createFactRetriever';
 export type { FactRetrieverEngine } from './FactRetrieverEngine';
-export type { FactRetrieverRegistry } from './FactRetrieverRegistry';
 export * from './factRetrievers';

@@ -230,3 +230,14 @@ export type FactRetrieverRegistration = {
    */
   initialDelay?: Duration | HumanDuration;
 };
+
+/**
+ * @public
+ */
+export interface FactRetrieverRegistry {
+  register(registration: FactRetrieverRegistration): Promise<void>;
+  get(retrieverReference: string): Promise<FactRetrieverRegistration>;
+  listRetrievers(): Promise<FactRetriever[]>;
+  listRegistrations(): Promise<FactRetrieverRegistration[]>;
+  getSchemas(): Promise<FactSchema[]>;
+}
