@@ -312,7 +312,7 @@ Another thing to note is that this indirection in the routing is particularly us
 
 ### Optional External Route References
 
-When creating an ExternalRouteRef it is possible to mark it as optional:
+It is possible to define an `ExternalRouteRef` as optional, so it is not required to bind it in the app. When calling `useRouteRef` with an optional external route, its return signature is changed to `RouteFunc | undefined`, and the returned value can be used used to decide whether a certain link should be displayed or if an action should be taken:
 
 ```tsx
 // plugins/catalog/src/routes.ts
@@ -325,13 +325,7 @@ const rootRouteRef = createRouteRef();
 const createComponentRouteRef = createExternalRouteRef({
   optional: true,
 });
-```
 
-An external route that is marked as optional is not required to be bound in the app, allowing it to be used as a switch for whether a particular link should be displayed or action should be taken.
-
-When calling useRouteRef with an optional external route, its return signature is changed to RouteFunc | undefined, allowing for logic like this:
-
-```tsx
 // plugins/catalog/src/plugin.tsx
 import { createPlugin, createPageExtension, useRouteRef } from '@backstage/frontend-plugin-api';
 import { rootRouteRef, createComponentRouteRef } from './routes';
