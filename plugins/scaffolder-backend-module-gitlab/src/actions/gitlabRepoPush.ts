@@ -149,22 +149,27 @@ export const createGitlabRepoPushAction = (options: {
         execute_filemode: file.executable,
       }));
 
+      let branchExists = false;
       try {
         await api.Branches.show(repoID, branchName);
-      } catch (e) {
+        branchExists = true;
+      } catch (e: any) {
         if (e.response?.statusCode !== 404) {
           throw new InputError(
             `Failed to check status of branch '${branchName}'. Please make sure that branch already exists or Backstage has permissions to create one. ${e}`,
           );
         }
+      }
+
+      if (!branchExists) {
         // create a branch using the default branch as ref
         try {
           const projects = await api.Projects.show(repoID);
           const { default_branch: defaultBranch } = projects;
           await api.Branches.create(repoID, branchName, String(defaultBranch));
-        } catch (e2) {
+        } catch (e) {
           throw new InputError(
-            `The branch '${branchName}' was not found and creation failed with error. Please make sure that branch already exists or Backstage has permissions to create one. ${e2}`,
+            `The branch '${branchName}' was not found and creation failed with error. Please make sure that branch already exists or Backstage has permissions to create one. ${e}`,
           );
         }
       }
