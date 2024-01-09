@@ -18,7 +18,7 @@ The composability system isn't a single API surface. It is a collection of patte
 
 ## Route References
 
-In order to address the problem outlined above, we introduced the `RouteRefs` concept. `RouteRefs` abstract paths in a the Backstage app, and these paths can be configured both at the plugin level (by plugin developers) and at the instance level (by application integrators).
+In order to address the problem outlined above, we introduced the concept of route references. A `RouteRef` is an abstract paths in a the Backstage app, and these paths can be configured both at the plugin level (by plugin developers) and at the instance level (by application integrators).
 
 Plugin developers create a `RouteRef` to expose a path in Backstage's routing system. You will see below how routes are defined programmatically, but before diving into code, let us explain how to configure them at the app level. In spite of the fact that plugin developers choose a default route path for the routes their plugin provides, all that path can be changed, so app integrators can set a custom path to a route whenever they like to (more information in the following sessions).
 
