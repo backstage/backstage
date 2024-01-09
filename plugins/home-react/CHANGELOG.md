@@ -1,5 +1,14 @@
 # @backstage/plugin-home-react
 
+## 0.1.7-next.2
+
+### Patch Changes
+
+- 98ac5ab: Updated dependency `@rjsf/utils` to `5.15.1`.
+  Updated dependency `@rjsf/core` to `5.15.1`.
+  Updated dependency `@rjsf/material-ui` to `5.15.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.15.1`.
+
 ## 0.1.7-next.1
 
 ### Patch Changes

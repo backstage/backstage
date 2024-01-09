@@ -1,5 +1,15 @@
 # @backstage/plugin-user-settings
 
+## 0.8.0-next.2
+
+### Patch Changes
+
+- eea0849: add user-settings declarative integration core nav item
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.1-next.2
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
 ## 0.8.0-next.1
 
 ### Minor Changes
