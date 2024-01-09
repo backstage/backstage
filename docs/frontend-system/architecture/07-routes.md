@@ -75,7 +75,7 @@ const rootPage = createPageExtension({ // [2]
   // The `name` option is omitted since this is the root page
   defaultPath: '/'
   routeRef: rootRouteRef,
-  loader: async () => <Page>Root Page</Page>
+  loader: async () => <div>Root Page</div>
 });
 
 export default const createPlugin({ // [3]
