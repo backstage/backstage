@@ -30,6 +30,14 @@ Install this module:
 yarn add --cwd packages/backend @backstage/plugin-events-backend-module-gerrit
 ```
 
+### Add to backend
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-events-backend-module-gerrit/alpha'));
+```
+
+### Add to backend (old)
+
 Add the event router to the `EventsBackend` instance in `packages/backend/src/plugins/events.ts`:
 
 ```diff

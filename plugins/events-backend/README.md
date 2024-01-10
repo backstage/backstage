@@ -24,7 +24,15 @@ to the used event broker.
 yarn add --cwd packages/backend @backstage/plugin-events-backend @backstage/plugin-events-node
 ```
 
-### Event Broker
+### Add to backend
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-events-backend/alpha'));
+```
+
+### Add to backend (old)
+
+#### Event Broker
 
 First you will need to add and implementation of the `EventBroker` interface to the backend plugin environment.
 This will allow event broker instance any backend plugins to publish and subscribe to events in order to communicate
@@ -44,7 +52,7 @@ Then update plugin environment to include the event broker.
 +  eventBroker: EventBroker;
 ```
 
-### Publishing and Subscribing to events with the broker
+#### Publishing and Subscribing to events with the broker
 
 Backend plugins are passed the event broker in the plugin environment at startup of the application. The plugin can
 make use of this to communicate between parts of the application.
@@ -80,27 +88,27 @@ export default async function createPlugin(
 }
 ```
 
-### Implementing an `EventSubscriber` class
+#### Implementing an `EventSubscriber` class
 
 More complex solutions might need the creation of a class that implements the `EventSubscriber` interface. e.g.
 
 ```typescript jsx
-import { EventSubscriber } from "./EventSubscriber";
+import { EventSubscriber } from './EventSubscriber';
 
 class ExampleSubscriber implements EventSubscriber {
-  ...
+  // ...
 
   supportsEventTopics() {
-      return ['publish.example']
+    return ['publish.example'];
   }
 
   async onEvent(params: EventParams) {
-    env.logger.info(`receieved ${params.topic} event`)
+    env.logger.info(`receieved ${params.topic} event`);
   }
 }
 ```
 
-### Events Backend
+#### Events Backend
 
 The events backend plugin provides a router to handler http events and publish the http requests onto the event
 broker.
