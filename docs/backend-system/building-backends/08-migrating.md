@@ -754,3 +754,255 @@ going easily, but feel free to move it out to where it fits best. As you migrate
 your entire plugin flora to the new backend system, you will probably make more
 and more of these modules as "first class" things, living right next to the
 implementations that they represent, and being exported from there.
+
+### The Auth Plugin
+
+A basic installation of the auth plugin with a microsoft provider will look as follows.
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
+/* highlight-add-end */
+```
+
+An additional step you'll need to take is to add the resolvers to your configuration, here's an example:
+
+```yaml title:"app-config.yaml"
+auth:
+  environment: development
+  providers:
+    microsoft:
+      development:
+        clientId: ${AZURE_CLIENT_ID}
+        clientSecret: ${AZURE_CLIENT_SECRET}
+        tenantId: ${AZURE_TENANT_ID}
+        signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityAnnotation
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+```
+
+> Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+
+#### Auth Plugin Modules and Their Resolvers
+
+As you may have noticed in the above example you'll need to import the `auth-backend` and an `auth-backend-module`. The following sections outline each of them and their resolvers.
+
+All of the following modules include the following common resolvers:
+
+- [emailMatchingUserEntityProfileEmail](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-node/src/sign-in/commonSignInResolvers.ts#L29)
+- [emailLocalPartMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-node/src/sign-in/commonSignInResolvers.ts#L54)
+
+##### Atlassian
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-atlassian-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [usernameMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-atlassian-provider/src/resolvers.ts#L33C16-L33C46)
+
+##### GCP IAM
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-gcp-iap-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [emailMatchingUserEntityAnnotation](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-gcp-iap-provider/src/resolvers.ts#L32C16-L32C49)
+
+##### GitHub
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [usernameMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-github-provider/src/resolvers.ts#L33C16-L33C46)
+
+##### GitLab
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-gitlab-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [usernameMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-gitlab-provider/src/resolvers.ts#L33C16-L33C46)
+
+##### Google
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-google-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [emailMatchingUserEntityAnnotation](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-google-provider/src/resolvers.ts#L33C16-L33C49)
+
+##### Microsoft
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [emailMatchingUserEntityAnnotation](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-microsoft-provider/src/resolvers.ts#L33C16-L33C49)
+
+##### oauth2
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-oauth2-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [usernameMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-oauth2-provider/src/resolvers.ts#L33C16-L33C46)
+
+##### oauth2 Proxy
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(
+  import('@backstage/plugin-auth-backend-module-oauth2-proxy-provider'),
+);
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [forwardedUserMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-oauth2-proxy-provider/src/resolvers.ts#L27C16-L27C51)
+
+##### Okta
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-okta-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [emailMatchingUserEntityAnnotation](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-okta-provider/src/resolvers.ts#L34C16-L34C49)
+
+##### Pinniped
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-pinniped-provider'));
+/* highlight-add-end */
+```
+
+##### VMware Cloud
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(
+  import('@backstage/plugin-auth-backend-module-vmware-cloud-provider'),
+);
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [vmwareCloudSignInResolvers](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-vmware-cloud-provider/src/resolvers.ts#L29C18-L29C44)
+
+#### Custom Resolver
+
+You may have a case where the common resolvers or the ones that are included with the auth module you use won't work for your needs. In this case you will need to create a custom resolver. Instead of the 2nd import for your auth provider module you would provide your own:
+
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-start */
+export const authModuleGoogleProvider = createBackendModule({
+  pluginId: 'auth',
+  moduleId: 'googleProvider',
+  register(reg) {
+    reg.registerInit({
+      deps: { providers: authProvidersExtensionPoint },
+      async init({ providers }) {
+        providers.registerProvider({
+          providerId: 'google',
+          factory: createOAuthProviderFactory({
+            authenticator: googleAuthenticator,
+            async signInResolver(info, ctx) {
+              // custom resolver ...
+            },
+          }),
+        });
+      },
+    });
+  },
+});
+/* highlight-add-end */
+
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(authModuleGoogleProvider);
+/* highlight-add-end */
+```
