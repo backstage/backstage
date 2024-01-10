@@ -36,7 +36,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 
 /**
  * @public
- * @deprecated You should use EntityCard instead, it's identical
+ * @deprecated You should use {@link EntityCard} instead, it's identical
  */
 export const DomainCard = (props: { entity: DomainEntity }) => {
   const { entity } = props;
