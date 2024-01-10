@@ -2,4 +2,4 @@
 '@backstage/plugin-codescene': patch
 ---
 
-updated readme document in codescene plugin
+Updated Readme document in codescene plugin
