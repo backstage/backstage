@@ -120,7 +120,7 @@ export function getGiteaRequestOptions(config: GiteaIntegrationConfig): {
   }
 
   if (username) {
-    headers.Authorization = `Basic ${Buffer.from(
+    headers.Authorization = `basic ${Buffer.from(
       `${username}:${password}`,
     ).toString('base64')}`;
   } else {

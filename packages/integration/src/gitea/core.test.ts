@@ -118,7 +118,7 @@ describe('gitea core', () => {
         password: 'P',
       };
 
-      const basicAuthentication = `Basic ${Buffer.from(
+      const basicAuthentication = `basic ${Buffer.from(
         `${authRequest.username}:${authRequest.password}`,
       ).toString('base64')}`;
 
