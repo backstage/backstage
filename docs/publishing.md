@@ -139,5 +139,5 @@ process is used to release an emergency fix as version `6.5.1` in the patch rele
 
 ### When the release workflow is not triggered for some reason, such as a GitHub incident
 
-Ask one of the maintainers to force push master back to a previous commit and then push the release merge commit again. This can break open pull requests and if that happens, we will have to go through each open pull request and rebase them with the new master base commit.
+Ask one of the maintainers to force push master back to a previous commit and then push the release merge commit again.
 
