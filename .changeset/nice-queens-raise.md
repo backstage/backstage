@@ -61,7 +61,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
       config.getOptionalConfigArray('matchingResourceLabels')?.map(mrl => {
         return { key: mrl.getString('key'), value: mrl.getString('value') };
       }) ?? [];
-
+/*Added a better condition to identify a property from kubernetes config inside app-config.yaml*/
 -    const getGkeProperty = config.getString('authProvider') === 'googleServiceAccount';
 -    let storeAuthProviderString: string;
 -    if (getGkeProperty) {
