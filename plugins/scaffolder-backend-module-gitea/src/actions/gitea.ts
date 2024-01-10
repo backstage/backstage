@@ -18,10 +18,8 @@ import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import {
   getGiteaRequestOptions,
-  GiteaIntegration,
   GiteaIntegrationConfig,
   ScmIntegrationRegistry,
-  ScmIntegrationsGroup,
 } from '@backstage/integration';
 import {
   ActionContext,
