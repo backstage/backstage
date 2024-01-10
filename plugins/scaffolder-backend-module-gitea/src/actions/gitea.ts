@@ -18,10 +18,13 @@ import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import {
   getGiteaRequestOptions,
+  GiteaIntegration,
   GiteaIntegrationConfig,
   ScmIntegrationRegistry,
+  ScmIntegrationsGroup,
 } from '@backstage/integration';
 import {
+  ActionContext,
   createTemplateAction,
   getRepoSourceDirectory,
   initRepoAndPush,
@@ -150,6 +153,54 @@ const generateCommitMessage = (
 };
 
 /**
+ * Checks if the provided function can be executed within a specific period of time limit.
+ * @param fn
+ * @param timeLimit
+ */
+function checkDurationLimit(fn: () => void, timeLimit: number): boolean {
+  const startTime = process.hrtime();
+
+  // Call the function
+  fn();
+
+  const endTime = process.hrtime(startTime);
+  const durationInMs = endTime[0] * 1000 + endTime[1] / 1e6;
+
+  // Check if the duration exceeds the time limit
+  return durationInMs <= timeLimit;
+}
+
+export async function checkAvailabilityGiteaRepository(
+  integrationConfig: GiteaIntegrationConfig,
+  options: {
+    owner?: string;
+    repo: string;
+    defaultBranch: string;
+    ctx: ActionContext<any>;
+  },
+) {
+  const { owner, repo, defaultBranch, ctx } = options;
+  const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
+  let response: Response;
+
+  response = await checkGiteaContentUrl(integrationConfig, {
+    owner,
+    repo,
+    defaultBranch,
+  });
+
+  while (response.status !== 200) {
+    if (ctx.signal?.aborted) return;
+    await sleep(1000);
+    response = await checkGiteaContentUrl(integrationConfig, {
+      owner,
+      repo,
+      defaultBranch,
+    });
+  }
+}
+
+/**
  * Creates a new action that initializes a git repository using the content of the workspace.
  * and publishes it to a Gitea instance.
  * @public
@@ -242,9 +293,6 @@ export function createPublishGiteaAction(options: {
         sourcePath,
       } = ctx.input;
 
-      const sleep = (ms: number | undefined) =>
-        new Promise(r => setTimeout(r, ms));
-
       const { repo, host, owner } = parseRepoUrl(repoUrl, integrations);
 
       const integrationConfig = integrations.gitea.byHost(host);
@@ -299,19 +347,20 @@ export function createPublishGiteaAction(options: {
       });
 
       // Check if the gitea repo URL is available before to exit
-      let response: Response;
-      response = await checkGiteaContentUrl(integrationConfig.config, {
-        owner,
-        repo,
-        defaultBranch,
-      });
-      while (response.status !== 200) {
-        await sleep(1000);
-        response = await checkGiteaContentUrl(integrationConfig.config, {
-          owner,
-          repo,
-          defaultBranch,
-        });
+      const operationTimeLimit = 20000; // 20 seconds
+      const checkDuration = checkDurationLimit(
+        () =>
+          checkAvailabilityGiteaRepository(integrationConfig.config, {
+            owner,
+            repo,
+            defaultBranch,
+            ctx,
+          }),
+        operationTimeLimit,
+      );
+
+      if (!checkDuration) {
+        console.log('Operation exceeded the time limit.');
       }
 
       const repoContentsUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}/src/branch/${defaultBranch}/`;
@@ -320,4 +369,9 @@ export function createPublishGiteaAction(options: {
       ctx.output('repoContentsUrl', repoContentsUrl);
     },
   });
+}
+
+async function dummySleep() {
+  const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
+  await sleep(10000);
 }
