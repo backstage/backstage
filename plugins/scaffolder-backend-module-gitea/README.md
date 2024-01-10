@@ -31,7 +31,10 @@ integrations:
 **NOTE**: As backstage will issue HTTPS/TLS requests to the gitea instance, it is needed to configure `gitea` with a valid certificate or at least with a
 self-signed certificate `gitea cert --host localhost -ca`. Don't forget to set the env var `NODE_EXTRA_CA_CERTS` to point to the CA file before launching backstage !
 
-When done, you can use the action in your template:
+When done, you can create a template which:
+
+- Declare the `RepoUrlPicker` within the `spec/parameters` section to select the gitea hosts
+- Include a step able to publish by example the newly generated project using the action `action: publish:gitea`
 
 ```yaml
 apiVersion: scaffolder.backstage.io/v1beta3
@@ -47,43 +50,7 @@ spec:
   owner: quarkus
   type: service
   parameters:
-    - title: Provide Information for Application
-      required:
-        - component_id
-        - owner
-        - java_package_name
-      properties:
-        component_id:
-          title: Name
-          type: string
-          description: Unique name of the component
-          default: my-quarkus-app
-          ui:field: EntityNamePicker
-        group_id:
-          title: Group Id
-          type: string
-          default: io.quarkus
-          description: Maven Group Id
-        artifact_id:
-          title: Artifact Id
-          type: string
-          default: quarkus-app
-          description: Maven Artifact Id
-        java_package_name:
-          title: Java Package Name
-          default: io.quarkus.demo
-          type: string
-          description: Name for the java package. eg (io.quarkus.blah)
-        owner:
-          title: Owner
-          type: string
-          description: IdP owner of the component
-          ui:field: OwnerPicker
-          ui:options:
-            allowedKinds:
-              - Group
-
-    - title: Application git repository Information
+    - title: Git repository Information
       required:
         - repoUrl
       properties:
@@ -93,8 +60,8 @@ spec:
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
-              - localhost:3333
               - gitea.<YOUR_DOMAIN>:<PORT>
+              - localhost:<PORT>
 
   steps:
     - id: template
@@ -112,8 +79,7 @@ spec:
           artifact_id: ${{ parameters.artifact_id }}
           java_package_name: ${{ parameters.java_package_name }}
           owner: ${{ parameters.owner }}
-          destination: ${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
-          quay_destination: ${{ parameters.image_organization }}/${{ parameters.component_id }}
+          destination: ${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }
           port: 8080
 
     - id: publish
@@ -141,4 +107,4 @@ spec:
         entityRef: ${{ steps.register.output.entityRef }}
 ```
 
-Enjoy ;-)
+Access the newly gitea repository created using the `repoContentsUrl` ;-)
