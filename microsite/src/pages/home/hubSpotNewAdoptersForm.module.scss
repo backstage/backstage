@@ -3,7 +3,7 @@
   right: 0;
   display: flex;
   position: fixed;
-  transform: translateY(-50%);
+  transform: translateY(-40%);
 
   transition: all 250ms ease-in-out;
 
@@ -22,7 +22,7 @@
 }
 
 .hubSpotNewAdopterFormContent {
-  height: 550px;
+  height: 600px;
   max-width: 500px;
   overflow-y: hidden;
   border-radius: 8px 0 0 8px;
