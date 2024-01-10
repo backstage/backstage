@@ -25,6 +25,7 @@ import { themes, UnifiedThemeProvider } from '@backstage/theme';
 import MockIcon from '@material-ui/icons/AcUnit';
 import { createSpecializedApp } from '@backstage/core-app-api';
 import {
+  AppComponents,
   attachComponentData,
   BootErrorPageProps,
   createRouteRef,
@@ -101,6 +102,11 @@ export type TestAppOptions = {
    * const link = useRouteRef(myRouteRef)
    */
   mountedRoutes?: { [path: string]: RouteRef | ExternalRouteRef };
+
+  /**
+   * Components to be forwarded to the `components` option of `createApp`.
+   */
+  components?: Partial<AppComponents>;
 };
 
 function isExternalRouteRef(
@@ -137,6 +143,7 @@ export function createTestAppWrapper(
       Router: ({ children }) => (
         <MemoryRouter initialEntries={routeEntries} children={children} />
       ),
+      ...options.components,
     },
     icons: mockIcons,
     plugins: [],
