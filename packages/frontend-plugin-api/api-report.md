@@ -280,6 +280,8 @@ export interface BackstagePlugin<
   readonly id: string;
   // (undocumented)
   readonly routes: Routes;
+  // (undocumented)
+  toString(): string;
 }
 
 export { BackstageUserIdentity };
@@ -427,6 +429,11 @@ export namespace createComponentExtension {
       {}
     >;
 }
+
+// @public (undocumented)
+export function createComponentRef<T extends {} = {}>(options: {
+  id: string;
+}): ComponentRef<T>;
 
 // @public (undocumented)
 export function createExtension<
@@ -735,6 +742,8 @@ export interface Extension<TConfig> {
   readonly disabled: boolean;
   // (undocumented)
   readonly id: string;
+  // (undocumented)
+  toString(): string;
 }
 
 // @public (undocumented)
@@ -763,6 +772,7 @@ export type ExtensionDataRef<
   T: TData;
   config: TConfig;
   $$type: '@backstage/ExtensionDataRef';
+  toString(): string;
 };
 
 // @public
@@ -799,6 +809,8 @@ export interface ExtensionDefinition<TConfig> {
   readonly name?: string;
   // (undocumented)
   readonly namespace?: string;
+  // (undocumented)
+  toString(): string;
 }
 
 // @public (undocumented)
@@ -821,6 +833,8 @@ export interface ExtensionInput<
 export interface ExtensionOverrides {
   // (undocumented)
   readonly $$type: '@backstage/ExtensionOverrides';
+  // (undocumented)
+  toString(): string;
 }
 
 // @public (undocumented)
