@@ -20,4 +20,4 @@ import { authModulePinnipedProvider as deprecatedAuthModulePinnipedProvider } fr
  * @public
  * @deprecated Use default import instead
  */
-export { deprecatedAuthModulePinnipedProvider as authModulePinnipedProvider };
+export const authModulePinnipedProvider = deprecatedAuthModulePinnipedProvider;

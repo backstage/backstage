@@ -20,4 +20,5 @@ import { authModuleMicrosoftProvider as deprecatedAuthModuleMicrosoftProvider } 
  * @public
  * @deprecated Use default import instead
  */
-export { deprecatedAuthModuleMicrosoftProvider as authModuleMicrosoftProvider };
+export const authModuleMicrosoftProvider =
+  deprecatedAuthModuleMicrosoftProvider;
