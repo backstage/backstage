@@ -28,10 +28,8 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './gitea.examples';
-import fetch, { RequestInit, Response } from 'node-fetch';
 import crypto from 'crypto';
 
-/* NOT USED. See TODO hereafter */
 const checkGiteaContentUrl = async (
   config: GiteaIntegrationConfig,
   options: {
