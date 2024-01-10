@@ -29,7 +29,7 @@ integrations:
 ```
 
 **NOTE**: As backstage will issue HTTPS/TLS requests to the gitea instance, it is needed to configure `gitea` with a valid certificate or at least with a
-self-signed certificate `gitea cert --host localhost -ca`. Don't forget to set the env var `NODE_EXTRA_CA_CERTS` to point to the CA file before to launch backstage !
+self-signed certificate `gitea cert --host localhost -ca`. Don't forget to set the env var `NODE_EXTRA_CA_CERTS` to point to the CA file before launching backstage !
 
 When done, you can use the action in your template:
 
