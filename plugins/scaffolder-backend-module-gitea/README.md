@@ -14,23 +14,6 @@ yarn add --cwd packages/backend
 Configure the action (if not yet done):
 (you can check the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to see all options):
 
-```typescript
-// plugins/scaffolder-backend/src/scaffolder/actions/builtin/createBuiltinActions.ts
-
-export const createBuiltinActions = (
-...
-  const actions = [
-    ...
-    createPublishGiteaAction({
-      integrations,
-      config,
-    }),
-    ...
-  ];
-  return actions as TemplateAction[];
-};
-```
-
 Before to create a template, include to your `app-config.yaml` file the
 gitea host and credentials under the `integrations:` section
 
