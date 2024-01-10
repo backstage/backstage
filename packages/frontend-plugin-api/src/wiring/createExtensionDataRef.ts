@@ -23,7 +23,6 @@ export type ExtensionDataRef<
   T: TData;
   config: TConfig;
   $$type: '@backstage/ExtensionDataRef';
-  toString(): string;
 };
 
 /** @public */
@@ -51,7 +50,7 @@ export function createExtensionDataRef<TData>(
     },
     toString() {
       const optional = Boolean(this.config.optional);
-      return `extensionDataRef{id=${id},optional=${optional}}`;
+      return `ExtensionDataRef{id=${id},optional=${optional}}`;
     },
   } as ConfigurableExtensionDataRef<TData, { optional?: true }>;
 }

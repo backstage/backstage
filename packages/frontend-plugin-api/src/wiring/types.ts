@@ -41,13 +41,11 @@ export interface BackstagePlugin<
   readonly id: string;
   readonly routes: Routes;
   readonly externalRoutes: ExternalRoutes;
-  toString(): string;
 }
 
 /** @public */
 export interface ExtensionOverrides {
   readonly $$type: '@backstage/ExtensionOverrides';
-  toString(): string;
 }
 
 /** @public */

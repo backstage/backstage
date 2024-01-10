@@ -15,5 +15,3 @@
  */
 
 import '@testing-library/jest-dom';
-
-(global as unknown as { CSSOM: any }).CSSOM = { parse() {} };
