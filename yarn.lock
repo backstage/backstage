@@ -8291,6 +8291,8 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@gitbeaker/core": ^35.8.0
     "@gitbeaker/node": ^35.8.0
+    "@gitbeaker/rest": ^39.25.0
+    jest-date-mock: ^1.0.8
     yaml: ^2.0.0
     zod: ^3.22.4
   languageName: unknown
@@ -11117,6 +11119,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gitbeaker/core@npm:^39.25.0":
+  version: 39.25.0
+  resolution: "@gitbeaker/core@npm:39.25.0"
+  dependencies:
+    "@gitbeaker/requester-utils": ^39.25.0
+    qs: ^6.11.2
+    xcase: ^2.0.1
+  checksum: 56ebe3c6ba1078c47a6cae0abcd5ae4fd928dc73c9eb7dc462894d497d6fa5373c0d09a7a7a0583097cffa641eeb0b28b1764d33a085a7b95f0115399240bc7e
+  languageName: node
+  linkType: hard
+
 "@gitbeaker/node@npm:^35.1.0, @gitbeaker/node@npm:^35.8.0":
   version: 35.8.1
   resolution: "@gitbeaker/node@npm:35.8.1"
@@ -11138,6 +11151,28 @@ __metadata:
     qs: ^6.10.1
     xcase: ^2.0.1
   checksum: c3c94ad90dab481887380f5bcff0416c1e1eee935fc3ca4f12d8db83d85c5f0d47f7f35cee6f2b05491bda99c03fb7eb88b849c986822eae3b1bfc26641ec899
+  languageName: node
+  linkType: hard
+
+"@gitbeaker/requester-utils@npm:^39.25.0":
+  version: 39.25.0
+  resolution: "@gitbeaker/requester-utils@npm:39.25.0"
+  dependencies:
+    async-sema: ^3.1.1
+    micromatch: ^4.0.5
+    qs: ^6.11.2
+    xcase: ^2.0.1
+  checksum: 1ca90f5ac705d5ef9df682b3051106326bc660427b9b2a88762992690981ce0b6bed4b22bc08af0ba97043766f9898605ba58ed6c1a08b6711af34032f013ed2
+  languageName: node
+  linkType: hard
+
+"@gitbeaker/rest@npm:^39.25.0":
+  version: 39.25.0
+  resolution: "@gitbeaker/rest@npm:39.25.0"
+  dependencies:
+    "@gitbeaker/core": ^39.25.0
+    "@gitbeaker/requester-utils": ^39.25.0
+  checksum: 5732a34fe3f2fe0a048963baf90b237fde7a1be61fa327e2c7aa69266649394b5b48cd99a6c6abaf1cf8b32b84a293800af33eef49c011b252d6e061f7fe1af9
   languageName: node
   linkType: hard
 
@@ -20796,6 +20831,13 @@ __metadata:
   dependencies:
     retry: 0.13.1
   checksum: 38a7152ff7265a9321ea214b9c69e8224ab1febbdec98efbbde6e562f17ff68405569b796b1c5271f354aef8783665d29953f051f68c1fc45306e61aec82fdc4
+  languageName: node
+  linkType: hard
+
+"async-sema@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "async-sema@npm:3.1.1"
+  checksum: 07b8c51f6cab107417ecdd8126b7a9fe5a75151b7f69fdd420dcc8ee08f9e37c473a217247e894b56e999b088b32e902dbe41637e4e9b594d3f8dfcdddfadc5e
   languageName: node
   linkType: hard
 
@@ -30799,6 +30841,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-date-mock@npm:^1.0.8":
+  version: 1.0.8
+  resolution: "jest-date-mock@npm:1.0.8"
+  checksum: 7b012870440b0df742d0b651435b91625dbbf02d916633a0c70c7deb5d5087f9aadc59847602312368826325909e70e95cd412896a0c9ee1d5ac382000bf5ef9
+  languageName: node
+  linkType: hard
+
 "jest-diff@npm:^28.1.3":
   version: 28.1.3
   resolution: "jest-diff@npm:28.1.3"
@@ -37871,7 +37920,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.11.0, qs@npm:^6.9.1, qs@npm:^6.9.4, qs@npm:^6.9.6":
+"qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.11.0, qs@npm:^6.11.2, qs@npm:^6.9.1, qs@npm:^6.9.4, qs@npm:^6.9.6":
   version: 6.11.2
   resolution: "qs@npm:6.11.2"
   dependencies:
