@@ -472,7 +472,15 @@
       "architecture-decisions/adrs-adr012",
       "architecture-decisions/adrs-adr013"
     ],
-    "FAQ": ["FAQ"],
+    "FAQ": [
+      "faq/FAQ",
+      "faq/Product FAQs",
+      "faq/Technical FAQs",
+      "faq/Adoption FAQs",
+      "faq/DEPLOYMENT FAQs",
+      "faq/FRAMEWORK FAQs",
+      "faq/CORE FEATURES FAQs"
+    ],
     "Accessibility": ["accessibility/index"]
   }
 }
