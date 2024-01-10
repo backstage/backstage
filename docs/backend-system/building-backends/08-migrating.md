@@ -757,7 +757,7 @@ implementations that they represent, and being exported from there.
 
 ### The Auth Plugin
 
-A basic installation of the auth plugin will look as follows.
+A basic installation of the auth plugin with a microsoft provider will look as follows.
 
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
@@ -769,7 +769,7 @@ backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
 
 An additional step you'll need to take is to add the resolvers to your configuration, here's an example:
 
-```yaml title:"app-config.yaml
+```yaml title:"app-config.yaml"
 auth:
   environment: development
   providers:
