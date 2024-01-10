@@ -304,9 +304,7 @@ export function createPublishGiteaAction(options: {
       const { username, password } = integrationConfig.config;
 
       if (!username || !password) {
-        throw new Error(
-          'Credentials for Gitea integration required for this action.',
-        );
+        throw new Error('Credentials for the gitea ${host} required.');
       }
 
       // check if the org exists within the gitea server
