@@ -1,4 +1,4 @@
-# @backstage/backend-plugin-manager
+# @backstage/backend-dynamic-feature-service
 
 ## 0.0.5-next.2
 
