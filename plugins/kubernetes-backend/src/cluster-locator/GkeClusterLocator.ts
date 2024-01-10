@@ -62,7 +62,6 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
     } catch (err) {
       getGkeProperty = 'google';
     }
-    console.log('getGkeProperty', getGkeProperty);
     if (getGkeProperty === 'googleServiceAccount') {
       storeAuthProviderString = 'googleServiceAccount';
     } else {
