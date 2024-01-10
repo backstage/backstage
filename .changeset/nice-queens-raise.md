@@ -62,9 +62,24 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
         return { key: mrl.getString('key'), value: mrl.getString('value') };
       }) ?? [];
 
-+    const getGkeProperty = config.getString('authProvider') === 'googleServiceAccount';
+-    const getGkeProperty = config.getString('authProvider') === 'googleServiceAccount';
+-    let storeAuthProviderString: string;
+-    if (getGkeProperty) {
+-      storeAuthProviderString = 'googleServiceAccount';
+-    } else {
+-      storeAuthProviderString = 'google';
+-    }
 +    let storeAuthProviderString: string;
-+    if (getGkeProperty) {
++    let getGkeProperty;
++    try {
++     getGkeProperty = config.getString('authProvider');
+
++    } catch (err) {
++      getGkeProperty = 'google';
+
++    }
++    console.log('getGkeProperty', getGkeProperty);
++    if (getGkeProperty === 'googleServiceAccount') {
 +      storeAuthProviderString = 'googleServiceAccount';
 +    } else {
 +      storeAuthProviderString = 'google';
