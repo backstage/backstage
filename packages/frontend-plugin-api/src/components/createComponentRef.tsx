@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-export {
-  ExtensionBoundary,
-  type ExtensionBoundaryProps,
-} from './ExtensionBoundary';
-export { coreComponentRefs } from './coreComponentRefs';
-export { createComponentRef, type ComponentRef } from './createComponentRef';
+/** @public */
+export type ComponentRef<T extends {} = {}> = {
+  id: string;
+  T: T;
+};
+
+/** @public */
+export function createComponentRef<T extends {} = {}>(options: {
+  id: string;
+}): ComponentRef<T> {
+  const { id } = options;
+  return {
+    id,
+    toString: () => `componentRef{id=${id}}`,
+  } as ComponentRef<T>;
+}

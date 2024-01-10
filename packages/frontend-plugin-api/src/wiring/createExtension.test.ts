@@ -287,5 +287,8 @@ describe('createExtension', () => {
       },
     });
     expect(extension.namespace).toBe('test');
+    expect(String(extension)).toBe(
+      'extensionDefinition{namespace=test,attachTo=root@default}',
+    );
   });
 });

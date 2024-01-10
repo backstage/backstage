@@ -82,6 +82,9 @@ export function createPlugin<
     externalRoutes: options.externalRoutes ?? ({} as ExternalRoutes),
     featureFlags: options.featureFlags ?? [],
     extensions,
+    toString() {
+      return `plugin{id=${options.id}}`;
+    },
   } as InternalBackstagePlugin<Routes, ExternalRoutes>;
 }
 

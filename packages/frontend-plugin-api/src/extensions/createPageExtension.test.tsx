@@ -55,6 +55,7 @@ describe('createPageExtension', () => {
         routeRef: expect.anything(),
       },
       factory: expect.any(Function),
+      toString: expect.any(Function),
     });
 
     expect(
@@ -89,6 +90,7 @@ describe('createPageExtension', () => {
         routeRef: expect.anything(),
       },
       factory: expect.any(Function),
+      toString: expect.any(Function),
     });
 
     expect(
@@ -112,6 +114,7 @@ describe('createPageExtension', () => {
         routeRef: expect.anything(),
       },
       factory: expect.any(Function),
+      toString: expect.any(Function),
     });
   });
 

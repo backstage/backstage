@@ -138,6 +138,7 @@ describe('createPlugin', () => {
     const plugin = createPlugin({ id: 'test' });
 
     expect(plugin).toBeDefined();
+    expect(String(plugin)).toBe('plugin{id=test}');
   });
 
   it('should create a plugin with extension instances', async () => {
