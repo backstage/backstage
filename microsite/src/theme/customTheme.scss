@@ -8,6 +8,14 @@
   --ifm-color-primary-darkest: #268271;
 }
 
+#__docusaurus {
+  .theme-doc-markdown {
+    a {
+      text-decoration: underline;
+    }
+  }
+}
+
 .footerLogo {
   background-image: url(/img/logo.svg);
   background-repeat: no-repeat;
