@@ -301,11 +301,9 @@ export function createPublishGiteaAction(options: {
           `No matching integration configuration for host ${host}, please check your integrations config`,
         );
       }
+      const { username, password } = integrationConfig.config;
 
-      if (
-        !integrationConfig.config.username ||
-        !integrationConfig.config.password
-      ) {
+      if (!username || !password) {
         throw new Error(
           'Credentials for Gitea integration required for this action.',
         );
@@ -323,8 +321,8 @@ export function createPublishGiteaAction(options: {
       });
 
       const auth = {
-        username: integrationConfig.config.username!,
-        password: integrationConfig.config.password!,
+        username: username,
+        password: password,
       };
       const gitAuthorInfo = {
         name: gitAuthorName
@@ -369,9 +367,4 @@ export function createPublishGiteaAction(options: {
       ctx.output('repoContentsUrl', repoContentsUrl);
     },
   });
-}
-
-async function dummySleep() {
-  const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
-  await sleep(10000);
 }
