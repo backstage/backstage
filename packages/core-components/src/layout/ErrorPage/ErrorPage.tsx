@@ -15,11 +15,13 @@
  */
 
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from '../../components/Link';
+import { LogViewer } from '../../components';
 import { useSupportConfig } from '../../hooks';
 import { MicDrop } from './MicDrop';
 
@@ -28,6 +30,7 @@ interface IErrorPageProps {
   statusMessage: string;
   additionalInfo?: React.ReactNode;
   supportUrl?: string;
+  stack?: string;
 }
 
 /** @public */
@@ -35,10 +38,16 @@ export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
 
 const useStyles = makeStyles(
   theme => ({
-    container: {
+    parent: {
       padding: theme.spacing(8),
       [theme.breakpoints.down('xs')]: {
         padding: theme.spacing(2),
+      },
+    },
+    container: {
+      marginBottom: theme.spacing(5),
+      [theme.breakpoints.down('xs')]: {
+        marginBottom: theme.spacing(4),
       },
     },
     title: {
@@ -62,37 +71,44 @@ const useStyles = makeStyles(
  *
  */
 export function ErrorPage(props: IErrorPageProps) {
-  const { status, statusMessage, additionalInfo, supportUrl } = props;
+  const { status, statusMessage, additionalInfo, supportUrl, stack } = props;
   const classes = useStyles();
   const navigate = useNavigate();
   const support = useSupportConfig();
 
   return (
-    <Grid container spacing={0} className={classes.container}>
-      <Grid item xs={12} sm={8} md={4}>
-        <Typography
-          data-testid="error"
-          variant="body1"
-          className={classes.subtitle}
-        >
-          ERROR {status}: {statusMessage}
-        </Typography>
-        <Typography variant="body1" className={classes.subtitle}>
-          {additionalInfo}
-        </Typography>
-        <Typography variant="h2" className={classes.title}>
-          Looks like someone dropped the mic!
-        </Typography>
-        <Typography variant="h6">
-          <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
-            Go back
-          </Link>
-          ... or please{' '}
-          <Link to={supportUrl || support.url}>contact support</Link> if you
-          think this is a bug.
-        </Typography>
+    <Box className={classes.parent}>
+      <Grid container className={classes.container}>
+        <Grid item xs={12} sm={8} md={4}>
+          <Typography
+            data-testid="error"
+            variant="body1"
+            className={classes.subtitle}
+          >
+            ERROR {status}: {statusMessage}
+          </Typography>
+          <Typography variant="body1" className={classes.subtitle}>
+            {additionalInfo}
+          </Typography>
+          <Typography variant="h2" className={classes.title}>
+            Looks like someone dropped the mic!
+          </Typography>
+          <Typography variant="h6">
+            <Link
+              to="#"
+              data-testid="go-back-link"
+              onClick={() => navigate(-1)}
+            >
+              Go back
+            </Link>
+            ... or please{' '}
+            <Link to={supportUrl || support.url}>contact support</Link> if you
+            think this is a bug.
+          </Typography>
+        </Grid>
+        <MicDrop />
       </Grid>
-      <MicDrop />
-    </Grid>
+      {stack && <LogViewer text={stack} />}
+    </Box>
   );
 }
