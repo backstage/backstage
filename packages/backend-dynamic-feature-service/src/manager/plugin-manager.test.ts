@@ -47,7 +47,7 @@ import { PluginScanner } from '../scanner/plugin-scanner';
 import { findPaths } from '@backstage/cli-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-describe('backend-plugin-manager', () => {
+describe('backend-dynamic-feature-service', () => {
   const mockDir = createMockDirectory();
 
   describe('loadPlugins', () => {
