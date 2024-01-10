@@ -50,7 +50,7 @@ export function createExtensionOverrides(
     toString() {
       const ex = extensions.map(String).join(',');
       const ff = featureFlags.map(f => f.name).join(',');
-      return `extensionOverrides{extensions=[${ex}],featureFlags=[${ff}]}`;
+      return `ExtensionOverrides{extensions=[${ex}],featureFlags=[${ff}]}`;
     },
   } as InternalExtensionOverrides;
 }

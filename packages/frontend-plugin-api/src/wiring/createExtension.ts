@@ -107,7 +107,6 @@ export interface ExtensionDefinition<TConfig> {
   readonly attachTo: { id: string; input: string };
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig>;
-  toString(): string;
 }
 
 /** @internal */
@@ -121,7 +120,6 @@ export interface InternalExtensionDefinition<TConfig>
     config: TConfig;
     inputs: ResolvedExtensionInputs<any>;
   }): ExtensionDataValues<any>;
-  toString(): string;
 }
 
 /** @internal */
@@ -180,7 +178,7 @@ export function createExtension<
         parts.push(`name=${options.name}`);
       }
       parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
-      return `extensionDefinition{${parts.join(',')}}`;
+      return `ExtensionDefinition{${parts.join(',')}}`;
     },
   } as InternalExtensionDefinition<TConfig>;
 }

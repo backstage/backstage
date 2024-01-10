@@ -32,7 +32,6 @@ export interface Extension<TConfig> {
   readonly attachTo: { id: string; input: string };
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig>;
-  toString(): string;
 }
 
 /** @internal */
@@ -90,7 +89,7 @@ export function resolveExtensionDefinition<TConfig>(
     version: 'v1',
     id,
     toString() {
-      return `extension{id=${id}}`;
+      return `Extension{id=${id}}`;
     },
   } as Extension<TConfig>;
 }

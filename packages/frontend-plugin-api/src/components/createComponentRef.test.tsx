@@ -20,6 +20,6 @@ describe('createComponentRef', () => {
   it('can be created and read', () => {
     const ref = createComponentRef({ id: 'foo' });
     expect(ref.id).toBe('foo');
-    expect(String(ref)).toBe('componentRef{id=foo}');
+    expect(String(ref)).toBe('ComponentRef{id=foo}');
   });
 });

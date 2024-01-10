@@ -20,9 +20,9 @@ describe('createExtensionDataRef', () => {
   it('can be created and read', () => {
     const ref = createExtensionDataRef('foo');
     expect(ref.id).toBe('foo');
-    expect(String(ref)).toBe('extensionDataRef{id=foo,optional=false}');
+    expect(String(ref)).toBe('ExtensionDataRef{id=foo,optional=false}');
     const refOptional = ref.optional();
     expect(refOptional.id).toBe('foo');
-    expect(String(refOptional)).toBe('extensionDataRef{id=foo,optional=true}');
+    expect(String(refOptional)).toBe('ExtensionDataRef{id=foo,optional=true}');
   });
 });

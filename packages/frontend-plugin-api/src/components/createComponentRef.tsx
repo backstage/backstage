@@ -27,6 +27,8 @@ export function createComponentRef<T extends {} = {}>(options: {
   const { id } = options;
   return {
     id,
-    toString: () => `componentRef{id=${id}}`,
+    toString() {
+      return `ComponentRef{id=${id}}`;
+    },
   } as ComponentRef<T>;
 }
