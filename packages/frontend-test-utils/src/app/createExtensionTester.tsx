@@ -151,7 +151,7 @@ const AuthenticationProvider = (props: {
 
 const TestCoreRouterExtension = createExtension({
   namespace: 'app',
-  name: 'router',
+  name: 'root',
   attachTo: { id: 'app', input: 'root' },
   inputs: {
     signInPage: createExtensionInput(
