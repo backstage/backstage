@@ -25,6 +25,7 @@ import {
 import fetch, { Response, RequestInit } from 'node-fetch';
 
 import { Config } from '@backstage/config';
+import { getAuthorizationHeader } from './helpers';
 
 const createRepository = async (opts: {
   workspace: string;
@@ -91,29 +92,6 @@ const createRepository = async (opts: {
   // the first pushed branch will be set as "main branch" then
   const repoContentsUrl = `${r.links.html.href}/src/${mainBranch}`;
   return { remoteUrl, repoContentsUrl };
-};
-
-const getAuthorizationHeader = (config: {
-  username?: string;
-  appPassword?: string;
-  token?: string;
-}) => {
-  if (config.username && config.appPassword) {
-    const buffer = Buffer.from(
-      `${config.username}:${config.appPassword}`,
-      'utf8',
-    );
-
-    return `Basic ${buffer.toString('base64')}`;
-  }
-
-  if (config.token) {
-    return `Bearer ${config.token}`;
-  }
-
-  throw new Error(
-    `Authorization has not been provided for Bitbucket Cloud. Please add either username + appPassword to the Integrations config or a user login auth token`,
-  );
 };
 
 /**
