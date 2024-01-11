@@ -153,7 +153,7 @@ export type PermissionCriteria<TQuery> =
  *
  * @public
  */
-export type PermissionRuleParam = undefined | JsonPrimitive | JsonPrimitive[];
+export type PermissionRuleParam = JsonPrimitive | JsonPrimitive[];
 
 /**
  * Types that can be used as parameters to permission rules.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import express, { Response } from 'express';
+import express from 'express';
 import { Logger } from 'winston';
 import {
   errorHandler,
@@ -42,7 +42,6 @@ import { memoize } from 'lodash';
 import DataLoader from 'dataloader';
 import { Config } from '@backstage/config';
 import { createOpenApiRouter } from '../schema/openapi.generated';
-
 /**
  * Options required when constructing a new {@link express#Router} using
  * {@link createRouter}.
@@ -139,24 +138,24 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  router.post(
-    '/authorize',
-    async (req, res: Response<EvaluatePermissionResponseBatch>) => {
-      const user = await identity.getIdentity({ request: req });
+  router.post('/authorize', async (req, res) => {
+    const user = await identity.getIdentity({ request: req });
 
-      const { body } = req;
+    const { body } = req;
 
-      res.json({
-        items: await handleRequest(
-          body.items,
-          user,
-          policy,
-          permissionIntegrationClient,
-          req.header('authorization'),
-        ),
-      });
-    },
-  );
+    // Typing this to preserve validation of recursive allOf and anyOf checks.
+    const response: EvaluatePermissionResponseBatch = {
+      items: await handleRequest(
+        body.items,
+        user,
+        policy,
+        permissionIntegrationClient,
+        req.header('authorization'),
+      ),
+    };
+
+    res.status(200).json(response);
+  });
 
   router.use(errorHandler());
 

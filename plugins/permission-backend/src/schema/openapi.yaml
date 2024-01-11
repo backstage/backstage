@@ -9,19 +9,24 @@ servers:
 paths:
   /authorize:
     post:
+      operationId: Authorize
       responses:
         "200":
-          description: 200 response
+          description: Success
           content:
-            application/json; charset=utf-8:
+            application/json:
               schema:
-                $ref: "#/components/schemas/PostAuthorize200ResponseBody"
-        "400":
-          description: 400 response
-          content:
-            application/json; charset=utf-8:
-              schema:
-                $ref: "#/components/schemas/PostAuthorize400ResponseBody"
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/EvaluatePermissionResponse"
+                required:
+                  - items
+                additionalProperties: false
+        # "400":
+        #   $ref: '#/components/responses/ErrorResponse'
       requestBody:
         content:
           application/json:
@@ -33,12 +38,56 @@ paths:
         "200":
           description: 200 response
           content:
-            application/json; charset=utf-8:
+            application/json:
               schema:
                 $ref: "#/components/schemas/GetHealth200ResponseBody"
 components:
+  responses:
+    ErrorResponse:
+      description: An error response from the backend.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+            stack:
+              type: string
+            code:
+              type: string
+          required:
+            - name
+            - message
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            url:
+              type: string
+          required:
+            - method
+            - url
+        response:
+          type: object
+          properties:
+            statusCode:
+              type: number
+          required:
+            - statusCode
+      required:
+        - error
+        - response
+      additionalProperties: {}
     PostAuthorizeRequestBody:
       type: object
       properties:
@@ -110,39 +159,100 @@ components:
             additionalProperties: false
       required:
         - items
-    PostAuthorize200ResponseBody:
+    
+    PermissionRuleParam:
+      oneOf:
+        - type: string
+        - type: number
+        - type: boolean
+          nullable: true
+
+    PermissionCondition:
       type: object
       properties:
-        items:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-              result:
-                type: string
-              pluginId:
-                type: string
-              resourceType:
-                type: string
-              conditions:
-                type: object
-                properties:
-                  rule:
-                    type: string
-                  params:
-                    type: array
-                    items:
-                      type: string
-                required:
-                  - rule
-                  - params
-            required:
-              - id
-              - result
+        resourceType:
+          type: string
+        rule:
+          type: string
+        params:
+          type: object
+          additionalProperties:
+            oneOf:
+              - $ref: "#/components/schemas/PermissionRuleParam"
+              - type: array
+                items:
+                  $ref: "#/components/schemas/PermissionRuleParam"
       required:
-        - items
+        - resourceType
+        - rule
+      additionalProperties: true
+
+    DefinitivePolicyDecision:
+      type: object
+      properties:
+        result:
+          type: string
+          enum:
+            - ALLOW
+            - DENY
+      required:
+        - result
+      additionalProperties: false
+
+    PermissionCriteria:
+      # Restricting this to depth of 1, TS doesn't love recursive
+      oneOf:
+        - type: object
+          properties:
+            allOf:
+              type: array
+              items:
+                $ref: "#/components/schemas/PermissionCondition"
+              minItems: 1
+          additionalProperties: true
+        - type: object
+          properties:
+            anyOf:
+              type: array
+              items:
+                $ref: "#/components/schemas/PermissionCondition"
+              minItems: 1
+          additionalProperties: true
+        - type: object
+          properties:
+            not:
+              type: array
+              items:
+                $ref: "#/components/schemas/PermissionCondition"
+              minItems: 1
+          additionalProperties: true
+        - $ref: "#/components/schemas/PermissionCondition"
+    
+    ConditionalPolicyDecision:
+      type: object
+      properties:
+        result:
+          type: string
+          enum:
+            - CONDITIONAL
+        pluginId:
+          type: string
+        resourceType:
+          type: string
+        conditions:
+          $ref: "#/components/schemas/PermissionCriteria"
+      required:
+        - result
+        - pluginId
+        - resourceType
+        - conditions
+      additionalProperties: false
+    
+    EvaluatePermissionResponse:
+      oneOf:
+        - $ref: "#/components/schemas/ConditionalPolicyDecision"
+        - $ref: "#/components/schemas/DefinitivePolicyDecision"
+
     PostAuthorize400ResponseBody:
       type: object
       properties:
