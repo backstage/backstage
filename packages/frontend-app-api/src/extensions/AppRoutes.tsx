@@ -19,38 +19,47 @@ import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
+  coreComponentRefs,
+  useComponentRef,
 } from '@backstage/frontend-plugin-api';
-import { SidebarPage } from '@backstage/core-components';
+import { useRoutes } from 'react-router-dom';
 
-export const CoreLayout = createExtension({
+export const AppRoutes = createExtension({
   namespace: 'app',
-  name: 'layout',
-  attachTo: { id: 'app/router', input: 'children' },
+  name: 'routes',
+  attachTo: { id: 'app/layout', input: 'content' },
   inputs: {
-    nav: createExtensionInput(
-      {
-        element: coreExtensionData.reactElement,
-      },
-      { singleton: true },
-    ),
-    content: createExtensionInput(
-      {
-        element: coreExtensionData.reactElement,
-      },
-      { singleton: true },
-    ),
+    routes: createExtensionInput({
+      path: coreExtensionData.routePath,
+      ref: coreExtensionData.routeRef.optional(),
+      element: coreExtensionData.reactElement,
+    }),
   },
   output: {
     element: coreExtensionData.reactElement,
   },
   factory({ inputs }) {
+    const Routes = () => {
+      const NotFoundErrorPage = useComponentRef(
+        coreComponentRefs.notFoundErrorPage,
+      );
+
+      const element = useRoutes([
+        ...inputs.routes.map(route => ({
+          path: `${route.output.path}/*`,
+          element: route.output.element,
+        })),
+        {
+          path: '*',
+          element: <NotFoundErrorPage />,
+        },
+      ]);
+
+      return element;
+    };
+
     return {
-      element: (
-        <SidebarPage>
-          {inputs.nav.output.element}
-          {inputs.content.output.element}
-        </SidebarPage>
-      ),
+      element: <Routes />,
     };
   },
 });

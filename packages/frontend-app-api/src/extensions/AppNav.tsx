@@ -78,7 +78,7 @@ const SidebarNavItem = (
   return <SidebarItem to={to} icon={Icon} text={title} />;
 };
 
-export const CoreNav = createExtension({
+export const AppNav = createExtension({
   namespace: 'app',
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },

@@ -263,6 +263,118 @@ describe('useTemplateSchema', () => {
 
       expect(first.schema).toEqual({
         type: 'object',
+        properties: {},
+      });
+    });
+
+    it('should deal with dependencies and oneOf options', () => {
+      const firstStepDependencies = {
+        preconditions: {
+          oneOf: [
+            {
+              title: 'About',
+              description: 'you have chosen option A',
+              properties: {
+                preconditions: {
+                  enum: ['optionA'],
+                },
+              },
+            },
+            {
+              title: 'About',
+              description: 'you have chosen option B',
+              properties: {
+                preconditions: {
+                  enum: ['optionB'],
+                },
+              },
+            },
+          ],
+        },
+      };
+
+      const secondStepDependencies = {
+        preconditions: {
+          oneOf: [
+            {
+              required: ['inputA'],
+              properties: {
+                preconditions: {
+                  enum: ['optionA'],
+                },
+                inputA: {
+                  title: 'Input A',
+                  type: 'string',
+                },
+              },
+            },
+            {
+              required: ['inputB'],
+              properties: {
+                preconditions: {
+                  enum: ['optionB'],
+                },
+                inputA: {
+                  title: 'Input B',
+                  type: 'string',
+                },
+              },
+            },
+          ],
+        },
+      };
+
+      const manifest: TemplateParameterSchema = {
+        title: 'Test Template',
+        description: 'Test Template Description',
+        steps: [
+          {
+            title: 'First step',
+            schema: {
+              type: 'object',
+              properties: {
+                preconditions: {
+                  title: 'Preconditions',
+                  type: 'string',
+                  description: 'Choose an option',
+                  enum: ['optionA', 'optionB'],
+                  enumNames: ['Option A', 'Option B'],
+                },
+              },
+              dependencies: firstStepDependencies,
+            },
+          },
+          {
+            title: 'Second step',
+            schema: {
+              dependencies: secondStepDependencies,
+            },
+          },
+        ],
+      };
+
+      const { result } = renderHook(() => useTemplateSchema(manifest), {
+        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+          <TestApiProvider
+            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      });
+
+      const [first, second] = result.current.steps;
+
+      expect(first.schema).toEqual({
+        dependencies: firstStepDependencies,
+        properties: expect.anything(),
+        title: undefined,
+        type: 'object',
+      });
+
+      expect(second.schema).toEqual({
+        dependencies: secondStepDependencies,
+        title: undefined,
       });
     });
   });

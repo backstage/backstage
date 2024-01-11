@@ -15,3 +15,4 @@
  */
 
 export { eventsModuleAzureDevOpsEventRouter } from './service/eventsModuleAzureDevOpsEventRouter';
+export { eventsModuleAzureDevOpsEventRouter as default } from './service/eventsModuleAzureDevOpsEventRouter';
