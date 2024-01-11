@@ -38,11 +38,20 @@ export interface InternalExtensionOverrides extends ExtensionOverrides {
 export function createExtensionOverrides(
   options: ExtensionOverridesOptions,
 ): ExtensionOverrides {
+  const extensions = options.extensions.map(def =>
+    resolveExtensionDefinition(def),
+  );
+  const featureFlags = options.featureFlags ?? [];
   return {
     $$type: '@backstage/ExtensionOverrides',
     version: 'v1',
-    extensions: options.extensions.map(def => resolveExtensionDefinition(def)),
-    featureFlags: options.featureFlags ?? [],
+    extensions,
+    featureFlags,
+    toString() {
+      const ex = extensions.map(String).join(',');
+      const ff = featureFlags.map(f => f.name).join(',');
+      return `ExtensionOverrides{extensions=[${ex}],featureFlags=[${ff}]}`;
+    },
   } as InternalExtensionOverrides;
 }
 

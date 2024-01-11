@@ -166,5 +166,19 @@ export function createExtension<
         ...rest,
       });
     },
+    toString() {
+      const parts: string[] = [];
+      if (options.kind) {
+        parts.push(`kind=${options.kind}`);
+      }
+      if (options.namespace) {
+        parts.push(`namespace=${options.namespace}`);
+      }
+      if (options.name) {
+        parts.push(`name=${options.name}`);
+      }
+      parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
+      return `ExtensionDefinition{${parts.join(',')}}`;
+    },
   } as InternalExtensionDefinition<TConfig>;
 }

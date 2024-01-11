@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-export {
-  ExtensionBoundary,
-  type ExtensionBoundaryProps,
-} from './ExtensionBoundary';
-export { coreComponentRefs } from './coreComponentRefs';
-export { createComponentRef, type ComponentRef } from './createComponentRef';
+import { createExtensionDataRef } from './createExtensionDataRef';
+
+describe('createExtensionDataRef', () => {
+  it('can be created and read', () => {
+    const ref = createExtensionDataRef('foo');
+    expect(ref.id).toBe('foo');
+    expect(String(ref)).toBe('ExtensionDataRef{id=foo,optional=false}');
+    const refOptional = ref.optional();
+    expect(refOptional.id).toBe('foo');
+    expect(String(refOptional)).toBe('ExtensionDataRef{id=foo,optional=true}');
+  });
+});

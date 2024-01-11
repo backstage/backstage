@@ -19,22 +19,7 @@ import {
   CoreNotFoundErrorPageProps,
   CoreProgressProps,
 } from '../types';
-
-/** @public */
-export type ComponentRef<T extends {} = {}> = {
-  id: string;
-  T: T;
-};
-
-/** @public */
-export function createComponentRef<T extends {} = {}>(options: {
-  id: string;
-}): ComponentRef<T> {
-  const { id } = options;
-  return {
-    id,
-  } as ComponentRef<T>;
-}
+import { createComponentRef } from './createComponentRef';
 
 const coreProgressComponentRef = createComponentRef<CoreProgressProps>({
   id: 'core.components.progress',
