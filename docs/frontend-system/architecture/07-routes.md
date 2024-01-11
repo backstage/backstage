@@ -381,6 +381,8 @@ const detailsRouteRef = createSubRouteRef({
 });
 
 // plugins/catalog/src/plugin.ts
+import React from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
 import { createPlugin, createPageExtension, useRouteRef } from '@backstage/frontend-plugin-api';
 import { rootRouteRef, detailsRouteRef } from './routes.ts';
 
@@ -391,19 +393,27 @@ const DetailsPage = () => (
 );
 
 const rootPage = createPageExtension({
-  defaultPath: '/'
+  defaultPath: '/',
   routeRef: rootRouteRef,
   loader: async () => {
-    const detailsRouteRef = useRouteRef(detailsRouteRef)();
+    const Component = () => {
+      const to = useRouteRef(detailsRouteRef)();
 
-    return (
-      <div>
-        <h1>Index Page</h1>
-        <Routes>
-          <Route path={detailsRouteRef.path} element={<DetailsPage />} />
-        </Routes>
-      </div>
-    );
+      return (
+        <div>
+          <h1>Index Page</h1>
+          {/* Registering the details subroute */}
+          <Routes>
+            <Route path={detailsRouteRef.path} element={<DetailsPage />} />
+          </Routes>
+          {/* Linking to the details subroute */}
+          <Link to={to}>Details Subpage</Link>
+        </div>
+      );
+    };
+
+    return <Component />;
+  },
   }
 });
 
@@ -414,6 +424,80 @@ export default createPlugin({
     details: detailsRouteRef,
   },
   extensions: [rootPage]
+});
+
+// plugins/catalog/src/index.ts
+export { default } from './plugin';
+```
+
+Subroutes can also receive parameters, here is an example:
+
+```tsx
+// plugins/catalog/src/routes.ts
+import {
+  createRouteRef,
+  createSubRouteRef,
+} from '@backstage/frontend-plugin-api';
+
+const rootRouteRef = createRouteRef();
+const detailsRouteRef = createSubRouteRef({
+  parent: rootRouteRef,
+  path: '/details/:name/:namespace/:kind',
+});
+
+// plugins/catalog/src/plugin.ts
+import React from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
+import {
+  createPlugin,
+  createPageExtension,
+  useRouteRef,
+} from '@backstage/frontend-plugin-api';
+import { rootRouteRef, detailsRouteRef } from './routes.ts';
+
+const DetailsPage = () => (
+  <div>
+    <h1>Entity Details</h1>
+    {/* can get the entity ref from URL and load the entity data here */}
+  </div>
+);
+
+const rootPage = createPageExtension({
+  defaultPath: '/subroutes',
+  routeRef: rootRouteRef,
+  loader: async () => {
+    const Component = () => {
+      const detailsRoutePath = useRouteRef(detailsRouteRef)({
+        // Setting the details subroute params
+        name: 'entity1',
+        namespace: 'default',
+        kind: 'component',
+      });
+
+      return (
+        <div>
+          <h1>Index Page</h1>
+          {/* Registering the details subroute */}
+          <Routes>
+            <Route path={detailsRouteRef.path} element={<DetailsPage />} />
+          </Routes>
+          {/* Linking to the details subroute */}
+          <Link to={detailsRoutePath}>Entity 1 Details Subpage</Link>
+        </div>
+      );
+    };
+
+    return <Component />;
+  },
+});
+
+export default createPlugin({
+  id: 'catalog',
+  routes: {
+    root: rootRouteRef,
+    details: detailsRouteRef,
+  },
+  extensions: [rootPage],
 });
 
 // plugins/catalog/src/index.ts
