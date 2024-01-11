@@ -93,7 +93,7 @@ export { default } from './plugin'
 We have completed our journey of creating a plugin page route. This is what the code does:
 
 - [1] The line 1 creates a route reference, which is not yet associated with any plugin page;
-- [2] A route that renders nothing makes no sense, does it? So we are creating a page extension that associates a path and a component with the newly created route ref;
+- [2] We associate our route reference with our page by providing it as an option during creation of the page extension.
 - [3] Finally, our plugin provides both routes and extensions.
 
 It's a smart question, and the answer can be found in the (Binding External Route References)[#building-external-route-references] section, wait a bit, keep reading and you'll understand why.
