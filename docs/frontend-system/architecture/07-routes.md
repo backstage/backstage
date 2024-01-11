@@ -65,7 +65,7 @@ The code snippet of the previous section does not indicate which plugin the rout
 // plugins/catalog/src/routes.ts
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 
-const rootRouteRef = createRouteRef(); // [1]
+export const rootRouteRef = createRouteRef(); // [1]
 
 // plugins/catalog/src/plugin.tsx
 import { createPlugin, createPageExtension } from '@backstage/frontend-plugin-api';
