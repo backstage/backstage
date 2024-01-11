@@ -17,7 +17,6 @@
 import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
-import parseGitUrl from 'git-url-parse';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -141,7 +140,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
       };
     }
 
-    const { filepath } = parseGitUrl(location);
+    const { pathname: filepath } = new URL(location);
     if (filepath?.match(/[*?]/)) {
       const limiter = limiterFactory(5);
       const response = await this.options.reader.search(location, { etag });
