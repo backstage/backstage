@@ -2,4 +2,4 @@
 '@backstage/cli': minor
 ---
 
-Added i18n:scan command for translations
+Added `i18n:scan` command for translations
