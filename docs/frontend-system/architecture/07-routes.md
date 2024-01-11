@@ -134,7 +134,6 @@ import {
 import { rootRouteRef, detailsRouteRef } from './routes';
 
 const indexPage = createPageExtension({
-  // Ommiting name since it is the root page
   defaultPath: '/entities',
   routeRef: indexRouteRef,
   loader: async () => {
@@ -286,7 +285,6 @@ export default createPlugin({
 // plugins/scaffolder/src/index.ts
 export { default } from './plugin';
 ```
-
 
 Now let's move on and configure the app to point to the Scaffolder create component page when the catalog create component ref be used.
 
