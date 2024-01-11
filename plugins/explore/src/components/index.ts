@@ -17,3 +17,4 @@
 export * from './CatalogKindExploreContent';
 export * from './ExploreLayout';
 export * from './DomainCard';
+export * from './EntityCard';
