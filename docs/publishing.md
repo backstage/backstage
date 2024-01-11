@@ -135,9 +135,8 @@ process is used to release an emergency fix as version `6.5.1` in the patch rele
   - [ ] An updated `CHANGELOG.md` of all patched packages from the tip of the patch branch, `git checkout origin/patch/v1.18.0 -- {packages,plugins}/*/CHANGELOG.md`. Note that if the patch happens after any next-line releases you'll need to restore those entries in the changelog, placing the patch release entry beneath any next-line release entries.
   - [ ] A changeset with the message "Applied the fix from version `6.5.1` of this package, which is part of the `v1.18.1` release of Backstage."
 
-## Throubleshooting
+## Troubleshooting
 
 ### When the release workflow is not triggered for some reason, such as a GitHub incident
 
 Ask one of the maintainers to force push master back to a previous commit and then push the release merge commit again.
-
