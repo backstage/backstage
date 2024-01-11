@@ -52,7 +52,7 @@ async function test(
         YAML_SCHEMA_PATH,
         '--server-override',
         `http://localhost:${port}`,
-        options?.update ? '--update interactive' : '',
+        options?.update ? '--update' : '',
       ],
       {
         cwd: directoryPath,
