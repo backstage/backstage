@@ -32,6 +32,7 @@ import {
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import {
+  MockPermissionApi,
   MockStorageApi,
   TestApiProvider,
   renderInTestApp,
@@ -41,6 +42,7 @@ import { screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { DefaultApiExplorerPage } from './DefaultApiExplorerPage';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 
 describe('DefaultApiExplorerPage', () => {
   const catalogApi: Partial<CatalogApi> = {
@@ -98,6 +100,7 @@ describe('DefaultApiExplorerPage', () => {
             new DefaultStarredEntitiesApi({ storageApi }),
           ],
           [apiDocsConfigRef, apiDocsConfig],
+          [permissionApiRef, new MockPermissionApi()],
         ]}
       >
         {children}

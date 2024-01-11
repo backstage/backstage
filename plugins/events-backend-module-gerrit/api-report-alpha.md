@@ -6,7 +6,9 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const eventsModuleGerritEventRouter: () => BackendFeature;
+const eventsModuleGerritEventRouter: () => BackendFeature;
+export default eventsModuleGerritEventRouter;
+export { eventsModuleGerritEventRouter };
 
 // (No @packageDocumentation comment for this package)
 ```

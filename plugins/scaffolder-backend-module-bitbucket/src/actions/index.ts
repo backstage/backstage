@@ -17,3 +17,4 @@ export * from './bitbucket';
 export * from './bitbucketCloud';
 export * from './bitbucketServer';
 export * from './bitbucketServerPullRequest';
+export { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun';

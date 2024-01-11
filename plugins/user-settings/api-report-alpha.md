@@ -4,6 +4,7 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -15,6 +16,11 @@ const _default: BackstagePlugin<
   {}
 >;
 export default _default;
+
+// @alpha (undocumented)
+export const settingsNavItem: ExtensionDefinition<{
+  title: string;
+}>;
 
 // @alpha (undocumented)
 export const userSettingsTranslationRef: TranslationRef<

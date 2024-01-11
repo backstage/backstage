@@ -429,6 +429,11 @@ export namespace createComponentExtension {
 }
 
 // @public (undocumented)
+export function createComponentRef<T extends {} = {}>(options: {
+  id: string;
+}): ComponentRef<T>;
+
+// @public (undocumented)
 export function createExtension<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,

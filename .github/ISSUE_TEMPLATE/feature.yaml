@@ -14,6 +14,7 @@ body:
     attributes:
       label: '🔖 Feature description'
       description: 'A clear and concise description of what the feature is.'
+      placeholder: 'You should add ...'
   - type: textarea
     id: context
     validations:
@@ -21,11 +22,13 @@ body:
     attributes:
       label: '🎤 Context'
       description: 'Please explain why this feature should be implemented and how it would be used. Add examples, if applicable.'
+      placeholder: 'In my use-case, ...'
   - type: textarea
     id: implementation
     attributes:
       label: '✌️ Possible Implementation'
-      description: 'A clear and concise description of what you want to happen. Not obligatory, but ideas as to the implementation of the addition or change.'
+      description: 'A clear and concise description of what you want to happen.'
+      placeholder: 'Not obligatory, but ideas as to the implementation of the addition or change'
   - type: checkboxes
     id: no-duplicate-issues
     attributes:

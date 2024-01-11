@@ -1,5 +1,11 @@
 # @backstage/backend-dev-utils
 
+## 0.1.3-next.0
+
+### Patch Changes
+
+- 516fd3e: Updated README to reflect release status
+
 ## 0.1.2
 
 ### Patch Changes
