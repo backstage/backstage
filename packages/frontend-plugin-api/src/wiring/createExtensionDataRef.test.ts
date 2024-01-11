@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './createGitlabGroupEnsureExistsAction';
-export * from './createGitlabProjectDeployTokenAction';
-export * from './createGitlabProjectAccessTokenAction';
-export * from './createGitlabProjectVariableAction';
-export * from './createGitlabIssueAction';
-export * from './gitlab';
-export * from './gitlabMergeRequest';
-export * from './gitlabRepoPush';
+
+import { createExtensionDataRef } from './createExtensionDataRef';
+
+describe('createExtensionDataRef', () => {
+  it('can be created and read', () => {
+    const ref = createExtensionDataRef('foo');
+    expect(ref.id).toBe('foo');
+    expect(String(ref)).toBe('ExtensionDataRef{id=foo,optional=false}');
+    const refOptional = ref.optional();
+    expect(refOptional.id).toBe('foo');
+    expect(String(refOptional)).toBe('ExtensionDataRef{id=foo,optional=true}');
+  });
+});

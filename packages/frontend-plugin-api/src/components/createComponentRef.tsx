@@ -13,11 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './createGitlabGroupEnsureExistsAction';
-export * from './createGitlabProjectDeployTokenAction';
-export * from './createGitlabProjectAccessTokenAction';
-export * from './createGitlabProjectVariableAction';
-export * from './createGitlabIssueAction';
-export * from './gitlab';
-export * from './gitlabMergeRequest';
-export * from './gitlabRepoPush';
+
+/** @public */
+export type ComponentRef<T extends {} = {}> = {
+  id: string;
+  T: T;
+};
+
+/** @public */
+export function createComponentRef<T extends {} = {}>(options: {
+  id: string;
+}): ComponentRef<T> {
+  const { id } = options;
+  return {
+    id,
+    toString() {
+      return `ComponentRef{id=${id}}`;
+    },
+  } as ComponentRef<T>;
+}

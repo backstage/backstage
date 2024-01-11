@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './createGitlabGroupEnsureExistsAction';
-export * from './createGitlabProjectDeployTokenAction';
-export * from './createGitlabProjectAccessTokenAction';
-export * from './createGitlabProjectVariableAction';
-export * from './createGitlabIssueAction';
-export * from './gitlab';
-export * from './gitlabMergeRequest';
-export * from './gitlabRepoPush';
+
+import { createComponentRef } from './createComponentRef';
+
+describe('createComponentRef', () => {
+  it('can be created and read', () => {
+    const ref = createComponentRef({ id: 'foo' });
+    expect(ref.id).toBe('foo');
+    expect(String(ref)).toBe('ComponentRef{id=foo}');
+  });
+});
