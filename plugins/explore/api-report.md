@@ -11,6 +11,7 @@ import { default as default_2 } from 'react';
 import { DependencyGraphTypes } from '@backstage/core-components';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { DomainEntity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { ExploreToolsConfig } from '@backstage/plugin-explore-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
@@ -50,6 +51,9 @@ export const DomainCard: (props: {
 export const DomainExplorerContent: (props: {
   title?: string | undefined;
 }) => JSX_2.Element;
+
+// @public (undocumented)
+export const EntityCard: (props: { entity: Entity }) => React_2.JSX.Element;
 
 // @public
 export interface ExploreApi {
