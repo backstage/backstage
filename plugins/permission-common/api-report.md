@@ -205,7 +205,7 @@ export type PermissionMessageBatch<T> = {
 };
 
 // @public
-export type PermissionRuleParam = undefined | JsonPrimitive | JsonPrimitive[];
+export type PermissionRuleParam = JsonPrimitive | JsonPrimitive[];
 
 // @public
 export type PermissionRuleParams =

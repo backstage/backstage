@@ -271,17 +271,6 @@ export const spec = {
         required: ['resourceType', 'rule'],
         additionalProperties: true,
       },
-      DefinitivePolicyDecision: {
-        type: 'object',
-        properties: {
-          result: {
-            type: 'string',
-            enum: ['ALLOW', 'DENY'],
-          },
-        },
-        required: ['result'],
-        additionalProperties: false,
-      },
       PermissionCriteria: {
         oneOf: [
           {
@@ -328,6 +317,20 @@ export const spec = {
           },
         ],
       },
+      DefinitivePolicyDecision: {
+        type: 'object',
+        properties: {
+          result: {
+            type: 'string',
+            enum: ['ALLOW', 'DENY'],
+          },
+          id: {
+            type: 'string',
+          },
+        },
+        required: ['result', 'id'],
+        additionalProperties: false,
+      },
       ConditionalPolicyDecision: {
         type: 'object',
         properties: {
@@ -344,9 +347,12 @@ export const spec = {
           conditions: {
             $ref: '#/components/schemas/PermissionCriteria',
           },
+          id: {
+            type: 'string',
+          },
         },
-        required: ['result', 'pluginId', 'resourceType', 'conditions'],
-        additionalProperties: false,
+        required: ['result', 'id', 'pluginId', 'resourceType', 'conditions'],
+        additionalProperties: true,
       },
       EvaluatePermissionResponse: {
         oneOf: [

@@ -186,21 +186,7 @@ components:
         - resourceType
         - rule
       additionalProperties: true
-
-    DefinitivePolicyDecision:
-      type: object
-      properties:
-        result:
-          type: string
-          enum:
-            - ALLOW
-            - DENY
-        id:
-          type: string
-      required:
-        - result
-        - id
-      additionalProperties: false
+    
 
     PermissionCriteria:
       # Restricting this to depth of 1, TS doesn't love recursive
@@ -231,6 +217,22 @@ components:
           additionalProperties: true
         - $ref: '#/components/schemas/PermissionCondition'
 
+
+    DefinitivePolicyDecision:
+      type: object
+      properties:
+        result:
+          type: string
+          enum:
+            - ALLOW
+            - DENY
+        id:
+          type: string
+      required:
+        - result
+        - id
+      additionalProperties: false
+
     ConditionalPolicyDecision:
       type: object
       properties:
@@ -252,7 +254,7 @@ components:
         - pluginId
         - resourceType
         - conditions
-      additionalProperties: false
+      additionalProperties: true
 
     EvaluatePermissionResponse:
       oneOf:
