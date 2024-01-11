@@ -69,9 +69,9 @@ export const useTemplateSchema = (
         },
       } as ParsedTemplateSchema;
 
-      if (step.schema?.properties) {
+      if (step.schema?.properties || !step.schema?.dependencies) {
         strippedSchema.schema.properties = Object.fromEntries(
-          Object.entries((step.schema?.properties ?? []) as JsonObject).filter(
+          Object.entries((step.schema?.properties ?? {}) as JsonObject).filter(
             ([key]) => {
               const stepFeatureFlag =
                 step.uiSchema[key]?.['ui:backstage']?.featureFlag;

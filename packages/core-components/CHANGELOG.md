@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.13.10-next.1
+
+### Patch Changes
+
+- 6878b1d: Removed unnecessary `history` and `immer` dependencies.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0
+  - @backstage/version-bridge@1.0.7
+
 ## 0.13.10-next.0
 
 ### Patch Changes

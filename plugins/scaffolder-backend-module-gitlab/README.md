@@ -24,6 +24,7 @@ import {
   createGitlabProjectDeployTokenAction,
   createGitlabProjectVariableAction,
   createGitlabGroupEnsureExistsAction,
+  createGitlabIssueAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 // Create BuiltIn Actions
@@ -41,6 +42,7 @@ const actions = [
   createGitlabProjectDeployTokenAction({ integrations: integrations }),
   createGitlabProjectVariableAction({ integrations: integrations }),
   createGitlabGroupEnsureExistsAction({ integrations: integrations }),
+  createGitlabIssueAction({ integrations: integrations }),
 ];
 
 // Create Scaffolder Router
@@ -160,8 +162,26 @@ spec:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
+    - id: gitlabIssue
+      name: Issues
+      action: gitlab:issues:create
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
+        projectId: 1111111
+        title: Test Issue
+        assignees:
+          - 2222222
+        description: This is the description of the issue
+        confidential: true
+        createdAt: 2022-09-27 18:00:00.000
+        dueDate: 2024-09-28 12:00:00.000
+        epicId: 3333333
+        labels: phase1:label1,phase2:label2
   output:
     links:
       - title: Repository
         url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Link to new issue
+        url: ${{ steps['gitlabIssue'].output.issueUrl }}
 ```

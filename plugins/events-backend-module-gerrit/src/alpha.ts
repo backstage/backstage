@@ -15,3 +15,4 @@
  */
 
 export { eventsModuleGerritEventRouter } from './service/eventsModuleGerritEventRouter';
+export { eventsModuleGerritEventRouter as default } from './service/eventsModuleGerritEventRouter';

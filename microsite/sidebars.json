@@ -251,6 +251,15 @@
       "plugins/feature-flags",
       {
         "type": "category",
+        "label": "OpenAPI",
+        "items": [
+          "openapi/01-getting-started",
+          "openapi/generate-client",
+          "openapi/test-case-validation"
+        ]
+      },
+      {
+        "type": "category",
         "label": "Backends and APIs",
         "items": [
           "plugins/proxying",

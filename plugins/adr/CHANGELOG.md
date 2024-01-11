@@ -1,5 +1,30 @@
 # @backstage/plugin-adr
 
+## 0.6.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+  - @backstage/plugin-search-react@1.7.5-next.2
+  - @backstage/integration-react@1.1.23-next.0
+
+## 0.6.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/frontend-plugin-api@0.4.1-next.1
+  - @backstage/integration-react@1.1.23-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.1
+  - @backstage/plugin-search-react@1.7.5-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-adr-common@0.2.18
+  - @backstage/plugin-search-common@1.2.9
+
 ## 0.6.12-next.0
 
 ### Patch Changes

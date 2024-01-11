@@ -25,7 +25,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
 import { AppNode, useComponentRef } from '../apis';
-import { coreComponentRefs } from './ComponentRef';
+import { coreComponentRefs } from './coreComponentRefs';
 
 type RouteTrackerProps = PropsWithChildren<{
   disableTracking?: boolean;

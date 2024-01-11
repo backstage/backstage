@@ -24,7 +24,7 @@ import {
   createTranslationExtension,
 } from '@backstage/frontend-plugin-api';
 
-export const Core = createExtension({
+export const App = createExtension({
   namespace: 'app',
   attachTo: { id: 'root', input: 'default' }, // ignored
   inputs: {

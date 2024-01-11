@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node scripts/pre-build.js && docusaurus start",
     "build": "node scripts/pre-build.js && docusaurus build",
+    "prettier:fix": "prettier --write .",
     "prettier:check": "prettier --check .",
     "publish-gh-pages": "docusaurus-publish",
     "write-translations": "docusaurus-write-translations",

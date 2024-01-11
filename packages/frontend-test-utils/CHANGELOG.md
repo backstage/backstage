@@ -1,5 +1,24 @@
 # @backstage/frontend-test-utils
 
+## 0.1.1-next.2
+
+### Patch Changes
+
+- 516fd3e: Updated README to reflect release status
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+  - @backstage/frontend-app-api@0.4.1-next.2
+
+## 0.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.4.1-next.1
+  - @backstage/frontend-plugin-api@0.4.1-next.1
+  - @backstage/test-utils@1.4.7-next.1
+  - @backstage/types@1.1.1
+
 ## 0.1.1-next.0
 
 ### Patch Changes
