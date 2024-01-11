@@ -69,6 +69,18 @@ describe('azure-devops', () => {
       expect(isAzurePipelinesAvailable(entity)).toBe(true);
     });
 
+    it('should be false when no annotations are present', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'sample',
+        },
+      };
+      expect(isAzurePipelinesAvailable(entity)).toBe(false);
+    });
+
     it('should be false when only project annotation is present', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',

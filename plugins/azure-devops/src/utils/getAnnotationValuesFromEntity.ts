@@ -71,7 +71,7 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
     }
   }
 
-  throw new Error('"dev.azure.com" annotations are missing');
+  throw new Error('Expected "dev.azure.com" annotations were not found');
 }
 
 function getProjectRepo(annotations?: Record<string, string>): {

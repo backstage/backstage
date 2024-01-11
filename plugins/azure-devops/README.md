@@ -61,6 +61,25 @@ spec:
   # ...
 ```
 
+#### Mono repos
+
+If you have multiple entities within a single repo, you will need to specify which pipelines belong to each entity.
+
+```yaml
+dev.azure.com/project-repo: <my-project>/<my-repo>
+dev.azure.com/build-definition: <build-definition-name>
+```
+
+#### Pipeline in different project to repo
+
+If your pipeline is in a different project to the source code, you will need to specify this in the project annotation.
+
+```yaml
+dev.azure.com/project-repo: <project1>/<my-repo>
+dev.azure.com/build-definition: <build-definition-name>
+dev.azure.com/project: <project2>
+```
+
 #### Azure Pipelines Only
 
 If you are only using Azure Pipelines along with a different SCM tool then you can use the following two annotations to see Builds:
