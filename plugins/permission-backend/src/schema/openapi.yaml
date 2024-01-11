@@ -1,0 +1,186 @@
+openapi: 3.0.3
+info:
+  title: '@backstage/permission-backend'
+  description: Permission schema
+  version: 0.0.1
+servers:
+  - url: /
+  - url: permission
+paths:
+  /authorize:
+    post:
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/PostAuthorize200ResponseBody"
+        "400":
+          description: 400 response
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/PostAuthorize400ResponseBody"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostAuthorizeRequestBody"
+  /health:
+    get:
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: "#/components/schemas/GetHealth200ResponseBody"
+components:
+  schemas:
+
+    PostAuthorizeRequestBody:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              permission:
+                oneOf:
+                  - type: object
+                    properties:
+                      name:
+                        type: string
+                      attributes:
+                        type: object
+                        properties:
+                          action:
+                            type: string
+                            enum:
+                              - create
+                              - read
+                              - update
+                              - delete
+                        additionalProperties: false
+                      type:
+                        type: string
+                        enum: 
+                          - basic
+                    required:
+                      - name
+                      - type
+                      - attributes
+                    additionalProperties: false
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        enum: 
+                          - resource
+                      resourceType:
+                        type: string
+                      name:
+                        type: string
+                      attributes:
+                        type: object
+                        properties:
+                          action:
+                            type: string
+                            enum:
+                              - create
+                              - read
+                              - update
+                              - delete
+                        additionalProperties: false
+                    required:
+                      - type
+                      - name
+                      - attributes
+                      - resourceType
+                    additionalProperties: false
+              resourceRef:
+                type: string
+            required:
+              - id
+              - permission
+            additionalProperties: false
+      required:
+        - items
+    PostAuthorize200ResponseBody:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              result:
+                type: string
+              pluginId:
+                type: string
+              resourceType:
+                type: string
+              conditions:
+                type: object
+                properties:
+                  rule:
+                    type: string
+                  params:
+                    type: array
+                    items:
+                      type: string
+                required:
+                  - rule
+                  - params
+            required:
+              - id
+              - result
+      required:
+        - items
+    PostAuthorize400ResponseBody:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+          required:
+            - name
+            - message
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            url:
+              type: string
+          required:
+            - method
+            - url
+        response:
+          type: object
+          properties:
+            statusCode:
+              type: number
+          required:
+            - statusCode
+      required:
+        - error
+        - request
+        - response
+    GetHealth200ResponseBody:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status

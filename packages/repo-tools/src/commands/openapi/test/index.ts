@@ -46,13 +46,14 @@ async function test(
     );
   }
   try {
+    console.log(``);
     await exec(
       `${opticLocation.trim()} capture`,
       [
         YAML_SCHEMA_PATH,
         '--server-override',
         `http://localhost:${port}`,
-        options?.update ? '--update' : '',
+        options?.update ? '--update interactive' : '',
       ],
       {
         cwd: directoryPath,

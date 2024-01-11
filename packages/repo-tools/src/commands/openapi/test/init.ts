@@ -30,9 +30,7 @@ const ROUTER_TEST_PATHS = [
 async function init(directoryPath: string) {
   const openapiPath = join(directoryPath, YAML_SCHEMA_PATH);
   if (!(await fs.pathExists(openapiPath))) {
-    throw new Error(
-      `You do not have an OpenAPI YAML file at ${openapiPath}. Please create one and retry this command. If you already have existing test cases for your router, see 'backstage-repo-tools schema openapi test --update'`,
-    );
+    await fs.createFile(openapiPath);
   }
   const opticConfigFilePath = join(directoryPath, 'optic.yml');
   if (await fs.pathExists(opticConfigFilePath)) {

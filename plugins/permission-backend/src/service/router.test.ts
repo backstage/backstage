@@ -23,9 +23,10 @@ import {
   ApplyConditionsResponseEntry,
 } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
-
+import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
+import { Server } from 'http';
 
 const mockApplyConditions: jest.MockedFunction<
   InstanceType<typeof PermissionIntegrationClient>['applyConditions']
@@ -59,7 +60,7 @@ const policy = {
 };
 
 describe('createRouter', () => {
-  let app: express.Express;
+  let app: express.Express | Server;
 
   beforeAll(async () => {
     const router = await createRouter({
@@ -90,7 +91,7 @@ describe('createRouter', () => {
       policy,
     });
 
-    app = express().use(router);
+    app = wrapInOpenApiTestServer(express().use(router));
   });
 
   afterEach(() => {
@@ -762,13 +763,11 @@ describe('createRouter', () => {
       const response = await request(app).post('/authorize').send(requestBody);
 
       expect(response.status).toEqual(400);
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: expect.stringMatching(/invalid/i),
-          }),
-        }),
-      );
+      expect(response.body).toMatchObject({
+        error: {
+          message: expect.any(String),
+        },
+      });
     });
 
     it('returns a 500 error if the policy returns a different resourceType', async () => {

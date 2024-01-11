@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
-import express, { Request, Response } from 'express';
-import Router from 'express-promise-router';
+import express, { Response } from 'express';
 import { Logger } from 'winston';
 import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { InputError } from '@backstage/errors';
 import {
   BackstageIdentityResponse,
   IdentityApi,
@@ -32,10 +29,8 @@ import {
   EvaluatePermissionResponse,
   EvaluatePermissionRequest,
   IdentifiedPermissionMessage,
-  EvaluatePermissionRequestBatch,
   EvaluatePermissionResponseBatch,
   isResourcePermission,
-  PermissionAttributes,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -46,44 +41,7 @@ import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 import { memoize } from 'lodash';
 import DataLoader from 'dataloader';
 import { Config } from '@backstage/config';
-
-const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
-  action: z
-    .union([
-      z.literal('create'),
-      z.literal('read'),
-      z.literal('update'),
-      z.literal('delete'),
-    ])
-    .optional(),
-});
-
-const permissionSchema = z.union([
-  z.object({
-    type: z.literal('basic'),
-    name: z.string(),
-    attributes: attributesSchema,
-  }),
-  z.object({
-    type: z.literal('resource'),
-    name: z.string(),
-    attributes: attributesSchema,
-    resourceType: z.string(),
-  }),
-]);
-
-const evaluatePermissionRequestSchema: z.ZodSchema<
-  IdentifiedPermissionMessage<EvaluatePermissionRequest>
-> = z.object({
-  id: z.string(),
-  resourceRef: z.string().optional(),
-  permission: permissionSchema,
-});
-
-const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionRequestBatch> =
-  z.object({
-    items: z.array(evaluatePermissionRequestSchema),
-  });
+import { createOpenApiRouter } from '../schema/openapi.generated';
 
 /**
  * Options required when constructing a new {@link express#Router} using
@@ -175,8 +133,7 @@ export async function createRouter(
     discovery,
   });
 
-  const router = Router();
-  router.use(express.json());
+  const router = await createOpenApiRouter();
 
   router.get('/health', (_, response) => {
     response.json({ status: 'ok' });
@@ -184,21 +141,10 @@ export async function createRouter(
 
   router.post(
     '/authorize',
-    async (
-      req: Request<EvaluatePermissionRequestBatch>,
-      res: Response<EvaluatePermissionResponseBatch>,
-    ) => {
+    async (req, res: Response<EvaluatePermissionResponseBatch>) => {
       const user = await identity.getIdentity({ request: req });
 
-      const parseResult = evaluatePermissionRequestBatchSchema.safeParse(
-        req.body,
-      );
-
-      if (!parseResult.success) {
-        throw new InputError(parseResult.error.toString());
-      }
-
-      const body = parseResult.data;
+      const { body } = req;
 
       res.json({
         items: await handleRequest(
