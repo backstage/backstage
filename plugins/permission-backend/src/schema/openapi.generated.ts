@@ -59,6 +59,9 @@ export const spec = {
               },
             },
           },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
         },
         requestBody: {
           content: {
