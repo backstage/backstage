@@ -21,8 +21,8 @@ import fs from 'fs';
 describe('i18nScan', () => {
   const mockDir = createMockDirectory();
   const translationKey = 'test.translationKey';
-  const srcPath = `${mockDir.path}/Component.tsx`;
-  const outPath = `${mockDir.path}/test-output.csv`;
+  const srcPath = mockDir.resolve('Component.tsx');
+  const outPath = mockDir.resolve('test-output.csv');
 
   test('should something', () => {
     mockDir.setContent({
