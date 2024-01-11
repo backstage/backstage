@@ -46,7 +46,6 @@ async function test(
     );
   }
   try {
-    console.log(``);
     await exec(
       `${opticLocation.trim()} capture`,
       [
