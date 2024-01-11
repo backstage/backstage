@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, useContext, useState } from 'react';
+import React, {
+  ComponentType,
+  Fragment,
+  ReactNode,
+  useContext,
+  useState,
+} from 'react';
 import {
   coreExtensionData,
+  createAppRootWrapperExtension,
   createExtension,
   createExtensionInput,
   createSignInPageExtension,
@@ -40,26 +47,43 @@ export const AppRoot = createExtension({
   attachTo: { id: 'app', input: 'root' },
   inputs: {
     signInPage: createExtensionInput(
-      {
-        component: createSignInPageExtension.componentDataRef,
-      },
+      { component: createSignInPageExtension.componentDataRef },
       { singleton: true, optional: true },
     ),
     children: createExtensionInput(
-      {
-        element: coreExtensionData.reactElement,
-      },
+      { element: coreExtensionData.reactElement },
       { singleton: true },
+    ),
+    elements: createExtensionInput(
+      { element: coreExtensionData.reactElement },
+      { optional: true },
+    ),
+    wrappers: createExtensionInput(
+      { component: createAppRootWrapperExtension.componentDataRef },
+      { optional: true },
     ),
   },
   output: {
     element: coreExtensionData.reactElement,
   },
   factory({ inputs }) {
+    let content: React.ReactNode = (
+      <>
+        {inputs.elements.map(el => (
+          <Fragment key={el.node.spec.id}>{el.output.element}</Fragment>
+        ))}
+        {inputs.children.output.element}
+      </>
+    );
+
+    for (const wrapper of inputs.wrappers) {
+      content = <wrapper.output.component>{content}</wrapper.output.component>;
+    }
+
     return {
       element: (
         <AppRouter SignInPageComponent={inputs.signInPage?.output.component}>
-          {inputs.children.output.element}
+          {content}
         </AppRouter>
       ),
     };

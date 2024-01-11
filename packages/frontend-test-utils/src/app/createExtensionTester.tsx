@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, useContext, useState } from 'react';
+import React, {
+  ComponentType,
+  Fragment,
+  ReactNode,
+  useContext,
+  useState,
+} from 'react';
 import { MemoryRouter, Link } from 'react-router-dom';
 import { RenderResult, render } from '@testing-library/react';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
@@ -25,6 +31,7 @@ import {
   RouteRef,
   configApiRef,
   coreExtensionData,
+  createAppRootWrapperExtension,
   createExtension,
   createExtensionInput,
   createExtensionOverrides,
@@ -63,7 +70,7 @@ const NavItem = (props: {
   );
 };
 
-const TestCoreNavExtension = createExtension({
+const TestAppNavExtension = createExtension({
   namespace: 'app',
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
@@ -149,22 +156,26 @@ const AuthenticationProvider = (props: {
   return children;
 };
 
-const TestCoreRouterExtension = createExtension({
+const TestAppRootExtension = createExtension({
   namespace: 'app',
   name: 'root',
   attachTo: { id: 'app', input: 'root' },
   inputs: {
     signInPage: createExtensionInput(
-      {
-        component: createSignInPageExtension.componentDataRef,
-      },
+      { component: createSignInPageExtension.componentDataRef },
       { singleton: true, optional: true },
     ),
     children: createExtensionInput(
-      {
-        element: coreExtensionData.reactElement,
-      },
+      { element: coreExtensionData.reactElement },
       { singleton: true },
+    ),
+    elements: createExtensionInput(
+      { element: coreExtensionData.reactElement },
+      { optional: true },
+    ),
+    wrappers: createExtensionInput(
+      { component: createAppRootWrapperExtension.componentDataRef },
+      { optional: true },
     ),
   },
   output: {
@@ -172,13 +183,25 @@ const TestCoreRouterExtension = createExtension({
   },
   factory({ inputs }) {
     const SignInPage = inputs.signInPage?.output.component;
-    const children = inputs.children.output.element;
+
+    let content: React.ReactNode = (
+      <>
+        {inputs.elements.map(el => (
+          <Fragment key={el.node.spec.id}>{el.output.element}</Fragment>
+        ))}
+        {inputs.children.output.element}
+      </>
+    );
+
+    for (const wrapper of inputs.wrappers) {
+      content = <wrapper.output.component>{content}</wrapper.output.component>;
+    }
 
     return {
       element: (
         <MemoryRouter>
           <AuthenticationProvider signInPage={SignInPage}>
-            {children}
+            {content}
           </AuthenticationProvider>
         </MemoryRouter>
       ),
@@ -278,8 +301,8 @@ export class ExtensionTester {
         createExtensionOverrides({
           extensions: [
             ...this.#extensions.map(extension => extension.definition),
-            TestCoreNavExtension,
-            TestCoreRouterExtension,
+            TestAppNavExtension,
+            TestAppRootExtension,
           ],
         }),
       ],
