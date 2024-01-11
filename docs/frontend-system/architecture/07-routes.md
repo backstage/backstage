@@ -100,7 +100,7 @@ It may be unclear why we need to pass the route to the plugin once it has alread
 
 ### Using a Route Reference
 
-You can link to the routes from other pages in the same plugin or you can also link between different plugins pages. In this section we will cover the first scenario, if you are interested in link to a page of a plugin that isn't yours, please go to the [external routes](#external-router-references) section below.
+You can link to the routes from other pages in the same plugin or you can also link between different plugins pages. In this section we will cover the first scenario, if you are interested in link to a page of a different plugin, please go to the [external routes](#external-router-references) section below.
 
 Alright, let's presume that we have a plugin that renders tow different pages, and these pages links to each other.
 
