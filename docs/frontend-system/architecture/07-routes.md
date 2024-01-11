@@ -26,15 +26,13 @@ There are 3 types of route references: regular route, sub route, and external ro
 
 ### Creating a Route Reference
 
-Route references, also known as root plugin pages, are created as follows:
-
-_Catalog Plugin_
+Route references, also known as plugins' index pages, are created as follows:
 
 ```tsx
 // plugins/catalog/src/routes.ts
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 
-export const rootRouteRef = createRouteRef();
+export const indexRouteRef = createRouteRef();
 ```
 
 Note that you almost always want to create the route references themselves in a different file than the one that creates the plugin instance, for example a top-level routes.ts. This is to avoid circular imports when you use the route references from other parts of the same plugin.
@@ -47,10 +45,8 @@ The referenced route can also accepts `params`. Here is how you create a referen
 // plugins/catalog/src/routes.ts
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 
-type DetailsRouteParams = { namespace: string; name: string; kind: string };
-
-export const detailsRouteRef = createRouteRef<DetailsRouteParams>({
-  // A list of parameter names that the path that this route ref is bound to must contain
+export const detailsRouteRef = createRouteRef({
+  // The parameters that must be included in the path of this route reference
   params: ['namespace', 'name', 'kind'],
 });
 ```
@@ -65,29 +61,35 @@ The code snippet of the previous section does not indicate which plugin the rout
 // plugins/catalog/src/routes.ts
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 
-export const rootRouteRef = createRouteRef(); // [1]
+export const indexRouteRef = createRouteRef(); // [1]
 
 // plugins/catalog/src/plugin.tsx
-import { createPlugin, createPageExtension } from '@backstage/frontend-plugin-api';
-import { rootRouteRef } from './routes';
+import React from 'react';
+import {
+  createPlugin,
+  createPageExtension,
+} from '@backstage/frontend-plugin-api';
+import { indexRouteRef } from './routes';
 
-const rootPage = createPageExtension({ // [2]
-  // The `name` option is omitted since this is the root page
-  defaultPath: '/'
-  routeRef: rootRouteRef,
-  loader: async () => <div>Root Page</div>
+const indexPage = createPageExtension({
+  // [2]
+  // The `name` option is omitted since this is the index page
+  defaultPath: '/entities',
+  routeRef: indexRouteRef,
+  loader: async () => <div>Root Page</div>,
 });
 
-export default const createPlugin({ // [3]
+export default createPlugin({
+  // [3]
   id: 'catalog',
   routes: {
-    root: rootRouteRef,
+    index: indexRouteRef,
   },
-  extensions: [rootPage]
+  extensions: [indexPage],
 });
 
 // plugins/catalog/src/index.ts
-export { default } from './plugin'
+export { default } from './plugin';
 ```
 
 We have completed our journey of creating a plugin page route. This is what the code does:
@@ -110,16 +112,10 @@ First lets create the routes references:
 // plugins/catalog/src/routes.ts
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 
-export const rootRouteRef = createRouteRef();
+export const indexRouteRef = createRouteRef();
 
-type DetailsRouteParams = {
-  namespace: string;
-  name: string;
-  kind: string;
-};
-
-export const detailsRouteRef = createRouteRef<DetailsRouteParams>({
-  // A list of parameter names that the path that this route ref is bound to must contain
+export const detailsRouteRef = createRouteRef({
+  // The parameters that must be included in the path of this route reference
   params: ['namespace', 'name', 'kind'],
 });
 ```
@@ -128,51 +124,73 @@ Now we are ready to provide these routes via plugin extensions and link between 
 
 ```tsx
 // plugins/catalog/src/plugin.tsx
-import { createPlugin, createPageExtension, useRouteRef } from '@backstage/frontend-plugin-api';
+import React from 'react';
+import { useParams } from 'react-router';
+import {
+  createPlugin,
+  createPageExtension,
+  useRouteRef,
+} from '@backstage/frontend-plugin-api';
 import { rootRouteRef, detailsRouteRef } from './routes';
 
-const rootPage = createPageExtension({
+const indexPage = createPageExtension({
   // Ommiting name since it is the root page
-  defaultPath: '/'
-  routeRef: rootRouteRef,
+  defaultPath: '/entities',
+  routeRef: indexRouteRef,
   loader: async () => {
-    const href = useRouteRef(detailsRouteRef)({
-      kind: 'Component',
-      namespace: 'Default',
-      name: 'foo'
-    });
+    const Component = () => {
+      const href = useRouteRef(detailsRouteRef)({
+        kind: 'component',
+        namespace: 'default',
+        name: 'foo',
+      });
 
-    return (
-      <div>
-        <h1>Index Page</h1>
-        <a href={href}>Entity Foo</a>
-      </div>
-    );
-  }
+      return (
+        <div>
+          <h1>Index Page</h1>
+          <a href={href}>Entity Foo</a>
+        </div>
+      );
+    };
+
+    return <Component />;
+  },
 });
 
 const detailsPage = createPageExtension({
   name: 'details',
-  defaultPath: '/entities/:namespace/:kind/:name'
+  defaultPath: '/entities/:namespace/:kind/:name',
   routeRef: detailsRouteRef,
-  loader: async () => (
-    <div>
-      <h1>Catalog Entities</h1>
-    </div>
-  )
+  loader: async () => {
+    const Component = () => {
+      // Getting the parameters from the URL
+      const params = useParams();
+      return (
+        <div>
+          <h1>Details Page</h1>
+          <ul>
+            <li>Kind: {params.kind}</li>
+            <li>Namespace: {params.namespace}</li>
+            <li>Name: {params.name}</li>
+          </ul>
+        </div>
+      );
+    };
+    return <Component />;
+  },
 });
 
-export default const createPlugin({
+export default createPlugin({
   id: 'catalog',
   routes: {
-    root: rootRouteRef
+    index: indexRouteRef,
     details: detailsRouteRef,
   },
-  extensions: [rootPage, detailsPage]
+  extensions: [indexPage, detailsPage],
 });
 
 // plugins/catalog/src/index.ts
-export { default } from './plugin'
+export { default } from './plugin';
 ```
 
 During runtime, we used a hook `useRouteRef` to get the path to the details page. Because we are linking to pages of the same plugin, we are currently accessing the reference directly, but in the following sections, you will see how to link to pages of different plugins.
@@ -183,6 +201,8 @@ Now let's assume that we want to link from the Catalog entity list page to the S
 
 We create a new `RouteRef` inside the Scaffolder plugin, using a neutral name that describes its role in the plugin rather than a specific plugin page that it might be linking to, allowing the app to decide the final target. If the Catalog entity list page for example wants to link the Scaffolder create component page in the header, it might declare an `ExternalRouteRef` similar to this:
 
+_Catalog Plugin_
+
 ```tsx
 // plugins/catalog/src/routes.ts
 import {
@@ -190,19 +210,19 @@ import {
   createExternalRouteRef,
 } from '@backstage/frontend-plugin-api';
 
-const rootRouteRef = createRouteRef();
+const indexRouteRef = createRouteRef();
 const createComponentRouteRef = createExternalRouteRef();
 
 // plugins/catalog/src/plugin.tsx
+import React from 'react';
 import { createPlugin, createPageExtension, useRouteRef } from '@backstage/frontend-plugin-api';
-import { rootRouteRef, createComponentRouteRef } from './routes';
+import { indexRouteRef, createComponentRouteRef } from './routes';
 
-const rootPage = createPageExtension({
-  // Ommiting name since it is the root page
-  defaultPath: '/'
-  routeRef: rootRouteRef,
+const indexPage = createPageExtension({
+  defaultPath: '/entities',
+  routeRef: indexRouteRef,
   loader: async () => {
-    const href = useRouteRef(catalogCreateComponentRouteRef)();
+    const href = useRouteRef(createComponentRouteRef)();
 
     return (
       <div>
@@ -214,47 +234,53 @@ const rootPage = createPageExtension({
   }
 });
 
-export default const createPlugin({
+export default createPlugin({
   id: 'catalog',
   routes: {
-    root: rootRouteRef,
+    index: indexRouteRef,
   }
   externalRoutes: {
     createComponent: createComponentRouteRef,
   },
-  extensions: [rootPage]
+  extensions: [indexPage]
 });
 
 // plugins/catalog/src/index.ts
 export { default } from './plugin';
 ```
 
+_Scaffolder Plugin_
+
 ```tsx
 // plugins/scaffolder/src/routes.ts
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 
-const createComponentRouteRef = createRouteRef();
+const indexRouteRef = createRouteRef();
 
 // plugins/scaffolder/src/plugin.tsx
-import { createPlugin, createPageExtension } from '@backstage/frontend-plugin-api';
-import { createComponentRouteRef } from './routes';
+import React from 'react';
+import {
+  createPlugin,
+  createPageExtension,
+} from '@backstage/frontend-plugin-api';
+import { indexRouteRef } from './routes';
 
-const createComponentPage = createPageExtension({
-  defaultPath: '/'
-  routeRef: createComponentRouteRef,
+const indexPage = createPageExtension({
+  defaultPath: '/create',
+  routeRef: indexRouteRef,
   loader: async () => (
     <div>
       <h1>Create Component</h1>
     </div>
-  )
+  ),
 });
 
-export default const createPlugin({
+export default createPlugin({
   id: 'scaffolder',
   routes: {
-    createComponent: createComponentRouteRef,
+    index: indexRouteRef,
   },
-  extensions: [createComponentPage]
+  extensions: [indexPage],
 });
 
 // plugins/scaffolder/src/index.ts
@@ -276,7 +302,7 @@ Using the above example of the Catalog entities list page to the Scaffolder crea
 app:
   routes:
     bindings:
-      plugin.catalog.externalRoutes.createComponent: plugin.scaffolfer.routes.createComponent
+      plugin.catalog.externalRoutes.createComponent: plugin.scaffolder.routes.index
 ```
 
 Or via code, in the file where the app is created:
@@ -296,12 +322,6 @@ const app = createApp({
 });
 
 export default app.createRoot();
-
-// packages/app/src/index.ts
-import ReactDOM from 'react-dom/client';
-import app from './App';
-
-ReactDOM.createRoot(document.getElementById('root')!).render(app);
 ```
 
 Given the above binding, using `useRouteRef(createComponentRouteRef)` within the Catalog plugin will let us create a link to whatever path the Scaffolder create component page is mounted at.
@@ -321,40 +341,45 @@ import {
   createExternalRouteRef,
 } from '@backstage/frontend-plugin-api';
 
-const rootRouteRef = createRouteRef();
+const indexRouteRef = createRouteRef();
 const createComponentRouteRef = createExternalRouteRef({
   optional: true,
 });
 
 // plugins/catalog/src/plugin.tsx
-import { createPlugin, createPageExtension, useRouteRef } from '@backstage/frontend-plugin-api';
-import { rootRouteRef, createComponentRouteRef } from './routes';
+import React from 'react';
+import {
+  createPlugin,
+  createPageExtension,
+  useRouteRef,
+} from '@backstage/frontend-plugin-api';
+import { indexRouteRef, createComponentRouteRef } from './routes';
 
-const catalogEntityListPage = createPageExtension({
-  defaultPath: '/'
-  routeRef: rootRouteRef,
+const indexPage = createPageExtension({
+  defaultPath: '/entities',
+  routeRef: indexRouteRef,
   loader: async () => {
-    const href = useRouteRef(catalogCreateComponentRouteRef);
+    const link = useRouteRef(createComponentRouteRef);
 
     return (
       <div>
         <h1>Catalog Entities</h1>
         {/* Since the route is optional, rendering the link only if the href is defined */}
-        {href && <a to={href}>Create Component</a>
+        {link && <a href={link()}>Create Component</a>}
       </div>
     );
-  }
+  },
 });
 
-export default const createPlugin({
+export default createPlugin({
   id: 'catalog',
   routes: {
-    entityList: rootRouteRef
-  }
+    index: indexRouteRef,
+  },
   externalRoutes: {
     createComponent: createComponentRouteRef,
   },
-  extensions: [catalogEntityListPage]
+  extensions: [indexPage],
 });
 
 // index.ts
@@ -371,59 +396,66 @@ For example:
 // plugins/catalog/src/routes.ts
 import {
   createRouteRef,
-  createSubRouteRef
+  createSubRouteRef,
 } from '@backstage/frontend-plugin-api';
 
-const rootRouteRef = createRouteRef();
-const detailsRouteRef = createSubRouteRef({
-  parent: rootRouteRef,
+const indexRouteRef = createRouteRef();
+const detailsSubRouteRef = createSubRouteRef({
+  parent: indexRouteRef,
   path: '/details',
 });
 
 // plugins/catalog/src/plugin.ts
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
-import { createPlugin, createPageExtension, useRouteRef } from '@backstage/frontend-plugin-api';
-import { rootRouteRef, detailsRouteRef } from './routes.ts';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import {
+  createPlugin,
+  createPageExtension,
+  useRouteRef,
+} from '@backstage/frontend-plugin-api';
+import { indexRouteRef, detailsSubRouteRef } from './routes.ts';
 
 const DetailsPage = () => (
   <div>
-    <h1>Entity Details</h1>
+    <h1>Details Sub Page</h1>
   </div>
 );
 
-const rootPage = createPageExtension({
-  defaultPath: '/',
-  routeRef: rootRouteRef,
+const indexPage = createPageExtension({
+  defaultPath: '/entities',
+  routeRef: indexRouteRef,
   loader: async () => {
     const Component = () => {
-      const to = useRouteRef(detailsRouteRef)();
+      const { pathname } = useLocation();
+      const indexPath = useRouteRef(indexRouteRef)();
+      const detailsPath = useRouteRef(detailsSubRouteRef)();
 
       return (
         <div>
           <h1>Index Page</h1>
-          {/* Registering the details subroute */}
+          {/* Linking to the index route */}
+          {pathname === detailsPath && <a href={indexPath}>Hide details</a>}
+          {/* Linking to the details sub route */}
+          {pathname === indexPath && <a href={detailsPath}>Show details</a>}
+          {/* Registering the details sub route */}
           <Routes>
-            <Route path={detailsRouteRef.path} element={<DetailsPage />} />
+            <Route path={detailsSubRouteRef.path} element={<DetailsPage />} />
           </Routes>
-          {/* Linking to the details subroute */}
-          <Link to={to}>Details Subpage</Link>
         </div>
       );
     };
 
     return <Component />;
   },
-  }
 });
 
 export default createPlugin({
   id: 'catalog',
   routes: {
-    root: rootRouteRef,
-    details: detailsRouteRef,
+    index: indexRouteRef,
+    details: detailsSubRouteRef,
   },
-  extensions: [rootPage]
+  extensions: [indexPage],
 });
 
 // plugins/catalog/src/index.ts
@@ -439,50 +471,81 @@ import {
   createSubRouteRef,
 } from '@backstage/frontend-plugin-api';
 
-const rootRouteRef = createRouteRef();
-const detailsRouteRef = createSubRouteRef({
-  parent: rootRouteRef,
-  path: '/details/:name/:namespace/:kind',
+const indexRouteRef = createRouteRef();
+const detailsSubRouteRef = createSubRouteRef({
+  parent: indexRouteRef,
+  path: '/:name/:namespace/:kind',
 });
 
 // plugins/catalog/src/plugin.ts
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useParams, useLocation } from 'react-router-dom';
 import {
   createPlugin,
   createPageExtension,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { rootRouteRef, detailsRouteRef } from './routes.ts';
+import { indexRouteRef, detailsSubRouteRef } from './routes.ts';
 
-const DetailsPage = () => (
-  <div>
-    <h1>Entity Details</h1>
-    {/* can get the entity ref from URL and load the entity data here */}
-  </div>
-);
+const DetailsPage = () => {
+  // Getting the parameters from the URL
+  const params = useParams();
+  return (
+    <div>
+      <h1>Details Sub Page</h1>
+      <ul>
+        <li>Kind: {params.kind}</li>
+        <li>Namespace: {params.namespace}</li>
+        <li>Name: {params.name}</li>
+      </ul>
+    </div>
+  );
+};
 
-const rootPage = createPageExtension({
-  defaultPath: '/subroutes',
-  routeRef: rootRouteRef,
+const indexPage = createPageExtension({
+  defaultPath: '/entities',
+  routeRef: indexRouteRef,
   loader: async () => {
     const Component = () => {
-      const detailsRoutePath = useRouteRef(detailsRouteRef)({
+      const { pathname } = useLocation();
+      const indexPath = useRouteRef(indexRouteRef)();
+      const detailsPath = useRouteRef(detailsSubRouteRef)({
         // Setting the details subroute params
-        name: 'entity1',
-        namespace: 'default',
         kind: 'component',
+        namespace: 'default',
+        name: 'foo',
       });
 
       return (
         <div>
           <h1>Index Page</h1>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Foo</td>
+                <td>
+                  {/* Linking to the index route */}
+                  {pathname === detailsPath && (
+                    <a href={indexPath}>Hide details</a>
+                  )}
+                  {/* Linking to the details sub route */}
+                  {pathname === indexPath && (
+                    <a href={detailsPath}>Show details</a>
+                  )}
+                </td>
+              </tr>
+            </tbody>
+          </table>
           {/* Registering the details subroute */}
           <Routes>
-            <Route path={detailsRouteRef.path} element={<DetailsPage />} />
+            <Route path={detailsSubRouteRef.path} element={<DetailsPage />} />
           </Routes>
-          {/* Linking to the details subroute */}
-          <Link to={detailsRoutePath}>Entity 1 Details Subpage</Link>
         </div>
       );
     };
@@ -494,10 +557,10 @@ const rootPage = createPageExtension({
 export default createPlugin({
   id: 'catalog',
   routes: {
-    root: rootRouteRef,
-    details: detailsRouteRef,
+    index: indexRouteRef,
+    details: detailsSubRouteRef,
   },
-  extensions: [rootPage],
+  extensions: [indexPage],
 });
 
 // plugins/catalog/src/index.ts
