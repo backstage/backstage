@@ -11,7 +11,9 @@ import { PassportProfile } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
-export const authModuleMicrosoftProvider: () => BackendFeature;
+const authModuleMicrosoftProvider: () => BackendFeature;
+export { authModuleMicrosoftProvider };
+export default authModuleMicrosoftProvider;
 
 // @public (undocumented)
 export const microsoftAuthenticator: OAuthAuthenticator<

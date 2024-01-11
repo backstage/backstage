@@ -11,7 +11,9 @@ import { Strategy } from 'openid-client';
 import { TokenSet } from 'openid-client';
 
 // @public (undocumented)
-export const authModulePinnipedProvider: () => BackendFeature;
+const authModulePinnipedProvider: () => BackendFeature;
+export { authModulePinnipedProvider };
+export default authModulePinnipedProvider;
 
 // @public (undocumented)
 export const pinnipedAuthenticator: OAuthAuthenticator<
