@@ -105,6 +105,22 @@ export const createGitlabProjectVariableAction: (options: {
 >;
 
 // @public
+export const createGitlabRepoPushAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    branchName: string;
+    commitMessage: string;
+    sourcePath?: string | undefined;
+    targetPath?: string | undefined;
+    token?: string | undefined;
+    commitAction?: 'update' | 'delete' | 'create' | undefined;
+  },
+  JsonObject
+>;
+
+// @public
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
