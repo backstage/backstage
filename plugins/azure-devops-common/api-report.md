@@ -14,6 +14,14 @@ export const AZURE_DEVOPS_DEFAULT_TOP: number;
 export const AZURE_DEVOPS_HOST_ORG_ANNOTATION = 'dev.azure.com/host-org';
 
 // @public (undocumented)
+export const AZURE_DEVOPS_MONO_REPO_BUILD_DEFINITION_ANNOTATION =
+  'dev.azure.com/mono-repo-build-definition';
+
+// @public (undocumented)
+export const AZURE_DEVOPS_MONO_REPO_PATH_ANNOTATION =
+  'dev.azure.com/mono-repo-path';
+
+// @public (undocumented)
 export const AZURE_DEVOPS_PROJECT_ANNOTATION = 'dev.azure.com/project';
 
 // @public (undocumented)
@@ -225,6 +233,8 @@ export interface Readme {
 export interface ReadmeConfig {
   // (undocumented)
   host?: string;
+  // (undocumented)
+  monoRepoPath?: string;
   // (undocumented)
   org?: string;
   // (undocumented)

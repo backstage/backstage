@@ -30,8 +30,15 @@ export function useReadme(entity: Entity): {
   const api = useApi(azureDevOpsApiRef);
 
   const { value, loading, error } = useAsync(() => {
-    const { project, repo, host, org } = getAnnotationValuesFromEntity(entity);
-    return api.getReadme({ project, repo: repo as string, host, org });
+    const { project, repo, host, org, monoRepoPath } =
+      getAnnotationValuesFromEntity(entity);
+    return api.getReadme({
+      project,
+      repo: repo as string,
+      host,
+      org,
+      monoRepoPath,
+    });
   }, [api]);
 
   return {

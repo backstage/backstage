@@ -527,11 +527,18 @@ export class AzureDevOpsApi {
     org: string,
     project: string,
     repo: string,
+    path?: string,
   ): Promise<{
     url: string;
     content: string;
   }> {
-    const url = buildEncodedUrl(host, org, project, repo, 'README.md');
+    const url = buildEncodedUrl(
+      host,
+      org,
+      project,
+      repo,
+      path ? `${path}/README.md` : 'README.md',
+    );
     const response = await this.urlReader.readUrl(url);
     const buffer = await response.buffer();
     const content = await replaceReadme(

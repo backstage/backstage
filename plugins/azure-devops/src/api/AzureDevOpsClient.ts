@@ -189,6 +189,9 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (opts.org) {
       queryString.append('org', opts.org);
     }
+    if (opts.monoRepoPath) {
+      queryString.append('monoRepoPath', opts.monoRepoPath);
+    }
     return await this.get(
       `readme/${encodeURIComponent(opts.project)}/${encodeURIComponent(
         opts.repo,

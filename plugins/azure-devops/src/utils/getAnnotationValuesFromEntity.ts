@@ -20,6 +20,8 @@ import {
   AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
   AZURE_DEVOPS_REPO_ANNOTATION,
   AZURE_DEVOPS_HOST_ORG_ANNOTATION,
+  AZURE_DEVOPS_MONO_REPO_PATH_ANNOTATION,
+  AZURE_DEVOPS_MONO_REPO_BUILD_DEFINITION_ANNOTATION,
 } from '@backstage/plugin-azure-devops-common';
 
 export function getAnnotationValuesFromEntity(entity: Entity): {
@@ -28,16 +30,25 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
   definition?: string;
   host?: string;
   org?: string;
+  monoRepoPath?: string;
 } {
   const { host, org } = getHostOrg(entity.metadata.annotations);
 
   const projectRepoValues = getProjectRepo(entity.metadata.annotations);
   if (projectRepoValues.project && projectRepoValues.repo) {
+    const monoRepoPath =
+      entity.metadata.annotations?.[AZURE_DEVOPS_MONO_REPO_PATH_ANNOTATION];
+    const definition =
+      entity.metadata.annotations?.[
+        AZURE_DEVOPS_MONO_REPO_BUILD_DEFINITION_ANNOTATION
+      ];
     return {
       project: projectRepoValues.project,
       repo: projectRepoValues.repo,
+      definition,
       host,
       org,
+      monoRepoPath,
     };
   }
 
