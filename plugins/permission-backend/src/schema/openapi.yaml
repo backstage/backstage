@@ -11,7 +11,7 @@ paths:
     post:
       operationId: Authorize
       responses:
-        "200":
+        '200':
           description: Success
           content:
             application/json:
@@ -21,26 +21,26 @@ paths:
                   items:
                     type: array
                     items:
-                      $ref: "#/components/schemas/EvaluatePermissionResponse"
+                      $ref: '#/components/schemas/EvaluatePermissionResponse'
                 required:
                   - items
                 additionalProperties: false
-        "400":
+        '400':
           $ref: '#/components/responses/ErrorResponse'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PostAuthorizeRequestBody"
+              $ref: '#/components/schemas/PostAuthorizeRequestBody'
   /health:
     get:
       responses:
-        "200":
+        '200':
           description: 200 response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetHealth200ResponseBody"
+                $ref: '#/components/schemas/GetHealth200ResponseBody'
 components:
   responses:
     ErrorResponse:
@@ -117,7 +117,7 @@ components:
                         additionalProperties: false
                       type:
                         type: string
-                        enum: 
+                        enum:
                           - basic
                     required:
                       - name
@@ -128,7 +128,7 @@ components:
                     properties:
                       type:
                         type: string
-                        enum: 
+                        enum:
                           - resource
                       resourceType:
                         type: string
@@ -159,7 +159,7 @@ components:
             additionalProperties: false
       required:
         - items
-    
+
     PermissionRuleParam:
       oneOf:
         - type: string
@@ -178,10 +178,10 @@ components:
           type: object
           additionalProperties:
             oneOf:
-              - $ref: "#/components/schemas/PermissionRuleParam"
+              - $ref: '#/components/schemas/PermissionRuleParam'
               - type: array
                 items:
-                  $ref: "#/components/schemas/PermissionRuleParam"
+                  $ref: '#/components/schemas/PermissionRuleParam'
       required:
         - resourceType
         - rule
@@ -195,8 +195,11 @@ components:
           enum:
             - ALLOW
             - DENY
+        id:
+          type: string
       required:
         - result
+        - id
       additionalProperties: false
 
     PermissionCriteria:
@@ -207,7 +210,7 @@ components:
             allOf:
               type: array
               items:
-                $ref: "#/components/schemas/PermissionCondition"
+                $ref: '#/components/schemas/PermissionCondition'
               minItems: 1
           additionalProperties: true
         - type: object
@@ -215,7 +218,7 @@ components:
             anyOf:
               type: array
               items:
-                $ref: "#/components/schemas/PermissionCondition"
+                $ref: '#/components/schemas/PermissionCondition'
               minItems: 1
           additionalProperties: true
         - type: object
@@ -223,11 +226,11 @@ components:
             not:
               type: array
               items:
-                $ref: "#/components/schemas/PermissionCondition"
+                $ref: '#/components/schemas/PermissionCondition'
               minItems: 1
           additionalProperties: true
-        - $ref: "#/components/schemas/PermissionCondition"
-    
+        - $ref: '#/components/schemas/PermissionCondition'
+
     ConditionalPolicyDecision:
       type: object
       properties:
@@ -240,18 +243,21 @@ components:
         resourceType:
           type: string
         conditions:
-          $ref: "#/components/schemas/PermissionCriteria"
+          $ref: '#/components/schemas/PermissionCriteria'
+        id:
+          type: string
       required:
         - result
+        - id
         - pluginId
         - resourceType
         - conditions
       additionalProperties: false
-    
+
     EvaluatePermissionResponse:
       oneOf:
-        - $ref: "#/components/schemas/ConditionalPolicyDecision"
-        - $ref: "#/components/schemas/DefinitivePolicyDecision"
+        - $ref: '#/components/schemas/ConditionalPolicyDecision'
+        - $ref: '#/components/schemas/DefinitivePolicyDecision'
 
     PostAuthorize400ResponseBody:
       type: object
