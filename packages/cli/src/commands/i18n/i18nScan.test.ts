@@ -24,12 +24,12 @@ describe('i18nScan', () => {
   const srcPath = mockDir.resolve('Component.tsx');
   const outPath = mockDir.resolve('test-output.csv');
 
-  test('should something', () => {
+  test('should create output file with translation keys', async () => {
     mockDir.setContent({
       'Component.tsx': `t('${translationKey}')`,
     });
 
-    i18nScan({ src: srcPath, out: outPath });
+    await i18nScan({ src: srcPath, out: outPath });
 
     expect(fs.readFileSync(outPath, 'utf-8')).toEqual(translationKey);
   });

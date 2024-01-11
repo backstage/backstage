@@ -24,7 +24,7 @@ export default async (opts: OptionValues) => {
     keySeparator: false,
   });
   const filePaths = glob.sync(opts.src, {
-    ignore: ['./node_modules/**', './**/*.test.tsx'],
+    ignore: ['**/node_modules/**', '**/*.test.tsx'],
   });
   const parseOptions = { list: ['t'] };
 
