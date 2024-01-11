@@ -123,6 +123,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
   ): Promise<{ response: { data: Buffer; url: string }[]; etag?: string }> {
     // Does it contain globs? I.e. does it contain asterisks or question marks
     // (no curly braces for now)
+
     const { pathname: filepath } = new URL(location);
     if (filepath?.match(/[*?]/)) {
       const limiter = limiterFactory(5);
