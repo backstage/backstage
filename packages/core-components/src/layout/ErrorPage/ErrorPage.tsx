@@ -21,7 +21,7 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from '../../components/Link';
-import { LogViewer } from '../../components';
+import { CopyTextButton, WarningPanel } from '../../components';
 import { useSupportConfig } from '../../hooks';
 import { MicDrop } from './MicDrop';
 
@@ -59,6 +59,17 @@ const useStyles = makeStyles(
     },
     subtitle: {
       color: theme.palette.textSubtle,
+    },
+    text: {
+      fontFamily: 'monospace',
+      whiteSpace: 'pre',
+      overflowX: 'auto',
+      marginRight: theme.spacing(2),
+    },
+    copyTextContainer: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'flex-start',
     },
   }),
   { name: 'BackstageErrorPage' },
@@ -108,7 +119,25 @@ export function ErrorPage(props: IErrorPageProps) {
         </Grid>
         <MicDrop />
       </Grid>
-      {stack && <LogViewer text={stack} />}
+      {stack && (
+        <WarningPanel severity="error" title={statusMessage}>
+          <Grid container className={classes.container}>
+            <Grid item xs={10} sm={8}>
+              <Typography variant="subtitle1">Stack Trace</Typography>
+              <Typography
+                className={classes.text}
+                color="error"
+                variant="body1"
+              >
+                {stack}
+              </Typography>
+            </Grid>
+            <Grid item xs={2} sm={4} className={classes.copyTextContainer}>
+              <CopyTextButton text={stack} />
+            </Grid>
+          </Grid>
+        </WarningPanel>
+      )}
     </Box>
   );
 }
