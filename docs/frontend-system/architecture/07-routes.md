@@ -287,7 +287,6 @@ export default createPlugin({
 export { default } from './plugin';
 ```
 
-On important thing to highlight is that it is currently not possible to have parameterized `ExternalRouteRefs`, or to bind an external route to a parameterized route, although this may be added in the future if needed.
 
 Now let's move on and configure the app to point to the Scaffolder create component page when the catalog create component ref be used.
 
