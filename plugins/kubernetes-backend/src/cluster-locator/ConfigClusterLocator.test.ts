@@ -262,7 +262,9 @@ describe('ConfigClusterLocator', () => {
     });
 
     expect(() => ConfigClusterLocator.fromConfig(config, authStrategy)).toThrow(
-      'Missing required config value',
+      `cluster 'cluster' has no auth provider configured; this must be specified` +
+        ` via the 'authProvider' or ` +
+        `'authMetadata.${ANNOTATION_KUBERNETES_AUTH_PROVIDER}' parameter`,
     );
   });
 

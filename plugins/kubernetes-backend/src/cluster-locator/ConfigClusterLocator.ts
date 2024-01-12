@@ -40,11 +40,19 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
         const authMetadataBlock = c.getOptional<{
           [ANNOTATION_KUBERNETES_AUTH_PROVIDER]?: string;
         }>('authMetadata');
+        const name = c.getString('name');
         const authProvider =
           authMetadataBlock?.[ANNOTATION_KUBERNETES_AUTH_PROVIDER] ??
-          c.getString('authProvider');
+          c.getOptionalString('authProvider');
+        if (!authProvider) {
+          throw new Error(
+            `cluster '${name}' has no auth provider configured; this must be ` +
+              `specified via the 'authProvider' or ` +
+              `'authMetadata.${ANNOTATION_KUBERNETES_AUTH_PROVIDER}' parameter`,
+          );
+        }
         const clusterDetails: ClusterDetails = {
-          name: c.getString('name'),
+          name,
           url: c.getString('url'),
           skipTLSVerify: c.getOptionalBoolean('skipTLSVerify') ?? false,
           skipMetricsLookup: c.getOptionalBoolean('skipMetricsLookup') ?? false,
