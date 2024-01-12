@@ -55,15 +55,21 @@ function resolveInputs(
   );
 
   if (process.env.NODE_ENV !== 'production') {
+    const inputNames = Object.keys(inputMap);
+
     for (const [name, nodes] of undeclaredAttachments) {
       const pl = nodes.length > 1;
       // eslint-disable-next-line no-console
       console.warn(
-        `The extension${pl ? 's' : ''} '${nodes
-          .map(n => n.spec.id)
-          .join("', '")}' ${
-          pl ? 'are' : 'is'
-        } attached to the input '${name}' of '${id}', but the extension '${id}' noes not declare a '${name}' input`,
+        [
+          `The extension${pl ? 's' : ''} '${nodes
+            .map(n => n.spec.id)
+            .join("', '")}' ${pl ? 'are' : 'is'}`,
+          `attached to the input '${name}' of the extension '${id}', but it`,
+          inputNames.length === 0
+            ? 'has no inputs'
+            : `has no such input (candidates are '${inputNames.join("', '")}')`,
+        ].join(' '),
       );
     }
   }
