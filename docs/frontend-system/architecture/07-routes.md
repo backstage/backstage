@@ -39,7 +39,7 @@ Note that you often want to create the route references themselves in a differen
 
 ### Providing Route References to Plugins
 
-Route refs do not have any behavior, in other words, they are an opaque type that represents route targets in an app, which are bound to specific paths at runtime, but they provide a level of indirection to help mix together different plugins that otherwise wouldn't know how to route to each other.
+Route refs do not have any behavior themselves. They are an opaque value that represents route targets in an app, which are bound to specific paths at runtime. Their role is to provide a level of indirection to help link together different pages that otherwise wouldn't know how to route to each other.
 
 The previous section code snippet does not indicate which plugin the route belongs to. To do so, you have to use it in the creation of any kind of routable extension, such as a page extension. When this extension is installed in the app it will become associated with the newly created `RouteRef`, making it possible to use the route ref to navigate the extension. Here's what we need to do:
 
