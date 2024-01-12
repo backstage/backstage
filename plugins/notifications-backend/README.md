@@ -19,7 +19,9 @@ export default async function createPlugin(
   return await createRouter({
     logger: env.logger,
     identity: env.identity,
-    notificationService: env.notificationService,
+    tokenManager: env.tokenManager,
+    database: env.database,
+    discovery: env.discovery,
   });
 }
 ```
@@ -37,3 +39,8 @@ async function main() {
   apiRouter.use('/notifications', await notifications(notificationsEnv));
 }
 ```
+
+## Extending Notifications
+
+The notifications can be extended with `NotificationProcessor`. These processors allow to decorate notifications
+before they are sent or/and send the notifications to external services.

@@ -15,9 +15,10 @@
  */
 import {
   createServiceBuilder,
+  HostDiscovery,
   loadBackendConfig,
   PluginDatabaseManager,
-  PluginEndpointDiscovery,
+  ServerTokenManager,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -25,7 +26,11 @@ import { createRouter } from './router';
 import Knex from 'knex';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Request } from 'express';
-import { NotificationService } from '@backstage/plugin-notifications-node';
+import {
+  CatalogApi,
+  CatalogRequestOptions,
+  GetEntitiesByRefsRequest,
+} from '@backstage/catalog-client';
 
 export interface ServerOptions {
   port: number;
@@ -42,26 +47,34 @@ export async function startStandaloneServer(
   const config = await loadBackendConfig({ logger, argv: process.argv });
   const db = Knex(config.get('backend.database'));
 
+  const tokenManager = ServerTokenManager.fromConfig(config, {
+    logger,
+  });
+  const discovery = HostDiscovery.fromConfig(config);
+
   const dbMock: PluginDatabaseManager = {
     async getClient() {
       return db;
     },
   };
 
-  const discoveryMock: PluginEndpointDiscovery = {
-    async getBaseUrl(pluginId: string) {
-      return `http://localhost:7007/api/${pluginId}`;
+  const catalogApi = {
+    async getEntitiesByRefs(
+      _request: GetEntitiesByRefsRequest,
+      __options?: CatalogRequestOptions,
+    ) {
+      return {
+        items: [
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: { name: 'user', namespace: 'default' },
+            spec: {},
+          },
+        ],
+      };
     },
-
-    async getExternalBaseUrl(pluginId: string) {
-      return `http://localhost:7007/api/${pluginId}`;
-    },
-  };
-
-  const notificationService = NotificationService.create({
-    database: dbMock,
-    discovery: discoveryMock,
-  });
+  } as Partial<CatalogApi> as CatalogApi;
 
   const identityMock: IdentityApi = {
     async getIdentity({ request }: { request: Request<unknown> }) {
@@ -80,7 +93,10 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
     identity: identityMock,
-    notificationService,
+    database: dbMock,
+    catalog: catalogApi,
+    discovery,
+    tokenManager,
   });
 
   let service = createServiceBuilder(module)

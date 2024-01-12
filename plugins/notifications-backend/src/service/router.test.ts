@@ -13,13 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
+import {
+  DatabaseManager,
+  getVoidLogger,
+  PluginDatabaseManager,
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { NotificationService } from '@backstage/plugin-notifications-node';
+import { ConfigReader } from '@backstage/config';
+
+function createDatabase(): PluginDatabaseManager {
+  return DatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: {
+          client: 'better-sqlite3',
+          connection: ':memory:',
+        },
+      },
+    }),
+  ).forPlugin('notifications');
+}
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -36,17 +55,23 @@ describe('createRouter', () => {
       };
     },
   };
+  const mockedTokenManager: jest.Mocked<TokenManager> = {
+    getToken: jest.fn(),
+    authenticate: jest.fn(),
+  };
 
-  const notificationServiceMock: jest.Mocked<Partial<NotificationService>> = {
-    getStore: jest.fn(),
-    send: jest.fn(),
+  const discovery: jest.Mocked<PluginEndpointDiscovery> = {
+    getBaseUrl: jest.fn(),
+    getExternalBaseUrl: jest.fn(),
   };
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
       identity: identityMock,
-      notificationService: notificationServiceMock as NotificationService,
+      database: createDatabase(),
+      tokenManager: mockedTokenManager,
+      discovery,
     });
     app = express().use(router);
   });

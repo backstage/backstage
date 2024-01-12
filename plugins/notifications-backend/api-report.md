@@ -4,13 +4,23 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { Logger } from 'winston';
-import { NotificationService } from '@backstage/plugin-notifications-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
+import { PluginDatabaseManager } from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
+
+// @public (undocumented)
+export type NotificationProcessor = {
+  decorate?(notification: Notification_2): Promise<Notification_2>;
+  send?(notification: Notification_2): Promise<void>;
+};
 
 // @public
 export const notificationsPlugin: () => BackendFeature;
@@ -18,11 +28,19 @@ export const notificationsPlugin: () => BackendFeature;
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
+  catalog?: CatalogApi;
+  // (undocumented)
+  database: PluginDatabaseManager;
+  // (undocumented)
+  discovery: DiscoveryApi;
+  // (undocumented)
   identity: IdentityApi;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   // (undocumented)
-  notificationService: NotificationService;
+  processors?: NotificationProcessor[];
+  // (undocumented)
+  tokenManager: TokenManager;
 }
 
 // (No @packageDocumentation comment for this package)

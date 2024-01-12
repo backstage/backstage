@@ -18,7 +18,8 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { NotificationService } from './service';
+import { DefaultNotificationService } from './service';
+import { NotificationService } from './service/NotificationService';
 
 /** @public */
 export const notificationService = createServiceRef<NotificationService>({
@@ -28,12 +29,17 @@ export const notificationService = createServiceRef<NotificationService>({
     createServiceFactory({
       service,
       deps: {
+        logger: coreServices.logger,
         discovery: coreServices.discovery,
-        database: coreServices.database,
+        tokenManager: coreServices.tokenManager,
         // TODO: Signals
       },
-      factory({ discovery, database }) {
-        return NotificationService.create({ discovery, database });
+      factory({ logger, discovery, tokenManager }) {
+        return DefaultNotificationService.create({
+          logger,
+          discovery,
+          tokenManager,
+        });
       },
     }),
 });

@@ -15,10 +15,12 @@ import { NotificationService } from '@backstage/plugin-notifications-node';
 
 function makeCreateEnv(config: Config) {
   // ...
-  const notificationService = NotificationService.create({
-    database: databaseManager.forPlugin('notifications'),
+  const notificationService = DefaultNotificationService.create({
+    logger: root.child({ type: 'plugin' }),
     discovery,
+    tokenManager,
   });
+
   // ...
   return (plugin: string): PluginEnvironment => {
     // ...
@@ -51,8 +53,3 @@ save the notification and optionally signal the frontend to show the latest stat
 When sending notifications, you can specify the entity reference of the notification. If the entity reference is
 a user, the notification will be sent to only that user. If it's a group, the notification will be sent to all
 members of the group. If it's some other entity, the notification will be sent to the owner of that entity.
-
-## Extending Notification Service
-
-The `NotificationService` can be extended with `NotificationProcessor`. These processors allow to decorate notifications
-before they are sent or/and send the notifications to external services.

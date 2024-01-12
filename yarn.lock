@@ -7785,9 +7785,14 @@ __metadata:
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-notifications-common": "workspace:^"
     "@backstage/plugin-notifications-node": "workspace:^"
     "@types/express": "*"
     "@types/supertest": ^2.0.8
@@ -7797,6 +7802,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
+    uuid: ^8.0.0
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown

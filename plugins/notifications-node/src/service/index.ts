@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './NotificationService';
-export * from './NotificationProcessor';
+export * from './DefaultNotificationService';
+export type { NotificationService } from './NotificationService';

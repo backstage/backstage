@@ -75,7 +75,7 @@ import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { metrics } from '@opentelemetry/api';
 import { DefaultSignalService } from '@backstage/plugin-signals-node';
-import { NotificationService } from '@backstage/plugin-notifications-node';
+import { DefaultNotificationService } from '@backstage/plugin-notifications-node';
 
 // Expose opentelemetry metrics using a Prometheus exporter on
 // http://localhost:9464/metrics . See prometheus.yml in packages/backend for
@@ -105,9 +105,10 @@ function makeCreateEnv(config: Config) {
   const signalService = DefaultSignalService.create({
     eventBroker,
   });
-  const notificationService = NotificationService.create({
-    database: databaseManager.forPlugin('notifications'),
+  const notificationService = DefaultNotificationService.create({
+    logger: root.child({ type: 'plugin' }),
     discovery,
+    tokenManager,
   });
 
   root.info(`Created UrlReader ${reader}`);

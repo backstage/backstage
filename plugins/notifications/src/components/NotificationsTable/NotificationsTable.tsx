@@ -41,10 +41,15 @@ import CloseIcon from '@material-ui/icons/Close';
 import { Skeleton } from '@material-ui/lab';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
-import { NotificationIcon } from './NotificationIcon';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 const useStyles = makeStyles(theme => ({
+  table: {
+    border: `1px solid ${theme.palette.divider}`,
+  },
+  header: {
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
   notificationRow: {
     cursor: 'pointer',
     '&.hideOnHover': {
@@ -54,7 +59,6 @@ const useStyles = makeStyles(theme => ({
       display: 'none',
     },
     '&:hover': {
-      backgroundColor: theme.palette.background.paper,
       '& .hideOnHover': {
         display: 'none',
       },
@@ -112,7 +116,7 @@ export const NotificationsTable = (props: {
   }
 
   return (
-    <Table size="small">
+    <Table size="small" className={styles.table}>
       <TableHead>
         <TableRow>
           <TableCell colSpan={3}>
@@ -172,9 +176,13 @@ export const NotificationsTable = (props: {
       </TableHead>
       {props.notifications?.map(notification => {
         return (
-          <TableRow key={notification.id} className={styles.notificationRow}>
+          <TableRow
+            key={notification.id}
+            className={styles.notificationRow}
+            hover
+          >
             <TableCell
-              width="80px"
+              width="60px"
               style={{ verticalAlign: 'center', paddingRight: '0px' }}
             >
               <Checkbox
@@ -183,7 +191,6 @@ export const NotificationsTable = (props: {
                 checked={isChecked(notification.id)}
                 onClick={() => onCheckBoxClick(notification.id)}
               />
-              <NotificationIcon notification={notification} />
             </TableCell>
             <TableCell
               onClick={() => navigate(notification.link)}

@@ -26,7 +26,7 @@ import { Notification } from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
 
 const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-notifications-node',
+  '@backstage/plugin-notifications-backend',
   'migrations',
 );
 

@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
-import { notificationService } from '@backstage/plugin-notifications-node';
 
 /**
  * Notifications backend plugin
@@ -34,14 +32,25 @@ export const notificationsPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         logger: coreServices.logger,
         identity: coreServices.identity,
-        service: notificationService,
+        database: coreServices.database,
+        tokenManager: coreServices.tokenManager,
+        discovery: coreServices.discovery,
       },
-      async init({ httpRouter, logger, identity, service }) {
+      async init({
+        httpRouter,
+        logger,
+        identity,
+        database,
+        tokenManager,
+        discovery,
+      }) {
         httpRouter.use(
           await createRouter({
-            logger: loggerToWinstonLogger(logger),
+            logger,
             identity,
-            notificationService: service,
+            database,
+            tokenManager,
+            discovery,
           }),
         );
       },
