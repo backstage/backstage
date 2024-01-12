@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ExternalRouteRef, RouteRef } from '../routing';
+import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing';
 
 /**
  * Feature flag configuration.
@@ -27,7 +27,7 @@ export type FeatureFlagConfig = {
 };
 
 /** @public */
-export type AnyRoutes = { [name in string]: RouteRef };
+export type AnyRoutes = { [name in string]: RouteRef | SubRouteRef };
 
 /** @public */
 export type AnyExternalRoutes = { [name in string]: ExternalRouteRef };

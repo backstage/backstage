@@ -180,7 +180,7 @@ export type AnyRouteRefParams =
 
 // @public (undocumented)
 export type AnyRoutes = {
-  [name in string]: RouteRef;
+  [name in string]: RouteRef | SubRouteRef;
 };
 
 export { ApiFactory };
