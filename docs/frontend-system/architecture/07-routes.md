@@ -103,7 +103,7 @@ export const detailsRouteRef = createRouteRef({
 
 ### Using a Route Reference
 
-You can link to the routes from other pages in the same plugin or you can also link between different plugins pages. In this section we will cover the first scenario, if you are interested in link to a page of a different plugin, please go to the [external routes](#external-router-references) section below.
+Route references can be used to link to page in the same plugin, or to pages in a different plugins. In this section we will cover the first scenario, if you are interested in link to a page of a different plugin, please go to the [external routes](#external-router-references) section below.
 
 Alright, let's presume that we have a plugin that renders two different pages, and these pages link to each other.
 
