@@ -228,6 +228,34 @@ describe('ConfigClusterLocator', () => {
     ]);
   });
 
+  it('prefers authMetadata block to top-level keys', async () => {
+    const sut = ConfigClusterLocator.fromConfig(
+      new ConfigReader({
+        clusters: [
+          {
+            name: 'cluster',
+            url: 'http://url',
+            authProvider: 'aws',
+            authMetadata: {
+              [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+            },
+          },
+        ],
+      }),
+      authStrategy,
+    );
+
+    const result = await sut.getClusters();
+
+    expect(result).toMatchObject([
+      {
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+        },
+      },
+    ]);
+  });
+
   it('forbids cluster without auth provider', () => {
     const config: Config = new ConfigReader({
       clusters: [{ name: 'cluster', url: 'http://url' }],
