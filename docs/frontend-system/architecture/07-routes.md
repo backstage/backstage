@@ -89,7 +89,7 @@ It may be unclear why we need to pass the route to the plugin when it has alread
 
 ### Route Path Parameters
 
-The referenced route can also accepts `params`. Here is how you create a reference for a route that requires a kind, namespace and name `params`, like in this path `/entities/:kind/:namespace/:name`:
+Route references optionally accept a `params` option, which will require the listed parameter names to be present in the route path. Here is how you create a reference for a route that requires a `kind`, `namespace` and `name` parameters, like in this path `/entities/:kind/:namespace/:name`:
 
 ```tsx
 // plugins/catalog/src/routes.ts
