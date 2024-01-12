@@ -41,11 +41,11 @@ export { examplePlugin as default } from './plugin';
 
 Note that we export the plugin as the default export of our package from `src/index.ts`. This is important, as it is how users of our plugin are able to seamlessly install the plugin package in a Backstage app without having to reference the plugin instance through code.
 
-The plugin ID should be a lowercase dash-separated string, while the plugin instance variable should be the camelCase version of the ID with a `Plugin` suffix. For more details on naming patterns within the frontend system, see [the article on naming patterns](../architecture/08-naming-patterns.md). By sticking to these naming patterns you ensure that users of your plugin more easily recognize the exports and features provided by your plugin.
+The plugin ID should be a lowercase dash-separated string, while the plugin instance variable should be the camel case version of the ID with a `Plugin` suffix. For more details on naming patterns within the frontend system, see [the article on naming patterns](../architecture/08-naming-patterns.md). By sticking to these naming patterns you ensure that users of your plugin more easily recognize the exports and features provided by your plugin.
 
 ## Adding extensions
 
-The plugin that we created above is empty, and does't provide any actual functionality. To add functionality to a plugin you need to create and provide it with one or more [extensions](../architecture/03-extensions.md). Let's continue by adding a standalone page to our plugin, as well as a navigation item that allows users to navigate to the page.
+The plugin that we created above is empty, and doesn't provide any actual functionality. To add functionality to a plugin you need to create and provide it with one or more [extensions](../architecture/03-extensions.md). Let's continue by adding a standalone page to our plugin, as well as a navigation item that allows users to navigate to the page.
 
 To create a new extension you typically use pre-defined [extension creators](../architecture/03-extensions.md#extension-creators), provided either by the framework itself or by other plugins. In this case we'll need to use `createPageExtension` and `createNavItemExtension`, both from `@backstage/frontend-plugin-api`. We will also need to [create a route reference](../architecture/07-routes.md#creating-a-route-reference) to use as a reference for out page, allowing us to dynamically create URLs that link to our page.
 
