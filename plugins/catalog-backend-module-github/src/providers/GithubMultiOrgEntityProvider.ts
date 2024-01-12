@@ -298,21 +298,24 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     }
 
     const allUsers = Array.from(allUsersMap.values());
+    if (allUsers.length > 0 || allTeams.length > 0) {
+      const { markCommitComplete } = markReadComplete({ allUsers, allTeams });
 
-    const { markCommitComplete } = markReadComplete({ allUsers, allTeams });
+      await this.connection.applyMutation({
+        type: 'full',
+        entities: [...allUsers, ...allTeams].map(entity => ({
+          locationKey: `github-multi-org-provider:${this.options.id}`,
+          entity: withLocations(
+            `https://${this.options.gitHubConfig.host}`,
+            entity,
+          ),
+        })),
+      });
 
-    await this.connection.applyMutation({
-      type: 'full',
-      entities: [...allUsers, ...allTeams].map(entity => ({
-        locationKey: `github-multi-org-provider:${this.options.id}`,
-        entity: withLocations(
-          `https://${this.options.gitHubConfig.host}`,
-          entity,
-        ),
-      })),
-    });
-
-    markCommitComplete();
+      markCommitComplete();
+    } else {
+      logger.info('No users or teams to process');
+    }
   }
 
   private supportsEventTopics(): string[] {

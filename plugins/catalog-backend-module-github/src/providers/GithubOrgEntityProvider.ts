@@ -229,21 +229,25 @@ export class GithubOrgEntityProvider
       }
     }
 
-    const { markCommitComplete } = markReadComplete({ users, teams });
+    if (users.length > 0 || teams.length > 0) {
+      const { markCommitComplete } = markReadComplete({ users, teams });
 
-    await this.connection.applyMutation({
-      type: 'full',
-      entities: [...users, ...teams].map(entity => ({
-        locationKey: `github-org-provider:${this.options.id}`,
-        entity: withLocations(
-          `https://${this.options.gitHubConfig.host}`,
-          org,
-          entity,
-        ),
-      })),
-    });
+      await this.connection.applyMutation({
+        type: 'full',
+        entities: [...users, ...teams].map(entity => ({
+          locationKey: `github-org-provider:${this.options.id}`,
+          entity: withLocations(
+            `https://${this.options.gitHubConfig.host}`,
+            org,
+            entity,
+          ),
+        })),
+      });
 
-    markCommitComplete();
+      markCommitComplete();
+    } else {
+      logger.info('No users or teams to process');
+    }
   }
 
   /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.onEvent} */
