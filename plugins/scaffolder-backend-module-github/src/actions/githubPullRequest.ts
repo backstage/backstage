@@ -372,7 +372,7 @@ export const createPublishGithubPullRequestAction = (
         repo: pr.repo,
         pull_number: pr.number,
         reviewers,
-        team_reviewers: teamReviewers,
+        team_reviewers: [...new Set(teamReviewers)],
       });
       const addedUsers = result.data.requested_reviewers?.join(', ') ?? '';
       const addedTeams = result.data.requested_teams?.join(', ') ?? '';
