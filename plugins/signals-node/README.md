@@ -27,10 +27,8 @@ function makeCreateEnv(config: Config) {
   // ...
 
   const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
-  const signalService = SignalService.create({
-    logger: root,
-    eventBroker, // EventBroker is optional
-    identity,
+  const signalService = DefaultSignalService.create({
+    eventBroker,
   });
 
   return (plugin: string): PluginEnvironment => {
@@ -51,16 +49,38 @@ To allow connections from the frontend, you should also install the `@backstage/
 
 Once you have both of the backend plugins installed, you can utilize the signal service by calling the
 `publish` method. This will publish the message to all subscribers in the frontend. To send message to
-all subscribers, you can use `*` as `to` parameter.
+all subscribers, you can use `null` as `recipients` parameter.
 
 ```ts
 // Periodic sending example
 setInterval(async () => {
-  await signalService.publish('*', 'plugin:topic', {
-    message: 'hello world',
+  await signalService.publish({
+    recipients: null,
+    channel: 'my_plugin',
+    message: {
+      message: 'hello world',
+    },
   });
 }, 5000);
 ```
 
 To receive this message in the frontend, check the documentation of `@backstage/plugin-signals` and
 `@backstage/plugin-signals-react`.
+
+## Using event broker directly
+
+Other way to send signals is to utilize the `EventBroker` directly. This requires that the payload is correct for it
+to work:
+
+```ts
+eventBroker.publish({
+  topic: 'signals',
+  eventPayload: {
+    recipients: ['user:default/user1'],
+    message: {
+      message: 'hello world',
+    },
+    channel: 'my_plugin',
+  },
+});
+```

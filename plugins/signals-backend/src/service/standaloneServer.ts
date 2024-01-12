@@ -23,6 +23,11 @@ import { Logger } from 'winston';
 import { createRouter } from './router';
 import { DefaultSignalService } from '@backstage/plugin-signals-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import {
+  EventBroker,
+  EventParams,
+  EventSubscriber,
+} from '@backstage/plugin-events-node';
 
 export interface ServerOptions {
   port: number;
@@ -43,14 +48,26 @@ export async function startStandaloneServer(
     issuer: await discovery.getExternalBaseUrl('auth'),
   });
 
+  const mockSubscribers: EventSubscriber[] = [];
+  const eventBroker: EventBroker = {
+    async publish(params: EventParams): Promise<void> {
+      mockSubscribers.forEach(sub => sub.onEvent(params));
+    },
+    subscribe(...subscribers: EventSubscriber[]) {
+      subscribers.flat().forEach(subscriber => {
+        mockSubscribers.push(subscriber);
+      });
+    },
+  };
+
   const signals = DefaultSignalService.create({
-    logger: logger,
-    identity,
+    eventBroker,
   });
 
   const router = await createRouter({
     logger,
-    service: signals,
+    identity,
+    eventBroker,
   });
 
   let service = createServiceBuilder(module)
@@ -60,10 +77,22 @@ export async function startStandaloneServer(
     service = service.enableCors({ origin: 'http://localhost:3000' });
   }
 
-  return await service.start().catch(err => {
+  let server: Promise<Server>;
+  try {
+    server = service.start();
+
+    setInterval(() => {
+      signals.publish({
+        recipients: null,
+        channel: 'test',
+        message: { hello: 'world' },
+      });
+    }, 5000);
+  } catch (err) {
     logger.error(err);
     process.exit(1);
-  });
+  }
+  return server;
 }
 
 module.hot?.accept();

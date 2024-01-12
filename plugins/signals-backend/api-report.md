@@ -4,9 +4,10 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { EventBroker } from '@backstage/plugin-events-node';
 import express from 'express';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { SignalService } from '@backstage/plugin-signals-node';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -14,9 +15,11 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
-  logger: LoggerService;
+  eventBroker?: EventBroker;
   // (undocumented)
-  service: SignalService;
+  identity: IdentityApi;
+  // (undocumented)
+  logger: LoggerService;
 }
 
 // @public

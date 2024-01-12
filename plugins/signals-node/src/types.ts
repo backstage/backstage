@@ -13,35 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { EventBroker } from '@backstage/plugin-events-node';
-import { WebSocket } from 'ws';
 import { JsonObject } from '@backstage/types';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
  */
-export type ServiceOptions = {
+export type SignalServiceOptions = {
   eventBroker?: EventBroker;
-  logger: LoggerService;
-  identity: IdentityApi;
 };
 
 /** @public */
-export type SignalEventBrokerPayload = {
-  recipients?: string[];
-  topic?: string;
-  message?: JsonObject;
-};
-
-/**
- * @internal
- */
-export type SignalConnection = {
-  id: string;
-  user: string;
-  ws: WebSocket;
-  ownershipEntityRefs: string[];
-  subscriptions: Set<string>;
+export type SignalPayload = {
+  recipients: string[] | null;
+  channel: string;
+  message: JsonObject;
 };

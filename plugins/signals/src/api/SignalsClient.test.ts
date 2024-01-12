@@ -44,21 +44,21 @@ describe('SignalsClient', () => {
   it('should handle single subscription correctly', async () => {
     const messageMock = jest.fn();
     const client = SignalClient.create({ discoveryApi, identity });
-    const { unsubscribe } = client.subscribe('topic', messageMock);
+    const { unsubscribe } = client.subscribe('channel', messageMock);
     await server.connected;
 
     await expect(server).toReceiveMessage({
       action: 'subscribe',
-      topic: 'topic',
+      channel: 'channel',
     });
-    server.send({ topic: 'topic', message: { hello: 'world' } });
+    server.send({ channel: 'channel', message: { hello: 'world' } });
     expect(messageMock).toHaveBeenCalledWith({ hello: 'world' });
 
     await unsubscribe();
 
     await expect(server).toReceiveMessage({
       action: 'unsubscribe',
-      topic: 'topic',
+      channel: 'channel',
     });
   });
 
@@ -68,11 +68,11 @@ describe('SignalsClient', () => {
     const client1 = SignalClient.create({ discoveryApi, identity });
     const client2 = SignalClient.create({ discoveryApi, identity });
     const { unsubscribe: unsubscribe1 } = client1.subscribe(
-      'topic',
+      'channel',
       messageMock1,
     );
     const { unsubscribe: unsubscribe2 } = client2.subscribe(
-      'topic',
+      'channel',
       messageMock2,
     );
 
@@ -80,22 +80,22 @@ describe('SignalsClient', () => {
 
     await expect(server).toReceiveMessage({
       action: 'subscribe',
-      topic: 'topic',
+      channel: 'channel',
     });
-    server.send({ topic: 'topic', message: { hello: 'world' } });
+    server.send({ channel: 'channel', message: { hello: 'world' } });
     expect(messageMock1).toHaveBeenCalledWith({ hello: 'world' });
     expect(messageMock2).toHaveBeenCalledWith({ hello: 'world' });
 
     await unsubscribe1();
     await expect(server).not.toReceiveMessage({
       action: 'unsubscribe',
-      topic: 'topic',
+      channel: 'channel',
     });
 
     await unsubscribe2();
     await expect(server).toReceiveMessage({
       action: 'unsubscribe',
-      topic: 'topic',
+      channel: 'channel',
     });
   });
 
@@ -108,11 +108,11 @@ describe('SignalsClient', () => {
       connectTimeout: 100,
     });
 
-    client.subscribe('topic', messageMock);
+    client.subscribe('channel', messageMock);
     await server.connected;
     await expect(server).toReceiveMessage({
       action: 'subscribe',
-      topic: 'topic',
+      channel: 'channel',
     });
 
     await server.server.emit('error', null);
@@ -120,7 +120,7 @@ describe('SignalsClient', () => {
     await new Promise(r => setTimeout(r, 50));
     await expect(server).toReceiveMessage({
       action: 'subscribe',
-      topic: 'topic',
+      channel: 'channel',
     });
   });
 });

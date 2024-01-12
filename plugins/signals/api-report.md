@@ -24,7 +24,7 @@ export class SignalClient implements SignalApi {
   static readonly DEFAULT_RECONNECT_TIMEOUT_MS: number;
   // (undocumented)
   subscribe(
-    topic: string,
+    channel: string,
     onMessage: (message: JsonObject) => void,
   ): {
     unsubscribe: () => void;

@@ -18,9 +18,17 @@ import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
-import { DefaultSignalService } from '@backstage/plugin-signals-node';
+import { EventBroker } from '@backstage/plugin-events-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
-const signalsServiceMock: jest.Mocked<DefaultSignalService> = {} as any;
+const eventBrokerMock: jest.Mocked<EventBroker> = {
+  subscribe: jest.fn(),
+  publish: jest.fn(),
+};
+
+const identityApiMock: jest.Mocked<IdentityApi> = {
+  getIdentity: jest.fn(),
+};
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -28,7 +36,8 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
-      service: signalsServiceMock,
+      identity: identityApiMock,
+      eventBroker: eventBrokerMock,
     });
     app = express().use(router);
   });

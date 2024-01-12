@@ -22,10 +22,15 @@ Example of using the hook:
 ```ts
 import { useSignal } from '@backstage/plugin-signals-react';
 
-const { lastSignal } = useSignal('myplugin:topic');
+const { lastSignal } = useSignal('myplugin:channel');
+
+useEffect(() => {
+  console.log(lastSignal);
+}, [lastSignal]);
 ```
 
-Whenever backend publishes new message to the topic `myplugin:topic`, the lastSignal is changed.
+Whenever backend publishes new message to the channel `myplugin:channel`, the `lastSignal` is changed. The `lastSignal`
+is always initiated with null value before any messages are received from the backend.
 
 ## Using API directly
 
@@ -37,7 +42,7 @@ import { signalsApiRef } from '@backstage/plugin-signals-react';
 
 const signals = useApi(signalsApiRef);
 const { unsubscribe } = signals.subscribe(
-  'myplugin:topic',
+  'myplugin:channel',
   (message: JsonObject) => {
     console.log(message);
   },

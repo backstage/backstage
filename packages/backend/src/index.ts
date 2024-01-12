@@ -101,9 +101,7 @@ function makeCreateEnv(config: Config) {
 
   const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
   const signalService = DefaultSignalService.create({
-    logger: root,
     eventBroker,
-    identity,
   });
 
   root.info(`Created UrlReader ${reader}`);

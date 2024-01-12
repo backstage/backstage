@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import {
-  coreServices,
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
@@ -29,12 +28,11 @@ export const signalService = createServiceRef<SignalService>({
     createServiceFactory({
       service,
       deps: {
-        logger: coreServices.logger,
-        identity: coreServices.identity,
-        // TODO: EventBroker
+        // TODO: EventBroker. It is optional for now but it's actually required so waiting for the new backend system
+        //       for the events-backend for this to work.
       },
-      factory({ logger, identity }) {
-        return DefaultSignalService.create({ identity, logger });
+      factory({}) {
+        return DefaultSignalService.create({});
       },
     }),
 });

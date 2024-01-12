@@ -20,7 +20,8 @@ export default async function createPlugin(
 ): Promise<Router> {
   return await createRouter({
     logger: env.logger,
-    service: env.signalsService,
+    eventBroker: env.eventBroker,
+    identity: env.identity,
   });
 }
 ```
@@ -29,7 +30,7 @@ Now add the signals to `packages/backend/src/index.ts`:
 
 ```ts
 // ...
-import signals from './plugins/sonarqube';
+import signals from './plugins/signals';
 
 async function main() {
   // ...

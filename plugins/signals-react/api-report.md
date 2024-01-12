@@ -9,7 +9,7 @@ import { JsonObject } from '@backstage/types';
 // @public (undocumented)
 export type SignalApi = {
   subscribe(
-    topic: string,
+    channel: string,
     onMessage: (message: JsonObject) => void,
   ): {
     unsubscribe: () => void;
@@ -20,7 +20,7 @@ export type SignalApi = {
 export const signalApiRef: ApiRef<SignalApi>;
 
 // @public (undocumented)
-export const useSignal: (topic: string) => {
+export const useSignal: (channel: string) => {
   lastSignal: JsonObject | null;
 };
 

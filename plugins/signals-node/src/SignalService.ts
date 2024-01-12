@@ -13,32 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject } from '@backstage/types';
-import http, { IncomingMessage } from 'http';
-import { Duplex } from 'stream';
-import https from 'https';
-
-/** @public */
-export type SignalServiceUpgradeOptions = {
-  server: https.Server | http.Server;
-  request: IncomingMessage;
-  socket: Duplex;
-  head: Buffer;
-};
+import { SignalPayload } from './types';
 
 /** @public */
 export type SignalService = {
   /**
    * Publishes a message to user refs to specific topic
    */
-  publish(
-    to: string | string[],
-    topic: string,
-    message: JsonObject,
-  ): Promise<void>;
-
-  /**
-   * Handles request upgrade
-   */
-  handleUpgrade(options: SignalServiceUpgradeOptions): Promise<void>;
+  publish(signal: SignalPayload): Promise<void>;
 };

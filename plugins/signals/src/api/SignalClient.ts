@@ -19,7 +19,7 @@ import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { v4 as uuid } from 'uuid';
 
 type Subscription = {
-  topic: string;
+  channel: string;
   callback: (message: JsonObject) => void;
 };
 
@@ -63,20 +63,23 @@ export class SignalClient implements SignalApi {
   ) {}
 
   subscribe(
-    topic: string,
+    channel: string,
     onMessage: (message: JsonObject) => void,
   ): { unsubscribe: () => void } {
     const subscriptionId = uuid();
     const exists = [...this.subscriptions.values()].find(
-      sub => sub.topic === topic,
+      sub => sub.channel === channel,
     );
-    this.subscriptions.set(subscriptionId, { topic, callback: onMessage });
+    this.subscriptions.set(subscriptionId, {
+      channel: channel,
+      callback: onMessage,
+    });
 
     this.connect()
       .then(() => {
-        // Do not subscribe twice to same topic even there is multiple callbacks
+        // Do not subscribe twice to same channel even there is multiple callbacks
         if (!exists) {
-          this.send({ action: 'subscribe', topic });
+          this.send({ action: 'subscribe', channel });
         }
       })
       .catch(() => {
@@ -90,12 +93,12 @@ export class SignalClient implements SignalApi {
       }
       this.subscriptions.delete(subscriptionId);
       const multipleExists = [...this.subscriptions.values()].find(
-        s => s.topic === topic,
+        s => s.channel === channel,
       );
-      // If there are subscriptions still listening to this topic, do not
+      // If there are subscriptions still listening to this channel, do not
       // unsubscribe from the server
       if (!multipleExists) {
-        this.send({ action: 'unsubscribe', topic: sub.topic });
+        this.send({ action: 'unsubscribe', channel: sub.channel });
       }
 
       // If there are no subscriptions, close the connection
@@ -176,9 +179,9 @@ export class SignalClient implements SignalApi {
   private handleMessage(data: MessageEvent) {
     try {
       const json = JSON.parse(data.data) as JsonObject;
-      if (json.topic) {
+      if (json.channel) {
         for (const sub of this.subscriptions.values()) {
-          if (sub.topic === json.topic) {
+          if (sub.channel === json.channel) {
             sub.callback(json.message as JsonObject);
           }
         }
@@ -201,9 +204,9 @@ export class SignalClient implements SignalApi {
       this.ws = null;
       this.connect()
         .then(() => {
-          // Resubscribe to existing topics in case we lost connection
+          // Resubscribe to existing channels in case we lost connection
           for (const sub of this.subscriptions.values()) {
-            this.send({ action: 'subscribe', topic: sub.topic });
+            this.send({ action: 'subscribe', channel: sub.channel });
           }
         })
         .catch(() => {

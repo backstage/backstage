@@ -17,22 +17,27 @@ import { errorHandler } from '@backstage/backend-common';
 import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { SignalService } from '@backstage/plugin-signals-node';
 import * as https from 'https';
 import http from 'http';
+import { SignalManager } from './SignalManager';
+import { IdentityApi } from '@backstage/plugin-auth-node';
+import { EventBroker } from '@backstage/plugin-events-node';
 
 /** @public */
 export interface RouterOptions {
   logger: LoggerService;
-  service: SignalService;
+  eventBroker?: EventBroker;
+  identity: IdentityApi;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, service } = options;
+  const { logger } = options;
+  const manager = SignalManager.create(options);
   let subscribed = false;
+
   const upgradeMiddleware = (req: Request, _: Response, next: NextFunction) => {
     const server: https.Server | http.Server = (req.socket as any)?.server;
     if (
@@ -50,7 +55,7 @@ export async function createRouter(
       server.on('upgrade', async (request, socket, head) => {
         // TODO: Find a way to make this more generic
         if (request.url === '/api/signals') {
-          await service.handleUpgrade({ server, request, socket, head });
+          await manager.handleUpgrade({ request, socket, head });
         }
       });
     }

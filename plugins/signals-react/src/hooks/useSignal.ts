@@ -19,7 +19,7 @@ import { JsonObject } from '@backstage/types';
 import { useEffect, useState } from 'react';
 
 /** @public */
-export const useSignal = (topic: string) => {
+export const useSignal = (channel: string) => {
   const apiHolder = useApiHolder();
   // Use apiHolder instead useApi in case signalApi is not available in the
   // backstage instance this is used
@@ -28,7 +28,7 @@ export const useSignal = (topic: string) => {
   useEffect(() => {
     let unsub: null | (() => void) = null;
     if (signals) {
-      const { unsubscribe } = signals.subscribe(topic, (msg: JsonObject) => {
+      const { unsubscribe } = signals.subscribe(channel, (msg: JsonObject) => {
         setLastSignal(msg);
       });
       unsub = unsubscribe;
@@ -38,7 +38,7 @@ export const useSignal = (topic: string) => {
         unsub();
       }
     };
-  }, [signals, topic]);
+  }, [signals, channel]);
 
   return { lastSignal };
 };
