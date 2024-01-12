@@ -17,7 +17,6 @@
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
-  ObjectsByEntityResponse,
   KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
 import request from 'supertest';
@@ -39,10 +38,7 @@ import {
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   PermissionsService,
   createBackendModule,
@@ -57,9 +53,9 @@ import {
 } from '@backstage/plugin-kubernetes-node';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 
-describe('KubernetesBuilder', () => {
+describe('API integration tests', () => {
   let app: ExtendedHttpServer;
-  let objectsProviderMock: KubernetesObjectsProvider;
+  let objectsProviderMock: jest.Mocked<KubernetesObjectsProvider>;
   const happyK8SResult = {
     items: [{ clusterOne: { pods: [{ metadata: { name: 'pod1' } }] } }],
   };
@@ -530,52 +526,116 @@ metadata:
       expect(response.body).toStrictEqual({ items: [] });
     });
 
-    it('should not permit custom auth strategies with dashes', () => {
-      const throwError = () =>
-        startTestBackend({
-          features: [
-            import('@backstage/plugin-kubernetes-backend/alpha'),
-            createBackendModule({
-              pluginId: 'kubernetes',
-              moduleId: 'testAuthStrategy',
-              register(env) {
-                env.registerInit({
-                  deps: { extension: kubernetesAuthStrategyExtensionPoint },
-                  async init({ extension }) {
-                    extension.addAuthStrategy('custom-strategy', {
-                      getCredential: jest
-                        .fn<
-                          Promise<KubernetesCredential>,
-                          [ClusterDetails, KubernetesRequestAuth]
-                        >()
-                        .mockResolvedValue({ type: 'anonymous' }),
-                      validateCluster: jest.fn().mockReturnValue([]),
-                    });
+    it('reads custom auth metadata from config', async () => {
+      const authStrategy = {
+        getCredential: jest.fn().mockResolvedValue({ type: 'anonymous' }),
+        validateCluster: jest.fn().mockReturnValue([]),
+      };
+      worker.use(
+        rest.get('http://my.cluster/api', (_req, res, ctx) =>
+          res(ctx.json({})),
+        ),
+      );
+      const { server } = await startTestBackend({
+        features: [
+          mockServices.rootConfig.factory({
+            data: {
+              kubernetes: {
+                serviceLocatorMethod: { type: 'multiTenant' },
+                clusterLocatorMethods: [
+                  {
+                    type: 'config',
+                    clusters: [
+                      {
+                        name: 'cluster',
+                        url: 'http://my.cluster',
+                        authProvider: 'custom',
+                        authMetadata: { 'custom-key': 'custom-value' },
+                      },
+                    ],
                   },
-                });
+                ],
               },
-            }),
-          ],
-        });
-      return expect(throwError).rejects.toThrow(
-        'Strategy name can not include dashes',
+            },
+          }),
+          import('@backstage/plugin-kubernetes-backend/alpha'),
+          createBackendModule({
+            pluginId: 'kubernetes',
+            moduleId: 'testAuthStrategy',
+            register(env) {
+              env.registerInit({
+                deps: { extension: kubernetesAuthStrategyExtensionPoint },
+                async init({ extension }) {
+                  extension.addAuthStrategy('custom', authStrategy);
+                },
+              });
+            },
+          }),
+        ],
+      });
+      app = server;
+
+      const proxyEndpointRequest = request(app).get(
+        '/api/kubernetes/proxy/api',
+      );
+      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      const response = await proxyEndpointRequest;
+
+      expect(response.body).toStrictEqual({});
+      expect(authStrategy.getCredential).toHaveBeenCalledWith(
+        expect.objectContaining({
+          authMetadata: expect.objectContaining({
+            'custom-key': 'custom-value',
+          }),
+        }),
+        expect.anything(),
       );
     });
   });
 
-  describe('get /.well-known/backstage/permissions/metadata', () => {
-    it('lists permissions supported by the kubernetes plugin', async () => {
-      const response = await request(app).get(
-        '/api/kubernetes/.well-known/backstage/permissions/metadata',
-      );
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toMatchObject({
-        permissions: [
-          { type: 'basic', name: 'kubernetes.proxy', attributes: {} },
+  it('forbids custom auth strategies with dashes', () => {
+    const throwError = () =>
+      startTestBackend({
+        features: [
+          import('@backstage/plugin-kubernetes-backend/alpha'),
+          createBackendModule({
+            pluginId: 'kubernetes',
+            moduleId: 'testAuthStrategy',
+            register(env) {
+              env.registerInit({
+                deps: { extension: kubernetesAuthStrategyExtensionPoint },
+                async init({ extension }) {
+                  extension.addAuthStrategy('custom-strategy', {
+                    getCredential: jest
+                      .fn<
+                        Promise<KubernetesCredential>,
+                        [ClusterDetails, KubernetesRequestAuth]
+                      >()
+                      .mockResolvedValue({ type: 'anonymous' }),
+                    validateCluster: jest.fn().mockReturnValue([]),
+                  });
+                },
+              });
+            },
+          }),
         ],
-        rules: [],
       });
+    return expect(throwError).rejects.toThrow(
+      'Strategy name can not include dashes',
+    );
+  });
+
+  it('serves permission integration endpoint', async () => {
+    const response = await request(app).get(
+      '/api/kubernetes/.well-known/backstage/permissions/metadata',
+    );
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toMatchObject({
+      permissions: [
+        { type: 'basic', name: 'kubernetes.proxy', attributes: {} },
+      ],
+      rules: [],
     });
   });
 

@@ -37,7 +37,12 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
   ): ConfigClusterLocator {
     return new ConfigClusterLocator(
       config.getConfigArray('clusters').map(c => {
-        const authProvider = c.getString('authProvider');
+        const authMetadataBlock = c.getOptional<{
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]?: string;
+        }>('authMetadata');
+        const authProvider =
+          authMetadataBlock?.[ANNOTATION_KUBERNETES_AUTH_PROVIDER] ??
+          c.getString('authProvider');
         const clusterDetails: ClusterDetails = {
           name: c.getString('name'),
           url: c.getString('url'),
@@ -48,6 +53,7 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           authMetadata: {
             [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: authProvider,
             ...ConfigClusterLocator.parseAuthMetadata(c),
+            ...authMetadataBlock,
           },
         };
 

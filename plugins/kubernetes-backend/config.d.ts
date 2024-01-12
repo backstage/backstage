@@ -46,13 +46,16 @@ export interface Config {
             /** @visibility secret  */
             serviceAccountToken?: string;
             /** @visibility frontend */
-            authProvider:
+            authProvider?:
+              | 'aks'
               | 'aws'
-              | 'google'
-              | 'serviceAccount'
               | 'azure'
+              | 'google'
+              | 'googleServiceAccount'
               | 'oidc'
-              | 'googleServiceAccount';
+              | 'serviceAccount';
+            /** @visibility secret  */
+            authMetadata?: object;
             /** @visibility frontend */
             oidcTokenProvider?: string;
             /** @visibility frontend */

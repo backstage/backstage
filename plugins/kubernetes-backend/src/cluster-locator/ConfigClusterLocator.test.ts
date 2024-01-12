@@ -177,6 +177,67 @@ describe('ConfigClusterLocator', () => {
     ]);
   });
 
+  it('reads custom authMetadata', async () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster',
+          url: 'http://url',
+          authProvider: 'authProvider',
+          authMetadata: { 'custom-key': 'custom-value' },
+        },
+      ],
+    });
+
+    const result = await ConfigClusterLocator.fromConfig(
+      config,
+      authStrategy,
+    ).getClusters();
+
+    expect(result).toMatchObject([
+      {
+        authMetadata: expect.objectContaining({ 'custom-key': 'custom-value' }),
+      },
+    ]);
+  });
+
+  it('reads authProvider from metadata block', async () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster',
+          url: 'http://url',
+          authMetadata: {
+            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+          },
+        },
+      ],
+    });
+
+    const result = await ConfigClusterLocator.fromConfig(
+      config,
+      authStrategy,
+    ).getClusters();
+
+    expect(result).toMatchObject([
+      {
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+        },
+      },
+    ]);
+  });
+
+  it('forbids cluster without auth provider', () => {
+    const config: Config = new ConfigReader({
+      clusters: [{ name: 'cluster', url: 'http://url' }],
+    });
+
+    expect(() => ConfigClusterLocator.fromConfig(config, authStrategy)).toThrow(
+      'Missing required config value',
+    );
+  });
+
   it('one cluster with dashboardParameters', async () => {
     const config: Config = new ConfigReader({
       clusters: [
