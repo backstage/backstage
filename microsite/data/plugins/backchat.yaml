@@ -1,0 +1,11 @@
+---
+---
+title: Backchat GenAI
+author: benwilcock
+authorUrl: https://github.com/benwilcock
+category: Services
+description: Use open source GenAI privately, without leaving Backstage. Access Ollama, Text Gen Web UI, ChatBot UI or Big AGI UI in your portal. Choose from hundreds of compatible LLMs. Run your inferencing servers wherever you like - local or remote, CPU or GPU - it's up to you! See the GitHub repo for more details.
+documentation: https://github.com/benwilcock/backstage-plugin-backchat
+iconUrl: /img/backchat-logo.png
+npmPackageName: '@benbravo73/backstage-plugin-backchat'
+addedDate: '2024-01-12'
