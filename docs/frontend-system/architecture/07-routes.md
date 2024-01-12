@@ -445,7 +445,7 @@ export default app.createRoot();
 
 Given the above binding, using `useRouteRef(createComponentRouteRef)` within the Catalog plugin will let us create a link to whatever path the Scaffolder create component page is mounted at.
 
-Note that we are not importing and using the `RouteRef`s directly in the app, and instead rely on the plugin instance to access routes of the plugins. This is a new convention that was introduced to provide better namespacing and discoverability of routes, as well as reduce the number of separate exports from each plugin package.
+Note that we are not importing and using the `RouteRef`s directly in the app, and instead rely on the plugin instance to access routes of the plugins. This provides better namespacing and discoverability of routes, as well as reduce the number of separate exports from each plugin package.
 
 Another thing to note is that this indirection in the routing is particularly useful for open source plugins that need to leave flexibility in how they are integrated. For plugins that you build internally for your own Backstage application, you can choose to go the route of direct imports or even use concrete routes directly. Although there can be some benefits to using the full routing system even in internal plugins. It can help you structure your routes, and as you will see further down it also helps you manage route parameters.
 
