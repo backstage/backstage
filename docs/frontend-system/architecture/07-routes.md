@@ -18,7 +18,7 @@ The frontend system isn't a single API surface. It is a collection of patterns, 
 
 ## Route References
 
-In order to address the problem outlined above, we introduced the concept of route references. A `RouteRef` is an abstract path in a Backstage app, and these paths can be configured both at plugin level (by plugin developers) and at instance level (by application integrators).
+In order to address the problem outlined above, we introduced the concept of route references. A `RouteRef` is an abstract path in a Backstage app, and these paths can be configured both at plugin level (by plugin developers) and at the app level (by integrators).
 
 Plugin developers create a `RouteRef` to expose a path in Backstage's routing system. You will see below how routes are defined programmatically, but before diving into code, let us explain how to configure them at app level. In spite of the fact that plugin developers choose a default route path for the routes their plugin provides, paths are configurable, so app integrators can set a custom path to a route whenever they like to (more information in the following sessions).
 
