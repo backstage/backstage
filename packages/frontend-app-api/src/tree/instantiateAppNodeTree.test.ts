@@ -475,7 +475,7 @@ describe('createAppNodeInstance', () => {
     );
 
     expect(warn).toEqual([
-      "The extension 'app/test' is attached to the input 'undeclared' of 'app/parent', but the extension 'app/parent' noes not declare a 'undeclared' input",
+      "The extension 'app/test' is attached to the input 'undeclared' of the extension 'app/parent', but it has no such input (candidates are 'declared')",
     ]);
   });
 
@@ -510,8 +510,8 @@ describe('createAppNodeInstance', () => {
     );
 
     expect(warn).toEqual([
-      "The extension 'app/test' is attached to the input 'undeclared1' of 'app/parent', but the extension 'app/parent' noes not declare a 'undeclared1' input",
-      "The extensions 'app/test', 'app/test' are attached to the input 'undeclared2' of 'app/parent', but the extension 'app/parent' noes not declare a 'undeclared2' input",
+      "The extension 'app/test' is attached to the input 'undeclared1' of the extension 'app/parent', but it has no inputs",
+      "The extensions 'app/test', 'app/test' are attached to the input 'undeclared2' of the extension 'app/parent', but it has no inputs",
     ]);
   });
 
