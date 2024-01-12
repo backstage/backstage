@@ -4646,6 +4646,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-app-visualizer@workspace:^, @backstage/plugin-app-visualizer@workspace:plugins/app-visualizer":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-app-visualizer@workspace:plugins/app-visualizer"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-auth-backend-module-atlassian-provider@workspace:^, @backstage/plugin-auth-backend-module-atlassian-provider@workspace:plugins/auth-backend-module-atlassian-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-atlassian-provider@workspace:plugins/auth-backend-module-atlassian-provider"
@@ -9558,24 +9576,6 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
-  peerDependencies:
-    react: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  languageName: unknown
-  linkType: soft
-
-"@backstage/plugin-visualizer@workspace:^, @backstage/plugin-visualizer@workspace:plugins/visualizer":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-visualizer@workspace:plugins/visualizer"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    "@backstage/core-components": "workspace:^"
-    "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/frontend-plugin-api": "workspace:^"
-    "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
-    "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -26487,6 +26487,7 @@ __metadata:
     "@backstage/plugin-airbrake": "workspace:^"
     "@backstage/plugin-apache-airflow": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"
+    "@backstage/plugin-app-visualizer": "workspace:^"
     "@backstage/plugin-azure-devops": "workspace:^"
     "@backstage/plugin-azure-sites": "workspace:^"
     "@backstage/plugin-badges": "workspace:^"
@@ -26540,7 +26541,6 @@ __metadata:
     "@backstage/plugin-techdocs-react": "workspace:^"
     "@backstage/plugin-todo": "workspace:^"
     "@backstage/plugin-user-settings": "workspace:^"
-    "@backstage/plugin-visualizer": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@circleci/backstage-plugin": ^0.1.1

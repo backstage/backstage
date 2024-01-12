@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage-plugin-visualizer
-  title: '@backstage/plugin-visualizer'
+  name: backstage-plugin-app-visualizer
+  title: '@backstage/plugin-app-visualizer'
   description: Visualizes the Backstage app structure
 spec:
   lifecycle: experimental
