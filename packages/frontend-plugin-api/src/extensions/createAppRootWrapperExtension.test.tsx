@@ -33,7 +33,7 @@ describe('createAppRootWrapperExtension', () => {
     expect(extension).toEqual({
       $$type: '@backstage/ExtensionDefinition',
       version: 'v1',
-      kind: 'app-wrapper-component',
+      kind: 'app-root-wrapper',
       attachTo: { id: 'app/root', input: 'wrappers' },
       disabled: false,
       inputs: {},
@@ -79,7 +79,7 @@ describe('createAppRootWrapperExtension', () => {
     expect(extension).toEqual({
       $$type: '@backstage/ExtensionDefinition',
       version: 'v1',
-      kind: 'app-wrapper-component',
+      kind: 'app-root-wrapper',
       namespace: 'ns',
       name: 'test',
       attachTo: { id: 'app/root', input: 'wrappers' },
@@ -106,7 +106,7 @@ describe('createAppRootWrapperExtension', () => {
       .add(extension, { config: { name: 'Robin' } })
       .add(
         createExtension({
-          attachTo: { id: 'app-wrapper-component:ns/test', input: 'children' },
+          attachTo: { id: 'app-root-wrapper:ns/test', input: 'children' },
           output: { element: coreExtensionData.reactElement },
           factory: () => ({ element: <div /> }),
         }),
