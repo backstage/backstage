@@ -46,14 +46,14 @@ Translation extension provide custom translation messages for the app. They can 
 
 These are the extension types provided by the Backstage core feature plugins.
 
-### EntityCard - [Reference](../../reference/plugin-catalog-react.createentitycardextension.md)
+### EntityCard - [Reference](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md)
 
 Creates entity cards to be displayed on the entity pages of the catalog plugin.
 
-### EntityContent - [Reference](../../reference/plugin-catalog-react.createentitycontentextension.md)
+### EntityContent - [Reference](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md)
 
 Creates entity content to be displayed on the entity pages of the catalog plugin.
 
-### SearchResultListItem - [Reference](../../reference/plugin-search-react.createsearchresultlistitemextension.md)
+### SearchResultListItem - [Reference](https://github.com/backstage/backstage/blob/master/plugins/search-react/api-report-alpha.md)
 
 Creates search result list items for different types of search results, to be displayed in search result lists.
