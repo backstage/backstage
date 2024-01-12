@@ -25,10 +25,21 @@ const LazyOpenApiDefinition = React.lazy(() =>
   })),
 );
 
+type HttpMethods =
+  | 'get'
+  | 'put'
+  | 'post'
+  | 'delete'
+  | 'options'
+  | 'head'
+  | 'patch'
+  | 'trace';
+
 /** @public */
 export type OpenApiDefinitionWidgetProps = {
   definition: string;
   requestInterceptor?: (req: any) => any | Promise<any>;
+  supportedSubmitMethods?: HttpMethods[];
 };
 
 /** @public */
