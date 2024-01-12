@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
@@ -24,10 +23,8 @@ import {
 import request from 'supertest';
 import {
   ClusterDetails,
-  FetchResponseWrapper,
   KubernetesFetcher,
   KubernetesServiceLocator,
-  ObjectFetchParams,
 } from '../types/types';
 import { KubernetesCredential } from '../auth/types';
 import {
@@ -64,95 +61,65 @@ describe('KubernetesBuilder', () => {
   let app: ExtendedHttpServer;
   let objectsProviderMock: KubernetesObjectsProvider;
   const happyK8SResult = {
-    items: [
-      {
-        clusterOne: {
-          pods: [
-            {
-              metadata: {
-                name: 'pod1',
-              },
-            },
-          ],
-        },
-      },
-    ],
-  } as any;
-  const policyMock: jest.Mocked<PermissionEvaluator> = {
-    authorize: jest.fn(),
-    authorizeConditional: jest.fn(),
+    items: [{ clusterOne: { pods: [{ metadata: { name: 'pod1' } }] } }],
   };
   const permissionsMock: ServiceMock<PermissionsService> =
-    mockServices.permissions.mock(policyMock);
+    mockServices.permissions.mock({
+      authorize: jest.fn(),
+      authorizeConditional: jest.fn(),
+    });
+  const minimalValidConfigService = mockServices.rootConfig.factory({
+    data: {
+      kubernetes: {
+        serviceLocatorMethod: { type: 'multiTenant' },
+        clusterLocatorMethods: [],
+      },
+    },
+  });
+  const withClusters = (clusters: ClusterDetails[]) =>
+    createBackendModule({
+      pluginId: 'kubernetes',
+      moduleId: 'testClusterSupplier',
+      register(env) {
+        env.registerInit({
+          deps: { extension: kubernetesClusterSupplierExtensionPoint },
+          async init({ extension }) {
+            extension.addClusterSupplier({
+              getClusters: jest.fn().mockResolvedValue(clusters),
+            });
+          },
+        });
+      },
+    });
 
   beforeEach(async () => {
     jest.resetAllMocks();
 
     objectsProviderMock = {
-      getKubernetesObjectsByEntity: jest.fn().mockImplementation(_ => {
-        return Promise.resolve(happyK8SResult);
-      }),
-      getCustomResourcesByEntity: jest.fn().mockImplementation(_ => {
-        return Promise.resolve(happyK8SResult);
-      }),
-    };
-
-    const clusterSupplierMock = {
-      getClusters: jest.fn().mockImplementation(_ => {
-        return Promise.resolve([
-          {
-            name: 'some-cluster',
-            url: 'https://localhost:1234',
-            authMetadata: {
-              [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
-            },
-          },
-          {
-            name: 'some-other-cluster',
-            url: 'https://localhost:1235',
-            authMetadata: {
-              [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'oidc',
-              [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
-            },
-          },
-        ]);
-      }),
+      getKubernetesObjectsByEntity: jest.fn().mockResolvedValue(happyK8SResult),
+      getCustomResourcesByEntity: jest.fn().mockResolvedValue(happyK8SResult),
     };
 
     jest.mock('@backstage/catalog-client', () => ({
-      CatalogClient: jest.fn().mockImplementation(() => ({
-        getEntityByRef: jest.fn().mockImplementation(entityRef => {
+      CatalogClient: jest.fn().mockReturnValue({
+        getEntityByRef: jest.fn().mockImplementation(async entityRef => {
           if (entityRef.name === 'noentity') {
-            return Promise.resolve(undefined);
+            return undefined;
           }
-          return Promise.resolve({
+          return {
             kind: entityRef.kind,
             metadata: {
               name: entityRef.name,
               namespace: entityRef.namespace,
             },
-          } as Entity);
+          };
         }),
-      })),
+      }),
     }));
 
     const { server } = await startTestBackend({
       features: [
-        mockServices.rootConfig.factory({
-          data: {
-            kubernetes: {
-              serviceLocatorMethod: {
-                type: 'multiTenant',
-              },
-              clusterLocatorMethods: [
-                {
-                  type: 'config',
-                  clusters: [],
-                },
-              ],
-            },
-          },
-        }),
+        minimalValidConfigService,
         import('@backstage/plugin-kubernetes-backend/alpha'),
         import('@backstage/plugin-permission-backend/alpha'),
         import('@backstage/plugin-permission-backend-module-allow-all-policy'),
@@ -168,22 +135,31 @@ describe('KubernetesBuilder', () => {
             });
           },
         }),
-        createBackendModule({
-          pluginId: 'kubernetes',
-          moduleId: 'testClusterSupplier',
-          register(env) {
-            env.registerInit({
-              deps: { extension: kubernetesClusterSupplierExtensionPoint },
-              async init({ extension }) {
-                extension.addClusterSupplier(clusterSupplierMock);
-              },
-            });
+        withClusters([
+          {
+            name: 'some-cluster',
+            url: 'https://localhost:1234',
+            authMetadata: {
+              [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+            },
           },
-        }),
+          {
+            name: 'some-other-cluster',
+            url: 'https://localhost:1235',
+            authMetadata: {
+              [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'oidc',
+              [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
+            },
+          },
+        ]),
       ],
     });
 
     app = server;
+  });
+
+  afterEach(() => {
+    app.stop();
   });
 
   describe('get /clusters', () => {
@@ -219,20 +195,16 @@ describe('KubernetesBuilder', () => {
     it('happy path: lists kubernetes objects with auth in request body', async () => {
       const response = await request(app)
         .post('/api/kubernetes/services/test-service')
-        .send({
-          auth: {
-            google: 'google_token_123',
-          },
-        })
+        .send({ auth: { google: 'google_token_123' } })
         .set('Content-Type', 'application/json');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(happyK8SResult);
     });
 
     it('internal error: lists kubernetes objects', async () => {
-      objectsProviderMock.getKubernetesObjectsByEntity = jest
-        .fn()
-        .mockRejectedValue(Error('some internal error'));
+      objectsProviderMock.getKubernetesObjectsByEntity.mockRejectedValue(
+        Error('some internal error'),
+      );
 
       const response = await request(app).post(
         '/api/kubernetes/services/test-service',
@@ -260,96 +232,29 @@ describe('KubernetesBuilder', () => {
         },
       ];
 
-      const clusterSupplierMock = {
-        getClusters: jest.fn().mockImplementation(_ => {
-          return Promise.resolve(clusters);
+      const pod = { metadata: { name: 'pod1' } };
+
+      const mockServiceLocator: jest.Mocked<KubernetesServiceLocator> = {
+        getClustersByEntity: jest.fn().mockResolvedValue({
+          clusters: [someCluster],
         }),
       };
 
-      const pod = {
-        metadata: {
-          name: 'pod1',
-        },
-      };
-      const result: ObjectsByEntityResponse = {
-        items: [
-          {
-            cluster: {
-              name: someCluster.name,
-            },
-            errors: [],
-            podMetrics: [],
-            resources: [
-              {
-                type: 'pods',
-                resources: [pod],
-              },
-            ],
-          },
-        ],
-      };
-
-      const mockServiceLocator: KubernetesServiceLocator = {
-        getClustersByEntity(
-          _entity: Entity,
-        ): Promise<{ clusters: ClusterDetails[] }> {
-          return Promise.resolve({ clusters: [someCluster] });
-        },
-      };
-
-      const mockFetcher: KubernetesFetcher = {
-        fetchPodMetricsByNamespaces(
-          _clusterDetails: ClusterDetails,
-          _credential: KubernetesCredential,
-          _namespaces: Set<string>,
-        ): Promise<FetchResponseWrapper> {
-          return Promise.resolve({ errors: [], responses: [] });
-        },
-        fetchObjectsForService(
-          _params: ObjectFetchParams,
-        ): Promise<FetchResponseWrapper> {
-          return Promise.resolve({
-            errors: [],
-            responses: [
-              {
-                type: 'pods',
-                resources: [pod],
-              },
-            ],
-          });
-        },
+      const mockFetcher: jest.Mocked<KubernetesFetcher> = {
+        fetchPodMetricsByNamespaces: jest
+          .fn()
+          .mockResolvedValue({ errors: [], responses: [] }),
+        fetchObjectsForService: jest.fn().mockResolvedValue({
+          errors: [],
+          responses: [{ type: 'pods', resources: [pod] }],
+        }),
       };
 
       const { server } = await startTestBackend({
         features: [
-          mockServices.rootConfig.factory({
-            data: {
-              kubernetes: {
-                serviceLocatorMethod: {
-                  type: 'multiTenant',
-                },
-                clusterLocatorMethods: [
-                  {
-                    type: 'config',
-                    clusters: [],
-                  },
-                ],
-              },
-            },
-          }),
+          minimalValidConfigService,
           import('@backstage/plugin-kubernetes-backend/alpha'),
-          createBackendModule({
-            pluginId: 'kubernetes',
-            moduleId: 'testClusterSupplier',
-            register(env) {
-              env.registerInit({
-                deps: { extension: kubernetesClusterSupplierExtensionPoint },
-                async init({ extension }) {
-                  extension.addClusterSupplier(clusterSupplierMock);
-                },
-              });
-            },
-          }),
+          withClusters(clusters),
           createBackendModule({
             pluginId: 'kubernetes',
             moduleId: 'testFetcher',
@@ -376,20 +281,22 @@ describe('KubernetesBuilder', () => {
           }),
         ],
       });
-
       app = server;
 
       const response = await request(app)
         .post('/api/kubernetes/services/test-service')
-        .send({
-          entity: {
-            metadata: {
-              name: 'thing',
-            },
-          },
-        });
+        .send({ entity: { metadata: { name: 'thing' } } });
 
-      expect(response.body).toEqual(result);
+      expect(response.body).toEqual({
+        items: [
+          {
+            cluster: { name: someCluster.name },
+            errors: [],
+            podMetrics: [],
+            resources: [{ type: 'pods', resources: [pod] }],
+          },
+        ],
+      });
       expect(response.status).toEqual(200);
     });
 
@@ -406,9 +313,11 @@ describe('KubernetesBuilder', () => {
         }),
       };
 
-      const clusterSupplierMock = {
-        getClusters: jest.fn().mockImplementation(_ => {
-          return Promise.resolve([
+      const { server } = await startTestBackend({
+        features: [
+          minimalValidConfigService,
+          import('@backstage/plugin-kubernetes-backend/alpha'),
+          withClusters([
             {
               name: 'custom-cluster',
               url: 'http://my.cluster.url',
@@ -416,40 +325,7 @@ describe('KubernetesBuilder', () => {
                 [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'custom',
               },
             },
-          ]);
-        }),
-      };
-
-      const { server } = await startTestBackend({
-        features: [
-          mockServices.rootConfig.factory({
-            data: {
-              kubernetes: {
-                serviceLocatorMethod: {
-                  type: 'multiTenant',
-                },
-                clusterLocatorMethods: [
-                  {
-                    type: 'config',
-                    clusters: [],
-                  },
-                ],
-              },
-            },
-          }),
-          import('@backstage/plugin-kubernetes-backend/alpha'),
-          createBackendModule({
-            pluginId: 'kubernetes',
-            moduleId: 'testClusterSupplier',
-            register(env) {
-              env.registerInit({
-                deps: { extension: kubernetesClusterSupplierExtensionPoint },
-                async init({ extension }) {
-                  extension.addClusterSupplier(clusterSupplierMock);
-                },
-              });
-            },
-          }),
+          ]),
           createBackendModule({
             pluginId: 'kubernetes',
             moduleId: 'testAuthStrategy',
@@ -493,11 +369,7 @@ describe('KubernetesBuilder', () => {
       await request(app)
         .post('/api/kubernetes/services/test-service')
         .send({
-          entity: {
-            metadata: {
-              name: 'thing',
-            },
-          },
+          entity: { metadata: { name: 'thing' } },
           auth: { custom: 'custom-token' },
         });
 
@@ -534,30 +406,26 @@ describe('KubernetesBuilder', () => {
       );
     });
 
-    it('returns the given request body with permission set to allow', async () => {
-      const requestBody = {
+    it('forwards request body to k8s', async () => {
+      const namespaceManifest = {
         kind: 'Namespace',
         apiVersion: 'v1',
-        metadata: {
-          name: 'new-ns',
-        },
+        metadata: { name: 'new-ns' },
       };
 
       const proxyEndpointRequest = request(app)
         .post('/api/kubernetes/proxy/api/v1/namespaces')
         .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'randomtoken')
-        .send(requestBody);
-
+        .send(namespaceManifest);
       worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
-
       const response = await proxyEndpointRequest;
 
-      expect(response.body).toStrictEqual(requestBody);
+      expect(response.body).toStrictEqual(namespaceManifest);
     });
 
-    it('supports yaml content type with permission set to allow', async () => {
-      const requestBody = `---
+    it('supports yaml content type', async () => {
+      const yamlManifest = `---
 kind: Namespace
 apiVersion: v1
 metadata:
@@ -569,55 +437,37 @@ metadata:
         .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'randomtoken')
         .set('content-type', 'application/yaml')
-        .send(requestBody);
+        .send(yamlManifest);
 
       worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
 
       const response = await proxyEndpointRequest;
-      expect(response.text).toEqual(requestBody);
+      expect(response.text).toEqual(yamlManifest);
     });
 
-    it('returns a 403 response if Permission Policy is in place that blocks endpoint', async () => {
-      const requestBody = {
-        kind: 'Namespace',
-        apiVersion: 'v1',
-        metadata: {
-          name: 'new-ns',
-        },
-      };
-
+    it('returns 403 response when permission blocks endpoint', async () => {
       permissionsMock.authorize.mockResolvedValue([
         { result: AuthorizeResult.DENY },
       ]);
 
       const { server } = await startTestBackend({
         features: [
-          mockServices.rootConfig.factory({
-            data: {
-              kubernetes: {
-                serviceLocatorMethod: {
-                  type: 'multiTenant',
-                },
-                clusterLocatorMethods: [
-                  {
-                    type: 'config',
-                    clusters: [],
-                  },
-                ],
-              },
-            },
-          }),
+          minimalValidConfigService,
           permissionsMock.factory,
           import('@backstage/plugin-kubernetes-backend/alpha'),
-          // import('@backstage/plugin-permission-backend/alpha'),
         ],
       });
+      app = server;
 
-      const proxyEndpointRequest = request(server)
+      const proxyEndpointRequest = request(app)
         .post('/api/kubernetes/proxy/api/v1/namespaces')
         .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'randomtoken')
-        .send(requestBody);
+        .send({
+          kind: 'Namespace',
+          apiVersion: 'v1',
+          metadata: { name: 'new-ns' },
+        });
 
       worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
 
@@ -636,62 +486,17 @@ metadata:
         }),
       );
 
-      const clusterSupplierMock = {
-        getClusters: jest.fn().mockImplementation(_ => {
-          return Promise.resolve([
+      const { server } = await startTestBackend({
+        features: [
+          minimalValidConfigService,
+          import('@backstage/plugin-kubernetes-backend/alpha'),
+          withClusters([
             {
               name: 'custom-cluster',
               url: 'http://my.cluster.url',
-              authMetadata: {
-                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'custom',
-              },
+              authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'custom' },
             },
-          ]);
-        }),
-      };
-
-      const { server } = await startTestBackend({
-        features: [
-          mockServices.rootConfig.factory({
-            data: {
-              kubernetes: {
-                serviceLocatorMethod: {
-                  type: 'multiTenant',
-                },
-                clusterLocatorMethods: [
-                  {
-                    type: 'config',
-                    clusters: [],
-                  },
-                ],
-              },
-            },
-          }),
-          import('@backstage/plugin-kubernetes-backend/alpha'),
-          createBackendModule({
-            pluginId: 'kubernetes',
-            moduleId: 'testObjectsProvider',
-            register(env) {
-              env.registerInit({
-                deps: { extension: kubernetesObjectsProviderExtensionPoint },
-                async init({ extension }) {
-                  extension.addObjectsProvider(objectsProviderMock);
-                },
-              });
-            },
-          }),
-          createBackendModule({
-            pluginId: 'kubernetes',
-            moduleId: 'testClusterSupplier',
-            register(env) {
-              env.registerInit({
-                deps: { extension: kubernetesClusterSupplierExtensionPoint },
-                async init({ extension }) {
-                  extension.addClusterSupplier(clusterSupplierMock);
-                },
-              });
-            },
-          }),
+          ]),
           createBackendModule({
             pluginId: 'kubernetes',
             moduleId: 'testAuthStrategy',
@@ -715,9 +520,7 @@ metadata:
         ],
       });
 
-      app = server;
-
-      const proxyEndpointRequest = request(app)
+      const proxyEndpointRequest = request(server)
         .get('/api/kubernetes/proxy/api/v1/namespaces')
         .set(HEADER_KUBERNETES_CLUSTER, 'custom-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'custom-token');
@@ -727,9 +530,9 @@ metadata:
       expect(response.body).toStrictEqual({ items: [] });
     });
 
-    it('should not permit custom auth strategies with dashes', async () => {
-      const throwError = async () => {
-        await startTestBackend({
+    it('should not permit custom auth strategies with dashes', () => {
+      const throwError = () =>
+        startTestBackend({
           features: [
             import('@backstage/plugin-kubernetes-backend/alpha'),
             createBackendModule({
@@ -754,9 +557,7 @@ metadata:
             }),
           ],
         });
-      };
-
-      await expect(throwError).rejects.toThrow(
+      return expect(throwError).rejects.toThrow(
         'Strategy name can not include dashes',
       );
     });
@@ -771,11 +572,7 @@ metadata:
       expect(response.status).toEqual(200);
       expect(response.body).toMatchObject({
         permissions: [
-          {
-            type: 'basic',
-            name: 'kubernetes.proxy',
-            attributes: {},
-          },
+          { type: 'basic', name: 'kubernetes.proxy', attributes: {} },
         ],
         rules: [],
       });
