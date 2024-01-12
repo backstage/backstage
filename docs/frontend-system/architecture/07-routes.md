@@ -415,9 +415,9 @@ Using the above example of the Catalog entities list page to the Scaffolder crea
 app:
   routes:
     bindings:
-      # point to the Scaffolder create component page when the Catalog create component ref be used
+      # point to the Scaffolder create component page when the Catalog create component ref is used
       plugin.catalog.externalRoutes.createComponent: plugin.scaffolder.routes.index
-      # point to the Catalog details page when the Scaffolder component details ref be used
+      # point to the Catalog details page when the Scaffolder component details ref is used
       plugin.scaffolder.externalRoutes.componentDetails: plugin.catalog.routes.details
 ```
 
