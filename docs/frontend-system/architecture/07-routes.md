@@ -35,7 +35,7 @@ import { createRouteRef } from '@backstage/frontend-plugin-api';
 export const indexRouteRef = createRouteRef();
 ```
 
-Note that you almost always want to create the route references themselves in a different file than the one that creates the plugin instance, for example a top-level routes.ts. This is to avoid circular imports when you use the route references from other parts of the same plugin.
+Note that you often want to create the route references themselves in a different file than the one that creates the plugin instance, for example a top-level routes.ts. This is to avoid circular imports when you use the route references from other parts of the same plugin.
 
 ### Providing Route References to Plugins
 
