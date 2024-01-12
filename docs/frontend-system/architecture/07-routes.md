@@ -41,7 +41,7 @@ Note that you almost always want to create the route references themselves in a 
 
 Route refs do not have any behavior, in other words, they are an opaque type that represents route targets in an app, which are bound to specific paths at runtime, but they provide a level of indirection to help mix together different plugins that otherwise wouldn't know how to route to each other.
 
-The code snippet of the previous section does not indicate which plugin the route belongs to. To do so, you have to use it in the creation of any kind of routable extension, such as a page extension. When this extension is installed in the app it will become associated with the newly created `RouteRef`, making it possible to use the route ref to navigate the the extension. Here's what we need to do:
+The previous section code snippet does not indicate which plugin the route belongs to. To do so, you have to use it in the creation of any kind of routable extension, such as a page extension. When this extension is installed in the app it will become associated with the newly created `RouteRef`, making it possible to use the route ref to navigate the extension. Here's what we need to do:
 
 ```tsx
 // plugins/catalog/src/routes.ts
@@ -62,7 +62,8 @@ const catalogIndexPage = createPageExtension({
   // [2]
   defaultPath: '/entities',
   routeRef: indexRouteRef,
-  loader: async () => <div>Index Page</div>,
+  // Promise.resolve is a replacement for `import(...)`
+  loader: () => Promise.resolve(<div>Index Page</div>),
 });
 
 export default createPlugin({
@@ -88,7 +89,7 @@ It may be unclear why we need to pass the route to the plugin once it has alread
 
 ### Route Path Parameters
 
-The referenced route can also accepts `params`. Here is how you create a reference for a route that requires a `kind`, `namespace` and `name` params, like in this path `/entities/:kind/:namespace/:name`:
+The referenced route can also accepts `params`. Here is how you create a reference for a route that requires a kind, namespace and name `params`, like in this path `/entities/:kind/:namespace/:name`:
 
 ```tsx
 // plugins/catalog/src/routes.ts
@@ -136,7 +137,7 @@ import { rootRouteRef, detailsRouteRef } from './routes';
 const catalogIndexPage = createPageExtension({
   defaultPath: '/entities',
   routeRef: indexRouteRef,
-  loader: async () => {
+  loader: () => {
     const Component = () => {
       const detailsLink = useRouteRef(detailsRouteRef);
       const detailsPath = detailsLink({
@@ -153,7 +154,7 @@ const catalogIndexPage = createPageExtension({
       );
     };
 
-    return <Component />;
+    return Promise.resolve(<Component />);
   },
 });
 
@@ -163,7 +164,7 @@ const catalogDetailsPage = createPageExtension({
   // It will be their responsibility to make sure that it contains the same parameters, although they don't necessarily need to be in the same order.
   defaultPath: '/entities/:namespace/:kind/:name',
   routeRef: detailsRouteRef,
-  loader: async () => {
+  loader: () => {
     const Component = () => {
       // Getting the parameters from the URL
       const params = useParams();
@@ -178,7 +179,8 @@ const catalogDetailsPage = createPageExtension({
         </div>
       );
     };
-    return <Component />;
+
+    return Promise.resolve(<Component />);
   },
 });
 
@@ -221,30 +223,42 @@ export const createComponentRouteRef = createExternalRouteRef();
 
 // plugins/catalog/src/plugin.tsx
 import React from 'react';
-import { createPlugin, createPageExtension, useRouteRef } from '@backstage/frontend-plugin-api';
-import { indexRouteRef, detailsRouteRef, createComponentRouteRef } from './routes';
+import {
+  createPlugin,
+  createPageExtension,
+  useRouteRef,
+} from '@backstage/frontend-plugin-api';
+import {
+  indexRouteRef,
+  detailsRouteRef,
+  createComponentRouteRef,
+} from './routes';
 
 const catalogIndexPage = createPageExtension({
   defaultPath: '/entities',
   routeRef: indexRouteRef,
-  loader: async () => {
-    const createComponentLink = useRouteRef(createComponentRouteRef);
+  loader: () => {
+    const Component = () => {
+      const createComponentLink = useRouteRef(createComponentRouteRef);
 
-    return (
-      <div>
-        <h1>Index Page</h1>
-        {/* Linking to a create component page without direct reference */}
-        <a href={createComponentLink()}>Create Component</a>
-      </div>
-    );
-  }
+      return (
+        <div>
+          <h1>Index Page</h1>
+          {/* Linking to a create component page without direct reference */}
+          <a href={createComponentLink()}>Create Component</a>
+        </div>
+      );
+    };
+
+    return Promise.resolve(<Component />);
+  },
 });
 
 const catalogDetailsPage = createPageExtension({
   name: 'details',
   defaultPath: '/entities/:namespace/:kind/:name',
   routeRef: detailsRouteRef,
-  loader: async () => {
+  loader: () => {
     const Component = () => {
       // Getting the parameters from the URL
       const params = useParams();
@@ -259,7 +273,8 @@ const catalogDetailsPage = createPageExtension({
         </div>
       );
     };
-    return <Component />;
+
+    return Promise.resolve(<Component />);
   },
 });
 
@@ -268,11 +283,11 @@ export default createPlugin({
   routes: {
     index: indexRouteRef,
     details: detailsRouteRef,
-  }
+  },
   externalRoutes: {
     createComponent: createComponentRouteRef,
   },
-  extensions: [catalogIndexPage]
+  extensions: [catalogIndexPage, catalogDetailsPage],
 });
 
 // plugins/catalog/src/index.ts
@@ -298,11 +313,12 @@ import { indexRouteRef } from './routes';
 const scaffolderIndexPage = createPageExtension({
   defaultPath: '/create',
   routeRef: indexRouteRef,
-  loader: async () => (
-    <div>
-      <h1>Create Component</h1>
-    </div>
-  ),
+  loader: () =>
+    Promise.resolve(
+      <div>
+        <h1>Create Component</h1>
+      </div>,
+    ),
 });
 
 export default createPlugin({
@@ -317,7 +333,7 @@ export default createPlugin({
 export { default } from './plugin';
 ```
 
-One last thing is that external routes can also be parametrize, so if Scaffolder wants to redirect to the Catalog entity details page whenever a new component is created, the Scaffolder plugin can also expose a external route like this:
+The Scaffolder plugin can also expose an external route that redirects to the Catalog entity details page whenever a new component is created, such as:
 
 ```ts
 // plugins/scaffolder/src/routes.ts
@@ -327,7 +343,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 export const indexRouteRef = createRouteRef();
-export const entityDetailsExternalRouteRef = createExternalRouteRef({
+export const componentDetailsExternalRouteRef = createExternalRouteRef({
   // The parameters that must be included in the path of this route reference
   params: ['kind', 'namespace', 'name'],
 });
@@ -337,17 +353,37 @@ import React from 'react';
 import {
   createPlugin,
   createPageExtension,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { indexRouteRef, entityDetailsExternalRouteRef } from './routes';
+import { indexRouteRef, componentDetailsExternalRouteRef } from './routes';
 
 const scaffolderIndexPage = createPageExtension({
   defaultPath: '/create',
   routeRef: indexRouteRef,
-  loader: async () => (
-    <div>
-      <h1>Create Component</h1>
-    </div>
-  ),
+  loader: () => {
+    const Component = () => {
+      const componentDetailsLink = useRouteRef(
+        componentDetailsExternalRouteRef,
+      );
+
+      return (
+        <div>
+          <h1>Create Component</h1>
+          <a
+            href={componentDetailsLink({
+              kind: 'component',
+              namespace: 'default',
+              name: 'foo',
+            })}
+          >
+            See component details
+          </a>
+        </div>
+      );
+    };
+
+    return Promise.resolve(<Component />);
+  },
 });
 
 export default createPlugin({
@@ -356,7 +392,7 @@ export default createPlugin({
     index: indexRouteRef,
   },
   externalRoutes: {
-    entityDetails: entityDetailsExternalRouteRef,
+    componentDetails: componentDetailsExternalRouteRef,
   },
   extensions: [scaffolderIndexPage],
 });
@@ -365,7 +401,8 @@ export default createPlugin({
 export { default } from './plugin';
 ```
 
-Now let's move on and configure the app to point to the Scaffolder create component page when the Catalog create component ref be used and also to poin to the Catalog entity details page when the Scaffolder entity details ref be used.
+Note that external routes can also have path parameters!
+Now let's move on and configure the app to point to the Scaffolder create component page when the Catalog create component ref be used and also point to the Catalog entity details page when the Scaffolder component details ref be used.
 
 ### Binding External Route References
 
@@ -378,8 +415,10 @@ Using the above example of the Catalog entities list page to the Scaffolder crea
 app:
   routes:
     bindings:
+      # point to the Scaffolder create component page when the Catalog create component ref be used
       plugin.catalog.externalRoutes.createComponent: plugin.scaffolder.routes.index
-      plugin.scaffolder.externalRoutes.entityDetails: plugin.catalog.routes.details
+      # point to the Catalog details page when the Scaffolder component details ref be used
+      plugin.scaffolder.externalRoutes.componentDetails: plugin.catalog.routes.details
 ```
 
 Or via code, in the file where the app is created:
@@ -396,7 +435,7 @@ const app = createApp({
       createComponent: scaffolder.routes.createComponent,
     });
     bind(scaffolder.externalRoutes, {
-      entityDetails: catalog.routes.details,
+      componentDetails: catalog.routes.details,
     });
   },
 });
@@ -438,16 +477,20 @@ import { indexRouteRef, createComponentRouteRef } from './routes';
 const catalogIndexPage = createPageExtension({
   defaultPath: '/entities',
   routeRef: indexRouteRef,
-  loader: async () => {
-    const createComponentLink = useRouteRef(createComponentRouteRef);
+  loader: () => {
+    const Component = () => {
+      const createComponentLink = useRouteRef(createComponentRouteRef);
 
-    return (
-      <div>
-        <h1>Index Page</h1>
-        {/* Since the route is optional, rendering the link only if the href is defined */}
-        {link && <a href={createComponentLink()}>Create Component</a>}
-      </div>
-    );
+      return (
+        <div>
+          <h1>Index Page</h1>
+          {/* Since the route is optional, rendering the link only if the href is defined */}
+          {link && <a href={createComponentLink()}>Create Component</a>}
+        </div>
+      );
+    };
+
+    return Promise.resolve(<Component />);
   },
 });
 
@@ -504,7 +547,7 @@ const DetailsPage = () => (
 const catalogIndexPage = createPageExtension({
   defaultPath: '/entities',
   routeRef: indexRouteRef,
-  loader: async () => {
+  loader: () => {
     const Component = () => {
       const { pathname } = useLocation();
       const indexLink = useRouteRef(indexRouteRef);
@@ -525,7 +568,7 @@ const catalogIndexPage = createPageExtension({
       );
     };
 
-    return <Component />;
+    return Promise.resolve(<Component />);
   },
 });
 
@@ -585,7 +628,7 @@ const DetailsPage = () => {
 const catalogIndexPage = createPageExtension({
   defaultPath: '/entities',
   routeRef: indexRouteRef,
-  loader: async () => {
+  loader: () => {
     const Component = () => {
       const { pathname } = useLocation();
       const indexLink = useRouteRef(indexRouteRef)();
@@ -633,7 +676,7 @@ const catalogIndexPage = createPageExtension({
       );
     };
 
-    return <Component />;
+    return Promise.resolve(<Component />);
   },
 });
 
