@@ -123,6 +123,15 @@ the [`config`](#config) cluster locator. Accordingly, the catalog cluster
 locator does not support the [`serviceAccount`](#clustersauthprovider) auth
 strategy.
 
+This method can be quite helpful when used in combination with an ingestion
+procedure like the
+[`GkeEntityProvider`](https://backstage.io/docs/reference/plugin-catalog-backend-module-gcp.gkeentityprovider/)
+(installation documented
+[here](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-gcp#installation))
+or the
+[`AwsEKSClusterProcessor`](https://backstage.io/docs/reference/plugin-catalog-backend-module-aws.awseksclusterprocessor/)
+to automatically update the set of clusters tracked by Backstage.
+
 #### `config`
 
 This cluster locator method will read cluster information from your app-config
