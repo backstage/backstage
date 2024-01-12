@@ -50,7 +50,7 @@ export function createAppRootWrapperExtension<
   >;
 }): ExtensionDefinition<TConfig> {
   return createExtension({
-    kind: 'app-wrapper-component',
+    kind: 'app-root-wrapper',
     namespace: options.namespace,
     name: options.name,
     attachTo: options.attachTo ?? { id: 'app/root', input: 'wrappers' },

@@ -54,14 +54,12 @@ export const AppRoot = createExtension({
       { element: coreExtensionData.reactElement },
       { singleton: true },
     ),
-    elements: createExtensionInput(
-      { element: coreExtensionData.reactElement },
-      { optional: true },
-    ),
-    wrappers: createExtensionInput(
-      { component: createAppRootWrapperExtension.componentDataRef },
-      { optional: true },
-    ),
+    elements: createExtensionInput({
+      element: coreExtensionData.reactElement,
+    }),
+    wrappers: createExtensionInput({
+      component: createAppRootWrapperExtension.componentDataRef,
+    }),
   },
   output: {
     element: coreExtensionData.reactElement,
