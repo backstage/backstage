@@ -402,7 +402,7 @@ export { default } from './plugin';
 ```
 
 Note that external routes can also have path parameters!
-Now let's move on and configure the app to point to the Scaffolder create component page when the Catalog create component ref be used and also point to the Catalog entity details page when the Scaffolder component details ref be used.
+Now let's move on and configure the app to resolve these external routes, so that the Scaffolder links to the Catalog entity page, and the Catalog links to the Scaffolder page.
 
 ### Binding External Route References
 
