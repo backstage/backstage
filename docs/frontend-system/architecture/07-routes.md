@@ -421,7 +421,7 @@ app:
       plugin.scaffolder.externalRoutes.componentDetails: plugin.catalog.routes.details
 ```
 
-Or via code, in the file where the app is created:
+We also have the ability to express this in code as an option to `createApp`, but you of course only need to use one of these two methods:
 
 ```tsx
 // packages/app/src/App.tsx
