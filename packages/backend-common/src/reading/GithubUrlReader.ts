@@ -312,7 +312,7 @@ export class GithubUrlReader implements UrlReader {
     return repo.default_branch;
   }
 
-  protected async fetchResponse(
+  private async fetchResponse(
     url: string | URL,
     init: RequestInit,
   ): Promise<Response> {
