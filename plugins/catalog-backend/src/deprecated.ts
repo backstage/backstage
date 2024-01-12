@@ -15,6 +15,11 @@
  */
 
 import {
+  type AnalyzeLocationRequest as _AnalyzeLocationRequest,
+  type AnalyzeLocationResponse as _AnalyzeLocationResponse,
+  type LocationSpec as _LocationSpec,
+} from '@backstage/plugin-catalog-common';
+import {
   locationSpecToMetadataName as _locationSpecToMetadataName,
   locationSpecToLocationEntity as _locationSpecToLocationEntity,
   processingResult as _processingResult,
@@ -36,9 +41,12 @@ import {
   type EntityProviderConnection as _EntityProviderConnection,
   type EntityProviderMutation as _EntityProviderMutation,
   type AnalyzeOptions as _AnalyzeOptions,
+  type PlaceholderResolver as _PlaceholderResolver,
+  type PlaceholderResolverParams as _PlaceholderResolverParams,
+  type PlaceholderResolverRead as _PlaceholderResolverRead,
+  type PlaceholderResolverResolveUrl as _PlaceholderResolverResolveUrl,
   type ScmLocationAnalyzer as _ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
-import { type LocationSpec as _LocationSpec } from '@backstage/plugin-catalog-common';
 
 /**
  * @public
@@ -165,3 +173,38 @@ export type AnalyzeOptions = _AnalyzeOptions;
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export type ScmLocationAnalyzer = _ScmLocationAnalyzer;
+
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type PlaceholderResolver = _PlaceholderResolver;
+
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type PlaceholderResolverParams = _PlaceholderResolverParams;
+
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type PlaceholderResolverRead = _PlaceholderResolverRead;
+
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type PlaceholderResolverResolveUrl = _PlaceholderResolverResolveUrl;
+
+/**
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationRequest = _AnalyzeLocationRequest;
+/**
+ * @public
+ * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
+ */
+export type AnalyzeLocationResponse = _AnalyzeLocationResponse;

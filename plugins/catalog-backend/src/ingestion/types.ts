@@ -15,23 +15,12 @@
  */
 
 import {
-  AnalyzeLocationRequest as NonDeprecatedAnalyzeLocationRequest,
-  AnalyzeLocationResponse as NonDeprecatedAnalyzeLocationResponse,
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
   AnalyzeLocationExistingEntity as NonDeprecatedAnalyzeLocationExistingEntity,
   AnalyzeLocationGenerateEntity as NonDeprecatedAnalyzeLocationGenerateEntity,
   AnalyzeLocationEntityField as NonDeprecatedAnalyzeLocationEntityField,
 } from '@backstage/plugin-catalog-common';
-
-/**
- * @public
- * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
- */
-export type AnalyzeLocationRequest = NonDeprecatedAnalyzeLocationRequest;
-/**
- * @public
- * @deprecated use the same type from `@backstage/plugin-catalog-common` instead
- */
-export type AnalyzeLocationResponse = NonDeprecatedAnalyzeLocationResponse;
 
 /**
  * If the folder pointed to already contained catalog info yaml files, they are

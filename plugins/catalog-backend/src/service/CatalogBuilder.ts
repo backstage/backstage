@@ -39,6 +39,7 @@ import {
   CatalogProcessorParser,
   EntitiesSearchFilter,
   EntityProvider,
+  PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
@@ -47,7 +48,6 @@ import {
   CodeOwnersProcessor,
   FileReaderProcessor,
   PlaceholderProcessor,
-  PlaceholderResolver,
   UrlReaderProcessor,
 } from '../modules';
 import { ConfigLocationEntityProvider } from '../modules/core/ConfigLocationEntityProvider';
