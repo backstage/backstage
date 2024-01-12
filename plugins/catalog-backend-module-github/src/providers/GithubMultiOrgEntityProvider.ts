@@ -298,6 +298,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     }
 
     const allUsers = Array.from(allUsersMap.values());
+
     if (allUsers.length > 0 || allTeams.length > 0) {
       const { markCommitComplete } = markReadComplete({ allUsers, allTeams });
 
