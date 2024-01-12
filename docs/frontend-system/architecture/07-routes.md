@@ -85,7 +85,7 @@ We have completed our journey of creating a plugin page route. This is what the 
 - [2] We associate our route reference with our page by providing it as an option during creation of the page extension.
 - [3] Finally, our plugin provides both routes and extensions.
 
-It may be unclear why we need to pass the route to the plugin once it has already been passed to the extension, but the explanation can be found in the (Binding External Route References)[#building-external-route-references] section, wait a bit, keep reading and you'll understand why.
+It may be unclear why we need to pass the route to the plugin when it has already been passed to the extension. We do that to make it possible for other plugins to route to our page, which is explained in detail in the (Binding External Route References)[#building-external-route-references] section.
 
 ### Route Path Parameters
 
