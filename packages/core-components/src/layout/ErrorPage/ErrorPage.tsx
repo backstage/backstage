@@ -15,7 +15,6 @@
  */
 
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
@@ -38,16 +37,10 @@ export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
 
 const useStyles = makeStyles(
   theme => ({
-    parent: {
+    container: {
       padding: theme.spacing(8),
       [theme.breakpoints.down('xs')]: {
         padding: theme.spacing(2),
-      },
-    },
-    container: {
-      marginBottom: theme.spacing(5),
-      [theme.breakpoints.down('xs')]: {
-        marginBottom: theme.spacing(4),
       },
     },
     title: {
@@ -59,6 +52,13 @@ const useStyles = makeStyles(
     },
     subtitle: {
       color: theme.palette.textSubtle,
+    },
+    goBackTitle: {
+      color: theme.palette.textSubtle,
+      marginBottom: theme.spacing(5),
+      [theme.breakpoints.down('xs')]: {
+        marginBottom: theme.spacing(4),
+      },
     },
     text: {
       fontFamily: 'monospace',
@@ -88,56 +88,52 @@ export function ErrorPage(props: IErrorPageProps) {
   const support = useSupportConfig();
 
   return (
-    <Box className={classes.parent}>
-      <Grid container className={classes.container}>
-        <Grid item xs={12} sm={8} md={4}>
-          <Typography
-            data-testid="error"
-            variant="body1"
-            className={classes.subtitle}
-          >
-            ERROR {status}: {statusMessage}
-          </Typography>
-          <Typography variant="body1" className={classes.subtitle}>
-            {additionalInfo}
-          </Typography>
-          <Typography variant="h2" className={classes.title}>
-            Looks like someone dropped the mic!
-          </Typography>
-          <Typography variant="h6">
-            <Link
-              to="#"
-              data-testid="go-back-link"
-              onClick={() => navigate(-1)}
-            >
-              Go back
-            </Link>
-            ... or please{' '}
-            <Link to={supportUrl || support.url}>contact support</Link> if you
-            think this is a bug.
-          </Typography>
-        </Grid>
+    <Grid container className={classes.container}>
+      <Grid item xs={12} md={5}>
+        <Typography
+          data-testid="error"
+          variant="body1"
+          className={classes.subtitle}
+        >
+          ERROR {status}: {statusMessage}
+        </Typography>
+        <Typography variant="body1" className={classes.subtitle}>
+          {additionalInfo}
+        </Typography>
+        <Typography variant="h2" className={classes.title}>
+          Looks like someone dropped the mic!
+        </Typography>
+        <Typography variant="h6" className={classes.goBackTitle}>
+          <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
+            Go back
+          </Link>
+          ... or please{' '}
+          <Link to={supportUrl || support.url}>contact support</Link> if you
+          think this is a bug.
+        </Typography>
+        {stack && (
+          <WarningPanel severity="error" title={statusMessage}>
+            <Grid container>
+              <Grid item xs={11}>
+                <Typography variant="subtitle1">Stack Trace</Typography>
+                <Typography
+                  className={classes.text}
+                  color="textSecondary"
+                  variant="body2"
+                >
+                  {stack}
+                </Typography>
+              </Grid>
+              <Grid item xs={1} className={classes.copyTextContainer}>
+                <CopyTextButton text={stack} />
+              </Grid>
+            </Grid>
+          </WarningPanel>
+        )}
+      </Grid>
+      <Grid item xs={12} md={7}>
         <MicDrop />
       </Grid>
-      {stack && (
-        <WarningPanel severity="error" title={statusMessage}>
-          <Grid container className={classes.container}>
-            <Grid item xs={10} sm={8}>
-              <Typography variant="subtitle1">Stack Trace</Typography>
-              <Typography
-                className={classes.text}
-                color="error"
-                variant="body1"
-              >
-                {stack}
-              </Typography>
-            </Grid>
-            <Grid item xs={2} sm={4} className={classes.copyTextContainer}>
-              <CopyTextButton text={stack} />
-            </Grid>
-          </Grid>
-        </WarningPanel>
-      )}
-    </Box>
+    </Grid>
   );
 }
