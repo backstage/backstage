@@ -26,7 +26,7 @@ There are 3 types of route references: regular route, sub route, and external ro
 
 ### Creating a Route Reference
 
-Route references, also known as plugins' index pages or regular routes, are created as follows:
+Route references, also known as "absolute" or "regular" routes, are created as follows:
 
 ```tsx
 // plugins/catalog/src/routes.ts
