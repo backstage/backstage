@@ -19,7 +19,7 @@ import { getAnnotationValuesFromEntity } from './getAnnotationValuesFromEntity';
 
 describe('getAnnotationValuesFromEntity', () => {
   describe('without any annotations', () => {
-    it('should return ???', () => {
+    it('should throw annotations not found', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
