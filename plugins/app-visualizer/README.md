@@ -2,7 +2,7 @@
 
 A plugin to help explore the structure of your Backstage app.
 
-This plugin providers the following extensions:
+This plugin provides the following extensions:
 
 | ID                        | Type      | Description                          | Default Config            |
 | ------------------------- | --------- | ------------------------------------ | ------------------------- |
