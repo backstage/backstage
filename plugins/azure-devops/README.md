@@ -75,9 +75,9 @@ dev.azure.com/build-definition: <build-definition-name>
 If your pipeline is in a different project to the source code, you will need to specify this in the project annotation.
 
 ```yaml
-dev.azure.com/project-repo: <project1>/<my-repo>
+dev.azure.com/project-repo: <project-with-source-code>/<my-repo>
 dev.azure.com/build-definition: <build-definition-name>
-dev.azure.com/project: <project2>
+dev.azure.com/project: <project-with-build-code>
 ```
 
 #### Azure Pipelines Only
