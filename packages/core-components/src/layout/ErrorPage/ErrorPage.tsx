@@ -60,7 +60,9 @@ const useStyles = makeStyles(
         marginBottom: theme.spacing(4),
       },
     },
-    text: {
+    stackTraceText: {
+      maxHeight: '30vh',
+      overflow: 'scroll',
       fontFamily: 'monospace',
       whiteSpace: 'pre',
       overflowX: 'auto',
@@ -117,7 +119,7 @@ export function ErrorPage(props: IErrorPageProps) {
               <Grid item xs={11}>
                 <Typography variant="subtitle1">Stack Trace</Typography>
                 <Typography
-                  className={classes.text}
+                  className={classes.stackTraceText}
                   color="textSecondary"
                   variant="body2"
                 >
