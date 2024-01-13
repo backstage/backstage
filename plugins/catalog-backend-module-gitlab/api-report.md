@@ -33,7 +33,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 }
 
 // @public
-export class GitLabDiscoveryProcessor implements CatalogProcessor {
+export class GitlabDiscoveryProcessor implements CatalogProcessor {
   // (undocumented)
   static fromConfig(
     config: Config,
@@ -42,7 +42,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       skipReposWithoutExactFileMatch?: boolean;
       skipForkedRepos?: boolean;
     },
-  ): GitLabDiscoveryProcessor;
+  ): GitlabDiscoveryProcessor;
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)
@@ -51,22 +51,5 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     _optional: boolean,
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
-}
-
-// @public
-export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
-  // (undocumented)
-  connect(connection: EntityProviderConnection): Promise<void>;
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      logger: Logger;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
-    },
-  ): GitlabOrgDiscoveryEntityProvider[];
-  // (undocumented)
-  getProviderName(): string;
 }
 ```

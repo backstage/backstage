@@ -5458,6 +5458,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-gitlab-org@workspace:plugins/catalog-backend-module-gitlab-org":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-gitlab-org@workspace:plugins/catalog-backend-module-gitlab-org"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    "@types/lodash": ^4.14.151
+    "@types/uuid": ^8.0.0
+    lodash: ^4.17.21
+    luxon: ^3.0.0
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    uuid: ^8.0.0
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend-module-gitlab@workspace:plugins/catalog-backend-module-gitlab":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-gitlab@workspace:plugins/catalog-backend-module-gitlab"
