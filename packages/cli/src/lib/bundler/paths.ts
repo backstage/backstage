@@ -38,6 +38,14 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     return resolvePath(targetDir, `${pathString}.js`);
   };
 
+  const resolveTargetOptionalModule = (pathString: string) => {
+    try {
+      return resolveTargetModule(pathString);
+    } catch {
+      return undefined;
+    }
+  };
+
   let targetPublic = undefined;
   let targetHtml = resolvePath(targetDir, 'public/index.html');
 
@@ -51,12 +59,18 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     }
   }
 
+  let targetAuthHtml = targetHtml;
+  if (fs.pathExistsSync(resolvePath(targetDir, 'public/auth.html'))) {
+    targetAuthHtml = resolvePath(targetDir, 'public/auth.html');
+  }
+
   // Backend plugin dev run file
   const targetRunFile = resolvePath(targetDir, 'src/run.ts');
   const runFileExists = fs.pathExistsSync(targetRunFile);
 
   return {
     targetHtml,
+    targetAuthHtml,
     targetPublic,
     targetPath: resolvePath(targetDir, '.'),
     targetRunFile: runFileExists ? targetRunFile : undefined,
@@ -65,6 +79,7 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     targetSrc: resolvePath(targetDir, 'src'),
     targetDev: resolvePath(targetDir, 'dev'),
     targetEntry: resolveTargetModule(entry),
+    targetAuthEntry: resolveTargetOptionalModule('src/auth'),
     targetTsConfig: paths.resolveTargetRoot('tsconfig.json'),
     targetPackageJson: resolvePath(targetDir, 'package.json'),
     rootNodeModules: paths.resolveTargetRoot('node_modules'),

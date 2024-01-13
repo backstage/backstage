@@ -127,6 +127,8 @@ export async function createConfig(
 
   plugins.push(
     new HtmlWebpackPlugin({
+      chunks: ['main'],
+      filename: 'index.html',
       template: paths.targetHtml,
       templateParameters: {
         publicPath,
@@ -134,6 +136,20 @@ export async function createConfig(
       },
     }),
   );
+
+  if (paths.targetAuthEntry) {
+    plugins.push(
+      new HtmlWebpackPlugin({
+        chunks: ['auth'],
+        filename: 'auth/index.html',
+        template: paths.targetHtml,
+        templateParameters: {
+          publicPath,
+          config: frontendConfig,
+        },
+      }),
+    );
+  }
 
   const buildInfo = await readBuildInfo();
   plugins.push(
@@ -172,7 +188,10 @@ export async function createConfig(
     },
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
-    entry: [...(options.additionalEntryPoints ?? []), paths.targetEntry],
+    entry: {
+      main: [...(options.additionalEntryPoints ?? []), paths.targetEntry],
+      ...(paths.targetAuthEntry ? { auth: paths.targetAuthEntry } : {}),
+    },
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],
