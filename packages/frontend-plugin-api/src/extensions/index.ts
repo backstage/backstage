@@ -15,6 +15,8 @@
  */
 
 export { createApiExtension } from './createApiExtension';
+export { createAppRootElementExtension } from './createAppRootElementExtension';
+export { createAppRootWrapperExtension } from './createAppRootWrapperExtension';
 export { createPageExtension } from './createPageExtension';
 export { createNavItemExtension } from './createNavItemExtension';
 export { createNavLogoExtension } from './createNavLogoExtension';
