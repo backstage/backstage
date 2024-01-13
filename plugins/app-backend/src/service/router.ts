@@ -19,7 +19,7 @@ import {
   PluginDatabaseManager,
   resolvePackagePath,
 } from '@backstage/backend-common';
-import { Config } from '@backstage/config';
+import { AppConfig, Config } from '@backstage/config';
 import helmet from 'helmet';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -134,15 +134,67 @@ export async function createRouter(
 
     injectedConfigPath = await injectConfig({ appConfigs, logger, staticDir });
   }
+  const appConfigs = disableConfigInjection
+    ? await readConfigs({
+        config,
+        appDistDir,
+        env: process.env,
+      })
+    : undefined;
+
+  const assetStore =
+    options.database && !disableStaticFallbackCache
+      ? await StaticAssetsStore.create({
+          logger,
+          database: options.database,
+        })
+      : undefined;
 
   const router = Router();
 
   router.use(helmet.frameguard({ action: 'deny' }));
 
+  router.use(
+    await createEntryPointRouter({
+      logger,
+      rootDir: appDistDir,
+      assetStore,
+      staticFallbackHandler,
+      appConfigs,
+      injectedConfigPath,
+    }),
+  );
+
+  return router;
+}
+
+async function createEntryPointRouter({
+  logger,
+  rootDir,
+  assetStore,
+  staticFallbackHandler,
+  appConfigs,
+  injectedConfigPath,
+}: {
+  logger: Logger;
+  rootDir: string;
+  assetStore?: StaticAssetsStore;
+  staticFallbackHandler?: express.Handler;
+  appConfigs?: AppConfig[];
+  injectedConfigPath?: string;
+}) {
+  const staticDir = resolvePath(rootDir, 'static');
+
+  if (appConfigs) {
+    await injectConfig({ appConfigs, logger, staticDir });
+  }
+
+  const router = Router();
+
   // Use a separate router for static content so that a fallback can be provided by backend
   const staticRouter = Router();
   staticRouter.use(
-    express.static(resolvePath(appDistDir, 'static'), {
+    express.static(staticDir, {
       setHeaders: (res, path) => {
         if (path === injectedConfigPath) {
           res.setHeader('Cache-Control', CACHE_CONTROL_REVALIDATE_CACHE);
@@ -153,18 +205,13 @@ export async function createRouter(
     }),
   );
 
-  if (options.database && !disableStaticFallbackCache) {
-    const store = await StaticAssetsStore.create({
-      logger,
-      database: options.database,
-    });
-
+  if (assetStore) {
     const assets = await findStaticAssets(staticDir);
-    await store.storeAssets(assets);
+    await assetStore.storeAssets(assets);
     // Remove any assets that are older than 7 days
-    await store.trimAssets({ maxAgeSeconds: 60 * 60 * 24 * 7 });
+    await assetStore.trimAssets({ maxAgeSeconds: 60 * 60 * 24 * 7 });
 
-    staticRouter.use(createStaticAssetMiddleware(store));
+    staticRouter.use(createStaticAssetMiddleware(assetStore));
   }
 
   if (staticFallbackHandler) {
@@ -174,7 +221,7 @@ export async function createRouter(
 
   router.use('/static', staticRouter);
   router.use(
-    express.static(appDistDir, {
+    express.static(rootDir, {
       setHeaders: (res, path) => {
         // The Cache-Control header instructs the browser to not cache html files since it might
         // link to static assets from recently deployed versions.
@@ -187,7 +234,7 @@ export async function createRouter(
     }),
   );
   router.get('/*', (_req, res) => {
-    res.sendFile(resolvePath(appDistDir, 'index.html'), {
+    res.sendFile(resolvePath(rootDir, 'index.html'), {
       headers: {
         // The Cache-Control header instructs the browser to not cache the index.html since it might
         // link to static assets from recently deployed versions.
