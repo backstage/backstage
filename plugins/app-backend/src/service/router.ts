@@ -145,9 +145,22 @@ export async function createRouter(
 
   router.use(helmet.frameguard({ action: 'deny' }));
 
+  const publicDistDir = resolvePath(appDistDir, 'public');
+  if (await fs.pathExists(publicDistDir)) {
+    router.use(
+      '/public',
+      await createEntryPointRouter({
+        logger: logger.child({ entry: 'public' }),
+        rootDir: publicDistDir,
+        assetStore: assetStore?.withNamespace('public'),
+        appConfigs, // TODO(Rugvip): We should not be including the full config here
+      }),
+    );
+  }
+
   router.use(
     await createEntryPointRouter({
-      logger,
+      logger: logger.child({ entry: 'main' }),
       rootDir: appDistDir,
       assetStore,
       staticFallbackHandler,
