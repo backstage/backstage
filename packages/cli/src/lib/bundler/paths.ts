@@ -23,6 +23,8 @@ export type BundlingPathsOptions = {
   entry: string;
   // Target directory, defaulting to paths.targetDir
   targetDir?: string;
+  // Relative dist directory, defaulting to 'dist'
+  dist?: string;
 };
 
 export function resolveBundlingPaths(options: BundlingPathsOptions) {
@@ -38,14 +40,6 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     return resolvePath(targetDir, `${pathString}.js`);
   };
 
-  const resolveTargetOptionalModule = (pathString: string) => {
-    try {
-      return resolveTargetModule(pathString);
-    } catch {
-      return undefined;
-    }
-  };
-
   let targetPublic = undefined;
   let targetHtml = resolvePath(targetDir, 'public/index.html');
 
@@ -59,32 +53,35 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     }
   }
 
-  let targetAuthHtml = targetHtml;
-  if (fs.pathExistsSync(resolvePath(targetDir, 'public/auth.html'))) {
-    targetAuthHtml = resolvePath(targetDir, 'public/auth.html');
-  }
-
   // Backend plugin dev run file
   const targetRunFile = resolvePath(targetDir, 'src/run.ts');
   const runFileExists = fs.pathExistsSync(targetRunFile);
 
   return {
     targetHtml,
-    targetAuthHtml,
     targetPublic,
     targetPath: resolvePath(targetDir, '.'),
     targetRunFile: runFileExists ? targetRunFile : undefined,
-    targetDist: resolvePath(targetDir, 'dist'),
+    targetDist: resolvePath(targetDir, options.dist ?? 'dist'),
     targetAssets: resolvePath(targetDir, 'assets'),
     targetSrc: resolvePath(targetDir, 'src'),
     targetDev: resolvePath(targetDir, 'dev'),
     targetEntry: resolveTargetModule(entry),
-    targetAuthEntry: resolveTargetOptionalModule('src/auth'),
     targetTsConfig: paths.resolveTargetRoot('tsconfig.json'),
     targetPackageJson: resolvePath(targetDir, 'package.json'),
     rootNodeModules: paths.resolveTargetRoot('node_modules'),
     root: paths.targetRoot,
   };
+}
+
+export async function resolveOptionalBundlingPaths(
+  options: BundlingPathsOptions,
+) {
+  const resolvedPaths = resolveBundlingPaths(options);
+  if (await fs.pathExists(resolvedPaths.targetEntry)) {
+    return resolvedPaths;
+  }
+  return undefined;
 }
 
 export type BundlingPaths = ReturnType<typeof resolveBundlingPaths>;
