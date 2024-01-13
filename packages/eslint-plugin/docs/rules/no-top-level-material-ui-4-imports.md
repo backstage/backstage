@@ -7,12 +7,12 @@ Forbid top level import from Material UI v4 packages.
 Add the rules as follows, it has no options:
 
 ```js
-"@backstage/no-top-level-material-ui-4-imports": ["error"]
+'@backstage/no-top-level-material-ui-4-imports': 'error'
 ```
 
 ## Rule Details
 
-TBD - Not sure what should go here
+Automatically fixes imports from named to default imports. This will help you comply with [Material UI recommendations](https://mui.com/material-ui/guides/minimizing-bundle-size/) and make migrating to Material UI v5 easier.
 
 ### Fail
 

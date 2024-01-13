@@ -57,19 +57,8 @@ module.exports = {
       // Return if import is from '@material-ui/core/styles', as it's valid already
       if (node.source.value === '@material-ui/core/styles') return;
       // Return if proper import eg. `import Box from '@material-ui/core/Box'`
-      if (
-        node.specifiers.length >= 1 &&
-        node.source.value?.split('/').length === 3
-      )
-        return;
-
-      // Return if third level or deeper imports
-      if (
-        node.specifiers.length >= 1 &&
-        node.source.value.split('/').length > 3
-      ) {
-        return;
-      }
+      // Or if third level or deeper imports
+      if (node.source.value?.split('/').length >= 3) return;
 
       // Report all other imports
       context.report({
@@ -84,17 +73,13 @@ module.exports = {
           );
 
           const specifiersMap = specifiers.map(s => {
-            const propsTest = /^([A-Z]\w+)Props$/.test(s.local.name);
             const propsMatch = /^([A-Z]\w+)Props$/.exec(s.local.name);
-            let propValue;
-            if (propsMatch) {
-              propValue = propsMatch[1];
-            }
+
             return {
-              emitComponent: !propsTest,
-              emitProp: propsTest,
+              emitComponent: !(propsMatch !== null),
+              emitProp: propsMatch !== null,
               value: s.local.name,
-              propValue,
+              propValue: propsMatch ? propsMatch[1] : undefined,
             };
           });
 
