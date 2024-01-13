@@ -93,7 +93,7 @@ of your backend.
 
 ```ts title="packages/backend/src/plugins/catalog.ts"
 /* highlight-add-next-line */
-import { GitLabDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-gitlab';
+import { GitlabDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-gitlab';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -101,7 +101,7 @@ export default async function createPlugin(
   const builder = await CatalogBuilder.create(env);
   /* highlight-add-start */
   builder.addProcessor(
-    GitLabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger }),
+    GitlabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger }),
   );
   /* highlight-add-end */
 

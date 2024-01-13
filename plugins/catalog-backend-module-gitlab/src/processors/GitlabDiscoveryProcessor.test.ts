@@ -20,8 +20,8 @@ import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { rest, RestRequest } from 'msw';
 import { setupServer } from 'msw/node';
-import { GitLabDiscoveryProcessor, parseUrl } from './GitLabDiscoveryProcessor';
-import { GitLabProject } from './lib';
+import { GitlabDiscoveryProcessor, parseUrl } from './GitlabDiscoveryProcessor';
+import { GitLabProject } from '../lib';
 
 const server = setupServer();
 
@@ -143,9 +143,9 @@ function getProcessor({
   options,
 }: {
   config?: any;
-  options?: Partial<Parameters<typeof GitLabDiscoveryProcessor.fromConfig>[1]>;
-} = {}): GitLabDiscoveryProcessor {
-  return GitLabDiscoveryProcessor.fromConfig(
+  options?: Partial<Parameters<typeof GitlabDiscoveryProcessor.fromConfig>[1]>;
+} = {}): GitlabDiscoveryProcessor {
+  return GitlabDiscoveryProcessor.fromConfig(
     new ConfigReader(config || getConfig()),
     {
       logger: getVoidLogger(),

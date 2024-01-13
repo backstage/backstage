@@ -15,3 +15,5 @@
  */
 
 export { catalogModuleGitlabDiscoveryEntityProvider as default } from './module/catalogModuleGitlabDiscoveryEntityProvider';
+export { catalogModuleGitlabOrgDiscoveryEntityProvider } from './module/catalogModuleGitlabOrgDiscoveryEntityProvider';
+export { catalogModuleGitlabDiscoveryProcessor } from './module/catalogModuleGitlabDiscoveryProcessor';

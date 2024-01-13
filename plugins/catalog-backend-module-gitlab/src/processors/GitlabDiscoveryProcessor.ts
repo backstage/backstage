@@ -31,13 +31,13 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
-import { GitLabClient, GitLabProject, paginated } from './lib';
+import { GitLabClient, GitLabProject, paginated } from '../lib';
 
 /**
  * Extracts repositories out of an GitLab instance.
  * @public
  */
-export class GitLabDiscoveryProcessor implements CatalogProcessor {
+export class GitlabDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
   private readonly cache: CacheClient;
@@ -51,12 +51,12 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       skipReposWithoutExactFileMatch?: boolean;
       skipForkedRepos?: boolean;
     },
-  ): GitLabDiscoveryProcessor {
+  ): GitlabDiscoveryProcessor {
     const integrations = ScmIntegrations.fromConfig(config);
     const pluginCache =
       CacheManager.fromConfig(config).forPlugin('gitlab-discovery');
 
-    return new GitLabDiscoveryProcessor({
+    return new GitlabDiscoveryProcessor({
       ...options,
       integrations,
       pluginCache,
