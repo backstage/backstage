@@ -75,7 +75,7 @@ export const scaffolderPlugin = createBackendPlugin({
       deps: {
         logger: coreServices.logger,
         config: coreServices.rootConfig,
-        lifecycle: coreServices.lifecycle,
+        lifecycle: coreServices.rootLifecycle,
         reader: coreServices.urlReader,
         permissions: coreServices.permissions,
         database: coreServices.database,

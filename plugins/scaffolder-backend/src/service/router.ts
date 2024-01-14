@@ -77,7 +77,7 @@ import {
   PermissionRule,
 } from '@backstage/plugin-permission-node';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
-import { EventBroker, EventParams } from '@backstage/plugin-events-node';
+import { EventBroker } from '@backstage/plugin-events-node';
 import { Duration } from 'luxon';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 
@@ -336,19 +336,12 @@ export async function createRouter(
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
 
-  if (options.eventBroker) {
-    options.eventBroker?.subscribe({
-      supportsEventTopics: () => ['backend.startup.status'],
-      onEvent: async (params: EventParams<{ status: string }>) => {
-        if (params.eventPayload.status === 'ready') {
-          workers.forEach(worker => worker.start());
-        }
-      },
-    });
+  const launchWorkers = () => workers.forEach(worker => worker.start());
+
+  if (options.lifecycle) {
+    options.lifecycle.addStartupHook(launchWorkers);
   } else {
-    options.lifecycle?.addStartupHook(() => {
-      workers.forEach(worker => worker.start());
-    });
+    launchWorkers();
   }
 
   const dryRunner = createDryRunner({

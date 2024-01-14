@@ -29,7 +29,6 @@ import {
   TaskContext,
   TaskStore,
 } from './types';
-import { Duration } from 'luxon';
 import { readDuration } from './helper';
 
 /**
@@ -217,15 +216,13 @@ export class StorageTaskBroker implements TaskBroker {
     if (enabled) {
       const recoveredTaskIds =
         (await this.storage.recoverTasks?.({
-          timeoutS: Duration.fromObject(
-            readDuration(
-              this.config,
-              'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
-              {
-                seconds: 30,
-              },
-            ),
-          ).as('seconds'),
+          timeoutS: readDuration(
+            this.config,
+            'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
+            {
+              seconds: 30,
+            },
+          ),
         })) ?? [];
       recoveredTaskIds.forEach(() => {
         this.signalDispatch();

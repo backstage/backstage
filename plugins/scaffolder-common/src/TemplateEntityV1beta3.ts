@@ -87,11 +87,11 @@ export interface TemplateRecoveryV1beta3 extends JsonObject {
   /**
    *
    * none - not recover, let the task be marked as failed
-   * start_over - do recover, start the execution of the task from the first step.
+   * startOver - do recover, start the execution of the task from the first step.
    *
    * @public
    */
-  EXPERIMENTAL_strategy?: 'none' | 'start_over';
+  EXPERIMENTAL_strategy?: 'none' | 'startOver';
 }
 
 /**

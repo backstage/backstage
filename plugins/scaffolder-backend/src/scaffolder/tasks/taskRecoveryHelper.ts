@@ -30,7 +30,7 @@ export const compactEvents = (
     const { recoverStrategy } = events[ind].body as {
       recoverStrategy: TaskRecoverStrategy;
     };
-    if (recoverStrategy === 'start_over') {
+    if (recoverStrategy === 'startOver') {
       return {
         events: recoveredEventInd === 0 ? [] : events.slice(ind),
       };

@@ -37,7 +37,7 @@ import {
   TaskStatus,
   TaskEventType,
 } from '@backstage/plugin-scaffolder-node';
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { compactEvents } from './taskRecoveryHelper';
 
@@ -118,7 +118,7 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   private isRecoverableTask(spec: TaskSpec): boolean {
-    return ['start_over'].includes(
+    return ['startOver'].includes(
       spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
     );
   }
@@ -396,7 +396,7 @@ export class DatabaseTaskStore implements TaskStore {
   async listEvents(
     options: TaskStoreListEventsOptions,
   ): Promise<{ events: SerializedTaskEvent[] }> {
-    const { taskId, after, raw } = options;
+    const { taskId, after } = options;
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,
@@ -426,11 +426,7 @@ export class DatabaseTaskStore implements TaskStore {
       }
     });
 
-    if (!raw) {
-      return compactEvents(events);
-    }
-
-    return { events };
+    return compactEvents(events);
   }
 
   async shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void> {
@@ -472,32 +468,6 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  private async reopenTask(options: { taskId: string }): Promise<void> {
-    const { taskId } = options;
-
-    await this.db.transaction(async tx => {
-      const [{ spec }] = await tx<RawDbTaskRow>('tasks')
-        .where({ id: taskId })
-        .update(
-          {
-            status: 'open',
-            last_heartbeat_at: this.db.fn.now(),
-          },
-          ['spec'],
-        );
-
-      await this.db<RawDbTaskEventRow>('task_events').insert({
-        task_id: taskId,
-        event_type: 'recovered',
-        body: JSON.stringify({
-          recoverStrategy:
-            (JSON.parse(spec as string) as TaskSpec).EXPERIMENTAL_recovery
-              ?.EXPERIMENTAL_strategy ?? 'none',
-        }),
-      });
-    });
-  }
-
   async cancelTask(
     options: TaskStoreEmitOptions<{ message: string } & JsonObject>,
   ): Promise<void> {
@@ -511,19 +481,50 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   async recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<string[]> {
-    const recoveredTaskIds = [];
-    const { tasks } = await this.listStaleTasks({
-      timeoutS: options.timeoutS,
+    const taskIdsToRecover: string[] = [];
+    const timeoutS = Duration.fromObject(options.timeoutS).as('seconds');
+
+    await this.db.transaction(async tx => {
+      let heartbeatInterval = this.db.raw(
+        `? - interval '${timeoutS} seconds'`,
+        [this.db.fn.now()],
+      );
+      if (this.db.client.config.client.includes('mysql')) {
+        heartbeatInterval = this.db.raw(
+          `date_sub(now(), interval ${timeoutS} second)`,
+        );
+      } else if (this.db.client.config.client.includes('sqlite3')) {
+        heartbeatInterval = this.db.raw(`datetime('now', ?)`, [
+          `-${timeoutS} seconds`,
+        ]);
+      }
+
+      const result = await tx<RawDbTaskRow>('tasks')
+        .where('status', 'processing')
+        .andWhere('last_heartbeat_at', '<=', heartbeatInterval)
+        .update(
+          {
+            status: 'open',
+            last_heartbeat_at: this.db.fn.now(),
+          },
+          ['id', 'spec'],
+        );
+
+      taskIdsToRecover.push(...result.map(i => i.id));
+
+      for (const { id, spec } of result) {
+        const taskSpec = JSON.parse(spec as string) as TaskSpec;
+        await this.db<RawDbTaskEventRow>('task_events').insert({
+          task_id: id,
+          event_type: 'recovered',
+          body: JSON.stringify({
+            recoverStrategy:
+              taskSpec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
+          }),
+        });
+      }
     });
 
-    for (const task of tasks) {
-      if (
-        ['start_over'].includes(task.recovery?.EXPERIMENTAL_strategy ?? 'none')
-      ) {
-        await this.reopenTask({ taskId: task.taskId });
-        recoveredTaskIds.push(task.taskId);
-      }
-    }
-    return recoveredTaskIds;
+    return taskIdsToRecover;
   }
 }

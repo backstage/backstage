@@ -31,7 +31,7 @@ const toRecoveredEvent = (recoverStrategy: string) =>
 
 describe('taskRecoveryHelper', () => {
   describe('compactEvents', () => {
-    it('should return only events related to a restarted task. Recover strategy: "start_over"', () => {
+    it('should return only events related to a restarted task. Recover strategy: "startOver"', () => {
       const logEvents = [
         'fetch',
         'mock-step-1',
@@ -39,7 +39,7 @@ describe('taskRecoveryHelper', () => {
         'mock-step-3',
       ].map(toLogEvent);
 
-      const events = [...logEvents, toRecoveredEvent('start_over')];
+      const events = [...logEvents, toRecoveredEvent('startOver')];
 
       expect(compactEvents(events)).toEqual({ events: [] });
     });

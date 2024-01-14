@@ -17,7 +17,7 @@ export const isTemplateEntityV1beta3: (
 ) => entity is TemplateEntityV1beta3;
 
 // @public
-export type TaskRecoverStrategy = 'none' | 'start_over';
+export type TaskRecoverStrategy = 'none' | 'startOver';
 
 // @public
 export interface TaskRecovery {
@@ -121,6 +121,6 @@ export interface TemplatePresentationV1beta3 extends JsonObject {
 
 // @public
 export interface TemplateRecoveryV1beta3 extends JsonObject {
-  EXPERIMENTAL_strategy?: 'none' | 'start_over';
+  EXPERIMENTAL_strategy?: 'none' | 'startOver';
 }
 ```

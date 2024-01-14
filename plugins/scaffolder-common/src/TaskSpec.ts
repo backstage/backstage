@@ -47,11 +47,11 @@ export type TemplateInfo = {
 /**
  *
  * none - not recover, let the task be marked as failed
- * start_over - do recover, start the execution of the task from the first step.
+ * startOver - do recover, start the execution of the task from the first step.
  *
  * @public
  */
-export type TaskRecoverStrategy = 'none' | 'start_over';
+export type TaskRecoverStrategy = 'none' | 'startOver';
 
 /**
  * When task didn't have a chance to complete due to system restart you can define the strategy what to do with such tasks,

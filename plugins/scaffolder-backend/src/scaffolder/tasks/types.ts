@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonValue, JsonObject } from '@backstage/types';
+import { JsonValue, JsonObject, HumanDuration } from '@backstage/types';
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import {
@@ -121,7 +121,6 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 export type TaskStoreListEventsOptions = {
   taskId: string;
   after?: number | undefined;
-  raw?: boolean;
 };
 
 /**
@@ -148,7 +147,7 @@ export type TaskStoreCreateTaskOptions = {
  * @public
  */
 export type TaskStoreRecoverTaskOptions = {
-  timeoutS: number;
+  timeoutS: HumanDuration;
 };
 
 /**

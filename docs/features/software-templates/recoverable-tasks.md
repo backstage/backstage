@@ -20,7 +20,7 @@ metadata:
   name: my-recoverable-template
 spec:
   EXPERIMENTAL_recovery:
-    EXPERIMENTAL_strategy: 'start_over'
+    EXPERIMENTAL_strategy: 'startOver'
 ```
 
 If not specified, it is treated as 'none'.

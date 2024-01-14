@@ -589,12 +589,11 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 export type TaskStoreListEventsOptions = {
   taskId: string;
   after?: number | undefined;
-  raw?: boolean;
 };
 
 // @public
 export type TaskStoreRecoverTaskOptions = {
-  timeoutS: number;
+  timeoutS: HumanDuration;
 };
 
 // @public
