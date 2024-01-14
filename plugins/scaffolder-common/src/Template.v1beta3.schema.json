@@ -139,24 +139,6 @@
                 }
               ]
             },
-            "presentation": {
-              "type": "object",
-              "description": "A way to redefine the labels for actionable buttons.",
-              "properties": {
-                "backButtonText": {
-                  "type": "string",
-                  "description": "A button which return the user to one step back."
-                },
-                "createButtonText": {
-                  "type": "string",
-                  "description": "A button which start the execution of the template."
-                },
-                "reviewButtonText": {
-                  "type": "string",
-                  "description": "A button which open the review step to verify the input prior to start the execution."
-                }
-              }
-            },
             "EXPERIMENTAL_recovery": {
               "type": "object",
               "description": "A task recovery section.",
