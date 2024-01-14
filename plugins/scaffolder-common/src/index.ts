@@ -32,4 +32,5 @@ export type {
   TemplateEntityStepV1beta3,
   TemplateParametersV1beta3,
   TemplatePermissionsV1beta3,
+  TemplateRecoveryV1beta3,
 } from './TemplateEntityV1beta3';

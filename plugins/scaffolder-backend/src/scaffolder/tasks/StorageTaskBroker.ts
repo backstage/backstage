@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import { JsonObject, Observable } from '@backstage/types';
@@ -28,6 +29,7 @@ import {
   TaskContext,
   TaskStore,
 } from './types';
+import { readDuration } from './helper';
 
 /**
  * TaskManager
@@ -160,6 +162,7 @@ export class StorageTaskBroker implements TaskBroker {
   constructor(
     private readonly storage: TaskStore,
     private readonly logger: Logger,
+    private readonly config?: Config,
   ) {}
 
   async list(options?: {
@@ -200,6 +203,32 @@ export class StorageTaskBroker implements TaskBroker {
         }
       },
     });
+  }
+
+  public async recoverTasks(): Promise<boolean> {
+    const enabled =
+      (this.config &&
+        this.config.getOptionalBoolean(
+          'scaffolder.EXPERIMENTAL_recoverTasks',
+        )) ??
+      false;
+
+    if (enabled) {
+      const recoveredTaskIds =
+        (await this.storage.recoverTasks?.({
+          timeoutS: readDuration(
+            this.config,
+            'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
+            {
+              seconds: 30,
+            },
+          ),
+        })) ?? [];
+      recoveredTaskIds.forEach(() => {
+        this.signalDispatch();
+      });
+    }
+    return enabled;
   }
 
   /**

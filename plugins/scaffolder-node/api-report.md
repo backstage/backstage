@@ -238,6 +238,8 @@ export interface TaskBroker {
     tasks: SerializedTask[];
   }>;
   // (undocumented)
+  recoverTasks?(): Promise<boolean>;
+  // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
 
@@ -279,7 +281,7 @@ export interface TaskContext {
 }
 
 // @public
-export type TaskEventType = 'completion' | 'log' | 'cancelled';
+export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 
 // @public
 export type TaskSecrets = Record<string, string> & {
