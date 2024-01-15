@@ -93,7 +93,7 @@ Imagine you have a plugin with the ID `'search'`, and the plugin provides a page
 const customSearchPage = createPageExtension({
   namespace: 'search',
   // Omitting name since it is the index plugin page
-  defaultPath: 'search',
+  defaultPath: '/search',
   loader: () => Promise.resolve(<div>My custom search page</div>),
 });
 ```
