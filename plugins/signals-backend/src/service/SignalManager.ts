@@ -15,24 +15,11 @@
  */
 import { EventBroker, EventParams } from '@backstage/plugin-events-node';
 import { SignalPayload } from '@backstage/plugin-signals-node';
-import { RawData, WebSocket, WebSocketServer } from 'ws';
-import { IncomingMessage } from 'http';
+import { RawData, WebSocket } from 'ws';
 import { v4 as uuid } from 'uuid';
 import { JsonObject } from '@backstage/types';
-import {
-  BackstageIdentityResponse,
-  IdentityApi,
-  IdentityApiGetIdentityRequest,
-} from '@backstage/plugin-auth-node';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Duplex } from 'stream';
-
-/** @internal */
-export type ConnectionUpgradeOptions = {
-  request: IncomingMessage;
-  socket: Duplex;
-  head: Buffer;
-};
 
 /**
  * @internal
@@ -52,7 +39,6 @@ export type SignalManagerOptions = {
   // TODO: Remove optional when events-backend can offer this service
   eventBroker?: EventBroker;
   logger: LoggerService;
-  identity: IdentityApi;
 };
 
 /** @internal */
@@ -63,24 +49,13 @@ export class SignalManager {
   >();
   private eventBroker?: EventBroker;
   private logger: LoggerService;
-  private identity: IdentityApi;
-  private server: WebSocketServer;
 
   static create(options: SignalManagerOptions) {
     return new SignalManager(options);
   }
 
   private constructor(options: SignalManagerOptions) {
-    ({
-      eventBroker: this.eventBroker,
-      logger: this.logger,
-      identity: this.identity,
-    } = options);
-
-    this.server = new WebSocketServer({
-      noServer: true,
-      clientTracking: false,
-    });
+    ({ eventBroker: this.eventBroker, logger: this.logger } = options);
 
     this.eventBroker?.subscribe({
       supportsEventTopics: () => ['signals'],
@@ -89,37 +64,7 @@ export class SignalManager {
     });
   }
 
-  /**
-   * Handles request upgrade to websocket and adds the connection to internal
-   * list for publish/subscribe functionality
-   * @param req - Request
-   */
-  async handleUpgrade(options: ConnectionUpgradeOptions) {
-    const { request, socket, head } = options;
-    let identity: BackstageIdentityResponse | undefined = undefined;
-
-    // Authentication token is passed in Sec-WebSocket-Protocol header as there
-    // is no other way to pass the token with plain websockets
-    const token = request.headers['sec-websocket-protocol'];
-    if (token) {
-      identity = await this.identity.getIdentity({
-        request: {
-          headers: { authorization: token },
-        },
-      } as IdentityApiGetIdentityRequest);
-    }
-
-    this.server.handleUpgrade(
-      request,
-      socket,
-      head,
-      (ws: WebSocket, __: IncomingMessage) => {
-        this.addConnection(ws, identity);
-      },
-    );
-  }
-
-  private addConnection(ws: WebSocket, identity?: BackstageIdentityResponse) {
+  addConnection(ws: WebSocket, identity?: BackstageIdentityResponse) {
     const id = uuid();
 
     const conn = {
@@ -207,7 +152,11 @@ export class SignalManager {
         return;
       }
 
-      conn.ws.send(jsonMessage);
+      conn.ws.send(jsonMessage, err => {
+        if (err) {
+          this.logger.error(`Failed to send message to ${conn.id}: ${err}`);
+        }
+      });
     });
   }
 }

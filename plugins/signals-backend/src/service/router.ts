@@ -18,10 +18,15 @@ import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import * as https from 'https';
-import http from 'http';
+import http, { IncomingMessage } from 'http';
 import { SignalManager } from './SignalManager';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import {
+  BackstageIdentityResponse,
+  IdentityApi,
+  IdentityApiGetIdentityRequest,
+} from '@backstage/plugin-auth-node';
 import { EventBroker } from '@backstage/plugin-events-node';
+import { WebSocket, WebSocketServer } from 'ws';
 
 /** @public */
 export interface RouterOptions {
@@ -34,13 +39,23 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
+  const { logger, identity } = options;
   const manager = SignalManager.create(options);
-  let subscribed = false;
+  let subscribedToUpgradeRequests = false;
 
-  const upgradeMiddleware = (req: Request, _: Response, next: NextFunction) => {
+  const webSocketServer = new WebSocketServer({
+    noServer: true,
+    clientTracking: false,
+  });
+
+  const upgradeMiddleware = async (
+    req: Request,
+    _: Response,
+    next: NextFunction,
+  ) => {
     const server: https.Server | http.Server = (req.socket as any)?.server;
     if (
+      subscribedToUpgradeRequests ||
       !server ||
       !req.headers ||
       req.headers.upgrade === undefined ||
@@ -50,15 +65,35 @@ export async function createRouter(
       return;
     }
 
-    if (!subscribed) {
-      subscribed = true;
-      server.on('upgrade', async (request, socket, head) => {
-        // TODO: Find a way to make this more generic
-        if (request.url === '/api/signals') {
-          await manager.handleUpgrade({ request, socket, head });
-        }
-      });
-    }
+    subscribedToUpgradeRequests = true;
+    server.on('upgrade', async (request, socket, head) => {
+      // TODO: Find a way to make this more generic
+      if (request.url !== '/api/signals') {
+        return;
+      }
+
+      let userIdentity: BackstageIdentityResponse | undefined = undefined;
+
+      // Authentication token is passed in Sec-WebSocket-Protocol header as there
+      // is no other way to pass the token with plain websockets
+      const token = req.headers['sec-websocket-protocol'];
+      if (token) {
+        userIdentity = await identity.getIdentity({
+          request: {
+            headers: { authorization: token },
+          },
+        } as IdentityApiGetIdentityRequest);
+      }
+
+      webSocketServer.handleUpgrade(
+        request,
+        socket,
+        head,
+        (ws: WebSocket, __: IncomingMessage) => {
+          manager.addConnection(ws, userIdentity);
+        },
+      );
+    });
   };
 
   const router = Router();
