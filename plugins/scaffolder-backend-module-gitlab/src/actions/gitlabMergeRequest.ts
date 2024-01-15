@@ -19,12 +19,12 @@ import {
   parseRepoUrl,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Gitlab } from '@gitbeaker/node';
 import { Types } from '@gitbeaker/core';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-common';
+import { createGitlabApi } from './helpers';
 
 /**
  * Create a new action that creates a gitlab merge request.
@@ -158,33 +158,16 @@ export const createPublishGitlabMergeRequestAction = (options: {
         targetPath,
         sourcePath,
         title,
-        token: providedToken,
+        token,
       } = ctx.input;
 
-      const { host, owner, repo, project } = parseRepoUrl(
-        repoUrl,
-        integrations,
-      );
+      const { owner, repo, project } = parseRepoUrl(repoUrl, integrations);
       const repoID = project ? project : `${owner}/${repo}`;
 
-      const integrationConfig = integrations.gitlab.byHost(host);
-
-      if (!integrationConfig) {
-        throw new InputError(
-          `No matching integration configuration for host ${host}, please check your integrations config`,
-        );
-      }
-
-      if (!integrationConfig.config.token && !providedToken) {
-        throw new InputError(`No token available for host ${host}`);
-      }
-
-      const token = providedToken ?? integrationConfig.config.token!;
-      const tokenType = providedToken ? 'oauthToken' : 'token';
-
-      const api = new Gitlab({
-        host: integrationConfig.config.baseUrl,
-        [tokenType]: token,
+      const api = createGitlabApi({
+        integrations,
+        token,
+        repoUrl,
       });
 
       let assigneeId = undefined;

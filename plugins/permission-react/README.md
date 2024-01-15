@@ -1,5 +1,3 @@
-# permission
+# @backstage/plugin-permission-react
 
-**NOTE: THIS PACKAGE IS EXPERIMENTAL!**
-
-Components and hooks to help implement permissions in Backstage frontend plugins. For more information, see the [authorization PRFC](https://github.com/backstage/backstage/pull/7761).
+Components and hooks to help implement permissions in Backstage frontend plugins. For more information, see the [permissions documentation on Backstage.io](https://backstage.io/docs/permissions/overview).

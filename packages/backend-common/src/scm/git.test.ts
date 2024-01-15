@@ -63,6 +63,22 @@ describe('Git', () => {
     });
   });
 
+  describe('remove', () => {
+    it('should call isomorphic-git remove with the correct arguments', async () => {
+      const git = Git.fromAuth({});
+      const dir = 'mockdirectory';
+      const filepath = 'mockfile/path';
+
+      await git.remove({ dir, filepath });
+
+      expect(isomorphic.remove).toHaveBeenCalledWith({
+        fs,
+        dir,
+        filepath,
+      });
+    });
+  });
+
   describe('deleteRemote', () => {
     it('should call isomorphic-git with the correct arguments', async () => {
       const git = Git.fromAuth({});

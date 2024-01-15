@@ -204,7 +204,10 @@ module.exports = {
           {
             items: [
               {
-                html: '<a href="/"><h2 class="footerLogo"></h2></a>',
+                html: `
+                <a href="/" aria-label="Backstage Home">
+                  <div class="footerLogo"></div>
+                </a>`,
               },
             ],
           },

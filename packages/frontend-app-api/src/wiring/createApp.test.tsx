@@ -194,7 +194,7 @@ describe('createApp', () => {
           extensions: [
             createExtension({
               namespace: 'app',
-              name: 'router',
+              name: 'root',
               attachTo: { id: 'app', input: 'root' },
               disabled: true,
               output: {},
@@ -244,7 +244,7 @@ describe('createApp', () => {
     expect(String(tree.root)).toMatchInlineSnapshot(`
       "<app out=[core.reactElement]>
         root [
-          <app/router out=[core.reactElement]>
+          <app/root out=[core.reactElement]>
             children [
               <app/layout out=[core.reactElement]>
                 content [
@@ -259,7 +259,7 @@ describe('createApp', () => {
                 ]
               </app/layout>
             ]
-          </app/router>
+          </app/root>
         ]
         components [
           <component:core.components.progress out=[core.component.component] />

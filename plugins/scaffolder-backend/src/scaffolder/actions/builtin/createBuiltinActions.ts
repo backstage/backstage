@@ -60,6 +60,7 @@ import {
   createPublishBitbucketCloudAction,
   createPublishBitbucketServerAction,
   createPublishBitbucketServerPullRequestAction,
+  createBitbucketPipelinesRunAction,
 } from '@backstage/plugin-scaffolder-backend-module-bitbucket';
 
 import {
@@ -69,6 +70,7 @@ import {
 
 import {
   createPublishGitlabAction,
+  createGitlabRepoPushAction,
   createPublishGitlabMergeRequestAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
@@ -165,6 +167,9 @@ export const createBuiltinActions = (
     createPublishGitlabMergeRequestAction({
       integrations,
     }),
+    createGitlabRepoPushAction({
+      integrations,
+    }),
     createPublishBitbucketAction({
       integrations,
       config,
@@ -222,6 +227,9 @@ export const createBuiltinActions = (
     createGithubAutolinksAction({
       integrations,
       githubCredentialsProvider,
+    }),
+    createBitbucketPipelinesRunAction({
+      integrations,
     }),
   ];
 

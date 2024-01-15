@@ -1,5 +1,24 @@
 # @backstage/plugin-azure-sites
 
+## 0.1.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
+## 0.1.18-next.1
+
+### Patch Changes
+
+- a31f688: Show Azure site tags in `EntityAzureSitesOverviewWidget`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/plugin-catalog-react@1.9.3-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-azure-sites-common@0.1.1
+
 ## 0.1.18-next.0
 
 ### Patch Changes

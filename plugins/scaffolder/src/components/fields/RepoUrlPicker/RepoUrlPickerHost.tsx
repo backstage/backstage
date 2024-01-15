@@ -72,7 +72,7 @@ export const RepoUrlPickerHost = (props: {
       >
         <Select
           native
-          disabled={hosts?.length === 1 ?? false}
+          disabled={hosts?.length === 1}
           label="Host"
           onChange={s => onChange(String(Array.isArray(s) ? s[0] : s))}
           selected={host}

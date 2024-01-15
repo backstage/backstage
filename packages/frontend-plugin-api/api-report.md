@@ -67,6 +67,7 @@ import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -180,7 +181,7 @@ export type AnyRouteRefParams =
 
 // @public (undocumented)
 export type AnyRoutes = {
-  [name in string]: RouteRef;
+  [name in string]: RouteRef | SubRouteRef;
 };
 
 export { ApiFactory };
@@ -390,6 +391,61 @@ export { createApiFactory };
 
 export { createApiRef };
 
+// @public
+export function createAppRootElementExtension<
+  TConfig extends {},
+  TInputs extends AnyExtensionInputMap,
+>(options: {
+  namespace?: string;
+  name?: string;
+  attachTo?: {
+    id: string;
+    input: string;
+  };
+  configSchema?: PortableSchema<TConfig>;
+  disabled?: boolean;
+  inputs?: TInputs;
+  element:
+    | JSX_2.Element
+    | ((options: {
+        inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+        config: TConfig;
+      }) => JSX_2.Element);
+}): ExtensionDefinition<TConfig>;
+
+// @public
+export function createAppRootWrapperExtension<
+  TConfig extends {},
+  TInputs extends AnyExtensionInputMap,
+>(options: {
+  namespace?: string;
+  name?: string;
+  attachTo?: {
+    id: string;
+    input: string;
+  };
+  configSchema?: PortableSchema<TConfig>;
+  disabled?: boolean;
+  inputs?: TInputs;
+  Component: ComponentType<
+    PropsWithChildren<{
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+      config: TConfig;
+    }>
+  >;
+}): ExtensionDefinition<TConfig>;
+
+// @public (undocumented)
+export namespace createAppRootWrapperExtension {
+  const // (undocumented)
+    componentDataRef: ConfigurableExtensionDataRef<
+      React_2.ComponentType<{
+        children?: React_2.ReactNode;
+      }>,
+      {}
+    >;
+}
+
 // @public (undocumented)
 export function createComponentExtension<
   TProps extends {},
@@ -427,6 +483,11 @@ export namespace createComponentExtension {
       {}
     >;
 }
+
+// @public (undocumented)
+export function createComponentRef<T extends {} = {}>(options: {
+  id: string;
+}): ComponentRef<T>;
 
 // @public (undocumented)
 export function createExtension<

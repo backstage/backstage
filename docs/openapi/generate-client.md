@@ -1,3 +1,9 @@
+---
+id: generate-client
+title: Generate a client from your OpenAPI spec
+description: Documentation on how to create a client for a given OpenAPI spec
+---
+
 ## How to generate a client with `repo-tools schema openapi generate-client`?
 
 ### Prerequisites

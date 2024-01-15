@@ -33,6 +33,7 @@ function makeExt(
     id,
     attachTo: { id: attachId, input: 'default' },
     disabled: status === 'disabled',
+    toString: expect.any(Function),
   } as Extension<unknown>;
 }
 

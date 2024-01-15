@@ -15,7 +15,7 @@ app:
     - entity-card:catalog/links:
         config:
           filter: kind:component has:links
-
+    - entity-card:linguist/languages
     # Entity page content
     - entity-content:techdocs
 

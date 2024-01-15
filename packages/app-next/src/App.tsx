@@ -32,7 +32,7 @@ import {
   createExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
-import appVisualizerPlugin from '@backstage/plugin-visualizer';
+import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
 import { homePage } from './HomePage';
 import { convertLegacyApp } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
@@ -50,6 +50,8 @@ import {
 } from '@backstage/integration-react';
 import { createSignInPageExtension } from '@backstage/frontend-plugin-api';
 import { SignInPage } from '@backstage/core-components';
+
+import linguistPlugin from '@backstage/plugin-linguist/alpha';
 
 /*
 
@@ -125,6 +127,7 @@ const app = createApp({
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
+    linguistPlugin,
     ...collectedLegacyPlugins,
     createExtensionOverrides({
       extensions: [
