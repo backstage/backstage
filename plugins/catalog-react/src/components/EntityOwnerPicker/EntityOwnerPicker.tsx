@@ -48,6 +48,12 @@ export type CatalogReactEntityOwnerPickerClassKey = 'input';
 const useStyles = makeStyles(
   {
     input: {},
+    fullWidth: { width: '100%' },
+    boxLabel: {
+      width: '100%',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+    },
   },
   {
     name: 'CatalogReactEntityOwnerPicker',
@@ -56,13 +62,7 @@ const useStyles = makeStyles(
 
 const FixedWidthFormControlLabel = withStyles(
   _theme => ({
-    root: {
-      width: '100%',
-    },
     label: {
-      root: {
-        width: '100%',
-      },
       width: '100%',
     },
   }),
@@ -182,9 +182,9 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
               humanizeEntityRef(entity, { defaultKind: entity.kind }),
             );
             return (
-              <Box style={{ width: '100%' }}>
+              <Box className={classes.fullWidth}>
                 <FixedWidthFormControlLabel
-                  style={{ width: '100%' }}
+                  className={classes.fullWidth}
                   control={
                     <Checkbox
                       icon={icon}
@@ -202,13 +202,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
                           <PersonIcon fontSize="small" />
                         )}
                         &nbsp;
-                        <Box
-                          style={{
-                            width: '100%',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                          }}
-                        >
+                        <Box className={classes.boxLabel}>
                           <Typography noWrap>{humanizedName}</Typography>
                         </Box>
                       </Box>
