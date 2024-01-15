@@ -22,8 +22,7 @@ If you want to override an app extension, you will need to create a new extensio
 
 In this example below, we are going to create custom extensions for the app light and dark themes:
 
-```tsx
-// packages/app/src/themes.ts
+```tsx title="packages/app/src/themes.ts"
 import {
   createThemeExtension,
   createExtensionOverrides
