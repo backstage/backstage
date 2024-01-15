@@ -40,6 +40,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import GroupIcon from '@material-ui/icons/Group';
 import { humanizeEntity, humanizeEntityRef } from '../EntityRefLink/humanize';
 import { useFetchEntities } from './useFetchEntities';
+import { withStyles } from '@material-ui/core/styles';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -52,6 +53,21 @@ const useStyles = makeStyles(
     name: 'CatalogReactEntityOwnerPicker',
   },
 );
+
+const FixedWidthFormControlLabel = withStyles(
+  _theme => ({
+    root: {
+      width: '100%',
+    },
+    label: {
+      root: {
+        width: '100%',
+      },
+      width: '100%',
+    },
+  }),
+  { name: 'FixedWidthFormControlLabel' },
+)(FormControlLabel);
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -154,7 +170,6 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
                 if (typeof e !== 'string') {
                   cache.setEntity(e);
                 }
-
                 return entityRef;
               }),
             );
@@ -167,37 +182,40 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
               humanizeEntityRef(entity, { defaultKind: entity.kind }),
             );
             return (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    icon={icon}
-                    checkedIcon={checkedIcon}
-                    checked={selected}
-                  />
-                }
-                onClick={event => event.preventDefault()}
-                label={
-                  <Tooltip title={humanizedName}>
-                    <Box display="flex" flexWrap="wrap" alignItems="center">
-                      {isGroup ? (
-                        <GroupIcon fontSize="small" />
-                      ) : (
-                        <PersonIcon fontSize="small" />
-                      )}
-                      &nbsp;
-                      <Box
-                        style={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          width: '11rem',
-                        }}
-                      >
-                        <Typography noWrap>{humanizedName}</Typography>
+              <Box style={{ width: '100%' }}>
+                <FixedWidthFormControlLabel
+                  style={{ width: '100%' }}
+                  control={
+                    <Checkbox
+                      icon={icon}
+                      checkedIcon={checkedIcon}
+                      checked={selected}
+                    />
+                  }
+                  onClick={event => event.preventDefault()}
+                  label={
+                    <Tooltip title={humanizedName}>
+                      <Box display="flex" alignItems="center">
+                        {isGroup ? (
+                          <GroupIcon fontSize="small" />
+                        ) : (
+                          <PersonIcon fontSize="small" />
+                        )}
+                        &nbsp;
+                        <Box
+                          style={{
+                            width: '100%',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <Typography noWrap>{humanizedName}</Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  </Tooltip>
-                }
-              />
+                    </Tooltip>
+                  }
+                />
+              </Box>
             );
           }}
           size="small"
