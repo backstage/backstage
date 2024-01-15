@@ -80,10 +80,10 @@ export type EntityOwnerPickerProps = {
   mode?: 'owners-only' | 'all';
 };
 
-function WrappedOption(props: { entity: Entity; isSelected: boolean }) {
+function RenderOptionLabel(props: { entity: Entity; isSelected: boolean }) {
   const classes = useStyles();
   const isGroup = props.entity.kind.toLocaleLowerCase('en-US') === 'group';
-  const { primaryTitle } = useEntityPresentation(props.entity);
+  const { primaryTitle: title } = useEntityPresentation(props.entity);
   return (
     <Box className={classes.fullWidth}>
       <FixedWidthFormControlLabel
@@ -97,7 +97,7 @@ function WrappedOption(props: { entity: Entity; isSelected: boolean }) {
         }
         onClick={event => event.preventDefault()}
         label={
-          <Tooltip title={primaryTitle}>
+          <Tooltip title={title}>
             <Box display="flex" alignItems="center">
               {isGroup ? (
                 <GroupIcon fontSize="small" />
@@ -106,7 +106,7 @@ function WrappedOption(props: { entity: Entity; isSelected: boolean }) {
               )}
               &nbsp;
               <Box className={classes.boxLabel}>
-                <Typography noWrap>{primaryTitle}</Typography>
+                <Typography noWrap>{title}</Typography>
               </Box>
             </Box>
           </Tooltip>
@@ -213,7 +213,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
           }}
           filterOptions={x => x}
           renderOption={(entity, { selected }) => {
-            return <WrappedOption entity={entity} isSelected={selected} />;
+            return <RenderOptionLabel entity={entity} isSelected={selected} />;
           }}
           size="small"
           popupIcon={<ExpandMoreIcon data-testid="owner-picker-expand" />}
