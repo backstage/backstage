@@ -20,6 +20,7 @@ import {
   GithubIntegrationConfig,
   readGithubIntegrationConfigs,
 } from './config';
+import { ConsumedResponse } from '@backstage/errors';
 
 /**
  * A GitHub based integration.
@@ -66,7 +67,7 @@ export class GithubIntegration implements ScmIntegration {
     return replaceGithubUrlType(url, 'edit');
   }
 
-  isRateLimited(response: Response): boolean {
+  isRateLimited(response: ConsumedResponse): boolean {
     return (
       response.status === 429 ||
       (response.status === 403 &&
