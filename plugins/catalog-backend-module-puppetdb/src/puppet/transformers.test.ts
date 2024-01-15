@@ -72,7 +72,7 @@ describe('defaultResourceTransformer', () => {
           [ANNOTATION_PUPPET_CERTNAME]: 'node1',
         },
         description: 'ipaddress1',
-        tags: ['linux'],
+        tags: ['linux', 'unchanged'],
       },
       spec: {
         type: 'virtual-machine',
