@@ -149,10 +149,7 @@ export class GithubUrlReader implements UrlReader {
     // GitHub returns a 403 response with a couple of headers indicating rate
     // limit status. See more in the GitHub docs:
     // https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
-    if (
-      response.status === 403 &&
-      response.headers.get('X-RateLimit-Remaining') === '0'
-    ) {
+    if (this.integration.isRateLimited(response)) {
       message += ' (rate limit exceeded)';
     }
 
@@ -350,10 +347,18 @@ export class GithubUrlReader implements UrlReader {
     const response = await fetch(urlAsString, init);
 
     if (!response.ok) {
-      const message = `Request failed for ${urlAsString}, ${response.status} ${response.statusText}`;
+      let message = `Request failed for ${urlAsString}, ${response.status} ${response.statusText}`;
       if (response.status === 404) {
         throw new NotFoundError(message);
       }
+
+      // GitHub returns a 403 response with a couple of headers indicating rate
+      // limit status. See more in the GitHub docs:
+      // https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
+      if (this.integration.isRateLimited(response)) {
+        message += ' (rate limit exceeded)';
+      }
+
       throw new Error(message);
     }
 

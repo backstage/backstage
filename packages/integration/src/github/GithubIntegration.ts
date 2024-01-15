@@ -65,6 +65,14 @@ export class GithubIntegration implements ScmIntegration {
   resolveEditUrl(url: string): string {
     return replaceGithubUrlType(url, 'edit');
   }
+
+  isRateLimited(response: Response): boolean {
+    return (
+      response.status === 429 ||
+      (response.status === 403 &&
+        response.headers.get('x-ratelimit-remaining') === '0')
+    );
+  }
 }
 
 /**
