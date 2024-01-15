@@ -3,6 +3,7 @@ kind: Group
 metadata:
   name: acme-corp
   description: The acme-corp organization
+  title: some test title
   links:
     - url: http://www.acme.com/
       title: Website
@@ -11,7 +12,7 @@ metadata:
 spec:
   type: organization
   profile:
-    displayName: ACME Corp
+    # displayName: ACME Corp
     email: info@example.com
     picture: https://api.dicebear.com/7.x/identicon/svg?seed=Maggie&flip=true&backgroundColor=ffdfbf
   children: [infrastructure]
