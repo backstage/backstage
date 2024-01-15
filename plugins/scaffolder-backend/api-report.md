@@ -9,7 +9,6 @@ import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucke
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
-import { EventBroker } from '@backstage/plugin-events-node';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
 import express from 'express';
@@ -438,8 +437,6 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;
-  // (undocumented)
-  eventBroker?: EventBroker;
   // (undocumented)
   identity?: IdentityApi;
   // (undocumented)

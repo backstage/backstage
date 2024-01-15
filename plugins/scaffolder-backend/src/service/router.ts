@@ -77,7 +77,6 @@ import {
   PermissionRule,
 } from '@backstage/plugin-permission-node';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
-import { EventBroker } from '@backstage/plugin-events-node';
 import { Duration } from 'luxon';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 
@@ -130,7 +129,6 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
   scheduler?: PluginTaskScheduler;
-  eventBroker?: EventBroker;
   actions?: TemplateAction<any, any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
