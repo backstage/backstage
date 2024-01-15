@@ -4,6 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { ConsumedResponse } from '@backstage/errors';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 
 // @public
@@ -566,6 +567,8 @@ export class GithubIntegration implements ScmIntegration {
   get config(): GithubIntegrationConfig;
   // (undocumented)
   static factory: ScmIntegrationsFactory<GithubIntegration>;
+  // (undocumented)
+  isRateLimited(response: ConsumedResponse): boolean;
   // (undocumented)
   resolveEditUrl(url: string): string;
   // (undocumented)
