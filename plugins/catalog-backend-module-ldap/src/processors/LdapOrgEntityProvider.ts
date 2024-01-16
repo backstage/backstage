@@ -192,6 +192,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
         logger,
       },
     );
+
     const { markCommitComplete } = markReadComplete({ users, groups });
 
     await this.connection.applyMutation({

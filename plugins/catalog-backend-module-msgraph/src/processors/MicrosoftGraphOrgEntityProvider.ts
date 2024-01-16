@@ -323,6 +323,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
         logger: logger,
       },
     );
+
     const { markCommitComplete } = markReadComplete({ users, groups });
 
     await this.connection.applyMutation({
