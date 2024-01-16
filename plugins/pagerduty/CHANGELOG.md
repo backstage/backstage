@@ -1,5 +1,13 @@
 # @backstage/plugin-pagerduty
 
+## 0.7.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-home-react@0.1.7-next.2
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
 ## 0.7.1-next.1
 
 ### Patch Changes
