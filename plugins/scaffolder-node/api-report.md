@@ -46,12 +46,7 @@ export type ActionContext<
 };
 
 // @public (undocumented)
-export function addFiles({
-  dir,
-  filepath,
-  auth,
-  logger,
-}: {
+export function addFiles(options: {
   dir: string;
   filepath: string;
   auth:
@@ -66,15 +61,7 @@ export function addFiles({
 }): Promise<void>;
 
 // @public (undocumented)
-export function cloneRepo({
-  url,
-  dir,
-  auth,
-  logger,
-  ref,
-  depth,
-  noCheckout,
-}: {
+export function cloneRepo(options: {
   url: string;
   dir: string;
   auth:
@@ -92,16 +79,7 @@ export function cloneRepo({
 }): Promise<void>;
 
 // @public (undocumented)
-export function commitAndPushBranch({
-  dir,
-  auth,
-  logger,
-  commitMessage,
-  gitAuthorInfo,
-  branch,
-  remoteRef,
-  remote,
-}: {
+export function commitAndPushBranch(options: {
   dir: string;
   auth:
     | {
@@ -148,12 +126,7 @@ export function commitAndPushRepo(input: {
 }>;
 
 // @public (undocumented)
-export function createBranch({
-  dir,
-  auth,
-  logger,
-  ref,
-}: {
+export function createBranch(options: {
   dir: string;
   ref: string;
   auth:
