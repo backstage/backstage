@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.1.26
+
+### Patch Changes
+
+- 4ebf99b: Add support for the new backend system.
+
+  A new backend module for the catalog backend
+  was added and exported as `default`.
+
+  You can use it with the new backend system like
+
+  ```ts title="packages/backend/src/index.ts"
+  backend.add(import('@backstage/plugin-catalog-backend-module-openapi'));
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-catalog-node@1.6.1
+  - @backstage/plugin-catalog-backend@1.16.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.20
+
 ## 0.1.26-next.2
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/frontend-test-utils
 
+## 0.1.1
+
+### Patch Changes
+
+- f7566f9: Updates to reflect the `app/router` extension having been renamed to `app/root`.
+- 516fd3e: Updated README to reflect release status
+- c97fa1c: Added `elements`, `wrappers`, and `router` inputs to `app/root`, that let you add things to the root of the React tree above the layout. You can use the `createAppRootElementExtension`, `createAppRootWrapperExtension`, and `createRouterExtension` extension creator, respectively, to conveniently create such extensions. These are all optional, and if you do not supply a router a default one will be used (`BrowserRouter` in regular runs, `MemoryRouter` in tests/CI).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/frontend-app-api@0.5.0
+  - @backstage/test-utils@1.4.7
+  - @backstage/types@1.1.1
+
 ## 0.1.1-next.2
 
 ### Patch Changes

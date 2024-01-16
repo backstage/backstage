@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.4.5
+
+### Patch Changes
+
+- 178b8d8: Updated Template.v1beta3.schema.json, added a missing "presentation" field
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+
 ## 1.4.4
 
 ### Patch Changes

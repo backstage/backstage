@@ -1,5 +1,14 @@
 # @backstage/plugin-explore-react
 
+## 0.0.35
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-explore-common@0.0.2
+
 ## 0.0.35-next.1
 
 ### Patch Changes
