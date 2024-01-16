@@ -138,6 +138,7 @@ describe('createPlugin', () => {
     const plugin = createPlugin({ id: 'test' });
 
     expect(plugin).toBeDefined();
+    expect(String(plugin)).toBe('Plugin{id=test}');
   });
 
   it('should create a plugin with extension instances', async () => {
@@ -150,7 +151,7 @@ describe('createPlugin', () => {
     await renderWithEffects(
       createTestAppRoot({
         features: [plugin],
-        config: { app: { extensions: [{ 'app/router': false }] } },
+        config: { app: { extensions: [{ 'app/root': false }] } },
       }),
     );
 
@@ -172,7 +173,7 @@ describe('createPlugin', () => {
         config: {
           app: {
             extensions: [
-              { 'app/router': false },
+              { 'app/root': false },
               {
                 'test/2': {
                   config: { name: 'extension-2-renamed' },
@@ -210,7 +211,7 @@ describe('createPlugin', () => {
         features: [plugin],
         config: {
           app: {
-            extensions: [{ 'app/router': false }],
+            extensions: [{ 'app/root': false }],
           },
         },
       }),

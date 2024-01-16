@@ -13,29 +13,33 @@ body:
       required: true
     attributes:
       label: '📜 Description'
-      description: 'A clear and concise description of what the bug is. It bugs out when ...'
+      description: 'A clear and concise description of what the bug is.'
+      placeholder: 'It bugs out when ...'
   - type: textarea
     id: expected-behavior
     validations:
       required: true
     attributes:
       label: '👍 Expected behavior'
-      description: 'What did you think should happen? It should ...'
+      description: 'What did you think should happen?'
+      placeholder: 'It should ...'
   - type: textarea
     id: actual-behavior
     validations:
       required: true
     attributes:
       label: '👎 Actual Behavior with Screenshots'
-      description: 'What did actually happen? Add screenshots, if applicable. It actually ...'
+      description: 'What did actually happen? Add screenshots, if applicable.'
+      placeholder: 'It actually ...'
   - type: textarea
     id: steps-to-reproduce
     validations:
       required: true
     attributes:
       label: '👟 Reproduction steps'
-      description: 'How do you trigger this bug? Please walk us through it step by step. Provide a link to a live example, or an unambiguous set of steps to reproduce this bug. Include code or configuration to reproduce, if relevant.'
-      placeholder: "\n
+      description: 'How do you trigger this bug? Please walk us through it step by step.'
+      placeholder:
+        "Provide a link to a live example, or an unambiguous set of steps to reproduce this bug. Include code or configuration to reproduce, if relevant.\n
         1. Go to '...'\n
         2. Click on '....'\n
         3. Scroll down to '....'"
@@ -45,14 +49,17 @@ body:
       required: false
     attributes:
       label: '📃 Provide the context for the Bug.'
-      description: 'How has this issue affected you? What are you trying to accomplish? Providing context (e.g. links to configuration settings, stack trace or log data) helps us come up with a solution that is most useful in the real world.'
+      description: 'How has this issue affected you? What are you trying to accomplish?'
+      placeholder: 'Providing context (e.g. links to configuration settings, stack trace or log data) helps us come up with a solution that is most useful in the real world.'
   - type: textarea
     id: environment
     validations:
       required: false
     attributes:
       label: '🖥️ Your Environment'
-      description: 'Always provide output of `yarn backstage-cli info`; provide browser information when applicable. Include as many relevant details about the environment you experienced the bug in.'
+      description: 'Provide Browser Information
+        Provide Output of `yarn backstage-cli info`'
+      placeholder: 'Include as many relevant details about the environment you experienced the bug in.'
   - type: checkboxes
     id: no-duplicate-issues
     attributes:

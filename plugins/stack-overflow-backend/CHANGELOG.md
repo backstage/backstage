@@ -1,5 +1,20 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.2.13
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.2
+
+## 0.2.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.2-next.2
+
 ## 0.2.13-next.1
 
 ### Patch Changes

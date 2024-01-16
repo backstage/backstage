@@ -1,5 +1,33 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.9.2
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/catalog-client@1.5.2
+  - @backstage/plugin-search-backend-module-techdocs@0.1.13
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-techdocs-node@1.11.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-catalog-common@1.0.20
+
+## 1.9.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-search-backend-module-techdocs@0.1.13-next.2
+  - @backstage/plugin-techdocs-node@1.11.1-next.2
+
 ## 1.9.2-next.1
 
 ### Patch Changes

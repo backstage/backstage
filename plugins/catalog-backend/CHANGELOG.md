@@ -1,5 +1,44 @@
 # @backstage/plugin-catalog-backend
 
+## 1.16.1
+
+### Patch Changes
+
+- c3249d6: Parse the URL using a different method rather than `git-url-parse` to support wildcards for URLs which are not VCS providers
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/catalog-client@1.5.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.13
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/backend-openapi-utils@0.1.2
+  - @backstage/plugin-catalog-node@1.6.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-node@0.7.20
+  - @backstage/backend-tasks@0.5.14
+  - @backstage/plugin-auth-node@0.4.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.20
+  - @backstage/plugin-events-node@0.2.18
+
+## 1.16.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/backend-openapi-utils@0.1.2-next.2
+  - @backstage/plugin-auth-node@0.4.3-next.2
+  - @backstage/plugin-catalog-node@1.6.1-next.2
+  - @backstage/plugin-events-node@0.2.18-next.2
+  - @backstage/plugin-permission-node@0.7.20-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.13-next.2
+  - @backstage/backend-tasks@0.5.14-next.2
+
 ## 1.16.1-next.1
 
 ### Patch Changes

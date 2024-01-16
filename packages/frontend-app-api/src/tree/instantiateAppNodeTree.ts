@@ -46,26 +46,32 @@ function resolveInputData(
 }
 
 function resolveInputs(
+  id: string,
   inputMap: AnyExtensionInputMap,
   attachments: ReadonlyMap<string, AppNode[]>,
 ): ResolvedExtensionInputs<AnyExtensionInputMap> {
   const undeclaredAttachments = Array.from(attachments.entries()).filter(
     ([inputName]) => inputMap[inputName] === undefined,
   );
-  // TODO: Make this a warning rather than an error
-  if (undeclaredAttachments.length > 0) {
-    throw new Error(
-      `received undeclared input${
-        undeclaredAttachments.length > 1 ? 's' : ''
-      } ${undeclaredAttachments
-        .map(
-          ([k, exts]) =>
-            `'${k}' from extension${exts.length > 1 ? 's' : ''} '${exts
-              .map(e => e.spec.id)
-              .join("', '")}'`,
-        )
-        .join(' and ')}`,
-    );
+
+  if (process.env.NODE_ENV !== 'production') {
+    const inputNames = Object.keys(inputMap);
+
+    for (const [name, nodes] of undeclaredAttachments) {
+      const pl = nodes.length > 1;
+      // eslint-disable-next-line no-console
+      console.warn(
+        [
+          `The extension${pl ? 's' : ''} '${nodes
+            .map(n => n.spec.id)
+            .join("', '")}' ${pl ? 'are' : 'is'}`,
+          `attached to the input '${name}' of the extension '${id}', but it`,
+          inputNames.length === 0
+            ? 'has no inputs'
+            : `has no such input (candidates are '${inputNames.join("', '")}')`,
+        ].join(' '),
+      );
+    }
   }
 
   return mapValues(inputMap, (input, inputName) => {
@@ -129,7 +135,7 @@ export function createAppNodeInstance(options: {
     const namedOutputs = internalExtension.factory({
       node,
       config: parsedConfig,
-      inputs: resolveInputs(internalExtension.inputs, attachments),
+      inputs: resolveInputs(id, internalExtension.inputs, attachments),
     });
 
     for (const [name, output] of Object.entries(namedOutputs)) {

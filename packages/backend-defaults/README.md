@@ -1,7 +1,5 @@
 # @backstage/backend-defaults
 
-**This package is EXPERIMENTAL, we recommend against using it for production deployments**
-
 This package provides the default implementations and setup for a standard Backstage backend app.
 
 ## Installation
