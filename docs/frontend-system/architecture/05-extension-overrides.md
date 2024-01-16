@@ -79,7 +79,7 @@ If the plugin you want to change is internal to your company or you just want to
 
 Note that it can still be a good idea to split your overrides out into separate packages in large projects. But it's up to you to decide how to group the extensions into extension overrides.
 
-## Overriding Plugin Extensions
+## Override Plugin Extensions
 
 To override an extension that is provided by a plugin, you need to provide a new extension that has the same ID as the existing extension. That is, all kind, namespace, and name options must match the extension you want to replace. This means that you typically need to provide an explicit `namespace` when overriding extensions from a plugin.
 
