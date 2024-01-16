@@ -22,6 +22,21 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
   },
+  "dependencies": {
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@backstage/version-bridge": "workspace:^",
+    "@material-ui/core": "^4.12.4",
+    "@types/react": "^16.13.1 || ^17.0.0",
+    "lodash": "^4.17.21",
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.21.4"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
@@ -33,20 +48,5 @@
   },
   "files": [
     "dist"
-  ],
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
-  "dependencies": {
-    "@backstage/core-components": "workspace:^",
-    "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/types": "workspace:^",
-    "@backstage/version-bridge": "workspace:^",
-    "@material-ui/core": "^4.12.4",
-    "@types/react": "^16.13.1 || ^17.0.0",
-    "lodash": "^4.17.21",
-    "zod": "^3.22.4",
-    "zod-to-json-schema": "^3.21.4"
-  }
+  ]
 }

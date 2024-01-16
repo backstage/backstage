@@ -3344,6 +3344,40 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service":
+  version: 0.0.0-use.local
+  resolution: "@backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service"
+  dependencies:
+    "@backstage/backend-app-api": "workspace:^"
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/config-loader": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-events-backend": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/express": ^4.17.6
+    chokidar: ^3.5.3
+    express: ^4.17.1
+    lodash: ^4.17.21
+    wait-for-expect: ^3.0.2
+    winston: ^3.2.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/backend-openapi-utils@workspace:^, @backstage/backend-openapi-utils@workspace:packages/backend-openapi-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-openapi-utils@workspace:packages/backend-openapi-utils"
@@ -3377,40 +3411,6 @@ __metadata:
     "@types/express": ^4.17.6
     express: ^4.17.1
     knex: ^3.0.0
-  languageName: unknown
-  linkType: soft
-
-"@backstage/backend-plugin-manager@workspace:packages/backend-plugin-manager":
-  version: 0.0.0-use.local
-  resolution: "@backstage/backend-plugin-manager@workspace:packages/backend-plugin-manager"
-  dependencies:
-    "@backstage/backend-app-api": "workspace:^"
-    "@backstage/backend-common": "workspace:^"
-    "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-tasks": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@backstage/cli-common": "workspace:^"
-    "@backstage/cli-node": "workspace:^"
-    "@backstage/config": "workspace:^"
-    "@backstage/config-loader": "workspace:^"
-    "@backstage/errors": "workspace:^"
-    "@backstage/plugin-auth-node": "workspace:^"
-    "@backstage/plugin-catalog-backend": "workspace:^"
-    "@backstage/plugin-events-backend": "workspace:^"
-    "@backstage/plugin-events-node": "workspace:^"
-    "@backstage/plugin-permission-common": "workspace:^"
-    "@backstage/plugin-permission-node": "workspace:^"
-    "@backstage/plugin-scaffolder-node": "workspace:^"
-    "@backstage/plugin-search-backend-node": "workspace:^"
-    "@backstage/plugin-search-common": "workspace:^"
-    "@backstage/types": "workspace:^"
-    "@types/express": ^4.17.6
-    chokidar: ^3.5.3
-    express: ^4.17.1
-    lodash: ^4.17.21
-    wait-for-expect: ^3.0.2
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -4641,6 +4641,24 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@types/express": ^4.17.6
     express: ^4.17.1
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-app-visualizer@workspace:^, @backstage/plugin-app-visualizer@workspace:plugins/app-visualizer":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-app-visualizer@workspace:plugins/app-visualizer"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -9557,24 +9575,6 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
-  peerDependencies:
-    react: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  languageName: unknown
-  linkType: soft
-
-"@backstage/plugin-visualizer@workspace:^, @backstage/plugin-visualizer@workspace:plugins/visualizer":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-visualizer@workspace:plugins/visualizer"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    "@backstage/core-components": "workspace:^"
-    "@backstage/core-plugin-api": "workspace:^"
-    "@backstage/frontend-plugin-api": "workspace:^"
-    "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
-    "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -26384,6 +26384,7 @@ __metadata:
     "@backstage/plugin-airbrake": "workspace:^"
     "@backstage/plugin-apache-airflow": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"
+    "@backstage/plugin-app-visualizer": "workspace:^"
     "@backstage/plugin-azure-devops": "workspace:^"
     "@backstage/plugin-azure-sites": "workspace:^"
     "@backstage/plugin-badges": "workspace:^"
@@ -26437,7 +26438,6 @@ __metadata:
     "@backstage/plugin-techdocs-react": "workspace:^"
     "@backstage/plugin-todo": "workspace:^"
     "@backstage/plugin-user-settings": "workspace:^"
-    "@backstage/plugin-visualizer": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@circleci/backstage-plugin": ^0.1.1

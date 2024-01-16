@@ -1,10 +1,6 @@
-# @backstage/backend-plugin-manager
+# @backstage/backend-dynamic-feature-service
 
-This package adds experimental support for **dynamic backend plugins**, according to the content of the proposal in [RFC 18390](https://github.com/backstage/backstage/issues/18390)
-
-## Status
-
-**This package is EXPERIMENTAL, and is subject to change according to the discussions and conclusions that happen around the RFC mentioned above.**
+This package adds experimental support for **dynamic backend features (plugins and modules)**, according to the content of the proposal in [RFC 18390](https://github.com/backstage/backstage/issues/18390)
 
 ## Testing the backend dynamic plugins feature
 
@@ -12,9 +8,9 @@ In order to test the dynamic backend plugins feature provided by this package, e
 
 ## How it works
 
-The backend plugin manager is a service that scans a configured root directory (`dynamicPlugins.rootDirectory` in the app config) for dynamic plugin packages, and loads them dynamically.
+The dynamic plugin manager is a service that scans a configured root directory (`dynamicPlugins.rootDirectory` in the app config) for dynamic plugin packages, and loads them dynamically.
 
-In the `backend-next` application, it can be enabled by adding the `backend-plugin-manager` as a dependency in the `package.json` and the following lines in the `src/index.ts` file:
+In the `backend-next` application, it can be enabled by adding the `backend-dynamic-feature-service` as a dependency in the `package.json` and the following lines in the `src/index.ts` file:
 
 ```ts
 const backend = createBackend();
@@ -36,9 +32,9 @@ Points 2 and 3 can be done by the `export-dynamic-plugin` CLI command used to pe
 
 ### About the `export-dynamic-plugin` command
 
-The `export-dynamic-plugin` CLI command, used the dynamic plugin examples provided in the [showcase repository](https://github.com/janus-idp/dynamic-backend-plugins-showcase), is part of a `@backstage/cli` fork (`@dfatwork-pkgs/backstage-cli@0.22.9-next.6`), and can be used to help packaging the dynamic plugins according to the constraints mentioned above, in order to allow straightforward testing of the dynamic plugins feature.
+The `export-dynamic-plugin` CLI command, used the dynamic plugin examples provided in the [showcase repository](https://github.com/janus-idp/dynamic-backend-plugins-showcase), is part of the `@janus-idp/cli` package, and can be used to help packaging the dynamic plugins according to the constraints mentioned above, in order to allow straightforward testing of the dynamic plugins feature.
 
-However the `backend-plugin-manager` experimental package does **not** depend on the use of this additional CLI command, and in future steps of this backend dynamic plugin work, the use of such a dedicated command might not even be necessary.
+However the `backend-dynamic-feature-service` experimental package does **not** depend on the use of this additional CLI command, and in future steps of this backend dynamic plugin work, the use of such a dedicated command might not even be necessary.
 
 ### About the support of the legacy backend system
 
@@ -49,4 +45,4 @@ This is why the API related to the old backend is already marked as deprecated.
 
 ### Future work
 
-The current implementation of the backend plugin manager is a first step towards the final implementation of the dynamic backend plugins feature, which will be completed / simplified in future steps, as the status of the backstage codebase allows it.
+The current implementation of the dynamic plugin manager is a first step towards the final implementation of the dynamic features loading, which will be completed / simplified in future steps, as the status of the backstage codebase allows it.

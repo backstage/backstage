@@ -25,7 +25,10 @@ describe('<DefaultTemplateOutputs />', () => {
   it('should render template output', async () => {
     const output = {
       links: [{ title: 'Link 1', url: 'https://backstage.io/' }],
-      text: [{ title: 'Text 1', content: 'Hello, **world**!' }],
+      text: [
+        { title: 'Text 1', content: 'Hello, **world**!' },
+        { title: 'Text 2', content: 'Hello, **mars**!' },
+      ],
     };
 
     const { getByRole } = await renderInTestApp(
@@ -35,6 +38,11 @@ describe('<DefaultTemplateOutputs />', () => {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
       },
+    );
+
+    // first text output default visible
+    expect(getByRole('heading', { level: 2 }).innerHTML).toBe(
+      output.text[0].title,
     );
 
     // test link outputs
