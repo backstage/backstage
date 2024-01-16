@@ -53,6 +53,7 @@ Additional steps for the main line release
   - Add the release note file as [`/docs/releases/vx.y.0.md`](./releases)
   - Add an entry to [`/microsite/sidebar.json`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.json) for the release note
   - Update the navigation bar item in [`/microsite/docusaurus.config.js`](https://github.com/backstage/backstage/blob/master/microsite/docusaurus.config.js) to point to the new release note
+  - Finally copy the content, without the metadata header, into the description of the [`Version Packages` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages)
 
 Once the release has been published edit the newly created release in the [GitHub repository](https://github.com/backstage/backstage/releases) and replace the text content with the release notes.
 
