@@ -4,9 +4,9 @@ A backend for [Vault](https://www.vaultproject.io/), this plugin adds a few rout
 
 ## Introduction
 
-Vault is an identity-based secrets and encryption management system. A secret is anything that you want to tightly control access to, such as API encryption keys, passwords, or certificates. Vault provides encryption services that are gated by authentication and authorization methods.
+Vault is an identity-based secret and encryption management solution. A secret is anything you wish to restrict access to, such as API encryption keys, passwords, or certificates. Vault offers encryption services that are protected by authentication and authorization protocols.
 
-This plugins allows you to view all the available secrets at a certain location, and redirect you to the official UI so backstage can rely on LIST permissions, which is safer.
+This plugin enables you to examine all accessible secrets in a certain place and redirects you to the official UI, allowing backstage to rely on LIST permissions, which is safer.
 
 ## Getting started
 
