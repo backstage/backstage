@@ -138,15 +138,7 @@ export async function commitAndPushRepo(input: {
 /**
  * @public
  */
-export async function cloneRepo({
-  url,
-  dir,
-  auth,
-  logger,
-  ref,
-  depth,
-  noCheckout,
-}: {
+export async function cloneRepo(options: {
   url: string;
   dir: string;
   // For use cases where token has to be used with Basic Auth
@@ -158,6 +150,8 @@ export async function cloneRepo({
   depth?: number | undefined;
   noCheckout?: boolean | undefined;
 }): Promise<void> {
+  const { url, dir, auth, logger, ref, depth, noCheckout } = options;
+
   const git = Git.fromAuth({
     ...auth,
     logger,
@@ -169,12 +163,7 @@ export async function cloneRepo({
 /**
  * @public
  */
-export async function createBranch({
-  dir,
-  auth,
-  logger,
-  ref,
-}: {
+export async function createBranch(options: {
   dir: string;
   ref: string;
   // For use cases where token has to be used with Basic Auth
@@ -183,6 +172,7 @@ export async function createBranch({
   auth: { username: string; password: string } | { token: string };
   logger?: Logger | undefined;
 }): Promise<void> {
+  const { dir, ref, auth, logger } = options;
   const git = Git.fromAuth({
     ...auth,
     logger,
@@ -194,12 +184,7 @@ export async function createBranch({
 /**
  * @public
  */
-export async function addFiles({
-  dir,
-  filepath,
-  auth,
-  logger,
-}: {
+export async function addFiles(options: {
   dir: string;
   filepath: string;
   // For use cases where token has to be used with Basic Auth
@@ -208,6 +193,7 @@ export async function addFiles({
   auth: { username: string; password: string } | { token: string };
   logger?: Logger | undefined;
 }): Promise<void> {
+  const { dir, filepath, auth, logger } = options;
   const git = Git.fromAuth({
     ...auth,
     logger,
@@ -219,16 +205,7 @@ export async function addFiles({
 /**
  * @public
  */
-export async function commitAndPushBranch({
-  dir,
-  auth,
-  logger,
-  commitMessage,
-  gitAuthorInfo,
-  branch = 'master',
-  remoteRef,
-  remote = 'origin',
-}: {
+export async function commitAndPushBranch(options: {
   dir: string;
   // For use cases where token has to be used with Basic Auth
   // it has to be provided as password together with a username
@@ -241,6 +218,16 @@ export async function commitAndPushBranch({
   remoteRef?: string;
   remote?: string;
 }): Promise<{ commitHash: string }> {
+  const {
+    dir,
+    auth,
+    logger,
+    commitMessage,
+    gitAuthorInfo,
+    branch = 'master',
+    remoteRef,
+    remote = 'origin',
+  } = options;
   const git = Git.fromAuth({
     ...auth,
     logger,
