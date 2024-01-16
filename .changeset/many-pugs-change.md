@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes-backend': patch
 ---
 
-Change add some lines in the script GkeClusterLocator.ts, the implementation consist in adding a piece of code starts in 58 adding some config.getString() method to find out if the app-config.yaml kubernetes config includes the type of Auth as googleServiceAccount
+The purpose of this patch is to add a new login method which is `googleServiceAccount` configuring the kubernetes properties in the app-config.yaml file with authProvider key
