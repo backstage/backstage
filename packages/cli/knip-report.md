@@ -60,10 +60,17 @@
 | @vitejs/plugin-react       | package.json |
 | vite-plugin-node-polyfills | package.json |
 
-## Unlisted dependencies (11)
+## Unlisted dependencies (18)
 
 | Name                              | Location                                                                                         |
 |:----------------------------------|:-------------------------------------------------------------------------------------------------|
+| rollup-plugin-polyfill-node       | dist/cjs/build-5e63d42c.cjs.js                                                                   |
+| rollup-plugin-polyfill-node       | dist/cjs/buildWorkspace-47e09dac.cjs.js                                                          |
+| rollup-plugin-polyfill-node       | dist/cjs/createDistWorkspace-09d75851.cjs.js                                                     |
+| rollup-plugin-polyfill-node       | dist/cjs/index-4cb89d61.cjs.js                                                                   |
+| react/package.json                | dist/cjs/index-7e560cd7.cjs.js                                                                   |
+| react-dom/client                  | dist/cjs/packageDetection-6cb79707.cjs.js                                                        |
+| prettier                          | dist/cjs/packageLintConfigs-eceb588c.cjs.js                                                      |
 | prettier                          | src/commands/migrate/packageLintConfigs.ts                                                       |
 | react-dom/client                  | src/lib/bundler/hasReactDomClient.ts                                                             |
 | react/package.json                | src/lib/bundler/server.ts                                                                        |

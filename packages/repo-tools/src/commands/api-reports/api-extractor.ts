@@ -30,6 +30,8 @@ import {
   ExtractorLogLevel,
   ExtractorMessage,
 } from '@microsoft/api-extractor';
+import os from 'os';
+import pLimit from 'p-limit';
 import { Program } from 'typescript';
 import {
   DocBlockTag,
@@ -1454,55 +1456,60 @@ export async function runKnipReports({
   isLocalBuild,
 }: KnipExtractionOptions) {
   const knipDir = cliPaths.resolveTargetRoot('./node_modules/knip/bin/');
+  const limiter = pLimit(os.cpus().length);
 
-  for (const packageDir of packageDirs) {
-    console.log(`## Processing ${packageDir}`);
-    const fullDir = cliPaths.resolveTargetRoot(packageDir);
-    const reportPath = resolvePath(fullDir, 'knip-report.md');
-    const run = createBinRunner(fullDir, '');
+  await Promise.all(
+    packageDirs.map(packageDir =>
+      limiter(async () => {
+        console.log(`## Processing ${packageDir}`);
+        const fullDir = cliPaths.resolveTargetRoot(packageDir);
+        const reportPath = resolvePath(fullDir, 'knip-report.md');
+        const run = createBinRunner(fullDir, '');
 
-    const report = await run(
-      `${knipDir}/knip.js`,
-      `--directory ${fullDir}`, // Run in the package directory
-      '--no-exit-code', // Removing this will end the process in case there are findings by knip
-      '--no-progress', // Remove unnecessary debugging from output
-      // TODO: Add more checks when dependencies start to look ok, see https://knip.dev/reference/cli#--include
-      '--include dependencies,unlisted',
-      '--reporter markdown',
-    );
+        const report = await run(
+          `${knipDir}/knip.js`,
+          `--directory ${fullDir}`, // Run in the package directory
+          '--no-exit-code', // Removing this will end the process in case there are findings by knip
+          '--no-progress', // Remove unnecessary debugging from output
+          // TODO: Add more checks when dependencies start to look ok, see https://knip.dev/reference/cli#--include
+          '--include dependencies,unlisted',
+          '--reporter markdown',
+        );
 
-    const existingReport = await fs
-      .readFile(reportPath, 'utf8')
-      .catch(error => {
-        if (error.code === 'ENOENT') {
-          return undefined;
+        const existingReport = await fs
+          .readFile(reportPath, 'utf8')
+          .catch(error => {
+            if (error.code === 'ENOENT') {
+              return undefined;
+            }
+            throw error;
+          });
+
+        if (existingReport !== report) {
+          if (isLocalBuild) {
+            console.warn(`Knip report changed for ${packageDir}`);
+            await fs.writeFile(reportPath, report);
+          } else {
+            logApiReportInstructions();
+
+            if (existingReport) {
+              console.log('');
+              console.log(
+                `The conflicting file is ${relativePath(
+                  cliPaths.targetRoot,
+                  reportPath,
+                )}, expecting the following content:`,
+              );
+              console.log('');
+
+              console.log(report);
+
+              logApiReportInstructions();
+            }
+            throw new Error(`Knip report changed for ${packageDir}, `);
+          }
         }
-        throw error;
-      });
-
-    if (existingReport !== report) {
-      if (isLocalBuild) {
-        console.warn(`Knip report changed for ${packageDir}`);
-        await fs.writeFile(reportPath, report);
-      } else {
-        logApiReportInstructions();
-
-        if (existingReport) {
-          console.log('');
-          console.log(
-            `The conflicting file is ${relativePath(
-              cliPaths.targetRoot,
-              reportPath,
-            )}, expecting the following content:`,
-          );
-          console.log('');
-
-          console.log(report);
-
-          logApiReportInstructions();
-        }
-        throw new Error(`Knip report changed for ${packageDir}, `);
-      }
-    }
-  }
+      }),
+    ),
+  );
 }

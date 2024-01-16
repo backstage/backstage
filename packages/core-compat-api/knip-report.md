@@ -6,7 +6,7 @@
 |:------------------------|:-------------|
 | @backstage/core-app-api | package.json |
 
-## Unused devDependencies (8)
+## Unused devDependencies (9)
 
 | Name                                  | Location     |
 |:--------------------------------------|:-------------|
@@ -15,6 +15,7 @@
 | @testing-library/jest-dom             | package.json |
 | @backstage/plugin-catalog             | package.json |
 | @backstage/plugin-puppetdb            | package.json |
+| @backstage/frontend-app-api           | package.json |
 | @backstage/plugin-stackstorm          | package.json |
 | @backstage/frontend-test-utils        | package.json |
 | @oriflame/backstage-plugin-score-card | package.json |
