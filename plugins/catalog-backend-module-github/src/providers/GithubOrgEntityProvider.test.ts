@@ -30,13 +30,51 @@ jest.mock('@octokit/graphql');
 
 describe('GithubOrgEntityProvider', () => {
   describe('read', () => {
+    let mockClient;
+    let entityProviderConnection;
+    let entityProvider;
+
+    const setupMocks = response => {
+      mockClient = jest.fn().mockImplementation(response);
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+    };
+
+    beforeEach(() => {
+      entityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      const logger = getVoidLogger();
+      const gitHubConfig = {
+        host: 'https://github.com',
+      };
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+      });
+
+      const githubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      entityProvider = new GithubOrgEntityProvider({
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+      });
+
+      entityProvider.connect(entityProviderConnection);
+    });
+
     afterEach(() => jest.resetAllMocks());
 
     it('should read org data and apply mutation', async () => {
-      const mockClient = jest.fn();
-
-      mockClient
-        .mockResolvedValueOnce({
+      setupMocks(() =>
+        Promise.resolve({
           organization: {
             membersWithRole: {
               pageInfo: { hasNextPage: false },
@@ -50,10 +88,6 @@ describe('GithubOrgEntityProvider', () => {
                 },
               ],
             },
-          },
-        })
-        .mockResolvedValueOnce({
-          organization: {
             teams: {
               pageInfo: { hasNextPage: false },
               nodes: [
@@ -76,38 +110,8 @@ describe('GithubOrgEntityProvider', () => {
               ],
             },
           },
-        });
-
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
-
-      const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
-      };
-
-      const logger = getVoidLogger();
-      const gitHubConfig: GithubIntegrationConfig = {
-        host: 'https://github.com',
-      };
-
-      const mockGetCredentials = jest.fn().mockReturnValue({
-        headers: { token: 'blah' },
-        type: 'app',
-      });
-
-      const githubCredentialsProvider: GithubCredentialsProvider = {
-        getCredentials: mockGetCredentials,
-      };
-
-      const entityProvider = new GithubOrgEntityProvider({
-        id: 'my-id',
-        githubCredentialsProvider,
-        orgUrl: 'https://github.com/backstage',
-        gitHubConfig,
-        logger,
-      });
-
-      entityProvider.connect(entityProviderConnection);
+        }),
+      );
 
       await entityProvider.read();
 
@@ -172,50 +176,11 @@ describe('GithubOrgEntityProvider', () => {
       });
     });
 
-    // New test case for handling request failure
     it('should not apply mutation if a request fails', async () => {
-      const mockClient = jest.fn();
+      setupMocks(() => Promise.reject(new Error('Network error')));
 
-      // Simulate a request failure
-      mockClient.mockRejectedValue(new Error('Network error'));
+      await expect(entityProvider.read()).rejects.toThrow('Network error');
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
-
-      const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
-      };
-
-      const logger = getVoidLogger();
-
-      const gitHubConfig: GithubIntegrationConfig = {
-        host: 'https://github.com',
-      };
-
-      const mockGetCredentials = jest.fn().mockReturnValue({
-        headers: { token: 'blah' },
-        type: 'app',
-      });
-
-      const githubCredentialsProvider: GithubCredentialsProvider = {
-        getCredentials: mockGetCredentials,
-      };
-
-      const entityProvider = new GithubOrgEntityProvider({
-        id: 'my-id',
-        githubCredentialsProvider,
-        orgUrl: 'https://github.com/backstage',
-        gitHubConfig,
-        logger,
-      });
-
-      entityProvider.connect(entityProviderConnection);
-
-      try {
-        await entityProvider.read();
-      } catch (e) {
-        // Failed successfuly!
-      }
       expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
     });
   });
