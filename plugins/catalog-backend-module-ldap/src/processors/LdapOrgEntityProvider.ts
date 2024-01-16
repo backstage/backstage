@@ -192,21 +192,17 @@ export class LdapOrgEntityProvider implements EntityProvider {
         logger,
       },
     );
-    if (users.length > 0 || groups.length > 0) {
-      const { markCommitComplete } = markReadComplete({ users, groups });
+    const { markCommitComplete } = markReadComplete({ users, groups });
 
-      await this.connection.applyMutation({
-        type: 'full',
-        entities: [...users, ...groups].map(entity => ({
-          locationKey: `ldap-org-provider:${this.options.id}`,
-          entity: withLocations(this.options.id, entity),
-        })),
-      });
+    await this.connection.applyMutation({
+      type: 'full',
+      entities: [...users, ...groups].map(entity => ({
+        locationKey: `ldap-org-provider:${this.options.id}`,
+        entity: withLocations(this.options.id, entity),
+      })),
+    });
 
-      markCommitComplete();
-    } else {
-      logger.info('No users or teams to process');
-    }
+    markCommitComplete();
   }
 
   private schedule(schedule: LdapOrgEntityProviderOptions['schedule']) {
