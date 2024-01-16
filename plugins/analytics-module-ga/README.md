@@ -1,8 +1,6 @@
 # Analytics Module: Google Analytics
 
-This plugin provides an opinionated implementation of the Backstage Analytics
-API for Google Analytics. Once installed and configured, analytics events will
-be sent to GA as your users navigate and use your Backstage instance.
+This plugin offers an opinionated implementation of the Backstage Analytics API for Google Analytics. After installation and configuration, GA will receive analytics events from your Backstage instance as people explore and utilise it.
 
 This plugin contains no other functionality.
 
