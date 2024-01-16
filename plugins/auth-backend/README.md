@@ -168,7 +168,7 @@ To try out SAML, you can use the mock identity provider:
 
 ## Configuring Token Expiration in App Config
 
-The expiration feature is not enabled unless you set this in your config file:
+If you need to change Backstage token expiration from the default value of one hour, set the following in your config file:
 
 ```
 auth:
