@@ -168,7 +168,7 @@ function checkDurationLimit(fn: () => void, timeLimit: number): boolean {
   return durationInMs <= timeLimit;
 }
 
-export async function checkAvailabilityGiteaRepository(
+async function checkAvailabilityGiteaRepository(
   integrationConfig: GiteaIntegrationConfig,
   options: {
     owner?: string;
