@@ -133,8 +133,6 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ## Local Development
 
-Start this plugin in standalone mode by running `yarn start` inside the plugin directory. This method of serving the plugin provides quicker
-iteration speed and a faster startup and hot reloads. It is only meant for local development, and the setup for it can
-be found inside the [/dev](./dev) directory.
+Start this plugin in standalone mode by executing 'yarn start' from within the plugin directory. This technique of providing the plugin speeds up iteration, setup, and hot reloading. The configuration is exclusively for local development and may be found in the [/dev] (./dev) directory.
 
 > A mock API will be used to run it in standalone. If you want to talk to the real API [follow the instructions to start up Airbrake Backend in standalone](../airbrake-backend/README.md#local-development).
