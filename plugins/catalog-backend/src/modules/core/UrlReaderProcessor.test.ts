@@ -238,6 +238,9 @@ describe('UrlReaderProcessor', () => {
       mockCache,
     );
 
-    expect(reader.search).toHaveReturned();
+    expect(reader.search).toHaveBeenCalledWith(
+      'https://storage.cloud.google.com/ah-backstage-poc-catalog/*',
+      { etag: undefined },
+    );
   });
 });
