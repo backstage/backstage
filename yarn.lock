@@ -8255,7 +8255,48 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab":
+"@backstage/plugin-scaffolder-backend-module-gerrit@workspace:^, @backstage/plugin-scaffolder-backend-module-gerrit@workspace:plugins/scaffolder-backend-module-gerrit":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-gerrit@workspace:plugins/scaffolder-backend-module-gerrit"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    yaml: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-scaffolder-backend-module-github@workspace:^, @backstage/plugin-scaffolder-backend-module-github@workspace:plugins/scaffolder-backend-module-github":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-github@workspace:plugins/scaffolder-backend-module-github"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@octokit/webhooks": ^10.0.0
+    "@types/libsodium-wrappers": ^0.7.10
+    fs-extra: 10.1.0
+    jest-when: ^3.1.0
+    jsonschema: ^1.2.6
+    libsodium-wrappers: ^0.7.11
+    octokit: ^3.0.0
+    octokit-plugin-create-pull-request: ^3.10.0
+    winston: ^3.2.1
+    yaml: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-scaffolder-backend-module-gitlab@workspace:^, @backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab"
   dependencies:
@@ -8270,7 +8311,6 @@ __metadata:
     "@gitbeaker/core": ^39.25.0
     "@gitbeaker/node": ^35.8.0
     "@gitbeaker/rest": ^39.25.0
-    luxon: ^3.4.4
     jest-date-mock: ^1.0.8
     luxon: ^3.4.4
     yaml: ^2.0.0
@@ -9923,6 +9963,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@changesets/get-github-info@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@changesets/get-github-info@npm:0.5.2"
+  dependencies:
+    dataloader: ^1.4.0
+    node-fetch: ^2.5.0
+  checksum: 067e07eeaecdbedbd1c715513c4aa6206a941bd1d3af292d067792808c6fa6644caad2b35fba614a44892559c031c234df8028f8d2abd4cb2682d48080ef5df3
+  languageName: node
+  linkType: hard
+
 "@changesets/get-release-plan@npm:^4.0.0":
   version: 4.0.0
   resolution: "@changesets/get-release-plan@npm:4.0.0"
@@ -10012,6 +10062,13 @@ __metadata:
   version: 4.1.0
   resolution: "@changesets/types@npm:4.1.0"
   checksum: 72c1f58044178ca867dd9349ecc4b7c233ce3781bb03b5b72a70c3166fbbab54a2f2cb19a81f96b4649ba004442c8734569fba238be4dd737fb4624a135c6098
+  languageName: node
+  linkType: hard
+
+"@changesets/types@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "@changesets/types@npm:5.2.1"
+  checksum: 527dc1aa41b040fe35bcd55f7d07bec710320b179b000c429723e25b87aac18be487daf5047d4fecf2781aad78f73abff111e76e411b652f7a2e812a464c69f2
   languageName: node
   linkType: hard
 
@@ -11078,7 +11135,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/core@npm:^35.6.0, @gitbeaker/core@npm:^35.8.0, @gitbeaker/core@npm:^35.8.1":
+"@gitbeaker/core@npm:^35.6.0, @gitbeaker/core@npm:^35.8.1":
   version: 35.8.1
   resolution: "@gitbeaker/core@npm:35.8.1"
   dependencies:
@@ -11092,14 +11149,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/core@npm:^39.25.0":
-  version: 39.25.0
-  resolution: "@gitbeaker/core@npm:39.25.0"
+"@gitbeaker/core@npm:^39.25.0, @gitbeaker/core@npm:^39.29.0":
+  version: 39.29.0
+  resolution: "@gitbeaker/core@npm:39.29.0"
   dependencies:
-    "@gitbeaker/requester-utils": ^39.25.0
+    "@gitbeaker/requester-utils": ^39.29.0
     qs: ^6.11.2
     xcase: ^2.0.1
-  checksum: 56ebe3c6ba1078c47a6cae0abcd5ae4fd928dc73c9eb7dc462894d497d6fa5373c0d09a7a7a0583097cffa641eeb0b28b1764d33a085a7b95f0115399240bc7e
+  checksum: 61eacb3980613eab0fdc64e12041ee138159fe52c4db629e99d4608acda82a0872a4b52db143a3ec64aa1c71e1c68b917d5b38cf28e3f88b3b7f4822bb83b67e
   languageName: node
   linkType: hard
 
@@ -11127,25 +11184,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/requester-utils@npm:^39.25.0":
-  version: 39.25.0
-  resolution: "@gitbeaker/requester-utils@npm:39.25.0"
+"@gitbeaker/requester-utils@npm:^39.29.0":
+  version: 39.29.0
+  resolution: "@gitbeaker/requester-utils@npm:39.29.0"
   dependencies:
     async-sema: ^3.1.1
     micromatch: ^4.0.5
     qs: ^6.11.2
     xcase: ^2.0.1
-  checksum: 1ca90f5ac705d5ef9df682b3051106326bc660427b9b2a88762992690981ce0b6bed4b22bc08af0ba97043766f9898605ba58ed6c1a08b6711af34032f013ed2
+  checksum: 484dff9f76597fe83f5aad09ac15330ef0d1f321503d152aaffa7aa73e4cd5a28665611ff8da8d59b5bdf6caee3053a4b512ab47e00bfe68cec8e3e1aa17ddc7
   languageName: node
   linkType: hard
 
-"@gitbeaker/rest@npm:^39.25.0":
-  version: 39.25.0
-  resolution: "@gitbeaker/rest@npm:39.25.0"
+"@gitbeaker/rest@npm:^39.22.0, @gitbeaker/rest@npm:^39.25.0":
+  version: 39.29.0
+  resolution: "@gitbeaker/rest@npm:39.29.0"
   dependencies:
-    "@gitbeaker/core": ^39.25.0
-    "@gitbeaker/requester-utils": ^39.25.0
-  checksum: 5732a34fe3f2fe0a048963baf90b237fde7a1be61fa327e2c7aa69266649394b5b48cd99a6c6abaf1cf8b32b84a293800af33eef49c011b252d6e061f7fe1af9
+    "@gitbeaker/core": ^39.29.0
+    "@gitbeaker/requester-utils": ^39.29.0
+  checksum: fcf6f987d55acf6fce6e1d419f33ace144dbc390996cd106470ae6318422ab9248b1e3707950321edc112581c8c2f352bd08cab8a996666355ce0417bc7b56c0
   languageName: node
   linkType: hard
 
@@ -24184,6 +24241,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dataloader@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "dataloader@npm:1.4.0"
+  checksum: e2c93d43afde68980efc0cd9ff48e9851116e27a9687f863e02b56d46f7e7868cc762cd6dcbaf4197e1ca850a03651510c165c2ae24b8e9843fd894002ad0e20
+  languageName: node
+  linkType: hard
+
 "dataloader@npm:^2.0.0, dataloader@npm:^2.2.2":
   version: 2.2.2
   resolution: "dataloader@npm:2.2.2"
@@ -34940,7 +35004,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.5, node-fetch@npm:^2.6.7":
+"node-fetch@npm:^2.5.0, node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.5, node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.9":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
