@@ -147,7 +147,7 @@ export type TaskStoreCreateTaskOptions = {
  * @public
  */
 export type TaskStoreRecoverTaskOptions = {
-  timeoutS: HumanDuration;
+  timeout: HumanDuration;
 };
 
 /**

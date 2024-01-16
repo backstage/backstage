@@ -482,7 +482,7 @@ export class DatabaseTaskStore implements TaskStore {
 
   async recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<string[]> {
     const taskIdsToRecover: string[] = [];
-    const timeoutS = Duration.fromObject(options.timeoutS).as('seconds');
+    const timeoutS = Duration.fromObject(options.timeout).as('seconds');
 
     await this.db.transaction(async tx => {
       let heartbeatInterval = this.db.raw(

@@ -590,7 +590,7 @@ export type TaskStoreListEventsOptions = {
 
 // @public
 export type TaskStoreRecoverTaskOptions = {
-  timeoutS: HumanDuration;
+  timeout: HumanDuration;
 };
 
 // @public

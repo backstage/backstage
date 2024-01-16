@@ -216,7 +216,7 @@ export class StorageTaskBroker implements TaskBroker {
     if (enabled) {
       const recoveredTaskIds =
         (await this.storage.recoverTasks?.({
-          timeoutS: readDuration(
+          timeout: readDuration(
             this.config,
             'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
             {
