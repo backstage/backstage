@@ -171,6 +171,53 @@ describe('GithubOrgEntityProvider', () => {
         type: 'full',
       });
     });
+
+    // New test case for handling request failure
+    it('should not apply mutation if a request fails', async () => {
+      const mockClient = jest.fn();
+
+      // Simulate a request failure
+      mockClient.mockRejectedValue(new Error('Network error'));
+
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      const logger = getVoidLogger();
+
+      const gitHubConfig: GithubIntegrationConfig = {
+        host: 'https://github.com',
+      };
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+      });
+
+      const githubCredentialsProvider: GithubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      const entityProvider = new GithubOrgEntityProvider({
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+      });
+
+      entityProvider.connect(entityProviderConnection);
+
+      try {
+        await entityProvider.read();
+      } catch (e) {
+        // Failed successfuly!
+      }
+      expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+    });
   });
 
   describe('withLocations', () => {
