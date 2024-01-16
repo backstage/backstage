@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-backend-dynamic-feature-service
+  title: '@backstage/backend-dynamic-feature-service'
+  description: Backstage backend service to handle dynamic features
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

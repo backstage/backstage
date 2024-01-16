@@ -259,6 +259,10 @@ describe('createApp', () => {
                 ]
               </app/layout>
             ]
+            elements [
+              <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
+              <app-root-element:app/alert-display out=[core.reactElement] />
+            ]
           </app/root>
         ]
         components [

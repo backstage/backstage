@@ -6,8 +6,11 @@
   },
   "scripts": {
     "dev": "concurrently 'yarn start' 'yarn start-backend'",
+    "dev:next": "concurrently 'yarn start:next' 'yarn start-backend:next'",
     "start": "yarn workspace example-app start",
     "start-backend": "yarn workspace example-backend start",
+    "start:next": "yarn workspace example-app-next start",
+    "start-backend:next": "yarn workspace example-backend-next start",
     "build:backend": "yarn workspace example-backend build",
     "build:all": "backstage-cli repo build --all",
     "build:api-reports": "yarn build:api-reports:only --tsc",
