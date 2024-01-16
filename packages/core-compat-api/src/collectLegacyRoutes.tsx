@@ -173,9 +173,8 @@ export function collectLegacyRoutes(
     (route: ReactNode) => {
       // TODO(freben): Handle feature flag and permissions framework wrapper elements
       if (!React.isValidElement(route) || route.type !== Route) {
-        return;
+        throw new Error('Invalid <Route /> element has been detected.');
       }
-
       const routeElement = route.props.element;
       const path: string | undefined = route.props.path;
       const plugin = getComponentData<LegacyBackstagePlugin>(
@@ -186,7 +185,12 @@ export function collectLegacyRoutes(
         routeElement,
         'core.mountPoint',
       );
-      if (!plugin || !path) {
+      if (path === undefined) {
+        throw new Error(
+          `<Route /> element with invalid path has been detected. Please make sure to pass the path's props`,
+        );
+      }
+      if (!plugin) {
         return;
       }
 

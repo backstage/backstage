@@ -279,4 +279,58 @@ describe('collectLegacyRoutes', () => {
       screen.findByText('plugins: test'),
     ).resolves.toBeInTheDocument();
   });
+
+  it('should throw if invalid Route has been detected', async () => {
+    const plugin = createPlugin({
+      id: 'test',
+    });
+    const routeRef = createRouteRef({ id: 'test' });
+    const Page = plugin.provide(
+      createRoutableExtension({
+        name: 'Test',
+        mountPoint: routeRef,
+        component: () =>
+          Promise.resolve(() => {
+            const app = useApp();
+            return <div>plugins: {app.getPlugins().map(p => p.getId())}</div>;
+          }),
+      }),
+    );
+
+    expect(() =>
+      collectLegacyRoutes(
+        <FlatRoutes>
+          <Route path="/" element={<Page />} />
+          <Route path="/" element={<Page />} />
+          <div />
+        </FlatRoutes>,
+      ),
+    ).toThrow(/Invalid <Route/);
+  });
+
+  it('should throw if <Route /> has no path', async () => {
+    const plugin = createPlugin({
+      id: 'test',
+    });
+    const routeRef = createRouteRef({ id: 'test' });
+    const Page = plugin.provide(
+      createRoutableExtension({
+        name: 'Test',
+        mountPoint: routeRef,
+        component: () =>
+          Promise.resolve(() => {
+            const app = useApp();
+            return <div>plugins: {app.getPlugins().map(p => p.getId())}</div>;
+          }),
+      }),
+    );
+
+    expect(() =>
+      collectLegacyRoutes(
+        <FlatRoutes>
+          <Route element={<Page />} />
+        </FlatRoutes>,
+      ),
+    ).toThrow(/<Route \/> element with invalid path/);
+  });
 });
