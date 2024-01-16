@@ -19,6 +19,9 @@ import {
   commitAndPushRepo,
   initRepoAndPush,
   commitAndPushBranch,
+  addFiles,
+  createBranch,
+  cloneRepo,
 } from './gitHelpers';
 
 jest.mock('@backstage/backend-common', () => ({
@@ -312,6 +315,198 @@ describe('commitAndPushRepo', () => {
   });
 });
 
+describe('cloneRepo', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('with minimal parameters', () => {
+    beforeEach(async () => {
+      await cloneRepo({
+        url: 'git@github.com:test/repo.git',
+        dir: '/tmp/repo/dir/',
+        auth: {
+          username: 'test-user',
+          password: 'test-password',
+        },
+      });
+    });
+
+    it('clone the repo', () => {
+      expect(mockedGit.clone).toHaveBeenCalledWith({
+        url: 'git@github.com:test/repo.git',
+        dir: '/tmp/repo/dir/',
+        ref: undefined,
+        depth: undefined,
+        noCheckout: undefined,
+      });
+    });
+  });
+
+  it('with token', async () => {
+    await cloneRepo({
+      url: 'git@github.com:test/repo.git',
+      dir: '/tmp/repo/dir/',
+      auth: {
+        token: 'test-token',
+      },
+    });
+
+    expect(mockedGit.clone).toHaveBeenCalledWith({
+      dir: '/tmp/repo/dir/',
+      url: 'git@github.com:test/repo.git',
+      ref: undefined,
+      depth: undefined,
+      noCheckout: undefined,
+    });
+  });
+
+  it('allows overriding the default branch', async () => {
+    await cloneRepo({
+      url: 'git@github.com:test/repo.git',
+      dir: '/tmp/repo/dir/',
+      ref: 'trunk',
+      auth: {
+        username: 'test-user',
+        password: 'test-password',
+      },
+    });
+
+    expect(mockedGit.clone).toHaveBeenCalledWith({
+      dir: '/tmp/repo/dir/',
+      url: 'git@github.com:test/repo.git',
+      ref: 'trunk',
+      depth: undefined,
+      noCheckout: undefined,
+    });
+  });
+
+  it('allows overriding the depth', async () => {
+    await cloneRepo({
+      url: 'git@github.com:test/repo.git',
+      dir: '/tmp/repo/dir/',
+      ref: 'trunk',
+      depth: 2,
+      auth: {
+        username: 'test-user',
+        password: 'test-password',
+      },
+    });
+
+    expect(mockedGit.clone).toHaveBeenCalledWith({
+      dir: '/tmp/repo/dir/',
+      url: 'git@github.com:test/repo.git',
+      ref: 'trunk',
+      depth: 2,
+      noCheckout: undefined,
+    });
+  });
+
+  it('allows overriding the noCheckout', async () => {
+    await cloneRepo({
+      url: 'git@github.com:test/repo.git',
+      dir: '/tmp/repo/dir/',
+      ref: 'trunk',
+      depth: 2,
+      noCheckout: true,
+      auth: {
+        username: 'test-user',
+        password: 'test-password',
+      },
+    });
+
+    expect(mockedGit.clone).toHaveBeenCalledWith({
+      dir: '/tmp/repo/dir/',
+      url: 'git@github.com:test/repo.git',
+      ref: 'trunk',
+      depth: 2,
+      noCheckout: true,
+    });
+  });
+});
+
+describe('createBranch', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('with minimal parameters', () => {
+    beforeEach(async () => {
+      await createBranch({
+        dir: '/tmp/repo/dir/',
+        ref: 'trunk',
+        auth: {
+          username: 'test-user',
+          password: 'test-password',
+        },
+      });
+    });
+
+    it('create the branch', () => {
+      expect(mockedGit.checkout).toHaveBeenCalledWith({
+        ref: 'trunk',
+        dir: '/tmp/repo/dir/',
+      });
+    });
+  });
+
+  it('with token', async () => {
+    await createBranch({
+      dir: '/tmp/repo/dir/',
+      ref: 'trunk',
+      auth: {
+        token: 'test-token',
+      },
+    });
+
+    expect(mockedGit.checkout).toHaveBeenCalledWith({
+      ref: 'trunk',
+      dir: '/tmp/repo/dir/',
+    });
+  });
+});
+
+describe('addFiles', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('with minimal parameters', () => {
+    beforeEach(async () => {
+      await addFiles({
+        dir: '/tmp/repo/dir/',
+        filepath: '.',
+        auth: {
+          username: 'test-user',
+          password: 'test-password',
+        },
+      });
+    });
+
+    it('add files', () => {
+      expect(mockedGit.add).toHaveBeenCalledWith({
+        filepath: '.',
+        dir: '/tmp/repo/dir/',
+      });
+    });
+  });
+
+  it('with token', async () => {
+    await addFiles({
+      dir: '/tmp/repo/dir/',
+      filepath: '.',
+      auth: {
+        token: 'test-token',
+      },
+    });
+
+    expect(mockedGit.add).toHaveBeenCalledWith({
+      filepath: '.',
+      dir: '/tmp/repo/dir/',
+    });
+  });
+});
+
 describe('commitAndPushBranch', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -320,53 +515,19 @@ describe('commitAndPushBranch', () => {
   describe('with minimal parameters', () => {
     beforeEach(async () => {
       await commitAndPushBranch({
-        tempDir: '/tmp/repo/dir/',
-        dir: '/test/repo/dir/',
-        remoteUrl: 'git@github.com:test/repo.git',
+        dir: '/tmp/repo/dir/',
         auth: {
           username: 'test-user',
           password: 'test-password',
         },
         commitMessage: 'commit message',
-        gitAuthorInfo: {
-          name: 'Scaffolder',
-          email: 'scaffolder@backstage.io',
-        },
-        logger: getVoidLogger(),
       });
     });
 
-    it('clone the repo', () => {
-      expect(mockedGit.clone).toHaveBeenCalledWith({
-        url: 'git@github.com:test/repo.git',
-        dir: '/tmp/repo/dir/',
-      });
-    });
-
-    it('fetch the branches', () => {
-      expect(mockedGit.fetch).toHaveBeenCalledWith({
-        dir: '/tmp/repo/dir/',
-      });
-    });
-
-    it('checkout the branch', () => {
-      expect(mockedGit.checkout).toHaveBeenCalledWith({
-        dir: '/tmp/repo/dir/',
-        ref: 'master',
-      });
-    });
-
-    it('stages all files in the repo', () => {
-      expect(mockedGit.add).toHaveBeenCalledWith({
-        dir: '/tmp/repo/dir/',
-        filepath: '.',
-      });
-    });
-
-    it('creates an commit', () => {
+    it('create commit', () => {
       expect(mockedGit.commit).toHaveBeenCalledWith({
-        dir: '/tmp/repo/dir/',
         message: 'commit message',
+        dir: '/tmp/repo/dir/',
         author: {
           name: 'Scaffolder',
           email: 'scaffolder@backstage.io',
@@ -389,58 +550,91 @@ describe('commitAndPushBranch', () => {
 
   it('with token', async () => {
     await commitAndPushBranch({
-      tempDir: '/tmp/repo/dir/',
-      dir: '/test/repo/dir/',
-      remoteUrl: 'git@github.com:test/repo.git',
+      dir: '/tmp/repo/dir/',
       auth: {
         token: 'test-token',
       },
       commitMessage: 'commit message',
+      gitAuthorInfo: {
+        name: 'gitCommitter',
+        email: 'gitCommitter@backstage.io',
+      },
       logger: getVoidLogger(),
     });
 
-    expect(mockedGit.clone).toHaveBeenCalledWith({
+    expect(mockedGit.commit).toHaveBeenCalledWith({
+      message: 'commit message',
       dir: '/tmp/repo/dir/',
-      url: 'git@github.com:test/repo.git',
+      author: {
+        name: 'gitCommitter',
+        email: 'gitCommitter@backstage.io',
+      },
+      committer: {
+        name: 'gitCommitter',
+        email: 'gitCommitter@backstage.io',
+      },
+    });
+
+    expect(mockedGit.push).toHaveBeenCalledWith({
+      dir: '/tmp/repo/dir/',
+      remote: 'origin',
+      remoteRef: 'refs/heads/master',
     });
   });
 
   it('allows overriding the default branch', async () => {
     await commitAndPushBranch({
-      tempDir: '/tmp/repo/dir/',
-      dir: '/test/repo/dir/',
-      branch: 'trunk',
-      remoteUrl: 'git@github.com:test/repo.git',
+      dir: '/tmp/repo/dir/',
       auth: {
         username: 'test-user',
         password: 'test-password',
       },
       commitMessage: 'commit message',
-      logger: getVoidLogger(),
+      branch: 'trunk',
     });
 
-    expect(mockedGit.checkout).toHaveBeenCalledWith({
+    expect(mockedGit.commit).toHaveBeenCalledWith({
+      message: 'commit message',
       dir: '/tmp/repo/dir/',
-      ref: 'trunk',
+      author: {
+        name: 'Scaffolder',
+        email: 'scaffolder@backstage.io',
+      },
+      committer: {
+        name: 'Scaffolder',
+        email: 'scaffolder@backstage.io',
+      },
+    });
+
+    expect(mockedGit.push).toHaveBeenCalledWith({
+      dir: '/tmp/repo/dir/',
+      remote: 'origin',
+      remoteRef: 'refs/heads/trunk',
     });
   });
 
   it('allows overriding the remoteRef', async () => {
     await commitAndPushBranch({
-      tempDir: '/tmp/repo/dir/',
-      dir: '/test/repo/dir/',
-      gitAuthorInfo: {
-        name: 'Custom Scaffolder Author',
-        email: 'scaffolder@example.org',
-      },
-      remoteUrl: 'git@github.com:test/repo.git',
+      dir: '/tmp/repo/dir/',
       auth: {
         username: 'test-user',
         password: 'test-password',
       },
-      remoteRef: 'ABC123',
       commitMessage: 'commit message',
-      logger: getVoidLogger(),
+      remoteRef: 'ABC123',
+    });
+
+    expect(mockedGit.commit).toHaveBeenCalledWith({
+      message: 'commit message',
+      dir: '/tmp/repo/dir/',
+      author: {
+        name: 'Scaffolder',
+        email: 'scaffolder@backstage.io',
+      },
+      committer: {
+        name: 'Scaffolder',
+        email: 'scaffolder@backstage.io',
+      },
     });
 
     expect(mockedGit.push).toHaveBeenCalledWith({

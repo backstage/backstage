@@ -16,7 +16,6 @@
 
 import { Git } from '@backstage/backend-common';
 import { Logger } from 'winston';
-import fs from 'fs-extra';
 
 /**
  * @public
@@ -139,48 +138,113 @@ export async function commitAndPushRepo(input: {
 /**
  * @public
  */
-export async function commitAndPushBranch({
-  tempDir,
+export async function cloneRepo({
+  url,
   dir,
-  remoteUrl,
+  auth,
+  logger,
+  ref,
+  depth,
+  noCheckout,
+}: {
+  url: string;
+  dir: string;
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
+  logger?: Logger | undefined;
+  ref?: string | undefined;
+  depth?: number | undefined;
+  noCheckout?: boolean | undefined;
+}): Promise<void> {
+  const git = Git.fromAuth({
+    ...auth,
+    logger,
+  });
+
+  await git.clone({ url, dir, ref, depth, noCheckout });
+}
+
+/**
+ * @public
+ */
+export async function createBranch({
+  dir,
+  auth,
+  logger,
+  ref,
+}: {
+  dir: string;
+  ref: string;
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
+  logger?: Logger | undefined;
+}): Promise<void> {
+  const git = Git.fromAuth({
+    ...auth,
+    logger,
+  });
+
+  await git.checkout({ dir, ref });
+}
+
+/**
+ * @public
+ */
+export async function addFiles({
+  dir,
+  filepath,
+  auth,
+  logger,
+}: {
+  dir: string;
+  filepath: string;
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
+  logger?: Logger | undefined;
+}): Promise<void> {
+  const git = Git.fromAuth({
+    ...auth,
+    logger,
+  });
+
+  await git.add({ dir, filepath });
+}
+
+/**
+ * @public
+ */
+export async function commitAndPushBranch({
+  dir,
   auth,
   logger,
   commitMessage,
   gitAuthorInfo,
   branch = 'master',
   remoteRef,
+  remote = 'origin',
 }: {
-  tempDir: string;
   dir: string;
-  remoteUrl: string;
   // For use cases where token has to be used with Basic Auth
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger: Logger;
+  logger?: Logger | undefined;
   commitMessage: string;
   gitAuthorInfo?: { name?: string; email?: string };
   branch?: string;
   remoteRef?: string;
+  remote?: string;
 }): Promise<{ commitHash: string }> {
   const git = Git.fromAuth({
     ...auth,
     logger,
   });
-
-  await git.clone({ url: remoteUrl, dir: tempDir });
-  await git.fetch({ dir: tempDir });
-  await git.checkout({ dir: tempDir, ref: branch });
-
-  // copy files
-  fs.cpSync(dir, tempDir, {
-    recursive: true,
-    filter: path => {
-      return !(path.indexOf('.git') > -1);
-    },
-  });
-
-  await git.add({ dir: tempDir, filepath: '.' });
 
   // use provided info if possible, otherwise use fallbacks
   const authorInfo = {
@@ -189,15 +253,15 @@ export async function commitAndPushBranch({
   };
 
   const commitHash = await git.commit({
-    dir: tempDir,
+    dir,
     message: commitMessage,
     author: authorInfo,
     committer: authorInfo,
   });
 
   await git.push({
-    dir: tempDir,
-    remote: 'origin',
+    dir,
+    remote,
     remoteRef: remoteRef ?? `refs/heads/${branch}`,
   });
 

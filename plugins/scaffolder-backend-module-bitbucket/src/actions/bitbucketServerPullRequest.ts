@@ -23,10 +23,14 @@ import {
   createTemplateAction,
   getRepoSourceDirectory,
   commitAndPushBranch,
+  addFiles,
+  createBranch as createGitBranch,
+  cloneRepo,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import fetch, { RequestInit, Response } from 'node-fetch';
 import { Config } from '@backstage/config';
+import fs from 'fs-extra';
 
 const createPullRequest = async (opts: {
   project: string;
@@ -354,10 +358,40 @@ export function createPublishBitbucketServerPullRequestAction(options: {
           email: config.getOptionalString('scaffolder.defaultAuthor.email'),
         };
 
+        const tempDir = await ctx.createTemporaryDirectory();
+        const sourceDir = getRepoSourceDirectory(ctx.workspacePath, undefined);
+        await cloneRepo({
+          url: remoteUrl,
+          dir: tempDir,
+          auth,
+          logger: ctx.logger,
+          ref: sourceBranch,
+        });
+
+        await createGitBranch({
+          dir: tempDir,
+          auth,
+          logger: ctx.logger,
+          ref: sourceBranch,
+        });
+
+        // copy files
+        fs.cpSync(sourceDir, tempDir, {
+          recursive: true,
+          filter: path => {
+            return !(path.indexOf('.git') > -1);
+          },
+        });
+
+        await addFiles({
+          dir: tempDir,
+          auth,
+          logger: ctx.logger,
+          filepath: '.',
+        });
+
         await commitAndPushBranch({
-          tempDir: await ctx.createTemporaryDirectory(),
-          dir: getRepoSourceDirectory(ctx.workspacePath, undefined),
-          remoteUrl,
+          dir: tempDir,
           auth,
           logger: ctx.logger,
           commitMessage:

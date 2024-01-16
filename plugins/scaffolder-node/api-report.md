@@ -46,20 +46,14 @@ export type ActionContext<
 };
 
 // @public (undocumented)
-export function commitAndPushBranch({
-  tempDir,
+export function addFiles({
   dir,
-  remoteUrl,
+  filepath,
   auth,
   logger,
-  commitMessage,
-  gitAuthorInfo,
-  branch,
-  remoteRef,
 }: {
-  tempDir: string;
   dir: string;
-  remoteUrl: string;
+  filepath: string;
   auth:
     | {
         username: string;
@@ -68,7 +62,56 @@ export function commitAndPushBranch({
     | {
         token: string;
       };
-  logger: Logger;
+  logger?: Logger | undefined;
+}): Promise<void>;
+
+// @public (undocumented)
+export function cloneRepo({
+  url,
+  dir,
+  auth,
+  logger,
+  ref,
+  depth,
+  noCheckout,
+}: {
+  url: string;
+  dir: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: Logger | undefined;
+  ref?: string | undefined;
+  depth?: number | undefined;
+  noCheckout?: boolean | undefined;
+}): Promise<void>;
+
+// @public (undocumented)
+export function commitAndPushBranch({
+  dir,
+  auth,
+  logger,
+  commitMessage,
+  gitAuthorInfo,
+  branch,
+  remoteRef,
+  remote,
+}: {
+  dir: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: Logger | undefined;
   commitMessage: string;
   gitAuthorInfo?: {
     name?: string;
@@ -76,6 +119,7 @@ export function commitAndPushBranch({
   };
   branch?: string;
   remoteRef?: string;
+  remote?: string;
 }): Promise<{
   commitHash: string;
 }>;
@@ -102,6 +146,26 @@ export function commitAndPushRepo(input: {
 }): Promise<{
   commitHash: string;
 }>;
+
+// @public (undocumented)
+export function createBranch({
+  dir,
+  auth,
+  logger,
+  ref,
+}: {
+  dir: string;
+  ref: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: Logger | undefined;
+}): Promise<void>;
 
 // @public
 export const createTemplateAction: <

@@ -29,5 +29,8 @@ export {
   initRepoAndPush,
   commitAndPushRepo,
   commitAndPushBranch,
+  addFiles,
+  createBranch,
+  cloneRepo,
 } from './gitHelpers';
 export { parseRepoUrl, getRepoSourceDirectory } from './util';
