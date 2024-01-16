@@ -122,7 +122,7 @@ export default app.createRoot();
 
 Now let's talk about the last override case, orphan extensions.
 
-## Creating Orphan Extensions
+## Create Orphan Extensions
 
 Sometimes you just need to quickly create a new extension and not overwrite an app extension or plugin. You can also use overrides to create extensions, but remember that if you want to make this extension available for installation by other users, we recommend providing it via a plugin in a separate package.
 
