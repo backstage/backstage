@@ -1,5 +1,29 @@
 # @backstage/frontend-app-api
 
+## 0.5.0
+
+### Minor Changes
+
+- d4149bf: **BREAKING**: Renamed the `app/router` extension to `app/root`.
+- 074dfe3: Attaching extensions to an input that does not exist is now a warning rather than an error.
+
+### Patch Changes
+
+- 7d63b32: Accepts sub route refs on the new `createPlugin` routes map.
+- 516fd3e: Updated README to reflect release status
+- c97fa1c: Added `elements`, `wrappers`, and `router` inputs to `app/root`, that let you add things to the root of the React tree above the layout. You can use the `createAppRootElementExtension`, `createAppRootWrapperExtension`, and `createRouterExtension` extension creator, respectively, to conveniently create such extensions. These are all optional, and if you do not supply a router a default one will be used (`BrowserRouter` in regular runs, `MemoryRouter` in tests/CI).
+- 5fe6600: add oauth dialog and alert display to the root elements
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/config@1.1.1
+  - @backstage/core-app-api@1.11.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 0.4.1-next.2
 
 ### Patch Changes
