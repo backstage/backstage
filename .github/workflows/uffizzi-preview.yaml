@@ -76,7 +76,7 @@ jobs:
 
       - name: Cache Manifests File
         if: ${{ steps.event.outputs.ACTION != 'closed' }}
-        uses: actions/cache@v3.3.2
+        uses: actions/cache@v3.3.3
         with:
           path: manifests.rendered.yml
           key: ${{ steps.hash.outputs.MANIFESTS_FILE_HASH }}
