@@ -155,4 +155,4 @@ const app = createApp({
 export default app.createRoot();
 ```
 
-Note that we are omitting `namespace` when creating the page extension. When we omit `namespace`, we are telling the system the new extension is orphaned (not an application or plugin extension) and this is all about orphaned extensions!
+Note that we are omitting `namespace` when creating the page extension. When we omit `namespace`, we are telling the system the new extension is orphaned and not an application or plugin extension!
