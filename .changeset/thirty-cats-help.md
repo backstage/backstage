@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Change script in **UrlReaderProcessor.ts** Replacing the line code 127 with method (new URL) to handle URL Reader from GCS with wildcard \*
+Parse the URL using a different method rather than `git-url-parse` to support wildcards for URLs which are not VCS providers
