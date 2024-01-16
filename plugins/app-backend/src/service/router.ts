@@ -114,6 +114,7 @@ export async function createRouter(
 
   logger.info(`Serving static app content from ${appDistDir}`);
 
+  let injectedConfigPath: string | undefined;
   if (!disableConfigInjection) {
     const appConfigs = await readConfigs({
       config,
@@ -121,7 +122,7 @@ export async function createRouter(
       env: process.env,
     });
 
-    await injectConfig({ appConfigs, logger, staticDir });
+    injectedConfigPath = await injectConfig({ appConfigs, logger, staticDir });
   }
 
   const router = Router();
@@ -132,8 +133,15 @@ export async function createRouter(
   const staticRouter = Router();
   staticRouter.use(
     express.static(resolvePath(appDistDir, 'static'), {
-      setHeaders: res => {
-        res.setHeader('Cache-Control', CACHE_CONTROL_MAX_CACHE);
+      setHeaders: (res, path) => {
+        if (path === injectedConfigPath) {
+          logger.info(
+            `Serving in the injected Javascript file with max caching disabled`,
+          );
+          res.setHeader('Cache-Control', 'no-cache');
+        } else {
+          res.setHeader('Cache-Control', CACHE_CONTROL_MAX_CACHE);
+        }
       },
     }),
   );
