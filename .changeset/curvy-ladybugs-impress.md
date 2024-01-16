@@ -2,4 +2,4 @@
 '@backstage/plugin-adr': patch
 ---
 
-Updated Readme document in adr plugin
+Updated README document in adr plugin
