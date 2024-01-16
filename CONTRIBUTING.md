@@ -386,7 +386,7 @@ Here are a few things that can help as you go through the review process:
 - PRs get automatically assigned so you don't need to ping people, they will be notified and have a process of their own for this
 - If you are waiting for a review or mid-review and your PR goes stale one of the easiest ways to clear the stale bot is by simply rebasing your PR
 - There are times where you might run into conflict with the `yarn.lock` during a rebase, to help with that make sure your `master` branch is up to date and then in your branch run `git checkout master yarn.lock` and then run `yarn install`, this will get you a conflict free `yarn.lock` file you can commit
-- If Vale finds issues with your documentation but it's a code reference you can fix it by putting backticks (`) around it. Now if it is a special word or maybe a name there are two ways you can fix that by adding it to the list of accepted words in the [accept.txt file](https://github.com/backstage/backstage/blob/master/.github/vale/Vocab/Backstage/accept.txt) and them committing that change
+- If Vale finds issues with your documentation but it's a code reference you can fix it by putting backticks (`) around it. Now if it is a special word or maybe a name there are two ways you can fix that by adding it to the list of accepted words in the [accept.txt file](https://github.com/backstage/backstage/blob/master/.github/vale/config/vocabularies/Backstage/accept.txt) and them committing that change
 
 ### Merging to Master
 
