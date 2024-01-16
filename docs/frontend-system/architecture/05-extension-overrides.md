@@ -128,7 +128,7 @@ Sometimes you just need to quickly create a new extension and not overwrite an a
 
 ### Example
 
-Imagine you want to create a page that is currently only used by your application, like an Institutional page for example, you can use overrides to extend the Backstage app to render it. To do so, simply create a page extension and pass it to the app as an override:
+Imagine you want to create a page that is currently only used by your application, like an Institutional page, for example. You can use overrides to extend the Backstage app to render it. To do so, simply create a page extension and pass it to the app as an override:
 
 ```tsx title="packages/app/src/App.ts" showLineNumbers
 import { createApp } from '@backstage/frontend-app-api';
