@@ -28,11 +28,13 @@ import {
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
+  CatalogProcessorParser,
   EntityProvider,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { PlaceholderResolver } from '../modules';
+import { defaultEntityDataParser } from '../modules/util/parse';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -40,6 +42,7 @@ class CatalogProcessingExtensionPointImpl
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
   #placeholderResolvers: Record<string, PlaceholderResolver> = {};
+  entityDataParser: CatalogProcessorParser = defaultEntityDataParser;
 
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
@@ -59,6 +62,10 @@ class CatalogProcessingExtensionPointImpl
         `A placeholder resolver for '${key}' has already been set up, please check your config.`,
       );
     this.#placeholderResolvers[key] = resolver;
+  }
+
+  setEntityDataParser(parser: CatalogProcessorParser): void {
+    this.entityDataParser = parser;
   }
 
   get processors() {
@@ -164,6 +171,8 @@ export const catalogPlugin = createBackendPlugin({
         });
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);
+        builder.setEntityDataParser(processingExtensions.entityDataParser);
+
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );

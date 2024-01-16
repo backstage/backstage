@@ -18,6 +18,7 @@ import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import {
   CatalogProcessor,
+  CatalogProcessorParser,
   EntitiesSearchFilter,
   EntityProvider,
   PlaceholderResolver,
@@ -37,6 +38,7 @@ export interface CatalogProcessingExtensionPoint {
     ...providers: Array<EntityProvider | Array<EntityProvider>>
   ): void;
   addPlaceholderResolver(key: string, resolver: PlaceholderResolver): void;
+  setEntityDataParser(parser: CatalogProcessorParser): void;
 }
 
 /**

@@ -5,6 +5,7 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
 import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
@@ -54,6 +55,8 @@ export interface CatalogProcessingExtensionPoint {
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
   ): void;
+  // (undocumented)
+  setEntityDataParser(parser: CatalogProcessorParser): void;
 }
 
 // @alpha (undocumented)
