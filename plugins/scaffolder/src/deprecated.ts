@@ -215,10 +215,10 @@ export type LayoutOptions = LayoutOptionsTemp;
 
 /**
  * TaskPageProps for constructing a TaskPage
- * @param loadingText - Optional loading text shown before a task begins executing.
  * @public
  * @deprecated - this is a useless type that is no longer used.
  */
 export type TaskPageProps = {
+  // Optional loading text shown before a task begins executing.
   loadingText?: string;
 };
