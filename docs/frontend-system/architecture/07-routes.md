@@ -26,7 +26,7 @@ There are 3 types of route references: regular route, sub route, and external ro
 
 Route references, also known as "absolute" or "regular" routes, are created as follows:
 
-```tsx title="plugins/catalog/src/routes.ts" showLineNumbers
+```tsx title="plugins/catalog/src/routes.ts"
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 
 // Creates a route reference, which is not yet associated with any plugin page
@@ -41,7 +41,7 @@ Route refs do not have any behavior themselves. They are an opaque value that re
 
 The code snippet in the previous section does not indicate which plugin the route belongs to. To do so, you have to use it in the creation of any kind of routable extension, such as a page extension:
 
-```tsx title="plugins/catalog/src/plugin.tsx" {11,17-19} showLineNumbers
+```tsx title="plugins/catalog/src/plugin.tsx"
 import React from 'react';
 import {
   createPlugin,
@@ -52,25 +52,23 @@ import { indexRouteRef } from './routes';
 const catalogIndexPage = createPageExtension({
   // The `name` option is omitted because this is an index page
   defaultPath: '/entities',
+  // highlight-next-line
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
 
 export default createPlugin({
   id: 'catalog',
+  // highlight-start
   routes: {
     index: indexRouteRef,
   },
+  // highlight-end
   extensions: [catalogIndexPage],
 });
 ```
 
-In the example above we have associated a route ref with an plugin page. This is what the code does:
-
-- Line 11: Associates the `indexRouteRef` with the `catalogIndexPage` extension;
-- Line 17 to 19: Provides both the `indexRouteRef` and `catalogIndexPage` via the Catalog plugin.
-
-When this extension is installed in the app it will become associated with the newly created `RouteRef`, making it possible to use the route ref to navigate the extension.
+In the example above we associated the `indexRouteRef` with the `catalogIndexPage` extension and provided both the route ref and page via the Catalog plugin. So, When this plugin is installed in the app, the index page will become associated with the newly created `RouteRef`, making it possible to use the route ref to navigate the page extension.
 
 It may be unclear why we configure the routes option when creating a plugin as the route has already been passed to the extension. We do that to make it possible for other plugins to route to our page, which is explained in detail in the [binding routes](#binding-external-route-references) section.
 
@@ -78,11 +76,12 @@ It may be unclear why we configure the routes option when creating a plugin as t
 
 Route references optionally accept a `params` option, which will require the listed parameter names to be present in the route path. Here is how you create a reference for a route that requires a `kind`, `namespace` and `name` parameters, like in this path `/entities/:kind/:namespace/:name`:
 
-```tsx title="plugins/catalog/src/routes.ts" {5} showLineNumbers
+```tsx title="plugins/catalog/src/routes.ts"
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 
 export const detailsRouteRef = createRouteRef({
   // The parameters that must be included in the path of this route reference
+  // highlight-next-line
   params: ['kind', 'namespace', 'name'],
 });
 ```
@@ -93,22 +92,25 @@ Route references can be used to link to page in the same plugin, or to pages in 
 
 Suppose we are creating a plugin that renders a Catalog index page with a link to a "Foo" component details page. Here is the code for the index page:
 
-```tsx title="plugins/catalog/src/components/IndexPage.tsx" {6,11-15} showLineNumbers
+```tsx title="plugins/catalog/src/components/IndexPage.tsx"
 import React from 'react';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { detailsRouteRef } from '../routes';
 
 export const IndexPage = () => {
+  // highlight-next-line
   const getDetailsPath = useRouteRef(detailsRouteRef);
   return (
     <div>
       <h1>Index Page</h1>
       <a
+        {/* highlight-start */}
         href={getDetailsPath({
           kind: 'component',
           namespace: 'default',
           name: 'foo',
         })}
+        {/* highlight-end */}
       >
         See "Foo" details
       </a>
@@ -121,27 +123,30 @@ We use the `useRouteRef` hook to create a link generator function that returns t
 
 Let's see how the details page can get the parameters from the URL:
 
-```tsx title="plugins/catalog/src/components/DetailsPage.tsx" {6,11-13} showLineNumbers
+```tsx title="plugins/catalog/src/components/DetailsPage.tsx"
 import React from 'react';
 import { useRouteRefParams } from '@backstage/frontend-plugin-api';
 import { detailsRouteRef } from '../routes';
 
 export const DetailsPage = () => {
+  // highlight-next-line
   const params = useRouteRefParams(detailsRouteRef);
   return (
     <div>
       <h1>Details Page</h1>
       <ul>
+        {/* highlight-start */}
         <li>Kind: {params.kind}</li>
         <li>Namespace: {params.namespace}</li>
         <li>Name: {params.name}</li>
+        {/* highlight-end */}
       </ul>
     </div>
   );
 };
 ```
 
-On line 6, we are using the `useRouteRefParams` hook to retrieve the entity-composed id from the URL. The parameter object contains three values: kind, namespace, and name. We can display these values or call an API using them.
+In the code above, we are using the `useRouteRefParams` hook to retrieve the entity-composed id from the URL. The parameter object contains three values: kind, namespace, and name. We can display these values or call an API using them.
 
 Since we are linking to pages of the same package, we are using a route ref directly. However, in the following sections, you will see how to link to pages of different plugins.
 
@@ -154,7 +159,7 @@ We don't want to reference the Scaffolder plugin directly, since that would crea
 
 We create a new `RouteRef` inside the Scaffolder plugin, using a neutral name that describes its role in the plugin rather than a specific plugin page that it might be linking to, allowing the app to decide the final target. If the Catalog entity list page for example wants to link the Scaffolder create component page in the header, it might declare an `ExternalRouteRef` similar to this:
 
-```tsx title="plugins/catalog/src/routes.ts" showLineNumbers
+```tsx title="plugins/catalog/src/routes.ts"
 import { createExternalRouteRef } from '@backstage/frontend-plugin-api';
 
 export const createComponentExternalRouteRef = createExternalRouteRef();
@@ -162,16 +167,18 @@ export const createComponentExternalRouteRef = createExternalRouteRef();
 
 External routes are also used in a similar way as regular routes:
 
-```tsx title="plugins/catalog/src/components/IndexPage.tsx" {6,10} showLineNumbers
+```tsx title="plugins/catalog/src/components/IndexPage.tsx"
 import React from 'react';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { createComponentExternalRouteRef } from '../routes';
 
 export const IndexPage = () => {
+  // highlight-next-line
   const getCreateComponentPath = useRouteRef(createComponentExternalRouteRef);
   return (
     <div>
       <h1>Index Page</h1>
+      {/* highlight-next-line */}
       <a href={getCreateComponentPath()}>Create Component</a>
     </div>
   );
@@ -182,7 +189,7 @@ Given the above binding, using `useRouteRef(createComponentExternalRouteRef)` wi
 
 Now the only thing left is to provide the page and external route via a plugin:
 
-```tsx title="plugins/catalog/src/plugin.tsx" {20-23} showLineNumbers
+```tsx title="plugins/catalog/src/plugin.tsx"
 import React from 'react';
 import {
   createPlugin,
@@ -202,19 +209,22 @@ export default createPlugin({
   routes: {
     index: indexRouteRef,
   },
+  // highlight-start
   externalRoutes: {
     createComponent: createComponentExternalRouteRef,
   },
   extensions: [catalogIndexPage],
+  // highlight-end
 });
 ```
 
 External routes can also have parameters. For example, if you want to link to an entity's details page from Scaffolder, you'll need to create an external route that receives the same parameters the Catalog details page expects:
 
-```tsx title="plugins/scaffolder/src/routes.ts" {4} showLineNumbers
+```tsx title="plugins/scaffolder/src/routes.ts"
 import { createExternalRouteRef } from '@backstage/frontend-plugin-api';
 
 export const entityDetailsExternalRouteRef = createExternalRouteRef({
+  // highlight-next-line
   params: ['kind', 'namespace', 'name'],
 });
 ```
@@ -227,24 +237,27 @@ The association of external routes is controlled by the app. Each `ExternalRoute
 
 Using the above example of the Catalog entities list page to the Scaffolder create component page, we might do something like this in the app configuration file:
 
-```yaml title="app-config.yaml" {5,7} showLineNumbers
+```yaml title="app-config.yaml"
 app:
   routes:
     bindings:
       # point to the Scaffolder create component page when the Catalog create component ref is used
+      # highlight-next-line
       plugin.catalog.externalRoutes.createComponent: plugin.scaffolder.routes.index
       # point to the Catalog details page when the Scaffolder component details ref is used
+      # highlight-next-line
       plugin.scaffolder.externalRoutes.componentDetails: plugin.catalog.routes.details
 ```
 
 We also have the ability to express this in code as an option to `createApp`, but you of course only need to use one of these two methods:
 
-```tsx title="packages/app/src/App.tsx" {6-13} showLineNumbers
+```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-app-api';
 import catalog from '@backstage/plugin-catalog';
 import scaffolder from '@backstage/plugin-scaffolder';
 
 const app = createApp({
+  // highlight-start
   bindRoutes({ bind }) {
     bind(catalog.externalRoutes, {
       createComponent: scaffolder.routes.createComponent,
@@ -253,6 +266,7 @@ const app = createApp({
       componentDetails: catalog.routes.details,
     });
   },
+  // highlight-end
 });
 
 export default app.createRoot();
@@ -266,17 +280,18 @@ Another thing to note is that this indirection in the routing is particularly us
 
 It is possible to define an `ExternalRouteRef` as optional, so it is not required to bind it in the app.
 
-```tsx title="plugins/catalog/src/routes.ts" {4} showLineNumbers
+```tsx title="plugins/catalog/src/routes.ts"
 import { createExternalRouteRef } from '@backstage/frontend-plugin-api';
 
 export const createComponentExternalRouteRef = createExternalRouteRef({
+  // highlight-next-line
   optional: true,
 });
 ```
 
 When calling `useRouteRef` with an optional external route, its return signature is changed to `RouteFunc | undefined`, and the returned value can be used to decide whether a certain link should be displayed or if an action should be taken:
 
-```tsx title="plugins/catalog/src/components/IndexPage.tsx" {11} showLineNumbers
+```tsx title="plugins/catalog/src/components/IndexPage.tsx"
 import React from 'react';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { createComponentExternalRouteRef } from '../routes';
@@ -287,9 +302,11 @@ export const IndexPage = () => {
     <div>
       <h1>Index Page</h1>
       {/* Rendering the link only if the getCreateComponentPath is defined */}
+      {/* highlight-start */}
       {getCreateComponentPath && (
         <a href={getCreateComponentPath()}>Create Component</a>
       )}
+      {/* highlight-end */}
     </div>
   );
 };
@@ -301,32 +318,35 @@ The last kind of route refs that can be created are `SubRouteRef`s, which can be
 
 For example:
 
-```tsx title ="plugins/catalog/src/routes.ts" {4,7} showLineNumbers
+```tsx title ="plugins/catalog/src/routes.ts"
 import {
   createRouteRef,
   createSubRouteRef,
 } from '@backstage/frontend-plugin-api';
 
 export const indexRouteRef = createRouteRef();
+// highlight-start
 export const detailsSubRouteRef = createSubRouteRef({
   parent: indexRouteRef,
   path: '/details',
 });
+// highlight-end
 ```
 
 There are substantial differences between creating subroutes and regular or external routes because subroutes are associated with regular routes, and the sub route path must be specified. The path string must include the parameters if this sub route has them:
 
-```tsx title ="plugins/catalog/src/routes.ts" {4} showLineNumbers
+```tsx title ="plugins/catalog/src/routes.ts"
 // Omitting rest of the previous example file
 export const detailsSubRouteRef = createSubRouteRef({
   parent: indexRouteRef,
+  // highlight-next-line
   path: '/:name/:namespace/:kind',
 });
 ```
 
 Using subroutes in a page extension is as simple as this:
 
-```tsx title="plugins/catalog/src/components/IndexPage.ts" showLineNumbers
+```tsx title="plugins/catalog/src/components/IndexPage.ts"
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
@@ -342,8 +362,9 @@ export const IndexPage = () => {
       <h1>Index Page</h1>
       {/* Linking to the details sub route */}
       {pathname === getIndexPath() ? (
-        // Setting the details sub route params
+        // highlight-start
         <a
+          {/* Setting the details sub route params */}
           href={getDetailsPath({
             kind: 'component',
             namespace: 'default',
@@ -352,7 +373,9 @@ export const IndexPage = () => {
         >
           Show details
         </a>
+        // highlight-end
       ) : (
+        // highlight-next-line
         <a href={getIndexPath()}>Hide details</a>
       )}
       {/* Registering the details sub route */}
@@ -366,19 +389,22 @@ export const IndexPage = () => {
 
 This is how you can get the parameters of a sub route URL:
 
-```tsx title="plugins/catalog/src/components/DetailsPage.ts" {5} showLineNumbers
+```tsx title="plugins/catalog/src/components/DetailsPage.ts"
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
 export const DetailsPage = () => {
+  // highlight-next-line
   const params = useParams();
   return (
     <div>
       <h1>Details Sub Page</h1>
       <ul>
+        {/* highlight-start */}
         <li>Kind: {params.kind}</li>
         <li>Namespace: {params.namespace}</li>
         <li>Name: {params.name}</li>
+        {/* highlight-end */}
       </ul>
     </div>
   );
@@ -387,7 +413,7 @@ export const DetailsPage = () => {
 
 Finally, see how a plugin can provide subroutes:
 
-```tsx title="plugins/catalog/src/plugin.ts" {18} showLineNumbers
+```tsx title="plugins/catalog/src/plugin.ts"
 import React from 'react';
 import {
   createPlugin,
@@ -405,6 +431,7 @@ export default createPlugin({
   id: 'catalog',
   routes: {
     index: indexRouteRef,
+    // highlight-next-line
     details: detailsSubRouteRef,
   },
   extensions: [catalogIndexPage],
