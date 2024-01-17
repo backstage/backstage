@@ -12,11 +12,9 @@ description: Frontend routes
 
 Each Backstage plugin is an isolated piece of functionality that doesn't typically communicate directly with other plugins. In order to achieve this, there are many parts of the frontend system that provide a layer of indirection for cross-plugin communication, and they routing system is one of them.
 
-The Backstage routing system makes it possible to implement navigation across plugin boundaries, without each individual plugin knowing the concrete path or location of other plugins in the routing hierarchy, or even its own. This is achieved through the concept of route references, which are opaque reference values that can be shared and used to create concrete links to different parts of an app.
+The Backstage routing system makes it possible to implement navigation across plugin boundaries, without each individual plugin knowing the concrete path or location of other plugins in the routing hierarchy, or even its own. This is achieved through the concept of route references, which are opaque reference values that can be shared and used to create concrete links to different parts of an app. The route ref paths can be configured both at plugin level (by plugin developers) and at the app level (by integrators). It is up to plugin developers to create route references for any page content in their plugin that they want it to be possible to link to or from.
 
 ## Route References
-
-A `RouteRef` is an abstract path in a Backstage app, and these paths can be configured both at plugin level (by plugin developers) and at the app level (by integrators). It is up to plugin developers to create route references for any page content in their plugin that they want it to be possible to link to or from.
 
 Plugin developers create a `RouteRef` to expose a path in Backstage's routing system. You will see below how routes are defined programmatically, but before diving into code, let us explain how to configure them at app level. In spite of the fact that plugin developers choose a default route path for the routes their plugin provides, paths are configurable, so app integrators can set a custom path to a route whenever they like to (more information in the following sections).
 
