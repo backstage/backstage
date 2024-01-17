@@ -22,5 +22,3 @@ export type { RouterProps } from './Router';
 export { OngoingTask as TaskPage } from './OngoingTask';
 
 export type { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
-
-export type { TaskPageProps } from '../legacy/TaskPage';
