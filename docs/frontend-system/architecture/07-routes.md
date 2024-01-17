@@ -39,7 +39,7 @@ Route refs do not have any behavior themselves. They are an opaque value that re
 
 ### Providing Route References to Plugins
 
-The previous section code snippet does not indicate which plugin the route belongs to. To do so, you have to use it in the creation of any kind of routable extension, such as a page extension:
+The code snippet in the previous section does not indicate which plugin the route belongs to. To do so, you have to use it in the creation of any kind of routable extension, such as a page extension:
 
 ```tsx title="plugins/catalog/src/plugin.tsx" {11,17-19} showLineNumbers
 import React from 'react';
