@@ -1,5 +1,5 @@
 ---
-id: index
+id: extension-types
 title: Frontend System Extension Types
 sidebar_label: Extension Types
 # prettier-ignore

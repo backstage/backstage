@@ -76,9 +76,10 @@ const examplePage = createPageExtension({
   defaultPath: '/example',
 
   // Page extensions are always dynamically loaded using React.lazy().
-  // [1] All of the functionality of this page is implemented in the
+  // All of the functionality of this page is implemented in the
   // ExamplePage component, which is a regular React component.
-  loader: () => import('./components/ExamplePage').then(m => m.ExamplePage),
+  // highlight-next-line
+  loader: () => import('./components/ExamplePage').then(m => <m.ExamplePage />),
 });
 
 // This nav item is provided to the app.nav extension, and will by default be rendered as a sidebar item
@@ -92,16 +93,18 @@ const exampleNavItem = createNavItemExtension({
 export const examplePlugin = createPlugin({
   id: 'example',
   extensions: [examplePage, exampleNavItem],
-  // [2] We can also make routes available to other plugins.
+  // We can also make routes available to other plugins.
+  // highlight-start
   routes: {
     root: rootRouteRef,
   },
+  // highlight-end
 });
 ```
 
-What we've built here is a very common type of plugin. It's a top-level tool that provides a single page, along with a method for navigating to that page. The implementation of the page component at `[1]` can be arbitrarily complex, anything from a single simple information page, to a full-blown application with multiple sub-pages.
+What we've built here is a very common type of plugin. It's a top-level tool that provides a single page, along with a method for navigating to that page. The implementation of the page component, in this case the highlighted `ExamplePage`, can be arbitrarily complex. It can be anything from a single simple information page, to a full-blown application with multiple sub-pages.
 
-We have also made the route reference available to other plugins at `[2]`. This makes it possible for app integrators to bind an external link from a different plugin to our plugin page. You can read more about how this works in the [External Route References](../architecture/07-routes.md#external-route-references) section.
+We have also provided external access to our route reference by passing it to the plugin `routes` option. This makes it possible for app integrators to bind an external link from a different plugin to our plugin page. You can read more about how this works in the [External Route References](../architecture/07-routes.md#external-router-references) section.
 
 ## Utility APIs
 
