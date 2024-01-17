@@ -6,9 +6,9 @@ import {
 } from './';
 
 {{/hasImports}}
-/**
- * @type {{classname}}{{#description}}
- * {{{.}}}{{/description}}
- * @export
- */
+{{#description}}
+    /**
+    * {{{.}}}
+    */
+{{/description}}
 export type {{classname}} = {{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}};
