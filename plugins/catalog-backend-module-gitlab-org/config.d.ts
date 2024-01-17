@@ -22,7 +22,7 @@ export interface Config {
       /**
        * GitlabOrgDiscoveryEntityProvider configuration
        */
-      gitlab?: {
+      gitlabOrg?: {
         [name: string]: {
           /**
            * (Required) Gitlab's host name.
