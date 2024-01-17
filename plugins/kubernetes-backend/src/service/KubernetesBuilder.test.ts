@@ -206,6 +206,7 @@ describe('KubernetesBuilder', () => {
       });
     });
   });
+
   describe('post /services/:serviceId', () => {
     it('happy path: lists kubernetes objects without auth in request body', async () => {
       const response = await request(app).post(
@@ -779,5 +780,25 @@ metadata:
         rules: [],
       });
     });
+  });
+
+  it('fails when an unsupported serviceLocator type is specified', () => {
+    return expect(() =>
+      startTestBackend({
+        features: [
+          mockServices.rootConfig.factory({
+            data: {
+              kubernetes: {
+                serviceLocatorMethod: { type: 'unsupported' },
+                clusterLocatorMethods: [{ type: 'config', clusters: [] }],
+              },
+            },
+          }),
+          import('@backstage/plugin-kubernetes-backend/alpha'),
+        ],
+      }),
+    ).rejects.toThrow(
+      'Unsupported kubernetes.serviceLocatorMethod "unsupported"',
+    );
   });
 });

@@ -288,7 +288,7 @@ export class KubernetesBuilder {
         break;
       default:
         throw new Error(
-          `Unsupported kubernetes.clusterLocatorMethod "${method}"`,
+          `Unsupported kubernetes.serviceLocatorMethod "${method}"`,
         );
     }
 
