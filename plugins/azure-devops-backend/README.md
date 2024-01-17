@@ -25,7 +25,7 @@ Configuration Details:
 
 #### Multi Organization & Service Principals
 
-To support cases where you have multiple Azure DevOps organizations and/or you want to use a Service Principle you will want to make sure to configure them in the `integrations.azure` section of your `app-config.yaml` as detailed in the [Azure DevOps Locations](https://backstage.io/docs/integrations/azure/locations) documentation.
+To support cases where you have multiple Azure DevOps organizations and/or you want to use a Service Principal you will want to make sure to configure them in the `integrations.azure` section of your `app-config.yaml` as detailed in the [Azure DevOps Locations](https://backstage.io/docs/integrations/azure/locations) documentation.
 
 **Note:** You will still need to define the [configuration above](#configuration).
 
