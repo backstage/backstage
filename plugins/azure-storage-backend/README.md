@@ -89,10 +89,10 @@ azureStorage:
 
 This Plugin provides 2 types of authentication on your storage account.
 
-### accessToken
+### Access Token
 
 When you create a storage account, Azure generates two 512-bit storage account access keys for that account. You can use this access keys to authenticate the Azure storage account ["More Info..."](https://learn.microsoft.com/en-us/azure/storage/common/storage-account-keys-manage?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json&tabs=azure-portal)
 
-### clientToken
+### Client Token
 
 This method uses the RBAC authentication but only to Azure App Client. ["More info..."](https://learn.microsoft.com/en-us/azure/storage/blobs/assign-azure-role-data-access?tabs=portal)
