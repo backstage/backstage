@@ -8,9 +8,7 @@
 {{/description}}
 {{^isEnum}}
 export interface {{classname}} {
-{{#additionalPropertiesType}}
-    [key: string]: {{{additionalPropertiesType}}};
-{{/additionalPropertiesType}}
+{{>modelGenericAdditionalProperties}}
 {{#vars}}
 {{#description}}
     /**
