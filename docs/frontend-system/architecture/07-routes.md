@@ -16,7 +16,7 @@ The Backstage routing system makes it possible to implement navigation across pl
 
 ## Route References
 
-A `RouteRef` is an abstract path in a Backstage app, and these paths can be configured both at plugin level (by plugin developers) and at the app level (by integrators).
+A `RouteRef` is an abstract path in a Backstage app, and these paths can be configured both at plugin level (by plugin developers) and at the app level (by integrators). It is up to plugin developers to create route references for any page content in their plugin that they want it to be possible to link to or from.
 
 Plugin developers create a `RouteRef` to expose a path in Backstage's routing system. You will see below how routes are defined programmatically, but before diving into code, let us explain how to configure them at app level. In spite of the fact that plugin developers choose a default route path for the routes their plugin provides, paths are configurable, so app integrators can set a custom path to a route whenever they like to (more information in the following sections).
 
