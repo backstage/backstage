@@ -201,7 +201,6 @@ RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid
 
 COPY --chown=node:node . .
 
-
 # Passing the baseUrl in your app-config.yaml app.baseUrl: ${BASE_URL}
 # Uncomment to activate the argument and then execute:
 # docker build --build-arg="BASE_URL=https://backstage.example.com"
