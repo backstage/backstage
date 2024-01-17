@@ -300,6 +300,15 @@ export class Git {
     return git.readCommit({ fs, dir, oid: sha });
   }
 
+  /** https://isomorphic-git.org/docs/en/remove */
+  async remove(options: { dir: string; filepath: string }): Promise<void> {
+    const { dir, filepath } = options;
+    this.config.logger?.info(
+      `Removing file from git index {dir=${dir},filepath=${filepath}}`,
+    );
+    return git.remove({ fs, dir, filepath });
+  }
+
   /** https://isomorphic-git.org/docs/en/resolveRef */
   async resolveRef(options: { dir: string; ref: string }): Promise<string> {
     const { dir, ref } = options;

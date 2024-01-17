@@ -28,17 +28,18 @@ import { TextOutputs } from './TextOutputs';
 export const DefaultTemplateOutputs = (props: {
   output?: ScaffolderTaskOutput;
 }) => {
-  const [textOutputIndex, setTextOutputIndex] = useState<number | undefined>();
+  const { output } = props;
+  const [textOutputIndex, setTextOutputIndex] = useState<number | undefined>(
+    output?.text?.length ? 0 : undefined,
+  );
 
   const textOutput = useMemo(
     () =>
-      textOutputIndex !== undefined
-        ? props.output?.text?.[textOutputIndex]
-        : null,
-    [props.output, textOutputIndex],
+      textOutputIndex !== undefined ? output?.text?.[textOutputIndex] : null,
+    [output, textOutputIndex],
   );
 
-  if (!props.output) {
+  if (!output) {
     return null;
   }
 
@@ -48,11 +49,11 @@ export const DefaultTemplateOutputs = (props: {
         <Paper>
           <Box padding={2} justifyContent="center" display="flex" gridGap={16}>
             <TextOutputs
-              output={props.output}
+              output={output}
               index={textOutputIndex}
               setIndex={setTextOutputIndex}
             />
-            <LinkOutputs output={props.output} />
+            <LinkOutputs output={output} />
           </Box>
         </Paper>
       </Box>

@@ -1,5 +1,34 @@
 # @backstage/plugin-devtools-backend
 
+## 0.2.6
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/config-loader@1.6.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-node@0.7.20
+  - @backstage/plugin-auth-node@0.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-devtools-common@0.1.8
+
+## 0.2.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-auth-node@0.4.3-next.2
+  - @backstage/plugin-permission-node@0.7.20-next.2
+  - @backstage/config-loader@1.6.1-next.0
+
 ## 0.2.6-next.1
 
 ### Patch Changes

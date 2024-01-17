@@ -1,6 +1,3 @@
 # @backstage/plugin-permission-backend
 
-> NOTE: THIS PACKAGE IS EXPERIMENTAL, HERE BE DRAGONS
-
-Backend for Backstage authorization and permissions. For more information, see
-the [authorization PRFC](https://github.com/backstage/backstage/pull/7761).
+Backend for Backstage authorization and permissions. For more information, see the [permissions documentation on Backstage.io](https://backstage.io/docs/permissions/overview).

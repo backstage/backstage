@@ -1,5 +1,40 @@
 # @backstage/plugin-home
 
+## 0.6.1
+
+### Patch Changes
+
+- 98ac5ab: Updated dependency `@rjsf/utils` to `5.15.1`.
+  Updated dependency `@rjsf/core` to `5.15.1`.
+  Updated dependency `@rjsf/material-ui` to `5.15.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.15.1`.
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.1
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/catalog-client@1.5.2
+  - @backstage/plugin-home-react@0.1.7
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-app-api@1.11.3
+  - @backstage/theme@0.5.0
+
+## 0.6.1-next.2
+
+### Patch Changes
+
+- 98ac5ab: Updated dependency `@rjsf/utils` to `5.15.1`.
+  Updated dependency `@rjsf/core` to `5.15.1`.
+  Updated dependency `@rjsf/material-ui` to `5.15.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.15.1`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.1-next.2
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-home-react@0.1.7-next.2
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
 ## 0.6.1-next.1
 
 ### Patch Changes

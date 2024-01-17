@@ -27,6 +27,7 @@ describe('createExtensionOverrides', () => {
         "$$type": "@backstage/ExtensionOverrides",
         "extensions": [],
         "featureFlags": [],
+        "toString": [Function],
         "version": "v1",
       }
     `);
@@ -74,6 +75,7 @@ describe('createExtensionOverrides', () => {
             "id": "a",
             "inputs": {},
             "output": {},
+            "toString": [Function],
             "version": "v1",
           },
           {
@@ -88,6 +90,7 @@ describe('createExtensionOverrides', () => {
             "id": "b",
             "inputs": {},
             "output": {},
+            "toString": [Function],
             "version": "v1",
           },
           {
@@ -102,10 +105,12 @@ describe('createExtensionOverrides', () => {
             "id": "k:c/n",
             "inputs": {},
             "output": {},
+            "toString": [Function],
             "version": "v1",
           },
         ],
         "featureFlags": [],
+        "toString": [Function],
         "version": "v1",
       }
     `);

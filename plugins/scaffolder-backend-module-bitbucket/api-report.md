@@ -8,6 +8,19 @@ import { JsonObject } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
+// @public
+export const createBitbucketPipelinesRunAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    workspace: string;
+    repo_slug: string;
+    body?: object | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
 // @public @deprecated
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;

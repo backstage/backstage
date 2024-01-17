@@ -1,6 +1,6 @@
 {
   "name": "example-app-next",
-  "version": "0.0.5-next.1",
+  "version": "0.0.5",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -21,6 +21,7 @@
     "@backstage/plugin-airbrake": "workspace:^",
     "@backstage/plugin-apache-airflow": "workspace:^",
     "@backstage/plugin-api-docs": "workspace:^",
+    "@backstage/plugin-app-visualizer": "workspace:^",
     "@backstage/plugin-azure-devops": "workspace:^",
     "@backstage/plugin-azure-sites": "workspace:^",
     "@backstage/plugin-badges": "workspace:^",
@@ -74,7 +75,6 @@
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/plugin-todo": "workspace:^",
     "@backstage/plugin-user-settings": "workspace:^",
-    "@backstage/plugin-visualizer": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@circleci/backstage-plugin": "^0.1.1",
     "@material-ui/core": "^4.12.2",

@@ -53,6 +53,7 @@ Additional steps for the main line release
   - Add the release note file as [`/docs/releases/vx.y.0.md`](./releases)
   - Add an entry to [`/microsite/sidebar.json`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.json) for the release note
   - Update the navigation bar item in [`/microsite/docusaurus.config.js`](https://github.com/backstage/backstage/blob/master/microsite/docusaurus.config.js) to point to the new release note
+  - Finally copy the content, without the metadata header, into the description of the [`Version Packages` Pull Request](https://github.com/backstage/backstage/pulls?q=is%3Aopen+is%3Apr+in%3Atitle+%22Version+Packages)
 
 Once the release has been published edit the newly created release in the [GitHub repository](https://github.com/backstage/backstage/releases) and replace the text content with the release notes.
 
@@ -134,3 +135,9 @@ process is used to release an emergency fix as version `6.5.1` in the patch rele
   - [ ] The fix, which you can likely cherry-pick from your patch branch: `git cherry-pick origin/patch/v1.18.0^`
   - [ ] An updated `CHANGELOG.md` of all patched packages from the tip of the patch branch, `git checkout origin/patch/v1.18.0 -- {packages,plugins}/*/CHANGELOG.md`. Note that if the patch happens after any next-line releases you'll need to restore those entries in the changelog, placing the patch release entry beneath any next-line release entries.
   - [ ] A changeset with the message "Applied the fix from version `6.5.1` of this package, which is part of the `v1.18.1` release of Backstage."
+
+## Troubleshooting
+
+### When the release workflow is not triggered for some reason, such as a GitHub incident
+
+Ask one of the maintainers to force push master back to a previous commit and then push the release merge commit again.

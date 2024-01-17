@@ -6,7 +6,9 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha
-export const eventsModuleAzureDevOpsEventRouter: () => BackendFeature;
+const eventsModuleAzureDevOpsEventRouter: () => BackendFeature;
+export default eventsModuleAzureDevOpsEventRouter;
+export { eventsModuleAzureDevOpsEventRouter };
 
 // (No @packageDocumentation comment for this package)
 ```

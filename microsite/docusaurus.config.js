@@ -182,7 +182,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.21.0',
+            to: 'docs/releases/v1.22.0',
             label: 'Releases',
             position: 'left',
           },
@@ -204,7 +204,10 @@ module.exports = {
           {
             items: [
               {
-                html: '<a href="/"><h2 class="footerLogo"></h2></a>',
+                html: `
+                <a href="/" aria-label="Backstage Home">
+                  <div class="footerLogo"></div>
+                </a>`,
               },
             ],
           },

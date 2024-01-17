@@ -1,5 +1,43 @@
 # @backstage/plugin-scaffolder
 
+## 1.17.1
+
+### Patch Changes
+
+- 98ac5ab: Updated dependency `@rjsf/utils` to `5.15.1`.
+  Updated dependency `@rjsf/core` to `5.15.1`.
+  Updated dependency `@rjsf/material-ui` to `5.15.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.15.1`.
+- 4016f21: Remove some unused dependencies
+- df4bc9d: Minor internal refactor
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.7.1
+  - @backstage/core-components@0.13.10
+  - @backstage/plugin-scaffolder-common@1.4.5
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/catalog-client@1.5.2
+  - @backstage/plugin-permission-react@0.4.19
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/integration-react@1.1.23
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.20
+
+## 1.17.1-next.2
+
+### Patch Changes
+
+- 98ac5ab: Updated dependency `@rjsf/utils` to `5.15.1`.
+  Updated dependency `@rjsf/core` to `5.15.1`.
+  Updated dependency `@rjsf/material-ui` to `5.15.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.15.1`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.7.1-next.2
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+  - @backstage/integration-react@1.1.23-next.0
+
 ## 1.17.1-next.1
 
 ### Patch Changes

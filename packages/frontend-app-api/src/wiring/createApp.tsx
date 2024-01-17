@@ -32,10 +32,10 @@ import {
   RouteRef,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { Core } from '../extensions/Core';
-import { CoreRoutes } from '../extensions/CoreRoutes';
-import { CoreLayout } from '../extensions/CoreLayout';
-import { CoreNav } from '../extensions/CoreNav';
+import { App } from '../extensions/App';
+import { AppRoutes } from '../extensions/AppRoutes';
+import { AppLayout } from '../extensions/AppLayout';
+import { AppNav } from '../extensions/AppNav';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -78,6 +78,10 @@ import { apis as defaultApis } from '../../../app-defaults/src/defaults';
 import { Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
+import {
+  oauthRequestDialogAppRootElement,
+  alertDisplayAppRootElement,
+} from '../extensions/elements';
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
 import {
   appLanguageApiRef,
@@ -95,7 +99,7 @@ import {
 } from '../extensions/components';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { InternalAppContext } from './InternalAppContext';
-import { CoreRouter } from '../extensions/CoreRouter';
+import { AppRoot } from '../extensions/AppRoot';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -106,16 +110,18 @@ import { stringifyError } from '@backstage/errors';
 const DefaultApis = defaultApis.map(factory => createApiExtension({ factory }));
 
 export const builtinExtensions = [
-  Core,
-  CoreRouter,
-  CoreRoutes,
-  CoreNav,
-  CoreLayout,
+  App,
+  AppRoot,
+  AppRoutes,
+  AppNav,
+  AppLayout,
   DefaultProgressComponent,
   DefaultErrorBoundaryComponent,
   DefaultNotFoundErrorPageComponent,
   LightTheme,
   DarkTheme,
+  oauthRequestDialogAppRootElement,
+  alertDisplayAppRootElement,
   ...DefaultApis,
 ].map(def => resolveExtensionDefinition(def));
 
@@ -371,7 +377,7 @@ export function createSpecializedApp(options?: {
   );
   const rootEl = tree.root.instance!.getData(coreExtensionData.reactElement);
 
-  const App = () => (
+  const AppComponent = () => (
     <ApiProvider apis={apiHolder}>
       <AppThemeProvider>
         <RoutingProvider {...routeInfo} routeBindings={routeBindings}>
@@ -387,7 +393,7 @@ export function createSpecializedApp(options?: {
 
   return {
     createRoot() {
-      return <App />;
+      return <AppComponent />;
     },
   };
 }

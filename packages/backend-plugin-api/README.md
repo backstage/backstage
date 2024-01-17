@@ -1,8 +1,6 @@
 # @backstage/backend-plugin-api
 
-**This package is EXPERIMENTAL, but we encourage use of it to add support for the new backend system in your own plugins**
-
-This package provides the core API used by Backstage backend plugins and modules.
+This package provides the framework API used by Backstage backend plugins and modules.
 
 ## Installation
 

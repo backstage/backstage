@@ -1,5 +1,15 @@
 # @backstage/plugin-xcmetrics
 
+## 0.2.47
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+
 ## 0.2.47-next.1
 
 ### Patch Changes
