@@ -201,11 +201,10 @@ RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid
 
 COPY --chown=node:node . .
 
-# If you want to configure the baseUrl using an environment variable in your app-config.yaml
-# # app-config.yaml
-# app:
-#   baseUrl: ${BASE_URL}
-# You may set the BASE_URL argument to provide the value, and pass it as -build-arg on docker build
+
+# Passing the baseUrl in your app-config.yaml app.baseUrl: ${BASE_URL}
+# Uncomment to activate the argument and then execute:
+# docker build --build-arg="BASE_URL=https://backstage.example.com"
 # ARG BASE_URL
 
 RUN yarn tsc
