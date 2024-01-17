@@ -12,21 +12,13 @@ description: Frontend plugins
 
 In addition to the existing [`plugins`](../../plugins/index.md) documentation we now want to take a look at plugins in the new frontend system. If you already created a plugin yourself you will recognise a lot of similarity in the new architecture with the existing one.
 
-Backstage is a single-page application composed of a set of plugins. Each of this plugin extends & customises your specific
+Backstage is a single-page application composed of a set of plugins. Each of this plugins should solve exactly one responsibility & follow our suggested [plugin package structure & naming](../../architecture-decisions/adr011-plugin-package-structure.md).
 
-<!--
-
-Introduce frontend plugins and how each of them is shipped as a separate package. Highlight that each package should only export a single plugin instance.
-
--->
+For frontend plugins each plugin should only export a single plugin instance. The new frontend system can detect plugins, if they are exported as `default`, from the plugin package. This is also possible during runtime allowing you to add plugins to your Backstage instance without requiring a restart.
 
 ## Creating a Plugin
 
-<!--
-
-How to create a simple plugin
-
- -->
+A plugin is can easily be created, it only requires a plugin `id`:
 
 ```ts
 export const myPlugin = createPlugin({
@@ -34,19 +26,11 @@ export const myPlugin = createPlugin({
 });
 ```
 
-<!--
-
-Note that this plugin is useless in itself, and you need to provide extra options to make it useful, in particular extensions.
-
- -->
+The created plugin does not yet do anything, it will need some plugin options to be usefull. You can make it reachable through `routes`, link to other parts inside Backstage using `externalRoutes`, provide it `featureFlags` and most importantly give it functionallty, like pages, navigation items or entity cards, through `extensions`.
 
 ### Plugin ID
 
-<!--
-
-link to relevant docs
-
--->
+You will decide on the `id` when you [create a plugin](../../). The plugin `id` should follow the respective [naming pattern](./08-naming-patterns.md#plugins) of the new frontend system. To give you an example the GraphiQL plugin has the `id` `graphiql` & as it follows the naming convention we know that the `graphiqlPlugin` is the symbol for the default package export containing the plugin.
 
 ### Plugin Extensions
 
