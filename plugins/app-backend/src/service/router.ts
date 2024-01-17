@@ -135,9 +135,6 @@ export async function createRouter(
     express.static(resolvePath(appDistDir, 'static'), {
       setHeaders: (res, path) => {
         if (path === injectedConfigPath) {
-          logger.info(
-            `Serving in the injected Javascript file with max caching disabled`,
-          );
           res.setHeader('Cache-Control', 'no-cache');
         } else {
           res.setHeader('Cache-Control', CACHE_CONTROL_MAX_CACHE);
