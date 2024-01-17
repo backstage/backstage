@@ -105,7 +105,10 @@ When updating the tests in the Backstage project we found the following patterns
 - Use `.findBy*` to wait for elements to appear.
 - Use `waitFor(...)` to wait for any other expected state changes or multiple elements.
 - Use `@testing-library/user-event` for user interactions.
-- `renderHook` no longer forwards initial props to `wrapper`, they may need to be moved to a wrapper for the `wrapper` instead.
+- The `renderHook` API has changes in several ways:
+  - It no longer returns `waitForValueToChange` or `waitForNextUpdate`, you'll likely want to use `waitFor` instead.
+  - It now throws errors rather than returns them as part of the result.
+  - It no longer forwards `initialProps` to the `wrapper`, a workaround for this is provided in the [docs](https://testing-library.com/docs/react-testing-library/api/#renderhook-options-initialprops).
 - Waiting for mock functions to be called by a component and then expecting render state to be updated is no longer reliable.
 - Rendered components often don't immediately update on user input, it's more common to need to use `waitFor` or other utilities to wait for the expected state to be reached.
 
