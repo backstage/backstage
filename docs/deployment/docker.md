@@ -203,7 +203,7 @@ COPY --chown=node:node . .
 
 # Passing the baseUrl in your app-config.yaml app.baseUrl: ${BASE_URL}
 # Uncomment to activate the argument and then execute:
-# docker build --build-arg="BASE_URL=https://<your-url>"
+# docker build --build-arg="BASE_URL=https://<your-url>" .
 # ARG BASE_URL
 
 RUN yarn tsc
