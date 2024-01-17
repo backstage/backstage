@@ -651,7 +651,7 @@ SingleTenant Cluster:
 
 In the example above, we configured the "backstage.io/kubernetes-cluster" annotation on the entity `catalog-info.yaml` file to specify that the current component is running in a single cluster called "dice-cluster", so this cluster must have been specified in the `app-config.yaml`, under the Kubernetes clusters configuration (for more details, see [`Configuring Kubernetes clusters`](#configuring-kubernetes-clusters)).
 
-If you do not specify the annotation by `default Backstage fetches all` defined Kubernetes cluster.
+If you do not specify the annotation, by default Backstage fetches from all defined Kubernetes clusters.
 
 [1]: https://cloud.google.com/kubernetes-engine
 [2]: https://cloud.google.com/docs/authentication/production#linux-or-macos
