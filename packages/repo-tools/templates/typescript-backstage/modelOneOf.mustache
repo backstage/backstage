@@ -1,0 +1,14 @@
+{{#hasImports}}
+import {
+    {{#imports}}
+    {{{.}}},
+    {{/imports}}
+} from './';
+
+{{/hasImports}}
+/**
+ * @type {{classname}}{{#description}}
+ * {{{.}}}{{/description}}
+ * @export
+ */
+export type {{classname}} = {{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}};
