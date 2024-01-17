@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createApiRef } from '@backstage/core-plugin-api';
+import { JsonObject } from '@backstage/types';
 
-// TODO(Rugvip): This plugin is currently not part of the app element tree,
-//               ideally we have an API for the context menu that permits that.
-export { badgesPlugin } from '@backstage/plugin-badges';
-export { shortcutsPlugin } from '@backstage/plugin-shortcuts';
-export { homePlugin } from '@backstage/plugin-home';
-export { signalsPlugin } from '@backstage/plugin-signals';
+/** @public */
+export const signalApiRef = createApiRef<SignalApi>({
+  id: 'plugin.signal.service',
+});
+
+/** @public */
+export type SignalApi = {
+  subscribe(
+    channel: string,
+    onMessage: (message: JsonObject) => void,
+  ): { unsubscribe: () => void };
+};

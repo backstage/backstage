@@ -8700,6 +8700,95 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-signals-backend@workspace:^, @backstage/plugin-signals-backend@workspace:plugins/signals-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-signals-backend@workspace:plugins/signals-backend"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/plugin-signals-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/express": "*"
+    "@types/supertest": ^2.0.8
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    http-proxy-middleware: ^2.0.0
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    supertest: ^6.2.4
+    uuid: ^8.0.0
+    winston: ^3.2.1
+    ws: ^8.14.2
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-signals-node@workspace:^, @backstage/plugin-signals-node@workspace:plugins/signals-node":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-signals-node@workspace:plugins/signals-node"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/express": ^4.17.21
+    express: ^4.17.1
+    uuid: ^8.0.0
+    ws: ^8.14.2
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-signals-react@workspace:^, @backstage/plugin-signals-react@workspace:plugins/signals-react":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-signals-react@workspace:plugins/signals-react"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@material-ui/core": ^4.12.4
+    "@testing-library/jest-dom": ^6.0.0
+    "@testing-library/react": ^14.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-signals@workspace:^, @backstage/plugin-signals@workspace:plugins/signals":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-signals@workspace:plugins/signals"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/dev-utils": "workspace:^"
+    "@backstage/plugin-signals-react": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@material-ui/core": ^4.12.4
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": ^4.0.0-alpha.61
+    "@testing-library/jest-dom": ^6.0.0
+    "@testing-library/react": ^14.0.0
+    "@testing-library/user-event": ^14.0.0
+    jest-websocket-mock: ^2.5.0
+    msw: ^1.0.0
+    react-use: ^17.2.4
+    uuid: ^8.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-sonarqube-backend@workspace:^, @backstage/plugin-sonarqube-backend@workspace:plugins/sonarqube-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-sonarqube-backend@workspace:plugins/sonarqube-backend"
@@ -17758,7 +17847,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^4.17.13, @types/express@npm:^4.17.17, @types/express@npm:^4.17.6":
+"@types/express@npm:*, @types/express@npm:^4.17.13, @types/express@npm:^4.17.17, @types/express@npm:^4.17.21, @types/express@npm:^4.17.6":
   version: 4.17.21
   resolution: "@types/express@npm:4.17.21"
   dependencies:
@@ -26330,6 +26419,7 @@ __metadata:
     "@backstage/plugin-search-react": "workspace:^"
     "@backstage/plugin-sentry": "workspace:^"
     "@backstage/plugin-shortcuts": "workspace:^"
+    "@backstage/plugin-signals": "workspace:^"
     "@backstage/plugin-stack-overflow": "workspace:^"
     "@backstage/plugin-stackstorm": "workspace:^"
     "@backstage/plugin-tech-insights": "workspace:^"
@@ -26469,6 +26559,8 @@ __metadata:
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
+    "@backstage/plugin-signals-backend": "workspace:^"
+    "@backstage/plugin-signals-node": "workspace:^"
     "@backstage/plugin-tech-insights-backend": "workspace:^"
     "@backstage/plugin-tech-insights-backend-module-jsonfc": "workspace:^"
     "@backstage/plugin-tech-insights-node": "workspace:^"
@@ -44433,7 +44525,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:*, ws@npm:8.14.2, ws@npm:^8.11.0, ws@npm:^8.12.0, ws@npm:^8.13.0, ws@npm:^8.8.0":
+"ws@npm:*, ws@npm:8.14.2, ws@npm:^8.11.0, ws@npm:^8.12.0, ws@npm:^8.13.0, ws@npm:^8.14.2, ws@npm:^8.8.0":
   version: 8.14.2
   resolution: "ws@npm:8.14.2"
   peerDependencies:
