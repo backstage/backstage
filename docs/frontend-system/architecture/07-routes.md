@@ -10,9 +10,9 @@ description: Frontend routes
 
 ## Introduction
 
-In Backstage, plug-in boundaries and connections must be clearly defined. The app should allow navigation between plug-ins while isolating faults within them.
+Each Backstage plugin is an isolated piece of functionality that doesn't typically communicate directly with other plugins. In order to achieve this, there are many parts of the frontend system that provide a layer of indirection for cross-plugin communication, and they routing system is one of them.
 
-In order to address the problem outlined above, we introduced the concept of `RouteRef` which enables us route between pages in a flexible way, and it is especially important when bringing together different open source plugins.
+The Backstage routing system makes it possible to implement navigation across plugin boundaries, without each individual plugin knowing the concrete path or location of other plugins in the routing hierarchy, or even its own. This is achieved through the concept of route references, which are opaque reference values that can be shared and used to create concrete links to different parts of an app.
 
 ## Route References
 
