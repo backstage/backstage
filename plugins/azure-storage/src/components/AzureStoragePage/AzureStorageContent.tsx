@@ -107,7 +107,6 @@ export const AzureStorageContent = () => {
           style={{
             cursor: 'pointer',
             color: '#1F5493',
-            fontWeight: row.contentType === 'Folder' ? 'bold' : '500',
           }}
         >
           {row.filename}
