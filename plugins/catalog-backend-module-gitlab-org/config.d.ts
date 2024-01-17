@@ -20,7 +20,7 @@ export interface Config {
   catalog?: {
     providers?: {
       /**
-       * GitlabDiscoveryEntityProvider configuration
+       * GitlabOrgDiscoveryEntityProvider configuration
        */
       gitlab?: {
         [name: string]: {
