@@ -96,6 +96,14 @@ RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid
 COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 
+# If you want to configure the baseUrl using an environment variable in your app-config.yaml
+# # app-config.yaml
+# app:
+#   baseUrl: ${BASE_URL}
+
+# You may set the BASE_URL argument to provide the value, and pass it as -build-arg on docker build
+# ARG BASE_URL
+
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
 ```
 
