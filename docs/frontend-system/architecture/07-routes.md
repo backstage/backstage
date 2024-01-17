@@ -117,7 +117,7 @@ export const IndexPage = () => {
 };
 ```
 
-Line 6 uses a hook called `useRouteRef` to access a getter function that returns the details page path. On line 11, we call the getter, passing it an object with the kind, namespace, and name. These parameters are used to construct a concrete path to details the "Foo" details page.
+We use the `useRouteRef` hook to create a link generator function that returns the details page path. We then call the link generator, passing it an object with the kind, namespace, and name. These parameters are used to construct a concrete path to details the "Foo" details page.
 
 Let's see how the details page can get the parameters from the URL:
 
