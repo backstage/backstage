@@ -321,7 +321,7 @@ describe('BackendInitializer', () => {
       })(),
     );
     await expect(init.start()).rejects.toThrow(
-      "Extension point registered for plugin 'test-a' may not be used by module for plugin 'test-b'",
+      "Illegal dependency: Module 'mod' for plugin 'test-b' attempted to depend on extension point 'a' for plugin 'test-a'. Extension points can only be used within their plugin's scope.",
     );
   });
 });
