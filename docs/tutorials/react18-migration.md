@@ -65,9 +65,17 @@ ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
 
 Once these steps are done you should be able to run your app and see it working as before, except now using React 18.
 
+### TypeScript Errors
+
+When upgrading to React 18 you are likely to see a fair number of TypeScript type errors. A summary of the breaking changes can be found in the [Pull Request that introduced them](https://github.com/DefinitelyTyped/DefinitelyTyped/pull/56210). A codemod is also provided to help with the migration.
+
+Run `yarn tsc:full` to asses the damage.
+
+The good news is that these errors can be fixed while still staying on React 17. If you have a large number of errors to fix you can address as few or many is you like at a time and merge them into your main branch **without** the version bumps from step 1. This lets you gradually migrate the types in your project while not yet fully moving over to React 18. Once all type breakages are fixed you can move on to the next step of migrating tests.
+
 ### Migrating Tests
 
-At this point the app hopefully works, but if you run your tests you may see that a lot of them are failing. This is because the current version of the `@testing-library/react` package does not support React 18. Unfortunately the new version that we will be moving to does not support React 17, which is why we need to do this all at once.
+At this point the app hopefully works and you have no type errors, but if you run your tests you may see that a lot of them are failing. This is because the current version of the `@testing-library/react` package does not support React 18. Unfortunately the new version that we will be moving to does not support React 17, which is why we need to do this all at once.
 
 :::info
 If migrating your entire project at once is not feasible, you can try to add `devDependencies` for `react` and `react-dom` v17 to individual plugins to be migrated later. This is not something we have tried ourselves in practice, so let us know in the community Discord if you attempt this and how it goes.
