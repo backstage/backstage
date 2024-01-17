@@ -14,9 +14,4 @@
  * limitations under the License.
  */
 
-export type {
-  AnalyzeLocationEntityField,
-  AnalyzeLocationExistingEntity,
-  AnalyzeLocationGenerateEntity,
-  LocationAnalyzer,
-} from './types';
+export type { LocationAnalyzer } from './types';
