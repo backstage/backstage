@@ -1,5 +1,17 @@
 # @backstage/plugin-sonarqube
 
+## 0.7.11
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-sonarqube-react@0.1.12
+
 ## 0.7.11-next.2
 
 ### Patch Changes

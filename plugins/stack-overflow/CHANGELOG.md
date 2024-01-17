@@ -1,5 +1,19 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.24
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-home-react@0.1.7
+  - @backstage/plugin-search-react@1.7.5
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.1.24-next.2
 
 ### Patch Changes

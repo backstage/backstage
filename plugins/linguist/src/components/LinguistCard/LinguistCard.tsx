@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  Box,
-  Chip,
-  Tooltip,
-  Typography,
-  makeStyles,
-  Grid,
-  useTheme,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { InfoCard, Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { DateTime } from 'luxon';

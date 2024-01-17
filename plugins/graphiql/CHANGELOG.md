@@ -1,5 +1,16 @@
 # @backstage/plugin-graphiql
 
+## 0.3.2
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.1
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+
 ## 0.3.2-next.2
 
 ### Patch Changes

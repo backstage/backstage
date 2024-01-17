@@ -46,6 +46,7 @@ export class StackOverflowClient implements StackOverflowApi {
   }): Promise<StackOverflowQuestion[]> {
     const params = qs.stringify(options.requestParams, {
       addQueryPrefix: true,
+      arrayFormat: 'repeat',
     });
     const response = await fetch(`${this.baseUrl}/questions${params}`);
     const data = await response.json();

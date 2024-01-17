@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.1.15
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 1.1.15-next.1
 
 ### Patch Changes

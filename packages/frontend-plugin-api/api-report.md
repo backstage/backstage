@@ -687,6 +687,39 @@ export function createRouteRef<
       }
 >;
 
+// @public
+export function createRouterExtension<
+  TConfig extends {},
+  TInputs extends AnyExtensionInputMap,
+>(options: {
+  namespace?: string;
+  name?: string;
+  attachTo?: {
+    id: string;
+    input: string;
+  };
+  configSchema?: PortableSchema<TConfig>;
+  disabled?: boolean;
+  inputs?: TInputs;
+  Component: ComponentType<
+    PropsWithChildren<{
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+      config: TConfig;
+    }>
+  >;
+}): ExtensionDefinition<TConfig>;
+
+// @public (undocumented)
+export namespace createRouterExtension {
+  const // (undocumented)
+    componentDataRef: ConfigurableExtensionDataRef<
+      React_2.ComponentType<{
+        children?: React_2.ReactNode;
+      }>,
+      {}
+    >;
+}
+
 // @public (undocumented)
 export function createSchemaFromZod<TOutput, TInput>(
   schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,

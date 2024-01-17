@@ -377,7 +377,7 @@ describe('createPublishGithubPullRequestAction', () => {
         branchName: 'new-app',
         description: 'This PR is really good',
         reviewers: ['foobar'],
-        teamReviewers: ['team-foo'],
+        teamReviewers: ['team-foo', 'team-foo', 'team-bar'],
       };
 
       mockDir.setContent({ [workspacePath]: {} });
@@ -401,7 +401,7 @@ describe('createPublishGithubPullRequestAction', () => {
         repo: 'myrepo',
         pull_number: 123,
         reviewers: ['foobar'],
-        team_reviewers: ['team-foo'],
+        team_reviewers: ['team-foo', 'team-bar'],
       });
     });
 
