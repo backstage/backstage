@@ -59,7 +59,7 @@ import {
   yamlPlaceholderResolver,
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
-import { LocationAnalyzer } from '../ingestion/types';
+import { LocationAnalyzer } from '../ingestion';
 import { CatalogProcessingEngine } from '../processing';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
@@ -71,7 +71,7 @@ import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import {
   createRandomProcessingInterval,
   ProcessingIntervalFunction,
-} from '../processing/refresh';
+} from '../processing';
 import { createRouter } from './createRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { AuthorizedRefreshService } from './AuthorizedRefreshService';
@@ -92,7 +92,7 @@ import {
   createPermissionIntegrationRouter,
 } from '@backstage/plugin-permission-node';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
-import { basicEntityFilter } from './request/basicEntityFilter';
+import { basicEntityFilter } from './request';
 import {
   catalogPermissions,
   RESOURCE_TYPE_CATALOG_ENTITY,

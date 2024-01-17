@@ -29,7 +29,7 @@ import { Logger } from 'winston';
 import yn from 'yn';
 import { z } from 'zod';
 import { EntitiesCatalog } from '../catalog/types';
-import { LocationAnalyzer } from '../ingestion/types';
+import { LocationAnalyzer } from '../ingestion';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
 import {
