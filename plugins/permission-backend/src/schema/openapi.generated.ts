@@ -269,7 +269,7 @@ export const spec = {
           },
         },
         required: ['resourceType', 'rule'],
-        additionalProperties: true,
+        additionalProperties: false,
       },
       PermissionCriteria: {
         oneOf: [
@@ -279,12 +279,12 @@ export const spec = {
               allOf: {
                 type: 'array',
                 items: {
-                  $ref: '#/components/schemas/PermissionCondition',
+                  $ref: '#/components/schemas/PermissionCriteria',
                 },
                 minItems: 1,
               },
             },
-            additionalProperties: true,
+            additionalProperties: false,
           },
           {
             type: 'object',
@@ -292,12 +292,12 @@ export const spec = {
               anyOf: {
                 type: 'array',
                 items: {
-                  $ref: '#/components/schemas/PermissionCondition',
+                  $ref: '#/components/schemas/PermissionCriteria',
                 },
                 minItems: 1,
               },
             },
-            additionalProperties: true,
+            additionalProperties: false,
           },
           {
             type: 'object',
@@ -305,12 +305,12 @@ export const spec = {
               not: {
                 type: 'array',
                 items: {
-                  $ref: '#/components/schemas/PermissionCondition',
+                  $ref: '#/components/schemas/PermissionCriteria',
                 },
                 minItems: 1,
               },
             },
-            additionalProperties: true,
+            additionalProperties: false,
           },
           {
             $ref: '#/components/schemas/PermissionCondition',
@@ -352,7 +352,7 @@ export const spec = {
           },
         },
         required: ['result', 'id', 'pluginId', 'resourceType', 'conditions'],
-        additionalProperties: true,
+        additionalProperties: false,
       },
       EvaluatePermissionResponse: {
         oneOf: [

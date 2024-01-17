@@ -21,7 +21,9 @@ paths:
                   items:
                     type: array
                     items:
-                      $ref: '#/components/schemas/EvaluatePermissionResponse'
+                      oneOf:
+                        - $ref: '#/components/schemas/ConditionalPolicyDecision'
+                        - $ref: '#/components/schemas/DefinitivePolicyDecision'
                 required:
                   - items
                 additionalProperties: false
@@ -185,36 +187,35 @@ components:
       required:
         - resourceType
         - rule
-      additionalProperties: true
+      additionalProperties: false
     
 
     PermissionCriteria:
-      # Restricting this to depth of 1, TS doesn't love recursive
       oneOf:
         - type: object
           properties:
             allOf:
               type: array
               items:
-                $ref: '#/components/schemas/PermissionCondition'
+                $ref: '#/components/schemas/PermissionCriteria'
               minItems: 1
-          additionalProperties: true
+          additionalProperties: false
         - type: object
           properties:
             anyOf:
               type: array
               items:
-                $ref: '#/components/schemas/PermissionCondition'
+                $ref: '#/components/schemas/PermissionCriteria'
               minItems: 1
-          additionalProperties: true
+          additionalProperties: false
         - type: object
           properties:
             not:
               type: array
               items:
-                $ref: '#/components/schemas/PermissionCondition'
+                $ref: '#/components/schemas/PermissionCriteria'
               minItems: 1
-          additionalProperties: true
+          additionalProperties: false
         - $ref: '#/components/schemas/PermissionCondition'
 
 
@@ -254,12 +255,7 @@ components:
         - pluginId
         - resourceType
         - conditions
-      additionalProperties: true
-
-    EvaluatePermissionResponse:
-      oneOf:
-        - $ref: '#/components/schemas/ConditionalPolicyDecision'
-        - $ref: '#/components/schemas/DefinitivePolicyDecision'
+      additionalProperties: false
 
     PostAuthorize400ResponseBody:
       type: object

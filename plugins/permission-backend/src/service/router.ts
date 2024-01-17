@@ -138,6 +138,7 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
+  // @ts-expect-error - https://github.com/ThomasAribart/json-schema-to-ts/issues/96
   router.post('/authorize', async (req, res) => {
     const user = await identity.getIdentity({ request: req });
 
