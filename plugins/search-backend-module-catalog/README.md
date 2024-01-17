@@ -1,7 +1,5 @@
 # search-backend-module-catalog
 
-> DISCLAIMER: The new backend system is in alpha, and so are the search backend module support for the new backend system. We don't recommend you to migrate your backend installations to the new system yet. But if you want to experiment, you can find getting started guides below.
-
 This package exports a module that extends the search backend to also indexing the entities of your catalog.
 
 ## Installation
@@ -61,7 +59,7 @@ backend.add(searchModuleCatalogCollator());
 backend.add(
   createBackendModule({
     pluginId: 'search',
-    moduleId: 'myCatalogCollatorOptions',
+    moduleId: 'my-catalog-collator-options',
     register(reg) {
       reg.registerInit({
         deps: { collator: catalogCollatorExtensionPoint },

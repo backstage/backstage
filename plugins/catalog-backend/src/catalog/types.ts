@@ -15,19 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-
-/**
- * A filter expression for entities.
- *
- * Any (at least one) of the outer sets must match, within which all of the
- * individual filters must match.
- * @public
- */
-export type EntityFilter =
-  | { allOf: EntityFilter[] }
-  | { anyOf: EntityFilter[] }
-  | { not: EntityFilter }
-  | EntitiesSearchFilter;
+import { EntityFilter } from '@backstage/plugin-catalog-node';
 
 /**
  * A pagination rule for entities.
@@ -44,27 +32,6 @@ export type EntityPagination = {
 export type EntityOrder = {
   field: string;
   order: 'asc' | 'desc';
-};
-
-/**
- * Matches rows in the search table.
- * @public
- */
-export type EntitiesSearchFilter = {
-  /**
-   * The key to match on.
-   *
-   * Matches are always case insensitive.
-   */
-  key: string;
-
-  /**
-   * Match on plain equality of values.
-   *
-   * Match on values that are equal to any of the given array items. Matches are
-   * always case insensitive.
-   */
-  values?: string[];
 };
 
 export type PageInfo =

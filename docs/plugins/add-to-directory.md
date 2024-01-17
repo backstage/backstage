@@ -21,7 +21,18 @@ description: A brief description of the plugin. # Max 170 characters
 documentation: # A link to your documentation E.g. Your github README
 iconUrl: # Used as the src attribute for your logo.
 # You can provide an external url or add your logo under static/img and provide a path
-# relative to static/ e.g. img/my-logo.png
+# relative to static/ e.g. /img/my-logo.png
 npmPackageName: # Your npm package name E.g. '@backstage/plugin-<etc>' quotes are required
 addedDate: # The date plugin added to directory E.g. '2022-10-01' quotes are required
 ```
+
+## Submission Tips
+
+Here are a few tips to help speed up the review process when you submit your plugin:
+
+- For any icon that you use make sure you have the proper rights to use it.
+- Make sure that your package had been published on the NPM registry and that it's public.
+- Make sure your package on NPM has a link back to your code repo, this helps provide confidence that it's the right package.
+- Where possible, please use an [NPM scope](https://docs.npmjs.com/about-scopes) that matches either your Organization name or user name, this provides trust in the plugin
+- If your plugin has both a frontend and backend link the documentation to the frontend package but make sure it mentioned needing to install the backend package.
+- Where possible include a screenshot of the features in you plugin documentation, it really does help when deciding to use a plugin.

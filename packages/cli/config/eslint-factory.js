@@ -66,7 +66,7 @@ function createConfig(dir, extraConfig = {}) {
       ...(extraExtends ?? []),
     ],
     parser: '@typescript-eslint/parser',
-    plugins: ['import', ...(plugins ?? [])],
+    plugins: ['import', 'unused-imports', ...(plugins ?? [])],
     env: {
       jest: true,
       ...env,
@@ -161,6 +161,23 @@ function createConfig(dir, extraConfig = {}) {
                 ...(restrictedImports ?? []),
                 ...(restrictedTestImports ?? []),
               ],
+            },
+          ],
+        },
+      },
+      {
+        files: ['**/src/generated/**/*.ts'],
+        rules: {
+          ...tsRules,
+          'no-unused-vars': 'off',
+          'unused-imports/no-unused-imports': 'error',
+          'unused-imports/no-unused-vars': [
+            'warn',
+            {
+              vars: 'all',
+              varsIgnorePattern: '^_',
+              args: 'none',
+              argsIgnorePattern: '^_',
             },
           ],
         },

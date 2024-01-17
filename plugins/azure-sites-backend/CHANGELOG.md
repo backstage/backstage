@@ -1,5 +1,99 @@
 # @backstage/plugin-azure-sites-backend
 
+## 0.1.19
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.2
+
+## 0.1.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.18
+
+### Patch Changes
+
+- 99fb541: Updated dependency `@azure/identity` to `^4.0.0`.
+- b7a13ed: Updated dependency `@azure/arm-appservice` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.18-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.18-next.1
+
+### Patch Changes
+
+- 99fb54183b: Updated dependency `@azure/identity` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- b7a13edf6d: Updated dependency `@azure/arm-appservice` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
+## 0.1.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
 ## 0.1.17-next.2
 
 ### Patch Changes

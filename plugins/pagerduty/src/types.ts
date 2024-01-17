@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-/** @public */
+/**
+ * @public
+ * @deprecated This plugin and it's types will be removed in a future release. Please use \@pagerduty/backstage-plugin plugin instead (https://www.npmjs.com/package/\@pagerduty/backstage-plugin).
+ */
 export type PagerDutyEntity = {
   integrationKey?: string;
   serviceId?: string;

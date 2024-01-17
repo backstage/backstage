@@ -15,11 +15,10 @@
  */
 
 import { useElementFilter } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
@@ -51,7 +50,7 @@ type OverlayMenuProps = {
   children?: React.ReactNode;
 };
 
-const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
+const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
   theme => ({
     root: {
       position: 'fixed',

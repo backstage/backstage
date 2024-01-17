@@ -17,8 +17,8 @@ jobs:
         node-version: [18.x, 20.x]
 
     services:
-      postgres13:
-        image: postgres:13
+      postgres16:
+        image: postgres:16
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -28,8 +28,8 @@ jobs:
           --health-retries 5
         ports:
           - 5432/tcp
-      postgres9:
-        image: postgres:9
+      postgres12:
+        image: postgres:12
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/checkout@v4.1.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -106,8 +106,8 @@ jobs:
           bash <(curl -s https://codecov.io/bash) -f packages/core-plugin-api/coverage/* -F core-plugin-api
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
-          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES16_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres16.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES12_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres12.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
 
       - name: Discord notification
@@ -138,14 +138,14 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@1b05615854632b887b69ae1be8cbefe72d3ae423 # v2.6.0
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
         with:
           egress-policy: audit
 
       - uses: actions/checkout@v4.1.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -171,7 +171,7 @@ jobs:
           if [ -f ".changeset/pre.json" ]; then
               yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish --tag next
           else
-              yarn workspaces foreach -p -j 10 -v --no-private npm publish --access public --tolerate-republish
+              yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

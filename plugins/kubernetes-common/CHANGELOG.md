@@ -1,5 +1,73 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.7.3
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+
+## 0.7.3-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.11
+
+## 0.7.2
+
+### Patch Changes
+
+- 706fc3a: Updated dependency `@kubernetes/client-node` to `0.20.0`.
+- 5d79682: Remove unused dependency
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.7.2-next.1
+
+### Patch Changes
+
+- 5d796829bb: Remove unused dependency
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.10
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- 706fc3a7e1: Updated dependency `@kubernetes/client-node` to `0.20.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.10
+
+## 0.7.1
+
+### Patch Changes
+
+- 62180df4ee: Allow storing dashboard parameters for kubernetes in catalog
+- df40b067e1: Fixed the lack of `resourcequotas` as part of the Default Objects to fetch from the kubernetes api
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.7.1-next.1
 
 ### Patch Changes

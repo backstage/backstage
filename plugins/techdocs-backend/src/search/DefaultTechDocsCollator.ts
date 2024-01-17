@@ -136,6 +136,7 @@ export class DefaultTechDocsCollator {
         );
 
         try {
+          const { token: newToken } = await tokenManager.getToken();
           const searchIndexResponse = await fetch(
             DefaultTechDocsCollator.constructDocsIndexUrl(
               techDocsBaseUrl,
@@ -143,7 +144,7 @@ export class DefaultTechDocsCollator {
             ),
             {
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${newToken}`,
               },
             },
           );

@@ -134,7 +134,7 @@ links:
 
 There are multiple authentication providers available for you to use with
 Backstage, feel free to follow
-[the instructions for adding authentication](../auth/).
+[the instructions for adding authentication](../auth/index.md).
 
 For this tutorial we choose to use GitHub, a free service most of you might be
 familiar with. For other options, see
@@ -205,7 +205,7 @@ Restart Backstage from the terminal, by stopping it with `Control-C`, and starti
 To learn more about Authentication in Backstage, here are some docs you
 could read:
 
-- [Authentication in Backstage](../auth/)
+- [Authentication in Backstage](../auth/index.md)
 - [Using organizational data from GitHub](../integrations/github/org.md)
 
 ### Setting up a GitHub Integration
@@ -254,7 +254,7 @@ integrations:
 
 Some helpful links, for if you want to learn more about:
 
-- [Other available integrations](../integrations/)
+- [Other available integrations](../integrations/index.md)
 - [Using GitHub Apps instead of a Personal Access Token](../integrations/github/github-apps.md#docsNav)
 
 ### Explore what we've done so far
@@ -275,8 +275,8 @@ otherwise something went terribly wrong.
 
   ![Software template main screen, with a blue button to add an existing component](../assets/getting-started/b-existing-1.png)
 
-- As URL use `https://github.com/backstage/demo/blob/master/catalog-info.yaml`.
-  This is used by our [demo site](https://demo.backstage.io).
+- As URL use `https://github.com/backstage/backstage/blob/master/catalog-info.yaml`.
+  This is used in our [demo site](https://demo.backstage.io) catalog.
 
   ![Register a new component wizard, asking for an URL to the existing component YAML file](../assets/getting-started/b-existing-2.png)
 
@@ -285,10 +285,15 @@ otherwise something went terribly wrong.
   ![Register a new component wizard, showing the metadata for the component YAML we use in this tutorial](../assets/getting-started/b-existing-3.png)
 
 - You should receive a message that your entities have been added.
-- If you go back to `Home`, you should be able to find `demo`. You should be
+- If you go back to `Home`, you should be able to find `backstage`. You should be
   able to click it and see the details
 
 ## Create a new component using a software template
+
+> Note: if you're running Backstage with Node 20 or later, you'll need to pass the flag `--no-node-snapshot` to Node in order to
+> use the templates feature.
+> One way to do this is to specify the `NODE_OPTIONS` environment variable before starting Backstage:
+> `export NODE_OPTIONS=--no-node-snapshot`
 
 - Go to `create` and choose to create a website with the `Example Node.js Template`
 - Type in a name, let's use `tutorial` and click `Next Step`

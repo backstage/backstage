@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
+
 import {
   IconButton,
   ListItemIcon,
@@ -22,6 +22,7 @@ import {
   MenuItem,
   MenuList,
   Popover,
+  Theme,
   useTheme,
 } from '@material-ui/core';
 import { useAsync } from '@react-hookz/web';
@@ -44,7 +45,7 @@ type ContextMenuProps = {
   taskId?: string;
 };
 
-const useStyles = makeStyles<BackstageTheme, { fontColor: string }>(() => ({
+const useStyles = makeStyles<Theme, { fontColor: string }>(() => ({
   button: {
     color: ({ fontColor }) => fontColor,
   },
@@ -60,7 +61,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
     onToggleButtonBar,
     taskId,
   } = props;
-  const { getPageTheme } = useTheme<BackstageTheme>();
+  const { getPageTheme } = useTheme();
   const pageTheme = getPageTheme({ themeId: 'website' });
   const classes = useStyles({ fontColor: pageTheme.fontColor });
   const scaffolderApi = useApi(scaffolderApiRef);

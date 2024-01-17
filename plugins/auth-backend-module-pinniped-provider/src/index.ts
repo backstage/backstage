@@ -20,5 +20,6 @@
  * @packageDocumentation
  */
 
-export { pinnipedAuthenticator } from './authenticator';
-export { authModulePinnipedProvider } from './module';
+export { pinnipedAuthenticator, PinnipedStrategyCache } from './authenticator';
+export { authModulePinnipedProvider as default } from './module';
+export * from './deprecated';

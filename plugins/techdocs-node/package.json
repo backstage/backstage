@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-techdocs-node",
   "description": "Common node.js functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
-  "version": "1.10.0-next.2",
+  "version": "1.11.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -43,7 +43,7 @@
     "@aws-sdk/credential-providers": "^3.350.0",
     "@aws-sdk/lib-storage": "^3.350.0",
     "@aws-sdk/types": "^3.347.0",
-    "@azure/identity": "^3.2.1",
+    "@azure/identity": "^4.0.0",
     "@azure/storage-blob": "^12.5.0",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
@@ -53,7 +53,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/integration-aws-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
-    "@google-cloud/storage": "^6.0.0",
+    "@google-cloud/storage": "^7.0.0",
     "@smithy/node-http-handler": "^2.1.7",
     "@trendyol-js/openstack-swift-sdk": "^0.0.6",
     "@types/express": "^4.17.6",

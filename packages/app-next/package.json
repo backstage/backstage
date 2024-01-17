@@ -1,6 +1,6 @@
 {
   "name": "example-app-next",
-  "version": "0.0.3-next.2",
+  "version": "0.0.5",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -10,7 +10,6 @@
     "@backstage/app-defaults": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
@@ -22,6 +21,7 @@
     "@backstage/plugin-airbrake": "workspace:^",
     "@backstage/plugin-apache-airflow": "workspace:^",
     "@backstage/plugin-api-docs": "workspace:^",
+    "@backstage/plugin-app-visualizer": "workspace:^",
     "@backstage/plugin-azure-devops": "workspace:^",
     "@backstage/plugin-azure-sites": "workspace:^",
     "@backstage/plugin-badges": "workspace:^",
@@ -31,7 +31,6 @@
     "@backstage/plugin-catalog-import": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^",
-    "@backstage/plugin-circleci": "workspace:^",
     "@backstage/plugin-cloudbuild": "workspace:^",
     "@backstage/plugin-code-coverage": "workspace:^",
     "@backstage/plugin-cost-insights": "workspace:^",
@@ -77,6 +76,7 @@
     "@backstage/plugin-todo": "workspace:^",
     "@backstage/plugin-user-settings": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "@circleci/backstage-plugin": "^0.1.1",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",

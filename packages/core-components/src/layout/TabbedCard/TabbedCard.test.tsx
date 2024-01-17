@@ -18,6 +18,7 @@ import { renderInTestApp, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { CardTab, TabbedCard } from './TabbedCard';
+import userEvent from '@testing-library/user-event';
 
 const minProps = {
   title: 'Some title',
@@ -95,5 +96,26 @@ describe('<TabbedCard />', () => {
       </TabbedCard>,
     );
     expect(screen.getByText('Test Content 2')).toBeInTheDocument();
+  });
+
+  it('should trigger onChange only once', async () => {
+    const mockOnChange = jest.fn();
+    const user = userEvent.setup();
+
+    const rendered = render(
+      wrapInTestApp(
+        <TabbedCard onChange={mockOnChange}>
+          <CardTab value="one" label="Test 1">
+            Test Content 1
+          </CardTab>
+          <CardTab value="two" label="Test 2">
+            Test Content 2
+          </CardTab>
+        </TabbedCard>,
+      ),
+    );
+
+    await user.click(rendered.getByText('Test 2'));
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
   });
 });

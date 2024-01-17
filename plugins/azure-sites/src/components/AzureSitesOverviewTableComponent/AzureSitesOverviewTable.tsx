@@ -18,6 +18,7 @@ import React, { Dispatch, useEffect, useState } from 'react';
 import {
   Box,
   Card,
+  Chip,
   IconButton,
   LinearProgress,
   Menu,
@@ -39,7 +40,6 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { DateTime } from 'luxon';
 import { useApi } from '@backstage/core-plugin-api';
 import { azureSiteApiRef } from '../../api';
-import { BackstageTheme } from '@backstage/theme';
 
 type States = 'Waiting' | 'Running' | 'Paused' | 'Failed' | 'Stopped';
 type Kinds = 'app' | 'functionapp';
@@ -50,7 +50,7 @@ const State = ({ value }: { value: States }) => {
       common: { black },
       status: { ok, error },
     },
-  } = useTheme<BackstageTheme>();
+  } = useTheme();
 
   const colorMap = {
     Waiting: '#dcbc21',
@@ -90,6 +90,18 @@ const Kind = ({ value }: { value: Kinds }) => {
       <Tooltip title={iconValue}>{iconMap[iconValue]}</Tooltip>
     </Box>
   );
+};
+
+const Tags = ({ tags }: { tags: any }) => {
+  return Object.keys(tags).map((key: any) => (
+    <Chip
+      key={key}
+      label={`${key}: ${tags[key]}`}
+      size="small"
+      variant="default"
+      style={{ marginBottom: '1px' }}
+    />
+  ));
 };
 
 type TableProps = {
@@ -223,6 +235,11 @@ export const AzureSitesOverviewTable = ({ data, loading }: TableProps) => {
       title: 'status',
       field: 'status',
       render: (func: AzureSite) => <State value={func.state as States} />,
+    },
+    {
+      title: 'Tags',
+      field: 'tags',
+      render: (func: AzureSite) => (func.tags ? <Tags tags={func.tags} /> : ''),
     },
     {
       title: 'last modified',

@@ -26,17 +26,7 @@ interface StartBackendOptions {
 }
 
 export async function startBackend(options: StartBackendOptions) {
-  const hasDev = await fs.pathExists(paths.resolveTarget('dev'));
-  if (hasDev) {
-    const waitForExit = await startBackendExperimental({
-      entry: 'dev/index',
-      checksEnabled: false, // not supported
-      inspectEnabled: options.inspectEnabled,
-      inspectBrkEnabled: options.inspectBrkEnabled,
-    });
-
-    await waitForExit();
-  } else if (!process.env.LEGACY_BACKEND_START) {
+  if (!process.env.LEGACY_BACKEND_START) {
     const waitForExit = await startBackendExperimental({
       entry: 'src/index',
       checksEnabled: false, // not supported
@@ -46,12 +36,7 @@ export async function startBackend(options: StartBackendOptions) {
 
     await waitForExit();
   } else {
-    // Cleaning dist/ before we start the dev process helps work around an issue
-    // where we end up with the entrypoint executing multiple times, causing
-    // a port bind conflict among other things.
-    await fs.remove(paths.resolveTarget('dist'));
-
-    const waitForExit = await serveBackend({
+    const waitForExit = await cleanDistAndServeBackend({
       entry: 'src/index',
       checksEnabled: options.checksEnabled,
       inspectEnabled: options.inspectEnabled,
@@ -60,4 +45,64 @@ export async function startBackend(options: StartBackendOptions) {
 
     await waitForExit();
   }
+}
+
+export async function startBackendPlugin(options: StartBackendOptions) {
+  if (!process.env.LEGACY_BACKEND_START) {
+    const hasDevIndexEntry = await fs.pathExists(
+      paths.resolveTarget('dev', 'index.ts'),
+    );
+    const hasSrcIndexEntry = await fs.pathExists(
+      paths.resolveTarget('src', 'run.ts'),
+    );
+
+    if (!hasDevIndexEntry && !hasSrcIndexEntry) {
+      console.warn(
+        hasSrcIndexEntry
+          ? `The 'dev' directory is missing. The plugin might not be updated for the new backend system. To run, use "LEGACY_BACKEND_START=1 yarn start".`
+          : `The 'dev' directory is missing. Please create a proper dev/index.ts in order to start the plugin.`,
+      );
+      return;
+    }
+
+    const waitForExit = await startBackendExperimental({
+      entry: 'dev/index',
+      checksEnabled: false, // not supported
+      inspectEnabled: options.inspectEnabled,
+      inspectBrkEnabled: options.inspectBrkEnabled,
+    });
+
+    await waitForExit();
+  } else {
+    const hasEntry = await fs.pathExists(paths.resolveTarget('src', 'run.ts'));
+    if (!hasEntry) {
+      console.warn(
+        `src/run.ts is missing. Please create the file or run the command without LEGACY_BACKEND_START`,
+      );
+      return;
+    }
+
+    const waitForExit = await cleanDistAndServeBackend({
+      entry: 'src/run',
+      checksEnabled: options.checksEnabled,
+      inspectEnabled: options.inspectEnabled,
+      inspectBrkEnabled: options.inspectBrkEnabled,
+    });
+
+    await waitForExit();
+  }
+}
+
+async function cleanDistAndServeBackend(options: {
+  entry: string;
+  checksEnabled: boolean;
+  inspectEnabled: boolean;
+  inspectBrkEnabled: boolean;
+}) {
+  // Cleaning dist/ before we start the dev process helps work around an issue
+  // where we end up with the entrypoint executing multiple times, causing
+  // a port bind conflict among other things.
+  await fs.remove(paths.resolveTarget('dist'));
+
+  return serveBackend(options);
 }

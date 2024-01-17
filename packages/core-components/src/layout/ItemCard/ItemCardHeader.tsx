@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
+
 import Box from '@material-ui/core/Box';
-import { createStyles, makeStyles, WithStyles } from '@material-ui/core/styles';
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  WithStyles,
+} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
 /** @public */
 export type ItemCardHeaderClassKey = 'root';
 
-const styles = (theme: BackstageTheme) =>
+const styles = (theme: Theme) =>
   createStyles({
     root: {
       color: theme.palette.common.white,

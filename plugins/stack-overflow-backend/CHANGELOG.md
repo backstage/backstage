@@ -1,5 +1,99 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.2.13
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.2
+
+## 0.2.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.2-next.2
+
+## 0.2.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.2-next.1
+
+## 0.2.13-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.2-next.0
+
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.9
+
+## 0.2.12-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.1-next.3
+  - @backstage/plugin-search-common@1.2.8
+
+## 0.2.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.1-next.2
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.8
+
+## 0.2.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.1-next.1
+  - @backstage/plugin-search-common@1.2.8
+
+## 0.2.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.1-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.8
+
+## 0.2.11
+
+### Patch Changes
+
+- b168d7e7ea: Deprecate package in favor of the new `@backstage/plugin-search-backend-module-stack-overflow-collator` module.
+
+  The search collator `requestParams` option is optional now, so its default value is `{ order: 'desc', sort: 'activity', site: 'stackoverflow' }` as defined in the `Try It` section on the [official Stack Overflow API documentation](https://api.stackexchange.com/docs/questions).
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.0
+  - @backstage/backend-common@0.19.9
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.8
+
 ## 0.2.11-next.2
 
 ### Patch Changes

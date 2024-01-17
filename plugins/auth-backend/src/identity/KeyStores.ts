@@ -76,7 +76,7 @@ export class KeyStores {
     }
 
     if (provider === 'static') {
-      await StaticKeyStore.fromConfig(config);
+      return await StaticKeyStore.fromConfig(config);
     }
 
     throw new Error(`Unknown KeyStore provider: ${provider}`);

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { AppNode } from '../apis';
 import { PortableSchema } from '../schema';
 import { Expand } from '../types';
 import { ExtensionDataRef } from './createExtensionDataRef';
 import { ExtensionInput } from './createExtensionInput';
-import { BackstagePlugin } from './createPlugin';
 
 /** @public */
 export type AnyExtensionDataMap = {
@@ -52,18 +52,28 @@ export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
 };
 
 /**
- * Converts an extension input map into the matching concrete input values type.
+ * Convert a single extension input into a matching resolved input.
  * @public
  */
-export type ExtensionInputValues<
+export type ResolvedExtensionInput<TExtensionData extends AnyExtensionDataMap> =
+  {
+    node: AppNode;
+    output: ExtensionDataValues<TExtensionData>;
+  };
+
+/**
+ * Converts an extension input map into a matching collection of resolved inputs.
+ * @public
+ */
+export type ResolvedExtensionInputs<
   TInputs extends { [name in string]: ExtensionInput<any, any> },
 > = {
   [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
-    ? Array<Expand<ExtensionDataValues<TInputs[InputName]['extensionData']>>>
+    ? Array<Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>>
     : false extends TInputs[InputName]['config']['optional']
-    ? Expand<ExtensionDataValues<TInputs[InputName]['extensionData']>>
+    ? Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>
     : Expand<
-        ExtensionDataValues<TInputs[InputName]['extensionData']> | undefined
+        ResolvedExtensionInput<TInputs[InputName]['extensionData']> | undefined
       >;
 };
 
@@ -73,36 +83,61 @@ export interface CreateExtensionOptions<
   TInputs extends AnyExtensionInputMap,
   TConfig,
 > {
-  id: string;
+  kind?: string;
+  namespace?: string;
+  name?: string;
   attachTo: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
   output: TOutput;
   configSchema?: PortableSchema<TConfig>;
   factory(options: {
-    source?: BackstagePlugin;
+    node: AppNode;
     config: TConfig;
-    inputs: Expand<ExtensionInputValues<TInputs>>;
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
 }
 
 /** @public */
-export interface Extension<TConfig> {
-  $$type: '@backstage/Extension';
-  id: string;
-  attachTo: { id: string; input: string };
-  disabled: boolean;
-  inputs: AnyExtensionInputMap;
-  output: AnyExtensionDataMap;
-  configSchema?: PortableSchema<TConfig>;
+export interface ExtensionDefinition<TConfig> {
+  $$type: '@backstage/ExtensionDefinition';
+  readonly kind?: string;
+  readonly namespace?: string;
+  readonly name?: string;
+  readonly attachTo: { id: string; input: string };
+  readonly disabled: boolean;
+  readonly configSchema?: PortableSchema<TConfig>;
+}
+
+/** @internal */
+export interface InternalExtensionDefinition<TConfig>
+  extends ExtensionDefinition<TConfig> {
+  readonly version: 'v1';
+  readonly inputs: AnyExtensionInputMap;
+  readonly output: AnyExtensionDataMap;
   factory(options: {
-    source?: BackstagePlugin;
+    node: AppNode;
     config: TConfig;
-    inputs: Record<
-      string,
-      undefined | Record<string, unknown> | Array<Record<string, unknown>>
-    >;
+    inputs: ResolvedExtensionInputs<any>;
   }): ExtensionDataValues<any>;
+}
+
+/** @internal */
+export function toInternalExtensionDefinition<TConfig>(
+  overrides: ExtensionDefinition<TConfig>,
+): InternalExtensionDefinition<TConfig> {
+  const internal = overrides as InternalExtensionDefinition<TConfig>;
+  if (internal.$$type !== '@backstage/ExtensionDefinition') {
+    throw new Error(
+      `Invalid extension definition instance, bad type '${internal.$$type}'`,
+    );
+  }
+  if (internal.version !== 'v1') {
+    throw new Error(
+      `Invalid extension definition instance, bad version '${internal.version}'`,
+    );
+  }
+  return internal;
 }
 
 /** @public */
@@ -112,18 +147,38 @@ export function createExtension<
   TConfig = never,
 >(
   options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
-): Extension<TConfig> {
+): ExtensionDefinition<TConfig> {
   return {
-    ...options,
+    $$type: '@backstage/ExtensionDefinition',
+    version: 'v1',
+    kind: options.kind,
+    namespace: options.namespace,
+    name: options.name,
+    attachTo: options.attachTo,
     disabled: options.disabled ?? false,
-    $$type: '@backstage/Extension',
     inputs: options.inputs ?? {},
+    output: options.output,
+    configSchema: options.configSchema,
     factory({ inputs, ...rest }) {
       // TODO: Simplify this, but TS wouldn't infer the input type for some reason
       return options.factory({
-        inputs: inputs as Expand<ExtensionInputValues<TInputs>>,
+        inputs: inputs as Expand<ResolvedExtensionInputs<TInputs>>,
         ...rest,
       });
     },
-  };
+    toString() {
+      const parts: string[] = [];
+      if (options.kind) {
+        parts.push(`kind=${options.kind}`);
+      }
+      if (options.namespace) {
+        parts.push(`namespace=${options.namespace}`);
+      }
+      if (options.name) {
+        parts.push(`name=${options.name}`);
+      }
+      parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
+      return `ExtensionDefinition{${parts.join(',')}}`;
+    },
+  } as InternalExtensionDefinition<TConfig>;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-stack-overflow",
-  "version": "0.1.22-next.2",
+  "version": "0.1.24",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -49,7 +49,6 @@
     "@backstage/plugin-home-react": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@testing-library/jest-dom": "^6.0.0",
@@ -66,8 +65,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
-    "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/react": "^14.0.0",

@@ -17,25 +17,32 @@
 import {
   AppTreeApi,
   appTreeApiRef,
+  coreExtensionData,
+  createExtension,
+  createExtensionOverrides,
   createPageExtension,
   createPlugin,
   createThemeExtension,
 } from '@backstage/frontend-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
-import { createApp } from './createApp';
+import { CreateAppFeatureLoader, createApp } from './createApp';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 
 describe('createApp', () => {
   it('should allow themes to be installed', async () => {
     const app = createApp({
-      configLoader: async () =>
-        new MockConfigApi({
+      configLoader: async () => ({
+        config: new MockConfigApi({
           app: {
-            extensions: [{ 'themes.light': false }, { 'themes.dark': false }],
+            extensions: [
+              { 'theme:app/light': false },
+              { 'theme:app/dark': false },
+            ],
           },
         }),
+      }),
       features: [
         createPlugin({
           id: 'test',
@@ -59,13 +66,12 @@ describe('createApp', () => {
   it('should deduplicate features keeping the last received one', async () => {
     const duplicatedFeatureId = 'test';
     const app = createApp({
-      configLoader: async () => new MockConfigApi({}),
+      configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
         createPlugin({
           id: duplicatedFeatureId,
           extensions: [
             createPageExtension({
-              id: 'test.page.first',
               defaultPath: '/',
               loader: async () => <div>First Page</div>,
             }),
@@ -75,7 +81,6 @@ describe('createApp', () => {
           id: duplicatedFeatureId,
           extensions: [
             createPageExtension({
-              id: 'test.page.last',
               defaultPath: '/',
               loader: async () => <div>Last Page</div>,
             }),
@@ -94,17 +99,129 @@ describe('createApp', () => {
     );
   });
 
+  it('should support feature loaders', async () => {
+    const loader: CreateAppFeatureLoader = {
+      getLoaderName() {
+        return 'test-loader';
+      },
+      async load({ config }) {
+        return {
+          features: [
+            createPlugin({
+              id: 'test',
+              extensions: [
+                createPageExtension({
+                  defaultPath: '/',
+                  loader: async () => <div>{config.getString('key')}</div>,
+                }),
+              ],
+            }),
+          ],
+        };
+      },
+    };
+
+    const app = createApp({
+      configLoader: async () => ({
+        config: new MockConfigApi({ key: 'config-value' }),
+      }),
+      features: [loader],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText('config-value'),
+    ).resolves.toBeInTheDocument();
+  });
+
+  it('should propagate errors thrown by feature loaders', async () => {
+    const loader: CreateAppFeatureLoader = {
+      getLoaderName() {
+        return 'test-loader';
+      },
+      async load() {
+        throw new TypeError('boom');
+      },
+    };
+
+    const app = createApp({
+      configLoader: async () => ({
+        config: new MockConfigApi({}),
+      }),
+      features: [loader],
+    });
+
+    await expect(
+      renderWithEffects(app.createRoot()),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Failed to read frontend features from loader 'test-loader', TypeError: boom"`,
+    );
+  });
+
+  it('should register feature flags', async () => {
+    const app = createApp({
+      configLoader: async () => ({ config: new MockConfigApi({}) }),
+      features: [
+        createPlugin({
+          id: 'test',
+          featureFlags: [{ name: 'test-1' }],
+          extensions: [
+            createExtension({
+              name: 'first',
+              attachTo: { id: 'app', input: 'root' },
+              output: { element: coreExtensionData.reactElement },
+              factory() {
+                const Component = () => {
+                  const flagsApi = useApi(featureFlagsApiRef);
+                  return (
+                    <div>
+                      Flags:{' '}
+                      {flagsApi
+                        .getRegisteredFlags()
+                        .map(flag => `${flag.name} from '${flag.pluginId}'`)
+                        .join(', ')}
+                    </div>
+                  );
+                };
+                return { element: <Component /> };
+              },
+            }),
+          ],
+        }),
+        createExtensionOverrides({
+          featureFlags: [{ name: 'test-2' }],
+          extensions: [
+            createExtension({
+              namespace: 'app',
+              name: 'root',
+              attachTo: { id: 'app', input: 'root' },
+              disabled: true,
+              output: {},
+              factory: () => ({}),
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText("Flags: test-1 from 'test', test-2 from ''"),
+    ).resolves.toBeInTheDocument();
+  });
+
   it('should make the app structure available through the AppTreeApi', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 
     const app = createApp({
-      configLoader: async () => new MockConfigApi({}),
+      configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
         createPlugin({
           id: 'my-plugin',
           extensions: [
             createPageExtension({
-              id: 'plugin.my-plugin.page',
               defaultPath: '/',
               loader: async () => {
                 const Component = () => {
@@ -125,26 +242,58 @@ describe('createApp', () => {
     const { tree } = appTreeApi!.getTree();
 
     expect(String(tree.root)).toMatchInlineSnapshot(`
-      "<core out=[core.reactElement]>
+      "<app out=[core.reactElement]>
         root [
-          <core.layout out=[core.reactElement]>
-            content [
-              <core.routes out=[core.reactElement]>
-                routes [
-                  <plugin.my-plugin.page out=[core.routing.path, core.routing.ref, core.reactElement] />
+          <app/root out=[core.reactElement]>
+            children [
+              <app/layout out=[core.reactElement]>
+                content [
+                  <app/routes out=[core.reactElement]>
+                    routes [
+                      <page:my-plugin out=[core.routing.path, core.routing.ref, core.reactElement] />
+                    ]
+                  </app/routes>
                 ]
-              </core.routes>
+                nav [
+                  <app/nav out=[core.reactElement] />
+                ]
+              </app/layout>
             ]
-            nav [
-              <core.nav out=[core.reactElement] />
+            elements [
+              <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
+              <app-root-element:app/alert-display out=[core.reactElement] />
             ]
-          </core.layout>
+          </app/root>
+        ]
+        components [
+          <component:core.components.progress out=[core.component.component] />
+          <component:core.components.errorBoundaryFallback out=[core.component.component] />
+          <component:core.components.notFoundErrorPage out=[core.component.component] />
         ]
         themes [
-          <themes.light out=[core.theme] />
-          <themes.dark out=[core.theme] />
+          <theme:app/light out=[core.theme.theme] />
+          <theme:app/dark out=[core.theme.theme] />
         ]
-      </core>"
+        apis [
+          <api:core.discovery out=[core.api.factory] />
+          <api:core.alert out=[core.api.factory] />
+          <api:core.analytics out=[core.api.factory] />
+          <api:core.error out=[core.api.factory] />
+          <api:core.storage out=[core.api.factory] />
+          <api:core.fetch out=[core.api.factory] />
+          <api:core.oauthrequest out=[core.api.factory] />
+          <api:core.auth.google out=[core.api.factory] />
+          <api:core.auth.microsoft out=[core.api.factory] />
+          <api:core.auth.github out=[core.api.factory] />
+          <api:core.auth.okta out=[core.api.factory] />
+          <api:core.auth.gitlab out=[core.api.factory] />
+          <api:core.auth.onelogin out=[core.api.factory] />
+          <api:core.auth.bitbucket out=[core.api.factory] />
+          <api:core.auth.bitbucket-server out=[core.api.factory] />
+          <api:core.auth.atlassian out=[core.api.factory] />
+          <api:plugin.permission.api out=[core.api.factory] />
+        ]
+      </app>"
     `);
   });
 });

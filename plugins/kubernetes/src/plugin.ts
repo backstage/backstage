@@ -20,6 +20,10 @@ import {
   kubernetesAuthProvidersApiRef,
   KubernetesAuthProviders,
   KubernetesProxyClient,
+  kubernetesClusterLinkFormatterApiRef,
+  getDefaultFormatters,
+  KubernetesClusterLinkFormatter,
+  DEFAULT_FORMATTER_NAME,
 } from '@backstage/plugin-kubernetes-react';
 import {
   createApiFactory,
@@ -94,6 +98,17 @@ export const kubernetesPlugin = createPlugin({
           microsoftAuthApi,
           googleAuthApi,
           oidcProviders,
+        });
+      },
+    }),
+    createApiFactory({
+      api: kubernetesClusterLinkFormatterApiRef,
+      deps: { googleAuthApi: googleAuthApiRef },
+      factory: deps => {
+        const formatters = getDefaultFormatters(deps);
+        return new KubernetesClusterLinkFormatter({
+          formatters,
+          defaultFormatterName: DEFAULT_FORMATTER_NAME,
         });
       },
     }),

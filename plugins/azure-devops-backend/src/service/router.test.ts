@@ -161,6 +161,8 @@ describe('createRouter', () => {
         'myProject',
         'af4ae3af-e747-4129-9bbc-d1329f6b0998',
         40,
+        undefined,
+        undefined,
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(builds);
@@ -215,6 +217,8 @@ describe('createRouter', () => {
         'myProject',
         'myRepo',
         50,
+        undefined,
+        undefined,
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(repoBuilds);
@@ -252,6 +256,8 @@ describe('createRouter', () => {
       expect(azureDevOpsApi.getGitTags).toHaveBeenCalledWith(
         'myProject',
         'myRepo',
+        undefined,
+        undefined,
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(gitTags);
@@ -315,6 +321,8 @@ describe('createRouter', () => {
         'myProject',
         'myRepo',
         { status: 1, top: 50 },
+        undefined,
+        undefined,
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(pullRequests);
@@ -341,6 +349,8 @@ describe('createRouter', () => {
       expect(azureDevOpsApi.getBuildDefinitions).toHaveBeenCalledWith(
         'myProject',
         'myBuildDefinition',
+        undefined,
+        undefined,
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(inputDefinitions);
@@ -397,6 +407,8 @@ describe('createRouter', () => {
           50,
           'myRepo',
           undefined,
+          undefined,
+          undefined,
         );
         expect(response.status).toEqual(200);
         expect(response.body).toEqual(buildRuns);
@@ -452,6 +464,8 @@ describe('createRouter', () => {
           50,
           undefined,
           'myDefinition',
+          undefined,
+          undefined,
         );
         expect(response.status).toEqual(200);
         expect(response.body).toEqual(buildRuns);

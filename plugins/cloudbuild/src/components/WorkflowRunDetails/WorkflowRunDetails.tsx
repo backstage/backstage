@@ -25,7 +25,6 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Theme,
   Typography,
 } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
@@ -36,7 +35,7 @@ import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { Breadcrumbs, Link, WarningPanel } from '@backstage/core-components';
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: 720,
     margin: theme.spacing(2),

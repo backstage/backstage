@@ -6,8 +6,6 @@ sidebar_label: Migration Guide
 description: How to migrate existing backends to the new backend system
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 ## Overview
 
 This section describes how to migrate an existing Backstage backend service
@@ -21,8 +19,7 @@ internal plugins and support classes themselves to the backend system first -
 the migration here will mostly deal with wiring and using compatibility wrappers
 where possible in the backend package itself. We hope that you will find that
 you end up with a much smaller, easier to understand, and easier to maintain
-package as a result of these steps, and then being able to [migrate
-plugins](../building-plugins-and-modules/08-migrating.md) as a separate
+package as a result of these steps, and then being able to [migrate plugins](../building-plugins-and-modules/08-migrating.md) as a separate
 endeavour later.
 
 ## Overall Structure
@@ -262,6 +259,317 @@ If you have other customizations made to `plugins/catalog.ts`, such as adding
 custom processors or entity providers, read on. Otherwise, you should be able to
 just delete that file at this point.
 
+#### Amazon Web Services
+
+`AwsEksClusterProcessor` and `AwsOrganizationCloudAccountProcessor` have not yet been migrated to the new backend system.
+See [Other Catalog Extensions](#other-catalog-extensions) for how to use these in the new backend system.
+
+For `AwsS3DiscoveryProcessor`, first migrate to `AwsS3EntityProvider`.
+
+To migrate `AwsS3EntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-aws` module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-aws/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other AWS configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    awsS3:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT1H
+          timeout: PT50M
+        /* highlight-add-end */
+```
+
+#### Azure DevOps
+
+For `AzureDevOpsDiscoveryProcessor`, first migrate to `AzureDevOpsEntityProvider`.
+
+To migrate `AzureDevOpsEntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-azure` module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-azure/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Azure DevOps configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    azureDevOps:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT1H
+          timeout: PT50M
+        /* highlight-add-end */
+```
+
+#### Open API
+
+`InternalOpenApiDocumentationProvider` has not yet been migrated to the new backend system.
+See [Other Catalog Extensions](#other-catalog-extensions) for how to use this in the new backend system.
+
+#### Bitbucket
+
+For `BitbucketDiscoveryProcessor`, migrate to `BitbucketCloudEntityProvider` or `BitbucketServerEntityProvider`
+
+To migrate `BitbucketCloudEntityProvider` to the new backend system, add a reference to the `@backstage/plugin-catalog-backend-module-bitbucket-cloud` module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-bitbucket-cloud/alpha'),
+);
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Bitbucket Cloud configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    bitbucketCloud:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+To migrate `BitbucketServerEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-bitbucket-server`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-bitbucket-server/alpha'),
+);
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Bitbucket Server configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    bitbucketServer:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+#### Google Cloud Platform
+
+To migrate `GkeEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-gcp`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-gcp'));
+/* highlight-add-end */
+```
+
+Configuration in app-config.yaml remains the same.
+
+#### Gerrit
+
+To migrate `GerritEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-gerrit`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-gerrit/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Gerrit configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    gerrit:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+#### Github
+
+For `GithubDiscoveryProcessor`, `GithubMultiOrgReaderProcessor` and `GithubOrgReaderProcessor`, first migrate to the equivalent Entity Provider.
+
+To migrate `GithubEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-github/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Github configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    github:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+To migrate `GithubMultiOrgEntityProvider` and `GithubOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github-org`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Github configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    githubOrg:
+      yourProviderId:
+        # ...
+        /* highlight-add-start */
+        schedule:
+          frequency: PT30M
+          timeout: PT3M
+        /* highlight-add-end */
+```
+
+If you were providing transformers, these can be configured by extending `githubOrgEntityProviderTransformsExtensionPoint`
+
+```ts title="packages/backend/src/index.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { githubOrgEntityProviderTransformsExtensionPoint } from '@backstage/plugin-catalog-backend-module-github-org';
+
+backend.add(
+  createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'githubOrgTransformers',
+    register(env) {
+      env.registerInit({
+        deps: {
+          /* highlight-add-start */
+          githubOrgTransformers:
+            githubOrgEntityProviderTransformsExtensionPoint,
+          /* highlight-add-end */
+        },
+        async init({ githubOrgTransformers }) {
+          /* highlight-add-start */
+          githubOrgTransformers.setUserTransformer(myUserTransformer);
+          githubOrgTransformers.setTeamTransformer(myTeamTransformer);
+          /* highlight-add-end */
+        },
+      });
+    },
+  }),
+);
+```
+
+#### Microsoft Graph
+
+For `MicrosoftGraphOrgReaderProcessor`, first migrate to `MicrosoftGraphOrgEntityProvider`
+
+To migrate `MicrosoftGraphOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-msgraph`.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-msgraph/alpha'));
+/* highlight-add-end */
+```
+
+If you were providing a `schedule` in code, this now needs to be set via configuration.
+All other Microsoft Graph configuration in `app-config.yaml` remains the same.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    microsoftGraphOrg:
+      provider:
+        /* highlight-add-start */
+        schedule:
+          frequency: PT4H
+          timeout: PT30M
+        /* highlight-add-end */
+```
+
+If you were providing transformers, these can be configured by extending `microsoftGraphOrgEntityProviderTransformExtensionPoint`
+
+```ts title="packages/backend/src/index.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { microsoftGraphOrgEntityProviderTransformExtensionPoint } from '@backstage/plugin-catalog-backend-module-msgraph/alpha';
+
+backend.add(
+  createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'microsoft-graph-extensions',
+    register(env) {
+      env.registerInit({
+        deps: {
+          /* highlight-add-start */
+          microsoftGraphTransformers:
+            microsoftGraphOrgEntityProviderTransformExtensionPoint,
+          /* highlight-add-end */
+        },
+        async init({ microsoftGraphTransformers }) {
+          /* highlight-add-start */
+          microsoftGraphTransformers.setUserTransformer(myUserTransformer);
+          microsoftGraphTransformers.setGroupTransformer(myGroupTransformer);
+          microsoftGraphTransformers.setOrganizationTransformer(
+            myOrganizationTransformer,
+          );
+          /* highlight-add-end */
+        },
+      });
+    },
+  }),
+);
+```
+
+#### Other Catalog Extensions
+
 You will use the [extension points](../architecture/05-extension-points.md)
 mechanism to extend or tweak the functionality of the plugin. To do that,
 you'll make your own bespoke [module](../architecture/06-modules.md) which
@@ -269,21 +577,21 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 
 /* highlight-add-start */
 const catalogModuleCustomExtensions = createBackendModule({
   pluginId: 'catalog', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
         // ... and other dependencies as needed
       },
-      init({ catalog /* ..., other dependencies */ }) {
+      async init({ catalog /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
         catalog.addEntityProvider(new MyEntityProvider()); // just an example
@@ -338,21 +646,21 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 
 /* highlight-add-start */
 const eventsModuleCustomExtensions = createBackendModule({
   pluginId: 'events', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {
         events: eventsExtensionPoint,
         // ... and other dependencies as needed
       },
-      init({ events /* ..., other dependencies */ }) {
+      async init({ events /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
         events.addSubscribers(new MySubscriber()); // just an example
@@ -403,21 +711,21 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
-import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 
 /* highlight-add-start */
 const scaffolderModuleCustomExtensions = createBackendModule({
   pluginId: 'scaffolder', // name of the plugin that the module is targeting
-  moduleId: 'customExtensions',
+  moduleId: 'custom-extensions',
   register(env) {
     env.registerInit({
       deps: {
         scaffolder: scaffolderActionsExtensionPoint,
         // ... and other dependencies as needed
       },
-      init({ scaffolder /* ..., other dependencies */ }) {
+      async init({ scaffolder /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
         scaffolder.addActions(new MyAction()); // just an example
@@ -446,3 +754,255 @@ going easily, but feel free to move it out to where it fits best. As you migrate
 your entire plugin flora to the new backend system, you will probably make more
 and more of these modules as "first class" things, living right next to the
 implementations that they represent, and being exported from there.
+
+### The Auth Plugin
+
+A basic installation of the auth plugin with a Microsoft provider will look as follows.
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
+/* highlight-add-end */
+```
+
+An additional step you'll need to take is to add the resolvers to your configuration, here's an example:
+
+```yaml title:"app-config.yaml"
+auth:
+  environment: development
+  providers:
+    microsoft:
+      development:
+        clientId: ${AZURE_CLIENT_ID}
+        clientSecret: ${AZURE_CLIENT_SECRET}
+        tenantId: ${AZURE_TENANT_ID}
+        signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityAnnotation
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+```
+
+> Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+
+#### Auth Plugin Modules and Their Resolvers
+
+As you may have noticed in the above example you'll need to import the `auth-backend` and an `auth-backend-module`. The following sections outline each of them and their resolvers.
+
+All of the following modules include the following common resolvers:
+
+- [emailMatchingUserEntityProfileEmail](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-node/src/sign-in/commonSignInResolvers.ts#L29)
+- [emailLocalPartMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-node/src/sign-in/commonSignInResolvers.ts#L54)
+
+##### Atlassian
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-atlassian-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [usernameMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-atlassian-provider/src/resolvers.ts#L33C16-L33C46)
+
+##### GCP IAM
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-gcp-iap-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [emailMatchingUserEntityAnnotation](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-gcp-iap-provider/src/resolvers.ts#L32C16-L32C49)
+
+##### GitHub
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [usernameMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-github-provider/src/resolvers.ts#L33C16-L33C46)
+
+##### GitLab
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-gitlab-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [usernameMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-gitlab-provider/src/resolvers.ts#L33C16-L33C46)
+
+##### Google
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-google-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [emailMatchingUserEntityAnnotation](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-google-provider/src/resolvers.ts#L33C16-L33C49)
+
+##### Microsoft
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [emailMatchingUserEntityAnnotation](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-microsoft-provider/src/resolvers.ts#L33C16-L33C49)
+
+##### oauth2
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-oauth2-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [usernameMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-oauth2-provider/src/resolvers.ts#L33C16-L33C46)
+
+##### oauth2 Proxy
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(
+  import('@backstage/plugin-auth-backend-module-oauth2-proxy-provider'),
+);
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [forwardedUserMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-oauth2-proxy-provider/src/resolvers.ts#L27C16-L27C51)
+
+##### Okta
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-okta-provider'));
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [emailMatchingUserEntityAnnotation](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-okta-provider/src/resolvers.ts#L34C16-L34C49)
+
+##### Pinniped
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-pinniped-provider'));
+/* highlight-add-end */
+```
+
+##### VMware Cloud
+
+Setup:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(
+  import('@backstage/plugin-auth-backend-module-vmware-cloud-provider'),
+);
+/* highlight-add-end */
+```
+
+Additional resolvers:
+
+- [vmwareCloudSignInResolvers](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-vmware-cloud-provider/src/resolvers.ts#L29C18-L29C44)
+
+#### Custom Resolver
+
+You may have a case where the common resolvers or the ones that are included with the auth module you use won't work for your needs. In this case you will need to create a custom resolver. Instead of the 2nd import for your auth provider module you would provide your own:
+
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-start */
+export const authModuleGoogleProvider = createBackendModule({
+  pluginId: 'auth',
+  moduleId: 'googleProvider',
+  register(reg) {
+    reg.registerInit({
+      deps: { providers: authProvidersExtensionPoint },
+      async init({ providers }) {
+        providers.registerProvider({
+          providerId: 'google',
+          factory: createOAuthProviderFactory({
+            authenticator: googleAuthenticator,
+            async signInResolver(info, ctx) {
+              // custom resolver ...
+            },
+          }),
+        });
+      },
+    });
+  },
+});
+/* highlight-add-end */
+
+const backend = createBackend();
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(authModuleGoogleProvider);
+/* highlight-add-end */
+```

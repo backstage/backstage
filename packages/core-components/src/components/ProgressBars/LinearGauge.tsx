@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
+
 import { useTheme } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -33,7 +33,7 @@ type Props = {
 
 export function LinearGauge(props: Props) {
   const { value, getColor = getProgressColor, width = 'thick' } = props;
-  const { palette } = useTheme<BackstageTheme>();
+  const { palette } = useTheme();
   if (isNaN(value)) {
     return null;
   }

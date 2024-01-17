@@ -15,15 +15,25 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:13.2-alpine
+          image: postgres:12-alpine
           imagePullPolicy: 'IfNotPresent'
           ports:
             - containerPort: 5432
+          env:
+            - name: PGDATA
+              value: '/data/pgdata'
           envFrom:
             - secretRef:
                 name: postgres-secrets
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 256Mi
+            requests:
+              cpu: 10m
+              memory: 96Mi
           volumeMounts:
-            - mountPath: /var/lib/postgresql
+            - mountPath: /data
               name: postgresdb
       volumes:
         - name: postgresdb

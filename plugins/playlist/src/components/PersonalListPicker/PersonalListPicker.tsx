@@ -29,7 +29,6 @@ import {
   ListItemText,
   makeStyles,
   MenuItem,
-  Theme,
   Typography,
 } from '@material-ui/core';
 import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
@@ -75,7 +74,7 @@ export class PersonalListFilter implements PlaylistFilter {
   }
 }
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: 'rgba(0, 0, 0, .11)',
     boxShadow: 'none',
@@ -270,7 +269,6 @@ export const PersonalListPicker = () => {
                 <MenuItem
                   role="none presentation"
                   key={item.id}
-                  button
                   divider
                   onClick={() => setSelectedPersonalFilter(item.id)}
                   selected={item.id === selectedPersonalFilter}

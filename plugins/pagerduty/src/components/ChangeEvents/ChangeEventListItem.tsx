@@ -28,9 +28,8 @@ import {
 import { DateTime, Duration } from 'luxon';
 import { PagerDutyChangeEvent } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
-import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles<BackstageTheme>({
+const useStyles = makeStyles({
   denseListIcon: {
     marginRight: 0,
     display: 'flex',

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { QueryEntitiesInitialRequest } from '@backstage/catalog-client';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
-import { compact, intersection, isEqual } from 'lodash';
-import { useEffect, useMemo, useRef } from 'react';
+import { compact, intersection } from 'lodash';
+import { useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityOwnerFilter, EntityUserFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
 import { reduceCatalogFilters } from '../../utils';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useDeepCompareEffect from 'react-use/lib/useDeepCompareEffect';
 
 export function useOwnedEntitiesCount() {
   const identityApi = useApi(identityApiRef);
@@ -37,79 +37,63 @@ export function useOwnedEntitiesCount() {
     [],
   );
 
-  const prevRequest = useRef<QueryEntitiesInitialRequest>();
-
-  const request = useMemo(() => {
-    const { user, owners, ...allFilters } = filters;
-    const compacted = compact(Object.values(allFilters));
-    const allFilter = reduceCatalogFilters(compacted);
-    const { ['metadata.name']: metadata, ...filter } = allFilter;
-
-    const countFilter = getOwnedCountClaims(owners, ownershipEntityRefs);
-
-    if (
-      ownershipEntityRefs?.length === 0 ||
-      countFilter === undefined ||
-      Object.keys(filter).length === 0
-    ) {
-      prevRequest.current = undefined;
-      return undefined;
-    }
-    const newRequest: QueryEntitiesInitialRequest = {
-      filter: {
-        ...filter,
-        'relations.ownedBy': countFilter,
-      },
-      limit: 0,
-    };
-
-    if (isEqual(newRequest, prevRequest.current)) {
-      return prevRequest.current;
-    }
-
-    prevRequest.current = newRequest;
-
-    return newRequest;
-  }, [filters, ownershipEntityRefs]);
+  const { user, owners, ...allFilters } = filters;
+  const { ['metadata.name']: metadata, ...filter } = reduceCatalogFilters(
+    compact(Object.values(allFilters)),
+  );
 
   const [{ value: count, loading: loadingEntityOwnership }, fetchEntities] =
     useAsyncFn(
-      async (
-        req: QueryEntitiesInitialRequest | undefined,
-        ownershipEntityRefsParam: string[],
-      ) => {
-        if (ownershipEntityRefsParam && !req) {
+      async (req: {
+        ownershipEntityRefs: string[];
+        owners: EntityOwnerFilter | undefined;
+        filter: Record<string, string | symbol | (string | symbol)[]>;
+      }) => {
+        const ownedClaims = getOwnedCountClaims(
+          req.owners,
+          req.ownershipEntityRefs,
+        );
+        if (ownedClaims === undefined) {
           // this implicitly means that there aren't claims in common with
           // the logged in users, so avoid invoking the queryEntities endpoint
           // which will implicitly returns 0
           return 0;
         }
-        const { totalItems } = await catalogApi.queryEntities(req);
+
+        const { totalItems } = await catalogApi.queryEntities({
+          filter: {
+            ...req.filter,
+            'relations.ownedBy': ownedClaims,
+          },
+          limit: 0,
+        });
         return totalItems;
       },
       [],
       { loading: true },
     );
 
-  useEffect(() => {
-    if (ownershipEntityRefs) {
-      if (request && Object.keys(request).length === 0) {
-        return;
-      }
-      fetchEntities(request, ownershipEntityRefs);
+  useDeepCompareEffect(() => {
+    // context contains no filter, wait
+    if (Object.keys(filter).length === 0) {
+      return;
     }
-  }, [fetchEntities, request, ownershipEntityRefs]);
+    // ownershipEntityRefs is loading, wait
+    if (ownershipEntityRefs === undefined) {
+      return;
+    }
+    fetchEntities({ ownershipEntityRefs, owners, filter });
+  }, [ownershipEntityRefs, owners, filter]);
 
   const loading = loadingEntityRefs || loadingEntityOwnership;
-  const filter = useMemo(
-    () => EntityUserFilter.owned(ownershipEntityRefs ?? []),
-    [ownershipEntityRefs],
-  );
 
   return {
     count,
     loading,
-    filter,
+    filter: useMemo(
+      () => EntityUserFilter.owned(ownershipEntityRefs ?? []),
+      [ownershipEntityRefs],
+    ),
     ownershipEntityRefs,
   };
 }

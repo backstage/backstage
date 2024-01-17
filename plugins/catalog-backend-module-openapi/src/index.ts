@@ -22,3 +22,6 @@ export { jsonSchemaRefPlaceholderResolver } from './jsonSchemaRefPlaceholderReso
  * @deprecated replaced by jsonSchemaRefPlaceholderResolver
  */
 export const openApiPlaceholderResolver = jsonSchemaRefPlaceholderResolver;
+
+export * from './module';
+export { default } from './module';

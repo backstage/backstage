@@ -34,6 +34,9 @@ catalog:
             securityEnabled eq false
             and mailEnabled eq true
             and groupTypes/any(c:c+eq+'Unified')
+        schedule:
+          frequency: PT1H
+          timeout: PT50M
 ```
 
 Finally, register the plugin in `catalog.ts`.
@@ -52,11 +55,7 @@ export default async function createPlugin(
   builder.addEntityProvider(
     MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
       logger: env.logger,
-      schedule: env.scheduler.createScheduledTaskRunner({
-        frequency: { hours: 1 },
-        timeout: { minutes: 50 },
-        initialDelay: { seconds: 15 },
-      }),
+      scheduler: env.scheduler,
     }),
   );
   /* highlight-add-end */

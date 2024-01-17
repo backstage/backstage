@@ -22,7 +22,7 @@ import { Readme } from '@backstage/plugin-azure-devops-common';
 import { ReadmeConfig } from '@backstage/plugin-azure-devops-common';
 import { RepoBuild } from '@backstage/plugin-azure-devops-common';
 import { RepoBuildOptions } from '@backstage/plugin-azure-devops-common';
-import { SvgIconProps } from '@material-ui/core';
+import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import { Team } from '@backstage/plugin-azure-devops-common';
 
 // @public (undocumented)
@@ -71,6 +71,8 @@ export interface AzureDevOpsApi {
     projectName: string,
     repoName?: string,
     definitionName?: string,
+    host?: string,
+    org?: string,
     options?: BuildRunOptions,
   ): Promise<{
     items: BuildRun[];
@@ -83,6 +85,8 @@ export interface AzureDevOpsApi {
   getGitTags(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
   ): Promise<{
     items: GitTag[];
   }>;
@@ -90,6 +94,8 @@ export interface AzureDevOpsApi {
   getPullRequests(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
     options?: PullRequestOptions,
   ): Promise<{
     items: PullRequest[];
@@ -100,6 +106,8 @@ export interface AzureDevOpsApi {
   getRepoBuilds(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
     options?: RepoBuildOptions,
   ): Promise<{
     items: RepoBuild[];
@@ -124,6 +132,8 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     projectName: string,
     repoName?: string,
     definitionName?: string,
+    host?: string,
+    org?: string,
     options?: BuildRunOptions,
   ): Promise<{
     items: BuildRun[];
@@ -136,6 +146,8 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   getGitTags(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
   ): Promise<{
     items: GitTag[];
   }>;
@@ -143,6 +155,8 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   getPullRequests(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
     options?: PullRequestOptions,
   ): Promise<{
     items: PullRequest[];
@@ -153,6 +167,8 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   getRepoBuilds(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
     options?: RepoBuildOptions,
   ): Promise<{
     items: RepoBuild[];

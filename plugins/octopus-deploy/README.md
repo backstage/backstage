@@ -8,6 +8,17 @@ Welcome to the octopus-deploy plugin!
 
 ## Getting started
 
+### Installing
+
+To get started, first install the plugin with the following command:
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-octopus-deploy
+```
+
+### Setup
+
 This plugin (currently) uses the Backstage proxy to securely communicate with the Octopus Deploy API.
 
 To use it, you will need to generate an [API Key](https://octopus.com/docs/octopus-rest-api/how-to-create-an-api-key) within Octopus Deploy.
@@ -23,12 +34,19 @@ proxy:
       X-Octopus-ApiKey: ${OCTOPUS_API_KEY}
 ```
 
+Optionally, also add the following section to your app-config.yaml if you wish to enable linking to the Project Release page in the Octopus Deploy UI from the footer of the Backstage Release Table. Typically this will be the server URL above without the /api postfix.
+
+```
+octopusdeploy:
+  webBaseUrl: "<your-octopus-web-url>"
+```
+
 2. Add the following to `EntityPage.tsx` to display Octopus Releases
 
 ```
 // In packages/app/src/components/catalog/EntityPage.tsx
 import {
-  isOctopusDeployAvailable
+  isOctopusDeployAvailable,
   EntityOctopusDeployContent
 } from '@backstage/plugin-octopus-deploy';
 

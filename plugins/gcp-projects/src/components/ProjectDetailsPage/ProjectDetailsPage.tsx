@@ -23,7 +23,6 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  Theme,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
@@ -43,7 +42,7 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: 720,
     margin: theme.spacing(2),
@@ -127,7 +126,7 @@ const DetailsPage = () => {
                 {details?.name && (
                   <Button>
                     <a
-                      href={`${cloud_home_url}/home/dashboard?project=${details.name}&supportedpurview=project`}
+                      href={`${cloud_home_url}/home/dashboard?project=${details.projectId}&supportedpurview=project`}
                       target="_blank"
                       rel="noreferrer noopener"
                     >
@@ -138,7 +137,7 @@ const DetailsPage = () => {
                 {details?.name && (
                   <Button>
                     <a
-                      href={`${cloud_home_url}/logs/query?project=${details.name}&supportedpurview=project`}
+                      href={`${cloud_home_url}/logs/query?project=${details.projectId}&supportedpurview=project`}
                       target="_blank"
                       rel="noreferrer noopener"
                     >

@@ -1,5 +1,36 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.2.15
+
+### Patch Changes
+
+- acf9390: Updated dependency `ts-morph` to `^20.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.8.0
+
+## 0.2.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.1
+
+## 0.2.15-next.0
+
+### Patch Changes
+
+- acf93904e7: Updated dependency `ts-morph` to `^20.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.0
+
+## 0.2.14
+
+### Patch Changes
+
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.7.2
+
 ## 0.2.14-next.0
 
 ### Patch Changes

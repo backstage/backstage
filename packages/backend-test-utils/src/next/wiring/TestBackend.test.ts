@@ -33,8 +33,8 @@ beforeAll(async () => {
   await startTestBackend({
     features: [
       createBackendModule({
-        moduleId: 'test.module',
         pluginId: 'test',
+        moduleId: 'test-module',
         register(env) {
           env.registerInit({
             deps: { lifecycle: coreServices.lifecycle },
@@ -128,8 +128,8 @@ describe('TestBackend', () => {
     });
 
     const testModule = createBackendModule({
-      moduleId: 'test.module',
       pluginId: 'test',
+      moduleId: 'test-module',
       register(env) {
         env.registerInit({
           deps: {
@@ -153,8 +153,8 @@ describe('TestBackend', () => {
     const shutdownSpy = jest.fn();
 
     const testModule = createBackendModule({
-      moduleId: 'test.module',
       pluginId: 'test',
+      moduleId: 'test-module',
       register(env) {
         env.registerInit({
           deps: {

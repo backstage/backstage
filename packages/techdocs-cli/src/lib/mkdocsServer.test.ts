@@ -97,6 +97,24 @@ describe('runMkdocsServer', () => {
         expect.objectContaining({}),
       );
     });
+
+    it('should accept additinoal mkdocs CLI parameters', async () => {
+      await runMkdocsServer({
+        mkdocsParameterClean: true,
+        mkdocsParameterStrict: true,
+      });
+      expect(run).toHaveBeenCalledWith(
+        'docker',
+        expect.arrayContaining([
+          'serve',
+          '--dev-addr',
+          '0.0.0.0:8000',
+          '--clean',
+          '--strict',
+        ]),
+        expect.objectContaining({}),
+      );
+    });
   });
 
   describe('mkdocs', () => {

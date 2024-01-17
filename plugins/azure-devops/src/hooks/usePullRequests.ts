@@ -15,12 +15,12 @@
  */
 
 import {
+  AZURE_DEVOPS_DEFAULT_TOP,
   PullRequest,
   PullRequestOptions,
   PullRequestStatus,
 } from '@backstage/plugin-azure-devops-common';
 
-import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
 import { Entity } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
@@ -44,11 +44,11 @@ export function usePullRequests(
   };
 
   const api = useApi(azureDevOpsApiRef);
-  const { project, repo } = getAnnotationValuesFromEntity(entity);
 
-  const { value, loading, error } = useAsync(async () => {
-    return await api.getPullRequests(project, repo as string, options);
-  }, [api, project, repo, top, status]);
+  const { value, loading, error } = useAsync(() => {
+    const { project, repo, host, org } = getAnnotationValuesFromEntity(entity);
+    return api.getPullRequests(project, repo as string, host, org, options);
+  }, [api, top, status]);
 
   return {
     items: value?.items,

@@ -15,12 +15,11 @@
  */
 
 import React from 'react';
-import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
 
 export type PageClassKey = 'root';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     root: {
       display: 'grid',
@@ -53,7 +52,7 @@ export function Page(props: Props) {
   const classes = useStyles();
   return (
     <ThemeProvider
-      theme={(baseTheme: BackstageTheme) => ({
+      theme={(baseTheme: Theme) => ({
         ...baseTheme,
         page: baseTheme.getPageTheme({ themeId }),
       })}

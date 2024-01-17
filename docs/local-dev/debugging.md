@@ -47,3 +47,44 @@ The resulting log should now have more information available for debugging:
 [1] 2023-04-12T00:51:44.118Z search info Collating documents for tools succeeded type=plugin documentType=tools
 [1] 2023-04-12T00:51:44.119Z backstage debug task: search_index_tools will next occur around 2023-04-11T21:01:44.118-04:00 type=taskManager task=search_index_tools
 ```
+
+## Debugger
+
+### VSCode
+
+In your `launch.json`, add a new entry with the following,
+
+```jsonc
+{
+    "name": "Start Backend",
+    "type": "node",
+    "request": "launch",
+    "args": [
+        "package",
+        "start"
+    ],
+    "cwd": "${workspaceFolder}/packages/backend",
+    "program": "${workspaceFolder}/node_modules/.bin/backstage-cli",
+    "skipFiles": [
+        "<node_internals>/**"
+    ],
+    "console": "integratedTerminal"
+},
+```
+
+### WebStorm
+
+This section describes the process for enabling run configurations for Backstage in WebStorm.
+Run configurations enable the use of debugging functionality such as steppers and breakpoints.
+
+1. Select `Edit Configurations` in the `Run` dropdown menu. Click the plus sign to add a new
+   configuration, then select `Node.js`.
+2. In `Working directory`, input `{PROJECT_DIR}/packages/backend`.
+   Replace `{PROJECT_DIR}` with the path to your Backstage repo.
+3. In `JavaScript file`, input `{PROJECT_DIR}/node_modules/@backstage/cli/bin/backstage-cli`.
+   Replace `{PROJECT_DIR}` with the path to your Backstage repo.
+4. In `Application parameters`, input `package start`.
+5. Optionally, for `Environment Variables`, input `LOG_LEVEL=debug`.
+6. Click `Apply` to save the changes.
+7. With the newly-created configuration selected, use the `Run` or `Debug` icons on the
+   toolbar to execute the newly created configuration.

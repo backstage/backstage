@@ -24,6 +24,7 @@ import { LogFunc, waitForSignal } from '../../lib/run';
 import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
+import { checkIfDockerIsOperational } from './utils';
 
 function findPreviewBundlePath(): string {
   try {
@@ -73,6 +74,14 @@ export default async function serve(opts: OptionValues) {
     mkdocsConfigFileName,
   });
 
+  // Validate that Docker is up and running
+  if (opts.docker) {
+    const isDockerOperational = await checkIfDockerIsOperational(logger);
+    if (!isDockerOperational) {
+      return;
+    }
+  }
+
   let mkdocsServerHasStarted = false;
   const mkdocsLogFunc: LogFunc = data => {
     // Sometimes the lines contain an unnecessary extra new line
@@ -107,6 +116,9 @@ export default async function serve(opts: OptionValues) {
     stdoutLogFunc: mkdocsLogFunc,
     stderrLogFunc: mkdocsLogFunc,
     mkdocsConfigFileName: mkdocsYmlPath,
+    mkdocsParameterClean: opts.mkdocsParameterClean,
+    mkdocsParameterDirtyReload: opts.mkdocsParameterDirtyReload,
+    mkdocsParameterStrict: opts.mkdocsParameterStrict,
   });
 
   // Wait until mkdocs server has started so that Backstage starts with docs loaded

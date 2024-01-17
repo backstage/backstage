@@ -1,6 +1,9 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.22.0",
+      "releases/v1.21.0",
+      "releases/v1.20.0",
       "releases/v1.19.0",
       "releases/v1.18.0",
       "releases/v1.17.0",
@@ -116,7 +119,7 @@
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
           "features/software-templates/authorizing-parameters-steps-and-actions",
-          "features/software-templates/testing-scaffolder-alpha",
+          "features/software-templates/migrating-to-rjsf-v5",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
       },
@@ -249,6 +252,15 @@
       "plugins/feature-flags",
       {
         "type": "category",
+        "label": "OpenAPI",
+        "items": [
+          "openapi/01-getting-started",
+          "openapi/generate-client",
+          "openapi/test-case-validation"
+        ]
+      },
+      {
+        "type": "category",
         "label": "Backends and APIs",
         "items": [
           "plugins/proxying",
@@ -379,6 +391,40 @@
         "items": ["backend-system/core-services/index"]
       }
     ],
+    "New Frontend System": [
+      "frontend-system/index",
+      {
+        "type": "category",
+        "label": "Architecture",
+        "items": [
+          "frontend-system/architecture/index",
+          "frontend-system/architecture/app",
+          "frontend-system/architecture/extensions",
+          "frontend-system/architecture/plugins",
+          "frontend-system/architecture/extension-overrides",
+          "frontend-system/architecture/utility-apis",
+          "frontend-system/architecture/routes",
+          "frontend-system/architecture/naming-patterns",
+          "frontend-system/architecture/references"
+        ]
+      },
+      {
+        "type": "category",
+        "label": "Building Plugins",
+        "items": ["frontend-system/building-plugins/testing"]
+      },
+      {
+        "type": "category",
+        "label": "Utility APIs",
+        "items": [
+          "frontend-system/utility-apis/index",
+          "frontend-system/utility-apis/creating",
+          "frontend-system/utility-apis/consuming",
+          "frontend-system/utility-apis/configuring",
+          "frontend-system/utility-apis/migrating"
+        ]
+      }
+    ],
     "Designing for Backstage": [
       "dls/design",
       "dls/component-design-guidelines",
@@ -407,7 +453,9 @@
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres",
       "tutorials/using-backstage-proxy-within-plugin",
-      "tutorials/yarn-migration"
+      "tutorials/yarn-migration",
+      "tutorials/migrate-to-mui5",
+      "tutorials/setup-opentelemetry"
     ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",

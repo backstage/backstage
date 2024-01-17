@@ -92,3 +92,19 @@ integrations:
 - There is a limit of 100 apps for one OAuth client/token pair
 - The OAuth application must be at the GitHub organization level in order to display the workflows. If you do
   not see any workflows, confirm the OAuth application was created in the organization and not a specific user account.
+
+## Optional Workflow Runs Card View
+
+Github Workflow Runs optional UI to show in Card view instead of table, with branch selection option
+
+```tsx
+
+// You can add the tab to any number of pages, the service page is shown as an
+// example given here
+const serviceEntityPage = (
+  <EntityLayout>
+    {/* other tabs... */}
+    <EntityLayout.Route path="/github-actions" title="GitHub Actions">
+      <EntityGithubActionsContent view='cards' />
+    </EntityLayout.Route>
+```

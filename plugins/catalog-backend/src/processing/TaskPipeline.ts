@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import { TRACER_ID, withActiveSpan } from '../util/opentelemetry';
+import { trace } from '@opentelemetry/api';
+
 const DEFAULT_POLLING_INTERVAL_MS = 1000;
+const tracer = trace.getTracer(TRACER_ID);
 
 type Options<T> = {
   /**
@@ -86,33 +90,35 @@ export function startTaskPipeline<T>(options: Options<T>) {
   async function pipelineLoop() {
     while (!abortSignal.aborted) {
       if (state.inFlightCount <= lowWatermark) {
-        const loadCount = highWatermark - state.inFlightCount;
-        const loadedItems = await Promise.resolve()
-          .then(() => loadTasks(loadCount))
-          .catch(() => {
-            // Silently swallow errors and go back to sleep to try again; we
-            // delegate to the loadTasks function itself to catch errors and log
-            // if it so desires
-            return [];
-          });
-        if (loadedItems.length && !abortSignal.aborted) {
-          state.inFlightCount += loadedItems.length;
-          for (const item of loadedItems) {
-            Promise.resolve()
-              .then(() => processTask(item))
-              .catch(() => {
-                // Silently swallow errors and go back to sleep to try again; we
-                // delegate to the processTask function itself to catch errors
-                // and log if it so desires
-              })
-              .finally(() => {
-                state.inFlightCount -= 1;
-                barrier.release();
-              });
+        await withActiveSpan(tracer, 'TaskPipelineLoop', async span => {
+          const loadCount = highWatermark - state.inFlightCount;
+          const loadedItems = await Promise.resolve()
+            .then(() => loadTasks(loadCount))
+            .catch(() => {
+              // Silently swallow errors and go back to sleep to try again; we
+              // delegate to the loadTasks function itself to catch errors and log
+              // if it so desires
+              return [];
+            });
+          span.setAttribute('itemCount', loadedItems.length);
+          if (loadedItems.length && !abortSignal.aborted) {
+            state.inFlightCount += loadedItems.length;
+            for (const item of loadedItems) {
+              Promise.resolve()
+                .then(() => processTask(item))
+                .catch(() => {
+                  // Silently swallow errors and go back to sleep to try again; we
+                  // delegate to the processTask function itself to catch errors
+                  // and log if it so desires
+                })
+                .finally(() => {
+                  state.inFlightCount -= 1;
+                  barrier.release();
+                });
+            }
           }
-        }
+        });
       }
-
       await barrier.wait();
     }
   }

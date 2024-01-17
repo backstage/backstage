@@ -1,5 +1,241 @@
 # @backstage/plugin-catalog-react
 
+## 1.9.3
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/catalog-client@1.5.2
+  - @backstage/plugin-permission-react@0.4.19
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/integration-react@1.1.23
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.20
+
+## 1.9.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+  - @backstage/integration-react@1.1.23-next.0
+
+## 1.9.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/frontend-plugin-api@0.4.1-next.1
+  - @backstage/integration-react@1.1.23-next.0
+  - @backstage/plugin-permission-react@0.4.19-next.1
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-permission-common@0.7.11
+
+## 1.9.3-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/frontend-plugin-api@0.4.1-next.0
+  - @backstage/plugin-permission-react@0.4.19-next.0
+  - @backstage/integration-react@1.1.22
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-permission-common@0.7.11
+
+## 1.9.2
+
+### Patch Changes
+
+- 8587f06: Added pagination support to `EntityListProvider`.
+- 5360097: Ensure that passed-in icons are taken advantage of in the presentation API
+- fd9863c: Grouped all `/alpha` extension data reference exports under `catalogExtensionData`.
+- 08d9e67: Add default icon for kind resource.
+- aaa6fb3: Minor updates for TypeScript 5.2.2+ compatibility
+- a5a0473: Internal refactor of alpha exports due to a change in how extension factories are defined.
+- 4d9e3b3: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- 8f5d6c1: Updates to the `/alpha` exports to match the extension input wrapping change.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- e223f22: Breaking alpha-API change to entity visibility filter functions to accept a bare entity as their first argument, instead of an object with an entity property.
+
+  Functions that accept such filters now also support the string expression form of filters.
+
+- eee0ff2: Fixed a issue where `CatalogPage` wasn't using the chosen `initiallySelectedFilter` as intended.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/frontend-plugin-api@0.4.0
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/catalog-client@1.5.0
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/integration-react@1.1.22
+  - @backstage/plugin-permission-react@0.4.18
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.19
+
+## 1.9.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/frontend-plugin-api@0.4.0-next.3
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-react@0.4.18-next.1
+
+## 1.9.2-next.2
+
+### Patch Changes
+
+- 8f5d6c1: Updates to the `/alpha` exports to match the extension input wrapping change.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.2
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-react@0.4.18-next.1
+
+## 1.9.2-next.1
+
+### Patch Changes
+
+- 53600976bb: Ensure that passed-in icons are taken advantage of in the presentation API
+- 08d9e67199: Add default icon for kind resource.
+- a5a04739e1: Internal refactor of alpha exports due to a change in how extension factories are defined.
+- e223f2264d: Breaking alpha-API change to entity visibility filter functions to accept a bare entity as their first argument, instead of an object with an entity property.
+
+  Functions that accept such filters now also support the string expression form of filters.
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/catalog-client@1.5.0-next.0
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/plugin-permission-react@0.4.18-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+
+## 1.9.2-next.0
+
+### Patch Changes
+
+- 8587f067d2: Added pagination support to `EntityListProvider`.
+- aaa6fb3bc9: Minor updates for TypeScript 5.2.2+ compatibility
+- 4d9e3b39e4: Register component overrides in the global `OverrideComponentNameToClassKeys` provided by `@backstage/theme`. This will in turn will provide component style override types for `createUnifiedTheme`.
+- eee0ff2946: Fixed a issue where `CatalogPage` wasn't using the chosen `initiallySelectedFilter` as intended.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/frontend-plugin-api@0.3.1-next.0
+  - @backstage/integration-react@1.1.22-next.0
+  - @backstage/plugin-permission-react@0.4.18-next.0
+  - @backstage/catalog-client@1.4.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+
+## 1.9.0
+
+### Minor Changes
+
+- 1e5b7d993a: Added an `EntityPresentationApi` and associated `entityPresentationApiRef`. This
+  API lets you control how references to entities (e.g. in links, headings,
+  iconography etc) are represented in the user interface.
+
+  Usage of this API is initially added to the `EntityRefLink` and `EntityRefLinks`
+  components, so that they can render richer, more correct representation of
+  entity refs. There's also a new `EntityDisplayName` component, which works just like
+  the `EntityRefLink` but without the link.
+
+  Along with that change, the `fetchEntities` and `getTitle` props of
+  `EntityRefLinksProps` are deprecated and no longer used, since the same need
+  instead is fulfilled (and by default always enabled) by the
+  `entityPresentationApiRef`.
+
+- 1fd53fa0c6: The `UserListPicker` component has undergone improvements to enhance its performance.
+
+  The previous implementation inferred the number of owned and starred entities based on the entities available in the `EntityListContext`. The updated version no longer relies on the `EntityListContext` for inference, allowing for better decoupling.
+
+  The component now loads the entities' count asynchronously, resulting in improved performance and responsiveness. For this purpose, some of the exported filters such as `EntityTagFilter`, `EntityOwnerFilter`, `EntityLifecycleFilter` and `EntityNamespaceFilter` have now the `getCatalogFilters` method implemented.
+
+### Patch Changes
+
+- 2ad1bacef7: Add EntityRef to Entity Inspector UI
+- 6c2b872153: Add official support for React 18.
+- 69ee8d75f4: Remove `button` prop from used MaterialUI `MenuItem` component fixing incompatibility with MaterialUI v5.
+- 0bf6ebda88: Added new APIs at the `/alpha` subpath for creating entity page cards and content for the new frontend system.
+- 77f009b35d: Internal updates to match changes in the experimental `@backstage/frontend-plugin-api`.
+- 71c97e7d73: The `spec.type` field in entities will now always be rendered as a string.
+- 69c14904b6: Move the `EntityRefLink` icon to the left hand side as per Material-UI guidelines
+- 000dcd01af: Removed unnecessary `@backstage/integration` dependency, replaced by `@backstage/integration-react`.
+- 6c357184e2: Export `MissingAnnotationEmptyState` from `@backstage/plugin-catalog-react`
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/frontend-plugin-api@0.3.0
+  - @backstage/integration-react@1.1.21
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-permission-react@0.4.17
+  - @backstage/version-bridge@1.0.7
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-client@1.4.6
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+
 ## 1.9.0-next.2
 
 ### Patch Changes

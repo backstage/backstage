@@ -26,6 +26,8 @@ describe('createExtensionOverrides', () => {
       {
         "$$type": "@backstage/ExtensionOverrides",
         "extensions": [],
+        "featureFlags": [],
+        "toString": [Function],
         "version": "v1",
       }
     `);
@@ -36,8 +38,22 @@ describe('createExtensionOverrides', () => {
       createExtensionOverrides({
         extensions: [
           createExtension({
-            id: 'a',
-            attachTo: { id: 'core', input: 'apis' },
+            name: 'a',
+            attachTo: { id: 'app', input: 'apis' },
+            output: {},
+            factory: () => ({}),
+          }),
+          createExtension({
+            namespace: 'b',
+            attachTo: { id: 'app', input: 'apis' },
+            output: {},
+            factory: () => ({}),
+          }),
+          createExtension({
+            kind: 'k',
+            namespace: 'c',
+            name: 'n',
+            attachTo: { id: 'app', input: 'apis' },
             output: {},
             factory: () => ({}),
           }),
@@ -50,16 +66,51 @@ describe('createExtensionOverrides', () => {
           {
             "$$type": "@backstage/Extension",
             "attachTo": {
-              "id": "core",
+              "id": "app",
               "input": "apis",
             },
+            "configSchema": undefined,
             "disabled": false,
             "factory": [Function],
             "id": "a",
             "inputs": {},
             "output": {},
+            "toString": [Function],
+            "version": "v1",
+          },
+          {
+            "$$type": "@backstage/Extension",
+            "attachTo": {
+              "id": "app",
+              "input": "apis",
+            },
+            "configSchema": undefined,
+            "disabled": false,
+            "factory": [Function],
+            "id": "b",
+            "inputs": {},
+            "output": {},
+            "toString": [Function],
+            "version": "v1",
+          },
+          {
+            "$$type": "@backstage/Extension",
+            "attachTo": {
+              "id": "app",
+              "input": "apis",
+            },
+            "configSchema": undefined,
+            "disabled": false,
+            "factory": [Function],
+            "id": "k:c/n",
+            "inputs": {},
+            "output": {},
+            "toString": [Function],
+            "version": "v1",
           },
         ],
+        "featureFlags": [],
+        "toString": [Function],
         "version": "v1",
       }
     `);
@@ -69,8 +120,8 @@ describe('createExtensionOverrides', () => {
     const overrides = createExtensionOverrides({
       extensions: [
         createExtension({
-          id: 'a',
-          attachTo: { id: 'core', input: 'apis' },
+          namespace: 'a',
+          attachTo: { id: 'app', input: 'apis' },
           output: {},
           factory: () => ({}),
         }),

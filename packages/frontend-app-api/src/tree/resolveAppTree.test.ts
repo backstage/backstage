@@ -16,15 +16,17 @@
 
 import { createExtension } from '@backstage/frontend-plugin-api';
 import { resolveAppTree } from './resolveAppTree';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
-const extBaseConfig = {
-  id: 'test',
-  attachTo: { id: 'nonexistent', input: 'nonexistent' },
-  output: {},
-  factory: () => ({}),
-};
-
-const extension = createExtension(extBaseConfig);
+const extension = resolveExtensionDefinition(
+  createExtension({
+    name: 'test',
+    attachTo: { id: 'nonexistent', input: 'nonexistent' },
+    output: {},
+    factory: () => ({}),
+  }),
+);
 
 const baseSpec = {
   extension,
@@ -34,19 +36,19 @@ const baseSpec = {
 
 describe('buildAppTree', () => {
   it('should fail to create an empty tree', () => {
-    expect(() => resolveAppTree('core', [])).toThrow(
-      "No root node with id 'core' found in app tree",
+    expect(() => resolveAppTree('app', [])).toThrow(
+      "No root node with id 'app' found in app tree",
     );
   });
 
   it('should create a tree with only one node', () => {
-    const tree = resolveAppTree('core', [{ ...baseSpec, id: 'core' }]);
+    const tree = resolveAppTree('app', [{ ...baseSpec, id: 'app' }]);
     expect(tree.root).toEqual({
-      spec: { ...baseSpec, id: 'core' },
+      spec: { ...baseSpec, id: 'app' },
       edges: { attachments: new Map() },
     });
     expect(Array.from(tree.orphans)).toEqual([]);
-    expect(Array.from(tree.nodes.keys())).toEqual(['core']);
+    expect(Array.from(tree.nodes.keys())).toEqual(['app']);
   });
 
   it('should create a tree', () => {
@@ -157,7 +159,7 @@ describe('buildAppTree', () => {
 
   it('throws an error when duplicated extensions are detected', () => {
     expect(() =>
-      resolveAppTree('core', [
+      resolveAppTree('app', [
         { ...baseSpec, id: 'a' },
         { ...baseSpec, id: 'a' },
       ]),

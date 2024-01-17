@@ -51,6 +51,7 @@ import {
   FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
+import { ErrorListTemplate } from './ErrorListTemplate';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -190,12 +191,28 @@ export const Stepper = (stepperProps: StepperProps) => {
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
-      <MuiStepper activeStep={activeStep} alternativeLabel variant="elevation">
-        {steps.map((step, index) => (
-          <MuiStep key={index}>
-            <MuiStepLabel>{step.title}</MuiStepLabel>
-          </MuiStep>
-        ))}
+      <MuiStepper
+        activeStep={activeStep}
+        alternativeLabel
+        variant="elevation"
+        style={{ overflowX: 'auto' }}
+      >
+        {steps.map((step, index) => {
+          const isAllowedLabelClick = activeStep > index;
+          return (
+            <MuiStep key={index}>
+              <MuiStepLabel
+                aria-label={`Step ${index + 1}`}
+                style={{ cursor: isAllowedLabelClick ? 'pointer' : 'default' }}
+                onClick={() => {
+                  if (isAllowedLabelClick) setActiveStep(index);
+                }}
+              >
+                {step.title}
+              </MuiStepLabel>
+            </MuiStep>
+          );
+        })}
         <MuiStep>
           <MuiStepLabel>Review</MuiStepLabel>
         </MuiStep>
@@ -212,8 +229,12 @@ export const Stepper = (stepperProps: StepperProps) => {
             uiSchema={currentStep.uiSchema}
             onSubmit={handleNext}
             fields={fields}
-            showErrorList={false}
+            showErrorList="top"
+            templates={{ ErrorListTemplate }}
             onChange={handleChange}
+            experimental_defaultFormStateBehavior={{
+              allOf: 'populateDefaults',
+            }}
             {...(props.formProps ?? {})}
           >
             <div className={styles.footer}>

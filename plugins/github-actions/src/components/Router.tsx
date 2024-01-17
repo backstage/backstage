@@ -23,15 +23,18 @@ import {
 import { Routes, Route } from 'react-router-dom';
 import { buildRouteRef } from '../routes';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
+import { WorkflowRunsCard } from './WorkflowRunsCard';
 import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { GITHUB_ACTIONS_ANNOTATION } from './getProjectNameFromEntity';
+import { RouterProps } from '../api/types';
 
 /** @public */
 export const isGithubActionsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]);
 
 /** @public */
-export const Router = () => {
+export const Router = (props: RouterProps) => {
+  const { view = 'table' } = props;
   const { entity } = useEntity();
 
   if (!isGithubActionsAvailable(entity)) {
@@ -39,14 +42,21 @@ export const Router = () => {
       <MissingAnnotationEmptyState annotation={GITHUB_ACTIONS_ANNOTATION} />
     );
   }
+
+  const workflowRunsComponent =
+    view === 'cards' ? (
+      <WorkflowRunsCard entity={entity} />
+    ) : (
+      <WorkflowRunsTable entity={entity} />
+    );
+
   return (
     <Routes>
-      <Route path="/" element={<WorkflowRunsTable entity={entity} />} />
+      <Route path="/" element={workflowRunsComponent} />
       <Route
         path={`${buildRouteRef.path}`}
         element={<WorkflowRunDetails entity={entity} />}
       />
-      )
     </Routes>
   );
 };

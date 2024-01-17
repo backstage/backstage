@@ -15,9 +15,9 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { Typography, Theme, makeStyles } from '@material-ui/core';
+import { Typography, makeStyles } from '@material-ui/core';
 
-export const useStyles = makeStyles<Theme>(
+export const useStyles = makeStyles(
   theme => ({
     label: {
       fontWeight: 'normal',

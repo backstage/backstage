@@ -48,19 +48,17 @@ export type SearchResultItemExtensionPredicate = (
 ) => boolean;
 
 /** @alpha */
-export const searchResultItemExtensionData = createExtensionDataRef<{
-  predicate?: SearchResultItemExtensionPredicate;
-  component: SearchResultItemExtensionComponent;
-}>('plugin.search.result.item.data');
-
-/** @alpha */
 export type SearchResultItemExtensionOptions<
   TConfig extends { noTrack?: boolean },
 > = {
   /**
-   * The extension id.
+   * The extension namespace.
    */
-  id: string;
+  namespace?: string;
+  /**
+   * The extension name.
+   */
+  name?: string;
   /**
    * The extension attachment point (e.g., search modal or page).
    */
@@ -86,8 +84,6 @@ export type SearchResultItemExtensionOptions<
 export function createSearchResultListItemExtension<
   TConfig extends { noTrack?: boolean },
 >(options: SearchResultItemExtensionOptions<TConfig>) {
-  const id = `plugin.search.result.item.${options.id}`;
-
   const configSchema =
     'configSchema' in options
       ? options.configSchema
@@ -98,16 +94,18 @@ export function createSearchResultListItemExtension<
         ) as PortableSchema<TConfig>);
 
   return createExtension({
-    id,
+    kind: 'search-result-list-item',
+    namespace: options.namespace,
+    name: options.name,
     attachTo: options.attachTo ?? {
-      id: 'plugin.search.page',
+      id: 'page:search',
       input: 'items',
     },
     configSchema,
     output: {
-      item: searchResultItemExtensionData,
+      item: createSearchResultListItemExtension.itemDataRef,
     },
-    factory({ config, source }) {
+    factory({ config, node }) {
       const ExtensionComponent = lazy(() =>
         options
           .component({ config })
@@ -118,7 +116,7 @@ export function createSearchResultListItemExtension<
         item: {
           predicate: options.predicate,
           component: props => (
-            <ExtensionBoundary id={id} source={source}>
+            <ExtensionBoundary node={node}>
               <SearchResultListItemExtension
                 rank={props.rank}
                 result={props.result}
@@ -132,4 +130,12 @@ export function createSearchResultListItemExtension<
       };
     },
   });
+}
+
+/** @alpha */
+export namespace createSearchResultListItemExtension {
+  export const itemDataRef = createExtensionDataRef<{
+    predicate?: SearchResultItemExtensionPredicate;
+    component: SearchResultItemExtensionComponent;
+  }>('search.search-result-list-item.item');
 }

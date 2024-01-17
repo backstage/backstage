@@ -38,6 +38,14 @@ auth:
     url: https://demo.backstage.io/api/auth
 
 catalog:
+  rules:
+    - allow:
+        - Component
+        - API
+        - Resource
+        - System
+        - Domain
+        - Location
   locations:
     - type: url
       target: https://github.com/backstage/backstage/blob/${REF_NAME}/packages/catalog-model/examples/all.yaml

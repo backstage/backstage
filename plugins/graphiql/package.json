@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-graphiql",
   "description": "Backstage plugin for browsing GraphQL APIs",
-  "version": "0.3.0-next.2",
+  "version": "0.3.2",
   "publishConfig": {
     "access": "public"
   },
@@ -46,13 +46,11 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.61",
     "@types/react": "^16.13.1 || ^17.0.0",
     "graphiql": "^3.0.6",
     "graphql": "^16.0.0",
@@ -66,16 +64,12 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.0.0",
-    "@types/codemirror": "^5.0.0",
-    "cross-fetch": "^4.0.0",
-    "msw": "^1.0.0"
+    "@types/codemirror": "^5.0.0"
   },
   "files": [
     "dist"

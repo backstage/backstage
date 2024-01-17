@@ -1,5 +1,60 @@
 # @backstage/integration-react
 
+## 1.1.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0
+
+## 1.1.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/integration@1.8.0
+  - @backstage/config@1.1.1
+
+## 1.1.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/integration@1.8.0
+  - @backstage/config@1.1.1
+
+## 1.1.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/config@1.1.1
+
+## 1.1.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/config@1.1.1
+
+## 1.1.21
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/integration@1.7.2
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/config@1.1.1
+
 ## 1.1.21-next.1
 
 ### Patch Changes

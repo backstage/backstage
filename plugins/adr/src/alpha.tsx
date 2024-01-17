@@ -29,9 +29,8 @@ function isAdrDocument(result: any): result is AdrDocument {
 }
 
 /** @alpha */
-export const AdrSearchResultListItemExtension =
+export const adrSearchResultListItemExtension =
   createSearchResultListItemExtension({
-    id: 'adr',
     configSchema: createSchemaFromZod(z =>
       z.object({
         // TODO: Define how the icon can be configurable
@@ -54,5 +53,5 @@ export const AdrSearchResultListItemExtension =
 /** @alpha */
 export default createPlugin({
   id: 'adr',
-  extensions: [AdrSearchResultListItemExtension],
+  extensions: [adrSearchResultListItemExtension],
 });

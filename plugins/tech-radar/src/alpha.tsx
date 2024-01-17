@@ -24,12 +24,14 @@ import {
 import React from 'react';
 import { techRadarApiRef } from './api';
 import { SampleTechRadarApi } from './sample';
-import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
 import { rootRouteRef } from './plugin';
 
 /** @alpha */
-export const TechRadarPage = createPageExtension({
-  id: 'plugin.techradar.page',
+export const techRadarPage = createPageExtension({
   defaultPath: '/tech-radar',
   routeRef: convertLegacyRouteRef(rootRouteRef),
   configSchema: createSchemaFromZod(z =>
@@ -45,20 +47,20 @@ export const TechRadarPage = createPageExtension({
     }),
   ),
   loader: ({ config }) =>
-    import('./components').then(m => <m.RadarPage {...config} />),
+    import('./components').then(m =>
+      compatWrapper(<m.RadarPage {...config} />),
+    ),
 });
 
-const sampleTechRadarApi = createApiExtension({
-  api: techRadarApiRef,
-  factory() {
-    return createApiFactory(techRadarApiRef, new SampleTechRadarApi());
-  },
+/** @alpha */
+export const techRadarApi = createApiExtension({
+  factory: createApiFactory(techRadarApiRef, new SampleTechRadarApi()),
 });
 
 /** @alpha */
 export default createPlugin({
   id: 'tech-radar',
-  extensions: [TechRadarPage, sampleTechRadarApi],
+  extensions: [techRadarPage, techRadarApi],
   routes: {
     root: convertLegacyRouteRef(rootRouteRef),
   },

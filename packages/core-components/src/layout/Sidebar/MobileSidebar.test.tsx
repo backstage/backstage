@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { mockBreakpoint, renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
+import { mockBreakpoint } from '@backstage/core-components/testUtils';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import HomeIcon from '@material-ui/icons/Home';
 import LayersIcon from '@material-ui/icons/Layers';

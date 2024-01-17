@@ -25,3 +25,15 @@ export {
   GitlabDiscoveryEntityProvider,
   GitlabOrgDiscoveryEntityProvider,
 } from './providers';
+export type {
+  GitLabUser,
+  GitLabGroup,
+  GitlabProviderConfig,
+  GitLabGroupSamlIdentity,
+  GroupNameTransformer,
+  GroupNameTransformerOptions,
+  GroupTransformer,
+  GroupTransformerOptions,
+  UserTransformer,
+  UserTransformerOptions,
+} from './lib';

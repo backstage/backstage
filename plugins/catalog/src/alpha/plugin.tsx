@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { convertLegacyRouteRef } from '@backstage/core-plugin-api/alpha';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { createPlugin } from '@backstage/frontend-plugin-api';
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
@@ -23,6 +23,7 @@ import {
   createComponentRouteRef,
   createFromTemplateRouteRef,
   rootRouteRef,
+  unregisterRedirectRouteRef,
   viewTechDocRouteRef,
 } from '../routes';
 
@@ -45,6 +46,7 @@ export default createPlugin({
     viewTechDoc: convertLegacyRouteRef(viewTechDocRouteRef),
     createComponent: convertLegacyRouteRef(createComponentRouteRef),
     createFromTemplate: convertLegacyRouteRef(createFromTemplateRouteRef),
+    unregisterRedirect: convertLegacyRouteRef(unregisterRedirectRouteRef),
   },
   extensions: [
     ...apis,

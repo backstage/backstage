@@ -6,8 +6,6 @@ sidebar_label: Overview
 description: The structure and architecture of the new Backend System and its component parts
 ---
 
-> **NOTE: The new backend system is in alpha, and some plugins do not yet fully implement it.**
-
 ## Building Blocks
 
 This section introduces the high-level building blocks upon which this new
@@ -59,7 +57,7 @@ Just like plugins, modules also have access to services and can depend on their 
 
 A detailed explanation of the package architecture can be found in the
 [Backstage Architecture
-Overview](../../overview/architecture-overview/#package-architecture). The
+Overview](../../overview/architecture-overview.md#package-architecture). The
 most important packages to consider for this system are the following:
 
 - `plugin-<pluginId>-backend` houses the implementation of the backend plugins

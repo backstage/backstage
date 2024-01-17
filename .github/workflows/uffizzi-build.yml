@@ -3,9 +3,14 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
     paths-ignore:
-      - 'microsite/**'
-      - 'storybook/**'
+      - '.changeset/**'
       - 'contrib/**'
+      - 'docs/**'
+      - 'microsite/**'
+      - 'scripts/**'
+      - 'storybook/**'
+      - '**/*.test.*'
+      - '**/package.json'
       - '*.md'
 
 jobs:
@@ -20,7 +25,7 @@ jobs:
       tags: ${{ steps.meta.outputs.tags }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@1b05615854632b887b69ae1be8cbefe72d3ae423 # v2.6.0
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
         with:
           egress-policy: audit
 
@@ -28,7 +33,7 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: setup-node
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: 18.x
           registry-url: https://registry.npmjs.org/
@@ -42,30 +47,26 @@ jobs:
         run: |
           cp -f ./.github/uffizzi/uffizzi.production.app-config.yaml ./app-config.yaml
 
-      - name: typescript build
-        run: |
-          yarn tsc
-
       - name: backstage build
         run: |
           yarn workspace example-backend build
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@885d1462b80bc1c1c7f0b00334ad271f09369c55 # v2.10.0
+        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
 
       - name: Generate UUID image name
         id: uuid
-        run: echo "UUID_TAG_APP=$(uuidgen)" >> $GITHUB_ENV
+        run: echo "UUID_TAG_APP=backstage-$(uuidgen --time)" >> $GITHUB_ENV
 
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@818d4b7b91585d195f67373fd9cb0332e31a7175 # v4.6.0
+        uses: docker/metadata-action@e6428a5c4e294a61438ed7f43155db912025b6b3 # v5.2.0
         with:
           images: registry.uffizzi.com/${{ env.UUID_TAG_APP }}
           tags: type=raw,value=60d
 
       - name: Build Image
-        uses: docker/build-push-action@0a97817b6ade9f46837855d676c4cca3a2471fc9 # v4.2.1
+        uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56 # v5.1.0
         with:
           context: .
           file: packages/backend/Dockerfile
@@ -82,7 +83,7 @@ jobs:
       - build-backstage
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@1b05615854632b887b69ae1be8cbefe72d3ae423 # v2.6.0
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
         with:
           egress-policy: audit
 
@@ -114,7 +115,7 @@ jobs:
     if: ${{ github.event.action == 'closed' }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@1b05615854632b887b69ae1be8cbefe72d3ae423 # v2.6.0
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
         with:
           egress-policy: audit
 

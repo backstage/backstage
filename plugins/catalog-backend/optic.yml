@@ -12,4 +12,4 @@ capture:
       # ℹ️ Requests should be sent to the Optic proxy, the address of which is injected into 'run.command's env as OPTIC_PROXY (or the value of 'run.proxy_variable').
       run:
         # 🔧 Specify a command that will generate traffic
-        command: yarn backstage-cli package test --no-watch src/service/router.test.ts src/service/createRouter.test.ts
+        command: yarn backstage-cli package test --no-watch "src/service/router.test.ts" "src/service/createRouter.test.ts"

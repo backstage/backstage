@@ -16,16 +16,24 @@
 
 import React from 'react';
 import * as deployments from '../../__fixtures__/2-deployments.json';
-import { renderInTestApp, textContentMatcher } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  TestApiProvider,
+  textContentMatcher,
+} from '@backstage/test-utils';
 import { DeploymentDrawer } from './DeploymentDrawer';
+import { kubernetesClusterLinkFormatterApiRef } from '../../api';
 
 describe('DeploymentDrawer', () => {
   it('should render deployment drawer', async () => {
     const { getByText, getAllByText } = await renderInTestApp(
-      <DeploymentDrawer
-        deployment={(deployments as any).deployments[0]}
-        expanded
-      />,
+      <TestApiProvider apis={[[kubernetesClusterLinkFormatterApiRef, {}]]}>
+        <DeploymentDrawer
+          deployment={(deployments as any).deployments[0]}
+          expanded
+        />
+        ,
+      </TestApiProvider>,
     );
 
     expect(getAllByText('dice-roller')).toHaveLength(2);
@@ -53,13 +61,16 @@ describe('DeploymentDrawer', () => {
   it('should render deployment drawer without namespace', async () => {
     const deployment = (deployments as any).deployments[0];
     const { queryByText } = await renderInTestApp(
-      <DeploymentDrawer
-        deployment={{
-          ...deployment,
-          metadata: { ...deployment.metadata, namespace: undefined },
-        }}
-        expanded
-      />,
+      <TestApiProvider apis={[[kubernetesClusterLinkFormatterApiRef, {}]]}>
+        <DeploymentDrawer
+          deployment={{
+            ...deployment,
+            metadata: { ...deployment.metadata, namespace: undefined },
+          }}
+          expanded
+        />
+        ,
+      </TestApiProvider>,
     );
 
     expect(queryByText('namespace: default')).not.toBeInTheDocument();

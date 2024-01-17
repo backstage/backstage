@@ -64,6 +64,7 @@ export type GeneratorRunOptions = {
   logger: Logger;
   logStream?: Writable;
   siteOptions?: { name?: string };
+  runAsDefaultUser?: boolean;
 };
 
 /**

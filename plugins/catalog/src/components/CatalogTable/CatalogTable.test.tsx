@@ -32,6 +32,7 @@ import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { act, fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
+import { CatalogTableColumnsFunc } from './types';
 
 const entities: Entity[] = [
   {
@@ -360,6 +361,65 @@ describe('CatalogTable component', () => {
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider value={{ entities: [entity] }}>
+          <CatalogTable columns={columns} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    const columnHeader = screen
+      .getAllByRole('button')
+      .filter(c => c.tagName === 'SPAN');
+    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    expect(columnHeaderLabels).toEqual(expectedColumns);
+
+    const labelCellValue = screen.getByText('generic');
+    expect(labelCellValue).toBeInTheDocument();
+  });
+
+  it('should render the label column with customised title and value as specified using function', async () => {
+    const columns: CatalogTableColumnsFunc = ({
+      filters,
+      entities: entities1,
+    }) => {
+      return filters.kind?.value === 'api' && entities1.length
+        ? [
+            CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
+            CatalogTable.columns.createLabelColumn('category', {
+              title: 'Category',
+            }),
+          ]
+        : [];
+    };
+
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'API',
+      metadata: {
+        name: 'APIWithLabel',
+        labels: { category: 'generic' },
+      },
+    };
+    const expectedColumns = ['Name', 'Category', 'Actions'];
+
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            entities: [entity],
+            filters: {
+              kind: {
+                value: 'api',
+                getCatalogFilters: () => ({ kind: 'api' }),
+                toQueryValue: () => 'api',
+              },
+            },
+          }}
+        >
           <CatalogTable columns={columns} />
         </MockEntityListContextProvider>
       </ApiProvider>,

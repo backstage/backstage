@@ -49,19 +49,6 @@ export default async function createPlugin(
 }
 ```
 
-Alternatively to the config-based schedule, you can use
-
-```ts
-/* highlight-remove-next-line */
-scheduler: env.scheduler,
-/* highlight-add-start */
-schedule: env.scheduler.createScheduledTaskRunner({
-  frequency: { minutes: 30 },
-  timeout: { minutes: 3 },
-}),
-/* highlight-add-end */
-```
-
 ### Installation with Events Support
 
 Please follow the installation instructions at
@@ -131,7 +118,7 @@ catalog:
         filters: # optional
           projectKey: '^apis-.*$' # optional; RegExp
           repoSlug: '^service-.*$' # optional; RegExp
-        schedule: # optional; same options as in TaskScheduleDefinition
+        schedule: # same options as in TaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code
@@ -153,7 +140,7 @@ catalog:
     Regular expression used to filter results based on the project key.
   - **`repoSlug`** _(optional)_:
     Regular expression used to filter results based on the repo slug.
-- **`schedule`** _(optional)_:
+- **`schedule`**:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.
   - **`timeout`**:

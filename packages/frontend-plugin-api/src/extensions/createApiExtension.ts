@@ -17,9 +17,9 @@
 import { AnyApiFactory, AnyApiRef } from '@backstage/core-plugin-api';
 import { PortableSchema } from '../schema';
 import {
-  ExtensionInputValues,
+  ResolvedExtensionInputs,
   createExtension,
-  coreExtensionData,
+  createExtensionDataRef,
 } from '../wiring';
 import { AnyExtensionInputMap } from '../wiring/createExtension';
 import { Expand } from '../types';
@@ -34,7 +34,7 @@ export function createApiExtension<
         api: AnyApiRef;
         factory: (options: {
           config: TConfig;
-          inputs: Expand<ExtensionInputValues<TInputs>>;
+          inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         }) => AnyApiFactory;
       }
     | {
@@ -51,12 +51,15 @@ export function createApiExtension<
     'api' in options ? options.api : (factory as { api: AnyApiRef }).api;
 
   return createExtension({
-    id: `apis.${apiRef.id}`,
-    attachTo: { id: 'core', input: 'apis' },
+    kind: 'api',
+    // Since ApiRef IDs use a global namespace we use the namespace here in order to override
+    // potential plugin IDs and always end up with the format `api:<api-ref-id>`
+    namespace: apiRef.id,
+    attachTo: { id: 'app', input: 'apis' },
     inputs: extensionInputs,
     configSchema,
     output: {
-      api: coreExtensionData.apiFactory,
+      api: createApiExtension.factoryDataRef,
     },
     factory({ config, inputs }) {
       if (typeof factory === 'function') {
@@ -65,4 +68,10 @@ export function createApiExtension<
       return { api: factory };
     },
   });
+}
+
+/** @public */
+export namespace createApiExtension {
+  export const factoryDataRef =
+    createExtensionDataRef<AnyApiFactory>('core.api.factory');
 }

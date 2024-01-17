@@ -46,6 +46,7 @@ export class DockerContainerRunner implements ContainerRunner {
       workingDir,
       envVars = {},
       pullImage = true,
+      defaultUser = false,
     } = options;
 
     // Show a better error message when Docker is unavailable.
@@ -71,7 +72,7 @@ export class DockerContainerRunner implements ContainerRunner {
     }
 
     const userOptions: UserOptions = {};
-    if (process.getuid && process.getgid) {
+    if (!defaultUser && process.getuid && process.getgid) {
       // Files that are created inside the Docker container will be owned by
       // root on the host system on non Mac systems, because of reasons. Mainly the fact that
       // volume sharing is done using NFS on Mac and actual mounts in Linux world.

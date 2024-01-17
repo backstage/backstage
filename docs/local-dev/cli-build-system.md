@@ -295,7 +295,8 @@ Webpack configuration itself varies very little between the frontend development
 and production bundling, so we'll dive more into the configuration in the
 production section below. The main differences are that `process.env.NODE_ENV`
 is set to `'development'`, minification is disabled, cheap source maps are used,
-and [React Hot Loader](https://github.com/gaearon/react-hot-loader) is enabled.
+and [React Refresh](https://github.com/pmmmwh/react-refresh-webpack-plugin#readme)
+is enabled.
 
 If you prefer to run type checking and linting as part of the Webpack process,
 you can enable usage of the
@@ -589,22 +590,25 @@ For your productivity working with unit tests it's quite essential to have your 
 
 A complete launch configuration for VS Code debugging may look like this:
 
-```json
+```jsonc
 {
   "type": "node",
-  "name": "vscode-jest-tests",
+  "name": "vscode-jest-tests.v2",
   "request": "launch",
+  "args": [
+    "repo",
+    "test",
+    "--runInBand",
+    "--watchAll=false",
+    "--testNamePattern",
+    "${jest.testNamePattern}",
+    "--runTestsByPath",
+    "${jest.testFile}"
+  ],
   "console": "integratedTerminal",
   "internalConsoleOptions": "neverOpen",
   "disableOptimisticBPs": true,
-  "program": "${workspaceFolder}/node_modules/.bin/jest",
-  "cwd": "${workspaceFolder}",
-  "args": [
-    "--config",
-    "node_modules/@backstage/cli/config/jest.js",
-    "--runInBand",
-    "--watchAll=false"
-  ]
+  "program": "${workspaceFolder}/node_modules/.bin/backstage-cli"
 }
 ```
 
