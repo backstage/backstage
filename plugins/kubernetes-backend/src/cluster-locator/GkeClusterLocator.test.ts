@@ -382,5 +382,108 @@ describe('GkeClusterLocator', () => {
         parent: 'projects/some-project/locations/some-region',
       });
     });
+    it('return google login when no authProvider is specified', async () => {
+      mockedListClusters.mockReturnValueOnce([
+        {
+          clusters: [
+            {
+              name: 'some-cluster',
+              endpoint: '1.2.3.4',
+            },
+          ],
+        },
+      ]);
+
+      const config: Config = new ConfigReader({
+        type: 'gke',
+        projectId: 'some-project',
+      });
+
+      const sut = GkeClusterLocator.fromConfigWithClient(config, {
+        listClusters: mockedListClusters,
+      } as any);
+
+      const result = await sut.getClusters();
+
+      expect(result).toStrictEqual([
+        {
+          name: 'some-cluster',
+          url: 'https://1.2.3.4',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
+          skipTLSVerify: false,
+          skipMetricsLookup: false,
+        },
+      ]);
+    });
+    it('return googleServiceAccount login when authProvider is specified', async () => {
+      mockedListClusters.mockReturnValueOnce([
+        {
+          clusters: [
+            {
+              name: 'some-cluster',
+              endpoint: '1.2.3.4',
+            },
+          ],
+        },
+      ]);
+
+      const config: Config = new ConfigReader({
+        type: 'gke',
+        projectId: 'some-project',
+        authProvider: 'googleServiceAccount',
+      });
+
+      const sut = GkeClusterLocator.fromConfigWithClient(config, {
+        listClusters: mockedListClusters,
+      } as any);
+
+      const result = await sut.getClusters();
+
+      expect(result).toStrictEqual([
+        {
+          name: 'some-cluster',
+          url: 'https://1.2.3.4',
+          authMetadata: {
+            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'googleServiceAccount',
+          },
+          skipTLSVerify: false,
+          skipMetricsLookup: false,
+        },
+      ]);
+    });
+    it('return google login when authProvider property has invalid value', async () => {
+      mockedListClusters.mockReturnValueOnce([
+        {
+          clusters: [
+            {
+              name: 'some-cluster',
+              endpoint: '1.2.3.4',
+            },
+          ],
+        },
+      ]);
+
+      const config: Config = new ConfigReader({
+        type: 'gke',
+        projectId: 'some-project',
+        authProvider: 'differentValue',
+      });
+
+      const sut = GkeClusterLocator.fromConfigWithClient(config, {
+        listClusters: mockedListClusters,
+      } as any);
+
+      const result = await sut.getClusters();
+
+      expect(result).toStrictEqual([
+        {
+          name: 'some-cluster',
+          url: 'https://1.2.3.4',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
+          skipTLSVerify: false,
+          skipMetricsLookup: false,
+        },
+      ]);
+    });
   });
 });

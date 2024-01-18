@@ -393,6 +393,7 @@ For example:
 - type: 'gke'
   projectId: 'gke-clusters'
   region: 'europe-west1' # optional
+  authProvider: 'google' # optional
   skipTLSVerify: false # optional
   skipMetricsLookup: false # optional
   exposeDashboard: false # optional
@@ -416,6 +417,18 @@ The Google Cloud project to look for Kubernetes clusters in.
 
 The Google Cloud region to look for Kubernetes clusters in. Defaults to all
 regions.
+
+##### `authProvider` (optional)
+
+Set the authentication method for discovering clusters and gathering information
+about resources.
+
+Defaults to `google` which leverages the logged in user's Google OAuth credentials.
+
+Set to `googleServiceAccount` to leverage
+Application Default Credentials (https://cloud.google.com/docs/authentication/application-default-credentials).
+To use a service account JSON key (not recommended), set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable
+on the Backstage backend to the path of the service account key file.
 
 ##### `skipTLSVerify` (optional)
 
