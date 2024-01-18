@@ -16201,12 +16201,12 @@ __metadata:
   linkType: hard
 
 "@stoplight/types@npm:^14.0.0":
-  version: 14.0.0
-  resolution: "@stoplight/types@npm:14.0.0"
+  version: 14.1.1
+  resolution: "@stoplight/types@npm:14.1.1"
   dependencies:
     "@types/json-schema": ^7.0.4
     utility-types: ^3.10.0
-  checksum: 462fb6c718a2679927421ca1fffb5e31be2d150130e95a2771ffba04f68fc0e0f8ef3d4ae050e63fd4044bc4103e2ea82c98e1f5c7ff192a78914838eb250e5e
+  checksum: 1da2e683e88afe2f72c3b3af341537bc9bac153d224f65744ca60d44eade93609ce91172064ae27093e1ebfa7bcbf05fb232a1910d83b2aee5b1eed4bb726200
   languageName: node
   linkType: hard
 
