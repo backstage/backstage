@@ -26,7 +26,7 @@ import { BackendFeatureRegistration } from '../../types';
  * @public
  */
 export interface RootFeatureRegistryService {
-  getFeatures(): BackendFeatureRegistration[];
+  getFeatures(): Promise<BackendFeatureRegistration[]>;
 }
 
 /**

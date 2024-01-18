@@ -35,7 +35,7 @@ export class DefaultRootFeatureRegistryService
     this.#features = features;
   }
 
-  getFeatures(): BackendFeatureRegistration[] {
+  async getFeatures(): Promise<BackendFeatureRegistration[]> {
     return this.#features;
   }
 }
