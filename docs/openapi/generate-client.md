@@ -8,15 +8,12 @@ description: Documentation on how to create a client for a given OpenAPI spec
 
 ### Prerequisites
 
-1. Add your plugin ID as the last `servers` item, like this,
+1. Set your OpenAPI file's `info.title` to your pluginID like so,
 
 ```yaml
-servers:
-  # first value, used for OpenAPI router validation.
-  - url: /
-
-  # final value, pluginId.
-  - url: catalog
+info:
+  # your pluginId
+  title: catalog
 ```
 
 2. Find or create a new plugin to house your new generated client. Currently, we do not support generating an entirely new plugin and instead just generate client files.
