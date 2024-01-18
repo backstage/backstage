@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import { createValidatedOpenApiRouter } from '@backstage/backend-openapi-utils';
 export const spec = {
   openapi: '3.0.3',
   info: {
-    title: '@backstage/plugin-catalog-backend',
+    title: 'catalog',
     version: '1',
     description:
       'The Backstage backend plugin that provides the Backstage catalog',
@@ -35,9 +35,6 @@ export const spec = {
   servers: [
     {
       url: '/',
-    },
-    {
-      url: 'catalog',
     },
   ],
   components: {
