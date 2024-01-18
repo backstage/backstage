@@ -7,6 +7,7 @@ on:
       - 'contrib/**'
       - 'docs/**'
       - 'microsite/**'
+      - 'beps/**'
       - 'scripts/**'
       - 'storybook/**'
       - '**/*.test.*'
