@@ -4,6 +4,8 @@
   display: flex;
   position: fixed;
   transform: translateY(-50%);
+  margin-top: 44px;
+  max-height: calc(100% - 44px);
 
   transition: all 250ms ease-in-out;
 
@@ -22,9 +24,7 @@
 }
 
 .hubSpotNewAdopterFormContent {
-  height: 600px;
   max-width: 500px;
-  overflow-y: hidden;
   border-radius: 8px 0 0 8px;
   background-color: var(--ifm-color-white);
 
