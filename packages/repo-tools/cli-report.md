@@ -15,7 +15,8 @@ Commands:
   api-reports [options] [paths...]
   type-deps
   generate-catalog-info [options]
-  schema [command]
+  package [command]
+  repo [command]
   help [command]
 ```
 
@@ -48,10 +49,23 @@ Options:
   -h, --help
 ```
 
-### `backstage-repo-tools schema`
+### `backstage-repo-tools package`
 
 ```
-Usage: backstage-repo-tools schema [options] [command] [command]
+Usage: backstage-repo-tools package [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  schema [command]
+  help [command]
+```
+
+### `backstage-repo-tools package schema`
+
+```
+Usage: backstage-repo-tools package schema [options] [command] [command]
 
 Options:
   -h, --help
@@ -61,65 +75,127 @@ Commands:
   help [command]
 ```
 
-### `backstage-repo-tools schema openapi`
+### `backstage-repo-tools package schema openapi`
 
 ```
-Usage: backstage-repo-tools schema openapi [options] [command] [command]
+Usage: backstage-repo-tools package schema openapi [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  init
+  generate [command]
+  help [command]
+```
+
+### `backstage-repo-tools package schema openapi generate`
+
+```
+Usage: backstage-repo-tools package schema openapi generate [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  server
+  client [options]
+  help [command]
+```
+
+### `backstage-repo-tools package schema openapi generate client`
+
+```
+Usage: backstage-repo-tools package schema openapi generate client [options]
+
+Options:
+  --output-package <pathToPackage>
+  -h, --help
+```
+
+### `backstage-repo-tools package schema openapi generate server`
+
+```
+Usage: backstage-repo-tools package schema openapi generate server [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-repo-tools package schema openapi init`
+
+```
+Usage: backstage-repo-tools package schema openapi init [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-repo-tools repo`
+
+```
+Usage: backstage-repo-tools repo [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  schema [command]
+  help [command]
+```
+
+### `backstage-repo-tools repo schema`
+
+```
+Usage: backstage-repo-tools repo schema [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  openapi [command]
+  help [command]
+```
+
+### `backstage-repo-tools repo schema openapi`
+
+```
+Usage: backstage-repo-tools repo schema openapi [options] [command] [command]
 
 Options:
   -h, --help
 
 Commands:
   verify [paths...]
-  generate [paths...]
   lint [options] [paths...]
   test [options] [paths...]
-  init <paths...>
   help [command]
 ```
 
-### `backstage-repo-tools schema openapi generate`
+### `backstage-repo-tools repo schema openapi lint`
 
 ```
-Usage: backstage-repo-tools schema openapi generate [options] [paths...]
-
-Options:
-  -h, --help
-```
-
-### `backstage-repo-tools schema openapi init`
-
-```
-Usage: backstage-repo-tools schema openapi init [options] <paths...>
-
-Options:
-  -h, --help
-```
-
-### `backstage-repo-tools schema openapi lint`
-
-```
-Usage: backstage-repo-tools schema openapi lint [options] [paths...]
+Usage: backstage-repo-tools repo schema openapi lint [options] [paths...]
 
 Options:
   --strict
   -h, --help
 ```
 
-### `backstage-repo-tools schema openapi test`
+### `backstage-repo-tools repo schema openapi test`
 
 ```
-Usage: backstage-repo-tools schema openapi test [options] [paths...]
+Usage: backstage-repo-tools repo schema openapi test [options] [paths...]
 
 Options:
   --update
   -h, --help
 ```
 
-### `backstage-repo-tools schema openapi verify`
+### `backstage-repo-tools repo schema openapi verify`
 
 ```
-Usage: backstage-repo-tools schema openapi verify [options] [paths...]
+Usage: backstage-repo-tools repo schema openapi verify [options] [paths...]
 
 Options:
   -h, --help

@@ -2,7 +2,7 @@
 '@backstage/repo-tools': minor
 ---
 
-Renames the `schema openapi *` commands into `package schema openapi *` and `repo schema openapi *`. The aim is to make it more clear what the command is operating on, the entire repo or just a single package.
+**BREAKING**: The `schema openapi *` commands are now renamed into `package schema openapi *` and `repo schema openapi *`. The aim is to make it more clear what the command is operating on, the entire repo or just a single package.
 
 The following commands now live under the `package` namespace,
 
