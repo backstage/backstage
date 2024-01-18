@@ -170,7 +170,7 @@ describe('vmwareCloudAuthenticator', () => {
       );
       const { searchParams } = new URL(startResponse.url);
 
-      expect(searchParams.get('scope')).toBe('openid offline_access');
+      expect(searchParams.get('scope')).toBe('openid');
     });
 
     it('generates PKCE challenge', async () => {

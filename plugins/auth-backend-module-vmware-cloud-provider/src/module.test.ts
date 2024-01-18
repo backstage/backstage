@@ -74,7 +74,7 @@ describe('authModuleVmwareCloudProvider', () => {
       redirect_uri: `http://localhost:${server.port()}/api/auth/vmwareCloudServices/handler/frame`,
       code_challenge: expect.any(String),
       state: expect.any(String),
-      scope: 'openid offline_access',
+      scope: 'openid',
       orgId: 'orgId',
       code_challenge_method: 'S256',
     });

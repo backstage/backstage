@@ -106,7 +106,7 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
     const clientSecret = '';
     const authorizationUrl = `${consoleEndpoint}/csp/gateway/discovery`;
     const tokenUrl = `${consoleEndpoint}/csp/gateway/am/api/auth/token`;
-    const scope = config.getOptionalString('scope') ?? 'openid offline_access';
+    const scope = config.getOptionalString('scope') ?? 'openid';
 
     const providerStrategy = new OAuth2Strategy(
       {
