@@ -18198,7 +18198,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/luxon@npm:*, @types/luxon@npm:^3.0.0, @types/luxon@npm:~3.3.0":
+"@types/luxon@npm:*, @types/luxon@npm:^3.0.0":
+  version: 3.4.1
+  resolution: "@types/luxon@npm:3.4.1"
+  checksum: f1e7af456a03f91131dccd2628fd108f6f0a214eb7ed7aada80cda5637a972ad2ce777c6644e96336cec3babcc72f0000a179b4d554c8979e8287cdf4e1cce7e
+  languageName: node
+  linkType: hard
+
+"@types/luxon@npm:~3.3.0":
   version: 3.3.8
   resolution: "@types/luxon@npm:3.3.8"
   checksum: 026711b4aefc01c6e233e359c693b6d4c0873acc3f52a08661ea3751b2cf3e34d1ce1d5b0b99b0e40a059a2a3755acc20498d37db5f9a5a4f0f330cdf72db3db
