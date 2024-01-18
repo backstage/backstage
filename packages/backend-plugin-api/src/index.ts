@@ -21,5 +21,10 @@
  */
 
 export * from './services';
-export type { BackendFeature } from './types';
+export type {
+  BackendFeature,
+  BackendFeatureRegistration,
+  BackendPluginRegistration,
+  BackendModuleRegistration,
+} from './types';
 export * from './wiring';

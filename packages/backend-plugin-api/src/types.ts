@@ -27,3 +27,21 @@ export interface BackendFeature {
   // NOTE: This type is opaque in order to simplify future API evolution.
   $$type: '@backstage/BackendFeature';
 }
+
+/** @public */
+export type BackendFeatureRegistration =
+  | BackendPluginRegistration
+  | BackendModuleRegistration;
+
+/** @public */
+export interface BackendPluginRegistration {
+  pluginId: string;
+  type: 'plugin';
+}
+
+/** @public */
+export interface BackendModuleRegistration {
+  pluginId: string;
+  moduleId: string;
+  type: 'module';
+}

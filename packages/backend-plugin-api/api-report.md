@@ -21,12 +21,27 @@ export interface BackendFeature {
   $$type: '@backstage/BackendFeature';
 }
 
+// @public (undocumented)
+export type BackendFeatureRegistration =
+  | BackendPluginRegistration
+  | BackendModuleRegistration;
+
 // @public
 export interface BackendModuleConfig {
   moduleId: string;
   pluginId: string;
   // (undocumented)
   register(reg: BackendModuleRegistrationPoints): void;
+}
+
+// @public (undocumented)
+export interface BackendModuleRegistration {
+  // (undocumented)
+  moduleId: string;
+  // (undocumented)
+  pluginId: string;
+  // (undocumented)
+  type: 'module';
 }
 
 // @public
@@ -54,6 +69,14 @@ export interface BackendPluginConfig {
   pluginId: string;
   // (undocumented)
   register(reg: BackendPluginRegistrationPoints): void;
+}
+
+// @public (undocumented)
+export interface BackendPluginRegistration {
+  // (undocumented)
+  pluginId: string;
+  // (undocumented)
+  type: 'plugin';
 }
 
 // @public
@@ -116,6 +139,7 @@ export namespace coreServices {
   const tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
   const identity: ServiceRef<IdentityService, 'plugin'>;
+  const rootFeatureRegistry: ServiceRef<RootFeatureRegistryService, 'root'>;
 }
 
 // @public
@@ -357,6 +381,18 @@ export type ReadUrlResponse = {
 
 // @public (undocumented)
 export interface RootConfigService extends Config {}
+
+// @public
+export interface RootFeatureRegistryService {
+  // (undocumented)
+  getFeatures(): BackendFeatureRegistration[];
+}
+
+// @public
+export abstract class RootFeatureRegistryServiceImplementation {
+  // (undocumented)
+  abstract setFeatures(features: BackendFeatureRegistration[]): void;
+}
 
 // @public (undocumented)
 export interface RootHttpRouterService {
