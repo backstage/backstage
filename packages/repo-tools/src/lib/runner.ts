@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { resolvePackagePaths } from '../../lib/paths';
+import { resolvePackagePaths } from './paths';
 import pLimit from 'p-limit';
 import { relative as relativePath } from 'path';
-import { paths as cliPaths } from '../../lib/paths';
+import { paths as cliPaths } from './paths';
 import portFinder from 'portfinder';
 
 export async function runner(

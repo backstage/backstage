@@ -21,13 +21,21 @@ import { join } from 'path';
 import chalk from 'chalk';
 import { relative as relativePath, resolve as resolvePath } from 'path';
 import Parser from '@apidevtools/swagger-parser';
-import { runner } from '../runner';
-import { paths as cliPaths } from '../../../lib/paths';
-import { TS_MODULE, TS_SCHEMA_PATH, YAML_SCHEMA_PATH } from '../constants';
+import { runner } from '../../../../lib/runner';
+import { paths as cliPaths } from '../../../../lib/paths';
+import {
+  TS_MODULE,
+  TS_SCHEMA_PATH,
+  YAML_SCHEMA_PATH,
+} from '../../../../lib/openapi/constants';
+import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
 
 async function verify(directoryPath: string) {
-  const openapiPath = join(directoryPath, YAML_SCHEMA_PATH);
-  if (!(await fs.pathExists(openapiPath))) {
+  let openapiPath = '';
+  try {
+    openapiPath = await getPathToOpenApiSpec(directoryPath);
+  } catch {
+    // Unable to find spec at path.
     return;
   }
 
@@ -47,7 +55,7 @@ async function verify(directoryPath: string) {
   if (!isEqual(schema.spec, yaml)) {
     const path = relativePath(cliPaths.targetRoot, directoryPath);
     throw new Error(
-      `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn backstage-repo-tools schema openapi generate ${path}\` to regenerate \`${TS_SCHEMA_PATH}\`.`,
+      `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn backstage-repo-tools package schema openapi generate\` from '${path}' to regenerate \`${TS_SCHEMA_PATH}\`.`,
     );
   }
 }

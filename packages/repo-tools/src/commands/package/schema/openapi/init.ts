@@ -15,12 +15,12 @@
  */
 import fs from 'fs-extra';
 import { join } from 'path';
-import { YAML_SCHEMA_PATH } from './../constants';
+import { YAML_SCHEMA_PATH } from '../../../../lib/openapi/constants';
 
-import { paths as cliPaths } from '../../../lib/paths';
-import { runner } from '../runner';
+import { paths as cliPaths } from '../../../../lib/paths';
+import { runner } from '../../../../lib/runner';
 import chalk from 'chalk';
-import { exec } from '../../../lib/exec';
+import { exec } from '../../../../lib/exec';
 
 const ROUTER_TEST_PATHS = [
   'src/service/router.test.ts',
@@ -31,7 +31,7 @@ async function init(directoryPath: string) {
   const openapiPath = join(directoryPath, YAML_SCHEMA_PATH);
   if (!(await fs.pathExists(openapiPath))) {
     throw new Error(
-      `You do not have an OpenAPI YAML file at ${openapiPath}. Please create one and retry this command. If you already have existing test cases for your router, see 'backstage-repo-tools schema openapi test --update'`,
+      `You do not have an OpenAPI YAML file at ${openapiPath}. Please create one and retry this command. If you already have existing test cases for your router, see 'backstage-repo-tools package schema openapi test --update'`,
     );
   }
   const opticConfigFilePath = join(directoryPath, 'optic.yml');
