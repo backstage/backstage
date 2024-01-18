@@ -32,7 +32,7 @@ export class DefaultIconsApi implements IconsApi {
     return this.#icons.get(key);
   }
 
-  listIconKeys: IconsApi['listIconKeys'] = () => {
-    return { keys: this.#icons.keys() };
-  };
+  listIconKeys(): string[] {
+    return Array.from(this.#icons.keys());
+  }
 }

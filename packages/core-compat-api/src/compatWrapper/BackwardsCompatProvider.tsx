@@ -122,10 +122,8 @@ function LegacyAppContextProvider(props: { children: ReactNode }) {
       },
 
       getSystemIcons(): Record<string, IconComponent> {
-        const { keys } = iconsApi.listIconKeys();
-
         return Object.fromEntries(
-          Array.from(keys).map(key => [key, iconsApi.getIcon(key)!]),
+          iconsApi.listIconKeys().map(key => [key, iconsApi.getIcon(key)!]),
         );
       },
 

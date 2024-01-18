@@ -25,7 +25,7 @@ import { IconComponent } from '../../icons';
 export interface IconsApi {
   getIcon(key: string): IconComponent | undefined;
 
-  listIconKeys(): { keys: Iterable<string> };
+  listIconKeys(): string[];
 }
 
 /**

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { DefaultIconsApi } from './IconsApi';
+export { DefaultIconsApi } from './DefaultIconsApi';

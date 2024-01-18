@@ -981,9 +981,7 @@ export interface IconsApi {
   // (undocumented)
   getIcon(key: string): IconComponent | undefined;
   // (undocumented)
-  listIconKeys(): {
-    keys: Iterable<string>;
-  };
+  listIconKeys(): string[];
 }
 
 // @public
