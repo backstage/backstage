@@ -24,8 +24,6 @@ import { createConfluenceToMarkdownAction } from '@backstage/plugin-scaffolder-b
 import { Router } from 'express';
 import type { PluginEnvironment } from '../types';
 
-import { createGitlabProjectAccessTokenAction } from '@backstage/plugin-scaffolder-backend-module-gitlab';
-
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
@@ -49,7 +47,6 @@ export default async function createPlugin(
       config: env.config,
       reader: env.reader,
     }),
-    createGitlabProjectAccessTokenAction({ integrations: integrations }),
   ];
 
   return await createRouter({

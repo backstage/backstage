@@ -22,12 +22,10 @@ import {
   errorApiRef,
   fetchApiRef,
   githubAuthApiRef,
-  gitlabAuthApiRef,
 } from '@backstage/core-plugin-api';
 import {
   ScmAuth,
   ScmIntegrationsApi,
-  scmAuthApiRef,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import {
@@ -51,15 +49,8 @@ export const apis: AnyApiFactory[] = [
     deps: { configApi: configApiRef },
     factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
   }),
-  createApiFactory({
-    api: scmAuthApiRef,
-    deps: {
-      gitlabAuthApi: gitlabAuthApiRef,
-    },
-    factory: ({ gitlabAuthApi }) => ScmAuth.forGitlab(gitlabAuthApi),
-  }),
 
-  // ScmAuth.createDefaultApiFactory(),
+  ScmAuth.createDefaultApiFactory(),
 
   createApiFactory({
     api: graphQlBrowseApiRef,
@@ -70,12 +61,12 @@ export const apis: AnyApiFactory[] = [
     },
     factory: ({ errorApi, fetchApi, githubAuthApi }) =>
       GraphQLEndpoints.from([
-        // GraphQLEndpoints.create({
-        //   id: 'gitlab',
-        //   title: 'GitLab',
-        //   url: 'https://gitlab.com/api/graphql',
-        //   fetchApi,
-        // }),
+        GraphQLEndpoints.create({
+          id: 'gitlab',
+          title: 'GitLab',
+          url: 'https://gitlab.com/api/graphql',
+          fetchApi,
+        }),
         GraphQLEndpoints.github({
           id: 'github',
           title: 'GitHub',
