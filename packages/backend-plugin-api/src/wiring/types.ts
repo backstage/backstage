@@ -15,7 +15,11 @@
  */
 
 import { ServiceRef } from '../services/system/types';
-import { BackendFeature } from '../types';
+import {
+  BackendFeature,
+  BackendModuleRegistration,
+  BackendPluginRegistration,
+} from '../types';
 
 /**
  * TODO
@@ -81,7 +85,8 @@ export interface InternalBackendFeature extends BackendFeature {
 }
 
 /** @internal */
-export interface InternalBackendPluginRegistration {
+export interface InternalBackendPluginRegistration
+  extends BackendPluginRegistration {
   pluginId: string;
   type: 'plugin';
   extensionPoints: Array<readonly [ExtensionPoint<unknown>, unknown]>;
@@ -92,7 +97,8 @@ export interface InternalBackendPluginRegistration {
 }
 
 /** @internal */
-export interface InternalBackendModuleRegistration {
+export interface InternalBackendModuleRegistration
+  extends BackendModuleRegistration {
   pluginId: string;
   moduleId: string;
   type: 'module';

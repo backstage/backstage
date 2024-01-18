@@ -20,6 +20,7 @@ import {
   coreServices,
   ServiceRef,
   ServiceFactory,
+  BackendFeatureRegistration,
 } from '@backstage/backend-plugin-api';
 import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
 import { BackendPluginLifecycleImpl } from '../services/implementations/lifecycle/lifecycleServiceFactory';
@@ -31,6 +32,7 @@ import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
+import { BackendFeatureRegistrationObserver } from '@backstage/backend-plugin-api';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -170,18 +172,26 @@ export class BackendInitializer {
     }
 
     // Initialize all root scoped services
+    const featureRegistrationObservers: BackendFeatureRegistrationObserver[] =
+      [];
     for (const ref of this.#serviceRegistry.getServiceRefs()) {
       if (ref.scope === 'root') {
-        await this.#serviceRegistry.get(ref, 'root');
+        const service = await this.#serviceRegistry.get(ref, 'root');
+        if (service instanceof BackendFeatureRegistrationObserver) {
+          featureRegistrationObservers.push(service);
+        }
       }
     }
 
     const pluginInits = new Map<string, BackendRegisterInit>();
     const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
+    const registrations: BackendFeatureRegistration[] = [];
 
     // Enumerate all features
     for (const feature of this.#features) {
       for (const r of feature.getRegistrations()) {
+        registrations.push(r);
+
         const provides = new Set<ExtensionPoint<unknown>>();
 
         if (r.type === 'plugin' || r.type === 'module') {
@@ -227,6 +237,30 @@ export class BackendInitializer {
         }
       }
     }
+
+    featureRegistrationObservers.forEach(observer => {
+      observer.setFeatures(
+        registrations.map<BackendFeatureRegistration>(r => {
+          switch (r.type) {
+            case 'plugin':
+              return {
+                pluginId: r.pluginId,
+                type: 'plugin',
+              };
+            case 'module':
+              return {
+                pluginId: r.pluginId,
+                moduleId: r.moduleId,
+                type: 'module',
+              };
+            default: {
+              const _exhaustiveCheck: never = r;
+              return _exhaustiveCheck;
+            }
+          }
+        }),
+      );
+    });
 
     const allPluginIds = [
       ...new Set([...pluginInits.keys(), ...moduleInits.keys()]),

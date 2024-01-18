@@ -21,6 +21,8 @@ import {
   createBackendPlugin,
   createBackendModule,
   createExtensionPoint,
+  BackendFeatureRegistration,
+  BackendFeatureRegistrationObserver,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
 
@@ -148,6 +150,83 @@ describe('BackendInitializer', () => {
       })(),
     );
     await init.start();
+  });
+
+  it('should pass feature registrations to any service extending BackendFeatureRegistrationObserver', async () => {
+    expect.assertions(1);
+
+    const init = new BackendInitializer(baseFactories);
+
+    init.add(
+      createBackendPlugin({
+        pluginId: 'testPlugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+
+    init.add(
+      createBackendModule({
+        pluginId: 'testPlugin',
+        moduleId: 'testModule',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+
+    interface FeatureListerService {
+      getFeatures(): Promise<BackendFeatureRegistration[]>;
+    }
+
+    const featureListerRef = createServiceRef<FeatureListerService>({
+      id: 'featureLister',
+      scope: 'root',
+    });
+
+    const serviceImpl = new (class FeatureListerServiceImpl
+      extends BackendFeatureRegistrationObserver
+      implements FeatureListerService
+    {
+      private features: BackendFeatureRegistration[] = [];
+      setFeatures(features: BackendFeatureRegistration[]): void {
+        this.features = features;
+      }
+      async getFeatures(): Promise<BackendFeatureRegistration[]> {
+        return this.features;
+      }
+    })();
+
+    init.add(
+      createServiceFactory({
+        service: featureListerRef,
+        deps: {},
+        factory({}) {
+          return serviceImpl;
+        },
+      })(),
+    );
+
+    await init.start();
+
+    expect(await serviceImpl.getFeatures()).toEqual([
+      {
+        type: 'plugin',
+        pluginId: 'testPlugin',
+      },
+      {
+        type: 'module',
+        pluginId: 'testPlugin',
+        moduleId: 'testModule',
+      },
+    ]);
   });
 
   it('should forward errors when plugins fail to start', async () => {

@@ -21,12 +21,33 @@ export interface BackendFeature {
   $$type: '@backstage/BackendFeature';
 }
 
+// @public (undocumented)
+export type BackendFeatureRegistration =
+  | BackendPluginRegistration
+  | BackendModuleRegistration;
+
+// @public
+export abstract class BackendFeatureRegistrationObserver {
+  // (undocumented)
+  abstract setFeatures(features: BackendFeatureRegistration[]): void;
+}
+
 // @public
 export interface BackendModuleConfig {
   moduleId: string;
   pluginId: string;
   // (undocumented)
   register(reg: BackendModuleRegistrationPoints): void;
+}
+
+// @public (undocumented)
+export interface BackendModuleRegistration {
+  // (undocumented)
+  moduleId: string;
+  // (undocumented)
+  pluginId: string;
+  // (undocumented)
+  type: 'module';
 }
 
 // @public
@@ -54,6 +75,14 @@ export interface BackendPluginConfig {
   pluginId: string;
   // (undocumented)
   register(reg: BackendPluginRegistrationPoints): void;
+}
+
+// @public (undocumented)
+export interface BackendPluginRegistration {
+  // (undocumented)
+  pluginId: string;
+  // (undocumented)
+  type: 'plugin';
 }
 
 // @public
