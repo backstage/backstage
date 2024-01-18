@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
+import { DatabaseManager, dropDatabase } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { randomBytes } from 'crypto';
 import { Knex } from 'knex';
@@ -157,11 +157,13 @@ export class TestDatabases {
     }
 
     // Ensure that a unique logical database is created in the instance
+    const databaseName = `db${randomBytes(16).toString('hex')}`;
     const connection = await instance.databaseManager
-      .forPlugin(`db${randomBytes(16).toString('hex')}`)
+      .forPlugin(databaseName)
       .getClient();
 
     instance.connections.push(connection);
+    instance.databaseNames.push(databaseName);
 
     return connection;
   }
@@ -173,21 +175,30 @@ export class TestDatabases {
       if (envVarName) {
         const connectionString = process.env[envVarName];
         if (connectionString) {
-          const databaseManager = DatabaseManager.fromConfig(
-            new ConfigReader({
-              backend: {
-                database: {
-                  knexConfig: properties.driver.includes('sqlite')
-                    ? {}
-                    : LARGER_POOL_CONFIG,
-                  client: properties.driver,
-                  connection: connectionString,
-                },
+          const config = new ConfigReader({
+            backend: {
+              database: {
+                knexConfig: properties.driver.includes('sqlite')
+                  ? {}
+                  : LARGER_POOL_CONFIG,
+                client: properties.driver,
+                connection: connectionString,
               },
-            }),
-          );
+            },
+          });
+          const databaseManager = DatabaseManager.fromConfig(config);
+          const databaseNames: Array<string> = [];
           return {
+            dropDatabases: async () => {
+              await dropDatabase(
+                config.getConfig('backend.database'),
+                ...databaseNames.map(
+                  databaseName => `backstage_plugin_${databaseName}`,
+                ),
+              );
+            },
             databaseManager,
+            databaseNames,
             connections: [],
           };
         }
@@ -226,10 +237,10 @@ export class TestDatabases {
         },
       }),
     );
-
     return {
       stopContainer: stop,
       databaseManager,
+      databaseNames: [],
       connections: [],
     };
   }
@@ -256,6 +267,7 @@ export class TestDatabases {
     return {
       stopContainer: stop,
       databaseManager,
+      databaseNames: [],
       connections: [],
     };
   }
@@ -273,9 +285,9 @@ export class TestDatabases {
         },
       }),
     );
-
     return {
       databaseManager,
+      databaseNames: [],
       connections: [],
     };
   }
@@ -284,7 +296,12 @@ export class TestDatabases {
     const instances = [...this.instanceById.values()];
     this.instanceById.clear();
 
-    for (const { stopContainer, connections, databaseManager } of instances) {
+    for (const {
+      stopContainer,
+      dropDatabases,
+      connections,
+      databaseManager,
+    } of instances) {
       for (const connection of connections) {
         try {
           await connection.destroy();
@@ -294,6 +311,15 @@ export class TestDatabases {
             error,
           });
         }
+      }
+
+      // If the database is not running in docker then drop the databases
+      try {
+        await dropDatabases?.();
+      } catch (error) {
+        console.warn(`TestDatabases: Failed to drop databases`, {
+          error,
+        });
       }
 
       try {
