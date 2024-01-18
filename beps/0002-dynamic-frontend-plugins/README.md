@@ -115,7 +115,7 @@ The Vite plugin claims webpack compatibility as well. The Vite plugin _is not pa
 
 **The level of compatibility has to be tested.** Before then, no decision in regards to which implementation(s) will be used should be made. The chosen tool, or their mix, will shape the design and implementation.
 
-That said, packages from the `@module-federation/*` organization should have higher priority as they are based directly on the module federation concepts and are wll supported.
+That said, packages from the `@module-federation/*` organization should have higher priority as they are based directly on the module federation concepts and are well supported.
 
 ### Plugin integration into shell applications
 
