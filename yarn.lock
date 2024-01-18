@@ -3668,7 +3668,7 @@ __metadata:
     "@vitejs/plugin-react": ^4.0.4
     vite: ^4.4.9
     vite-plugin-html: ^3.2.0
-    vite-plugin-node-polyfills: ^0.17.0
+    vite-plugin-node-polyfills: ^0.19.0
   peerDependenciesMeta:
     "@vitejs/plugin-react":
       optional: true
@@ -21658,16 +21658,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer-polyfill@npm:buffer@^6.0.3, buffer@npm:^6.0.3":
-  version: 6.0.3
-  resolution: "buffer@npm:6.0.3"
-  dependencies:
-    base64-js: ^1.3.1
-    ieee754: ^1.2.1
-  checksum: 5ad23293d9a731e4318e420025800b42bf0d264004c0286c8cc010af7a270c7a0f6522e84f54b9ad65cbd6db20b8badbfd8d2ebf4f80fa03dab093b89e68c3f9
-  languageName: node
-  linkType: hard
-
 "buffer-writer@npm:2.0.0":
   version: 2.0.0
   resolution: "buffer-writer@npm:2.0.0"
@@ -21710,6 +21700,16 @@ __metadata:
     base64-js: ^1.3.1
     ieee754: ^1.1.13
   checksum: e2cf8429e1c4c7b8cbd30834ac09bd61da46ce35f5c22a78e6c2f04497d6d25541b16881e30a019c6fd3154150650ccee27a308eff3e26229d788bbdeb08ab84
+  languageName: node
+  linkType: hard
+
+"buffer@npm:^6.0.3":
+  version: 6.0.3
+  resolution: "buffer@npm:6.0.3"
+  dependencies:
+    base64-js: ^1.3.1
+    ieee754: ^1.2.1
+  checksum: 5ad23293d9a731e4318e420025800b42bf0d264004c0286c8cc010af7a270c7a0f6522e84f54b9ad65cbd6db20b8badbfd8d2ebf4f80fa03dab093b89e68c3f9
   languageName: node
   linkType: hard
 
@@ -26443,7 +26443,7 @@ __metadata:
     react-use: ^17.2.4
     vite: ^4.4.9
     vite-plugin-html: ^3.2.0
-    vite-plugin-node-polyfills: ^0.17.0
+    vite-plugin-node-polyfills: ^0.19.0
     zen-observable: ^0.10.0
   languageName: unknown
   linkType: soft
@@ -43800,17 +43800,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-node-polyfills@npm:^0.17.0":
-  version: 0.17.0
-  resolution: "vite-plugin-node-polyfills@npm:0.17.0"
+"vite-plugin-node-polyfills@npm:^0.19.0":
+  version: 0.19.0
+  resolution: "vite-plugin-node-polyfills@npm:0.19.0"
   dependencies:
     "@rollup/plugin-inject": ^5.0.5
-    buffer-polyfill: "npm:buffer@^6.0.3"
     node-stdlib-browser: ^1.2.0
-    process: ^0.11.10
   peerDependencies:
     vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
-  checksum: 760d29c25adfa72b5fc731c1bb0826f9c6cc495afc856d38f634ac811566b158a11b1ea968e5d9d536889072470666e9b933ca38ea0c533854375806503b1729
+  checksum: f01962d9c0bdb97c22c8d8994396ae950350c2bbeebcc837303e520216390fb194423cde92a47df5c835375efb86f5b33cc8ab224b0a7bf8e3e2800a66630f60
   languageName: node
   linkType: hard
 
