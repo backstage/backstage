@@ -30,6 +30,7 @@ import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
 import { RootConfigService } from '@backstage/backend-plugin-api';
+import { RootFeatureRegistryService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
@@ -265,6 +266,12 @@ export interface RootConfigFactoryOptions {
 export const rootConfigServiceFactory: (
   options?: RootConfigFactoryOptions | undefined,
 ) => ServiceFactory<RootConfigService, 'root'>;
+
+// @public (undocumented)
+export const rootFeatureRegistryServiceFactory: () => ServiceFactory<
+  RootFeatureRegistryService,
+  'root'
+>;
 
 // @public (undocumented)
 export interface RootHttpRouterConfigureContext {

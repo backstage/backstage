@@ -20,6 +20,8 @@ import {
   coreServices,
   ServiceRef,
   ServiceFactory,
+  BackendFeatureRegistration,
+  RootFeatureRegistryServiceImplementation,
 } from '@backstage/backend-plugin-api';
 import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
 import { BackendPluginLifecycleImpl } from '../services/implementations/lifecycle/lifecycleServiceFactory';
@@ -177,10 +179,13 @@ export class BackendInitializer {
 
     const pluginInits = new Map<string, BackendRegisterInit>();
     const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
+    const registrations: BackendFeatureRegistration[] = [];
 
     // Enumerate all features
     for (const feature of this.#features) {
       for (const r of feature.getRegistrations()) {
+        registrations.push(r);
+
         const provides = new Set<ExtensionPoint<unknown>>();
 
         if (r.type === 'plugin' || r.type === 'module') {
@@ -225,6 +230,16 @@ export class BackendInitializer {
           });
         }
       }
+    }
+
+    const rootFeatureRegistry = await this.#serviceRegistry.get(
+      coreServices.rootFeatureRegistry,
+      'root',
+    );
+    if (
+      rootFeatureRegistry instanceof RootFeatureRegistryServiceImplementation
+    ) {
+      rootFeatureRegistry.setFeatures(registrations);
     }
 
     const allPluginIds = [

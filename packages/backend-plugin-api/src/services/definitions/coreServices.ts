@@ -165,4 +165,13 @@ export namespace coreServices {
   export const identity = createServiceRef<
     import('./IdentityService').IdentityService
   >({ id: 'core.identity' });
+
+  /**
+   * The service reference for the root scoped {@link RootFeatureRegistryService}.
+   *
+   * @public
+   */
+  export const rootFeatureRegistry = createServiceRef<
+    import('./RootFeatureRegistryService').RootFeatureRegistryService
+  >({ id: 'core.featureRegistry', scope: 'root' });
 }

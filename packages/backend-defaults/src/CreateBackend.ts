@@ -32,6 +32,7 @@ import {
   tokenManagerServiceFactory,
   urlReaderServiceFactory,
   identityServiceFactory,
+  rootFeatureRegistryServiceFactory,
 } from '@backstage/backend-app-api';
 
 export const defaultServiceFactories = [
@@ -50,6 +51,7 @@ export const defaultServiceFactories = [
   schedulerServiceFactory(),
   tokenManagerServiceFactory(),
   urlReaderServiceFactory(),
+  rootFeatureRegistryServiceFactory(),
 ];
 
 /**
