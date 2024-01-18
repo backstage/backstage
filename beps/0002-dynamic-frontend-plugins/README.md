@@ -1,11 +1,11 @@
 ---
-title: BEP Dynamic frontend plugins
+title: Dynamic Frontend Plugins
 status: provisional
 authors:
   - '@Hyperkid123'
 owners:
 project-areas:
-  - aaa
+  - core
 creation-date: 2024-01-17
 ---
 
