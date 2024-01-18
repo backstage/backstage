@@ -13993,15 +13993,15 @@ __metadata:
   linkType: hard
 
 "@opensearch-project/opensearch@npm:^2.2.1":
-  version: 2.4.0
-  resolution: "@opensearch-project/opensearch@npm:2.4.0"
+  version: 2.5.0
+  resolution: "@opensearch-project/opensearch@npm:2.5.0"
   dependencies:
     aws4: ^1.11.0
     debug: ^4.3.1
     hpagent: ^1.2.0
     ms: ^2.1.3
     secure-json-parse: ^2.4.0
-  checksum: 961ba055276c2cea9733247e57c1a1df76671a777b46ba4caa64a15c8b2aeb12d205c02026a6181382d3b575af49c4bf72b7bcb8fe82bc8dc2c519e1792746f3
+  checksum: f9a4afa06c2917ffb76baac1ee1df9b8cf4594af6aded451b7c4838a4a0320101a432c0cbd3586d3533a4eb662fc414d4f1b315b73fac5b7a0c1d5f0ff0ac6ed
   languageName: node
   linkType: hard
 
