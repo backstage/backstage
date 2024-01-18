@@ -29,6 +29,7 @@ import {
   createTranslationExtension,
   ExtensionDataRef,
   FrontendFeature,
+  iconsApiRef,
   RouteRef,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
@@ -105,7 +106,10 @@ import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiri
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
+import { DefaultIconsApi } from '../apis/implementations/IconsApi';
 import { stringifyError } from '@backstage/errors';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { icons as defaultIcons } from '../../../app-defaults/src/defaults';
 
 const DefaultApis = defaultApis.map(factory => createApiExtension({ factory }));
 
@@ -269,6 +273,7 @@ export interface CreateAppFeatureLoader {
 
 /** @public */
 export function createApp(options?: {
+  icons?: { [key in string]: IconComponent };
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   configLoader?: () => Promise<{ config: ConfigApi }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
@@ -303,6 +308,7 @@ export function createApp(options?: {
     }
 
     const app = createSpecializedApp({
+      icons: options?.icons,
       config,
       features: [...discoveredFeatures, ...providedFeatures],
       bindRoutes: options?.bindRoutes,
@@ -330,6 +336,7 @@ export function createApp(options?: {
  * @public
  */
 export function createSpecializedApp(options?: {
+  icons?: { [key in string]: IconComponent };
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
@@ -348,7 +355,12 @@ export function createSpecializedApp(options?: {
   });
 
   const appIdentityProxy = new AppIdentityProxy();
-  const apiHolder = createApiHolder(tree, config, appIdentityProxy);
+  const apiHolder = createApiHolder(
+    tree,
+    config,
+    appIdentityProxy,
+    options?.icons,
+  );
 
   const featureFlagApi = apiHolder.get(featureFlagsApiRef);
   if (featureFlagApi) {
@@ -402,6 +414,7 @@ function createApiHolder(
   tree: AppTree,
   configApi: ConfigApi,
   appIdentityProxy: AppIdentityProxy,
+  icons?: { [key in string]: IconComponent },
 ): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
@@ -468,6 +481,12 @@ function createApiHolder(
     api: componentsApiRef,
     deps: {},
     factory: () => new DefaultComponentsApi(componentsMap),
+  });
+
+  factoryRegistry.register('static', {
+    api: iconsApiRef,
+    deps: {},
+    factory: () => new DefaultIconsApi({ ...defaultIcons, ...icons }),
   });
 
   factoryRegistry.register('static', {

@@ -976,6 +976,17 @@ export type IconComponent = ComponentType<
     }
 >;
 
+// @public
+export interface IconsApi {
+  // (undocumented)
+  getIcon(key: string): IconComponent | undefined;
+  // (undocumented)
+  listIconKeys(): string[];
+}
+
+// @public
+export const iconsApiRef: ApiRef<IconsApi>;
+
 export { IdentityApi };
 
 export { identityApiRef };
