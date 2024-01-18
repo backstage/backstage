@@ -7994,6 +7994,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-azure@workspace:plugins/scaffolder-backend-module-azure"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
