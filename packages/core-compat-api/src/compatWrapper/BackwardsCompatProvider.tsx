@@ -18,14 +18,13 @@ import React, { useMemo } from 'react';
 import { ReactNode } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
-  components as defaultComponents,
-  icons as defaultIcons,
-} from '../../../app-defaults/src/defaults';
-import {
+  createPlugin as createNewPlugin,
   BackstagePlugin as NewBackstagePlugin,
   appTreeApiRef,
+  componentsApiRef,
+  coreComponentRefs,
+  iconsApiRef,
   useApi,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -71,14 +70,34 @@ function toLegacyPlugin(plugin: NewBackstagePlugin): LegacyBackstagePlugin {
   return legacy;
 }
 
+// TODO: Currently a very naive implementation, may need some more work
+function toNewPlugin(plugin: LegacyBackstagePlugin): NewBackstagePlugin {
+  return createNewPlugin({
+    id: plugin.getId(),
+  });
+}
+
 // Recreates the old AppContext APIs using the various new APIs that replaced it
 function LegacyAppContextProvider(props: { children: ReactNode }) {
   const appTreeApi = useApi(appTreeApiRef);
+  const componentsApi = useApi(componentsApiRef);
+  const iconsApi = useApi(iconsApiRef);
 
   const appContext = useMemo(() => {
     const { tree } = appTreeApi.getTree();
 
     let gatheredPlugins: LegacyBackstagePlugin[] | undefined = undefined;
+
+    const ErrorBoundaryFallback = componentsApi.getComponent(
+      coreComponentRefs.errorBoundaryFallback,
+    );
+    const ErrorBoundaryFallbackWrapper: AppComponents['ErrorBoundaryFallback'] =
+      ({ plugin, ...rest }) => (
+        <ErrorBoundaryFallback
+          {...rest}
+          plugin={plugin && toNewPlugin(plugin)}
+        />
+      );
 
     return {
       getPlugins(): LegacyBackstagePlugin[] {
@@ -98,24 +117,39 @@ function LegacyAppContextProvider(props: { children: ReactNode }) {
         return gatheredPlugins;
       },
 
-      // TODO: Grab these from new API once it exists
       getSystemIcon(key: string): IconComponent | undefined {
-        return key in defaultIcons
-          ? defaultIcons[key as keyof typeof defaultIcons]
-          : undefined;
+        return iconsApi.getIcon(key);
       },
 
-      // TODO: Grab these from new API once it exists
       getSystemIcons(): Record<string, IconComponent> {
-        return defaultIcons;
+        const { keys } = iconsApi.listIconKeys();
+
+        return Object.fromEntries(
+          Array.from(keys).map(key => [key, iconsApi.getIcon(key)!]),
+        );
       },
 
-      // TODO: Grab these from new API once it exists
       getComponents(): AppComponents {
-        return defaultComponents;
+        return {
+          NotFoundErrorPage: componentsApi.getComponent(
+            coreComponentRefs.notFoundErrorPage,
+          ),
+          BootErrorPage() {
+            throw new Error(
+              'The BootErrorPage app component should not be accessed by plugins',
+            );
+          },
+          Progress: componentsApi.getComponent(coreComponentRefs.progress),
+          Router() {
+            throw new Error(
+              'The Router app component should not be accessed by plugins',
+            );
+          },
+          ErrorBoundaryFallback: ErrorBoundaryFallbackWrapper,
+        };
       },
     };
-  }, [appTreeApi]);
+  }, [appTreeApi, componentsApi, iconsApi]);
 
   return (
     <AppContextProvider appContext={appContext}>
