@@ -163,7 +163,7 @@ components:
         - items
 
     PermissionRuleParam:
-      oneOf:
+      anyOf:
         - type: string
         - type: number
         - type: boolean
@@ -179,7 +179,7 @@ components:
         params:
           type: object
           additionalProperties:
-            oneOf:
+            anyOf:
               - $ref: '#/components/schemas/PermissionRuleParam'
               - type: array
                 items:
@@ -199,6 +199,8 @@ components:
               items:
                 $ref: '#/components/schemas/PermissionCriteria'
               minItems: 1
+          required:
+            - allOf
           additionalProperties: false
         - type: object
           properties:
@@ -207,6 +209,8 @@ components:
               items:
                 $ref: '#/components/schemas/PermissionCriteria'
               minItems: 1
+          required:
+            - anyOf
           additionalProperties: false
         - type: object
           properties:
@@ -216,6 +220,8 @@ components:
                 $ref: '#/components/schemas/PermissionCriteria'
               minItems: 1
           additionalProperties: false
+          required:
+            - not
         - $ref: '#/components/schemas/PermissionCondition'
 
 

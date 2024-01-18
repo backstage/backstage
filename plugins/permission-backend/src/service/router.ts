@@ -138,6 +138,7 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
+  // below ts-expect-error is finicky, not sure why, changes on save.
   // @ts-expect-error - https://github.com/ThomasAribart/json-schema-to-ts/issues/96
   router.post('/authorize', async (req, res) => {
     const user = await identity.getIdentity({ request: req });
@@ -155,6 +156,7 @@ export async function createRouter(
       ),
     };
 
+    // @ts-expect-error - https://github.com/ThomasAribart/json-schema-to-ts/issues/96
     res.status(200).json(response);
   });
 

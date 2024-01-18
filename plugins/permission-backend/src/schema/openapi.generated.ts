@@ -49,7 +49,14 @@ export const spec = {
                     items: {
                       type: 'array',
                       items: {
-                        $ref: '#/components/schemas/EvaluatePermissionResponse',
+                        oneOf: [
+                          {
+                            $ref: '#/components/schemas/ConditionalPolicyDecision',
+                          },
+                          {
+                            $ref: '#/components/schemas/DefinitivePolicyDecision',
+                          },
+                        ],
                       },
                     },
                   },
@@ -229,7 +236,7 @@ export const spec = {
         required: ['items'],
       },
       PermissionRuleParam: {
-        oneOf: [
+        anyOf: [
           {
             type: 'string',
           },
@@ -254,7 +261,7 @@ export const spec = {
           params: {
             type: 'object',
             additionalProperties: {
-              oneOf: [
+              anyOf: [
                 {
                   $ref: '#/components/schemas/PermissionRuleParam',
                 },
@@ -284,6 +291,7 @@ export const spec = {
                 minItems: 1,
               },
             },
+            required: ['allOf'],
             additionalProperties: false,
           },
           {
@@ -297,6 +305,7 @@ export const spec = {
                 minItems: 1,
               },
             },
+            required: ['anyOf'],
             additionalProperties: false,
           },
           {
@@ -311,6 +320,7 @@ export const spec = {
               },
             },
             additionalProperties: false,
+            required: ['not'],
           },
           {
             $ref: '#/components/schemas/PermissionCondition',
@@ -353,16 +363,6 @@ export const spec = {
         },
         required: ['result', 'id', 'pluginId', 'resourceType', 'conditions'],
         additionalProperties: false,
-      },
-      EvaluatePermissionResponse: {
-        oneOf: [
-          {
-            $ref: '#/components/schemas/ConditionalPolicyDecision',
-          },
-          {
-            $ref: '#/components/schemas/DefinitivePolicyDecision',
-          },
-        ],
       },
       PostAuthorize400ResponseBody: {
         type: 'object',
