@@ -12,6 +12,21 @@
   "backstage": {
     "role": "backend-plugin-module"
   },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -28,6 +43,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "winston": "^3.2.1",

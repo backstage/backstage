@@ -13,7 +13,7 @@ import { UrlReader } from '@backstage/backend-common';
 export function createFetchRailsAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   allowedImageNames?: string[];
 }): TemplateAction<
   {
