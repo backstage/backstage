@@ -21,8 +21,8 @@ For frontend plugins each plugin should only export a single plugin instance. Th
 A plugin is can easily be created, it only requires a plugin `id`:
 
 ```ts
-export const myPlugin = createPlugin({
-  id: 'my-plugin',
+export const techRadarPlugin = createPlugin({
+  id: 'tech-radar',
 });
 ```
 
@@ -30,9 +30,18 @@ The created plugin does not yet do anything, it will need some plugin options to
 
 ### Plugin ID
 
-You will decide on the `id` when you [create a plugin](../../). The plugin `id` should follow the respective [naming pattern](./08-naming-patterns.md#plugins) of the new frontend system. To give you an example the GraphiQL plugin has the `id` `graphiql` & as it follows the naming convention we know that the `graphiqlPlugin` is the symbol for the default package export containing the plugin.
+You will decide on the `id` when you [create a plugin](../../). The plugin `id` should follow the respective [naming pattern](./08-naming-patterns.md#plugins) of the new frontend system. To give you an example the GraphiQL plugin has the `id` `tech-radar` & as it follows the naming convention we know that the `techRadarPlugin` is the symbol for the default package export containing the plugin.
 
 ### Plugin Extensions
+
+So let's make our plugin a bit more useful! Imagine we want to have a TechRadar plugin that displays the recommended technologies at our organisation, [just like in the Backstage demo instance](https://demo.backstage.io/tech-radar).
+
+```ts
+export const techRadarPlugin = createPlugin({
+  id: 'tech-radar',
+  extensions: [graphiqlPage, graphiqlNavItem],
+});
+```
 
 <!--
 
@@ -51,6 +60,12 @@ link to relevant docs
 link to relevant docs
 
 -->
+
+```ts
+export const myPlugin = createPlugin({
+  id: 'my-plugin',
+});
+```
 
 ### Plugin External Routes
 
