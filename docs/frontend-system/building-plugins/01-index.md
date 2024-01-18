@@ -18,7 +18,7 @@ This guide assumes that you already have a Backstage project set up. Even if you
 
 To create a frontend plugin, run `yarn new`, select `plugin`, and fill out the rest of the prompts. This will create a new package at `plugins/<pluginId>`, which will be the main entrypoint for your plugin.
 
-> **NOT: The created plugin will currently be templated for use in the legacy frontend system, and you will need to replace the existing plugin wiring code.**
+> **NOTE: The created plugin will currently be templated for use in the legacy frontend system, and you will need to replace the existing plugin wiring code.**
 
 ## The plugin instance
 
