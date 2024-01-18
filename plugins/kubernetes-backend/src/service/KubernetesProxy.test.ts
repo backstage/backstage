@@ -131,6 +131,7 @@ describe('KubernetesProxy', () => {
         >()
         .mockResolvedValue({ type: 'anonymous' }),
       validateCluster: jest.fn(),
+      presentAuthMetadata: jest.fn(),
     };
     proxy = new KubernetesProxy({ logger, clusterSupplier, authStrategy });
     permissionApi.authorize.mockResolvedValue([
@@ -514,6 +515,7 @@ describe('KubernetesProxy', () => {
         .fn()
         .mockReturnValue({ type: 'bearer token', token: 'MY_TOKEN3' }),
       validateCluster: jest.fn(),
+      presentAuthMetadata: jest.fn(),
     };
 
     proxy = new KubernetesProxy({

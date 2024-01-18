@@ -29,7 +29,6 @@ import { Logger } from 'winston';
 
 import { getCombinedClusterSupplier } from '../cluster-locator';
 import {
-  AuthenticationStrategy,
   AnonymousStrategy,
   DispatchStrategy,
   GoogleStrategy,
@@ -45,17 +44,19 @@ import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
 import { SingleTenantServiceLocator } from '../service-locator/SingleTenantServiceLocator';
 import {
-  CustomResource,
-  KubernetesFetcher,
   KubernetesObjectsProviderOptions,
-  KubernetesObjectTypes,
-  KubernetesServiceLocator,
   ObjectsByEntityRequest,
   ServiceLocatorMethod,
 } from '../types/types';
 import {
+  AuthenticationStrategy,
+  AuthMetadata,
+  CustomResource,
   KubernetesClustersSupplier,
+  KubernetesFetcher,
   KubernetesObjectsProvider,
+  KubernetesObjectTypes,
+  KubernetesServiceLocator,
 } from '@backstage/plugin-kubernetes-node';
 import {
   DEFAULT_OBJECTS,
@@ -369,11 +370,20 @@ export class KubernetesBuilder {
         items: clusterDetails.map(cd => {
           const oidcTokenProvider =
             cd.authMetadata[ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER];
+          const authProvider =
+            cd.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
+          const strategy = this.getAuthStrategyMap()[authProvider];
+          let auth: AuthMetadata = {};
+          if (strategy) {
+            auth = strategy.presentAuthMetadata(cd.authMetadata);
+          }
+
           return {
             name: cd.name,
             dashboardUrl: cd.dashboardUrl,
-            authProvider: cd.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER],
+            authProvider,
             ...(oidcTokenProvider && { oidcTokenProvider }),
+            ...(auth && Object.keys(auth).length !== 0 && { auth }),
           };
         }),
       });

@@ -25,8 +25,12 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
 } from '@backstage/plugin-kubernetes-common';
-import { ClusterDetails } from '../types/types';
-import { AuthenticationStrategy, KubernetesCredential } from './types';
+import {
+  AuthMetadata,
+  AuthenticationStrategy,
+  ClusterDetails,
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 
 /**
  *
@@ -127,5 +131,9 @@ export class AwsIamStrategy implements AuthenticationStrategy {
     const url = `https://${request.hostname}${request.path}?${query}`;
 
     return `k8s-aws-v1.${Buffer.from(url).toString('base64url')}`;
+  }
+
+  public presentAuthMetadata(_authMetadata: AuthMetadata): AuthMetadata {
+    return {};
   }
 }
