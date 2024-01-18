@@ -96,6 +96,22 @@ export async function ensureDatabaseExists(
 }
 
 /**
+ * Drops the given databases.
+ *
+ * @public
+ */
+export async function dropDatabase(
+  dbConfig: Config,
+  ...databases: Array<string>
+): Promise<void> {
+  const client: DatabaseClient = dbConfig.getString('client');
+
+  return await ddlLimiter(() =>
+    ConnectorMapping[client]?.dropDatabase?.(dbConfig, ...databases),
+  );
+}
+
+/**
  * Ensures that the given schemas all exist, creating them if they do not.
  *
  * @public

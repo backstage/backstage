@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, useContext, useState } from 'react';
+import React, {
+  ComponentType,
+  Fragment,
+  PropsWithChildren,
+  ReactNode,
+  useContext,
+  useState,
+} from 'react';
 import {
   coreExtensionData,
+  createAppRootWrapperExtension,
   createExtension,
   createExtensionInput,
+  createRouterExtension,
   createSignInPageExtension,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -39,27 +48,49 @@ export const AppRoot = createExtension({
   name: 'root',
   attachTo: { id: 'app', input: 'root' },
   inputs: {
+    router: createExtensionInput(
+      { component: createRouterExtension.componentDataRef },
+      { singleton: true, optional: true },
+    ),
     signInPage: createExtensionInput(
-      {
-        component: createSignInPageExtension.componentDataRef,
-      },
+      { component: createSignInPageExtension.componentDataRef },
       { singleton: true, optional: true },
     ),
     children: createExtensionInput(
-      {
-        element: coreExtensionData.reactElement,
-      },
+      { element: coreExtensionData.reactElement },
       { singleton: true },
     ),
+    elements: createExtensionInput({
+      element: coreExtensionData.reactElement,
+    }),
+    wrappers: createExtensionInput({
+      component: createAppRootWrapperExtension.componentDataRef,
+    }),
   },
   output: {
     element: coreExtensionData.reactElement,
   },
   factory({ inputs }) {
+    let content: React.ReactNode = (
+      <>
+        {inputs.elements.map(el => (
+          <Fragment key={el.node.spec.id}>{el.output.element}</Fragment>
+        ))}
+        {inputs.children.output.element}
+      </>
+    );
+
+    for (const wrapper of inputs.wrappers) {
+      content = <wrapper.output.component>{content}</wrapper.output.component>;
+    }
+
     return {
       element: (
-        <AppRouter SignInPageComponent={inputs.signInPage?.output.component}>
-          {inputs.children.output.element}
+        <AppRouter
+          SignInPageComponent={inputs.signInPage?.output.component}
+          RouterComponent={inputs.router?.output.component}
+        >
+          {content}
         </AppRouter>
       ),
     };
@@ -111,12 +142,18 @@ function SignInPageWrapper({
 export interface AppRouterProps {
   children?: ReactNode;
   SignInPageComponent?: ComponentType<SignInPageProps>;
+  RouterComponent?: ComponentType<PropsWithChildren<{}>>;
+}
+
+function DefaultRouter(props: PropsWithChildren<{}>) {
+  const configApi = useApi(configApiRef);
+  const basePath = getBasePath(configApi);
+  return <BrowserRouter basename={basePath}>{props.children}</BrowserRouter>;
 }
 
 /**
  * App router and sign-in page wrapper.
  *
- * @public
  * @remarks
  *
  * The AppRouter provides the routing context and renders the sign-in page.
@@ -125,7 +162,11 @@ export interface AppRouterProps {
  * the app, while providing routing and route tracking for the app.
  */
 export function AppRouter(props: AppRouterProps) {
-  const { children, SignInPageComponent } = props;
+  const {
+    children,
+    SignInPageComponent,
+    RouterComponent = DefaultRouter,
+  } = props;
 
   const configApi = useApi(configApiRef);
   const basePath = getBasePath(configApi);
@@ -161,15 +202,15 @@ export function AppRouter(props: AppRouterProps) {
     );
 
     return (
-      <BrowserRouter basename={basePath}>
+      <RouterComponent>
         <RouteTracker routeObjects={routeObjects} />
         {children}
-      </BrowserRouter>
+      </RouterComponent>
     );
   }
 
   return (
-    <BrowserRouter basename={basePath}>
+    <RouterComponent>
       <RouteTracker routeObjects={routeObjects} />
       <SignInPageWrapper
         component={SignInPageComponent}
@@ -177,6 +218,6 @@ export function AppRouter(props: AppRouterProps) {
       >
         {children}
       </SignInPageWrapper>
-    </BrowserRouter>
+    </RouterComponent>
   );
 }

@@ -15,16 +15,16 @@
  */
 
 import { Progress, WarningPanel } from '@backstage/core-components';
+import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import {
-  Box,
   createStyles,
   makeStyles,
-  Paper,
   Theme,
-  Typography,
   useTheme,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+} from '@material-ui/core/styles';
+import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import ReactJson from 'react-json-view';
 import { useConfig } from '../../../hooks';

@@ -1,5 +1,17 @@
 # @backstage/plugin-codescene
 
+## 0.1.21
+
+### Patch Changes
+
+- d5eda61: Updated Readme document in codescene plugin
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.21-next.1
 
 ### Patch Changes

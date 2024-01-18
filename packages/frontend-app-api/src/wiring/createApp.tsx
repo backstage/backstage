@@ -78,6 +78,10 @@ import { apis as defaultApis } from '../../../app-defaults/src/defaults';
 import { Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
+import {
+  oauthRequestDialogAppRootElement,
+  alertDisplayAppRootElement,
+} from '../extensions/elements';
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
 import {
   appLanguageApiRef,
@@ -116,6 +120,8 @@ export const builtinExtensions = [
   DefaultNotFoundErrorPageComponent,
   LightTheme,
   DarkTheme,
+  oauthRequestDialogAppRootElement,
+  alertDisplayAppRootElement,
   ...DefaultApis,
 ].map(def => resolveExtensionDefinition(def));
 

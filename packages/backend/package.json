@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.2.91-next.2",
+  "version": "0.2.91",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -72,6 +72,8 @@
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
+    "@backstage/plugin-signals-backend": "workspace:^",
+    "@backstage/plugin-signals-node": "workspace:^",
     "@backstage/plugin-tech-insights-backend": "workspace:^",
     "@backstage/plugin-tech-insights-backend-module-jsonfc": "workspace:^",
     "@backstage/plugin-tech-insights-node": "workspace:^",

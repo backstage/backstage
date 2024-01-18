@@ -70,7 +70,7 @@ async function exitIfMissingVale() {
       process.exit(1);
     }
     console.log(`Language linter (vale) generated errors. Please check the errors and review any markdown files that you changed.
-  Possibly update .github/vale/Vocab/Backstage/accept.txt to add new valid words.\n`);
+  Possibly update .github/vale/config/vocabularies/Backstage/accept.txt to add new valid words.\n`);
     process.exit(0);
   }
 }
@@ -89,7 +89,7 @@ async function runVale(files) {
     // If it contains system level error. In this case vale does not exist.
     if (process.platform !== 'win32' || result.error) {
       console.log(`Language linter (vale) generated errors. Please check the errors and review any markdown files that you changed.
-  Possibly update .github/vale/Vocab/Backstage/accept.txt to add new valid words.\n`);
+  Possibly update .github/vale/config/vocabularies/Backstage/accept.txt to add new valid words.\n`);
     }
     return false;
   }

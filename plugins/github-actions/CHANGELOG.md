@@ -1,5 +1,18 @@
 # @backstage/plugin-github-actions
 
+## 0.6.10
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/integration-react@1.1.23
+  - @backstage/catalog-model@1.4.3
+  - @backstage/integration@1.8.0
+
 ## 0.6.10-next.2
 
 ### Patch Changes

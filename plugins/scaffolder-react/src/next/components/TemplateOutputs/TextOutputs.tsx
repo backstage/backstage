@@ -47,7 +47,11 @@ export const TextOutputs = (props: {
               startIcon={<Icon />}
               component="div"
               color="primary"
-              onClick={() => setIndex?.(index !== i ? i : undefined)}
+              onClick={() => {
+                if (index !== i) {
+                  setIndex?.(i);
+                }
+              }}
               variant={index === i ? 'outlined' : undefined}
             >
               {title}
