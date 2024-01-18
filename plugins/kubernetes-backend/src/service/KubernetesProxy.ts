@@ -113,24 +113,6 @@ export class KubernetesProxy {
         return;
       }
 
-      const authHeader = req.header(HEADER_KUBERNETES_AUTH);
-      if (authHeader) {
-        req.headers.authorization = authHeader;
-      } else {
-        // Map Backstage-Kubernetes-Authorization-X-X headers to a KubernetesRequestAuth object
-        const authObj = KubernetesProxy.authHeadersToKubernetesRequestAuth(
-          req.headers,
-        );
-
-        const credential = await this.getClusterForRequest(req).then(cd => {
-          return this.authStrategy.getCredential(cd, authObj);
-        });
-
-        if (credential.type === 'bearer token') {
-          req.headers.authorization = `Bearer ${credential.token}`;
-        }
-      }
-
       const middleware = await this.getMiddleware(req);
 
       // If req is an upgrade handshake, use middleware upgrade instead of http request handler https://github.com/chimurai/http-proxy-middleware#external-websocket-upgrade
@@ -173,7 +155,7 @@ export class KubernetesProxy {
           const cluster = await this.getClusterForRequest(req);
           const url = new URL(cluster.url);
 
-          return {
+          const target: any = {
             protocol: url.protocol,
             host: url.hostname,
             port: url.port,
@@ -182,6 +164,29 @@ export class KubernetesProxy {
               cluster.caData,
             )?.toString(),
           };
+
+          const authHeader = req.header(HEADER_KUBERNETES_AUTH);
+          if (authHeader) {
+            req.headers.authorization = authHeader;
+          } else {
+            // Map Backstage-Kubernetes-Authorization-X-X headers to a KubernetesRequestAuth object
+            const authObj = KubernetesProxy.authHeadersToKubernetesRequestAuth(
+              req.headers,
+            );
+
+            const credential = await this.getClusterForRequest(req).then(cd => {
+              return this.authStrategy.getCredential(cd, authObj);
+            });
+
+            if (credential.type === 'bearer token') {
+              req.headers.authorization = `Bearer ${credential.token}`;
+            } else if (credential.type === 'x509 client certificate') {
+              target.key = credential.key;
+              target.cert = credential.cert;
+            }
+          }
+
+          return target;
         },
         onError: (error, req, res) => {
           const wrappedError = new ForwardedError(

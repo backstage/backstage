@@ -820,6 +820,67 @@ describe('KubernetesProxy', () => {
         expect(ca).toMatch('MOCKCA');
       });
     });
+
+    it('should use a x509 client cert authentication strategy to consume kubeapi when backstage-kubernetes-auth field is not provided and the authStrategy enables x509 client cert authentication', async () => {
+      worker.use(
+        rest.get(
+          'https://localhost:9999/api/v1/namespaces',
+          (req: any, res: any, ctx: any) => {
+            if (req.headers.get('Authorization')) {
+              return res(ctx.status(403));
+            }
+
+            return res(
+              ctx.status(200),
+              ctx.json({
+                kind: 'NamespaceList',
+                apiVersion: 'v1',
+                items: [],
+              }),
+            );
+          },
+        ),
+      );
+
+      clusterSupplier.getClusters.mockResolvedValue([
+        {
+          name: 'cluster1',
+          url: 'https://localhost:9999',
+          authMetadata: {},
+        },
+      ]);
+
+      const myCert = 'MOCKCert';
+      const myKey = 'MOCKKey';
+
+      authStrategy.getCredential.mockResolvedValue({
+        type: 'x509 client certificate',
+        cert: myCert,
+        key: myKey,
+      });
+
+      const requestPromise = setupProxyPromise({
+        proxyPath: '/mountpath',
+        requestPath: '/api/v1/namespaces',
+
+        headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+      });
+
+      const response = await requestPromise;
+
+      expect(authStrategy.getCredential).toHaveBeenCalledTimes(1);
+      expect(authStrategy.getCredential).toHaveBeenCalledWith(
+        expect.anything(),
+        {},
+      );
+
+      const [[{ key, cert }]] = httpsRequest.mock.calls;
+      expect(cert).toEqual(myCert);
+      expect(key).toEqual(myKey);
+
+      // 500 Since the key and cert are fake
+      expect(response.status).toEqual(500);
+    });
   });
 
   describe('WebSocket', () => {
