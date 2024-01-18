@@ -98,7 +98,7 @@ jobs:
 
       - name: test (and upload coverage)
         run: |
-          yarn backstage-cli repo test --maxWorkers=4 --workerIdleMemoryLimit=1300M --coverage
+          yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage
           bash <(curl -s https://codecov.io/bash)
           # Upload code coverage for some specific flags. Also see .codecov.yml
           bash <(curl -s https://codecov.io/bash) -f packages/core-app-api/coverage/* -F core-app-api
