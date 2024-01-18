@@ -34,12 +34,12 @@ You will decide on the `id` when you [create a plugin](../../). The plugin `id` 
 
 ### Plugin Extensions
 
-So let's make our plugin a bit more useful! Imagine we want to have a TechRadar plugin that displays the recommended technologies at our organisation, [just like in the Backstage demo instance](https://demo.backstage.io/tech-radar).
+So let's make our plugin a bit more useful! Imagine we want to have a TechRadar plugin that displays the recommended technologies at our organisation, [just like in the Backstage demo instance](https://demo.backstage.io/tech-radar). We want the plugin to be displayed on a page & have a navigation item directing to it. This can be achieved by creating a page extension & a navigation item extenssion. When adding those to the plugin they will be imported with the plugin package & can be discovered.
 
 ```ts
 export const techRadarPlugin = createPlugin({
   id: 'tech-radar',
-  extensions: [graphiqlPage, graphiqlNavItem],
+  extensions: [techRadarPage, techRadarNavItem],
 });
 ```
 
