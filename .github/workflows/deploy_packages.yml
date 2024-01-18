@@ -161,7 +161,7 @@ jobs:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: build type declarations
-        run: yarn tsc --skipLibCheck false --incremental false
+        run: yarn tsc:full
 
       - name: build packages
         run: yarn backstage-cli repo build
