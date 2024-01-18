@@ -66,6 +66,9 @@ const FixedWidthFormControlLabel = withStyles(
     label: {
       width: '100%',
     },
+    root: {
+      width: '90%',
+    },
   }),
   { name: 'FixedWidthFormControlLabel' },
 )(FormControlLabel);
