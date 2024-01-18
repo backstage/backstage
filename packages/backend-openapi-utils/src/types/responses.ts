@@ -25,10 +25,9 @@ import type {
   RequiredDoc,
   DocOperation,
   DocPathMethod,
-  DocPathTemplate,
-  PathTemplate,
   ToTypeSafe,
   ValueOf,
+  DocPath,
 } from './common';
 import { ImmutableReferenceObject, ImmutableResponseObject } from './immutable';
 
@@ -37,8 +36,8 @@ import { ImmutableReferenceObject, ImmutableResponseObject } from './immutable';
  */
 export type Response<
   Doc extends RequiredDoc,
-  Path extends keyof Doc['paths'],
-  Method extends keyof Doc['paths'][Path],
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
   StatusCode extends keyof DocOperation<Doc, Path, Method>['responses'],
 > = DocOperation<
   Doc,
@@ -59,7 +58,7 @@ export type Response<
  */
 export type ResponseSchemas<
   Doc extends RequiredDoc,
-  Path extends DocPathTemplate<Doc>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
 > = {
   [StatusCode in keyof DocOperation<Doc, Path, Method>['responses']]: Response<
@@ -78,6 +77,6 @@ export type ResponseSchemas<
  */
 export type ResponseBodyToJsonSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
 > = ToTypeSafe<ValueOf<ResponseSchemas<Doc, Path, Method>>>;

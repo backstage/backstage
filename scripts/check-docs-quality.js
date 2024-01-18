@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 const { spawnSync } = require('child_process');
-const { resolve: resolvePath, join: joinPath } = require('path');
+const {
+  resolve: resolvePath,
+  join: joinPath,
+  relative: relativePath,
+} = require('path');
 const fs = require('fs').promises;
 
 const IGNORED = [
@@ -66,7 +70,7 @@ async function exitIfMissingVale() {
       process.exit(1);
     }
     console.log(`Language linter (vale) generated errors. Please check the errors and review any markdown files that you changed.
-  Possibly update .github/vale/Vocab/Backstage/accept.txt to add new valid words.\n`);
+  Possibly update .github/vale/config/vocabularies/Backstage/accept.txt to add new valid words.\n`);
     process.exit(0);
   }
 }
@@ -85,7 +89,7 @@ async function runVale(files) {
     // If it contains system level error. In this case vale does not exist.
     if (process.platform !== 'win32' || result.error) {
       console.log(`Language linter (vale) generated errors. Please check the errors and review any markdown files that you changed.
-  Possibly update .github/vale/Vocab/Backstage/accept.txt to add new valid words.\n`);
+  Possibly update .github/vale/config/vocabularies/Backstage/accept.txt to add new valid words.\n`);
     }
     return false;
   }
@@ -94,9 +98,9 @@ async function runVale(files) {
 }
 
 async function main() {
-  const files = await listFiles();
-
   if (process.argv.includes('--ci-args')) {
+    const files = await listFiles();
+
     process.stdout.write(
       // Workaround for not being able to pass arguments to the vale action
       JSON.stringify([...files]),
@@ -106,7 +110,14 @@ async function main() {
 
   await exitIfMissingVale();
 
-  const success = await runVale(files);
+  const absolutePaths = process.argv
+    .slice(2)
+    .filter(path => !path.startsWith('-'));
+  const relativePaths = absolutePaths.map(path => relativePath(rootDir, path));
+
+  const success = await runVale(
+    relativePaths.length === 0 ? await listFiles() : relativePaths,
+  );
   if (!success) {
     process.exit(2);
   }

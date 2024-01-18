@@ -6,8 +6,6 @@ sidebar_label: Overview
 description: Building backend plugins and modules using the new backend system
 ---
 
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
-
 > NOTE: If you have an existing backend and/or backend plugins that are not yet
 > using the new backend system, see [migrating](./08-migrating.md).
 
@@ -27,6 +25,7 @@ To create a Backend plugin, run `yarn new`, select `backend-plugin`, and fill ou
 A basic backend plugin might look as follows:
 
 ```ts
+// src/plugin.ts
 import {
   createBackendPlugin,
   coreServices,
@@ -55,6 +54,9 @@ export const examplePlugin = createBackendPlugin({
     });
   },
 });
+
+// src/index.ts
+export { examplePlugin as default } from './plugin';
 ```
 
 When you depend on `plugin` scoped services, you'll receive an instance of them
@@ -68,12 +70,12 @@ items.
 
 ## Modules
 
-Backend modules are used to extend [plugins](../architecture/04-plugins.md) with
+Backend modules are used to extend [plugins](../architecture/04-plugins.md) or other modules with
 additional features or change existing behavior. They must always be installed
-in the same backend instance as the plugin that they extend, and may only extend
-a single plugin. Modules interact with their target plugin using the [extension
+in the same backend instance as the plugin or module that they extend, and may only extend a single plugin and modules from that plugin at a time.
+Modules interact with their target plugin or module using the [extension
 points](../architecture/05-extension-points.md) registered by the plugin, while also being
-able to depend on the [services](../architecture/03-services.md) of that plugin.
+able to depend on the [services](../architecture/03-services.md) of the target plugin.
 That last point is worth reiterating: injected `plugin` scoped services will be
 the exact
 same ones as the target plugin will receive later, i.e. they will be scoped
@@ -84,18 +86,24 @@ package, for example `@backstage/plugin-catalog-node`, and does not directly
 declare a dependency on the plugin package itself. This is to avoid a direct
 dependency and potentially cause duplicate installations of the plugin package,
 while duplicate installations of library packages should always be supported.
+Modules with extension points typically export their extension points from the same
+package however, since the extension points are generally only intended for internal
+customizations where package versions can be kept in sync.
+
+To create a Backend module, run `yarn new`, select `backend-module`, and fill out the rest of the prompts. This will create a new package at `plugins/<pluginId>-backend-module-<moduleId>`.
 
 The following is an example of how to create a module that adds a new processor
 using the `catalogProcessingExtensionPoint`:
 
 ```ts
+// src/module.ts
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { MyCustomProcessor } from './MyCustomProcessor';
 
 export const catalogModuleExampleCustomProcessor = createBackendModule({
-  moduleId: 'exampleCustomProcessor',
   pluginId: 'catalog',
+  moduleId: 'example-custom-processor',
   register(env) {
     env.registerInit({
       deps: {
@@ -108,6 +116,9 @@ export const catalogModuleExampleCustomProcessor = createBackendModule({
     });
   },
 });
+
+// src/index.ts
+export { catalogModuleExampleCustomProcessor as default } from './module';
 ```
 
 See [the article on naming patterns](../architecture/07-naming-patterns.md) for
@@ -120,10 +131,11 @@ initializing modules we can depend on both extension points and services
 interchangeably. You can also depend on multiple extension points at once, in
 case the implementation of the module requires it.
 
-It is typically best to keep modules slim and to each only add a single new
-feature. It is often the case that it is better to create two separate modules
-rather than one that provides both features. The one limitation here is that
-modules can not interact with each other and need to be self contained.
+Each module package should only contain a single module, but this module may
+extend multiple extension points. A module may also use configuration to
+conditionally enable or disable certain extensions. This pattern should only be
+used for extensions that are related to each other, otherwise it is best to
+create a separate module package with its own module.
 
 ### HTTP Handlers
 
@@ -185,34 +197,25 @@ export const examplesExtensionPoint =
     id: 'example.examples',
   });
 
-// This is the implementation of the extension point, which is internal to your plugin.
-class ExamplesExtension implements ExamplesExtensionPoint {
-  #examples: Example[] = [];
-
-  addExample(example: Example): void {
-    this.#examples.push(example);
-  }
-
-  // Note that this method is internal to this implementation
-  getRegisteredExamples() {
-    return this.#examples;
-  }
-}
-
 // The following shows how your plugin would register the extension point
 // and use the features that other modules have registered.
 export const examplePlugin = createBackendPlugin({
   pluginId: 'example',
   register(env) {
-    const examplesExtensions = new ExamplesExtension();
-    env.registerExtensionPoint(examplesExtensionPoint, examplesExtensions);
+    // We can share data between the extension point implementation and our init method.
+    const examples = new Array<Example>();
+
+    // This registers the implementation of the extension point, which is internal to your plugin.
+    env.registerExtensionPoint(examplesExtensionPoint, {
+      addExample(example) {
+        examples.push(example);
+      },
+    });
 
     env.registerInit({
       deps: { logger: coreServices.logger },
       async init({ logger }) {
-        // We can access `examplesExtension` directly, giving us access to the internal interface.
-        const examples = examplesExtension.getRegisteredExamples();
-
+        // We can access `examples` directly
         logger.info(`The following examples have been registered: ${examples}`);
       },
     });
@@ -222,12 +225,10 @@ export const examplePlugin = createBackendPlugin({
 
 This is a very common type of extension point, one where modules are given the opportunity to register features to be used by the plugin. In this case modules are able to register examples that are then used by our examples plugin.
 
-Note that the public extension point interface only needs to expose the `addExample` method, while the `getRegisteredExamples()` method is kept internal to the plugin.
-
 ### Configuration
 
 Your plugin or module can leverage the app configuration to configure its own
-internal behavior. You do this by adding a dependency on `coreServices.config`
+internal behavior. You do this by adding a dependency on `coreServices.rootConfig`
 and reading from that. This pattern is a good fit especially for customization
 that needs to be different across environments.
 
@@ -238,7 +239,7 @@ export const examplePlugin = createBackendPlugin({
   pluginId: 'example',
   register(env) {
     env.registerInit({
-      deps: { config: coreServices.config },
+      deps: { config: coreServices.rootConfig },
       async init({ config }) {
         // Here you can read from the current config as you see fit, e.g.:
         const value = config.getOptionalString('example.value');
@@ -252,54 +253,3 @@ Before adding custom configuration options, make sure to read [the configuration
 docs](../../conf/index.md), in particular the section on [defining configuration
 for your own plugins](../../conf/defining.md) which explains how to establish a
 configuration schema for your specific plugin.
-
-### Options
-
-You'll have noted that the return values from `createBackendPlugin` and
-`createBackendModule` are actually factory functions. These can be made to
-accept options that shall be passed in at initialization time.
-
-This pattern can be a good fit for fairly simple, static configuration values.
-
-```ts
-export interface ExampleOptions {
-  silent?: boolean;
-}
-
-export const examplePlugin = createBackendPlugin(
-  (options?: ExampleOptions) => ({
-    pluginId: 'example',
-    register(env) {
-      env.registerInit({
-        deps: {
-          // Omitted dependencies but they remain the same as above
-        },
-        async init(
-          {
-            /* ... */
-          },
-        ) {
-          // Here you can access the given options and act accordingly, e.g.:
-          if (!options?.silent) {
-            // ...
-          }
-        },
-      });
-    },
-  }),
-);
-```
-
-The return type from `createBackendPlugin` and `createBackendModule` will mimic
-this, resulting in a factory function that accepts an optional options object.
-You can also make it required to pass in options, by removing the optionality
-(the question mark on the options) above.
-
-```ts
-backend.add(examplePlugin({ silent: true }));
-```
-
-Use this pattern sparingly. There is a big convenience benefit in allowing
-people to easily install backend plugins without having to always pass in a
-large number of options, and these options cannot easily be made dynamic based
-on the environment etc.

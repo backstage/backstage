@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { mockServices } from './mockServices';
+export { mockServices, type ServiceMock } from './mockServices';

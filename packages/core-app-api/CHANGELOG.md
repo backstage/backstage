@@ -1,5 +1,248 @@
 # @backstage/core-app-api
 
+## 1.11.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.2
+
+### Patch Changes
+
+- 3e358b0: Added deprecation warning for React Router v6 beta, please make sure you have migrated your apps to use React Router v6 stable as support for the beta version will be removed. See the [migration tutorial](https://backstage.io/docs/tutorials/react-router-stable-migration) for more information.
+- 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.2-next.1
+
+### Patch Changes
+
+- 3e358b0dff: Added deprecation warning for React Router v6 beta, please make sure you have migrated your apps to use React Router v6 stable as support for the beta version will be removed. See the [migration tutorial](https://backstage.io/docs/tutorials/react-router-stable-migration) for more information.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.1
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 89d13e5618: Add current and default scopes when refreshing session
+- 9ab0572217: Add component data `core.type` marker for `AppRouter` and `FlatRoutes`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/version-bridge@1.0.7
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 89d13e5618: Add current and default scopes when refreshing session
+- 9ab0572217: Add component data `core.type` marker for `AppRouter` and `FlatRoutes`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.11.0
+
+### Minor Changes
+
+- c9d9bfeca2: URL encode some well known unsafe characters in `RouteResolver` (and therefore `useRouteRef`)
+
+### Patch Changes
+
+- 29e4d8b76b: Fixed bug in `AppRouter` to determine the correct `signOutTargetUrl` if `app.baseUrl` contains a `basePath`
+- acca17e91a: Wrap entire app in `<Suspense>`, enabling support for using translations outside plugins.
+- 1a0616fa10: Add missing resource and template app icons
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- f1b349cfba: Fixed a bug in `TranslationApi` implementation where in some cases it wouldn't notify subscribers of language changes.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/version-bridge@1.0.6
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.11.0-next.2
+
+### Minor Changes
+
+- c9d9bfeca2: URL encode some well known unsafe characters in `RouteResolver` (and therefore `useRouteRef`)
+
+### Patch Changes
+
+- acca17e91a: Wrap entire app in `<Suspense>`, enabling support for using translations outside plugins.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.10.1-next.1
+
+### Patch Changes
+
+- 1a0616fa10: Add missing resource and template app icons
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.10.0
+
+### Minor Changes
+
+- 18619f793c94: Fixed two bugs in how the `OAuth2Session` type represents the underlying data. The `expiresAt` and `backstageIdentity` are now both optional, since that's what they are in practice. This is not considered a breaking change since it was effectively a bug in the modelling of the state that this type represents, and the type was not used in any other external contract.
+- 18619f793c94: The `OAuth` class which is used by all OAuth providers will now consider both the session expiration of both the Backstage identity as well as the upstream identity provider, and refresh the session with either of them is about to expire.
+- 6e30769cc627: Introduced experimental support for internationalization.
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 9fe827b380e1: Internal refactor
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.10.0-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 9fe827b380e1: Internal refactor
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/types@1.1.1-next.0
+  - @backstage/version-bridge@1.0.5-next.0
+
+## 1.10.0-next.2
+
+### Minor Changes
+
+- 6e30769cc627: Introduced experimental support for internationalization.
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.10.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 18619f793c94: Fixed two bugs in how the `OAuth2Session` type represents the underlying data. The `expiresAt` and `backstageIdentity` are now both optional, since that's what they are in practice. This is not considered a breaking change since it was effectively a bug in the modelling of the state that this type represents, and the type was not used in any other external contract.
+- 18619f793c94: The `OAuth` class which is used by all OAuth providers will now consider both the session expiration of both the Backstage identity as well as the upstream identity provider, and refresh the session with either of them is about to expire.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.9.1
+
+### Patch Changes
+
+- 9ae4e7e63836: Fixed a bug that could cause `navigate` analytics events to be misattributed to the plugin mounted on the root route (e.g. the `home` plugin at `/`) when the route that was navigated to wasn't associated with a routable extension.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- 9ae4e7e63836: Fixed a bug that could cause `navigate` analytics events to be misattributed to the plugin mounted on the root route (e.g. the `home` plugin at `/`) when the route that was navigated to wasn't associated with a routable extension.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.9.0
+
+### Minor Changes
+
+- a77ddf7ccd71: add login in popup options to config popup width and height
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
 ## 1.8.2-next.1
 
 ### Patch Changes
@@ -86,7 +329,7 @@
 
 ### Minor Changes
 
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 - c15e0cedbe1: The `AuthConnector` interface now supports specifying a set of scopes when
   refreshing a session. The `DefaultAuthConnector` implementation passes the
   `scope` query parameter to the auth-backend plugin appropriately. The
@@ -147,7 +390,7 @@
 
 ### Minor Changes
 
-- 7908d72e033: Introduce a new global config parameter, `auth.enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
+- 7908d72e033: Introduce a new global config parameter, `enableExperimentalRedirectFlow`. When enabled, auth will happen with an in-window redirect flow rather than through a popup window.
 
 ### Patch Changes
 

@@ -30,11 +30,11 @@ import { createGithubSignatureValidator } from '../http/createGithubSignatureVal
  */
 export const eventsModuleGithubWebhook = createBackendModule({
   pluginId: 'events',
-  moduleId: 'githubWebhook',
+  moduleId: 'github-webhook',
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         events: eventsExtensionPoint,
       },
       async init({ config, events }) {

@@ -32,6 +32,7 @@ export const devToolsExternalDependenciesReadPermission: BasicPermission;
 // @public (undocumented)
 export type DevToolsInfo = {
   operatingSystem: string;
+  resourceUtilization: string;
   nodeJsVersion: string;
   backstageVersion: string;
   dependencies: PackageDependency[];

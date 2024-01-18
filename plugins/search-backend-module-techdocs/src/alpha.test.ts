@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { startTestBackend } from '@backstage/backend-test-utils';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-import { searchModuleTechDocsCollator } from './alpha';
+import searchModuleTechDocsCollator from './alpha';
 
 describe('searchModuleTechDocsCollator', () => {
   const schedule = {
@@ -34,7 +34,18 @@ describe('searchModuleTechDocsCollator', () => {
       extensionPoints: [
         [searchIndexRegistryExtensionPoint, extensionPointMock],
       ],
-      features: [searchModuleTechDocsCollator({ schedule })],
+      features: [
+        searchModuleTechDocsCollator(),
+        mockServices.rootConfig.factory({
+          data: {
+            search: {
+              techdocs: {
+                schedule,
+              },
+            },
+          },
+        }),
+      ],
     });
 
     expect(extensionPointMock.addCollator).toHaveBeenCalledTimes(1);

@@ -16,6 +16,8 @@
 
 export { frontendPlugin } from './frontendPlugin';
 export { backendPlugin } from './backendPlugin';
+export { backendModule } from './backendModule';
+export { nodeLibraryPackage } from './nodeLibraryPackage';
 export { webLibraryPackage } from './webLibraryPackage';
 export { pluginCommon } from './pluginCommon';
 export { pluginNode } from './pluginNode';

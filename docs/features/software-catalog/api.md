@@ -31,13 +31,190 @@ with a `Bearer` token, which should then be the Backstage token returned by the
 
 These are the endpoints that deal with reading of entities directly. What it
 exposes are final entities - i.e. the output of all processing and the stitching
-process, not the raw originally ingested entity data. See [The Life of an
-Entity](life-of-an-entity.md) for more details about this process and
+process, not the raw originally ingested entity data. See
+[The Life of an Entity](./life-of-an-entity.md) for more details about this process and
 distinction.
+
+### `GET /entities/by-query`
+
+Query entities. Supports the following query parameters, described in the section below:
+
+- [`filter`](#filtering), for selecting only a subset of all entities
+- [`fields`](#field-selection), for selecting only parts of the full data
+  structure of each entity
+- `limit` for limiting the number of entities returned (20 is the default)
+- [`orderField`](#ordering), for deciding the order of the entities
+- [`fullTextFilter`](#full-text-filtering), for filtering the entities by text
+- [`cursor`](#pagination), for retrieving the next or previous batch of entities
+
+The return type is JSON, on the following form
+
+```json
+{
+  "items": [{ "kind": "Component", "metadata": { "name": "foo" } }],
+  "totalItems": 4,
+  "pageInfo": {
+    "nextCursor": "a-cursor",
+    "prevCursor": "another-cursor"
+  }
+}
+```
+
+#### Filtering
+
+You can pass in one or more filter sets that get matched against each entity.
+Each filter set is a number of conditions that all have to match for the
+condition to be true (conditions effectively have an AND between them). At least
+one filter set has to be true for the entity to be part of the result set
+(filter sets effectively have an OR between them).
+
+Example:
+
+```text
+/entities/by-query?filter=kind=user,metadata.namespace=default&filter=kind=group,spec.type
+
+  Return entities that match
+
+    Filter set 1:
+      Condition 1: kind = user
+                   AND
+      Condition 2: metadata.namespace = default
+
+    OR
+
+    Filter set 2:
+      Condition 1: kind = group
+                   AND
+      Condition 2: spec.type exists
+```
+
+Each condition is either on the form `<key>`, or on the form `<key>=<value>`.
+The first form asserts on the existence of a certain key (with any value), and
+the second asserts that the key exists and has a certain value. All checks are
+always case _insensitive_.
+
+In all cases, the key is a simplified JSON path in a given piece of entity data.
+Each part of the path is a key of an object, and the traversal also descends
+through arrays. There are two special forms:
+
+- Array items that are simple value types (such as strings) match on a key-value
+  pair where the key is the item as a string, and the value is the string `true`
+- Relations can be matched on a `relations.<type>=<targetRef>` form
+
+Let's look at a simplified example to illustrate the concept:
+
+```json
+{
+  "a": {
+    "b": ["c", { "d": 1 }],
+    "e": 7
+  }
+}
+```
+
+This would match any one of the following conditions:
+
+- `a`
+- `a.b`
+- `a.b.c`
+- `a.b.c=true`
+- `a.b.d`
+- `a.b.d=1`
+- `a.e`
+- `a.e=7`
+
+Some more real world usable examples:
+
+- Return all orphaned entities:
+
+  `/entities/by-query?filter=metadata.annotations.backstage.io/orphan=true`
+
+- Return all users and groups:
+
+  `/entities/by-query?filter=kind=user&filter=kind=group`
+
+- Return all service components:
+
+  `/entities/by-query?filter=kind=component,spec.type=service`
+
+- Return all entities with the `java` tag:
+
+  `/entities/by-query?filter=metadata.tags.java`
+
+- Return all users who are members of the `ops` group (note that the full
+  [reference](references.md) of the group is used):
+
+  `/entities/by-query?filter=kind=user,relations.memberof=group:default/ops`
+
+#### Full text filtering
+
+TODO
+
+#### Field selection
+
+By default the full entities are returned, but you can pass in a `fields` query
+parameter which selects what parts of the entity data to retain. This makes the
+response smaller and faster to transfer, and may allow the catalog to perform
+more efficient queries.
+
+The query parameter value is a comma separated list of simplified JSON paths
+like above. Each path corresponds to the key of either a value, or of a subtree
+root that you want to keep in the output. The rest is pruned away. For example,
+specifying `?fields=metadata.name,metadata.annotations,spec` retains only the
+`name` and `annotations` fields of the `metadata` of each entity (it'll be an
+object with at most two keys), keeps the entire `spec` unchanged, and cuts out
+all other roots such as `relations`.
+
+Some more real world usable examples:
+
+- Return only enough data to form the full ref of each entity:
+
+  `/entities/by-query?fields=kind,metadata.namespace,metadata.name`
+
+#### Ordering
+
+By default the entities are returned ordered by their internal uid. You can
+customize the `orderField` query parameters to affect that ordering.
+
+For example, to return entities by their name:
+
+`/entities/by-query?orderField=metadata.name,asc`
+
+Each parameter can be followed by `asc` for ascending lexicographical order or
+`desc` for descending (reverse) lexicographical order.
+
+#### Pagination
+
+You may pass the `cursor` query parameters to perform cursor based pagination
+through the set of entities. The value of `cursor` will be returned in the response, under the `pageInfo` property:
+
+```json
+  "pageInfo": {
+    "nextCursor": "a-cursor",
+    "prevCursor": "another-cursor"
+  }
+```
+
+If `nextCursor` exists, it can be used to retrieve the next batch of entities. Following the same approach,
+if `prevCursor` exists, it can be used to retrieve the previous batch of entities.
+
+- [`filter`](#filtering), for selecting only a subset of all entities
+- [`fields`](#field-selection), for selecting only parts of the full data
+  structure of each entity
+- `limit` for limiting the number of entities returned (20 is the default)
+- [`orderField`](#ordering), for deciding the order of the entities
+- `fullTextFilter`
+  **NOTE**: [`filter`, `orderField`, `fullTextFilter`] and `cursor` are mutually exclusive. This means that,
+  it isn't possible to change any of [`filter`, `orderField`, `fullTextFilter`] when passing `cursor` as query parameters,
+  as changing any of these properties will affect pagination. If any of `filter`, `orderField`, `fullTextFilter` is specified together with `cursor`, only the latter is taken into consideration.
 
 ### `GET /entities`
 
-Lists entities. Supports the following query parameters, described in sections
+Lists entities.
+
+**NOTE**: This endpoint is deprecated in favor of `GET /entities/by-query`, which provides a more efficient implementation and cursor based pagination.
+
+The endpoint supports the following query parameters, described in sections
 below:
 
 - [`filter`](#filtering), for selecting only a subset of all entities
@@ -279,7 +456,65 @@ where the `items` array has _the same length_ and _the same order_ as the input
 
 ## Locations
 
-TODO
+### `GET /locations`
+
+Lists locations.
+
+Response type is JSON, on the form
+
+```json
+[
+  {
+    "data": {
+      "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
+      "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
+      "type": "url"
+    }
+  }
+]
+```
+
+### `POST /locations`
+
+Adds a location to be ingested by the catalog.
+
+If successful the response code will be `HTTP/1.1 201 Created` and a JSON on the form
+
+```json
+{
+  "entities": [],
+  "location": {
+    "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
+    "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
+    "type": "url"
+  }
+}
+```
+
+If the location already exists the response will be `HTTP/1.1 409 Conflict` and a JSON on the form
+
+```json
+{
+  "error": {
+    "message": "Location url:https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml already exists",
+    "name": "ConflictError",
+    "stack": "ConflictError: Location url:https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml already exists\n..."
+  },
+  "request": {
+    "method": "POST",
+    "url": "/locations"
+  },
+  "response": {
+    "statusCode": 409
+  }
+}
+```
+
+Supports the `?dryRun=true` query parameter, which will perform validation and not write anything to the database. In the event of successfully passing validation, the `entities` field of the response JSON will be populated with entities present in the location.
+
+### `DELETE /locations/<uid>`
+
+Delete a location by its id. On success response code will be `HTTP/1.1 204 No Content`.
 
 ## Other
 

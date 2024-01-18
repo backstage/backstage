@@ -1,5 +1,330 @@
 # @backstage/backend-plugin-api
 
+## 0.6.9
+
+### Patch Changes
+
+- 516fd3e: Updated README to reflect release status
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/backend-tasks@0.5.14
+  - @backstage/plugin-auth-node@0.4.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.6.9-next.2
+
+### Patch Changes
+
+- 516fd3e: Updated README to reflect release status
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.3-next.2
+  - @backstage/backend-tasks@0.5.14-next.2
+
+## 0.6.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/backend-tasks@0.5.14-next.1
+  - @backstage/plugin-auth-node@0.4.3-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.11
+
+## 0.6.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.14-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.11
+
+## 0.6.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.13
+  - @backstage/plugin-auth-node@0.4.2
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.6.8-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.13-next.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.2-next.3
+  - @backstage/plugin-permission-common@0.7.10
+
+## 0.6.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.2-next.2
+  - @backstage/backend-tasks@0.5.13-next.2
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.10
+
+## 0.6.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.13-next.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.2-next.1
+  - @backstage/plugin-permission-common@0.7.10
+
+## 0.6.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.13-next.0
+  - @backstage/plugin-auth-node@0.4.2-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.10
+
+## 0.6.7
+
+### Patch Changes
+
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.12
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1
+
+## 0.6.7-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.12-next.2
+  - @backstage/plugin-auth-node@0.4.1-next.2
+
+## 0.6.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.12-next.1
+  - @backstage/plugin-auth-node@0.4.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
+## 0.6.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.12-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.1-next.0
+  - @backstage/plugin-permission-common@0.7.9
+
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/plugin-auth-node@0.4.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
+## 0.6.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.0-next.2
+  - @backstage/backend-tasks@0.5.11-next.2
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9-next.0
+
+## 0.6.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.10-next.1
+  - @backstage/plugin-auth-node@0.3.2-next.1
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.8
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.2-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-tasks@0.5.10-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.8
+
+## 0.6.3
+
+### Patch Changes
+
+- ba4506076e2d: Ensure that root scoped services cannot accept (at a type level) plugin scoped deps
+- 474b792d6a43: Service factory functions are now marked as feature factories that can be installed in the backend.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/plugin-auth-node@0.3.0
+  - @backstage/config@1.1.0
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/types@1.1.1
+
+## 0.6.3-next.3
+
+### Patch Changes
+
+- ba4506076e2d: Ensure that root scoped services cannot accept (at a type level) plugin scoped deps
+- 474b792d6a43: Service factory functions are now marked as feature factories that can be installed in the backend.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/plugin-permission-common@0.7.8-next.2
+  - @backstage/types@1.1.1-next.0
+  - @backstage/backend-tasks@0.5.8-next.3
+  - @backstage/plugin-auth-node@0.3.0-next.3
+
+## 0.6.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.2
+  - @backstage/plugin-auth-node@0.3.0-next.2
+  - @backstage/plugin-permission-common@0.7.8-next.1
+  - @backstage/types@1.1.0
+
+## 0.6.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-tasks@0.5.8-next.1
+  - @backstage/plugin-auth-node@0.3.0-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.0
+  - @backstage/types@1.1.0
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.3.0-next.0
+  - @backstage/backend-tasks@0.5.7-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
+## 0.6.0
+
+### Minor Changes
+
+- c49785f00cab: **BREAKING**: It is no longer possible to declare options as being required with `createServiceFactory`.
+- 629cbd194a87: **BREAKING**: Renamed `coreServices.config` to `coreServices.rootConfig`.
+- 51987dbdaf87: **BREAKING**: Removed the ability to define options for plugins and modules. Existing options should be migrated to instead use either static configuration or extension points.
+- d008aefef808: **BREAKING**: Removing shared environments concept from the new experimental backend system.
+
+### Patch Changes
+
+- c7aa4ff1793c: Allow modules to register extension points.
+- cc9256a33bcc: Added new experimental `featureDiscoveryServiceRef`, available as an `/alpha` export.
+- a6d7983f349c: **BREAKING**: Removed the `services` option from `createBackend`. Service factories are now `BackendFeature`s and should be installed with `backend.add(...)` instead. The following should be migrated:
+
+  ```ts
+  const backend = createBackend({ services: [myCustomServiceFactory] });
+  ```
+
+  To instead pass the service factory via `backend.add(...)`:
+
+  ```ts
+  const backend = createBackend();
+  backend.add(customRootLoggerServiceFactory);
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.17
+  - @backstage/backend-tasks@0.5.5
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
+## 0.6.0-next.2
+
+### Patch Changes
+
+- cc9256a33bcc: Added new experimental `featureDiscoveryServiceRef`, available as an `/alpha` export.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/plugin-auth-node@0.2.17-next.2
+
+## 0.6.0-next.1
+
+### Minor Changes
+
+- 629cbd194a87: **BREAKING**: Renamed `coreServices.config` to `coreServices.rootConfig`.
+- d008aefef808: **BREAKING**: Removing shared environments concept from the new experimental backend system.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.17-next.1
+  - @backstage/backend-tasks@0.5.5-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.5-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.17-next.0
+  - @backstage/plugin-permission-common@0.7.7
+
+## 0.5.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.4
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-auth-node@0.2.16
+  - @backstage/plugin-permission-common@0.7.7
+
 ## 0.5.4-next.0
 
 ### Patch Changes

@@ -76,7 +76,7 @@ describe('OAuthProvider Utils', () => {
       } as unknown as express.Request;
       expect(() => {
         verifyNonce(mockRequest, 'providera');
-      }).toThrow('Invalid state passed via request');
+      }).toThrow('OAuth state is invalid, missing env');
     });
 
     it('should throw error if nonce mismatch', () => {

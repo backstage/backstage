@@ -12,22 +12,25 @@ import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const EntityPagerDutyCard: (
   props: EntityPagerDutyCardProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type EntityPagerDutyCardProps = {
   readOnly?: boolean;
+  disableChangeEvents?: boolean;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const HomePagePagerDutyCard: (
   props: CardExtensionProps<HomePagePagerDutyCardProps>,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type HomePagePagerDutyCardProps = PagerDutyEntity & {
@@ -66,7 +69,7 @@ export type PagerDutyAssignee = {
 };
 
 // @public @deprecated (undocumented)
-export const PagerDutyCard: (props: EntityPagerDutyCardProps) => JSX.Element;
+export const PagerDutyCard: (props: EntityPagerDutyCardProps) => JSX_2.Element;
 
 // @public @deprecated (undocumented)
 export type PagerDutyCardProps = EntityPagerDutyCardProps;
@@ -135,7 +138,7 @@ export type PagerDutyClientApiDependencies = {
   fetchApi: FetchApi;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type PagerDutyEntity = {
   integrationKey?: string;
   serviceId?: string;
@@ -173,8 +176,8 @@ export type PagerDutyOnCallsResponse = {
   oncalls: PagerDutyOnCall[];
 };
 
-// @public (undocumented)
-const pagerDutyPlugin: BackstagePlugin<{}, {}, {}>;
+// @public @deprecated (undocumented)
+const pagerDutyPlugin: BackstagePlugin<{}, {}>;
 export { pagerDutyPlugin };
 export { pagerDutyPlugin as plugin };
 
@@ -214,7 +217,9 @@ export type PagerDutyUser = {
 };
 
 // @public (undocumented)
-export function TriggerButton(props: { children?: ReactNode }): JSX.Element;
+export function TriggerButton(props: {
+  children?: ReactNode;
+}): React_2.JSX.Element;
 
 // @public (undocumented)
 export class UnauthorizedError extends Error {}

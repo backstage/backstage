@@ -24,7 +24,7 @@ import { SonarqubeFindings } from './sonarqubeInfoProvider';
 describe('createRouter', () => {
   let app: express.Express;
   const getBaseUrlMock: jest.Mock<
-    { baseUrl: string },
+    { baseUrl: string; externalBaseUrl?: string },
     [{ instanceName: string }]
   > = jest.fn();
   const getFindingsMock: jest.Mock<
@@ -55,6 +55,7 @@ describe('createRouter', () => {
   describe('GET /findings', () => {
     const DUMMY_COMPONENT_KEY = 'my:component';
     const DUMMY_INSTANCE_KEY = 'myInstance';
+
     it('returns ok', async () => {
       const measures = {
         analysisDate: '2022-01-01T00:00:00Z',
@@ -77,6 +78,7 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(measures);
     });
+
     it('returns an error when component key is not defined', async () => {
       const response = await request(app)
         .get('/findings')
@@ -112,9 +114,12 @@ describe('createRouter', () => {
       expect(response.body).toEqual(measures);
     });
   });
+
   describe('GET /instanceUrl', () => {
     const DUMMY_INSTANCE_KEY = 'myInstance';
-    const DUMMY_INSTANCE_URL = 'http://sonarqube.example.com';
+    const DUMMY_INSTANCE_URL = 'http://sonarqube-internal.example.com';
+    const DUMMY_INSTANCE_EXTERNAL_URL = 'http://sonarqube.example.com';
+
     it('returns ok', async () => {
       getBaseUrlMock.mockReturnValue({ baseUrl: DUMMY_INSTANCE_URL });
       const response = await request(app)
@@ -140,6 +145,18 @@ describe('createRouter', () => {
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ instanceUrl: DUMMY_INSTANCE_URL });
+    });
+
+    it('returns the external base url when provided', async () => {
+      getBaseUrlMock.mockReturnValue({
+        baseUrl: DUMMY_INSTANCE_URL,
+        externalBaseUrl: DUMMY_INSTANCE_EXTERNAL_URL,
+      });
+      const response = await request(app).get('/instanceUrl').send();
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        instanceUrl: DUMMY_INSTANCE_EXTERNAL_URL,
+      });
     });
   });
 });

@@ -15,9 +15,9 @@
  */
 
 import { OptionValues } from 'commander';
-import { startBackend } from './startBackend';
-import { startFrontend } from './startFrontend';
 import { findRoleFromCommand } from '../../lib/role';
+import { startBackend, startBackendPlugin } from './startBackend';
+import { startFrontend } from './startFrontend';
 
 export async function command(opts: OptionValues): Promise<void> {
   const role = await findRoleFromCommand(opts);
@@ -25,16 +25,17 @@ export async function command(opts: OptionValues): Promise<void> {
   const options = {
     configPaths: opts.config as string[],
     checksEnabled: Boolean(opts.check),
-    inspectEnabled: Boolean(opts.inspect),
-    inspectBrkEnabled: Boolean(opts.inspectBrk),
+    inspectEnabled: opts.inspect,
+    inspectBrkEnabled: opts.inspectBrk,
   };
 
   switch (role) {
     case 'backend':
+      return startBackend(options);
     case 'backend-plugin':
     case 'backend-plugin-module':
     case 'node-library':
-      return startBackend(options);
+      return startBackendPlugin(options);
     case 'frontend':
       return startFrontend({
         ...options,

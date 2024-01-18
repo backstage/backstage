@@ -48,6 +48,10 @@ describe('UnregisterEntityDialog', () => {
     },
   };
 
+  beforeEach(() => {
+    jest.spyOn(alertApi, 'post').mockImplementation(() => {});
+  });
+
   const entity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
@@ -281,8 +285,8 @@ describe('UnregisterEntityDialog', () => {
       expect(
         screen.getByText(/will unregister the following entities/),
       ).toBeInTheDocument();
-      expect(screen.getByText(/k1:ns1\/n1/)).toBeInTheDocument();
-      expect(screen.getByText(/k2:ns2\/n2/)).toBeInTheDocument();
+      expect(screen.getByText(/ns1\/n1/)).toBeInTheDocument();
+      expect(screen.getByText(/ns2\/n2/)).toBeInTheDocument();
     });
 
     await userEvent.click(screen.getByText('Unregister Location'));
@@ -329,8 +333,8 @@ describe('UnregisterEntityDialog', () => {
       expect(
         screen.getByText(/will unregister the following entities/),
       ).toBeInTheDocument();
-      expect(screen.getByText(/k1:ns1\/n1/)).toBeInTheDocument();
-      expect(screen.getByText(/k2:ns2\/n2/)).toBeInTheDocument();
+      expect(screen.getByText(/ns1\/n1/)).toBeInTheDocument();
+      expect(screen.getByText(/ns2\/n2/)).toBeInTheDocument();
     });
 
     await userEvent.click(screen.getByText('Advanced Options'));
@@ -346,6 +350,11 @@ describe('UnregisterEntityDialog', () => {
     await waitFor(() => {
       expect(deleteEntity).toHaveBeenCalled();
       expect(onConfirm).toHaveBeenCalled();
+      expect(alertApi.post).toHaveBeenCalledWith({
+        message: 'Removed entity n',
+        severity: 'success',
+        display: 'transient',
+      });
     });
   });
 });

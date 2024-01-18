@@ -10,9 +10,22 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmAuthApi } from '@backstage/integration-react';
+
+// @public (undocumented)
+export type Branch = {
+  name: string;
+};
+
+// @public (undocumented)
+export type Branches = {
+  default_branch: string;
+  branches: Branch[];
+};
 
 // @public (undocumented)
 export enum BuildStatus {
@@ -27,19 +40,19 @@ export enum BuildStatus {
 }
 
 // @public (undocumented)
-export const EntityGithubActionsContent: () => JSX.Element;
+export const EntityGithubActionsContent: (props: RouterProps) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityLatestGithubActionRunCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityLatestGithubActionsForBranchCard: (props: {
   branch: string;
   variant?: InfoCardVariants | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityRecentGithubActionsRunsCard: (props: {
@@ -47,7 +60,7 @@ export const EntityRecentGithubActionsRunsCard: (props: {
   dense?: boolean | undefined;
   limit?: number | undefined;
   variant?: InfoCardVariants | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
@@ -104,6 +117,21 @@ export type GithubActionsApi = {
   }) => Promise<
     RestEndpointMethodTypes['actions']['downloadJobLogsForWorkflowRun']['response']['data']
   >;
+  listBranches: (options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+    page: number;
+  }) => Promise<
+    RestEndpointMethodTypes['repos']['listBranches']['response']['data']
+  >;
+  getDefaultBranch: (options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+  }) => Promise<
+    RestEndpointMethodTypes['repos']['get']['response']['data']['default_branch']
+  >;
 };
 
 // @public (undocumented)
@@ -122,6 +150,14 @@ export class GithubActionsClient implements GithubActionsApi {
     RestEndpointMethodTypes['actions']['downloadJobLogsForWorkflowRun']['response']['data']
   >;
   // (undocumented)
+  getDefaultBranch(options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+  }): Promise<
+    RestEndpointMethodTypes['repos']['get']['response']['data']['default_branch']
+  >;
+  // (undocumented)
   getWorkflow(options: {
     hostname?: string;
     owner: string;
@@ -138,6 +174,15 @@ export class GithubActionsClient implements GithubActionsApi {
     id: number;
   }): Promise<
     RestEndpointMethodTypes['actions']['getWorkflowRun']['response']['data']
+  >;
+  // (undocumented)
+  listBranches(options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+    page?: number;
+  }): Promise<
+    RestEndpointMethodTypes['repos']['listBranches']['response']['data']
   >;
   // (undocumented)
   listJobsForWorkflowRun(options: {
@@ -175,7 +220,6 @@ const githubActionsPlugin: BackstagePlugin<
   {
     entityContent: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { githubActionsPlugin };
@@ -208,13 +252,13 @@ export type Jobs = {
 export const LatestWorkflowRunCard: (props: {
   branch: string;
   variant?: InfoCardVariants;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const LatestWorkflowsForBranchCard: (props: {
   branch: string;
   variant?: InfoCardVariants;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const RecentWorkflowRunsCard: (props: {
@@ -222,10 +266,16 @@ export const RecentWorkflowRunsCard: (props: {
   dense?: boolean;
   limit?: number;
   variant?: InfoCardVariants;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const Router: () => JSX.Element;
+export const Router: (props: RouterProps) => React_2.JSX.Element;
+
+// @public (undocumented)
+export interface RouterProps {
+  // (undocumented)
+  view?: 'cards' | 'table';
+}
 
 // @public (undocumented)
 export type Step = {

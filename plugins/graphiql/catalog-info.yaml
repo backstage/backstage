@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-graphiql
+  title: '@backstage/plugin-graphiql'
+  description: Backstage plugin for browsing GraphQL APIs
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

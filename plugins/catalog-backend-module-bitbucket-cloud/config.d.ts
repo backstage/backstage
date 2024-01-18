@@ -45,24 +45,23 @@ export interface Config {
              */
             filters?: {
               /**
-               * (Optional) Filter for the repository slug.
+               * (Optional) Regular expression filter for the repository slug.
                * @visibility frontend
                */
-              repoSlug?: RegExp;
+              repoSlug?: string;
               /**
-               * (Optional) Filter for the project key.
+               * (Optional) Regular expression filter for the project key.
                * @visibility frontend
                */
-              projectKey?: RegExp;
+              projectKey?: string;
             };
             /**
              * (Optional) TaskScheduleDefinition for the discovery.
              */
             schedule?: TaskScheduleDefinitionConfig;
           }
-        | Record<
-            string,
-            {
+        | {
+            [name: string]: {
               /**
                * (Optional) Path to the catalog file. Default to "/catalog-info.yaml".
                * @visibility frontend
@@ -79,22 +78,22 @@ export interface Config {
                */
               filters?: {
                 /**
-                 * (Optional) Filter for the repository slug.
+                 * (Optional) Regular expression filter for the repository slug.
                  * @visibility frontend
                  */
-                repoSlug?: RegExp;
+                repoSlug?: string;
                 /**
-                 * (Optional) Filter for the project key.
+                 * (Optional) Regular expression filter for the project key.
                  * @visibility frontend
                  */
-                projectKey?: RegExp;
+                projectKey?: string;
               };
               /**
                * (Optional) TaskScheduleDefinition for the discovery.
                */
               schedule?: TaskScheduleDefinitionConfig;
-            }
-          >;
+            };
+          };
     };
   };
 }

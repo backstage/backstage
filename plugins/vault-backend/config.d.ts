@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
 
 /** Configuration for the Vault plugin */
 export interface Config {
@@ -44,5 +45,11 @@ export interface Config {
      * The version of the K/V API. Defaults to `2`.
      */
     kvVersion?: 1 | 2;
+
+    /**
+     * If set to true, the default schedule (hourly) will be used. If a
+     * different schedule is set, this will be used instead.
+     * */
+    schedule?: TaskScheduleDefinitionConfig | boolean;
   };
 }

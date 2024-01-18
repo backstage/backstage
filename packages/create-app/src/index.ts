@@ -39,6 +39,10 @@ const main = (argv: string[]) => {
       '--skip-install',
       'Skip the install and builds steps after creating the app',
     )
+    .option(
+      '--template-path [directory]',
+      'Use an external application template instead of the default template',
+    )
     .action(cmd => createApp(cmd));
 
   program.parse(argv);

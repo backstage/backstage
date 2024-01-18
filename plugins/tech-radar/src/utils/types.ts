@@ -23,6 +23,7 @@ export type Ring = {
   color: string;
   outerRadius?: number;
   innerRadius?: number;
+  description?: string;
 };
 
 // Parameters for a quadrant (there should be exactly 4 of course)

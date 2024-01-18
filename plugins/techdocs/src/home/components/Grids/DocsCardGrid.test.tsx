@@ -15,8 +15,8 @@
  */
 
 import { configApiRef } from '@backstage/core-plugin-api';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { rootDocsRouteRef } from '../../../routes';
 import { DocsCardGrid } from './DocsCardGrid';
@@ -46,42 +46,40 @@ describe('Entity Docs Card Grid', () => {
   });
 
   it('should render all entities passed to it', async () => {
-    const { findByText, findAllByRole } = render(
-      wrapInTestApp(
-        <DocsCardGrid
-          entities={[
-            {
-              apiVersion: 'version',
-              kind: 'TestKind',
-              metadata: {
-                name: 'testName',
-              },
-              spec: {
-                owner: 'techdocs@example.com',
-              },
+    await renderInTestApp(
+      <DocsCardGrid
+        entities={[
+          {
+            apiVersion: 'version',
+            kind: 'TestKind',
+            metadata: {
+              name: 'testName',
             },
-            {
-              apiVersion: 'version',
-              kind: 'TestKind2',
-              metadata: {
-                name: 'testName2',
-              },
-              spec: {
-                owner: 'not-owned@example.com',
-              },
+            spec: {
+              owner: 'techdocs@example.com',
             },
-          ]}
-        />,
-        {
-          mountedRoutes: {
-            '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
           },
+          {
+            apiVersion: 'version',
+            kind: 'TestKind2',
+            metadata: {
+              name: 'testName2',
+            },
+            spec: {
+              owner: 'not-owned@example.com',
+            },
+          },
+        ]}
+      />,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
         },
-      ),
+      },
     );
-    expect(await findByText('testName')).toBeInTheDocument();
-    expect(await findByText('testName2')).toBeInTheDocument();
-    const [button1, button2] = await findAllByRole('button');
+    expect(await screen.findByText('testName')).toBeInTheDocument();
+    expect(await screen.findByText('testName2')).toBeInTheDocument();
+    const [button1, button2] = await screen.findAllByRole('button');
     expect(button1.getAttribute('href')).toContain(
       '/docs/default/testkind/testname',
     );
@@ -93,32 +91,30 @@ describe('Entity Docs Card Grid', () => {
   it('should fall back to case-sensitive links when configured', async () => {
     getOptionalBooleanMock.mockReturnValue(true);
 
-    const { findByRole } = render(
-      wrapInTestApp(
-        <DocsCardGrid
-          entities={[
-            {
-              apiVersion: 'version',
-              kind: 'TestKind',
-              metadata: {
-                name: 'testName',
-                namespace: 'SomeNamespace',
-              },
-              spec: {
-                owner: 'techdocs@example.com',
-              },
+    await renderInTestApp(
+      <DocsCardGrid
+        entities={[
+          {
+            apiVersion: 'version',
+            kind: 'TestKind',
+            metadata: {
+              name: 'testName',
+              namespace: 'SomeNamespace',
             },
-          ]}
-        />,
-        {
-          mountedRoutes: {
-            '/techdocs/:namespace/:kind/:name/*': rootDocsRouteRef,
+            spec: {
+              owner: 'techdocs@example.com',
+            },
           },
+        ]}
+      />,
+      {
+        mountedRoutes: {
+          '/techdocs/:namespace/:kind/:name/*': rootDocsRouteRef,
         },
-      ),
+      },
     );
 
-    const button = await findByRole('button');
+    const button = await screen.findByRole('button');
     expect(getOptionalBooleanMock).toHaveBeenCalledWith(
       'techdocs.legacyUseCaseSensitiveTripletPaths',
     );
@@ -128,30 +124,28 @@ describe('Entity Docs Card Grid', () => {
   });
 
   it('should render entity title if available', async () => {
-    const { findByText } = render(
-      wrapInTestApp(
-        <DocsCardGrid
-          entities={[
-            {
-              apiVersion: 'version',
-              kind: 'TestKind',
-              metadata: {
-                name: 'testName',
-                title: 'TestTitle',
-              },
-              spec: {
-                owner: 'techdocs@example.com',
-              },
+    await renderInTestApp(
+      <DocsCardGrid
+        entities={[
+          {
+            apiVersion: 'version',
+            kind: 'TestKind',
+            metadata: {
+              name: 'testName',
+              title: 'TestTitle',
             },
-          ]}
-        />,
-        {
-          mountedRoutes: {
-            '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+            spec: {
+              owner: 'techdocs@example.com',
+            },
           },
+        ]}
+      />,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
         },
-      ),
+      },
     );
-    expect(await findByText('TestTitle')).toBeInTheDocument();
+    expect(await screen.findByText('TestTitle')).toBeInTheDocument();
   });
 });

@@ -1,0 +1,16 @@
+import { add, multiply, subtract, divide } from "./math";
+
+export default (a, b, operator) => {
+  switch(operator) {
+    case '+':
+      return add(a, b);
+    case '-':
+      return subtract(a, b);
+    case '*':
+      return multiply(a, b);
+    case '/':
+      return divide(a, b);
+    default:
+      throw new Error('Invalid operator');
+  }
+};

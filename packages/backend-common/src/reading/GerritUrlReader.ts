@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import { Git } from '../scm';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GerritIntegration,
-  getGerritCloneRepoUrl,
+  ScmIntegrations,
+  buildGerritGitilesArchiveUrl,
   getGerritBranchApiUrl,
+  getGerritCloneRepoUrl,
   getGerritFileContentsApiUrl,
   getGerritRequestOptions,
-  parseGerritJsonResponse,
   parseGerritGitilesUrl,
+  parseGerritJsonResponse,
 } from '@backstage/integration';
 import { Base64Decode } from 'base64-stream';
 import concatStream from 'concat-stream';
@@ -31,20 +32,20 @@ import fs from 'fs-extra';
 import fetch, { Response } from 'node-fetch';
 import os from 'os';
 import { join as joinPath } from 'path';
+import { Readable, pipeline as pipelineCb } from 'stream';
 import tar from 'tar';
-import { pipeline as pipelineCb, Readable } from 'stream';
 import { promisify } from 'util';
+import { Git } from '../scm';
 import {
-  ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
   ReadTreeResponseFactory,
   ReadUrlOptions,
   ReadUrlResponse,
+  ReaderFactory,
   SearchResponse,
   UrlReader,
 } from './types';
-import { ScmIntegrations } from '@backstage/integration';
 
 const pipeline = promisify(pipelineCb);
 
@@ -59,6 +60,8 @@ const createTemporaryDirectory = async (workDir: string): Promise<string> =>
  * way we are depending on that there is a Gitiles installation somewhere
  * that we can link to. It is perfectly possible to integrate Gerrit with
  * Backstage without Gitiles since all API calls goes directly to Gerrit.
+ * However if Gitiles is configured, readTree will use it to fetch
+ * an archive instead of cloning the repository.
  *
  * The "host" variable in the config is the Gerrit host. The address where
  * Gitiles is installed may be on the same host but it could be on a
@@ -125,6 +128,7 @@ export class GerritUrlReader implements UrlReader {
     } catch (e) {
       throw new Error(`Unable to read gerrit file ${url}, ${e}`);
     }
+
     if (response.ok) {
       let responseBody: string;
       return {
@@ -135,7 +139,7 @@ export class GerritUrlReader implements UrlReader {
           return Buffer.from(responseBody, 'base64');
         },
         stream: () => {
-          const readable = new Readable().wrap(response.body);
+          const readable = Readable.from(response.body);
           return readable.pipe(new Base64Decode());
         },
       };
@@ -152,7 +156,6 @@ export class GerritUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const { filePath } = parseGerritGitilesUrl(this.integration.config, url);
     const apiUrl = getGerritBranchApiUrl(this.integration.config, url);
     let response: Response;
     try {
@@ -180,6 +183,30 @@ export class GerritUrlReader implements UrlReader {
       throw new NotModifiedError();
     }
 
+    if (
+      this.integration.config.gitilesBaseUrl !== this.integration.config.baseUrl
+    ) {
+      return this.readTreeFromGitiles(url, branchInfo.revision, options);
+    }
+    return this.readTreeFromGitClone(url, branchInfo.revision, options);
+  }
+
+  async search(): Promise<SearchResponse> {
+    throw new Error('GerritReader does not implement search');
+  }
+
+  toString() {
+    const { host, password } = this.integration.config;
+    return `gerrit{host=${host},authed=${Boolean(password)}}`;
+  }
+
+  private async readTreeFromGitClone(
+    url: string,
+    revision: string,
+    options?: ReadTreeOptions,
+  ) {
+    const { filePath } = parseGerritGitilesUrl(this.integration.config, url);
+
     const git = Git.fromAuth({
       username: this.integration.config.username,
       password: this.integration.config.password,
@@ -192,7 +219,7 @@ export class GerritUrlReader implements UrlReader {
       await git.clone({
         url: cloneUrl,
         dir: joinPath(tempDir, 'repo'),
-        ref: branchInfo.revision,
+        ref: revision,
         depth: 1,
       });
 
@@ -206,7 +233,7 @@ export class GerritUrlReader implements UrlReader {
       return await this.deps.treeResponseFactory.fromTarArchive({
         stream: tarArchive,
         subpath: filePath === '/' ? undefined : filePath,
-        etag: branchInfo.revision,
+        etag: revision,
         filter: options?.filter,
       });
     } catch (error) {
@@ -216,12 +243,47 @@ export class GerritUrlReader implements UrlReader {
     }
   }
 
-  async search(): Promise<SearchResponse> {
-    throw new Error('GerritReader does not implement search');
-  }
+  private async readTreeFromGitiles(
+    url: string,
+    revision: string,
+    options?: ReadTreeOptions,
+  ) {
+    const { branch, filePath, project } = parseGerritGitilesUrl(
+      this.integration.config,
+      url,
+    );
+    const archiveUrl = buildGerritGitilesArchiveUrl(
+      this.integration.config,
+      project,
+      branch,
+      filePath,
+    );
+    const archiveResponse = await fetch(archiveUrl, {
+      ...getGerritRequestOptions(this.integration.config),
+      // TODO(freben): The signal cast is there because pre-3.x versions of
+      // node-fetch have a very slightly deviating AbortSignal type signature.
+      // The difference does not affect us in practice however. The cast can
+      // be removed after we support ESM for CLI dependencies and migrate to
+      // version 3 of node-fetch.
+      // https://github.com/backstage/backstage/issues/8242
+      signal: options?.signal as any,
+    });
 
-  toString() {
-    const { host, password } = this.integration.config;
-    return `gerrit{host=${host},authed=${Boolean(password)}}`;
+    if (archiveResponse.status === 404) {
+      throw new NotFoundError(`Not found: ${archiveUrl}`);
+    }
+
+    if (!archiveResponse.ok) {
+      throw new Error(
+        `${url} could not be read as ${archiveUrl}, ${archiveResponse.status} ${archiveResponse.statusText}`,
+      );
+    }
+
+    return await this.deps.treeResponseFactory.fromTarArchive({
+      stream: archiveResponse.body as unknown as Readable,
+      etag: revision,
+      filter: options?.filter,
+      stripFirstDirectory: false,
+    });
   }
 }

@@ -29,12 +29,12 @@ import { GithubEntityProvider } from '../providers/GithubEntityProvider';
  */
 export const catalogModuleGithubEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'githubEntityProvider',
+  moduleId: 'github-entity-provider',
   register(env) {
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },

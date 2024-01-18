@@ -55,13 +55,18 @@ export interface Config {
              */
             region?: string;
             /**
+             * (Optional) AWS Account id.
+             * If not set, main account is used.
+             * @see https://github.com/backstage/backstage/blob/master/packages/integration-aws-node/README.md
+             */
+            accountId?: string;
+            /**
              * (Optional) TaskScheduleDefinition for the refresh.
              */
             schedule?: TaskScheduleDefinitionConfig;
           }
-        | Record<
-            string,
-            {
+        | {
+            [name: string]: {
               /**
                * (Required) AWS S3 Bucket Name
                */
@@ -78,11 +83,17 @@ export interface Config {
                */
               region?: string;
               /**
+               * (Optional) AWS Account id.
+               * If not set, main account is used.
+               * @see https://github.com/backstage/backstage/blob/master/packages/integration-aws-node/README.md
+               */
+              accountId?: string;
+              /**
                * (Optional) TaskScheduleDefinition for the refresh.
                */
               schedule?: TaskScheduleDefinitionConfig;
-            }
-          >;
+            };
+          };
     };
   };
 }

@@ -1,5 +1,97 @@
 # @backstage/plugin-catalog-common
 
+## 1.0.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.0.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.0.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.0.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-permission-common@0.7.9
+  - @backstage/plugin-search-common@1.2.7
+
+## 1.0.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/plugin-permission-common@0.7.9-next.0
+  - @backstage/plugin-search-common@1.2.7-next.0
+
+## 1.0.16
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/plugin-search-common@1.2.6
+
+## 1.0.16-next.2
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/plugin-permission-common@0.7.8-next.2
+  - @backstage/plugin-search-common@1.2.6-next.2
+
+## 1.0.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/plugin-permission-common@0.7.8-next.1
+  - @backstage/plugin-search-common@1.2.6-next.1
+
+## 1.0.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/plugin-permission-common@0.7.8-next.0
+  - @backstage/plugin-search-common@1.2.6-next.0
+
+## 1.0.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-permission-common@0.7.7
+  - @backstage/plugin-search-common@1.2.5
+
 ## 1.0.15-next.0
 
 ### Patch Changes

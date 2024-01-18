@@ -18,12 +18,14 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
+  entityPresentationApiRef,
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import {
   createComponentRouteRef,
   createFromTemplateRouteRef,
+  unregisterRedirectRouteRef,
   viewTechDocRouteRef,
 } from './routes';
 import {
@@ -52,7 +54,7 @@ import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';
 import { rootRouteRef } from './routes';
-import { CatalogInputPluginOptions, CatalogPluginOptions } from './options';
+import { DefaultEntityPresentationApi } from './apis/EntityPresentationApi';
 
 /** @public */
 export const catalogPlugin = createPlugin({
@@ -73,6 +75,12 @@ export const catalogPlugin = createPlugin({
       factory: ({ storageApi }) =>
         new DefaultStarredEntitiesApi({ storageApi }),
     }),
+    createApiFactory({
+      api: entityPresentationApiRef,
+      deps: { catalogApi: catalogApiRef },
+      factory: ({ catalogApi }) =>
+        DefaultEntityPresentationApi.create({ catalogApi }),
+    }),
   ],
   routes: {
     catalogIndex: rootRouteRef,
@@ -82,14 +90,7 @@ export const catalogPlugin = createPlugin({
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
     createFromTemplate: createFromTemplateRouteRef,
-  },
-  __experimentalConfigure(
-    options?: CatalogInputPluginOptions,
-  ): CatalogPluginOptions {
-    const defaultOptions = {
-      createButtonTitle: 'Create',
-    };
-    return { ...defaultOptions, ...options };
+    unregisterRedirect: unregisterRedirectRouteRef,
   },
 });
 

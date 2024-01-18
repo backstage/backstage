@@ -29,11 +29,11 @@ import { GitlabDiscoveryEntityProvider } from '../providers';
  */
 export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'gitlabDiscoveryEntityProvider',
+  moduleId: 'gitlab-discovery-entity-provider',
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         catalog: catalogProcessingExtensionPoint,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,

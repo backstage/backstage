@@ -1,5 +1,366 @@
 # @backstage/plugin-vault-backend
 
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/backend-tasks@0.5.14
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-vault-node@0.1.2
+
+## 0.4.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-vault-node@0.1.2-next.2
+  - @backstage/backend-tasks@0.5.14-next.2
+
+## 0.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/backend-tasks@0.5.14-next.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-vault-node@0.1.2-next.1
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/backend-tasks@0.5.14-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-vault-node@0.1.2-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- b7de76a: Updated to test using PostgreSQL 12 and 16
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/backend-tasks@0.5.13
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-vault-node@0.1.1
+
+## 0.4.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/backend-tasks@0.5.13-next.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-vault-node@0.1.1-next.3
+
+## 0.4.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/backend-tasks@0.5.13-next.2
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-vault-node@0.1.1-next.2
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/backend-tasks@0.5.13-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-vault-node@0.1.1-next.1
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/backend-tasks@0.5.13-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-vault-node@0.1.1-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- a873a32a1f: Added support for the [new backend system](https://backstage.io/docs/backend-system/).
+
+  In your `packages/backend/src/index.ts` make the following changes:
+
+  ```diff
+    import { createBackend } from '@backstage/backend-defaults';
+    const backend = createBackend();
+    // ... other feature additions
+  + backend.add(import('@backstage/plugin-vault-backend');
+    backend.start();
+  ```
+
+  If you use the new backend system, the token renewal task can be defined via configuration file:
+
+  ```diff
+  vault:
+    baseUrl: <BASE_URL>
+    token: <TOKEN>
+    schedule:
+  +   frequency: ...
+  +   timeout: ...
+  +   # Other schedule options, such as scope or initialDelay
+  ```
+
+  If the `schedule` is omitted or set to `false` no token renewal task will be scheduled.
+  If the value of `schedule` is set to `true` the renew will be scheduled hourly (the default).
+  In other cases (like in the diff above), the defined schedule will be used.
+
+  **DEPRECATIONS**: The interface `VaultApi` and the type `VaultSecret` are now deprecated. Import them from `@backstage/plugin-vault-node`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-vault-node@0.1.0
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-tasks@0.5.12
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.4.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/backend-tasks@0.5.12-next.2
+  - @backstage/plugin-vault-node@0.1.0-next.2
+
+## 0.4.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/backend-tasks@0.5.12-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-vault-node@0.1.0-next.1
+
+## 0.4.0-next.0
+
+### Minor Changes
+
+- a873a32a1f: Added support for the [new backend system](https://backstage.io/docs/backend-system/).
+
+  In your `packages/backend/src/index.ts` make the following changes:
+
+  ```diff
+    import { createBackend } from '@backstage/backend-defaults';
+    const backend = createBackend();
+    // ... other feature additions
+  + backend.add(import('@backstage/plugin-vault-backend');
+    backend.start();
+  ```
+
+  If you use the new backend system, the token renewal task can be defined via configuration file:
+
+  ```diff
+  vault:
+    baseUrl: <BASE_URL>
+    token: <TOKEN>
+    schedule:
+  +   frequency: ...
+  +   timeout: ...
+  +   # Other schedule options, such as scope or initialDelay
+  ```
+
+  If the `schedule` is omitted or set to `false` no token renewal task will be scheduled.
+  If the value of `schedule` is set to `true` the renew will be scheduled hourly (the default).
+  In other cases (like in the diff above), the defined schedule will be used.
+
+  **DEPRECATIONS**: The interface `VaultApi` and the type `VaultSecret` are now deprecated. Import them from `@backstage/plugin-vault-node`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-vault-node@0.1.0-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/backend-tasks@0.5.12-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.3.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.11
+  - @backstage/backend-common@0.19.8
+  - @backstage/errors@1.2.3
+  - @backstage/config@1.1.1
+
+## 0.3.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/backend-tasks@0.5.11-next.2
+  - @backstage/config@1.1.1-next.0
+
+## 0.3.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.10-next.1
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+
+## 0.3.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-tasks@0.5.10-next.0
+  - @backstage/errors@1.2.2
+
+## 0.3.8
+
+### Patch Changes
+
+- 858a18800870: Added ability to override vault secret engine value on catalog entity level using annotation `vault.io/secrets-engine`
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.8
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+
+## 0.3.7
+
+Skipped due to publishing issues.
+
+## 0.3.7-next.3
+
+### Patch Changes
+
+- 858a18800870: Added ability to override vault secret engine value on catalog entity level using annotation `vault.io/secrets-engine`
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/backend-common@0.19.5-next.3
+  - @backstage/backend-tasks@0.5.8-next.3
+
+## 0.3.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-tasks@0.5.8-next.2
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/errors@1.2.1
+
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-tasks@0.5.8-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/errors@1.2.1
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/backend-tasks@0.5.7-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-tasks@0.5.5
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 0.3.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.5-next.2
+  - @backstage/backend-common@0.19.2-next.2
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/backend-tasks@0.5.5-next.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/backend-tasks@0.5.5-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/backend-common@0.19.1
+  - @backstage/backend-tasks@0.5.4
+  - @backstage/config@1.0.8
+
 ## 0.3.3-next.0
 
 ### Patch Changes

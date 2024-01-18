@@ -25,6 +25,7 @@ export {
   jenkinsPlugin as plugin,
   EntityJenkinsContent,
   EntityLatestJenkinsRunCard,
+  EntityJobRunsTable,
 } from './plugin';
 export { LatestRunCard } from './components/Cards';
 export {

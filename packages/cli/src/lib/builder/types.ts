@@ -28,5 +28,4 @@ export type BuildOptions = {
   packageJson?: BackstagePackageJson;
   outputs: Set<Output>;
   minify?: boolean;
-  useApiExtractor?: boolean;
 };

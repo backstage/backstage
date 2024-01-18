@@ -19,22 +19,23 @@ import type { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { createFieldValidation, extractSchemaFromStep } from '../../lib';
-import { NextCustomFieldValidator } from '../../extensions';
+import {
+  CustomFieldValidator,
+  FieldExtensionUiSchema,
+} from '@backstage/plugin-scaffolder-react';
 import { isObject } from './utils';
-import { NextFieldExtensionUiSchema } from '../../extensions/types';
 
-/**
- * @internal
- */
+/** @alpha */
 export type FormValidation = {
   [name: string]: FieldValidation | FormValidation;
 };
 
+/** @alpha */
 export const createAsyncValidators = (
   rootSchema: JsonObject,
   validators: Record<
     string,
-    undefined | NextCustomFieldValidator<unknown, unknown>
+    undefined | CustomFieldValidator<unknown, unknown>
   >,
   context: {
     apiHolder: ApiHolder;
@@ -53,7 +54,7 @@ export const createAsyncValidators = (
       key: string,
       value: JsonValue | undefined,
       schema: JsonObject,
-      uiSchema: NextFieldExtensionUiSchema<unknown, unknown>,
+      uiSchema: FieldExtensionUiSchema<unknown, unknown>,
     ) => {
       const validator = validators[validatorName];
       if (validator) {
@@ -82,7 +83,7 @@ export const createAsyncValidators = (
       const doValidateItem = async (
         propValue: JsonObject,
         itemSchema: JsonObject,
-        itemUiSchema: NextFieldExtensionUiSchema<unknown, unknown>,
+        itemUiSchema: FieldExtensionUiSchema<unknown, unknown>,
       ) => {
         await validateForm(
           propValue['ui:field'] as string,

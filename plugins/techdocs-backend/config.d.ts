@@ -57,6 +57,11 @@ export interface Config {
          * will be broken in these scenarios.
          */
         legacyCopyReadmeMdToIndexMd?: boolean;
+
+        /**
+         * List of mkdocs plugins which should be added as default to all mkdocs.yml files.
+         */
+        defaultPlugins?: string[];
       };
     };
 
@@ -65,7 +70,12 @@ export interface Config {
      */
     publisher?:
       | {
-          type: 'local';
+          type:
+            | 'local'
+            | 'googleGcs'
+            | 'awsS3'
+            | 'azureBlobStorage'
+            | 'openStackSwift';
 
           local?: {
             /**
@@ -198,10 +208,15 @@ export interface Config {
            */
           azureBlobStorage?: {
             /**
-             * (Required) Credentials used to access a storage container.
+             * (Optional) Connection string of the storage container.
              * @visibility secret
              */
-            credentials: {
+            connectionString?: string;
+            /**
+             * (Optional) Credentials used to access a storage container.
+             * @visibility secret
+             */
+            credentials?: {
               /**
                * Account access name
                * @visibility secret

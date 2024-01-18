@@ -1,5 +1,392 @@
 # @backstage/dev-utils
 
+## 1.0.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/app-defaults@1.4.7
+  - @backstage/integration-react@1.1.23
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-app-api@1.11.3
+  - @backstage/theme@0.5.0
+
+## 1.0.26-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+  - @backstage/integration-react@1.1.23-next.0
+
+## 1.0.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/app-defaults@1.4.7-next.1
+  - @backstage/core-app-api@1.11.3-next.0
+  - @backstage/integration-react@1.1.23-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/theme@0.5.0
+
+## 1.0.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.0
+  - @backstage/app-defaults@1.4.7-next.0
+  - @backstage/integration-react@1.1.22
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-app-api@1.11.2
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/theme@0.5.0
+
+## 1.0.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/core-app-api@1.11.2
+  - @backstage/app-defaults@1.4.6
+  - @backstage/integration-react@1.1.22
+  - @backstage/catalog-model@1.4.3
+
+## 1.0.25-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/app-defaults@1.4.6-next.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.3
+
+## 1.0.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.2
+  - @backstage/app-defaults@1.4.6-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/integration-react@1.1.22-next.1
+
+## 1.0.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/app-defaults@1.4.6-next.1
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/theme@0.5.0-next.0
+
+## 1.0.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-react@1.9.2-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/app-defaults@1.4.6-next.0
+  - @backstage/core-app-api@1.11.2-next.0
+  - @backstage/integration-react@1.1.22-next.0
+  - @backstage/catalog-model@1.4.3
+
+## 1.0.23
+
+### Patch Changes
+
+- 67cc85bb14: Switched the conditional `react-dom/client` import to use `import(...)` rather than `require(...)`.
+- 38cda52746: Added support for React 18. The new `createRoot` API from `react-dom/client` will now be used if present.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/integration-react@1.1.21
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/app-defaults@1.4.5
+  - @backstage/core-app-api@1.11.1
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+
+## 1.0.23-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+  - @backstage/app-defaults@1.4.5-next.2
+  - @backstage/integration-react@1.1.21-next.1
+
+## 1.0.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/app-defaults@1.4.5-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-app-api@1.11.1-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+
+## 1.0.23-next.0
+
+### Patch Changes
+
+- 67cc85bb14: Switched the conditional `react-dom/client` import to use `import(...)` rather than `require(...)`.
+- 38cda52746: Added support for React 18. The new `createRoot` API from `react-dom/client` will now be used if present.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/integration-react@1.1.21-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/app-defaults@1.4.5-next.0
+  - @backstage/core-app-api@1.11.1-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-model@1.4.3
+
+## 1.0.22
+
+### Patch Changes
+
+- 080d1beb2a: Moving development `dependencies` to `devDependencies`
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 9468a67b92: Added support for React 18. The new `createRoot` API from `react-dom/client` will now be used if present.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/core-app-api@1.11.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/integration-react@1.1.20
+  - @backstage/catalog-model@1.4.3
+  - @backstage/app-defaults@1.4.4
+  - @backstage/theme@0.4.3
+
+## 1.0.22-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.11.0-next.2
+  - @backstage/integration-react@1.1.20-next.2
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/plugin-catalog-react@1.8.5-next.2
+  - @backstage/theme@0.4.3-next.0
+  - @backstage/app-defaults@1.4.4-next.2
+  - @backstage/test-utils@1.4.4-next.2
+
+## 1.0.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.1
+  - @backstage/core-app-api@1.10.1-next.1
+  - @backstage/app-defaults@1.4.4-next.1
+  - @backstage/test-utils@1.4.4-next.1
+  - @backstage/integration-react@1.1.20-next.1
+  - @backstage/plugin-catalog-react@1.8.5-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/theme@0.4.2
+
+## 1.0.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5-next.0
+  - @backstage/test-utils@1.4.4-next.0
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/core-components@0.13.6-next.0
+  - @backstage/integration-react@1.1.20-next.0
+  - @backstage/app-defaults@1.4.4-next.0
+  - @backstage/core-app-api@1.10.1-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/theme@0.4.2
+
+## 1.0.21
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/integration-react@1.1.19
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/test-utils@1.4.3
+  - @backstage/app-defaults@1.4.3
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-app-api@1.10.0
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/theme@0.4.2
+
+## 1.0.21-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/test-utils@1.4.3-next.3
+  - @backstage/app-defaults@1.4.3-next.3
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/core-app-api@1.10.0-next.3
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/integration-react@1.1.19-next.3
+  - @backstage/plugin-catalog-react@1.8.4-next.3
+  - @backstage/theme@0.4.2-next.0
+
+## 1.0.21-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/integration-react@1.1.19-next.2
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/app-defaults@1.4.3-next.2
+  - @backstage/core-app-api@1.10.0-next.2
+  - @backstage/test-utils@1.4.3-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/theme@0.4.1
+
+## 1.0.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/app-defaults@1.4.3-next.1
+  - @backstage/integration-react@1.1.19-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-app-api@1.10.0-next.1
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/test-utils@1.4.3-next.1
+  - @backstage/theme@0.4.1
+
+## 1.0.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.18-next.0
+  - @backstage/core-app-api@1.10.0-next.0
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/app-defaults@1.4.3-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/test-utils@1.4.3-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+
+## 1.0.18
+
+### Patch Changes
+
+- 254ad469f053: Removed deprecated calls to `app.getProvider()` and `app.getRouter()` in `DevAppBuilder`
+- Updated dependencies
+  - @backstage/core-app-api@1.9.1
+  - @backstage/integration-react@1.1.16
+  - @backstage/core-components@0.13.4
+  - @backstage/plugin-catalog-react@1.8.1
+  - @backstage/app-defaults@1.4.2
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/test-utils@1.4.2
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+
+## 1.0.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+  - @backstage/integration-react@1.1.16-next.1
+
+## 1.0.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.16-next.1
+  - @backstage/app-defaults@1.4.2-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/core-app-api@1.9.1-next.0
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/test-utils@1.4.2-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+
+## 1.0.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.9.1-next.0
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/app-defaults@1.4.2-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/test-utils@1.4.2-next.0
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/integration-react@1.1.16-next.0
+  - @backstage/theme@0.4.1
+
+## 1.0.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-app-api@1.9.0
+  - @backstage/test-utils@1.4.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/app-defaults@1.4.1
+  - @backstage/catalog-model@1.4.1
+  - @backstage/integration-react@1.1.15
+
 ## 1.0.17-next.2
 
 ### Patch Changes

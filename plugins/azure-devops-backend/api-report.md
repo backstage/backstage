@@ -7,36 +7,69 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { BuildDefinitionReference } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { BuildRun } from '@backstage/plugin-azure-devops-common';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
+import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { GitTag } from '@backstage/plugin-azure-devops-common';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
 import { Project } from '@backstage/plugin-azure-devops-common';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
 import { RepoBuild } from '@backstage/plugin-azure-devops-common';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Team } from '@backstage/plugin-azure-devops-common';
 import { TeamMember } from '@backstage/plugin-azure-devops-common';
 import { UrlReader } from '@backstage/backend-common';
-import { WebApi } from 'azure-devops-node-api';
+
+// @public (undocumented)
+export class AzureDevOpsAnnotatorProcessor implements CatalogProcessor {
+  constructor(opts: {
+    scmIntegrationRegistry: ScmIntegrationRegistry;
+    kinds?: string[];
+  });
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options?: {
+      kinds?: string[];
+    },
+  ): AzureDevOpsAnnotatorProcessor;
+  // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
+  preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
+}
 
 // @public (undocumented)
 export class AzureDevOpsApi {
-  constructor(logger: Logger, webApi: WebApi, urlReader: UrlReader);
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: Logger;
+      urlReader: UrlReader;
+    },
+  ): AzureDevOpsApi;
   // (undocumented)
   getAllTeams(): Promise<Team[]>;
   // (undocumented)
   getBuildDefinitions(
     projectName: string,
     definitionName: string,
+    host?: string,
+    org?: string,
   ): Promise<BuildDefinitionReference[]>;
   // (undocumented)
   getBuildList(
     projectName: string,
     repoId: string,
     top: number,
+    host?: string,
+    org?: string,
   ): Promise<Build[]>;
   // (undocumented)
   getBuildRuns(
@@ -44,6 +77,8 @@ export class AzureDevOpsApi {
     top: number,
     repoName?: string,
     definitionName?: string,
+    host?: string,
+    org?: string,
   ): Promise<BuildRun[]>;
   // (undocumented)
   getBuilds(
@@ -51,6 +86,8 @@ export class AzureDevOpsApi {
     top: number,
     repoId?: string,
     definitions?: number[],
+    host?: string,
+    org?: string,
   ): Promise<Build[]>;
   // (undocumented)
   getDashboardPullRequests(
@@ -61,16 +98,25 @@ export class AzureDevOpsApi {
   getGitRepository(
     projectName: string,
     repoName: string,
+    host?: string,
+    org?: string,
   ): Promise<GitRepository>;
   // (undocumented)
-  getGitTags(projectName: string, repoName: string): Promise<GitTag[]>;
+  getGitTags(
+    projectName: string,
+    repoName: string,
+    host?: string,
+    org?: string,
+  ): Promise<GitTag[]>;
   // (undocumented)
-  getProjects(): Promise<Project[]>;
+  getProjects(host?: string, org?: string): Promise<Project[]>;
   // (undocumented)
   getPullRequests(
     projectName: string,
     repoName: string,
     options: PullRequestOptions,
+    host?: string,
+    org?: string,
   ): Promise<PullRequest[]>;
   // (undocumented)
   getReadme(
@@ -87,6 +133,8 @@ export class AzureDevOpsApi {
     projectName: string,
     repoName: string,
     top: number,
+    host?: string,
+    org?: string,
   ): Promise<RepoBuild[]>;
   // (undocumented)
   getTeamMembers(options: {
@@ -96,7 +144,8 @@ export class AzureDevOpsApi {
 }
 
 // @public
-export const azureDevOpsPlugin: () => BackendFeature;
+const azureDevOpsPlugin: () => BackendFeature;
+export default azureDevOpsPlugin;
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;

@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { coreServices } from '@backstage/backend-plugin-api';
-import {
-  PluginTaskScheduler,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
-import { startTestBackend } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Duration } from 'luxon';
 import { catalogModuleGitlabDiscoveryEntityProvider } from './catalogModuleGitlabDiscoveryEntityProvider';
@@ -38,14 +32,14 @@ describe('catalogModuleGitlabDiscoveryEntityProvider', () => {
       },
     };
     const runner = jest.fn();
-    const scheduler = {
-      createScheduledTaskRunner: (schedule: TaskScheduleDefinition) => {
+    const scheduler = mockServices.scheduler.mock({
+      createScheduledTaskRunner(schedule) {
         usedSchedule = schedule;
-        return runner;
+        return { run: runner };
       },
-    } as unknown as PluginTaskScheduler;
+    });
 
-    const config = new ConfigReader({
+    const config = {
       integrations: {
         gitlab: [
           {
@@ -69,16 +63,16 @@ describe('catalogModuleGitlabDiscoveryEntityProvider', () => {
           },
         },
       },
-    });
+    };
 
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
-      services: [
-        [coreServices.config, config],
-        [coreServices.logger, getVoidLogger()],
-        [coreServices.scheduler, scheduler],
+      features: [
+        catalogModuleGitlabDiscoveryEntityProvider(),
+        mockServices.rootConfig.factory({ data: config }),
+        mockServices.logger.factory(),
+        scheduler.factory,
       ],
-      features: [catalogModuleGitlabDiscoveryEntityProvider()],
     });
 
     expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));

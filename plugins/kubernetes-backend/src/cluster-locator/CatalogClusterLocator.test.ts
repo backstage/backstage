@@ -15,6 +15,12 @@
  */
 
 import '@backstage/backend-common';
+import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
+  ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
+  ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+} from '@backstage/plugin-kubernetes-common';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { CatalogApi } from '@backstage/catalog-client';
 
@@ -23,16 +29,34 @@ const mockCatalogApi = {
   getEntities: async () => ({
     items: [
       {
-        apiVersion: 'version',
-        kind: 'User',
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Resource',
         metadata: {
           annotations: {
             'kubernetes.io/api-server': 'https://apiserver.com',
             'kubernetes.io/api-server-certificate-authority': 'caData',
-            'kubernetes.io/auth-provider': 'aws',
-            'kubernetes.io/oidc-token-provider': 'google',
+            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'oidc',
+            [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
             'kubernetes.io/skip-metrics-lookup': 'true',
             'kubernetes.io/skip-tls-verify': 'true',
+            'kubernetes.io/dashboard-url': 'my-url',
+            'kubernetes.io/dashboard-app': 'my-app',
+          },
+          name: 'owned',
+          namespace: 'default',
+        },
+      },
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Resource',
+        metadata: {
+          annotations: {
+            'kubernetes.io/api-server': 'https://apiserver.com',
+            'kubernetes.io/api-server-certificate-authority': 'caData',
+            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
+            [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'my-role',
+            [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'my-id',
+            [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
             'kubernetes.io/dashboard-url': 'my-url',
             'kubernetes.io/dashboard-app': 'my-app',
           },
@@ -67,17 +91,16 @@ describe('CatalogClusterLocator', () => {
 
     const result = await clusterSupplier.getClusters();
 
-    expect(result).toHaveLength(1);
-    expect(result[0]).toStrictEqual({
-      name: 'owned',
-      url: 'https://apiserver.com',
-      caData: 'caData',
-      authProvider: 'aws',
-      oidcTokenProvider: 'google',
-      skipMetricsLookup: true,
-      skipTLSVerify: true,
-      dashboardUrl: 'my-url',
-      dashboardApp: 'my-app',
-    });
+    expect(result).toHaveLength(2);
+    expect(result[0]).toMatchSnapshot();
+  });
+
+  it('returns the aws cluster details provided by annotations', async () => {
+    const clusterSupplier = CatalogClusterLocator.fromConfig(mockCatalogApi);
+
+    const result = await clusterSupplier.getClusters();
+
+    expect(result).toHaveLength(2);
+    expect(result[1]).toMatchSnapshot();
   });
 });

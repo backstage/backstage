@@ -15,12 +15,11 @@
  */
 
 import React from 'react';
-import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, Typography, Button } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import PeopleIcon from '@material-ui/icons/People';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   btn: {
     padding: '10px',
     width: '100%',

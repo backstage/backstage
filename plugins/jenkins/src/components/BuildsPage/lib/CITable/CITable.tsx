@@ -13,222 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link, Progress, Table, TableColumn } from '@backstage/core-components';
-import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
-import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
+import { Table, TableColumn } from '@backstage/core-components';
+import { Box, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import { default as React, useState } from 'react';
+import { default as React } from 'react';
 import { Project } from '../../../../api/JenkinsApi';
 import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
-import { buildRouteRef } from '../../../../plugin';
 import { useBuilds } from '../../../useBuilds';
-import { JenkinsRunStatus } from '../Status';
-import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
-
-const FailCount = ({ count }: { count: number }): JSX.Element | null => {
-  if (count !== 0) {
-    return <>{count} failed</>;
-  }
-  return null;
-};
-
-const SkippedCount = ({ count }: { count: number }): JSX.Element | null => {
-  if (count !== 0) {
-    return <>{count} skipped</>;
-  }
-  return null;
-};
-
-const FailSkippedWidget = ({
-  skipped,
-  failed,
-}: {
-  skipped: number;
-  failed: number;
-}): JSX.Element | null => {
-  if (skipped === 0 && failed === 0) {
-    return null;
-  }
-
-  if (skipped !== 0 && failed !== 0) {
-    return (
-      <>
-        {' '}
-        (<FailCount count={failed} />, <SkippedCount count={skipped} />)
-      </>
-    );
-  }
-
-  if (failed !== 0) {
-    return (
-      <>
-        {' '}
-        (<FailCount count={failed} />)
-      </>
-    );
-  }
-
-  if (skipped !== 0) {
-    return (
-      <>
-        {' '}
-        (<SkippedCount count={skipped} />)
-      </>
-    );
-  }
-
-  return null;
-};
-
-const generatedColumns: TableColumn[] = [
-  {
-    title: 'Timestamp',
-    defaultSort: 'desc',
-    hidden: true,
-    field: 'lastBuild.timestamp',
-  },
-  {
-    title: 'Build',
-    field: 'fullName',
-    highlight: true,
-    render: (row: Partial<Project>) => {
-      const LinkWrapper = () => {
-        const routeLink = useRouteRef(buildRouteRef);
-        if (!row.fullName || !row.lastBuild?.number) {
-          return (
-            <>
-              {row.fullName ||
-                row.fullDisplayName ||
-                row.displayName ||
-                'Unknown'}
-            </>
-          );
-        }
-
-        return (
-          <Link
-            to={routeLink({
-              jobFullName: encodeURIComponent(row.fullName),
-              buildNumber: String(row.lastBuild?.number),
-            })}
-          >
-            {row.fullDisplayName}
-          </Link>
-        );
-      };
-
-      return <LinkWrapper />;
-    },
-  },
-  {
-    title: 'Source',
-    field: 'lastBuild.source.branchName',
-    render: (row: Partial<Project>) => (
-      <>
-        <Typography paragraph>
-          <Link to={row.lastBuild?.source?.url ?? ''}>
-            {row.lastBuild?.source?.branchName}
-          </Link>
-        </Typography>
-        <Typography paragraph>{row.lastBuild?.source?.commit?.hash}</Typography>
-      </>
-    ),
-  },
-  {
-    title: 'Status',
-    field: 'status',
-    render: (row: Partial<Project>) => {
-      return (
-        <Box display="flex" alignItems="center">
-          <JenkinsRunStatus status={row.status} />
-        </Box>
-      );
-    },
-  },
-  {
-    title: 'Tests',
-    sorting: false,
-    render: (row: Partial<Project>) => {
-      return (
-        <>
-          <Typography paragraph>
-            {row.lastBuild?.tests && (
-              <Link to={row.lastBuild?.tests.testUrl ?? ''}>
-                {row.lastBuild?.tests.passed} / {row.lastBuild?.tests.total}{' '}
-                passed
-                <FailSkippedWidget
-                  skipped={row.lastBuild?.tests.skipped}
-                  failed={row.lastBuild?.tests.failed}
-                />
-              </Link>
-            )}
-
-            {!row.lastBuild?.tests && 'n/a'}
-          </Typography>
-        </>
-      );
-    },
-  },
-  {
-    title: 'Actions',
-    sorting: false,
-    render: (row: Partial<Project>) => {
-      const ActionWrapper = () => {
-        const [isLoadingRebuild, setIsLoadingRebuild] = useState(false);
-        const { allowed, loading } = useEntityPermission(
-          jenkinsExecutePermission,
-        );
-
-        const alertApi = useApi(alertApiRef);
-
-        const onRebuild = async () => {
-          if (row.onRestartClick) {
-            setIsLoadingRebuild(true);
-            try {
-              await row.onRestartClick();
-              alertApi.post({
-                message: 'Jenkins re-build has successfully executed',
-                severity: 'success',
-                display: 'transient',
-              });
-            } catch (e) {
-              alertApi.post({
-                message: `Jenkins re-build has failed. Error: ${e.message}`,
-                severity: 'error',
-              });
-            } finally {
-              setIsLoadingRebuild(false);
-            }
-          }
-        };
-
-        return (
-          <div style={{ width: '98px' }}>
-            {row.lastBuild?.url && (
-              <Tooltip title="View build">
-                <IconButton href={row.lastBuild.url} target="_blank">
-                  <VisibilityIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-            {isLoadingRebuild && <Progress />}
-            {!isLoadingRebuild && (
-              <Tooltip title="Rerun build">
-                <IconButton onClick={onRebuild} disabled={loading || !allowed}>
-                  <RetryIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-          </div>
-        );
-      };
-      return <ActionWrapper />;
-    },
-    width: '10%',
-  },
-];
+import { columnFactories } from './columns';
+import { defaultCITableColumns } from './presets';
 
 type Props = {
   loading: boolean;
@@ -239,6 +32,7 @@ type Props = {
   total: number;
   pageSize: number;
   onChangePageSize: (pageSize: number) => void;
+  columns: TableColumn<Project>[];
 };
 
 export const CITableView = ({
@@ -249,6 +43,7 @@ export const CITableView = ({
   projects,
   onChangePage,
   onChangePageSize,
+  columns,
   total,
 }: Props) => {
   const projectsInPage = projects?.slice(
@@ -279,20 +74,31 @@ export const CITableView = ({
           <Typography variant="h6">Projects</Typography>
         </Box>
       }
-      columns={generatedColumns}
+      columns={
+        columns && columns.length !== 0 ? columns : defaultCITableColumns
+      }
     />
   );
 };
 
-export const CITable = () => {
+type CITableProps = {
+  columns?: TableColumn<Project>[];
+};
+
+export const CITable = ({ columns }: CITableProps) => {
   const [tableProps, { setPage, retry, setPageSize }] = useBuilds();
 
   return (
     <CITableView
       {...tableProps}
+      columns={columns || ([] as TableColumn<Project>[])}
       retry={retry}
       onChangePageSize={setPageSize}
       onChangePage={setPage}
     />
   );
 };
+
+CITable.columns = columnFactories;
+
+CITable.defaultCITableColumns = defaultCITableColumns;

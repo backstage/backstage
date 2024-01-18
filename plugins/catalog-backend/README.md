@@ -86,5 +86,5 @@ some example entities.
 
 ## Links
 
-- [catalog](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend)
+- [catalog](https://github.com/backstage/backstage/tree/master/plugins/catalog)
   is the frontend interface for this plugin.

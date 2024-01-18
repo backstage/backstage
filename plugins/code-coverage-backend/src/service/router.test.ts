@@ -25,6 +25,42 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { createRouter } from './router';
+import { CatalogRequestOptions } from '@backstage/catalog-client';
+
+jest.mock('./CodeCoverageDatabase');
+
+import { CodeCoverageDatabase } from './CodeCoverageDatabase';
+
+CodeCoverageDatabase.create = jest.fn(
+  async () =>
+    ({
+      getCodeCoverage: async () => ({
+        files: [],
+        metadata: {
+          generationTime: 1,
+        },
+      }),
+      getHistory: async () => ({}),
+      insertCodeCoverage: async () => undefined,
+    } as any),
+);
+
+let catalogRequestOptions: CatalogRequestOptions;
+
+jest.mock('@backstage/catalog-client', () => ({
+  CatalogClient: jest.fn().mockImplementation(() => ({
+    getEntityByRef: async (_: string, options: CatalogRequestOptions) => {
+      catalogRequestOptions = options;
+      return {
+        metadata: {
+          annotations: {
+            'backstage.io/code-coverage': 'enabled',
+          },
+        },
+      };
+    },
+  })),
+}));
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -74,6 +110,67 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
+
+  [
+    '/report?entity=component:default/mycomponent',
+    '/history?entity=component:default/mycomponent',
+  ].forEach(uri => {
+    describe(`GET ${uri}`, () => {
+      it('does not send token when calling catalog api and request is unauthenticated', async () => {
+        const response = await request(app).get(uri);
+
+        expect(response.status).toEqual(200);
+        expect(catalogRequestOptions.token).toBeUndefined();
+      });
+
+      it('includes auth token when calling catalog api', async () => {
+        const token = 'my-auth-token';
+        const response = await request(app)
+          .get(uri)
+          .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toEqual(200);
+        expect(catalogRequestOptions.token).toEqual(token);
+      });
+    });
+  });
+
+  describe('POST /report', () => {
+    it('returns created when body does not exceed limit', async () => {
+      const response = await request(app)
+        .post('/report?entity=component:default/mycomponent&coverageType=lcov')
+        .set('Content-Type', 'text/plain')
+        .send(
+          'TN:\nSF:/src/index.js\nFNF:0\nFNH:0\nLF:1\nLH:1\nBRF:0\nBRH:0\nend_of_record',
+        );
+
+      expect(response.status).toBe(201);
+    });
+
+    it('returns content too large when body exceeds limit', async () => {
+      const router = await createRouter({
+        config: new ConfigReader({
+          codeCoverage: {
+            bodySizeLimit: '1b',
+          },
+        }),
+        database: createDatabase(),
+        discovery: testDiscovery,
+        urlReader: mockUrlReader,
+        logger: getVoidLogger(),
+      });
+      app = express().use(router);
+
+      const response = await request(app)
+        .post('/report?entity=component:default/mycomponent&coverageType=lcov')
+        .set('Content-Type', 'text/plain')
+        .send(
+          'TN:\nSF:/src/index.js\nFNF:0\nFNH:0\nLF:1\nLH:1\nBRF:0\nBRH:0\nend_of_record',
+        );
+
+      expect(response.status).toBe(413);
     });
   });
 });

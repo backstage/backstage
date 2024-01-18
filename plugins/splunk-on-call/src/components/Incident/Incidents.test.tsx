@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { Incidents } from './Incidents';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { splunkOnCallApiRef } from '../../api';
 import { MOCK_TEAM, MOCK_INCIDENT } from '../../api/mocks';
 
@@ -33,25 +34,27 @@ const apis = TestApiRegistry.from(
 );
 
 describe('Incidents', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
   afterEach(() => {
     jest.resetAllMocks();
+    jest.useRealTimers();
   });
 
   it('Renders an empty state when there are no incidents', async () => {
     mockSplunkOnCallApi.getIncidents.mockResolvedValue([]);
     mockSplunkOnCallApi.getTeams.mockResolvedValue([MOCK_TEAM]);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <Incidents readOnly={false} refreshIncidents={false} team="test" />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Incidents readOnly={false} refreshIncidents={false} team="test" />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    await waitFor(
-      () => expect(getByText('Nice! No incidents found!')).toBeInTheDocument(),
-      { timeout: 2000 },
+    jest.advanceTimersByTime(2000);
+    await waitFor(() => expect(screen.queryByTestId('progress')).toBe(null));
+    await waitFor(() =>
+      expect(screen.getByText('Nice! No incidents found!')).toBeInTheDocument(),
     );
   });
 
@@ -59,69 +62,57 @@ describe('Incidents', () => {
     mockSplunkOnCallApi.getIncidents.mockResolvedValue([MOCK_INCIDENT]);
     mockSplunkOnCallApi.getTeams.mockResolvedValue([MOCK_TEAM]);
 
-    const {
-      getByText,
-      getByTitle,
-      getAllByTitle,
-      getByLabelText,
-      queryByTestId,
-    } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <Incidents readOnly={false} team="test" refreshIncidents={false} />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Incidents readOnly={false} team="test" refreshIncidents={false} />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    await waitFor(
-      () =>
-        expect(
-          getByText('user', {
-            exact: false,
-          }),
-        ).toBeInTheDocument(),
-      { timeout: 2000 },
+    jest.advanceTimersByTime(2000);
+    await waitFor(() => expect(screen.queryByTestId('progress')).toBe(null));
+    await waitFor(() =>
+      expect(
+        screen.getByText('user', {
+          exact: false,
+        }),
+      ).toBeInTheDocument(),
     );
-    expect(getByText('test-incident')).toBeInTheDocument();
-    expect(getByTitle('Acknowledged')).toBeInTheDocument();
-    expect(getByLabelText('Status warning')).toBeInTheDocument();
+    expect(screen.getByText('test-incident')).toBeInTheDocument();
+    expect(screen.getByTitle('Acknowledged')).toBeInTheDocument();
+    expect(screen.getByLabelText('Status warning')).toBeInTheDocument();
 
     // assert links, mailto and hrefs, date calculation
-    expect(getAllByTitle('View in Splunk On-Call').length).toEqual(1);
+    expect(screen.getAllByTitle('View in Splunk On-Call').length).toEqual(1);
   });
 
   it('does not render incident action buttons in read only mode', async () => {
     mockSplunkOnCallApi.getIncidents.mockResolvedValue([MOCK_INCIDENT]);
     mockSplunkOnCallApi.getTeams.mockResolvedValue([MOCK_TEAM]);
 
-    const { getByText, getAllByTitle, getByLabelText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <Incidents readOnly team="test" refreshIncidents={false} />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Incidents readOnly team="test" refreshIncidents={false} />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    await waitFor(
-      () =>
-        expect(
-          getByText('user', {
-            exact: false,
-          }),
-        ).toBeInTheDocument(),
-      { timeout: 2000 },
+    jest.advanceTimersByTime(2000);
+    await waitFor(() => expect(screen.queryByTestId('progress')).toBe(null));
+    await waitFor(() =>
+      expect(
+        screen.getByText('user', {
+          exact: false,
+        }),
+      ).toBeInTheDocument(),
     );
-    expect(getByText('test-incident')).toBeInTheDocument();
-    expect(getByLabelText('Status warning')).toBeInTheDocument();
-    expect(() => getAllByTitle('Acknowledge')).toThrow(
+    expect(screen.getByText('test-incident')).toBeInTheDocument();
+    expect(screen.getByLabelText('Status warning')).toBeInTheDocument();
+    expect(() => screen.getAllByTitle('Acknowledge')).toThrow(
       'Unable to find an element with the title: Acknowledge.',
     );
-    expect(() => getAllByTitle('Resolve')).toThrow(
+    expect(() => screen.getAllByTitle('Resolve')).toThrow(
       'Unable to find an element with the title: Resolve.',
     );
 
     // assert links, mailto and hrefs, date calculation
-    expect(getAllByTitle('View in Splunk On-Call').length).toEqual(1);
+    expect(screen.getAllByTitle('View in Splunk On-Call').length).toEqual(1);
   });
 
   it('Handle errors', async () => {
@@ -130,22 +121,19 @@ describe('Incidents', () => {
     );
     mockSplunkOnCallApi.getTeams.mockResolvedValue([]);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <Incidents readOnly={false} team="test" refreshIncidents={false} />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Incidents readOnly={false} team="test" refreshIncidents={false} />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    await waitFor(
-      () =>
-        expect(
-          getByText(
-            'Error encountered while fetching information. Error occurred',
-          ),
-        ).toBeInTheDocument(),
-      { timeout: 2000 },
+    jest.advanceTimersByTime(2000);
+    await waitFor(() => expect(screen.queryByTestId('progress')).toBe(null));
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          'Error encountered while fetching information. Error occurred',
+        ),
+      ).toBeInTheDocument(),
     );
   });
 });

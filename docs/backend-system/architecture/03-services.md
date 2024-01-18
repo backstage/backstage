@@ -6,8 +6,6 @@ sidebar_label: Services
 description: Services for backend plugins
 ---
 
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
-
 Backend services provide shared functionality available to all backend plugins and modules. They are made available through service references that embed a type that represents the service interface, similar to how [Utility APIs](../../api/utility-apis.md) work in the Backstage frontend system. To use a service in your plugin or module you request an implementation of that service using the service reference.
 
 The system surrounding services exists to provide a level of indirection between the service interfaces and their implementation. It is an implementation of dependency injection, where each backend instance is the dependency injection container. The implementation for each service is provided by a service factory, which encapsulates the logic for how each service instance is created.
@@ -40,7 +38,7 @@ export const fooServiceRef = createServiceRef<FooService>({
 
 The `fooServiceRef` that we create above should be exported, and can then be used to declare a dependency on the `FooService` interface and receive an implementation of it at runtime.
 
-When creating a service reference you need to give it an ID. This ID needs to be globally unique, and should generally be of the format `'<pluginId>.<serviceName>'`. For more naming patters surrounding services, see the [naming patterns](./07-naming-patterns.md#services) page.
+When creating a service reference you need to give it an ID. This ID needs to be globally unique, and should generally be of the format `'<pluginId>.<serviceName>'`. For more naming patterns surrounding services, see the [naming patterns](./07-naming-patterns.md#services) page.
 
 A note on naming: the frontend and backend systems intentionally use the separate names "APIs" and "Services" for concepts that are quite similar. This is to avoid confusion between the two, both in documentation and discussion, but also in code. While the two systems are quite similar, they are not identical, and they can't be used interchangeably.
 
@@ -87,42 +85,6 @@ export const fooServiceFactory = createServiceFactory({
 ```
 
 Note that circular dependencies among service factories are not allowed. This is verified at runtime, and your backend instance will refuse to start up if it detects any conflicts. Likewise, the backend will also fail to start up if a service factory depends on a service that is not provided by any registered service factory.
-
-## Service Factory Options
-
-To install a service factory in a backend instance, we pass it in through the `services` option to `createBackend`:
-
-```ts
-const backend = createBackend({
-  services: [fooServiceFactory()],
-});
-```
-
-Note that we call `fooServiceFactory` to create the service factory instance. This is because `createServiceFactory` always returns a factory function that creates the actual service factory. This is done to always allow for options to be added to the service factory in the future, without breaking existing code. To add options to your service factory, you wrap the object passed to `createServiceFactory` in a callback that accepts the desired options. For example:
-
-```ts
-export interface FooFactoryOptions {
-  mode: 'eager' | 'lazy';
-}
-
-export const fooServiceFactory = createServiceFactory(
-  (options?: FooFactoryOptions) => ({
-    service: fooServiceRef,
-    deps: { bar: barServiceRef },
-    factory({ bar }) {
-      return new DefaultFooService(bar, options?.mode);
-    },
-  }),
-);
-```
-
-This lets us use the options to customize the factory implementation in any way we want. From the outside the service factory looks just like before, except that we're now also able to pass options when installing the factory:
-
-```ts
-const backend = createBackend({
-  services: [fooServiceFactory({ mode: 'eager' })],
-});
-```
 
 ## Core Services
 
@@ -227,3 +189,40 @@ Note that we don't use the `fooServiceRef` when creating our service factory, bu
 If a service defines a default factory, that factory will be used if there is no explicit factory registered in the backend for that service. This allows users of your service to directly import and use a service, without worrying about whether it is installed or not. It is recommended to always define a default factory for any service that you are exporting for use in other plugins or modules.
 
 When defining a default factory for a service, it is possible for it to end up with duplicate implementations at runtime. This applies both to any shared root context in your factory, as well as plugin specific instances of your service. This is because package dependency version ranges may not line up perfectly, causing duplicate installations of the same package. This can happen both for two different plugins using the same service, but also across a plugin and its modules. If your service would break in this scenario, you should not define a default factory for it, but instead require that users of your service explicitly install a factory in their backend instance.
+
+## Service Factory Options
+
+> NOTE: This pattern is discouraged, only use it when necessary. If possible you should prefer to make services configurable via static configuration instead.
+
+When declaring a service factory it's possible to include an options callback. This allows you to customize the factory through code when installing it in the backend. For example, this is how you install an explicit factory instance in the backend without any options:
+
+```ts
+const backend = createBackend();
+
+backend.add(fooServiceFactory());
+```
+
+Note that we call `fooServiceFactory` to create the service factory instance. This is because `createServiceFactory` always returns a factory function that creates the actual service factory. To add options to your service factory, you wrap the object passed to `createServiceFactory` in a callback that accepts the desired options. Note that the options must always be optional. For example:
+
+```ts
+export interface FooFactoryOptions {
+  transform: (foo: string) => string;
+}
+
+export const fooServiceFactory = createServiceFactory(
+  (options?: FooFactoryOptions) => ({
+    service: fooServiceRef,
+    factory() {
+      return new DefaultFooService(options?.transform);
+    },
+  }),
+);
+```
+
+This lets us use the options to customize the factory implementation in any way we want. From the outside the service factory looks just like before, except that we're now also able to pass options when installing the factory:
+
+```ts
+const backend = createBackend();
+
+backend.add(fooServiceFactory({ transform: foo => foo.toUpperCase() }));
+```

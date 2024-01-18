@@ -19,25 +19,13 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import mockFs from 'mock-fs';
-import os from 'os';
+import {
+  createMockDirectory,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
-import { readFile, writeFile, createWriteStream } from 'fs-extra';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-
-jest.mock('fs-extra', () => ({
-  mkdirSync: jest.fn(),
-  readFile: jest.fn().mockResolvedValue('File contents'),
-  writeFile: jest.fn().mockImplementation(() => {
-    return Promise.resolve();
-  }),
-  outputFile: jest.fn(),
-  openSync: jest.fn(),
-  createWriteStream: jest.fn().mockReturnValue(new PassThrough()),
-  ensureDir: jest.fn(),
-}));
 
 describe('confluence:transform:markdown', () => {
   const baseUrl = `https://nodomain.confluence.com`;
@@ -70,7 +58,8 @@ describe('confluence:transform:markdown', () => {
   const logger = getVoidLogger();
   jest.spyOn(logger, 'info');
 
-  const mockTmpDir = os.tmpdir();
+  const mockDir = createMockDirectory();
+  const workspacePath = mockDir.resolve('workspace');
 
   beforeEach(() => {
     reader = {
@@ -85,19 +74,21 @@ describe('confluence:transform:markdown', () => {
         confluenceUrls: [
           'https://nodomain.confluence.com/display/testing/mkdocs',
         ],
-        repoUrl: 'https://notreal.github.com/space/backstage/mkdocs.yml',
+        repoUrl:
+          'https://notreal.github.com/space/backstage/blob/main/mkdocs.yml',
       },
-      workspacePath: '/tmp',
+      workspacePath,
       logger,
       logStream: new PassThrough(),
       output: jest.fn(),
-      createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
+      createTemporaryDirectory: jest.fn(),
     };
-    mockFs({ [`${mockTmpDir}/src/docs`]: {} });
+
+    mockDir.setContent({ 'workspace/mkdocs.yml': 'File contents' });
   });
+
   afterEach(() => {
     jest.clearAllMocks();
-    mockFs.restore();
   });
 
   it('should call confluence to markdown action successfully with results array', async () => {
@@ -155,12 +146,14 @@ describe('confluence:transform:markdown', () => {
     await action.handler(mockContext);
 
     expect(logger.info).toHaveBeenCalledWith(
-      `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/mkdocs.yml`,
+      `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/blob/main/mkdocs.yml`,
     );
-    expect(logger.info).toHaveBeenCalledTimes(6);
-    expect(createWriteStream).toHaveBeenCalledTimes(1);
-    expect(readFile).toHaveBeenCalledTimes(1);
-    expect(writeFile).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledTimes(5);
+
+    expect(mockDir.content({ path: 'workspace/docs' })).toEqual({
+      img: { 'testing.pdf': Buffer.from('hello') },
+      'mkdocs.md': 'hello world',
+    });
   });
 
   it('should call confluence to markdown action successfully with empty results array', async () => {
@@ -202,13 +195,13 @@ describe('confluence:transform:markdown', () => {
     await action.handler(mockContext);
 
     expect(logger.info).toHaveBeenCalledWith(
-      `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/mkdocs.yml`,
+      `Fetching the mkdocs.yml catalog from https://notreal.github.com/space/backstage/blob/main/mkdocs.yml`,
     );
-    expect(logger.info).toHaveBeenCalledTimes(6);
+    expect(logger.info).toHaveBeenCalledTimes(5);
 
-    expect(createWriteStream).not.toHaveBeenCalled();
-    expect(readFile).toHaveBeenCalledTimes(1);
-    expect(writeFile).toHaveBeenCalledTimes(1);
+    expect(mockDir.content({ path: 'workspace/docs' })).toEqual({
+      'mkdocs.md': 'hello world',
+    });
   });
 
   it('should fail on the first fetch call with response.ok set to false', async () => {

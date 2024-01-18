@@ -2,7 +2,7 @@ area:catalog:
   - plugins/catalog/**/*
   - plugins/catalog-*/**/*
   - packages/catalog-*/**/*
-scaffolder:
+area:scaffolder:
   - plugins/scaffolder/**/*
   - plugins/scaffolder-*/**/*
 search:
@@ -24,6 +24,8 @@ documentation:
   - docs/**/*
 microsite:
   - microsite/**/*
+storybook:
+  - storybook/**/*
 auth:
   - plugins/auth-backend/**/*
   - packages/core-app-api/src/apis/implementations/auth/**/*

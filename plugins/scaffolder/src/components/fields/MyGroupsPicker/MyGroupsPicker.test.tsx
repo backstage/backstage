@@ -17,7 +17,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { CatalogApi } from '@backstage/catalog-client';
-import { FieldProps } from '@rjsf/core';
 import { MyGroupsPicker } from './MyGroupsPicker';
 import { TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -29,6 +28,7 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import userEvent from '@testing-library/user-event';
+import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 
 // Create a mock IdentityApi
 const mockIdentityApi: IdentityApi = {
@@ -109,7 +109,7 @@ describe('<MyGroupsPicker />', () => {
       onChange,
       schema,
       required,
-    } as unknown as FieldProps<any>;
+    } as unknown as FieldProps<string>;
 
     render(
       <TestApiProvider
@@ -129,7 +129,7 @@ describe('<MyGroupsPicker />', () => {
 
     expect(catalogApi.getEntities).toHaveBeenCalledWith({
       filter: {
-        type: 'Group',
+        kind: 'Group',
         'relations.hasMember': ['user:default/bob'],
       },
     });
@@ -181,7 +181,7 @@ describe('<MyGroupsPicker />', () => {
       onChange,
       schema,
       required,
-    } as unknown as FieldProps<any>;
+    } as unknown as FieldProps<string>;
 
     const { queryByText, getByRole } = render(
       <TestApiProvider
@@ -201,8 +201,8 @@ describe('<MyGroupsPicker />', () => {
 
     // Simulate user input
     const inputField = getByRole('combobox');
-    userEvent.click(inputField);
-    userEvent.type(inputField, 'group');
+    await userEvent.click(inputField);
+    await userEvent.type(inputField, 'group');
 
     // Wait for the dropdown elements to appear
     await waitFor(() => {
@@ -238,7 +238,7 @@ describe('<MyGroupsPicker />', () => {
       onChange,
       schema,
       required,
-    } as unknown as FieldProps<any>;
+    } as unknown as FieldProps<string>;
 
     const { getByRole } = render(
       <TestApiProvider
@@ -257,8 +257,8 @@ describe('<MyGroupsPicker />', () => {
     );
 
     const inputField = getByRole('combobox');
-    userEvent.click(inputField);
-    userEvent.type(inputField, 'group');
+    await userEvent.click(inputField);
+    await userEvent.type(inputField, 'group');
 
     await waitFor(() => {
       expect(
@@ -267,7 +267,7 @@ describe('<MyGroupsPicker />', () => {
     });
 
     const option = getByRole('option', { name: 'My First Group' });
-    userEvent.click(option);
+    await userEvent.click(option);
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledTimes(1);

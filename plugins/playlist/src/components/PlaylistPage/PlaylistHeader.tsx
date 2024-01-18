@@ -19,7 +19,12 @@ import {
   HeaderActionMenu,
   HeaderLabel,
 } from '@backstage/core-components';
-import { errorApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  errorApiRef,
+  useApi,
+  useRouteRef,
+  alertApiRef,
+} from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {
@@ -72,9 +77,11 @@ export type PlaylistHeaderProps = {
 export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
   const classes = useStyles();
   const errorApi = useApi(errorApiRef);
+  const alertApi = useApi(alertApiRef);
   const playlistApi = useApi(playlistApiRef);
   const navigate = useNavigate();
   const rootRoute = useRouteRef(rootRouteRef);
+
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
@@ -93,22 +100,38 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
       try {
         await playlistApi.updatePlaylist({ ...update, id: playlist.id });
         setOpenEditDialog(false);
+        let message = `Updated playlist '${playlist.name}'`;
+        if (update.name !== playlist.name) {
+          message = `Updated playlist name '${playlist.name}' to '${update.name}'`;
+        }
+
+        alertApi.post({
+          message,
+          severity: 'success',
+          display: 'transient',
+        });
         onUpdate();
       } catch (e) {
         errorApi.post(e);
       }
     },
-    [errorApi, onUpdate, playlist, playlistApi],
+    [errorApi, onUpdate, playlist, playlistApi, alertApi],
   );
 
   const [deleting, deletePlaylist] = useAsyncFn(async () => {
     try {
       await playlistApi.deletePlaylist(playlist.id);
       navigate(rootRoute());
+      const message = `Deleted playlist '${playlist.name}'`;
+      alertApi.post({
+        message,
+        severity: 'success',
+        display: 'transient',
+      });
     } catch (e) {
       errorApi.post(e);
     }
-  }, [playlistApi]);
+  }, [playlistApi, alertApi]);
 
   const singularTitle = useTitle({
     pluralize: false,
@@ -150,7 +173,7 @@ export const PlaylistHeader = ({ playlist, onUpdate }: PlaylistHeaderProps) => {
           },
           {
             label: `Delete ${singularTitle}`,
-            icon: <DeleteIcon />,
+            icon: <DeleteIcon color="secondary" />,
             disabled: !deleteAllowed,
             onClick: () => setOpenDeleteDialog(true),
           },

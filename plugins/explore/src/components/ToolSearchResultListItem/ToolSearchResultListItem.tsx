@@ -29,16 +29,19 @@ import {
 } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
-const useStyles = makeStyles({
-  flexContainer: {
-    flexWrap: 'wrap',
+const useStyles = makeStyles(
+  {
+    flexContainer: {
+      flexWrap: 'wrap',
+    },
+    itemText: {
+      width: '100%',
+      wordBreak: 'break-all',
+      marginBottom: '1rem',
+    },
   },
-  itemText: {
-    width: '100%',
-    wordBreak: 'break-all',
-    marginBottom: '1rem',
-  },
-});
+  { name: 'ExploreToolSearchResultListItem' },
+);
 
 /**
  * Props for {@link ToolSearchResultListItem}.

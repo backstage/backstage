@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import mockFs from 'mock-fs';
-import * as os from 'os';
-import * as path from 'path';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
   getStaleFiles,
@@ -27,6 +24,7 @@ import {
   lowerCaseEntityTripletInStoragePath,
   normalizeExternalStorageRootPath,
 } from './helpers';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('getHeadersForFileExtension', () => {
   const correctMapOfExtensions = [
@@ -57,30 +55,24 @@ describe('getHeadersForFileExtension', () => {
 });
 
 describe('getFileTreeRecursively', () => {
-  const root = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+  const mockDir = createMockDirectory();
 
   beforeEach(() => {
-    mockFs({
-      [root]: {
-        file1: '',
-        subDirA: {
-          file2: '',
-          emptyDir1: mockFs.directory(),
-        },
-        emptyDir2: mockFs.directory(),
+    mockDir.setContent({
+      file1: '',
+      subDirA: {
+        file2: '',
+        emptyDir1: {},
       },
+      emptyDir2: {},
     });
   });
 
-  afterEach(() => {
-    mockFs.restore();
-  });
-
   it('returns complete file tree of a path', async () => {
-    const fileList = await getFileTreeRecursively(root);
+    const fileList = await getFileTreeRecursively(mockDir.path);
     expect(fileList.length).toBe(2);
-    expect(fileList).toContain(path.resolve(root, 'file1'));
-    expect(fileList).toContain(path.resolve(root, 'subDirA/file2'));
+    expect(fileList).toContain(mockDir.resolve('file1'));
+    expect(fileList).toContain(mockDir.resolve('subDirA/file2'));
   });
 });
 

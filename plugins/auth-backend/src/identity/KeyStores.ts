@@ -15,18 +15,18 @@
  */
 
 import { pickBy } from 'lodash';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 import { Config } from '@backstage/config';
-
 import { AuthDatabase } from '../database/AuthDatabase';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { FirestoreKeyStore } from './FirestoreKeyStore';
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { KeyStore } from './types';
+import { StaticKeyStore } from './StaticKeyStore';
 
 type Options = {
-  logger: Logger;
+  logger: LoggerService;
   database: AuthDatabase;
 };
 
@@ -73,6 +73,10 @@ export class KeyStores {
       await FirestoreKeyStore.verifyConnection(keyStore, logger);
 
       return keyStore;
+    }
+
+    if (provider === 'static') {
+      return await StaticKeyStore.fromConfig(config);
     }
 
     throw new Error(`Unknown KeyStore provider: ${provider}`);

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTheme } from '@material-ui/core';
 import { Circle } from 'rc-progress';
 import React from 'react';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     height: theme.spacing(3),
     width: theme.spacing(3),
@@ -29,7 +28,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
 
 export const Percentage = ({ value }: { value?: string }) => {
   const classes = useStyles();
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
 
   return (
     <Circle

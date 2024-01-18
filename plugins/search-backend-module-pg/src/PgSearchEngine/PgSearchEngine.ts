@@ -86,6 +86,7 @@ export type PgSearchHighlightOptions = {
 export class PgSearchEngine implements SearchEngine {
   private readonly logger?: Logger;
   private readonly highlightOptions: PgSearchHighlightOptions;
+  private readonly indexerBatchSize: number;
 
   /**
    * @deprecated This will be marked as private in a future release, please us fromConfig instead
@@ -114,6 +115,8 @@ export class PgSearchEngine implements SearchEngine {
         highlightConfig?.getOptionalString('fragmentDelimiter') ?? ' ... ',
     };
     this.highlightOptions = highlightOptions;
+    this.indexerBatchSize =
+      config.getOptionalNumber('search.pg.indexerBatchSize') ?? 1000;
     this.logger = logger;
   }
 
@@ -178,7 +181,7 @@ export class PgSearchEngine implements SearchEngine {
 
   async getIndexer(type: string) {
     return new PgSearchEngineIndexer({
-      batchSize: 1000,
+      batchSize: this.indexerBatchSize,
       type,
       databaseStore: this.databaseStore,
       logger: this.logger?.child({ documentType: type }),

@@ -14,6 +14,7 @@
       },
       "spec": {
         "owner": "artist-relations-team",
+        "type": "website",
         "parameters": {
           "required": ["name", "description", "repoUrl"],
           "backstage:permissions": {
@@ -137,6 +138,24 @@
                   }
                 }
               ]
+            },
+            "presentation": {
+              "type": "object",
+              "description": "A way to redefine the labels for actionable buttons.",
+              "properties": {
+                "backButtonText": {
+                  "type": "string",
+                  "description": "A button which return the user to one step back."
+                },
+                "createButtonText": {
+                  "type": "string",
+                  "description": "A button which start the execution of the template."
+                },
+                "reviewButtonText": {
+                  "type": "string",
+                  "description": "A button which open the review step to verify the input prior to start the execution."
+                }
+              }
             },
             "steps": {
               "type": "array",

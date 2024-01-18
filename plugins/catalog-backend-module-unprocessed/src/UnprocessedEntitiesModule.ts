@@ -30,7 +30,7 @@ import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-no
  *
  * @public
  */
-export class UnprocessedEntitesModule {
+export class UnprocessedEntitiesModule {
   private readonly moduleRouter;
 
   constructor(

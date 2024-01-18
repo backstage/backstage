@@ -107,6 +107,7 @@ export async function loadConfig(
     remote: options.remote && {
       reloadInterval: { seconds: options.remote.reloadIntervalSeconds },
     },
+    watch: Boolean(options.watch),
     rootDir: options.configRoot,
     argv: options.configTargets.flatMap(t => [
       '--config',

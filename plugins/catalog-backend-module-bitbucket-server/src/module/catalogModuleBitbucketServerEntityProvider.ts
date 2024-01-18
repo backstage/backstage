@@ -27,12 +27,12 @@ import { BitbucketServerEntityProvider } from '../providers';
  */
 export const catalogModuleBitbucketServerEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'bitbucketServerEntityProvider',
+  moduleId: 'bitbucket-server-entity-provider',
   register(env) {
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },

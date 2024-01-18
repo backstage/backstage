@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -26,7 +26,7 @@ import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 
 export type LoginRequestListItemClassKey = 'root';
 
-const useItemStyles = makeStyles<Theme>(
+const useItemStyles = makeStyles(
   theme => ({
     root: {
       paddingLeft: theme.spacing(3),

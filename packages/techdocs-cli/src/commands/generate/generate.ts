@@ -47,6 +47,7 @@ export default async function generate(opts: OptionValues) {
   const dockerImage = opts.dockerImage;
   const pullImage = opts.pull;
   const legacyCopyReadmeMdToIndexMd = opts.legacyCopyReadmeMdToIndexMd;
+  const defaultPlugins = opts.defaultPlugin;
 
   logger.info(`Using source dir ${sourceDir}`);
   logger.info(`Will output generated files in ${outputDir}`);
@@ -68,6 +69,7 @@ export default async function generate(opts: OptionValues) {
         mkdocs: {
           legacyCopyReadmeMdToIndexMd,
           omitTechdocsCorePlugin,
+          defaultPlugins,
         },
       },
     },
@@ -112,6 +114,7 @@ export default async function generate(opts: OptionValues) {
     etag: opts.etag,
     logStream: getLogStream(logger),
     siteOptions: { name: opts.siteName },
+    runAsDefaultUser: opts.runAsDefaultUser,
   });
 
   if (configIsTemporary) {

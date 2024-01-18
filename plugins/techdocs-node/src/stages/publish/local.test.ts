@@ -16,15 +16,15 @@
 import {
   getVoidLogger,
   PluginEndpointDiscovery,
-  resolvePackagePath,
 } from '@backstage/backend-common';
+import { overridePackagePathResolution } from '@backstage/backend-common/testUtils';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
-import mockFs from 'mock-fs';
 import * as os from 'os';
 import { LocalPublish } from './local';
 import path from 'path';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const createMockEntity = (annotations = {}, lowerCase = false) => {
   return {
@@ -44,28 +44,26 @@ const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
   getExternalBaseUrl: jest.fn(),
 };
 
+const mockPublishDir = createMockDirectory();
+
+overridePackagePathResolution({
+  packageName: '@backstage/plugin-techdocs-backend',
+  paths: {
+    'static/docs': mockPublishDir.path,
+  },
+});
+
 const logger = getVoidLogger();
 
-const tmpDir =
-  os.platform() === 'win32' ? 'C:\\tmp\\generatedDir' : '/tmp/generatedDir';
-
-const resolvedDir = resolvePackagePath(
-  '@backstage/plugin-techdocs-backend',
-  'static/docs',
-);
-
 describe('local publisher', () => {
+  const mockDir = createMockDirectory();
+
   describe('publish', () => {
     beforeEach(() => {
-      mockFs({
-        [tmpDir]: {
-          'index.html': '',
-        },
+      mockPublishDir.clear();
+      mockDir.setContent({
+        'index.html': '',
       });
-    });
-
-    afterEach(() => {
-      mockFs.restore();
     });
 
     it('should publish generated documentation dir', async () => {
@@ -79,7 +77,7 @@ describe('local publisher', () => {
       const mockEntity = createMockEntity();
       const lowerMockEntity = createMockEntity(undefined, true);
 
-      await publisher.publish({ entity: mockEntity, directory: tmpDir });
+      await publisher.publish({ entity: mockEntity, directory: mockDir.path });
 
       expect(await publisher.hasDocsBeenGenerated(mockEntity)).toBe(true);
 
@@ -102,12 +100,14 @@ describe('local publisher', () => {
       const mockEntity = createMockEntity();
       const lowerMockEntity = createMockEntity(undefined, true);
 
-      await publisher.publish({ entity: mockEntity, directory: tmpDir });
+      await publisher.publish({ entity: mockEntity, directory: mockDir.path });
 
       expect(await publisher.hasDocsBeenGenerated(mockEntity)).toBe(true);
 
       // Lower/upper should be treated differently.
-      expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(false);
+      expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(
+        os.platform() === 'darwin', // MacOS is case-insensitive
+      );
     });
 
     it('should throw with unsafe triplet', async () => {
@@ -126,7 +126,7 @@ describe('local publisher', () => {
       };
 
       await expect(() =>
-        publisher.publish({ entity: mockEntity, directory: tmpDir }),
+        publisher.publish({ entity: mockEntity, directory: mockDir.path }),
       ).rejects.toThrow('Unable to publish TechDocs site');
     });
 
@@ -149,7 +149,7 @@ describe('local publisher', () => {
       };
 
       await expect(() =>
-        publisher.publish({ entity: mockEntity, directory: tmpDir }),
+        publisher.publish({ entity: mockEntity, directory: mockDir.path }),
       ).rejects.toThrow('Unable to publish TechDocs site');
     });
   });
@@ -165,23 +165,17 @@ describe('local publisher', () => {
 
     beforeEach(() => {
       app = express().use(publisher.docsRouter());
-      mockFs({
-        [resolvedDir]: {
-          'unsafe.html': '<html></html>',
-          'unsafe.svg': '<svg></svg>',
-          default: {
-            testkind: {
-              testname: {
-                'index.html': 'found it',
-              },
+      mockPublishDir.setContent({
+        'unsafe.html': '<html></html>',
+        'unsafe.svg': '<svg></svg>',
+        default: {
+          testkind: {
+            testname: {
+              'index.html': 'found it',
             },
           },
         },
       });
-    });
-
-    afterEach(() => {
-      mockFs.restore();
     });
 
     it('should pass text/plain content-type for unsafe types', async () => {
@@ -228,7 +222,7 @@ describe('local publisher', () => {
       const response = await request(app).get(
         '/default/TestKind/TestName/index.html',
       );
-      expect(response.status).toBe(404);
+      expect(response.status).toBe(os.platform() === 'darwin' ? 200 : 404);
     });
 
     it('should work with a configured directory', async () => {
@@ -236,15 +230,13 @@ describe('local publisher', () => {
         techdocs: {
           publisher: {
             local: {
-              publishDirectory: tmpDir,
+              publishDirectory: mockDir.path,
             },
           },
         },
       });
-      mockFs({
-        [tmpDir]: {
-          'index.html': 'found it',
-        },
+      mockDir.setContent({
+        'index.html': 'found it',
       });
       const legacyPublisher = LocalPublish.fromConfig(
         customConfig,

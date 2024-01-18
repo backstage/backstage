@@ -25,7 +25,6 @@ import {
 import { Config } from '@backstage/config';
 import { NotFoundError, serializeError } from '@backstage/errors';
 import express from 'express';
-import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
 import { z } from 'zod';
@@ -37,7 +36,6 @@ import {
   basicEntityFilter,
   entitiesBatchRequest,
   parseEntityFilterParams,
-  parseEntityPaginationParams,
   parseEntityTransformParams,
   parseQueryEntitiesParams,
 } from './request';
@@ -50,10 +48,10 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
-import type { ApiRouter } from '@backstage/backend-openapi-utils';
-import spec from '../schema/openapi.generated';
+import { createOpenApiRouter } from '../schema/openapi.generated';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
 
 /**
  * Options used by {@link createRouter}.
@@ -80,6 +78,13 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
+  const router = await createOpenApiRouter({
+    validatorOptions: {
+      // We want the spec to be up to date with the expected value, but the return type needs
+      //  to be controlled by the router implementation not the request validator.
+      ignorePaths: /^\/validate-entity\/?$/,
+    },
+  });
   const {
     entitiesCatalog,
     locationAnalyzer,
@@ -90,8 +95,6 @@ export async function createRouter(
     logger,
     permissionIntegrationRouter,
   } = options;
-  const router = Router() as ApiRouter<typeof spec>;
-  router.use(express.json());
 
   const readonlyEnabled =
     config.getOptionalBoolean('catalog.readonly') || false;
@@ -142,6 +145,7 @@ export async function createRouter(
       .get('/entities/by-query', async (req, res) => {
         const { items, pageInfo, totalItems } =
           await entitiesCatalog.queryEntities({
+            limit: req.query.limit,
             ...parseQueryEntitiesParams(req.query),
             authorizationToken: getBearerTokenFromAuthorizationHeader(
               req.header('authorization'),

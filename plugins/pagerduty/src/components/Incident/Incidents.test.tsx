@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { Incidents } from './Incidents';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
 import { PagerDutyIncident } from '../types';
 import { ApiProvider } from '@backstage/core-app-api';
@@ -33,12 +33,10 @@ describe('Incidents', () => {
       .fn()
       .mockImplementationOnce(async () => ({ incidents: [] }));
 
-    render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <Incidents serviceId="abc" refreshIncidents={false} />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Incidents serviceId="abc" refreshIncidents={false} />
+      </ApiProvider>,
     );
     await waitFor(() => !screen.queryByTestId('progress'));
     expect(screen.getByText('Nice! No incidents found!')).toBeInTheDocument();
@@ -86,12 +84,10 @@ describe('Incidents', () => {
           },
         ] as PagerDutyIncident[],
       }));
-    render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <Incidents serviceId="abc" refreshIncidents={false} />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Incidents serviceId="abc" refreshIncidents={false} />
+      </ApiProvider>,
     );
     await waitFor(() => !screen.queryByTestId('progress'));
     expect(screen.getByText('title1')).toBeInTheDocument();
@@ -112,12 +108,10 @@ describe('Incidents', () => {
       .fn()
       .mockRejectedValueOnce(new Error('Error occurred'));
 
-    render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <Incidents serviceId="abc" refreshIncidents={false} />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <Incidents serviceId="abc" refreshIncidents={false} />
+      </ApiProvider>,
     );
     await waitFor(() => !screen.queryByTestId('progress'));
     expect(

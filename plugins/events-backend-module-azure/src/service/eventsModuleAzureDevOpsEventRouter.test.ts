@@ -34,7 +34,6 @@ describe('eventsModuleAzureDevOpsEventRouter', () => {
 
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
-      services: [],
       features: [eventsModuleAzureDevOpsEventRouter()],
     });
 

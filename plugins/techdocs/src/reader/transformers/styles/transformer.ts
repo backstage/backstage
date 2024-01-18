@@ -15,12 +15,8 @@
  */
 
 import { useCallback, useMemo } from 'react';
-
 import { useTheme } from '@material-ui/core';
-
 import { useSidebarPinState } from '@backstage/core-components';
-import { BackstageTheme } from '@backstage/theme';
-
 import { Transformer } from '../transformer';
 import { rules } from './rules';
 
@@ -35,7 +31,7 @@ const useSidebar = () => useSidebarPinState();
  */
 const useRuleStyles = () => {
   const sidebar = useSidebar();
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
 
   return useMemo(() => {
     const options = { theme, sidebar };

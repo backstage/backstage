@@ -14,7 +14,8 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
-export const entityFeedbackPlugin: () => BackendFeature;
+const entityFeedbackPlugin: () => BackendFeature;
+export default entityFeedbackPlugin;
 
 // @public (undocumented)
 export interface RouterOptions {

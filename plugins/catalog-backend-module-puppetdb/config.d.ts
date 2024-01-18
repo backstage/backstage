@@ -46,9 +46,8 @@ export interface Config {
              */
             schedule?: TaskScheduleDefinition;
           }
-        | Record<
-            string,
-            {
+        | {
+            [name: string]: {
               /**
                * (Required) The base URL of PuppetDB API instance.
                */
@@ -61,8 +60,8 @@ export interface Config {
                * (Optional) Task schedule definition for the refresh.
                */
               schedule?: TaskScheduleDefinition;
-            }
-          >;
+            };
+          };
     };
   };
 }

@@ -18,6 +18,8 @@ export {
   newRelicDashboardPlugin,
   EntityNewRelicDashboardCard,
   EntityNewRelicDashboardContent,
+  DashboardSnapshot,
+  DashboardSnapshotList,
   DashboardSnapshotComponent,
 } from './plugin';
 export { isNewRelicDashboardAvailable } from './Router';

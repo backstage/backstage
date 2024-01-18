@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-signals-node
+  title: '@backstage/plugin-signals-node'
+  description: Node.js library for the signals plugin
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

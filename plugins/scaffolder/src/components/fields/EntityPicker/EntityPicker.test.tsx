@@ -18,11 +18,12 @@ import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { FieldProps } from '@rjsf/core';
+
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
+import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -39,7 +40,7 @@ describe('<EntityPicker />', () => {
   const rawErrors: string[] = [];
   const formData = undefined;
 
-  let props: FieldProps;
+  let props: FieldProps<string>;
 
   const catalogApi: jest.Mocked<CatalogApi> = {
     getLocationById: jest.fn(),
@@ -76,7 +77,7 @@ describe('<EntityPicker />', () => {
         uiSchema,
         rawErrors,
         formData,
-      } as unknown as FieldProps<any>;
+      } as unknown as FieldProps;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });

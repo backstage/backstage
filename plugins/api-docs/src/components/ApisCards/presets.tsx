@@ -33,10 +33,12 @@ export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
 
 const ApiDefinitionButton = ({ apiEntity }: { apiEntity: ApiEntity }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
-
   return (
     <>
-      <ToggleButton onClick={() => setDialogOpen(!dialogOpen)}>
+      <ToggleButton
+        aria-label="Toggle API Definition Dialog"
+        onClick={() => setDialogOpen(!dialogOpen)}
+      >
         <ExtensionIcon />
       </ToggleButton>
       <ApiDefinitionDialog

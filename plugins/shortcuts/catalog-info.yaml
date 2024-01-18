@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-shortcuts
+  title: '@backstage/plugin-shortcuts'
+  description: A Backstage plugin that provides a shortcuts feature to the sidebar
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

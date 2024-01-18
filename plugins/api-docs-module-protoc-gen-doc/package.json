@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-api-docs-module-protoc-gen-doc",
   "description": "Additional functionalities for the api-docs plugin that renders the output of the protoc-gen-doc",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -22,6 +22,7 @@
   "keywords": [
     "backstage"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
@@ -31,17 +32,17 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
     "grpc-docs": "^1.1.2"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@types/react": "^16.13.1 || ^17.0.0"
+    "@testing-library/jest-dom": "^6.0.0"
   },
   "files": [
     "dist"

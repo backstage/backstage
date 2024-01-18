@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useFacetsEntities } from './useFacetsEntities';
 import { CatalogApi } from '@backstage/catalog-client';
 
@@ -50,9 +50,7 @@ describe('useFacetsEntities', () => {
       },
     });
 
-    const { result, waitFor } = renderHook(() =>
-      useFacetsEntities({ enabled: true }),
-    );
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
 
     result.current[1]({ text: '' });
     await waitFor(() => {
@@ -91,9 +89,7 @@ describe('useFacetsEntities', () => {
       },
     });
 
-    const { result, waitFor } = renderHook(() =>
-      useFacetsEntities({ enabled: true }),
-    );
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
 
     result.current[1]({ text: '' });
     await waitFor(() => {
@@ -147,9 +143,7 @@ describe('useFacetsEntities', () => {
       },
     });
 
-    const { result, waitFor } = renderHook(() =>
-      useFacetsEntities({ enabled: true }),
-    );
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
 
     result.current[1]({ text: '' }, { limit: 2 });
     await waitFor(() => {
@@ -261,9 +255,7 @@ describe('useFacetsEntities', () => {
       },
     });
 
-    const { result, waitFor } = renderHook(() =>
-      useFacetsEntities({ enabled: true }),
-    );
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
 
     result.current[1]({ text: 'der  ' });
     await waitFor(() => {

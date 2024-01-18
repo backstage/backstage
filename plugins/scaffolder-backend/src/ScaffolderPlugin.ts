@@ -22,121 +22,107 @@ import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
-  scaffolderActionsExtensionPoint,
-  ScaffolderActionsExtensionPoint,
+  TaskBroker,
   TemplateAction,
-} from '@backstage/plugin-scaffolder-node';
-import {
   TemplateFilter,
   TemplateGlobal,
-  TaskBroker,
-} from '@backstage/plugin-scaffolder-backend';
+} from '@backstage/plugin-scaffolder-node';
+import {
+  scaffolderActionsExtensionPoint,
+  scaffolderTaskBrokerExtensionPoint,
+  scaffolderTemplatingExtensionPoint,
+} from '@backstage/plugin-scaffolder-node/alpha';
 import { createBuiltinActions } from './scaffolder';
 import { createRouter } from './service/router';
 
 /**
- * Catalog plugin options
+ * Scaffolder plugin
  *
  * @alpha
  */
-export type ScaffolderPluginOptions = {
-  actions?: TemplateAction<any, any>[];
-  taskWorkers?: number;
-  taskBroker?: TaskBroker;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-};
+export const scaffolderPlugin = createBackendPlugin({
+  pluginId: 'scaffolder',
+  register(env) {
+    const addedActions = new Array<TemplateAction<any, any>>();
+    env.registerExtensionPoint(scaffolderActionsExtensionPoint, {
+      addActions(...newActions: TemplateAction<any>[]) {
+        addedActions.push(...newActions);
+      },
+    });
 
-class ScaffolderActionsExtensionPointImpl
-  implements ScaffolderActionsExtensionPoint
-{
-  #actions = new Array<TemplateAction<any, any>>();
+    let taskBroker: TaskBroker | undefined;
+    env.registerExtensionPoint(scaffolderTaskBrokerExtensionPoint, {
+      setTaskBroker(newTaskBroker) {
+        if (taskBroker) {
+          throw new Error('Task broker may only be set once');
+        }
+        taskBroker = newTaskBroker;
+      },
+    });
 
-  addActions(...actions: TemplateAction<any>[]): void {
-    this.#actions.push(...actions);
-  }
+    const additionalTemplateFilters: Record<string, TemplateFilter> = {};
+    const additionalTemplateGlobals: Record<string, TemplateGlobal> = {};
+    env.registerExtensionPoint(scaffolderTemplatingExtensionPoint, {
+      addTemplateFilters(newFilters) {
+        Object.assign(additionalTemplateFilters, newFilters);
+      },
+      addTemplateGlobals(newGlobals) {
+        Object.assign(additionalTemplateGlobals, newGlobals);
+      },
+    });
 
-  get actions() {
-    return this.#actions;
-  }
-}
+    env.registerInit({
+      deps: {
+        logger: coreServices.logger,
+        config: coreServices.rootConfig,
+        reader: coreServices.urlReader,
+        permissions: coreServices.permissions,
+        database: coreServices.database,
+        httpRouter: coreServices.httpRouter,
+        catalogClient: catalogServiceRef,
+      },
+      async init({
+        logger,
+        config,
+        reader,
+        database,
+        httpRouter,
+        catalogClient,
+        permissions,
+      }) {
+        const log = loggerToWinstonLogger(logger);
 
-/**
- * Catalog plugin
- *
- * @alpha
- */
-export const scaffolderPlugin = createBackendPlugin(
-  (options?: ScaffolderPluginOptions) => ({
-    pluginId: 'scaffolder',
-    register(env) {
-      const actionsExtensions = new ScaffolderActionsExtensionPointImpl();
-
-      env.registerExtensionPoint(
-        scaffolderActionsExtensionPoint,
-        actionsExtensions,
-      );
-
-      env.registerInit({
-        deps: {
-          logger: coreServices.logger,
-          config: coreServices.config,
-          reader: coreServices.urlReader,
-          permissions: coreServices.permissions,
-          database: coreServices.database,
-          httpRouter: coreServices.httpRouter,
-          catalogClient: catalogServiceRef,
-        },
-        async init({
-          logger,
-          config,
-          reader,
-          database,
-          httpRouter,
-          catalogClient,
-          permissions,
-        }) {
-          const {
-            additionalTemplateFilters,
-            taskBroker,
-            taskWorkers,
-            additionalTemplateGlobals,
-          } = options ?? {};
-          const log = loggerToWinstonLogger(logger);
-
-          const actions = options?.actions || [
-            ...actionsExtensions.actions,
-            ...createBuiltinActions({
-              integrations: ScmIntegrations.fromConfig(config),
-              catalogClient,
-              reader,
-              config,
-              additionalTemplateFilters,
-              additionalTemplateGlobals,
-            }),
-          ];
-
-          const actionIds = actions.map(action => action.id).join(', ');
-          log.info(
-            `Starting scaffolder with the following actions enabled ${actionIds}`,
-          );
-
-          const router = await createRouter({
-            logger: log,
-            config,
-            database,
+        const actions = [
+          ...addedActions,
+          ...createBuiltinActions({
+            integrations: ScmIntegrations.fromConfig(config),
             catalogClient,
             reader,
-            actions,
-            taskBroker,
-            taskWorkers,
+            config,
             additionalTemplateFilters,
             additionalTemplateGlobals,
-            permissions,
-          });
-          httpRouter.use(router);
-        },
-      });
-    },
-  }),
-);
+          }),
+        ];
+
+        const actionIds = actions.map(action => action.id).join(', ');
+        log.info(
+          `Starting scaffolder with the following actions enabled ${actionIds}`,
+        );
+
+        const router = await createRouter({
+          logger: log,
+          config,
+          database,
+          catalogClient,
+          reader,
+          actions,
+          taskBroker,
+          additionalTemplateFilters,
+          additionalTemplateGlobals,
+          permissions,
+        });
+        httpRouter.use(router);
+      },
+    });
+  },
+});

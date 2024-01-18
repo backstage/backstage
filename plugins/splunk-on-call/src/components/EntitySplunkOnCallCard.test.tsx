@@ -22,8 +22,8 @@ import {
   configApiRef,
 } from '@backstage/core-plugin-api';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
-import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import {
   splunkOnCallApiRef,
@@ -114,22 +114,23 @@ describe('SplunkOnCallCard', () => {
       .fn()
       .mockImplementation(async () => [MOCK_TEAM_NO_INCIDENTS]);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={mockEntityNoIncidents}>
-            <EntitySplunkOnCallCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={mockEntityNoIncidents}>
+          <EntitySplunkOnCallCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('Create Incident')).toBeInTheDocument();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getByText('Create Incident')).toBeInTheDocument();
     await waitFor(
-      () => expect(getByText('Nice! No incidents found!')).toBeInTheDocument(),
+      () =>
+        expect(
+          screen.getByText('Nice! No incidents found!'),
+        ).toBeInTheDocument(),
       { timeout: 2000 },
     );
-    expect(getByText('Empty escalation policy')).toBeInTheDocument();
+    expect(screen.getByText('Empty escalation policy')).toBeInTheDocument();
   });
 
   it('does not render a "Create incident" link in read only mode', async () => {
@@ -140,22 +141,23 @@ describe('SplunkOnCallCard', () => {
       .fn()
       .mockImplementation(async () => [MOCK_TEAM_NO_INCIDENTS]);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={mockEntityNoIncidents}>
-            <EntitySplunkOnCallCard readOnly />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={mockEntityNoIncidents}>
+          <EntitySplunkOnCallCard readOnly />
+        </EntityProvider>
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(() => getByText('Create Incident')).toThrow();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(() => screen.getByText('Create Incident')).toThrow();
     await waitFor(
-      () => expect(getByText('Nice! No incidents found!')).toBeInTheDocument(),
+      () =>
+        expect(
+          screen.getByText('Nice! No incidents found!'),
+        ).toBeInTheDocument(),
       { timeout: 2000 },
     );
-    expect(getByText('Empty escalation policy')).toBeInTheDocument();
+    expect(screen.getByText('Empty escalation policy')).toBeInTheDocument();
   });
 
   it('handles a "splunk.com/on-call-routing-key" annotation', async () => {
@@ -171,32 +173,30 @@ describe('SplunkOnCallCard', () => {
     const mockTriggerAlarmFn = jest.fn();
     mockSplunkOnCallApi.incidentAction = mockTriggerAlarmFn;
 
-    const { getByRole, getByTestId, getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={mockEntityWithRoutingKeyAnnotation}>
-            <EntitySplunkOnCallCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={mockEntityWithRoutingKeyAnnotation}>
+          <EntitySplunkOnCallCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText(`Team: ${MOCK_TEAM.name}`)).toBeInTheDocument();
-    expect(getByText('Create Incident')).toBeInTheDocument();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getByText(`Team: ${MOCK_TEAM.name}`)).toBeInTheDocument();
+    expect(screen.getByText('Create Incident')).toBeInTheDocument();
     await waitFor(
-      () => expect(getByText('test-incident')).toBeInTheDocument(),
+      () => expect(screen.getByText('test-incident')).toBeInTheDocument(),
       { timeout: 2000 },
     );
 
-    const createIncidentButton = getByText('Create Incident');
+    const createIncidentButton = screen.getByText('Create Incident');
     await act(async () => {
       fireEvent.click(createIncidentButton);
     });
-    expect(getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
 
     await expectTriggeredIncident(
       'test-routing-key',
-      getByTestId,
+      screen.getByTestId,
       mockTriggerAlarmFn,
     );
   });
@@ -206,18 +206,18 @@ describe('SplunkOnCallCard', () => {
       .fn()
       .mockRejectedValueOnce(new UnauthorizedError());
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={mockEntity}>
-            <EntitySplunkOnCallCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={mockEntity}>
+          <EntitySplunkOnCallCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
     expect(
-      getByText('Missing or invalid Splunk On-Call API key and/or API id'),
+      screen.getByText(
+        'Missing or invalid Splunk On-Call API key and/or API id',
+      ),
     ).toBeInTheDocument();
   });
 
@@ -225,36 +225,32 @@ describe('SplunkOnCallCard', () => {
     mockSplunkOnCallApi.getUsers = jest
       .fn()
       .mockRejectedValueOnce(new Error('An error occurred'));
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={mockEntity}>
-            <EntitySplunkOnCallCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={mockEntity}>
+          <EntitySplunkOnCallCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
 
     expect(
-      getByText(
+      screen.getByText(
         'Error encountered while fetching information. An error occurred',
       ),
     ).toBeInTheDocument();
   });
 
   it('handles warning for missing required annotations', async () => {
-    const { getAllByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={mockEntityNoAnnotation}>
-            <EntitySplunkOnCallCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={mockEntityNoAnnotation}>
+          <EntitySplunkOnCallCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getAllByText('Missing Annotation').length).toEqual(1);
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getAllByText('Missing Annotation').length).toEqual(1);
   });
 
   it('handles warning for incorrect team annotation', async () => {
@@ -265,18 +261,16 @@ describe('SplunkOnCallCard', () => {
       .fn()
       .mockImplementationOnce(async () => []);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={mockEntity}>
-            <EntitySplunkOnCallCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={mockEntity}>
+          <EntitySplunkOnCallCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
     expect(
-      getByText(
+      screen.getByText(
         'Splunk On-Call API returned no record of teams associated with the "test" team name',
       ),
     ).toBeInTheDocument();
@@ -293,18 +287,16 @@ describe('SplunkOnCallCard', () => {
       .fn()
       .mockImplementationOnce(async () => []);
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={mockEntityWithRoutingKeyAnnotation}>
-            <EntitySplunkOnCallCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={mockEntityWithRoutingKeyAnnotation}>
+          <EntitySplunkOnCallCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
     expect(
-      getByText(
+      screen.getByText(
         `Splunk On-Call API returned no record of teams associated with the "${MOCK_ROUTING_KEY.routingKey}" routing key`,
       ),
     ).toBeInTheDocument();
@@ -318,21 +310,19 @@ describe('SplunkOnCallCard', () => {
       .fn()
       .mockImplementationOnce(async () => [MOCK_TEAM]);
 
-    const { getByText, queryByTestId, getByRole } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <EntityProvider entity={mockEntity}>
-            <EntitySplunkOnCallCard />
-          </EntityProvider>
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={mockEntity}>
+          <EntitySplunkOnCallCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('Create Incident')).toBeInTheDocument();
-    const triggerButton = getByText('Create Incident');
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getByText('Create Incident')).toBeInTheDocument();
+    const triggerButton = screen.getByText('Create Incident');
     await act(async () => {
       fireEvent.click(triggerButton);
     });
-    expect(getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 });

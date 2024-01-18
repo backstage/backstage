@@ -38,6 +38,14 @@ auth:
     url: https://demo.backstage.io/api/auth
 
 catalog:
+  rules:
+    - allow:
+        - Component
+        - API
+        - Resource
+        - System
+        - Domain
+        - Location
   locations:
     - type: url
       target: https://github.com/backstage/backstage/blob/${REF_NAME}/packages/catalog-model/examples/all.yaml
@@ -56,72 +64,73 @@ catalog:
         - allow: [Template]
 
 proxy:
-  '/circleci/api':
-    target: https://circleci.com/api/v1.1
-    headers:
-      Circle-Token: ${CIRCLECI_AUTH_TOKEN}
+  endpoints:
+    '/circleci/api':
+      target: https://circleci.com/api/v1.1
+      headers:
+        Circle-Token: ${CIRCLECI_AUTH_TOKEN}
 
-  '/jenkins/api':
-    target: http://localhost:8080
-    headers:
-      Authorization: ${JENKINS_BASIC_AUTH_HEADER}
+    '/jenkins/api':
+      target: http://localhost:8080
+      headers:
+        Authorization: ${JENKINS_BASIC_AUTH_HEADER}
 
-  '/travisci/api':
-    target: https://api.travis-ci.com
-    changeOrigin: true
-    headers:
-      Authorization: ${TRAVISCI_AUTH_TOKEN}
-      travis-api-version: '3'
+    '/travisci/api':
+      target: https://api.travis-ci.com
+      changeOrigin: true
+      headers:
+        Authorization: ${TRAVISCI_AUTH_TOKEN}
+        travis-api-version: '3'
 
-  '/newrelic/apm/api':
-    target: https://api.newrelic.com/v2
-    headers:
-      X-Api-Key: ${NEW_RELIC_REST_API_KEY}
+    '/newrelic/apm/api':
+      target: https://api.newrelic.com/v2
+      headers:
+        X-Api-Key: ${NEW_RELIC_REST_API_KEY}
 
-  '/newrelic/api':
-    target: https://api.newrelic.com
-    headers:
-      X-Api-Key: ${NEW_RELIC_USER_KEY}
+    '/newrelic/api':
+      target: https://api.newrelic.com
+      headers:
+        X-Api-Key: ${NEW_RELIC_USER_KEY}
 
-  '/pagerduty':
-    target: https://api.pagerduty.com
-    headers:
-      Authorization: Token token=${PAGERDUTY_TOKEN}
+    '/pagerduty':
+      target: https://api.pagerduty.com
+      headers:
+        Authorization: Token token=${PAGERDUTY_TOKEN}
 
-  '/buildkite/api':
-    target: https://api.buildkite.com/v2/
-    headers:
-      Authorization: ${BUILDKITE_TOKEN}
+    '/buildkite/api':
+      target: https://api.buildkite.com/v2/
+      headers:
+        Authorization: ${BUILDKITE_TOKEN}
 
-  '/sentry/api':
-    target: https://sentry.io/api/
-    allowedMethods: ['GET']
-    headers:
-      Authorization: ${SENTRY_TOKEN}
+    '/sentry/api':
+      target: https://sentry.io/api/
+      allowedMethods: ['GET']
+      headers:
+        Authorization: ${SENTRY_TOKEN}
 
-  '/ilert':
-    target: https://api.ilert.com
-    allowedMethods: ['GET', 'POST', 'PUT']
-    allowedHeaders: ['Authorization']
-    headers:
-      Authorization: ${ILERT_AUTH_HEADER}
+    '/ilert':
+      target: https://api.ilert.com
+      allowedMethods: ['GET', 'POST', 'PUT']
+      allowedHeaders: ['Authorization']
+      headers:
+        Authorization: ${ILERT_AUTH_HEADER}
 
-  '/airflow':
-    target: https://your.airflow.instance.com/api/v1
-    headers:
-      Authorization: ${AIRFLOW_BASIC_AUTH_HEADER}
+    '/airflow':
+      target: https://your.airflow.instance.com/api/v1
+      headers:
+        Authorization: ${AIRFLOW_BASIC_AUTH_HEADER}
 
-  '/gocd':
-    target: https://your.gocd.instance.com/go/api
-    allowedMethods: ['GET']
-    allowedHeaders: ['Authorization']
-    headers:
-      Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
+    '/gocd':
+      target: https://your.gocd.instance.com/go/api
+      allowedMethods: ['GET']
+      allowedHeaders: ['Authorization']
+      headers:
+        Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
 
-  '/dynatrace':
-    target: https://your.dynatrace.instance.com/api/v2
-    headers:
-      Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
+    '/dynatrace':
+      target: https://your.dynatrace.instance.com/api/v2
+      headers:
+        Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
 
 techdocs:
   builder: 'local' # Alternatives - 'external'
@@ -159,7 +168,10 @@ kubernetes:
     type: 'multiTenant'
   clusterLocatorMethods:
     - type: 'config'
-      clusters: []
+      clusters:
+        - url: ${UFFIZZI_CLUSTER_APISERVER}
+          name: uffizzi
+          authProvider: 'serviceAccount'
 
 kafka:
   clientId: backstage
@@ -279,3 +291,7 @@ gocd:
 
 permission:
   enabled: true
+
+search:
+  query:
+    pageLimit: 50

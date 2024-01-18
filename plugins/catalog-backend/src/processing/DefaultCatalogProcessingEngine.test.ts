@@ -21,7 +21,7 @@ import waitForExpect from 'wait-for-expect';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { CatalogProcessingOrchestrator } from './types';
-import { Stitcher } from '../stitching/Stitcher';
+import { Stitcher } from '../stitching/types';
 import { ConfigReader } from '@backstage/config';
 
 describe('DefaultCatalogProcessingEngine', () => {
@@ -66,6 +66,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
+      knex: {} as any,
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
@@ -133,6 +134,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
+      knex: {} as any,
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
@@ -216,6 +218,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
+      knex: {} as any,
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
@@ -292,6 +295,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
+      knex: {} as any,
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
@@ -350,6 +354,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
+      knex: {} as any,
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
@@ -450,10 +455,10 @@ describe('DefaultCatalogProcessingEngine', () => {
     await waitForExpect(() => {
       expect(stitcher.stitch).toHaveBeenCalledTimes(2);
     });
-    expect([...stitcher.stitch.mock.calls[0][0]]).toEqual(
+    expect([...stitcher.stitch.mock.calls[0][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1', 'k:ns/other2']),
     );
-    expect([...stitcher.stitch.mock.calls[1][0]]).toEqual(
+    expect([...stitcher.stitch.mock.calls[1][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1', 'k:ns/other3']),
     );
     await engine.stop();
@@ -464,6 +469,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
+      knex: {} as any,
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
@@ -535,7 +541,7 @@ describe('DefaultCatalogProcessingEngine', () => {
     await waitForExpect(() => {
       expect(stitcher.stitch).toHaveBeenCalledTimes(1);
     });
-    expect([...stitcher.stitch.mock.calls[0][0]]).toEqual(
+    expect([...stitcher.stitch.mock.calls[0][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me']),
     );
     await engine.stop();
@@ -546,6 +552,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
+      knex: {} as any,
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
@@ -622,7 +629,7 @@ describe('DefaultCatalogProcessingEngine', () => {
     await waitForExpect(() => {
       expect(stitcher.stitch).toHaveBeenCalledTimes(1);
     });
-    expect([...stitcher.stitch.mock.calls[0][0]]).toEqual(
+    expect([...stitcher.stitch.mock.calls[0][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other2']),
     );
     await engine.stop();
@@ -633,6 +640,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       config: new ConfigReader({}),
       logger: getVoidLogger(),
       processingDatabase: db,
+      knex: {} as any,
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
@@ -699,7 +707,7 @@ describe('DefaultCatalogProcessingEngine', () => {
     await waitForExpect(() => {
       expect(stitcher.stitch).toHaveBeenCalledTimes(1);
     });
-    expect([...stitcher.stitch.mock.calls[0][0]]).toEqual(
+    expect([...stitcher.stitch.mock.calls[0][0].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other2']),
     );
     await engine.stop();

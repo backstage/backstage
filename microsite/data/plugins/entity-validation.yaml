@@ -1,0 +1,10 @@
+---
+title: Entity Validation
+author: Spreadgroup
+authorUrl: https://github.com/spreadshirt
+category: Quality
+description: Interface for validating entities.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/entity-validation
+npmPackageName: '@backstage/plugin-entity-validation'
+iconUrl: /img/entity-validation.svg
+addedDate: '2023-09-13'

@@ -54,6 +54,7 @@ export class JenkinsApiImpl {
   private static readonly jobTreeSpec = `actions[*],
                    ${JenkinsApiImpl.lastBuildTreeSpec}
                    jobs{0,1},
+                   url,
                    name,
                    fullName,
                    displayName,
@@ -63,6 +64,16 @@ export class JenkinsApiImpl {
   private static readonly jobsTreeSpec = `jobs[
                    ${JenkinsApiImpl.jobTreeSpec}
                  ]{0,50}`;
+
+  private static readonly jobBuildsTreeSpec = `
+                   name,
+                   description,
+                   url,
+                   fullName,
+                   displayName,
+                   fullDisplayName,
+                   inQueue,
+                   builds[*]`;
 
   constructor(private readonly permissionApi?: PermissionEvaluator) {}
 
@@ -328,5 +339,36 @@ export class JenkinsApiImpl {
   ): string {
     const jobs = jobFullName.split('/');
     return `${jenkinsInfo.baseUrl}/job/${jobs.join('/job/')}/${buildId}`;
+  }
+
+  async getJobBuilds(jenkinsInfo: JenkinsInfo, jobFullName: string) {
+    let jobName = jobFullName;
+
+    if (jobFullName.includes('/')) {
+      const arr = jobFullName.split('/');
+      const multibranchJobName = arr.shift();
+      jobName = [
+        multibranchJobName,
+        'job',
+        encodeURIComponent(arr.join('/')),
+      ].join('/');
+    }
+
+    const response = await fetch(
+      `${
+        jenkinsInfo.baseUrl
+      }/job/${jobName}/api/json?tree=${JenkinsApiImpl.jobBuildsTreeSpec.replace(
+        /\s/g,
+        '',
+      )}`,
+      {
+        method: 'get',
+        headers: jenkinsInfo.headers as HeaderInit,
+      },
+    );
+
+    const jobBuilds = await response.json();
+
+    return jobBuilds;
   }
 }

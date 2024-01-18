@@ -1,5 +1,124 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.2.15
+
+### Patch Changes
+
+- acf9390: Updated dependency `ts-morph` to `^20.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.8.0
+
+## 0.2.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.1
+
+## 0.2.15-next.0
+
+### Patch Changes
+
+- acf93904e7: Updated dependency `ts-morph` to `^20.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.0
+
+## 0.2.14
+
+### Patch Changes
+
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.7.2
+
+## 0.2.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.1
+
+## 0.2.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.1
+
+## 0.2.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+
+## 0.2.12
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/integration@1.7.0
+
+## 0.2.12-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/integration@1.7.0-next.3
+
+## 0.2.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.0-next.2
+
+## 0.2.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.0-next.1
+
+## 0.2.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.0-next.0
+
+## 0.2.9
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/integration@1.6.0
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/integration@1.5.1
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.5.1
+
 ## 0.2.8-next.0
 
 ### Patch Changes

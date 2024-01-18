@@ -11,7 +11,7 @@ A Backstage App is a monorepo setup with `lerna` that includes everything you
 need to run Backstage in your own environment.
 
 If you intend to contribute a plugin, new feature, or bug fix to the Backstage project, you
-may want to read the [Contributors](./contributors.md) guide instead.
+may want to read the [Contributors](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) guide instead.
 
 ## Create an app
 

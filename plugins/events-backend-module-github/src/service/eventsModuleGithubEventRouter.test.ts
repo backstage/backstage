@@ -34,7 +34,6 @@ describe('eventsModuleGithubEventRouter', () => {
 
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
-      services: [],
       features: [eventsModuleGithubEventRouter()],
     });
 

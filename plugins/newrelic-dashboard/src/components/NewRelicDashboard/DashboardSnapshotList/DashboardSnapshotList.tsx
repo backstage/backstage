@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { Grid, Tab, Tabs, makeStyles } from '@material-ui/core';
+import { Tab, Tabs, makeStyles, Box } from '@material-ui/core';
 import { newRelicDashboardApiRef } from '../../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
@@ -29,11 +29,22 @@ interface TabPanelProps {
   value1: number;
 }
 
+const tabPanelStyles = makeStyles(
+  theme => ({
+    tabPanel: {
+      marginTop: theme.spacing(0.5),
+    },
+  }),
+  { name: 'BackstageNewRelicDashboardTabPanel' },
+);
+
 function TabPanel(props: TabPanelProps) {
   const { children, value1, index, ...other } = props;
+  const classes = tabPanelStyles(tabPanelStyles);
 
   return (
     <div
+      className={classes.tabPanel}
       role="tabpanel"
       hidden={value1 !== index}
       id={`simple-tabpanel-${index}`}
@@ -102,7 +113,7 @@ export const DashboardSnapshotList = (props: { guid: string }) => {
     return <ErrorPanel title={error.name} defaultExpanded error={error} />;
   }
   return (
-    <Grid container direction="column">
+    <Box>
       <Tabs
         selectionFollowsFocus
         indicatorColor="primary"
@@ -112,7 +123,6 @@ export const DashboardSnapshotList = (props: { guid: string }) => {
         aria-label="scrollable auto tabs example"
         onChange={handleChange}
         value={value1}
-        style={{ width: '100%' }}
       >
         {value?.getDashboardEntity?.data?.actor.entitySearch.results.entities?.map(
           (Entity: ResultEntity, index: number) => {
@@ -143,6 +153,6 @@ export const DashboardSnapshotList = (props: { guid: string }) => {
           );
         },
       )}
-    </Grid>
+    </Box>
   );
 };

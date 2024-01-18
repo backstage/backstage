@@ -29,7 +29,6 @@ import { BazaarProject } from '../../types';
 import { DateTime } from 'luxon';
 import { HomePageBazaarInfoCard } from '../HomePageBazaarInfoCard';
 import { Entity } from '@backstage/catalog-model';
-import { BackstageTheme } from '@backstage/theme';
 
 type Props = {
   project: BazaarProject;
@@ -42,7 +41,7 @@ type StyleProps = {
   height: 'large' | 'small';
 };
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
+const useStyles = makeStyles(theme => ({
   description: (props: StyleProps) => ({
     height: props.height === 'large' ? '10rem' : '4rem',
     WebkitBackgroundClip: 'text',

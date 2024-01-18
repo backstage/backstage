@@ -19,11 +19,11 @@ yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-unproce
 In `packages/backend/src/plugins/catalog.ts` import the module and initialize it after invoking `CatalogBuilder.build()`:
 
 ```ts title="packages/backend/src/plugins/catalog.ts"
-import { UnprocessedEntitesModule } from '@backstage/plugin-catalog-backend-module-unprocessed';
+import { UnprocessedEntitiesModule } from '@backstage/plugin-catalog-backend-module-unprocessed';
 
 //...
 
-const unprocessed = new UnprocessedEntitesModule(
+const unprocessed = new UnprocessedEntitiesModule(
   await env.database.getClient(),
   router,
 );

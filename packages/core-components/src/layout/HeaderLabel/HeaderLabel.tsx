@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import Grid from '@material-ui/core/Grid';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Link } from '../../components/Link';
 
 /** @public */
 export type HeaderLabelClassKey = 'root' | 'label' | 'value';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     root: {
       textAlign: 'left',
@@ -46,15 +45,22 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'BackstageHeaderLabel' },
 );
 
-type HeaderLabelContentProps = {
+type HeaderLabelContentProps = PropsWithChildren<{
   value: React.ReactNode;
   className: string;
-};
+  typographyRootComponent?: keyof JSX.IntrinsicElements;
+}>;
 
-const HeaderLabelContent = ({ value, className }: HeaderLabelContentProps) => {
+const HeaderLabelContent = ({
+  value,
+  className,
+  typographyRootComponent,
+}: HeaderLabelContentProps) => {
   return (
     <Typography
-      component={typeof value === 'string' ? 'p' : 'span'}
+      component={
+        typographyRootComponent ?? (typeof value === 'string' ? 'p' : 'span')
+      }
       className={className}
     >
       {value}
@@ -65,6 +71,7 @@ const HeaderLabelContent = ({ value, className }: HeaderLabelContentProps) => {
 type HeaderLabelProps = {
   label: string;
   value?: HeaderLabelContentProps['value'];
+  contentTypograpyRootComponent?: HeaderLabelContentProps['typographyRootComponent'];
   url?: string;
 };
 
@@ -75,12 +82,13 @@ type HeaderLabelProps = {
  *
  */
 export function HeaderLabel(props: HeaderLabelProps) {
-  const { label, value, url } = props;
+  const { label, value, url, contentTypograpyRootComponent } = props;
   const classes = useStyles();
   const content = (
     <HeaderLabelContent
       className={classes.value}
       value={value || '<Unknown>'}
+      typographyRootComponent={contentTypograpyRootComponent}
     />
   );
   return (

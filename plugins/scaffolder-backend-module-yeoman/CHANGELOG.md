@@ -1,5 +1,245 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.2.30
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.10
+  - @backstage/types@1.1.1
+
+## 0.2.30-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.10-next.2
+
+## 0.2.30-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.10-next.1
+  - @backstage/types@1.1.1
+
+## 0.2.30-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.2.10-next.0
+
+## 0.2.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.9
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.2.29-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.9-next.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.2.29-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.2.9-next.2
+
+## 0.2.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.2.9-next.1
+
+## 0.2.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.9-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.2.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.8
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.2.28-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.8-next.2
+
+## 0.2.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.2.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.8-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.2.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.6
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.2.27-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.6-next.2
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+
+## 0.2.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.5-next.1
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+
+## 0.2.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.5-next.0
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+
+## 0.2.24
+
+### Patch Changes
+
+- 4fa1c74cbadc: Enables dry-run functionality for the run:yeoman scaffolder action
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.2.3
+
+## 0.2.24-next.3
+
+### Patch Changes
+
+- 4fa1c74cbadc: Enables dry-run functionality for the run:yeoman scaffolder action
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/types@1.1.1-next.0
+  - @backstage/plugin-scaffolder-node@0.2.3-next.3
+
+## 0.2.24-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/plugin-scaffolder-node@0.2.3-next.2
+  - @backstage/types@1.1.0
+
+## 0.2.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/plugin-scaffolder-node@0.2.3-next.1
+  - @backstage/types@1.1.0
+
+## 0.2.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-scaffolder-node@0.2.2-next.0
+
+## 0.2.21
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 0.2.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.6-next.2
+
+## 0.2.21-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.6-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 0.2.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-scaffolder-node@0.1.6-next.0
+
+## 0.2.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-scaffolder-node@0.1.5
+
 ## 0.2.20-next.0
 
 ### Patch Changes

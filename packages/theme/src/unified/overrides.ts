@@ -77,16 +77,17 @@ function adaptV5Override(
     return undefined;
   }
   if (typeof overrides === 'object') {
+    const _theme = { ...theme };
+    const defaultSpacing = theme.spacing(1);
+    if (typeof defaultSpacing === 'number') {
+      // Override potential v4 spacing method: https://mui.com/material-ui/migration/v5-style-changes/#%E2%9C%85-remove-px-suffix
+      // `adaptV4Theme as reference: https://github.com/mui/material-ui/blob/v5.x/packages/mui-material/src/styles/adaptV4Theme.js#L54C41-L54C41
+      _theme.spacing = __v5Spacing(defaultSpacing);
+    }
     return Object.fromEntries(
       Object.entries(overrides).map(([className, style]) => {
         if (typeof style === 'function') {
-          const defaultSpacing = theme.spacing(1);
-          if (typeof defaultSpacing === 'number') {
-            // Override potential v4 spacing method: https://mui.com/material-ui/migration/v5-style-changes/#%E2%9C%85-remove-px-suffix
-            // `adaptV4Theme as reference: https://github.com/mui/material-ui/blob/v5.x/packages/mui-material/src/styles/adaptV4Theme.js#L54C41-L54C41
-            theme.spacing = __v5Spacing(defaultSpacing);
-          }
-          return [className, style({ theme })];
+          return [className, style({ theme: _theme })];
         }
         return [className, style];
       }),

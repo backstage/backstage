@@ -22,12 +22,14 @@ Team: @backstage/catalog-maintainers
 
 Scope: The catalog plugin and catalog model
 
-| Name           | Organization | Team      | GitHub                                   | Discord          |
-| -------------- | ------------ | --------- | ---------------------------------------- | ---------------- |
-| Rickard Dybeck | Spotify      | Chipmunks | [alde](http://github.com/alde)           | rdybeck#8083     |
-| Mike Blockley  | Spotify      | Chipmunks | [mikeyhc](http://github.com/mikeyhc)     | mikey-spot#5363  |
-| Elon Jefferson | Spotify      | Chipmunks | [Edje-C](http://github.com/Edje-C)       | elon-spotty#6086 |
-| Nurit Izrailov | Spotify      | Chipmunks | [nuritizra](http://github.com/nuritizra) | -                |
+| Name            | Organization | Team      | GitHub                                    | Discord             |
+| --------------- | ------------ | --------- | ----------------------------------------- | ------------------- |
+| Rickard Dybeck  | Spotify      | Chipmunks | [alde](https://github.com/alde)           | `rdybeck#8083`      |
+| Mike Blockley   | Spotify      | Chipmunks | [mikeyhc](https://github.com/mikeyhc)     | `mikey-spot#5363`   |
+| Elon Jefferson  | Spotify      | Chipmunks | [Edje-C](https://github.com/Edje-C)       | `elon-spotty#6086 ` |
+| Nurit Izrailov  | Spotify      | Chipmunks | [nuritizra](https://github.com/nuritizra) | -                   |
+| Hunter Dougless | Spotify      | Chipmunks | [hntrdglss](https://github.com/hntrdglss) | `hntrdglss#1849`    |
+| Seve Kim        | Spotify      | Chipmunks | [sevedkim](https://github.com/sevedkim)   | `seve#9951`         |
 
 ### Discoverability
 
@@ -42,6 +44,7 @@ Scope: Discoverability within Backstage, including the home page, information ar
 | Emma Indal               | Spotify      | BUX  | [emmaindal](http://github.com/emmaindal) | emmaindal#7503     |
 | Raghunandan Balachandran | Spotify      | BUX  | [soapraj](http://github.com/soapraj)     | raghunandanb#1114  |
 | Renan Mendes Carvalho    | Spotify      | BUX  | [aitherios](http://github.com/aitherios) | aitherios#0593     |
+| Bailey Brooks            | Spotify      | BUX  | [bailey](http://github.com/bailey)       | \_bailey4          |
 
 ### Helm Charts
 
@@ -72,16 +75,17 @@ Team: @backstage/permission-maintainers
 
 Scope: The Permission Framework and plugins integrating with the permission framework
 
-| Name                 | Organization | Team            | GitHub                                         | Discord          |
-| -------------------- | ------------ | --------------- | ---------------------------------------------- | ---------------- |
-| Ainhoa Larumbe       | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)           | ainhoa#8085      |
-| Claire Casey         | Spotify      | Imaginary Goats | [clairelcasey](http://github.com/clairelcasey) | clairecasey#2710 |
-| Eric Peterson        | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)             | iamEAP#3058      |
-| Harry Hogg           | Spotify      | Imaginary Goats | [HHogg](http://github.com/HHogg)               | simplex#3451     |
-| Joon Park            | Spotify      | Imaginary Goats | [Joonpark13](http://github.com/Joonpark13)     | Sixpool#5060     |
-| Mike Lewis           | Spotify      | Imaginary Goats | [mtlewis](http://github.com/mtlewis)           | mtlewis#3658     |
-| Tim Hansen           | Spotify      | Imaginary Goats | [timbonicus](http://github.com/timbonicus)     | timbonicus#6871  |
-| Vincenzo Scamporlino | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)         | vinzscam#6944    |
+| Name                 | Organization | Team            | GitHub                                          | Discord          |
+| -------------------- | ------------ | --------------- | ----------------------------------------------- | ---------------- |
+| Ainhoa Larumbe       | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)            | ainhoa#8085      |
+| Claire Casey         | Spotify      | Imaginary Goats | [clairelcasey](http://github.com/clairelcasey)  | clairecasey#2710 |
+| Eric Peterson        | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)              | iamEAP#3058      |
+| Harry Hogg           | Spotify      | Imaginary Goats | [HHogg](http://github.com/HHogg)                | simplex#3451     |
+| Joon Park            | Spotify      | Imaginary Goats | [Joonpark13](http://github.com/Joonpark13)      | Sixpool#5060     |
+| Lynette Lopez        | Spotify      | Imaginary Goats | [lynettelopez](https://github.com/lynettelopez) | lynettelopez     |
+| Mike Lewis           | Spotify      | Imaginary Goats | [mtlewis](http://github.com/mtlewis)            | mtlewis#3658     |
+| Tim Hansen           | Spotify      | Imaginary Goats | [timbonicus](http://github.com/timbonicus)      | timbonicus#6871  |
+| Vincenzo Scamporlino | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)          | vinzscam#6944    |
 
 ### TechDocs
 
@@ -89,10 +93,17 @@ Team: @backstage/techdocs-maintainers
 
 Scope: The TechDocs plugin and related tooling
 
-| Name                     | Organization | Team         | GitHub                                           | Discord            |
-| ------------------------ | ------------ | ------------ | ------------------------------------------------ | ------------------ |
-| Morgan Bentell           | Spotify      | Pulp Fiction | [agentbellnorm](http://github.com/agentbellnorm) | morganbentell#9030 |
-| Raghunandan Balachandran | Spotify      | Pulp Fiction | [soapraj](http://github.com/soapraj)             | raghunandanb#1114  |
+| Name                     | Organization | Team    | GitHub                                            | Discord             |
+| ------------------------ | ------------ | ------- | ------------------------------------------------- | ------------------- |
+| Alex Lorenzi             | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | `alexlorenzi`       |
+| Bond Yan                 | Spotify      | ProTean | [byan1197](https://github.com/byan1197)           | `bondify`           |
+| Daniel Lochrie           | Spotify      | ProTean | [dlochrie](https://github.com/dlochrie)           | -                   |
+| Jackson Chen             | Spotify      | ProTean | [PeaWarrior](https://github.com/PeaWarrior)       | `jacksonc#3322`     |
+| John Philip              | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | `john_philip#2399`  |
+| Morgan Bentell           | Spotify      | ProTean | [agentbellnorm](http://github.com/agentbellnorm)  | `morganbentell`     |
+| Raghunandan Balachandran | Spotify      | BUX     | [soapraj](http://github.com/soapraj)              | `raghunandanb#1114` |
+| Sydney Achinger          | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                   |
+| Vojta Burian             | Spotify      | ProTean | [sankaritan](https://github.com/sankaritan)       | `vojtabu`           |
 
 ## Incubating Project Areas
 
@@ -108,13 +119,23 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 | -------------- | ------------ | --------------------------------------- | ------------- |
 | Aramis Sennyey |              | [sennyeya](https://github.com/sennyeya) | `Aramis#7984` |
 
+### Scaffolder
+
+Team: @backstage/scaffolder-maintainers
+
+Scope: The Scaffolder frontend and backend plugins, and related tooling.
+
+| Name                | Organization | GitHub                                | Discord          |
+| ------------------- | ------------ | ------------------------------------- | ---------------- |
+| Bogdan Nechyporenko | Bol.com      | [acierto](https://github.com/acierto) | `bogdan_haarlem` |
+
 ## Sponsors
 
-| Name              | Organization | GitHub                                      | Email             |
-| ----------------- | ------------ | ------------------------------------------- | ----------------- |
-| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com   |
-| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com |
-| Lee Mills         | Spotify      | [leemills83](https://github.com/leemills83) | leem@spotify.com  |
+| Name              | Organization | GitHub                                      | Email              |
+| ----------------- | ------------ | ------------------------------------------- | ------------------ |
+| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com    |
+| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com  |
+| Helen Greul       | Spotify      | [helengreul](https://github.com/helengreul) | heleng@spotify.com |
 
 ## Organization Members
 
@@ -122,7 +143,7 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 | ------------------------------ | ------------------------- | ----------------------------------------------------- | ------------------------------ |
 | Adam Harvey                    | Cisco                     | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey_`                  |
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
-| Andre Wanlin                   | Keyloop                   | [awanlin](https://github.com/awanlin)                 | `ahhhndre`                     |
+| Andre Wanlin                   | Spotify                   | [awanlin](https://github.com/awanlin)                 | `ahhhndre`                     |
 | Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
 | Aramis Sennyey                 |                           | [sennyeya](https://github.com/sennyeya)               | `Aramis#7984`                  |
 | Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
@@ -144,3 +165,15 @@ Scope: Tooling for frontend and backend schema-first OpenAPI development.
 | Maintainer   | Organization | GitHub                                        | Discord        |
 | ------------ | ------------ | --------------------------------------------- | -------------- |
 | Stefan Ålund | Spotify      | [stefanalund](https://github.com/stefanalund) | `stalund#9602` |
+
+## Emeritus End User Sponsors
+
+| Name      | Organization | GitHub                                      | Discord        |
+| --------- | ------------ | ------------------------------------------- | -------------- |
+| Lee Mills | Spotify      | [leemills83](https://github.com/leemills83) | `.binarypoint` |
+
+## Emeritus Project Area Maintainers
+
+| Maintainer | Organization   | GitHub                              | Discord  |
+| ---------- | -------------- | ----------------------------------- | -------- |
+| Paul Cowan | frontendrescue | [dagda1](https://github.com/dagda1) | `dagda1` |

@@ -1145,6 +1145,35 @@ describe('parseHighlightFields', () => {
       bar: 'ghi <>jkl</>',
     });
   });
+
+  it('should filter out non array positions', () => {
+    expect(
+      parseHighlightFields({
+        preTag: '<>',
+        postTag: '</>',
+        doc: { foo: 'abc def', bar: 'ghi jkl' },
+        positionMetadata: {
+          test: {
+            foo: {
+              // invalid position item
+              position: [null as unknown as number[]],
+            },
+          },
+          anotherTest: {
+            foo: {
+              position: [[4, 3]],
+            },
+            bar: {
+              position: [[4, 3]],
+            },
+          },
+        },
+      }),
+    ).toEqual({
+      foo: 'abc <>def</>',
+      bar: 'ghi <>jkl</>',
+    });
+  });
 });
 
 describe('stopword testing', () => {

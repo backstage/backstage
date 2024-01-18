@@ -25,21 +25,17 @@ describe('ObservableConfigProxy', () => {
     const sub = config.subscribe(fn);
     expect(config.getOptionalNumber('x')).toBe(undefined);
 
-    config.setConfig(new ConfigReader({}));
-    expect(fn).toHaveBeenCalledTimes(1);
-    expect(config.getOptionalNumber('x')).toBe(undefined);
-
     config.setConfig(new ConfigReader({ x: 1 }));
-    expect(fn).toHaveBeenCalledTimes(2);
+    expect(fn).toHaveBeenCalledTimes(1);
     expect(config.getOptionalNumber('x')).toBe(1);
 
     config.setConfig(new ConfigReader({ x: 3 }));
-    expect(fn).toHaveBeenCalledTimes(3);
+    expect(fn).toHaveBeenCalledTimes(2);
     sub.unsubscribe();
     expect(config.getOptionalNumber('x')).toBe(3);
 
     config.setConfig(new ConfigReader({ x: 5 }));
-    expect(fn).toHaveBeenCalledTimes(3);
+    expect(fn).toHaveBeenCalledTimes(2);
     expect(config.getOptionalNumber('x')).toBe(5);
   });
 
@@ -58,18 +54,10 @@ describe('ObservableConfigProxy', () => {
     expect(config2.getOptionalNumber('x')).toBe(undefined);
     expect(config3.getOptionalNumber('x')).toBe(undefined);
 
-    config1.setConfig(new ConfigReader({}));
+    config1.setConfig(new ConfigReader({ x: 1, a: { x: 2, b: { x: 3 } } }));
     expect(fn1).toHaveBeenCalledTimes(1);
     expect(fn2).toHaveBeenCalledTimes(1);
     expect(fn3).toHaveBeenCalledTimes(1);
-    expect(config1.getOptionalNumber('x')).toBe(undefined);
-    expect(config2.getOptionalNumber('x')).toBe(undefined);
-    expect(config3.getOptionalNumber('x')).toBe(undefined);
-
-    config1.setConfig(new ConfigReader({ x: 1, a: { x: 2, b: { x: 3 } } }));
-    expect(fn1).toHaveBeenCalledTimes(2);
-    expect(fn2).toHaveBeenCalledTimes(2);
-    expect(fn3).toHaveBeenCalledTimes(2);
     expect(config1.getNumber('x')).toBe(1);
     expect(config2.getNumber('x')).toBe(2);
     expect(config3.getNumber('x')).toBe(3);
@@ -79,9 +67,9 @@ describe('ObservableConfigProxy', () => {
     sub3.unsubscribe();
 
     config1.setConfig(new ConfigReader({ x: 4, a: { x: 5, b: { x: 6 } } }));
-    expect(fn1).toHaveBeenCalledTimes(2);
-    expect(fn2).toHaveBeenCalledTimes(2);
-    expect(fn3).toHaveBeenCalledTimes(2);
+    expect(fn1).toHaveBeenCalledTimes(1);
+    expect(fn2).toHaveBeenCalledTimes(1);
+    expect(fn3).toHaveBeenCalledTimes(1);
     expect(config1.getNumber('x')).toBe(4);
     expect(config2.getNumber('x')).toBe(5);
     expect(config3.getNumber('x')).toBe(6);
@@ -139,5 +127,44 @@ describe('ObservableConfigProxy', () => {
     expect(() => (config.getConfig('a') as any).close()).toThrow(
       'Only the root config can be closed',
     );
+  });
+
+  it('should only notify subscribers when the config data actually changes (ignoring key order)', () => {
+    const config = ObservableConfigProxy.create(new AbortController());
+    const fn = jest.fn();
+    config.subscribe(fn);
+
+    expect(config.getOptionalNumber('a')).toBe(undefined);
+
+    config.setConfig(new ConfigReader({}));
+    expect(fn).toHaveBeenCalledTimes(0);
+    expect(config.getOptionalNumber('a')).toBe(undefined);
+
+    config.setConfig(
+      new ConfigReader({
+        a: 1,
+        b: 1,
+      }),
+    );
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(config.getOptionalNumber('a')).toBe(1);
+
+    config.setConfig(
+      new ConfigReader({
+        b: 1,
+        a: 1,
+      }),
+    );
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(config.getOptionalNumber('a')).toBe(1);
+
+    config.setConfig(
+      new ConfigReader({
+        b: 1,
+        a: 2,
+      }),
+    );
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(config.getOptionalNumber('a')).toBe(2);
   });
 });

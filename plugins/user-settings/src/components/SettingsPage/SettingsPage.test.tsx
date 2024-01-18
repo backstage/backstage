@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import { SettingsPage } from './SettingsPage';
 import { UserSettingsTab } from '../UserSettingsTab';
 import { useOutlet } from 'react-router-dom';
@@ -34,9 +34,7 @@ describe('<SettingsPage />', () => {
   });
 
   it('should render the default settings page with 3 tabs', async () => {
-    const { container } = await renderWithEffects(
-      wrapInTestApp(<SettingsPage />),
-    );
+    const { container } = await renderInTestApp(<SettingsPage />);
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
     expect(tabs).toHaveLength(3);
@@ -49,9 +47,7 @@ describe('<SettingsPage />', () => {
       </UserSettingsTab>
     );
     (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
-    const { container } = await renderWithEffects(
-      wrapInTestApp(<SettingsPage />),
-    );
+    const { container } = await renderInTestApp(<SettingsPage />);
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
     expect(tabs).toHaveLength(4);
@@ -65,9 +61,7 @@ describe('<SettingsPage />', () => {
       </SettingsLayout.Route>
     );
     (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
-    const { container } = await renderWithEffects(
-      wrapInTestApp(<SettingsPage />),
-    );
+    const { container } = await renderInTestApp(<SettingsPage />);
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
     expect(tabs).toHaveLength(4);
@@ -90,9 +84,7 @@ describe('<SettingsPage />', () => {
       </SettingsLayout>
     );
     (useOutlet as jest.Mock).mockReturnValue(customLayout);
-    const { container } = await renderWithEffects(
-      wrapInTestApp(<SettingsPage />),
-    );
+    const { container } = await renderInTestApp(<SettingsPage />);
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
     expect(tabs).toHaveLength(2);

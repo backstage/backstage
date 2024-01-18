@@ -32,9 +32,9 @@ import {
   Filter,
   FullMap,
   MapDiscriminatedUnion,
-  PathTemplate,
   RequiredDoc,
   SchemaRef,
+  ValueOf,
 } from './common';
 import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
 
@@ -43,9 +43,9 @@ import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
  */
 export type DocParameter<
   Doc extends RequiredDoc,
-  Path extends Extract<keyof Doc['paths'], string>,
-  Method extends keyof Doc['paths'][Path],
-  Parameter extends keyof Doc['paths'][Path][Method]['parameters'],
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
+  Parameter extends keyof DocOperation<Doc, Path, Method>['parameters'],
 > = DocOperation<
   Doc,
   Path,
@@ -61,21 +61,32 @@ export type DocParameter<
   : DocOperation<Doc, Path, Method>['parameters'][Parameter];
 
 /**
+ * Helper to convert from string to number, used to index arrays and pull out just the indices in the array.
+ * @public
+ */
+export type FromNumberStringToNumber<
+  NumberString extends string | number | symbol,
+> = NumberString extends `${infer R extends number}` ? R : never;
+
+/**
  * @public
  */
 export type DocParameters<
   Doc extends RequiredDoc,
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
-> = DocOperation<Doc, Path, Method>['parameters'] extends ReadonlyArray<any>
-  ? {
-      [Index in keyof DocOperation<
-        Doc,
-        Path,
-        Method
-      >['parameters']]: DocParameter<Doc, Path, Method, Index>;
-    }
-  : never;
+> = {
+  [Index in keyof DocOperation<
+    Doc,
+    Path,
+    Method
+  >['parameters'] as FromNumberStringToNumber<Index>]: DocParameter<
+    Doc,
+    Path,
+    Method,
+    Index
+  >;
+};
 
 /**
  * @public
@@ -111,50 +122,48 @@ export type ParametersSchema<
   Path extends Extract<keyof Doc['paths'], string>,
   Method extends keyof Doc['paths'][Path],
   FilterType extends ImmutableParameterObject,
-> = number extends keyof DocParameters<Doc, Path, Method>
-  ? MapToSchema<
-      Doc,
-      FullMap<
-        MapDiscriminatedUnion<
-          Filter<DocParameters<Doc, Path, Method>[number], FilterType>,
-          'name'
-        >
-      >
+> = MapToSchema<
+  Doc,
+  FullMap<
+    MapDiscriminatedUnion<
+      Filter<ValueOf<DocParameters<Doc, Path, Method>>, FilterType>,
+      'name'
     >
-  : never;
+  >
+>;
 
 /**
  * @public
  */
 export type HeaderSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableHeaderObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutableHeaderObject>;
 
 /**
  * @public
  */
 export type CookieSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableCookieObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutableCookieObject>;
 
 /**
  * @public
  */
 export type PathSchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutablePathObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutablePathObject>;
 
 /**
  * @public
  */
 export type QuerySchema<
   Doc extends RequiredDoc,
-  Path extends PathTemplate<Extract<keyof Doc['paths'], string>>,
+  Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = ParametersSchema<Doc, DocPath<Doc, Path>, Method, ImmutableQueryObject>;
+> = ParametersSchema<Doc, Path, Method, ImmutableQueryObject>;

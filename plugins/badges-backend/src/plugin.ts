@@ -20,6 +20,7 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
+import { createDefaultBadgeFactories } from './badges';
 
 /**
  * Badges backend plugin
@@ -31,7 +32,7 @@ export const badgesPlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         discovery: coreServices.discovery,
         tokenManager: coreServices.tokenManager,
@@ -50,6 +51,7 @@ export const badgesPlugin = createBackendPlugin({
           await createRouter({
             config,
             logger: loggerToWinstonLogger(logger),
+            badgeFactories: createDefaultBadgeFactories(),
             discovery,
             tokenManager,
             identity,

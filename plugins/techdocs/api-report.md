@@ -14,6 +14,7 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
@@ -51,13 +52,15 @@ export type ContentStateTypes =
 // @public
 export const DefaultTechDocsHome: (
   props: TechDocsIndexPageProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public @deprecated
 export type DefaultTechDocsHomeProps = TechDocsIndexPageProps;
 
 // @public
-export const DocsCardGrid: (props: DocsCardGridProps) => JSX.Element | null;
+export const DocsCardGrid: (
+  props: DocsCardGridProps,
+) => React_2.JSX.Element | null;
 
 // @public
 export type DocsCardGridProps = {
@@ -72,15 +75,16 @@ export type DocsGroupConfig = {
 
 // @public
 export const DocsTable: {
-  (props: DocsTableProps): JSX.Element | null;
+  (props: DocsTableProps): React_2.JSX.Element | null;
   columns: {
     createNameColumn(): TableColumn<DocsTableRow>;
     createOwnerColumn(): TableColumn<DocsTableRow>;
+    createKindColumn(): TableColumn<DocsTableRow>;
     createTypeColumn(): TableColumn<DocsTableRow>;
   };
   actions: {
     createCopyDocsUrlAction(copyToClipboard: Function): (row: DocsTableRow) => {
-      icon: () => JSX.Element;
+      icon: () => React_2.JSX.Element;
       tooltip: string;
       onClick: () => any;
     };
@@ -91,7 +95,7 @@ export const DocsTable: {
       cellStyle: {
         paddingLeft: string;
       };
-      icon: () => JSX.Element;
+      icon: () => React_2.JSX.Element;
       tooltip: string;
       onClick: () => any;
     };
@@ -121,12 +125,12 @@ export type DocsTableRow = {
 // @public
 export const EmbeddedDocsRouter: (
   props: PropsWithChildren<{}>,
-) => JSX.Element | null;
+) => React_2.JSX.Element | null;
 
 // @public
 export const EntityListDocsGrid: (
   props: EntityListDocsGridPageProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type EntityListDocsGridPageProps = {
@@ -135,15 +139,16 @@ export type EntityListDocsGridPageProps = {
 
 // @public
 export const EntityListDocsTable: {
-  (props: EntityListDocsTableProps): JSX.Element;
+  (props: EntityListDocsTableProps): React_2.JSX.Element;
   columns: {
     createNameColumn(): TableColumn<DocsTableRow>;
     createOwnerColumn(): TableColumn<DocsTableRow>;
+    createKindColumn(): TableColumn<DocsTableRow>;
     createTypeColumn(): TableColumn<DocsTableRow>;
   };
   actions: {
     createCopyDocsUrlAction(copyToClipboard: Function): (row: DocsTableRow) => {
-      icon: () => JSX.Element;
+      icon: () => React_2.JSX.Element;
       tooltip: string;
       onClick: () => any;
     };
@@ -154,7 +159,7 @@ export const EntityListDocsTable: {
       cellStyle: {
         paddingLeft: string;
       };
-      icon: () => JSX.Element;
+      icon: () => React_2.JSX.Element;
       tooltip: string;
       onClick: () => any;
     };
@@ -171,7 +176,7 @@ export type EntityListDocsTableProps = {
 // @public
 export const EntityTechdocsContent: (props: {
   children?: ReactNode;
-}) => JSX.Element | null;
+}) => JSX_2.Element | null;
 
 // @public
 export const isTechDocsAvailable: (entity: Entity) => boolean;
@@ -194,7 +199,9 @@ export interface PanelConfig {
 export type PanelType = 'DocsCardGrid' | 'DocsTable';
 
 // @public @deprecated
-export const Reader: (props: TechDocsReaderPageContentProps) => JSX.Element;
+export const Reader: (
+  props: TechDocsReaderPageContentProps,
+) => React_2.JSX.Element;
 
 // @public
 export type ReaderState = {
@@ -208,7 +215,7 @@ export type ReaderState = {
 };
 
 // @public
-export const Router: () => JSX.Element;
+export const Router: () => React_2.JSX.Element;
 
 // @public @deprecated
 export type SyncResult = 'cached' | 'updated';
@@ -261,7 +268,7 @@ export class TechDocsClient implements TechDocsApi_2 {
 // @public
 export const TechDocsCustomHome: (
   props: TechDocsCustomHomeProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export type TechDocsCustomHomeProps = {
@@ -272,7 +279,9 @@ export type TechDocsCustomHomeProps = {
 export type TechDocsEntityMetadata = TechDocsEntityMetadata_2;
 
 // @public
-export const TechDocsIndexPage: (props: TechDocsIndexPageProps) => JSX.Element;
+export const TechDocsIndexPage: (
+  props: TechDocsIndexPageProps,
+) => JSX_2.Element;
 
 // @public
 export type TechDocsIndexPageProps = {
@@ -285,12 +294,12 @@ export type TechDocsIndexPageProps = {
 export type TechDocsMetadata = TechDocsMetadata_2;
 
 // @public
-export const TechdocsPage: () => JSX.Element;
+export const TechdocsPage: () => JSX_2.Element;
 
 // @public
 export const TechDocsPageWrapper: (
   props: TechDocsPageWrapperProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type TechDocsPageWrapperProps = {
@@ -311,7 +320,6 @@ const techdocsPlugin: BackstagePlugin<
     }>;
     entityContent: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 export { techdocsPlugin as plugin };
@@ -320,7 +328,7 @@ export { techdocsPlugin };
 // @public
 export const TechDocsReaderLayout: (
   props: TechDocsReaderLayoutProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type TechDocsReaderLayoutProps = {
@@ -331,12 +339,12 @@ export type TechDocsReaderLayoutProps = {
 // @public
 export const TechDocsReaderPage: (
   props: TechDocsReaderPageProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export const TechDocsReaderPageContent: (
   props: TechDocsReaderPageContentProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type TechDocsReaderPageContentProps = {
@@ -348,7 +356,7 @@ export type TechDocsReaderPageContentProps = {
 // @public
 export const TechDocsReaderPageHeader: (
   props: TechDocsReaderPageHeaderProps,
-) => JSX.Element | null;
+) => React_2.JSX.Element | null;
 
 // @public @deprecated
 export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
@@ -374,12 +382,12 @@ export type TechDocsReaderPageRenderFunction = (options: {
 // @public
 export const TechDocsReaderPageSubheader: (props: {
   toolbarProps?: ToolbarProps;
-}) => JSX.Element | null;
+}) => React_2.JSX.Element | null;
 
 // @public
 export const TechDocsReaderProvider: (
   props: TechDocsReaderProviderProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type TechDocsReaderProviderProps = {
@@ -392,7 +400,9 @@ export type TechDocsReaderProviderRenderFunction = (
 ) => JSX.Element;
 
 // @public
-export const TechDocsSearch: (props: TechDocsSearchProps) => JSX.Element;
+export const TechDocsSearch: (
+  props: TechDocsSearchProps,
+) => React_2.JSX.Element;
 
 // @public
 export type TechDocsSearchProps = {

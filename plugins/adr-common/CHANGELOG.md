@@ -1,5 +1,152 @@
 # @backstage/plugin-adr-common
 
+## 0.2.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.2.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.8.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-search-common@1.2.9
+
+## 0.2.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-search-common@1.2.8
+
+## 0.2.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-search-common@1.2.8
+
+## 0.2.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-search-common@1.2.8
+
+## 0.2.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-search-common@1.2.7
+
+## 0.2.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-search-common@1.2.7
+
+## 0.2.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/plugin-search-common@1.2.7-next.0
+
+## 0.2.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/plugin-search-common@1.2.6
+
+## 0.2.15
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-search-common@1.2.6
+
+## 0.2.15-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/integration@1.7.0-next.3
+  - @backstage/plugin-search-common@1.2.6-next.2
+
+## 0.2.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/plugin-search-common@1.2.6-next.1
+
+## 0.2.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/plugin-search-common@1.2.6-next.0
+
+## 0.2.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.6.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-search-common@1.2.5
+
+## 0.2.11
+
+### Patch Changes
+
+- 2b4513abb784: fixed error with date parsing.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.1
+  - @backstage/integration@1.5.1
+  - @backstage/plugin-search-common@1.2.5
+
 ## 0.2.11-next.1
 
 ### Patch Changes

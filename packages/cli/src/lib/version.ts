@@ -35,6 +35,8 @@ leaving any imports in place.
 */
 
 import { version as backendCommon } from '../../../../packages/backend-common/package.json';
+import { version as backendPluginApi } from '../../../../packages/backend-plugin-api/package.json';
+import { version as backendTestUtils } from '../../../../packages/backend-test-utils/package.json';
 import { version as cli } from '../../../../packages/cli/package.json';
 import { version as config } from '../../../../packages/config/package.json';
 import { version as coreAppApi } from '../../../../packages/core-app-api/package.json';
@@ -42,11 +44,13 @@ import { version as coreComponents } from '../../../../packages/core-components/
 import { version as corePluginApi } from '../../../../packages/core-plugin-api/package.json';
 import { version as devUtils } from '../../../../packages/dev-utils/package.json';
 import { version as testUtils } from '../../../../packages/test-utils/package.json';
+import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
 import { version as theme } from '../../../../packages/theme/package.json';
-import { version as scaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
 
 export const packageVersions: Record<string, string> = {
   '@backstage/backend-common': backendCommon,
+  '@backstage/backend-plugin-api': backendPluginApi,
+  '@backstage/backend-test-utils': backendTestUtils,
   '@backstage/cli': cli,
   '@backstage/config': config,
   '@backstage/core-app-api': coreAppApi,
@@ -55,7 +59,7 @@ export const packageVersions: Record<string, string> = {
   '@backstage/dev-utils': devUtils,
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
-  '@backstage/plugin-scaffolder-backend': scaffolderBackend,
+  '@backstage/plugin-scaffolder-node': scaffolderNode,
 };
 
 export function findVersion() {

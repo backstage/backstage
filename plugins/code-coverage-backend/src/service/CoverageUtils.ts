@@ -163,9 +163,10 @@ export class CoverageUtils {
     const contentType = req.headers['content-type'];
     if (!contentType) {
       throw new InputError('Content-Type header missing');
-    } else if (!contentType.match(/^text\/xml($|;)/)) {
+      // text/xml or text/plain is allowed
+    } else if (!contentType.match(/^text\/xml|plain($|;)/)) {
       throw new InputError(
-        `Content-Type header "${contentType}" not supported, expected "text/xml" possibly followed by a charset`,
+        `Content-Type header "${contentType}" not supported, expected "text/xml" or "text/plain" possibly followed by a charset`,
       );
     }
     const body = req.body;

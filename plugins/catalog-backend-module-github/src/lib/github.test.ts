@@ -229,7 +229,7 @@ describe('github', () => {
 
     it('reads teams', async () => {
       const output = {
-        groups: [
+        teams: [
           expect.objectContaining({
             metadata: expect.objectContaining({
               name: 'team',
@@ -329,7 +329,7 @@ describe('github', () => {
 
     it('reads teams', async () => {
       const output = {
-        groups: [
+        teams: [
           expect.objectContaining({
             metadata: expect.objectContaining({
               name: 'Team-custom',
@@ -409,7 +409,7 @@ describe('github', () => {
       };
 
       const output = {
-        groups: [
+        teams: [
           expect.objectContaining({
             metadata: expect.objectContaining({
               name: 'Team-custom',
@@ -444,7 +444,7 @@ describe('github', () => {
         customTeamTransformer,
       );
 
-      expect(teams.groups).toHaveLength(1);
+      expect(teams.teams).toHaveLength(1);
       expect(teams).toEqual(output);
     });
   });

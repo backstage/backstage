@@ -24,11 +24,11 @@ export type CatalogCollatorEntityTransformer = (
 // @public (undocumented)
 export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer;
 
-// @public (undocumented)
+// @public
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   static fromConfig(
-    _config: Config,
+    configRoot: Config,
     options: DefaultCatalogCollatorFactoryOptions,
   ): DefaultCatalogCollatorFactory;
   // (undocumented)

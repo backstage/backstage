@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "16 || 18"
+    "node": "18 || 20"
   },
   "scripts": {
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
@@ -17,6 +17,8 @@
     "clean": "backstage-cli repo clean",
     "test": "backstage-cli repo test",
     "test:all": "backstage-cli repo test --coverage",
+    "test:e2e": "playwright test",
+    "fix": "backstage-cli repo fix",
     "lint": "backstage-cli repo lint --since origin/{{defaultBranch}}",
     "lint:all": "backstage-cli repo lint",
     "prettier:check": "prettier --check .",
@@ -30,16 +32,18 @@
   },
   "devDependencies": {
     "@backstage/cli": "^{{version '@backstage/cli'}}",
+    "@backstage/e2e-test-utils": "^{{version '@backstage/e2e-test-utils'}}",
+    "@playwright/test": "^1.32.3",
     "@spotify/prettier-config": "^12.0.0",
-    "concurrently": "^6.0.0",
-    "lerna": "^4.0.0",
+    "concurrently": "^8.0.0",
+    "lerna": "^7.3.0",
     "node-gyp": "^9.0.0",
     "prettier": "^2.3.2",
-    "typescript": "~5.0.0"
+    "typescript": "~5.2.0"
   },
   "resolutions": {
-    "@types/react": "^17",
-    "@types/react-dom": "^17"
+    "@types/react": "^18",
+    "@types/react-dom": "^18"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {

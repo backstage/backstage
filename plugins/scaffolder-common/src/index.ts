@@ -27,6 +27,7 @@ export {
   isTemplateEntityV1beta3,
 } from './TemplateEntityV1beta3';
 export type {
+  TemplatePresentationV1beta3,
   TemplateEntityV1beta3,
   TemplateEntityStepV1beta3,
   TemplateParametersV1beta3,

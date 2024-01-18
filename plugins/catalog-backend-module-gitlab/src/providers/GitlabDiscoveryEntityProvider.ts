@@ -133,7 +133,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
           try {
             await this.refresh(logger);
           } catch (error) {
-            logger.error(`${this.getProviderName()} refresh failed`, error);
+            logger.error(
+              `${this.getProviderName()} refresh failed, ${error}`,
+              error,
+            );
           }
         },
       });
@@ -155,6 +158,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     const projects = paginated<GitLabProject>(
       options => client.listProjects(options),
       {
+        archived: false,
         group: this.config.group,
         page: 1,
         per_page: 50,
@@ -173,7 +177,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 
       res.scanned++;
 
-      if (project.archived) {
+      if (
+        this.config.skipForkedRepos &&
+        project.hasOwnProperty('forked_from_project')
+      ) {
         continue;
       }
 

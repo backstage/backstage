@@ -29,6 +29,11 @@ export interface Config {
     /**
      * @visibility frontend
      */
+    hideTrendLine?: boolean;
+
+    /**
+     * @visibility frontend
+     */
     baseCurrency?: {
       /**
        * @visibility frontend

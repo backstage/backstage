@@ -45,7 +45,13 @@ const RadarDescription = (props: Props): JSX.Element => {
   const { open, onClose, title, description, timeline, url, links } = props;
 
   return (
-    <Dialog data-testid="radar-description" open={open} onClose={onClose}>
+    <Dialog
+      data-testid="radar-description"
+      open={open}
+      onClose={onClose}
+      maxWidth="lg"
+      fullWidth
+    >
       <DialogTitle data-testid="radar-description-dialog-title">
         {title}
       </DialogTitle>

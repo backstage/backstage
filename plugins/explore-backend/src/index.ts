@@ -36,19 +36,19 @@ import type {
 
 /**
  * @public
- * @deprecated import from `@backstage/search-backend-module-explore` instead
+ * @deprecated import from `@backstage/plugin-search-backend-module-explore` instead
  */
 export const ToolDocumentCollatorFactory = _ToolDocumentCollatorFactory;
 
 /**
  * @public
- * @deprecated import from `@backstage/search-backend-module-explore` instead
+ * @deprecated import from `@backstage/plugin-search-backend-module-explore` instead
  */
 export type ToolDocument = _ToolDocument;
 
 /**
  * @public
- * @deprecated import from `@backstage/search-backend-module-explore` instead
+ * @deprecated import from `@backstage/plugin-search-backend-module-explore` instead
  */
 export type ToolDocumentCollatorFactoryOptions =
   _ToolDocumentCollatorFactoryOptions;

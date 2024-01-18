@@ -18,14 +18,14 @@ import { AuthenticationError } from '@backstage/errors';
 import { exportJWK, generateKeyPair, importJWK, JWK, SignJWT } from 'jose';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 import { AnyJWK, KeyStore, TokenIssuer, TokenParams } from './types';
 
 const MS_IN_S = 1000;
 
 type Options = {
-  logger: Logger;
+  logger: LoggerService;
   /** Value of the issuer claim in issued tokens */
   issuer: string;
   /** Key store used for storing signing keys */
@@ -57,7 +57,7 @@ type Options = {
  */
 export class TokenFactory implements TokenIssuer {
   private readonly issuer: string;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly keyStore: KeyStore;
   private readonly keyDurationSeconds: number;
   private readonly algorithm: string;

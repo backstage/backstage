@@ -15,10 +15,9 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import mockFs from 'mock-fs';
 import { createWaitAction } from './wait';
 import { Writable } from 'stream';
-import os from 'os';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('debug:wait', () => {
   const action = createWaitAction();
@@ -27,23 +26,21 @@ describe('debug:wait', () => {
     write: jest.fn(),
   } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
 
-  const mockTmpDir = os.tmpdir();
+  const mockDir = createMockDirectory();
+  const workspacePath = mockDir.resolve('workspace');
+
   const mockContext = {
     input: {},
     baseUrl: 'somebase',
-    workspacePath: mockTmpDir,
+    workspacePath,
     logger: getVoidLogger(),
     logStream,
     output: jest.fn(),
-    createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
+    createTemporaryDirectory: jest.fn(),
   };
 
   beforeEach(() => {
     jest.resetAllMocks();
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('should wait for specified period of time', async () => {

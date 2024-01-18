@@ -20,11 +20,7 @@ import {
   UserEntity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  catalogApiRef,
-  entityRouteParams,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
 import {
   Box,
   createStyles,
@@ -36,7 +32,6 @@ import {
 } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import React, { useState } from 'react';
-import { generatePath } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 
 import {
@@ -52,6 +47,7 @@ import {
   getAllDesendantMembersForGroupEntity,
   removeDuplicateEntitiesFrom,
 } from '../../../../helpers/helpers';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -77,55 +73,65 @@ const MemberComponent = (props: { member: UserEntity }) => {
   const displayName = profile?.displayName ?? metaName;
 
   return (
-    <Grid item container xs={12} sm={6} md={4} xl={2}>
-      <Box className={classes.card}>
+    <Box className={classes.card}>
+      <Box
+        display="flex"
+        flexDirection="column"
+        m={3}
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Avatar
+          displayName={displayName}
+          picture={profile?.picture}
+          customStyles={{
+            position: 'absolute',
+            top: '-2rem',
+          }}
+        />
         <Box
-          display="flex"
-          flexDirection="column"
-          m={3}
-          alignItems="center"
-          justifyContent="center"
+          pt={2}
+          sx={{
+            width: '100%',
+          }}
+          textAlign="center"
         >
-          <Avatar
-            displayName={displayName}
-            picture={profile?.picture}
-            customStyles={{
-              position: 'absolute',
-              top: '-2rem',
-            }}
-          />
-          <Box
-            pt={2}
-            sx={{
-              width: '100%',
-            }}
-            textAlign="center"
-          >
-            <Typography variant="h6">
-              <Link
-                data-testid="user-link"
-                to={generatePath(
-                  `/catalog/:namespace/user/${metaName}`,
-                  entityRouteParams(props.member),
-                )}
-              >
-                <OverflowTooltip text={displayName} />
-              </Link>
-            </Typography>
-            {profile?.email && (
-              <Link to={`mailto:${profile.email}`}>
-                <OverflowTooltip text={profile.email} />
-              </Link>
-            )}
-            {description && (
-              <Typography variant="subtitle2">{description}</Typography>
-            )}
-          </Box>
+          <Typography variant="h6">
+            <EntityRefLink
+              data-testid="user-link"
+              entityRef={props.member}
+              title={displayName}
+            />
+          </Typography>
+          {profile?.email && (
+            <Link to={`mailto:${profile.email}`}>
+              <OverflowTooltip text={profile.email} />
+            </Link>
+          )}
+          {description && (
+            <Typography variant="subtitle2">{description}</Typography>
+          )}
         </Box>
       </Box>
-    </Grid>
+    </Box>
   );
 };
+
+const useListStyles = makeStyles(theme => ({
+  root: {
+    height: '100%',
+  },
+  cardContent: {
+    overflow: 'auto',
+  },
+  memberList: {
+    display: 'grid',
+    gap: theme.spacing(1.5),
+    gridTemplateColumns: `repeat(auto-fit, minmax(auto, ${theme.spacing(
+      34,
+    )}px))`,
+  },
+}));
 
 /** @public */
 export const MembersListCard = (props: {
@@ -138,6 +144,7 @@ export const MembersListCard = (props: {
     pageSize = 50,
     showAggregateMembersToggle,
   } = props;
+  const classes = useListStyles();
 
   const { entity: groupEntity } = useEntity<GroupEntity>();
   const {
@@ -217,14 +224,35 @@ export const MembersListCard = (props: {
     />
   );
 
+  let memberList: React.JSX.Element;
+  if (members && members.length > 0) {
+    memberList = (
+      <Box className={classes.memberList}>
+        {members.slice(pageSize * (page - 1), pageSize * page).map(member => (
+          <MemberComponent member={member} key={member.metadata.uid} />
+        ))}
+      </Box>
+    );
+  } else {
+    memberList = (
+      <Box p={2}>
+        <Typography>
+          This group has no {memberDisplayTitle.toLocaleLowerCase()}.
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
-    <Grid item>
+    <Grid item className={classes.root}>
       <InfoCard
         title={`${memberDisplayTitle} (${
           members?.length || 0
         }${paginationLabel})`}
         subheader={`of ${displayName}`}
         {...(nbPages <= 1 ? {} : { actions: pagination })}
+        className={classes.root}
+        cardClassName={classes.cardContent}
       >
         {showAggregateMembersToggle && (
           <>
@@ -243,21 +271,7 @@ export const MembersListCard = (props: {
         {showAggregateMembers && loadingDescendantMembers ? (
           <Progress />
         ) : (
-          <Grid container spacing={3}>
-            {members && members.length > 0 ? (
-              members
-                .slice(pageSize * (page - 1), pageSize * page)
-                .map(member => (
-                  <MemberComponent member={member} key={member.metadata.uid} />
-                ))
-            ) : (
-              <Box p={2}>
-                <Typography>
-                  This group has no {memberDisplayTitle.toLocaleLowerCase()}.
-                </Typography>
-              </Box>
-            )}
-          </Grid>
+          memberList
         )}
       </InfoCard>
     </Grid>

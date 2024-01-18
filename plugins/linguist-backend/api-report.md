@@ -4,9 +4,15 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorCache } from '@backstage/plugin-catalog-node';
+import { Config } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { HumanDuration } from '@backstage/types';
 import { Languages } from '@backstage/plugin-linguist-common';
+import { LanguageType } from '@backstage/plugin-linguist-common';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -22,6 +28,11 @@ export function createRouter(
 ): Promise<express.Router>;
 
 // @public (undocumented)
+export function createRouterFromConfig(
+  routerOptions: RouterOptions,
+): Promise<express.Router>;
+
+// @public (undocumented)
 export interface LinguistBackendApi {
   // (undocumented)
   getEntityLanguages(entityRef: string): Promise<Languages>;
@@ -30,22 +41,39 @@ export interface LinguistBackendApi {
 }
 
 // @public
-export const linguistPlugin: (options: LinguistPluginOptions) => BackendFeature;
+const linguistPlugin: () => BackendFeature;
+export default linguistPlugin;
 
 // @public
-export interface LinguistPluginOptions {
+export class LinguistTagsProcessor implements CatalogProcessor {
+  constructor(options: LinguistTagsProcessorOptions);
   // (undocumented)
-  age?: HumanDuration;
+  static fromConfig(
+    config: Config,
+    options: LinguistTagsProcessorOptions,
+  ): LinguistTagsProcessor;
   // (undocumented)
-  batchSize?: number;
+  getProcessorName(): string;
+  preProcessEntity(
+    entity: Entity,
+    _: any,
+    __: any,
+    ___: any,
+    cache: CatalogProcessorCache,
+  ): Promise<Entity>;
+}
+
+// @public
+export interface LinguistTagsProcessorOptions {
+  bytesThreshold?: number;
+  cacheTTL?: HumanDuration;
   // (undocumented)
-  kind?: string[];
+  discovery: DiscoveryService;
+  languageMap?: Record<string, string | undefined>;
+  languageTypes?: LanguageType[];
   // (undocumented)
-  linguistJsOptions?: Record<string, unknown>;
-  // (undocumented)
-  schedule?: TaskScheduleDefinition;
-  // (undocumented)
-  useSourceLocation?: boolean;
+  logger: Logger;
+  shouldProcessEntity?: ShouldProcessEntity;
 }
 
 // @public (undocumented)
@@ -67,6 +95,8 @@ export interface PluginOptions {
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
+  config?: Config;
+  // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
   discovery: PluginEndpointDiscovery;
@@ -81,4 +111,7 @@ export interface RouterOptions {
   // (undocumented)
   tokenManager: TokenManager;
 }
+
+// @public
+export type ShouldProcessEntity = (entity: Entity) => boolean;
 ```

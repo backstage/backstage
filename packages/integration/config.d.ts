@@ -30,8 +30,38 @@ export interface Config {
       /**
        * Token used to authenticate requests.
        * @visibility secret
+       * @deprecated Use `credentials` instead.
        */
       token?: string;
+
+      /**
+       * The credential to use for requests.
+       *
+       * If no credential is specified anonymous access is used.
+       *
+       * @deepVisibility secret
+       * @deprecated Use `credentials` instead.
+       */
+      credential?: {
+        clientId?: string;
+        clientSecret?: string;
+        tenantId?: string;
+        personalAccessToken?: string;
+      };
+
+      /**
+       * The credentials to use for requests. If multiple credentials are specified the first one that matches the organization is used.
+       * If not organization matches the first credential without an organization is used.
+       *
+       * If no credentials are specified at all, either a default credential (for Azure DevOps) or anonymous access (for Azure DevOps Server) is used.
+       * @deepVisibility secret
+       */
+      credentials?: {
+        clientId?: string;
+        clientSecret?: string;
+        tenantId?: string;
+        personalAccessToken?: string;
+      }[];
     }>;
 
     /**

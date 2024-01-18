@@ -32,13 +32,36 @@ yarn add --cwd packages/app @backstage/plugin-microsoft-calendar
 3. You can then use the provided React component `MicrosoftCalendar` in the backstage frontend where ever you want
 
 ```tsx
-import { MicrosoftCalendar } from '@backstage/plugin-microsoft-calendar';
+import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
 
 // ...
 <Grid item xs={12} md={4}>
-  <MicrosoftCalendar />
+  <MicrosoftCalendarCard />
 </Grid>;
 // ...
+```
+
+If your homepage is not static JSX add `microsoftCalendarApiRef` to the App's `apis.ts`:
+
+```ts
+import {
+  MicrosoftCalendarApiClient,
+  microsoftCalendarApiRef,
+} from '@backstage/plugin-microsoft-calendar';
+import {
+  // ...
+  fetchApiRef,
+  // ...
+} from '@backstage/core-plugin-api';
+
+export const apis = [
+  // ...
+  createApiFactory({
+    api: microsoftCalendarApiRef,
+    deps: { authApi: microsoftAuthApiRef, fetchApi: fetchApiRef },
+    factory: deps => new MicrosoftCalendarApiClient(deps),
+  }),
+];
 ```
 
 ![Microsoft Calendar plugin demo](https://user-images.githubusercontent.com/23618736/215717491-25db5fa6-b237-487f-8c00-28f572e8da05.mp4)

@@ -27,10 +27,11 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
 import React from 'react';
 import { Widget } from './types';
-import { withTheme } from '@rjsf/core-v5';
+import { withTheme } from '@rjsf/core';
+import { Theme as MuiTheme } from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
 
-const Form = withTheme(require('@rjsf/material-ui-v5').Theme);
+const Form = withTheme(MuiTheme);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,10 +59,12 @@ interface WidgetSettingsOverlayProps {
   handleRemove: (id: string) => void;
   handleSettingsSave: (id: string, settings: Record<string, any>) => void;
   settings?: Record<string, any>;
+  deletable?: boolean;
 }
 
 export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
-  const { id, widget, settings, handleRemove, handleSettingsSave } = props;
+  const { id, widget, settings, handleRemove, handleSettingsSave, deletable } =
+    props;
   const [settingsDialogOpen, setSettingsDialogOpen] = React.useState(false);
   const styles = useStyles();
 
@@ -88,6 +91,9 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
                   setSettingsDialogOpen(false);
                 }
               }}
+              experimental_defaultFormStateBehavior={{
+                allOf: 'populateDefaults',
+              }}
             />
           </DialogContent>
         </Dialog>
@@ -110,13 +116,15 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
             </Tooltip>
           </Grid>
         )}
-        <Grid item className="overlayGridItem">
-          <Tooltip title="Delete widget">
-            <IconButton color="secondary" onClick={() => handleRemove(id)}>
-              <DeleteIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-        </Grid>
+        {deletable !== false && (
+          <Grid item className="overlayGridItem">
+            <Tooltip title="Delete widget">
+              <IconButton color="secondary" onClick={() => handleRemove(id)}>
+                <DeleteIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        )}
       </Grid>
     </div>
   );

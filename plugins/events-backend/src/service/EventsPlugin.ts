@@ -89,7 +89,7 @@ export const eventsPlugin = createBackendPlugin({
 
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         router: coreServices.httpRouter,
       },

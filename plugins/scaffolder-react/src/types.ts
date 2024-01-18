@@ -16,6 +16,8 @@
 
 import { JsonObject } from '@backstage/types';
 
+import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common';
+
 /**
  * The shape of each entry of parameters which gets rendered
  * as a separate step in the wizard input
@@ -25,6 +27,7 @@ import { JsonObject } from '@backstage/types';
 export type TemplateParameterSchema = {
   title: string;
   description?: string;
+  presentation?: TemplatePresentationV1beta3;
   steps: Array<{
     title: string;
     description?: string;

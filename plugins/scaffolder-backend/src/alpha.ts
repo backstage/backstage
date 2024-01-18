@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export * from './modules';
 export * from './service';
-export { scaffolderPlugin } from './ScaffolderPlugin';
-export type { ScaffolderPluginOptions } from './ScaffolderPlugin';
+export { scaffolderPlugin as default } from './ScaffolderPlugin';

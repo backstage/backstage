@@ -206,7 +206,6 @@ export async function createDistWorkspace(
           logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
           // No need to detect these for the backend builds, we assume no minification or types
           minify: false,
-          useApiExtractor: false,
         });
       }
     }

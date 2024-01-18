@@ -1,5 +1,202 @@
 # @backstage/core-plugin-api
 
+## 1.8.2
+
+### Patch Changes
+
+- 6878b1d: Removed unnecessary `i18next` dependency.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.2-next.0
+
+### Patch Changes
+
+- 6878b1d: Removed unnecessary `i18next` dependency.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.1
+
+### Patch Changes
+
+- 03d0b6d: Removed the alpha `convertLegacyRouteRef` utility, which as been moved to `@backstage/core-compat-api`
+- 0c93dc3: The `createTranslationRef` function from the `/alpha` subpath can now also accept a nested object structure of default translation messages, which will be flatted using `.` separators.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.1-next.1
+
+### Patch Changes
+
+- 0c93dc37b2: The `createTranslationRef` function from the `/alpha` subpath can now also accept a nested object structure of default translation messages, which will be flatted using `.` separators.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- 03d0b6dcdc: Removed the alpha `convertLegacyRouteRef` utility, which as been moved to `@backstage/core-compat-api`
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.0
+
+### Minor Changes
+
+- 1e5b7d993a: `IconComponent` can now have a `fontSize` of `inherit`, which is useful for in-line icons.
+- cb6db75bc2: Introduced `AnyRouteRefParams` as a replacement for `AnyParams`, which is now deprecated.
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- cb6db75bc2: Deprecated several types related to the routing system that are scheduled to be removed, as well as several fields on the route ref types themselves.
+- 68fc9dc60e: Added a new `/alpha` export `convertLegacyRouteRef`, which is a temporary utility to allow existing route refs to be used with the new experimental packages.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.7
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.8.0-next.0
+
+### Minor Changes
+
+- 1e5b7d993a: `IconComponent` can now have a `fontSize` of `inherit`, which is useful for in-line icons.
+- cb6db75bc2: Introduced `AnyRouteRefParams` as a replacement for `AnyParams`, which is now deprecated.
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- cb6db75bc2: Deprecated several types related to the routing system that are scheduled to be removed, as well as several fields on the route ref types themselves.
+- 68fc9dc60e: Added a new `/alpha` export `convertLegacyRouteRef`, which is a temporary utility to allow existing route refs to be used with the new experimental packages.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.7-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.7.0
+
+### Minor Changes
+
+- 322bbcae24: Removed the exprimental plugin configuration API. The `__experimentalReconfigure()` from the plugin options as well as the `__experimentalConfigure()` method on plugin instances have both been removed.
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.6
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 1.7.0-next.1
+
+### Patch Changes
+
+- 0b55f773a7: Removed some unused dependencies
+- Updated dependencies
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- 322bbcae24: Removed the exprimental plugin configuration API. The `__experimentalReconfigure()` from the plugin options as well as the `__experimentalConfigure()` method on plugin instances have both been removed.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.6.0
+
+### Minor Changes
+
+- 18619f793c94: Added the optional `expiresAt` field that may now be part of a `BackstageIdentityResponse`.
+- 6e30769cc627: Introduced experimental support for internationalization.
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.5
+
+## 1.6.0-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/types@1.1.1-next.0
+  - @backstage/version-bridge@1.0.5-next.0
+
+## 1.6.0-next.2
+
+### Minor Changes
+
+- 6e30769cc627: Introduced experimental support for internationalization.
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.6.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 18619f793c94: Added the optional `expiresAt` field that may now be part of a `BackstageIdentityResponse`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
+## 1.5.3
+
+### Patch Changes
+
+- 8174cf4c0edf: Fixing MUI / Material UI references
+- 13426ebd1235: Change `IconComponent` type to be compatible with Material UI v5 icons.
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/version-bridge@1.0.4
+
 ## 1.5.3-next.1
 
 ### Patch Changes

@@ -18,27 +18,47 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
+import {
+  MockConfigApi,
+  renderWithEffects,
+  TestApiProvider,
+} from '@backstage/test-utils';
 
 import { searchApiRef } from '../../api';
 import { SearchContextProvider } from '../../context';
 
 import { SearchPagination } from './SearchPagination';
-
-const query = jest.fn().mockResolvedValue({
-  results: [],
-  nextPageCursor: 'Mg==',
-  previousPageCursor: 'MA==',
-});
+import { configApiRef } from '@backstage/core-plugin-api';
 
 describe('SearchPagination', () => {
+  const configApiMock = new MockConfigApi({
+    search: {
+      query: {
+        pagelimit: 10,
+      },
+    },
+  });
+
+  const searchApiMock = {
+    query: jest.fn().mockResolvedValue({
+      results: [],
+      nextPageCursor: 'Mg==',
+      previousPageCursor: 'MA==',
+    }),
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('Renders without exploding', async () => {
     await renderWithEffects(
-      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+      <TestApiProvider
+        apis={[
+          [searchApiRef, searchApiMock],
+          [configApiRef, configApiMock],
+        ]}
+      >
         <SearchContextProvider>
           <SearchPagination />
         </SearchContextProvider>
@@ -54,7 +74,12 @@ describe('SearchPagination', () => {
 
   it('Define default page limit options', async () => {
     await renderWithEffects(
-      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+      <TestApiProvider
+        apis={[
+          [searchApiRef, searchApiMock],
+          [configApiRef, configApiMock],
+        ]}
+      >
         <SearchContextProvider>
           <SearchPagination />
         </SearchContextProvider>
@@ -74,7 +99,12 @@ describe('SearchPagination', () => {
   it('Accept custom page limit label', async () => {
     const label = 'Page limit:';
     await renderWithEffects(
-      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+      <TestApiProvider
+        apis={[
+          [searchApiRef, searchApiMock],
+          [configApiRef, configApiMock],
+        ]}
+      >
         <SearchContextProvider>
           <SearchPagination limitLabel={label} />
         </SearchContextProvider>
@@ -86,7 +116,12 @@ describe('SearchPagination', () => {
 
   it('Show the total in text', async () => {
     await renderWithEffects(
-      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+      <TestApiProvider
+        apis={[
+          [searchApiRef, searchApiMock],
+          [configApiRef, configApiMock],
+        ]}
+      >
         <SearchContextProvider>
           <SearchPagination total={100} />
         </SearchContextProvider>
@@ -98,7 +133,12 @@ describe('SearchPagination', () => {
 
   it('Accept custom page limit text', async () => {
     await renderWithEffects(
-      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+      <TestApiProvider
+        apis={[
+          [searchApiRef, searchApiMock],
+          [configApiRef, configApiMock],
+        ]}
+      >
         <SearchContextProvider>
           <SearchPagination
             limitText={({ from, to }) => `${from}-${to} of more than ${to}`}
@@ -112,7 +152,12 @@ describe('SearchPagination', () => {
 
   it('Accept custom page limit options', async () => {
     await renderWithEffects(
-      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+      <TestApiProvider
+        apis={[
+          [searchApiRef, searchApiMock],
+          [configApiRef, configApiMock],
+        ]}
+      >
         <SearchContextProvider>
           <SearchPagination limitOptions={[5, 10, 20, 25]} />
         </SearchContextProvider>
@@ -131,7 +176,12 @@ describe('SearchPagination', () => {
 
   it('Set page limit in the context', async () => {
     await renderWithEffects(
-      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+      <TestApiProvider
+        apis={[
+          [searchApiRef, searchApiMock],
+          [configApiRef, configApiMock],
+        ]}
+      >
         <SearchContextProvider>
           <SearchPagination />
         </SearchContextProvider>
@@ -142,7 +192,7 @@ describe('SearchPagination', () => {
 
     await userEvent.click(screen.getByText('10'));
 
-    expect(query).toHaveBeenCalledWith(
+    expect(searchApiMock.query).toHaveBeenCalledWith(
       expect.objectContaining({
         pageLimit: 10,
       }),
@@ -158,7 +208,12 @@ describe('SearchPagination', () => {
     };
 
     await renderWithEffects(
-      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+      <TestApiProvider
+        apis={[
+          [searchApiRef, searchApiMock],
+          [configApiRef, configApiMock],
+        ]}
+      >
         <SearchContextProvider initialState={initialState}>
           <SearchPagination />
         </SearchContextProvider>
@@ -169,7 +224,7 @@ describe('SearchPagination', () => {
 
     expect(screen.getByText('51-75')).toBeInTheDocument();
 
-    expect(query).toHaveBeenLastCalledWith(
+    expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({
         pageCursor: 'Mg==', // page: 2
       }),
@@ -179,7 +234,7 @@ describe('SearchPagination', () => {
 
     expect(screen.getByText('26-50')).toBeInTheDocument();
 
-    expect(query).toHaveBeenLastCalledWith(
+    expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({
         pageCursor: 'MQ==', // page: 1
       }),
@@ -195,7 +250,12 @@ describe('SearchPagination', () => {
     };
 
     await renderWithEffects(
-      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+      <TestApiProvider
+        apis={[
+          [searchApiRef, searchApiMock],
+          [configApiRef, configApiMock],
+        ]}
+      >
         <SearchContextProvider initialState={initialState}>
           <SearchPagination />
         </SearchContextProvider>
@@ -205,7 +265,7 @@ describe('SearchPagination', () => {
     await userEvent.click(screen.getByText('25')); // first click to open the options
     await userEvent.click(screen.getByText('10')); // second click to select the option
 
-    expect(query).toHaveBeenLastCalledWith(
+    expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({
         pageCursor: undefined,
         pageLimit: 10,

@@ -15,7 +15,7 @@
  */
 
 import {
-  ConfigService,
+  RootConfigService,
   LoggerService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
@@ -49,7 +49,7 @@ export class WrapperProviders {
 
   constructor(
     private readonly options: {
-      config: ConfigService;
+      config: RootConfigService;
       logger: LoggerService;
       client: Knex;
       scheduler: SchedulerService;

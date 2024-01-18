@@ -9,47 +9,52 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 
 // @public (undocumented)
 export const EntityGroupProfileCard: (props: {
   variant?: InfoCardVariants | undefined;
   showLinks?: boolean | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityMembersListCard: (props: {
   memberDisplayTitle?: string | undefined;
   pageSize?: number | undefined;
   showAggregateMembersToggle?: boolean | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityOwnershipCard: (props: {
   variant?: InfoCardVariants | undefined;
   entityFilterKind?: string[] | undefined;
   hideRelationsToggle?: boolean | undefined;
-  relationsType?: string | undefined;
+  relationsType?: EntityRelationAggregation | undefined;
   entityLimit?: number | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
+
+// @public (undocumented)
+export type EntityRelationAggregation = 'direct' | 'aggregated';
 
 // @public (undocumented)
 export const EntityUserProfileCard: (props: {
   variant?: InfoCardVariants | undefined;
   showLinks?: boolean | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const GroupProfileCard: (props: {
   variant?: InfoCardVariants;
   showLinks?: boolean;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const MembersListCard: (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
   showAggregateMembersToggle?: boolean;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public
 export const MyGroupsSidebarItem: (props: {
@@ -57,15 +62,14 @@ export const MyGroupsSidebarItem: (props: {
   pluralTitle: string;
   icon: IconComponent;
   filter?: Record<string, string | symbol | (string | symbol)[]>;
-}) => JSX.Element | null;
+}) => React_2.JSX.Element | null;
 
 // @public (undocumented)
 const orgPlugin: BackstagePlugin<
   {},
   {
     catalogIndex: ExternalRouteRef<undefined, false>;
-  },
-  {}
+  }
 >;
 export { orgPlugin };
 export { orgPlugin as plugin };
@@ -75,13 +79,13 @@ export const OwnershipCard: (props: {
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
-  relationsType?: string;
+  relationsType?: EntityRelationAggregation;
   entityLimit?: number;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const UserProfileCard: (props: {
   variant?: InfoCardVariants;
   showLinks?: boolean;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 ```

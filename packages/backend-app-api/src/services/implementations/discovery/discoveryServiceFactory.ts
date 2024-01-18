@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { HostDiscovery } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { HostDiscovery } from './HostDiscovery';
 
 /** @public */
 export const discoveryServiceFactory = createServiceFactory({
   service: coreServices.discovery,
   deps: {
-    config: coreServices.config,
+    config: coreServices.rootConfig,
   },
   async factory({ config }) {
     return HostDiscovery.fromConfig(config);

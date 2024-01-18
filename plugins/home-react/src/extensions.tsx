@@ -42,7 +42,7 @@ export type ComponentParts = {
 /**
  * @public
  */
-export type RendererProps = { title: string } & ComponentParts;
+export type RendererProps = { title?: string } & ComponentParts;
 
 /**
  * @public
@@ -79,7 +79,7 @@ export type CardConfig = {
  * @public
  */
 export function createCardExtension<T>(options: {
-  title: string;
+  title?: string;
   components: () => Promise<ComponentParts>;
   name?: string;
   description?: string;
@@ -113,7 +113,6 @@ export function createCardExtension<T>(options: {
 
 type CardExtensionComponentProps<T> = CardExtensionProps<T> &
   ComponentParts & {
-    title: string;
     isCustomizable?: boolean;
     overrideTitle?: string;
   };
@@ -137,7 +136,7 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
     return (
       <Suspense fallback={<Progress />}>
         <Renderer
-          title={title}
+          {...(title && { title })}
           {...{
             Content,
             ...(Actions ? { Actions } : {}),
@@ -151,7 +150,7 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
   }
 
   const cardProps = {
-    title: title,
+    ...(title && { title }),
     ...(Settings && !isCustomizable
       ? {
           action: (

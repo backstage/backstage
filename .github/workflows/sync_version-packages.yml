@@ -13,17 +13,31 @@ jobs:
     name: Create Changeset PR
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Harden Runner
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
         with:
-          fetch-depth: 0
+          egress-policy: audit
+
+      - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 20000
+          fetch-tags: true
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
       - name: Install Dependencies
         run: yarn --immutable
       - name: Create Release Pull Request
-        uses: backstage/changesets-action@v2
+        uses: backstage/changesets-action@v2.1.0
         with:
           # Calls out to `changeset version`, but also runs prettier
           version: yarn release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           HUSKY: '0'
+
+      - name: Discord notification
+        if: ${{ failure() }}
+        uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9 # 0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: 'Version Packages Sync Failed https://github.com/{{GITHUB_REPOSITORY}}/actions/runs/{{GITHUB_RUN_ID}}'

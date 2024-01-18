@@ -25,7 +25,7 @@ export default async function createPlugin(
   });
 
   const catalogClient = new CatalogClient({
-    discoveryApi: discovery,
+    discoveryApi: env.discovery,
   });
 
   const todoService = new TodoReaderService({

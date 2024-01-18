@@ -28,16 +28,15 @@ describe('parseQueryEntitiesParams', () => {
       const validRequest = {
         authorizationToken: 'to_not_be_returned',
         fields: ['kind'],
-        limit: '3',
+        limit: 3,
         filter: ['a=1', 'b=2'],
         orderField: ['metadata.name,desc'],
         fullTextFilterTerm: 'query',
-        fullTextFilterFields: 'metadata.name,metadata.namespace',
+        fullTextFilterFields: ['metadata.name', 'metadata.namespace'],
       };
       const parsedObj = parseQueryEntitiesParams(
         validRequest,
       ) as QueryEntitiesInitialRequest;
-      expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
       expect(parsedObj.orderFields).toEqual([
         { field: 'metadata.name', order: 'desc' },
@@ -54,7 +53,6 @@ describe('parseQueryEntitiesParams', () => {
       const parsedObj = parseQueryEntitiesParams(
         {},
       ) as QueryEntitiesInitialRequest;
-      expect(parsedObj.limit).toBeUndefined();
       expect(parsedObj.fields).toBeUndefined();
       expect(parsedObj.orderFields).toBeUndefined();
       expect(parsedObj.filter).toBeUndefined();
@@ -64,15 +62,10 @@ describe('parseQueryEntitiesParams', () => {
     });
 
     it.each([
-      {
-        limit: 'asd',
-      },
       { filter: 3 },
       { orderField: ['metadata.uid,diagonal'] },
       { fields: [4] },
-      { fullTextFilterTerm: [] },
-      { fullTextFilterFields: 3 },
-    ])('should throw if some parameter is not valid %p', params => {
+    ])('should throw if some parameter is not valid %p', (params: any) => {
       expect(() => parseQueryEntitiesParams(params)).toThrow();
     });
   });
@@ -88,13 +81,12 @@ describe('parseQueryEntitiesParams', () => {
       const validRequest = {
         authorizationToken: 'to_not_be_returned',
         fields: ['kind'],
-        limit: '3',
+        limit: 3,
         cursor: encodeCursor(cursor),
       };
       const parsedObj = parseQueryEntitiesParams(
         validRequest,
       ) as QueryEntitiesCursorRequest;
-      expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
       expect(parsedObj.cursor).toEqual(cursor);
     });
@@ -109,16 +101,15 @@ describe('parseQueryEntitiesParams', () => {
       const validRequest = {
         authorizationToken: 'to_not_be_returned',
         fields: ['kind'],
-        limit: '3',
+        limit: 3,
         cursor: encodeCursor(cursor),
         filter: ['a=1', 'b=2'],
-        orderField: 'orderField,desc',
+        orderField: ['orderField,desc'],
         query: 'query',
       };
       const parsedObj = parseQueryEntitiesParams(
         validRequest,
       ) as QueryEntitiesCursorRequest;
-      expect(parsedObj.limit).toBe(3);
       expect(parsedObj.fields).toBeDefined();
       expect(parsedObj.cursor).toEqual(cursor);
       expect(parsedObj).not.toHaveProperty('filter');
@@ -130,18 +121,14 @@ describe('parseQueryEntitiesParams', () => {
       const parsedObj = parseQueryEntitiesParams(
         {},
       ) as QueryEntitiesCursorRequest;
-      expect(parsedObj.limit).toBeUndefined();
       expect(parsedObj.fields).toBeUndefined();
     });
 
-    it.each([
-      {
-        limit: 'asd',
+    it.each([{ cursor: [] }, { fields: [4] }])(
+      'should throw if some parameter is not valid %p',
+      (params: any) => {
+        expect(() => parseQueryEntitiesParams(params)).toThrow();
       },
-      { cursor: [] },
-      { fields: [4] },
-    ])('should throw if some parameter is not valid %p', params => {
-      expect(() => parseQueryEntitiesParams(params)).toThrow();
-    });
+    );
   });
 });

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageTheme } from '@backstage/theme';
+
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
@@ -47,13 +47,17 @@ type Props = {
   readMoreUrl?: string;
 };
 
+/**
+ * @public
+ * @deprecated This component is deprecated, please use {@link @backstage/plugin-catalog-react#MissingAnnotationEmptyStateClassKey} instead
+ */
 export type MissingAnnotationEmptyStateClassKey = 'code';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles(
   theme => ({
     code: {
       borderRadius: 6,
-      margin: `${theme.spacing(2)}px 0px`,
+      margin: theme.spacing(2, 0),
       background:
         theme.palette.type === 'dark' ? '#444' : theme.palette.common.white,
     },
@@ -69,7 +73,6 @@ function generateComponentYaml(annotations: string[]) {
   const annotationYaml = annotations
     .map(ann => ANNOTATION_YAML.replace('ANNOTATION', ann))
     .join('\n');
-
   return COMPONENT_YAML_TEMPLATE.replace(ANNOTATION_YAML, annotationYaml);
 }
 
@@ -92,6 +95,10 @@ function generateDescription(annotations: string[]) {
   );
 }
 
+/**
+ * @public
+ * @deprecated This component is deprecated, please use {@link @backstage/plugin-catalog-react#MissingAnnotationEmptyState} instead
+ */
 export function MissingAnnotationEmptyState(props: Props) {
   const { annotation, readMoreUrl } = props;
   const annotations = Array.isArray(annotation) ? annotation : [annotation];

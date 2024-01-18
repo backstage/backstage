@@ -29,11 +29,11 @@ import { AzureDevOpsEntityProvider } from '../providers';
  */
 export const catalogModuleAzureDevOpsEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'azureDevOpsEntityProvider',
+  moduleId: 'azure-dev-ops-entity-provider',
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         catalog: catalogProcessingExtensionPoint,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,

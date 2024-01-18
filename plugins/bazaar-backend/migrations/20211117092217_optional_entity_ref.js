@@ -89,9 +89,11 @@ exports.up = async function up(knex) {
     await knex.schema.alterTable('members', table => {
       table
         .integer('item_id')
+        .unsigned()
         .references('metadata.id')
         .onDelete('CASCADE')
         .comment('Id of the associated item');
+      table.dropForeign('entity_ref');
       table.dropColumn('entity_ref');
     });
   }

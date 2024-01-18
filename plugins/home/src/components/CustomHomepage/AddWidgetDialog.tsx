@@ -29,7 +29,7 @@ interface AddWidgetDialogProps {
 }
 
 const getTitle = (widget: Widget) => {
-  return widget.title ?? widget.name;
+  return widget.title || widget.name;
 };
 
 export const AddWidgetDialog = (props: AddWidgetDialogProps) => {

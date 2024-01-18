@@ -30,12 +30,19 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
 /** @public */
 export type EntityPagerDutyCardProps = {
   readOnly?: boolean;
+  disableChangeEvents?: boolean;
 };
 
 /** @public */
 export const EntityPagerDutyCard = (props: EntityPagerDutyCardProps) => {
-  const { readOnly } = props;
+  const { readOnly, disableChangeEvents } = props;
   const { entity } = useEntity();
   const pagerDutyEntity = getPagerDutyEntity(entity);
-  return <PagerDutyCard {...pagerDutyEntity} readOnly={readOnly} />;
+  return (
+    <PagerDutyCard
+      {...pagerDutyEntity}
+      readOnly={readOnly}
+      disableChangeEvents={disableChangeEvents}
+    />
+  );
 };

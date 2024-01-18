@@ -17,12 +17,26 @@
 import { WinstonLogger } from '@backstage/backend-app-api';
 import { merge } from 'lodash';
 import * as winston from 'winston';
-import { LoggerOptions } from 'winston';
+import { format, LoggerOptions } from 'winston';
 import { setRootLogger } from './globalLoggers';
+import { TransformableInfo } from 'logform';
 
-const redacter = WinstonLogger.redacter();
+const getRedacter = (() => {
+  let redacter: ReturnType<typeof WinstonLogger.redacter> | undefined =
+    undefined;
+  return () => {
+    if (!redacter) {
+      redacter = WinstonLogger.redacter();
+    }
+    return redacter;
+  };
+})();
 
-export const setRootLoggerRedactionList = redacter.add;
+export const setRootLoggerRedactionList = (
+  redactions: Iterable<string>,
+): void => {
+  getRedacter().add(redactions);
+};
 
 /**
  * A winston formatting function that finds occurrences of filteredKeys
@@ -33,15 +47,44 @@ export const setRootLoggerRedactionList = redacter.add;
 export function redactWinstonLogLine(
   info: winston.Logform.TransformableInfo,
 ): winston.Logform.TransformableInfo {
-  return redacter.format.transform(info) as winston.Logform.TransformableInfo;
+  return getRedacter().format.transform(
+    info,
+  ) as winston.Logform.TransformableInfo;
 }
 
+const colorizer = format.colorize();
+
+// NOTE: This is a copy of the WinstonLogger.colorFormat to avoid a circular dependency
 /**
  * Creates a pretty printed winston log formatter.
  *
  * @public
  */
-export const coloredFormat = WinstonLogger.colorFormat();
+export const coloredFormat = format.combine(
+  format.timestamp(),
+  format.colorize({
+    colors: {
+      timestamp: 'dim',
+      prefix: 'blue',
+      field: 'cyan',
+      debug: 'grey',
+    },
+  }),
+  format.printf((info: TransformableInfo) => {
+    const { timestamp, level, message, plugin, service, ...fields } = info;
+    const prefix = plugin || service;
+    const timestampColor = colorizer.colorize('timestamp', timestamp);
+    const prefixColor = colorizer.colorize('prefix', prefix);
+
+    const extraFields = Object.entries(fields)
+      .map(
+        ([key, value]) => `${colorizer.colorize('field', `${key}`)}=${value}`,
+      )
+      .join(' ');
+
+    return `${timestampColor} ${prefixColor} ${level} ${message} ${extraFields}`;
+  }),
+);
 
 /**
  * Creates a default "root" logger. This also calls {@link setRootLogger} under
@@ -64,7 +107,7 @@ export function createRootLogger(
         {
           level: env.LOG_LEVEL || 'info',
           format: winston.format.combine(
-            redacter.format,
+            getRedacter().format,
             env.NODE_ENV === 'production'
               ? winston.format.json()
               : WinstonLogger.colorFormat(),
@@ -84,5 +127,3 @@ export function createRootLogger(
 
   return logger;
 }
-
-setRootLogger(createRootLogger());

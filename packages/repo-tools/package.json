@@ -1,7 +1,7 @@
 {
   "name": "@backstage/repo-tools",
   "description": "CLI for Backstage repo tooling ",
-  "version": "0.3.2-next.1",
+  "version": "0.5.2",
   "publishConfig": {
     "access": "public"
   },
@@ -32,20 +32,24 @@
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.0",
     "@apisyouwonthate/style-guide": "^1.4.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
-    "@microsoft/api-documenter": "^7.19.27",
-    "@microsoft/api-extractor": "^7.33.7",
+    "@microsoft/api-documenter": "^7.22.33",
+    "@microsoft/api-extractor": "^7.36.4",
+    "@openapitools/openapi-generator-cli": "^2.7.0",
     "@stoplight/spectral-core": "^1.18.0",
     "@stoplight/spectral-formatters": "^1.1.0",
     "@stoplight/spectral-functions": "^1.7.2",
     "@stoplight/spectral-parsers": "^1.0.2",
-    "@stoplight/spectral-rulesets": "^1.16.0",
+    "@stoplight/spectral-rulesets": "^1.18.0",
     "@stoplight/spectral-runtime": "^1.1.2",
-    "@stoplight/types": "^13.14.0",
+    "@stoplight/types": "^14.0.0",
     "chalk": "^4.0.0",
+    "codeowners-utils": "^1.0.2",
     "commander": "^9.1.0",
     "fs-extra": "10.1.0",
     "glob": "^8.0.3",
@@ -54,20 +58,23 @@
     "lodash": "^4.17.21",
     "minimatch": "^5.1.1",
     "p-limit": "^3.0.2",
-    "ts-node": "^10.0.0"
+    "portfinder": "^1.0.32",
+    "ts-node": "^10.0.0",
+    "yaml-diff-patch": "^2.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
-    "@types/mock-fs": "^4.13.0",
-    "@types/node": "^16.11.26",
-    "mock-fs": "^5.1.0"
+    "@types/node": "^18.17.8",
+    "@types/prettier": "^2.0.0"
   },
   "peerDependencies": {
     "@microsoft/api-extractor-model": "*",
     "@microsoft/tsdoc": "*",
     "@microsoft/tsdoc-config": "*",
+    "@useoptic/optic": "^0.50.7",
     "prettier": "^2.8.1",
     "typescript": "> 3.0.0"
   },
@@ -78,7 +85,9 @@
   },
   "files": [
     "bin",
-    "dist/**/*.js"
+    "dist/**/*.js",
+    "templates",
+    "openapitools.json"
   ],
   "nodemonConfig": {
     "watch": "./src",

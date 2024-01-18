@@ -14,166 +14,22 @@
  * limitations under the License.
  */
 
-import express from 'express';
-import passport from 'passport';
-import { OAuth2Client } from 'google-auth-library';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import {
-  encodeState,
-  OAuthAdapter,
-  OAuthEnvironmentHandler,
-  OAuthHandlers,
-  OAuthProviderOptions,
-  OAuthRefreshRequest,
-  OAuthResponse,
-  OAuthResult,
-  OAuthStartRequest,
-  OAuthLogoutRequest,
-} from '../../lib/oauth';
+  googleAuthenticator,
+  googleSignInResolvers,
+} from '@backstage/plugin-auth-backend-module-google-provider';
 import {
-  executeFetchUserProfileStrategy,
-  executeFrameHandlerStrategy,
-  executeRedirectStrategy,
-  executeRefreshTokenStrategy,
-  makeProfileInfo,
-  PassportDoneCallback,
-} from '../../lib/passport';
+  commonSignInResolvers,
+  createOAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
 import {
-  AuthHandler,
-  AuthResolverContext,
-  OAuthStartResponse,
-  SignInResolver,
-} from '../types';
+  adaptLegacyOAuthHandler,
+  adaptLegacyOAuthSignInResolver,
+  adaptOAuthSignInResolverToLegacy,
+} from '../../lib/legacy';
+import { OAuthResult } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import {
-  commonByEmailLocalPartResolver,
-  commonByEmailResolver,
-} from '../resolvers';
-
-type PrivateInfo = {
-  refreshToken: string;
-};
-
-type Options = OAuthProviderOptions & {
-  signInResolver?: SignInResolver<OAuthResult>;
-  authHandler: AuthHandler<OAuthResult>;
-  resolverContext: AuthResolverContext;
-};
-
-export class GoogleAuthProvider implements OAuthHandlers {
-  private readonly strategy: GoogleStrategy;
-  private readonly signInResolver?: SignInResolver<OAuthResult>;
-  private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly resolverContext: AuthResolverContext;
-
-  constructor(options: Options) {
-    this.authHandler = options.authHandler;
-    this.signInResolver = options.signInResolver;
-    this.resolverContext = options.resolverContext;
-    this.strategy = new GoogleStrategy(
-      {
-        clientID: options.clientId,
-        clientSecret: options.clientSecret,
-        callbackURL: options.callbackUrl,
-        passReqToCallback: false,
-      },
-      (
-        accessToken: any,
-        refreshToken: any,
-        params: any,
-        fullProfile: passport.Profile,
-        done: PassportDoneCallback<OAuthResult, PrivateInfo>,
-      ) => {
-        done(
-          undefined,
-          {
-            fullProfile,
-            params,
-            accessToken,
-            refreshToken,
-          },
-          {
-            refreshToken,
-          },
-        );
-      },
-    );
-  }
-
-  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
-    return await executeRedirectStrategy(req, this.strategy, {
-      accessType: 'offline',
-      prompt: 'consent',
-      scope: req.scope,
-      state: encodeState(req.state),
-    });
-  }
-
-  async handler(req: express.Request) {
-    const { result, privateInfo } = await executeFrameHandlerStrategy<
-      OAuthResult,
-      PrivateInfo
-    >(req, this.strategy);
-
-    return {
-      response: await this.handleResult(result),
-      refreshToken: privateInfo.refreshToken,
-    };
-  }
-
-  async logout(req: OAuthLogoutRequest) {
-    const oauthClient = new OAuth2Client();
-    await oauthClient.revokeToken(req.refreshToken);
-  }
-
-  async refresh(req: OAuthRefreshRequest) {
-    const { accessToken, refreshToken, params } =
-      await executeRefreshTokenStrategy(
-        this.strategy,
-        req.refreshToken,
-        req.scope,
-      );
-    const fullProfile = await executeFetchUserProfileStrategy(
-      this.strategy,
-      accessToken,
-    );
-
-    return {
-      response: await this.handleResult({
-        fullProfile,
-        params,
-        accessToken,
-      }),
-      refreshToken,
-    };
-  }
-
-  private async handleResult(result: OAuthResult) {
-    const { profile } = await this.authHandler(result, this.resolverContext);
-
-    const response: OAuthResponse = {
-      providerInfo: {
-        idToken: result.params.id_token,
-        accessToken: result.accessToken,
-        scope: result.params.scope,
-        expiresInSeconds: result.params.expires_in,
-      },
-      profile,
-    };
-
-    if (this.signInResolver) {
-      response.backstageIdentity = await this.signInResolver(
-        {
-          result,
-          profile,
-        },
-        this.resolverContext,
-      );
-    }
-
-    return response;
-  }
-}
+import { AuthHandler, SignInResolver } from '../types';
 
 /**
  * Auth provider integration for Google auth
@@ -198,62 +54,18 @@ export const google = createAuthProviderIntegration({
       resolver: SignInResolver<OAuthResult>;
     };
   }) {
-    return ({ providerId, globalConfig, config, resolverContext }) =>
-      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-        const clientId = envConfig.getString('clientId');
-        const clientSecret = envConfig.getString('clientSecret');
-        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-        const callbackUrl =
-          customCallbackUrl ||
-          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-
-        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-          ? options.authHandler
-          : async ({ fullProfile, params }) => ({
-              profile: makeProfileInfo(fullProfile, params.id_token),
-            });
-
-        const provider = new GoogleAuthProvider({
-          clientId,
-          clientSecret,
-          callbackUrl,
-          signInResolver: options?.signIn?.resolver,
-          authHandler,
-          resolverContext,
-        });
-
-        return OAuthAdapter.fromConfig(globalConfig, provider, {
-          providerId,
-          callbackUrl,
-        });
-      });
+    return createOAuthProviderFactory({
+      authenticator: googleAuthenticator,
+      profileTransform: adaptLegacyOAuthHandler(options?.authHandler),
+      signInResolver: adaptLegacyOAuthSignInResolver(options?.signIn?.resolver),
+    });
   },
-  resolvers: {
-    /**
-     * Looks up the user by matching their email local part to the entity name.
-     */
-    emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
-    /**
-     * Looks up the user by matching their email to the entity email.
-     */
-    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
-    /**
-     * Looks up the user by matching their email to the `google.com/email` annotation.
-     */
-    emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
-      return async (info, ctx) => {
-        const { profile } = info;
-
-        if (!profile.email) {
-          throw new Error('Google profile contained no email');
-        }
-
-        return ctx.signInWithCatalogUser({
-          annotations: {
-            'google.com/email': profile.email,
-          },
-        });
-      };
-    },
-  },
+  resolvers: adaptOAuthSignInResolverToLegacy({
+    emailLocalPartMatchingUserEntityName:
+      commonSignInResolvers.emailLocalPartMatchingUserEntityName(),
+    emailMatchingUserEntityProfileEmail:
+      commonSignInResolvers.emailMatchingUserEntityProfileEmail(),
+    emailMatchingUserEntityAnnotation:
+      googleSignInResolvers.emailMatchingUserEntityAnnotation(),
+  }),
 });

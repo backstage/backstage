@@ -13,7 +13,7 @@ The plugin provides a standalone list of APIs, as well as an integration into th
 Right now, the following API formats are supported:
 
 - [OpenAPI](https://swagger.io/specification/) 2 & 3
-- [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/)
+- [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest)
 - [GraphQL](https://graphql.org/learn/schema/)
 
 Other formats are displayed as plain text, but this can easily be extended.
@@ -222,3 +222,44 @@ security:
 ## Links
 
 - [The Backstage homepage](https://backstage.io)
+
+### Adding `requestInterceptor` to Swagger UI
+
+To configure a [`requestInterceptor` for Swagger UI](https://github.com/swagger-api/swagger-ui/tree/master/flavors/swagger-ui-react#requestinterceptor-proptypesfunc) you'll need to add the following to your `api.tsx`:
+
+```tsx
+...
+import { OpenApiDefinitionWidget, apiDocsConfigRef, defaultDefinitionWidgets } from '@backstage/plugin-api-docs';
+import { ApiEntity } from '@backstage/catalog-model';
+
+export const apis: AnyApiFactory[] = [
+...
+createApiFactory({
+    api: apiDocsConfigRef,
+    deps: {},
+    factory: () => {
+      // Overriding openapi definition widget to add header
+      const requestInterceptor = (req: any) => {
+        req.headers.append('myheader', 'wombats');
+        return req;
+      };
+      const definitionWidgets = defaultDefinitionWidgets().map(obj => {
+        if (obj.type === 'openapi') {
+          return {
+            ...obj,
+            component: (definition) => <OpenApiDefinitionWidget definition={definition} requestInterceptor={requestInterceptor} />,
+          }
+        }
+        return obj;
+      });
+
+      return {
+        getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+          return definitionWidgets.find(d => d.type === apiEntity.spec.type);
+        },
+      };
+    },
+  })
+```
+
+In the same way as the `requestInterceptor` you can override any property of Swagger UI

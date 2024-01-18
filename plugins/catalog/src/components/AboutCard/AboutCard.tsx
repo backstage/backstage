@@ -16,32 +16,10 @@
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_LOCATION,
+  CompoundEntityRef,
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  HeaderIconLinkRow,
-  IconLinkVerticalProps,
-  InfoCardVariants,
-  Link,
-} from '@backstage/core-components';
-import {
-  alertApiRef,
-  errorApiRef,
-  useApi,
-  useApp,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
-import {
-  ScmIntegrationIcon,
-  scmIntegrationsApiRef,
-} from '@backstage/integration-react';
-import {
-  catalogApiRef,
-  getEntitySourceLocation,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
-import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import {
   Card,
   CardContent,
@@ -50,14 +28,44 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import {
+  HeaderIconLinkRow,
+  IconLinkVerticalProps,
+  InfoCardVariants,
+  Link,
+} from '@backstage/core-components';
+import React, { useCallback } from 'react';
+import {
+  ScmIntegrationIcon,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
+import {
+  alertApiRef,
+  errorApiRef,
+  useApi,
+  useApp,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
+import {
+  catalogApiRef,
+  getEntitySourceLocation,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
+import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
+
+import { AboutContent } from './AboutContent';
 import CachedIcon from '@material-ui/icons/Cached';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
-import React, { useCallback } from 'react';
+import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { parseEntityRef } from '@backstage/catalog-model';
+import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
+import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
 
-import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
-import { AboutContent } from './AboutContent';
+const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
+
+const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -102,6 +110,9 @@ export function AboutCard(props: AboutCardProps) {
   const errorApi = useApi(errorApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(createFromTemplateRouteRef);
+  const { allowed: canRefresh } = useEntityPermission(
+    catalogEntityRefreshPermission,
+  );
 
   const entitySourceLocation = getEntitySourceLocation(
     entity,
@@ -109,6 +120,19 @@ export function AboutCard(props: AboutCardProps) {
   );
   const entityMetadataEditUrl =
     entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
+
+  let techdocsRef: CompoundEntityRef | undefined;
+
+  if (entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
+    try {
+      techdocsRef = parseEntityRef(
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION],
+      );
+      // not a fan of this but we don't care if the parseEntityRef fails
+    } catch {
+      techdocsRef = undefined;
+    }
+  }
 
   const viewInSource: IconLinkVerticalProps = {
     label: 'View Source',
@@ -119,16 +143,24 @@ export function AboutCard(props: AboutCardProps) {
   const viewInTechDocs: IconLinkVerticalProps = {
     label: 'View TechDocs',
     disabled:
-      !entity.metadata.annotations?.['backstage.io/techdocs-ref'] ||
-      !viewTechdocLink,
+      !(
+        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
+      ) || !viewTechdocLink,
     icon: <DocsIcon />,
     href:
       viewTechdocLink &&
-      viewTechdocLink({
-        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-        kind: entity.kind,
-        name: entity.metadata.name,
-      }),
+      (techdocsRef
+        ? viewTechdocLink({
+            namespace: techdocsRef.namespace || DEFAULT_NAMESPACE,
+            kind: techdocsRef.kind,
+            name: techdocsRef.name,
+          })
+        : viewTechdocLink({
+            namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+            kind: entity.kind,
+            name: entity.metadata.name,
+          })),
   };
 
   const subHeaderLinks = [viewInSource, viewInTechDocs];
@@ -188,7 +220,7 @@ export function AboutCard(props: AboutCardProps) {
         title="About"
         action={
           <>
-            {allowRefresh && (
+            {allowRefresh && canRefresh && (
               <IconButton
                 aria-label="Refresh"
                 title="Schedule entity refresh"

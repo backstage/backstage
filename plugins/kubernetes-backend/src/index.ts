@@ -20,6 +20,6 @@
  * @packageDocumentation
  */
 
-export * from './kubernetes-auth-translator';
+export * from './auth';
 export * from './service';
 export * from './types';

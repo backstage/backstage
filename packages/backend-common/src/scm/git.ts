@@ -18,10 +18,39 @@ import git, {
   ProgressCallback,
   MergeResult,
   ReadCommitResult,
+  AuthCallback,
 } from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
 import { LoggerService } from '@backstage/backend-plugin-api';
+
+function isAuthCallbackOptions(
+  options: StaticAuthOptions | AuthCallbackOptions,
+): options is AuthCallbackOptions {
+  return 'onAuth' in options;
+}
+
+/**
+ * Configure static credential for authentication
+ *
+ * @public
+ */
+export type StaticAuthOptions = {
+  username?: string;
+  password?: string;
+  token?: string;
+  logger?: LoggerService;
+};
+
+/**
+ * Configure an authentication callback that can provide credentials on demand
+ *
+ * @public
+ */
+export type AuthCallbackOptions = {
+  onAuth: AuthCallback;
+  logger?: LoggerService;
+};
 
 /*
 provider          username         password
@@ -42,6 +71,7 @@ instead of Basic Auth (e.g., Bitbucket Server).
  *
  * @public
  */
+
 export class Git {
   private readonly headers: {
     [x: string]: string;
@@ -49,12 +79,13 @@ export class Git {
 
   private constructor(
     private readonly config: {
-      username?: string;
-      password?: string;
+      onAuth: AuthCallback;
       token?: string;
       logger?: LoggerService;
     },
   ) {
+    this.onAuth = config.onAuth;
+
     this.headers = {
       'user-agent': 'git/@isomorphic-git',
       ...(config.token ? { Authorization: `Bearer ${config.token}` } : {}),
@@ -160,8 +191,12 @@ export class Git {
   }
 
   /** https://isomorphic-git.org/docs/en/fetch */
-  async fetch(options: { dir: string; remote?: string }): Promise<void> {
-    const { dir, remote = 'origin' } = options;
+  async fetch(options: {
+    dir: string;
+    remote?: string;
+    tags?: boolean;
+  }): Promise<void> {
+    const { dir, remote = 'origin', tags = false } = options;
     this.config.logger?.info(
       `Fetching remote=${remote} for repository {dir=${dir}}`,
     );
@@ -172,6 +207,7 @@ export class Git {
         http,
         dir,
         remote,
+        tags,
         onProgress: this.onProgressHandler(),
         headers: this.headers,
         onAuth: this.onAuth,
@@ -264,6 +300,15 @@ export class Git {
     return git.readCommit({ fs, dir, oid: sha });
   }
 
+  /** https://isomorphic-git.org/docs/en/remove */
+  async remove(options: { dir: string; filepath: string }): Promise<void> {
+    const { dir, filepath } = options;
+    this.config.logger?.info(
+      `Removing file from git index {dir=${dir},filepath=${filepath}}`,
+    );
+    return git.remove({ fs, dir, filepath });
+  }
+
   /** https://isomorphic-git.org/docs/en/resolveRef */
   async resolveRef(options: { dir: string; ref: string }): Promise<string> {
     const { dir, ref } = options;
@@ -283,10 +328,7 @@ export class Git {
     });
   }
 
-  private onAuth = () => ({
-    username: this.config.username,
-    password: this.config.password,
-  });
+  private onAuth: AuthCallback;
 
   private onProgressHandler = (): ProgressCallback => {
     let currentPhase = '';
@@ -303,13 +345,13 @@ export class Git {
     };
   };
 
-  static fromAuth = (options: {
-    username?: string;
-    password?: string;
-    token?: string;
-    logger?: LoggerService;
-  }) => {
+  static fromAuth = (options: StaticAuthOptions | AuthCallbackOptions) => {
+    if (isAuthCallbackOptions(options)) {
+      const { onAuth, logger } = options;
+      return new Git({ onAuth, logger });
+    }
+
     const { username, password, token, logger } = options;
-    return new Git({ username, password, token, logger });
+    return new Git({ onAuth: () => ({ username, password }), token, logger });
   };
 }

@@ -17,4 +17,3 @@
 export { createFetchPlainAction } from './plain';
 export { createFetchPlainFileAction } from './plainFile';
 export { createFetchTemplateAction } from './template';
-export { fetchContents } from './helpers';

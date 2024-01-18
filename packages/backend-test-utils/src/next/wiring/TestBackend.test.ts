@@ -31,11 +31,10 @@ import { startTestBackend } from './TestBackend';
 let globalTestBackendHasBeenStopped = false;
 beforeAll(async () => {
   await startTestBackend({
-    services: [],
     features: [
       createBackendModule({
-        moduleId: 'test.module',
         pluginId: 'test',
+        moduleId: 'test-module',
         register(env) {
           env.registerInit({
             deps: { lifecycle: coreServices.lifecycle },
@@ -46,7 +45,7 @@ beforeAll(async () => {
             },
           });
         },
-      })(),
+      }),
     ],
   });
 });
@@ -68,17 +67,37 @@ describe('TestBackend', () => {
     const extensionPoint5 = createExtensionPoint<Obj>({ id: 'b5' });
     await expect(
       startTestBackend({
-        services: [
+        features: [
           // @ts-expect-error
           [extensionPoint1, { a: 'a' }],
-          [serviceRef, { a: 'a' }],
-          [serviceRef, { a: 'a', b: 'b' }],
-          // @ts-expect-error
-          [serviceRef, { c: 'c' }],
-          // @ts-expect-error
-          [serviceRef, { a: 'a', c: 'c' }],
-          // @ts-expect-error
-          [serviceRef, { a: 'a', b: 'b', c: 'c' }],
+          createServiceFactory(() => ({
+            service: serviceRef,
+            deps: {},
+            // @ts-expect-error
+            factory: async () => ({ a: 'a' }),
+          })),
+          createServiceFactory(() => ({
+            service: serviceRef,
+            deps: {},
+            factory: async () => ({ a: 'a', b: 'b' }),
+          })),
+          createServiceFactory(() => ({
+            service: serviceRef,
+            deps: {},
+            // @ts-expect-error
+            factory: async () => ({ c: 'c' }),
+          })),
+          createServiceFactory(() => ({
+            service: serviceRef,
+            deps: {},
+            // @ts-expect-error
+            factory: async () => ({ a: 'a', c: 'c' }),
+          })),
+          createServiceFactory(() => ({
+            service: serviceRef,
+            deps: {},
+            factory: async () => ({ a: 'a', b: 'b', c: 'c' }),
+          })),
         ],
         extensionPoints: [
           // @ts-expect-error
@@ -109,8 +128,8 @@ describe('TestBackend', () => {
     });
 
     const testModule = createBackendModule({
-      moduleId: 'test.module',
       pluginId: 'test',
+      moduleId: 'test-module',
       register(env) {
         env.registerInit({
           deps: {
@@ -124,8 +143,7 @@ describe('TestBackend', () => {
     });
 
     await startTestBackend({
-      services: [sf],
-      features: [testModule()],
+      features: [testModule(), sf()],
     });
 
     expect(testFn).toHaveBeenCalledWith('winning');
@@ -135,8 +153,8 @@ describe('TestBackend', () => {
     const shutdownSpy = jest.fn();
 
     const testModule = createBackendModule({
-      moduleId: 'test.module',
       pluginId: 'test',
+      moduleId: 'test-module',
       register(env) {
         env.registerInit({
           deps: {
@@ -150,7 +168,6 @@ describe('TestBackend', () => {
     });
 
     const backend = await startTestBackend({
-      services: [],
       features: [testModule()],
     });
 
@@ -168,7 +185,7 @@ describe('TestBackend', () => {
         env.registerInit({
           deps: {
             cache: coreServices.cache,
-            config: coreServices.config,
+            config: coreServices.rootConfig,
             database: coreServices.database,
             discovery: coreServices.discovery,
             httpRouter: coreServices.httpRouter,
@@ -192,7 +209,6 @@ describe('TestBackend', () => {
     });
 
     await startTestBackend({
-      services: [],
       features: [testPlugin()],
     });
   });
@@ -219,5 +235,90 @@ describe('TestBackend', () => {
     const res = await request(server).get('/api/test/ping-me');
     expect(res.status).toEqual(200);
     expect(res.body).toEqual({ message: 'pong' });
+  });
+
+  it('should provide extension point implementations', async () => {
+    expect.assertions(3);
+
+    const extensionPointA = createExtensionPoint<string>({ id: 'a' });
+    const extensionPointB = createExtensionPoint<string>({ id: 'b' });
+    await expect(
+      startTestBackend({
+        extensionPoints: [
+          [extensionPointA, 'a'],
+          [extensionPointB, 'b'],
+        ],
+        features: [
+          createBackendModule({
+            pluginId: 'testA',
+            moduleId: 'test',
+            register(reg) {
+              reg.registerInit({
+                deps: { ext: extensionPointA },
+                async init({ ext }) {
+                  expect(ext).toBe('a');
+                },
+              });
+            },
+          }),
+          createBackendModule({
+            pluginId: 'testB',
+            moduleId: 'test',
+            register(reg) {
+              reg.registerInit({
+                deps: { ext: extensionPointB },
+                async init({ ext }) {
+                  expect(ext).toBe('b');
+                },
+              });
+            },
+          }),
+        ],
+      }),
+    ).resolves.not.toBeUndefined();
+  });
+
+  it('should reject extension point used by multiple plugins', async () => {
+    const extensionPointA = createExtensionPoint<string>({ id: 'a' });
+    await expect(
+      startTestBackend({
+        extensionPoints: [[extensionPointA, 'a']],
+        features: [
+          createBackendModule({
+            pluginId: 'testA',
+            moduleId: 'test',
+            register(reg) {
+              reg.registerInit({
+                deps: { ext: extensionPointA },
+                async init() {},
+              });
+            },
+          }),
+          createBackendModule({
+            pluginId: 'testB',
+            moduleId: 'test',
+            register(reg) {
+              reg.registerInit({
+                deps: { ext: extensionPointA },
+                async init() {},
+              });
+            },
+          }),
+        ],
+      }),
+    ).rejects.toThrow(
+      "Illegal dependency: Module 'test' for plugin 'testB' attempted to depend on extension point 'a' for plugin 'testA'. Extension points can only be used within their plugin's scope.",
+    );
+  });
+
+  it('should reject extension point not used by any plugin', async () => {
+    const extensionPointA = createExtensionPoint<string>({ id: 'a' });
+    await expect(
+      startTestBackend({
+        extensionPoints: [[extensionPointA, 'a']],
+      }),
+    ).rejects.toThrow(
+      "Unable to determine the plugin ID of extension point(s) 'a'. Tested extension points must be depended on by one or more tested modules.",
+    );
   });
 });

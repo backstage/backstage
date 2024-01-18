@@ -131,7 +131,10 @@ export class AwsS3EntityProvider implements EntityProvider {
           try {
             await this.refresh(logger);
           } catch (error) {
-            logger.error(`${this.getProviderName()} refresh failed`, error);
+            logger.error(
+              `${this.getProviderName()} refresh failed, ${error}`,
+              error,
+            );
           }
         },
       });
@@ -146,20 +149,22 @@ export class AwsS3EntityProvider implements EntityProvider {
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
-    const credProvider =
-      await this.awsCredentialsManager.getCredentialProvider();
+    const { accountId, region, bucketName } = this.config;
+    const credProvider = await this.awsCredentialsManager.getCredentialProvider(
+      accountId ? { accountId } : undefined,
+    );
     this.s3 = new S3({
       apiVersion: '2006-03-01',
       credentialDefaultProvider: () => credProvider.sdkCredentialProvider,
       endpoint: this.integration.config.endpoint,
-      region: this.config.region,
+      region,
       forcePathStyle: this.integration.config.s3ForcePathStyle,
     });
 
     // https://github.com/aws/aws-sdk-js-v3/issues/4122#issuecomment-1298968804
     const endpoint = await getEndpointFromInstructions(
       {
-        Bucket: this.config.bucketName,
+        Bucket: bucketName,
       },
       ListObjectsV2Command,
       this.s3.config as unknown as Record<string, unknown>,

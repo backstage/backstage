@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles, Tooltip } from '@material-ui/core';
+
+import { makeStyles, Theme, Tooltip } from '@material-ui/core';
 import React from 'react';
-import { BackstageTheme } from '@backstage/theme';
 import { BuildStatus, BuildStatusResult, xcmetricsApiRef } from '../../api';
 import { cn, formatDuration, formatStatus } from '../../utils';
 import useAsync from 'react-use/lib/useAsync';
@@ -71,7 +71,7 @@ type StatusStyle = {
   [key in BuildStatus]: any;
 };
 
-const useStyles = makeStyles<BackstageTheme, StatusCellProps>(theme => ({
+const useStyles = makeStyles<Theme, StatusCellProps>(theme => ({
   root: {
     width: ({ size }) => size,
     height: ({ size }) => size,

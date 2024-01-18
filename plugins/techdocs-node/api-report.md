@@ -10,6 +10,7 @@ import { Config } from '@backstage/config';
 import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -21,6 +22,13 @@ import { Writable } from 'stream';
 export class DirectoryPreparer implements PreparerBase {
   static fromConfig(config: Config, options: PreparerConfig): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  shouldCleanPreparedDirectory(): boolean;
+}
+
+// @public
+export interface DocsBuildStrategy {
+  // (undocumented)
+  shouldBuild(params: { entity: Entity }): Promise<boolean>;
 }
 
 // @public
@@ -54,6 +62,7 @@ export type GeneratorRunOptions = {
   siteOptions?: {
     name?: string;
   };
+  runAsDefaultUser?: boolean;
 };
 
 // @public
@@ -88,9 +97,10 @@ export const getLocationForEntity: (
 // @public @deprecated (undocumented)
 export const getMkDocsYml: (
   inputDir: string,
-  siteOptions?:
+  options?:
     | {
         name?: string | undefined;
+        mkdocsConfigFileName?: string | undefined;
       }
     | undefined,
 ) => Promise<{
@@ -102,8 +112,9 @@ export const getMkDocsYml: (
 // @public
 export const getMkdocsYml: (
   inputDir: string,
-  siteOptions?: {
+  options?: {
     name?: string;
+    mkdocsConfigFileName?: string;
   },
 ) => Promise<{
   path: string;
@@ -132,6 +143,7 @@ export const parseReferenceAnnotation: (
 // @public
 export type PreparerBase = {
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  shouldCleanPreparedDirectory(): boolean;
 };
 
 // @public
@@ -226,6 +238,15 @@ export type RemoteProtocol = 'url' | 'dir';
 export type SupportedGeneratorKey = 'techdocs' | string;
 
 // @public
+export interface TechdocsBuildsExtensionPoint {
+  // (undocumented)
+  setBuildStrategy(buildStrategy: DocsBuildStrategy): void;
+}
+
+// @public
+export const techdocsBuildsExtensionPoint: ExtensionPoint<TechdocsBuildsExtensionPoint>;
+
+// @public
 export interface TechDocsDocument extends IndexableDocument {
   kind: string;
   lifecycle: string;
@@ -243,7 +264,7 @@ export class TechdocsGenerator implements GeneratorBase {
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   });
-  static readonly defaultDockerImage = 'spotify/techdocs:v1.2.1';
+  static readonly defaultDockerImage = 'spotify/techdocs:v1.2.3';
   static fromConfig(
     config: Config,
     options: GeneratorOptions,
@@ -274,5 +295,6 @@ export const transformDirLocation: (
 export class UrlPreparer implements PreparerBase {
   static fromConfig(options: PreparerConfig): UrlPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
+  shouldCleanPreparedDirectory(): boolean;
 }
 ```

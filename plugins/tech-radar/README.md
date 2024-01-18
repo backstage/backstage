@@ -85,11 +85,12 @@ When defining the radar entries you can see the available properties on the file
 
 ### ring
 
-| Name    | Type   | Description                                       | Required? |
-| ------- | ------ | ------------------------------------------------- | --------- |
-| `id`    | string | The id of the ring                                | Yes       |
-| `name`  | string | The name of the ring                              | Yes       |
-| `color` | string | The color of the ring and entries inside the ring | Yes       |
+| Name          | Type   | Description                                       | Required? |
+| ------------- | ------ | ------------------------------------------------- | --------- |
+| `id`          | string | The id of the ring                                | Yes       |
+| `name`        | string | The name of the ring                              | Yes       |
+| `color`       | string | The color of the ring and entries inside the ring | Yes       |
+| `description` | string | Description of the Ring                           | No        |
 
 ### entry
 

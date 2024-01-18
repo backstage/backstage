@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { WelcomeTitle } from './WelcomeTitle';
@@ -29,4 +30,16 @@ describe('<WelcomeTitle>', () => {
 
     expect(getByText(/Get some rest, Guest/)).toBeInTheDocument();
   });
+});
+
+test('should greet user with a single language', async () => {
+  jest
+    .spyOn(global.Date, 'now')
+    .mockImplementation(() => new Date('1970-01-01T10:00:00').valueOf());
+
+  const { getByText } = await renderInTestApp(
+    <WelcomeTitle language={['English']} />,
+  );
+
+  expect(getByText(/Good morning, Guest/)).toBeInTheDocument();
 });

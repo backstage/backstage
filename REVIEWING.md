@@ -20,6 +20,14 @@ When reviewing pull requests it's important to consider our [versioning policy a
 
 One other thing to keep in mind, especially when merging pull requests, is where in the release cycle we're currently at. In particular you want to avoid merging any large or risky changes towards the end of each release cycle. If there is a change that is ready to be merged, but you want to hold off until the next main line release, then you can label it with the `merge-after-release` label.
 
+## Configuration
+
+Pull requests that have [configuration related](https://backstage.io/docs/conf/defining) changes or additions need some extra consideration.
+
+- Every configuration field consumed by code should have a corresponding `config.d.ts` declaration.
+- Carefully consider the `@visibility` of configuration fields in the schema. The default is `backend`. Take extra care that sensitive/secret fields are marked as `@visibility secret` so that they don't accidentally leak. Also ensure that fields that the frontend wants to consume are marked as `@visibility frontend`, otherwise they can't be sent to the browser at all.
+- Check that the `config.d.ts` is mentioned in the consuming package's `package.json` as illustrated [in the docs](https://backstage.io/docs/conf/defining). Otherwise it won't get packaged and picked up by the runtime.
+
 ## Changesets
 
 We use changesets to track changes in all published packages. Changesets both define what should go into the changelog of each package, but also what kind of version bump should be done for the next release.
@@ -52,6 +60,7 @@ Some things that changeset should NOT contain are:
 - Information related to a different package.
 - A large amount of content, consider for example a separate migration guide instead, either in the package README or [./docs/](./docs/), and then link to that instead.
 - Documentation - changesets can describe new features, but it should not be relied on for documenting them. Documentation should either be placed in [TSDoc](https://tsdoc.org) comments, package README, or [./docs/](./docs/).
+- Diffs of internal code, for example mirroring what the pull request changes _inside_ a plugin rather than public surfaces. This is not of interest to the reader of a package changelog. Sometimes, however, a small and concise diff can be used in a changeset to illustrate changes that the user will have to make in _their own_ Backstage installation as part of an upgrade, specifically when breaking changes are made to a package.
 
 ### When is a changeset needed?
 
@@ -163,13 +172,7 @@ We generate API Reports using the [API Extractor](https://api-extractor.com/) to
 
 Each API report contains a list of all the exported types of each package. As long as the API report does not have any warnings it will contain the full publicly facing API of the package, meaning you do not need to consider any other changes to the package from the point of view of TypeScript API stability.
 
-Exported types can be marked with either `@public`, `@alpha` or `@beta` release tags. It is only the `@public` exports that we consider to be part of the stable API. The `@alpha` and `@beta` exports are considered unstable and can be changed at any time without needing a breaking package versions bump. However, this **ONLY** applies if the package has been configured to use experimental type builds, which looks like this in `package.json`:
-
-```json
-  "build": "backstage-cli package build --experimental-type-build"
-```
-
-If a package does not have this configuration, then all exported types are considered stable, even if they are marked as `@alpha` or `@beta`.
+Exported types can be marked with either `@public`, `@alpha` or `@beta` release tags. It is only the `@public` exports that we consider to be part of the stable API. The `@alpha` and `@beta` exports are considered unstable and can be changed at any time without needing a breaking package versions bump.
 
 #### Changes that are Not Considered Breaking
 
@@ -346,3 +349,13 @@ type LabelStyle = 'normal' | 'thin';
 // Output, since it's an exported constant
 const LABEL_SIZE: number;
 ```
+
+## Plugin Directory Submissions
+
+When reviewing Plugin Directory submissions please consider the following:
+
+- Check to make sure they have the rights for any icon being used. This is mostly for clearly copyrighted logos, for example the Microsoft Azure DevOps logo
+- Make sure the package has been published on the NPM registry.
+- Make sure the package on NPM has a link back to the code repo, this helps provide confidence that it's the right package.
+- If they use an [NPM scope](https://docs.npmjs.com/about-scopes) make sure it that matches either the Organization name or user name, this provides trust in the plugin
+- If the plugin has both a frontend and backend make sure that the documentation notes that.

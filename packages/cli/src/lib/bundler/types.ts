@@ -22,16 +22,16 @@ export type BundlingOptions = {
   checksEnabled: boolean;
   isDev: boolean;
   frontendConfig: Config;
-  frontendAppConfigs: AppConfig[];
+  getFrontendAppConfigs(): AppConfig[];
   baseUrl: URL;
   parallelism?: number;
+  additionalEntryPoints?: string[];
 };
 
 export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
-  frontendConfig: Config;
-  frontendAppConfigs: AppConfig[];
-  fullConfig: Config;
+  configPaths: string[];
+  verifyVersions?: boolean;
 };
 
 export type BuildOptions = BundlingPathsOptions & {
@@ -42,6 +42,7 @@ export type BuildOptions = BundlingPathsOptions & {
   schema?: ConfigSchema;
   frontendConfig: Config;
   frontendAppConfigs: AppConfig[];
+  fullConfig: Config;
 };
 
 export type BackendBundlingOptions = {

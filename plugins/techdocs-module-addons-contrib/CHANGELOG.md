@@ -1,5 +1,323 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.4
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-techdocs-react@1.1.15
+  - @backstage/integration-react@1.1.23
+  - @backstage/integration@1.8.0
+
+## 1.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/integration-react@1.1.23-next.0
+  - @backstage/plugin-techdocs-react@1.1.15-next.1
+  - @backstage/integration@1.8.0
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/plugin-techdocs-react@1.1.15-next.0
+  - @backstage/integration-react@1.1.22
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/integration@1.8.0
+
+## 1.1.3
+
+### Patch Changes
+
+- a518c5a: Updated dependency `@react-hookz/web` to `^23.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/integration@1.8.0
+  - @backstage/integration-react@1.1.22
+  - @backstage/plugin-techdocs-react@1.1.14
+
+## 1.1.3-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-techdocs-react@1.1.14-next.3
+
+## 1.1.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/plugin-techdocs-react@1.1.14-next.2
+
+## 1.1.3-next.1
+
+### Patch Changes
+
+- a518c5a25b: Updated dependency `@react-hookz/web` to `^23.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/plugin-techdocs-react@1.1.14-next.1
+  - @backstage/theme@0.5.0-next.0
+
+## 1.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/integration-react@1.1.22-next.0
+  - @backstage/plugin-techdocs-react@1.1.14-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- 4728b3960d: Fixed navigation bug that caused users to not be scrolled to the top of a new page. Fixed navigation bug where using backwards and forwards browser navigation did not scroll users to the correct place on the TechDoc page.
+- 6c2b872153: Add official support for React 18.
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/core-components@0.13.8
+  - @backstage/integration@1.7.2
+  - @backstage/integration-react@1.1.21
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-techdocs-react@1.1.13
+  - @backstage/theme@0.4.4
+
+## 1.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/plugin-techdocs-react@1.1.13-next.2
+
+## 1.1.2-next.1
+
+### Patch Changes
+
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/integration-react@1.1.21-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/plugin-techdocs-react@1.1.13-next.1
+
+## 1.1.2-next.0
+
+### Patch Changes
+
+- 4728b3960d: Fixed navigation bug that caused users to not be scrolled to the top of a new page. Fixed navigation bug where using backwards and forwards browser navigation did not scroll users to the correct place on the TechDoc page.
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/integration-react@1.1.21-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/plugin-techdocs-react@1.1.13-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/integration@1.7.1
+
+## 1.1.1
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/integration-react@1.1.20
+  - @backstage/plugin-techdocs-react@1.1.12
+  - @backstage/theme@0.4.3
+
+## 1.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.20-next.2
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/theme@0.4.3-next.0
+  - @backstage/plugin-techdocs-react@1.1.12-next.2
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.1
+  - @backstage/integration-react@1.1.20-next.1
+  - @backstage/plugin-techdocs-react@1.1.12-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/theme@0.4.2
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/core-components@0.13.6-next.0
+  - @backstage/integration-react@1.1.20-next.0
+  - @backstage/plugin-techdocs-react@1.1.12-next.0
+  - @backstage/theme@0.4.2
+
+## 1.1.0
+
+### Minor Changes
+
+- 86c19906fe4b: Enable zoom icon for techdocs images inside lightbox
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/integration-react@1.1.19
+  - @backstage/core-components@0.13.5
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-techdocs-react@1.1.10
+  - @backstage/theme@0.4.2
+
+## 1.1.0-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/integration@1.7.0-next.3
+  - @backstage/integration-react@1.1.19-next.3
+  - @backstage/plugin-techdocs-react@1.1.10-next.3
+  - @backstage/theme@0.4.2-next.0
+
+## 1.1.0-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/integration-react@1.1.19-next.2
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-techdocs-react@1.1.10-next.2
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/theme@0.4.1
+
+## 1.1.0-next.1
+
+### Minor Changes
+
+- 86c19906fe4b: Enable zoom icon for techdocs images inside lightbox
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/integration-react@1.1.19-next.1
+  - @backstage/plugin-techdocs-react@1.1.10-next.1
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/theme@0.4.1
+
+## 1.0.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.18-next.0
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-techdocs-react@1.1.10-next.0
+
+## 1.0.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.16
+  - @backstage/integration@1.6.0
+  - @backstage/core-components@0.13.4
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-techdocs-react@1.1.9
+
+## 1.0.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.16-next.1
+  - @backstage/integration@1.5.1
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-techdocs-react@1.1.9-next.0
+
+## 1.0.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/integration@1.5.1
+  - @backstage/integration-react@1.1.16-next.0
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-techdocs-react@1.1.9-next.0
+
+## 1.0.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/integration@1.5.1
+  - @backstage/integration-react@1.1.15
+  - @backstage/plugin-techdocs-react@1.1.8
+
 ## 1.0.15-next.2
 
 ### Patch Changes

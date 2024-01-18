@@ -1,0 +1,9 @@
+# CLOMonitor metadata file
+# This file must be located at the root of the repository
+# https://clomonitor.io/projects/cncf/backstage
+
+# Checks exemptions
+exemptions:
+  - check: trademark_disclaimer # Check identifier (see https://github.com/cncf/clomonitor/blob/main/docs/checks.md#exemptions)
+    # Justification of this exemption (mandatory, it will be displayed on the UI)
+    reason: 'The Linux Foundation trademark disclaimer and link are contained within the project web site at https://backstage.io in the copyright footer. However, because the site is delivered dynamically via React through JavaScript, the check cannot currently identify it.'

@@ -17,7 +17,7 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   defaultAuthProviderFactories,
   AuthProviderFactory,
@@ -38,19 +38,23 @@ import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers';
 import { AuthDatabase } from '../database/AuthDatabase';
 import { BACKSTAGE_SESSION_EXPIRATION } from '../lib/session';
+import { TokenIssuer } from '../identity/types';
+import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
+import { StaticKeyStore } from '../identity/StaticKeyStore';
 
 /** @public */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
 
 /** @public */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   database: PluginDatabaseManager;
   config: Config;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
+  disableDefaultProviderFactories?: boolean;
   catalogApi?: CatalogApi;
 }
 
@@ -65,7 +69,7 @@ export async function createRouter(
     database,
     tokenManager,
     tokenFactoryAlgorithm,
-    providerFactories,
+    providerFactories = {},
     catalogApi,
   } = options;
   const router = Router();
@@ -74,20 +78,34 @@ export async function createRouter(
   const authUrl = await discovery.getExternalBaseUrl('auth');
 
   const authDb = AuthDatabase.create(database);
+  const sessionExpirationSeconds = BACKSTAGE_SESSION_EXPIRATION;
+
   const keyStore = await KeyStores.fromConfig(config, {
     logger,
     database: authDb,
   });
-  const keyDurationSeconds = BACKSTAGE_SESSION_EXPIRATION;
 
-  const tokenIssuer = new TokenFactory({
-    issuer: authUrl,
-    keyStore,
-    keyDurationSeconds,
-    logger: logger.child({ component: 'token-factory' }),
-    algorithm: tokenFactoryAlgorithm,
-  });
-
+  let tokenIssuer: TokenIssuer;
+  if (keyStore instanceof StaticKeyStore) {
+    tokenIssuer = new StaticTokenIssuer(
+      {
+        logger: logger.child({ component: 'token-factory' }),
+        issuer: authUrl,
+        sessionExpirationSeconds: sessionExpirationSeconds,
+      },
+      keyStore as StaticKeyStore,
+    );
+  } else {
+    tokenIssuer = new TokenFactory({
+      issuer: authUrl,
+      keyStore,
+      keyDurationSeconds: sessionExpirationSeconds,
+      logger: logger.child({ component: 'token-factory' }),
+      algorithm:
+        tokenFactoryAlgorithm ??
+        config.getOptionalString('auth.identityTokenAlgorithm'),
+    });
+  }
   const secret = config.getOptionalString('auth.session.secret');
   if (secret) {
     router.use(cookieParser(secret));
@@ -113,23 +131,28 @@ export async function createRouter(
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
-  const allProviderFactories = {
-    ...defaultAuthProviderFactories,
-    ...providerFactories,
-  };
-  const providersConfig = config.getConfig('auth.providers');
-  const configuredProviders = providersConfig.keys();
+  const allProviderFactories = options.disableDefaultProviderFactories
+    ? providerFactories
+    : {
+        ...defaultAuthProviderFactories,
+        ...providerFactories,
+      };
+
+  const providersConfig = config.getOptionalConfig('auth.providers');
 
   const isOriginAllowed = createOriginFilter(config);
 
   for (const [providerId, providerFactory] of Object.entries(
     allProviderFactories,
   )) {
-    if (configuredProviders.includes(providerId)) {
+    if (providersConfig?.has(providerId)) {
       logger.info(`Configuring auth provider: ${providerId}`);
       try {
         const provider = providerFactory({
           providerId,
+          appUrl,
+          baseUrl: authUrl,
+          isOriginAllowed,
           globalConfig: {
             baseUrl: authUrl,
             appUrl,

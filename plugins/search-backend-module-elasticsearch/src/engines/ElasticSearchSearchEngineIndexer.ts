@@ -19,6 +19,7 @@ import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { Readable } from 'stream';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Options for instantiate ElasticSearchSearchEngineIndexer
@@ -29,9 +30,10 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   indexPrefix: string;
   indexSeparator: string;
   alias: string;
-  logger: Logger;
+  logger: Logger | LoggerService;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
   batchSize: number;
+  skipRefresh?: boolean;
 };
 
 function duration(startTimestamp: [number, number]): string {
@@ -55,7 +57,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private readonly indexSeparator: string;
   private readonly alias: string;
   private readonly removableAlias: string;
-  private readonly logger: Logger;
+  private readonly logger: Logger | LoggerService;
   private readonly sourceStream: Readable;
   private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
   private configuredBatchSize: number;
@@ -94,7 +96,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
           index: { _index: that.indexName },
         };
       },
-      refreshOnCompletion: that.indexName,
+      refreshOnCompletion: options.skipRefresh !== true,
     });
 
     // Safely catch errors thrown by the bulk helper client, e.g. HTTP timeouts
@@ -186,7 +188,9 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     // If any indices are removable, remove them. Do not bubble up this error,
     // as doing so would delete the now aliased index. Log instead.
     if (this.removableIndices.length) {
-      this.logger.info('Removing stale search indices', this.removableIndices);
+      this.logger.info('Removing stale search indices', {
+        removableIndices: this.removableIndices,
+      });
       try {
         await this.elasticSearchClientWrapper.deleteIndex({
           index: this.removableIndices,

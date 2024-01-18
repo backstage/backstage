@@ -108,7 +108,7 @@ export function makeLegacyPlugin<
 export const legacyPlugin = makeLegacyPlugin(
   {
     cache: coreServices.cache,
-    config: coreServices.config,
+    config: coreServices.rootConfig,
     database: coreServices.database,
     discovery: coreServices.discovery,
     logger: coreServices.logger,

@@ -39,8 +39,9 @@ import {
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { getHostnameFromEntity } from '../getHostnameFromEntity';
+import { getStatusDescription } from '../WorkflowRunStatus/WorkflowRunStatus';
 
-const generatedColumns: TableColumn[] = [
+const generatedColumns: TableColumn<Partial<WorkflowRun>>[] = [
   {
     title: 'ID',
     field: 'id',
@@ -51,7 +52,7 @@ const generatedColumns: TableColumn[] = [
     title: 'Message',
     field: 'message',
     highlight: true,
-    render: (row: Partial<WorkflowRun>) => {
+    render: row => {
       const LinkWrapper = () => {
         const routeLink = useRouteRef(buildRouteRef);
         return (
@@ -66,7 +67,7 @@ const generatedColumns: TableColumn[] = [
   },
   {
     title: 'Source',
-    render: (row: Partial<WorkflowRun>) => (
+    render: row => (
       <Typography variant="body2" noWrap>
         <Typography paragraph variant="body2">
           {row.source?.branchName}
@@ -83,9 +84,10 @@ const generatedColumns: TableColumn[] = [
   },
   {
     title: 'Status',
-    width: '150px',
-
-    render: (row: Partial<WorkflowRun>) => (
+    customSort: (d1, d2) => {
+      return getStatusDescription(d1).localeCompare(getStatusDescription(d2));
+    },
+    render: row => (
       <Box display="flex" alignItems="center">
         <WorkflowRunStatus status={row.status} conclusion={row.conclusion} />
       </Box>

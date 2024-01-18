@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /**
    * Configuration options for the catalog plugin.
@@ -142,5 +144,43 @@ export interface Config {
      * "keep".
      */
     orphanStrategy?: 'keep' | 'delete';
+
+    /**
+     * The strategy to use when stitching together the final entities.
+     */
+    stitchingStrategy?:
+      | {
+          /** Perform stitching in-band immediately when needed */
+          mode: 'immediate';
+        }
+      | {
+          /** Defer stitching to be performed asynchronously */
+          mode: 'deferred';
+        };
+
+    /**
+     * The interval at which the catalog should process its entities.
+     *
+     * @remarks
+     *
+     * Example:
+     *
+     * ```yaml
+     * catalog:
+     *   processingInterval: { minutes: 30 }
+     * ```
+     *
+     * Note that this is only a suggested minimum, and the actual interval may
+     * be longer. Internally, the catalog will scale up this number by a small
+     * factor and choose random numbers in that range to spread out the load. If
+     * the catalog is overloaded and cannot process all entities during the
+     * interval, the time taken between processing runs of any given entity may
+     * also be longer than specified here.
+     *
+     * Setting this value too low risks exhausting rate limits on external
+     * systems that are queried by processors, such as version control systems
+     * housing catalog-info files.
+     */
+    processingInterval?: HumanDuration;
   };
 }

@@ -6,13 +6,11 @@ sidebar_label: Extension Points
 description: Extension points of backend plugins
 ---
 
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
-
-While plugins are able to accept options for lightweight forms of customization and extension, you quickly hit a limit where you need something more powerful to allow users to extend your plugin. For this purpose, the backend system provides a mechanism for plugins to provide extension points, which can be used to expose deeper customizations for your plugin. Extension points are used by modules, which are installed in the backend adjacent to plugins. Modules are covered more in-depth in the [next section](./06-modules.md).
+While plugins are able to use static configuration for lightweight forms of customization, you can quickly hit a limit where you need something more powerful to allow users to extend your plugin. For this purpose, the backend system provides a mechanism for plugins to provide extension points, which can be used to expose deeper customizations for your plugin. Extension points are used by modules, which are installed in the backend adjacent to plugins. Modules are covered more in-depth in the [next section](./06-modules.md).
 
 Extension points are quite similar to services, in that they both encapsulate an interface in a reference object. The key difference is that extension points are registered and provided by plugins themselves, and do not have any factory associated with them. Extension points for a given plugin are also only accessible to modules that extend that same plugin.
 
-Extension points should always be exported from a plugin node library package, for example `@backstage/plugin-catalog-node`. This is to allow for modules to avoid a direct dependency on the plugin, and make it easier to evolve extension points over time. You can export as many different extension points as you want, just be mindful of the complexity of the API surface. It is however often better to export multiple extension points with few methods, rather than few extension points with many methods, as that tends to be easier to maintain.
+Plugin extension points should always be exported from a plugin node library package, for example `@backstage/plugin-catalog-node`. This is to allow for modules to avoid a direct dependency on the plugin, and make it easier to evolve extension points over time. You can export as many different extension points as you want, just be mindful of the complexity of the API surface. It is however often better to export multiple extension points with few methods, rather than few extension points with many methods, as that tends to be easier to maintain.
 
 ## Defining an Extension Point
 
@@ -36,28 +34,29 @@ export const scaffolderActionsExtensionPoint =
 For modules to be able to use your extension point, an implementation of it must be registered by the plugin. This is done using the `registerExtensionPoint` method in the `register` callback of the plugin definition.
 
 ```ts
-class ActionsExtension implements ScaffolderActionsExtensionPoint {
-  addActions(...actions: TemplateAction<any>[]): void { ... }
-
-  getRegisteredActions() { ... }
-}
-
 export const scaffolderPlugin = createBackendPlugin(
   {
     pluginId: 'scaffolder',
     register(env) {
-      const actionsExtensions = new ActionsExtension();
+      const actions = new Map<string, TemplateAction<any>>();
+
       env.registerExtensionPoint(
         scaffolderActionsExtensionPoint,
-        actionsExtensions,
+        {
+          addAction(action) {
+            if (actions.has(action.id)) {
+              throw new Error(`Scaffolder actions with ID '${action.id}' has already been installed`);
+            }
+            actions.set(action.id, action);
+          },
+        },
       );
 
       env.registerInit({
         deps: { ... },
         async init({ ... }) {
-          const actions = actionsExtension.getRegisteredActions();
-
           // Use the registered actions when setting up the scaffolder ...
+          const installedActions = Array.from(actions.values());
         },
       });
     },
@@ -65,9 +64,11 @@ export const scaffolderPlugin = createBackendPlugin(
 );
 ```
 
-There are a couple of things to note here. The first is that our `ActionsExtension` class both implements the `ScaffolderActionsExtensionPoint` interface, but also has additional public methods. These methods won't be available to the modules that use this extension, but we can use them here in the implementation of our plugin. Note also that the `ActionsExtension` class is _not_ exported to the outside, since it's only for the internal use of this plugin during its setup phase.
+Note that we create a closure that adds to a shared `actions` structure when `addAction` is called by users of your extension point. It is safe for us to then access our `actions` in the `init` method of our plugin, since all modules that extend our plugin will be completely initialized before our plugin gets initialized. That means that at the point where our `init` method is called, all actions have been added and can be accessed.
 
-The second is that we create our `ActionsExtension` instance within the `register` method, and then access it directly in our `init` method. This is both safe to do and an intended convenience. All modules that extend our plugin will be completely initialized before our plugin gets initialized, which means that at the point where our `init` method is called, all actions have been added and can be accessed.
+## Module Extension Points
+
+Just like plugins, modules can also provide their own extension points. The API for registering and using extension points is the same as for plugins. However, modules should typically only use extension points to allow for complex internal customizations by users of the plugin module. It is therefore preferred to export the extension point directly from the module package, rather than creating a separate node library for that purpose. Extension points exported by a module are used the same way as extension points exported by a plugin, you create your own separate module and declare a dependency on the extension point that you want to interact with.
 
 ## Extension Point Design
 

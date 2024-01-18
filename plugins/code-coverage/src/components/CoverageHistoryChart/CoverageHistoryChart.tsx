@@ -15,7 +15,6 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Card,
@@ -50,7 +49,7 @@ import { DateTime } from 'luxon';
 
 type Coverage = 'line' | 'branch';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   trendDown: {
     color: theme.palette.status.warning,
   },
@@ -113,8 +112,8 @@ export const CoverageHistoryChart = () => {
     );
   }
 
-  const oldestCoverage = valueHistory.history[0];
-  const [latestCoverage] = valueHistory.history.slice(-1);
+  const [oldestCoverage] = valueHistory.history.slice(-1);
+  const latestCoverage = valueHistory.history[0];
 
   const getTrendForCoverage = (type: Coverage) => {
     if (!oldestCoverage[type].percentage) {

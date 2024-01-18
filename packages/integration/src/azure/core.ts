@@ -15,15 +15,6 @@
  */
 
 import { AzureUrl } from './AzureUrl';
-import {
-  AzureIntegrationConfig,
-  isAzureManagedIdentityCredential,
-  isAzureClientSecretCredential,
-} from './config';
-import {
-  ClientSecretCredential,
-  ManagedIdentityCredential,
-} from '@azure/identity';
 
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
@@ -61,46 +52,4 @@ export function getAzureDownloadUrl(url: string): string {
  */
 export function getAzureCommitsUrl(url: string): string {
   return AzureUrl.fromRepoUrl(url).toCommitsUrl();
-}
-
-/**
- * Gets the request options necessary to make requests to a given provider.
- *
- * @param config - The relevant provider config
- * @param additionalHeaders - Additional headers for the request
- * @public
- */
-export async function getAzureRequestOptions(
-  config: AzureIntegrationConfig,
-  additionalHeaders?: Record<string, string>,
-): Promise<{ headers: Record<string, string> }> {
-  const azureDevOpsScope = '499b84ac-1321-427f-aa17-267ca6975798/.default';
-  const headers: Record<string, string> = additionalHeaders
-    ? { ...additionalHeaders }
-    : {};
-
-  const { token, credential } = config;
-  if (credential) {
-    if (isAzureClientSecretCredential(credential)) {
-      const servicePrincipal = new ClientSecretCredential(
-        credential.tenantId,
-        credential.clientId,
-        credential.clientSecret,
-      );
-
-      const accessToken = await servicePrincipal.getToken(azureDevOpsScope);
-      headers.Authorization = `Bearer ${accessToken.token}`;
-    } else if (isAzureManagedIdentityCredential(credential)) {
-      const managedIdentity = new ManagedIdentityCredential(
-        credential.clientId,
-      );
-      const accessToken = await managedIdentity.getToken(azureDevOpsScope);
-      headers.Authorization = `Bearer ${accessToken.token}`;
-    }
-  } else if (token) {
-    const buffer = Buffer.from(`:${config.token}`, 'utf8');
-    headers.Authorization = `Basic ${buffer.toString('base64')}`;
-  }
-
-  return { headers };
 }

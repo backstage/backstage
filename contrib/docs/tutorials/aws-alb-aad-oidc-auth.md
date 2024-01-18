@@ -1,18 +1,18 @@
-# Using AWS Application Load Balancer with Azure Active Directory to authenticate requests
+# Using AWS Application Load Balancer with Entra ID to authenticate requests
 
 Backstage allows offloading the responsibility of authenticating users to an AWS Application Load Balancer (**ALB**), leveraging the authentication support on ALB.
 This tutorial shows how to use authentication on an ALB sitting in front of Backstage.
-Azure Active Directory (**AAD**) is used as identity provider but any identity provider supporting OpenID Connect (OIDC) can be used.
+Entra Id (formerly Azure Active Directory) is used as identity provider but any identity provider supporting OpenID Connect (OIDC) can be used.
 
 It is assumed an ALB is already serving traffic in front of a Backstage instance configured to serve the frontend app from the backend.
 
 ## Infrastructure setup
 
-### AAD App
+### Entra App Registration
 
-The AAD App is used to execute the authentication flow, serve and refresh the identity token.
+The App Registration is used to execute the authentication flow, serve and refresh the identity token.
 
-Create the AAD App following the steps outlined in `Create a Microsoft App Registration in Microsoft Portal` section from the tutorial [Monorepo App Setup With Authentication][monorepo-app-setup-with-auth].
+Create the App following the steps outlined in `Create a Microsoft App Registration in Microsoft Portal` section from the tutorial [Monorepo App Setup With Authentication][monorepo-app-setup-with-auth].
 
 Instead of `localhost` addresses, use the following values.
 
@@ -27,12 +27,12 @@ In the AWS console, configure ALB Authentication:
 
 - Edit the ALB rule used to forward the traffic to Backstage and add a new `Authenticate` action. The action will have higher priority compared to the existing `Forward to`.
 - Select `OIDC` under `Authenticate`
-- Set `Issuer` to `https://login.microsoftonline.com/{TENANT_ID}/v2.0`, replacing `{TENANT_ID}` with the value of `Directory (tenant) ID` of the AAD App.
-- Set `Authorization endpoint` to `https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/authorize`, replacing `{TENANT_ID}` with the value of `Directory (tenant) ID` of the AAD App.
-- Set `Token endpoint` to `https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/authorize`, replacing `{TENANT_ID}` with the value of `Directory (tenant) ID` of the AAD App.
+- Set `Issuer` to `https://login.microsoftonline.com/{TENANT_ID}/v2.0`, replacing `{TENANT_ID}` with the value of `Directory (tenant) ID` of the App Registration.
+- Set `Authorization endpoint` to `https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/authorize`, replacing `{TENANT_ID}` with the value of `Directory (tenant) ID` of the App Registration.
+- Set `Token endpoint` to `https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token`, replacing `{TENANT_ID}` with the value of `Directory (tenant) ID` of the App Registration.
 - Set `User info endpoint` to `https://graph.microsoft.com/oidc/userinfo`
-- Set `Client ID` to the AAD App `Application (client) Id`
-- Set `Client secret` to the AAD APP `client secret`
+- Set `Client ID` to the App Registration `Application (client) Id`
+- Set `Client secret` to the App Registration `client secret`
 
 Use the following advanced settings:
 
@@ -41,7 +41,7 @@ Use the following advanced settings:
 - `Scope` = `openid profile offline_access`
 - `Action on unauthenticated request` = `Autenticate (client reattempt)`
 
-Once you've saved the action, you should see an authentication flow be triggered against AAD when visiting Backstage address at `https://backstage.yourdomain.com`. The flow will not complete successfully as the Backstage app isn't yet configured properly.
+Once you've saved the action, you should see an authentication flow be triggered against Entra ID when visiting Backstage address at `https://backstage.yourdomain.com`. The flow will not complete successfully as the Backstage app isn't yet configured properly.
 
 ## Backstage changes
 
@@ -58,6 +58,7 @@ When using ALB authentication Backstage will only be loaded once the user has su
 import React from 'react';
 import { UserIdentity } from '@backstage/core-components';
 import { SignInPageProps } from '@backstage/core-app-api';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 
 const SampleSignInComponent: any = (props: SignInPageProps) => {
   const [error, setError] = React.useState<string | undefined>();
@@ -90,8 +91,8 @@ const SampleSignInComponent: any = (props: SignInPageProps) => {
             },
           }),
         );
-      } catch (err) {
-        setError(err.message);
+      } catch (err: any) {
+        setError(err.message as string);
       }
     }
   }, [config]);
@@ -135,12 +136,14 @@ export default async function createPlugin({
   database,
   config,
   discovery,
+  tokenManager,
 }: PluginEnvironment): Promise<Router> {
   return await createRouter({
     logger,
     config,
     database,
     discovery,
+    tokenManager,
     providerFactories: {
       awsalb: providers.awsAlb.create({
         authHandler: async ({ fullProfile }) => {
@@ -168,25 +171,29 @@ export default async function createPlugin({
           };
         },
         signIn: {
-          resolver: async ({ profile: { email } }, ctx) => {
-            const [id] = email?.split('@') ?? '';
-            // Fetch from an external system that returns entity claims like:
-            // ['user:default/breanna.davison', ...]
-            const userEntityRef = stringifyEntityRef({
+          resolver: async ({ profile }, ctx) => {
+            if (!profile.email) {
+              throw new Error('Profile contained no email');
+            }
+
+            const [id] = profile.email.split('@');
+            if (!id) {
+              throw new Error('Invalid email format');
+            }
+
+            const userRef = stringifyEntityRef({
               kind: 'User',
-              namespace: DEFAULT_NAMESPACE,
               name: id,
+              namespace: DEFAULT_NAMESPACE,
             });
 
-            // Resolve group membership from the Backstage catalog
-            const fullEnt =
-              await ctx.catalogIdentityClient.resolveCatalogMembership({
-                entityRefs: [id].concat([userEntityRef]),
-                logger: ctx.logger,
-              });
-            const token = await ctx.tokenIssuer.issueToken({
-              claims: { sub: userEntityRef, ent: fullEnt },
+            const { token } = await ctx.issueToken({
+              claims: {
+                sub: userRef,
+                ent: [userRef],
+              },
             });
+
             return { id, token };
           },
         },
@@ -208,11 +215,11 @@ auth:
       region: <AWS_REGION>
 ```
 
-Replace `<TENANT_ID>` with the value of `Directory (tenant) ID` of the AAD App and `<AWS_REGION>` with the AWS region identifier where the ALB is deployed (for example: `eu-central-1`).
+Replace `<TENANT_ID>` with the value of `Directory (tenant) ID` of the App Registration and `<AWS_REGION>` with the AWS region identifier where the ALB is deployed (for example: `eu-central-1`).
 
 ## Conclusion
 
-Once it's deployed, after going through the AAD authentication flow, Backstage should display the AAD user details.
+Once it's deployed, after going through the Entra ID authentication flow, Backstage should display the Entra user details.
 
 <!-- links -->
 

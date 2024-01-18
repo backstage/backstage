@@ -24,7 +24,7 @@ import { createRouter } from './service/router';
 /**
  * The example TODO list backend plugin.
  *
- * @alpha
+ * @public
  */
 export const exampleTodoListPlugin = createBackendPlugin({
   pluginId: 'exampleTodoList',

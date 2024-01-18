@@ -31,13 +31,13 @@ import { BitbucketCloudEntityProvider } from '../providers/BitbucketCloudEntityP
  */
 export const catalogModuleBitbucketCloudEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'bitbucketCloudEntityProvider',
+  moduleId: 'bitbucket-cloud-entity-provider',
   register(env) {
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
         catalogApi: catalogServiceRef,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         // TODO(pjungermann): How to make this optional for those which only want the provider without event support?
         //  Do we even want to support this?
         events: eventsExtensionPoint,

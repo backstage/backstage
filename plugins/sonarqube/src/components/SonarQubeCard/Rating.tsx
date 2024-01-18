@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import { Avatar } from '@material-ui/core';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
 import React, { useMemo } from 'react';
 
-const useStyles = makeStyles((theme: BackstageTheme) => {
+const useStyles = makeStyles(theme => {
   const commonCardRating: CSSProperties = {
     height: theme.spacing(3),
     width: theme.spacing(3),

@@ -28,7 +28,7 @@ const useStyles = makeStyles(
         maxWidth: '96%',
         bottom: 'unset',
         right: 'unset',
-        margin: `${theme.spacing(10)}px auto ${theme.spacing(4)}px`,
+        margin: theme.spacing(10, 'auto', 4),
       },
     },
   }),

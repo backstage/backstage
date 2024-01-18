@@ -1,5 +1,280 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.2.12
+
+### Patch Changes
+
+- 604c9dd: Add Scaffolder custom action that creates GitLab issues called `gitlab:issues:create`
+- 7c522c5: Add `gitlab:repo:push` scaffolder action to push files to arbitrary branch without creating a Merge Request
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/plugin-scaffolder-node@0.2.10
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+
+## 0.2.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-scaffolder-node@0.2.10-next.2
+
+## 0.2.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/integration@1.8.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-scaffolder-node@0.2.10-next.1
+  - @backstage/errors@1.2.3
+
+## 0.2.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-scaffolder-node@0.2.10-next.0
+
+## 0.2.11
+
+### Patch Changes
+
+- 219d7f0: Extract some more actions to this library
+- 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-scaffolder-node@0.2.9
+  - @backstage/integration@1.8.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.2.11-next.3
+
+### Patch Changes
+
+- 219d7f0: Extract some more actions to this library
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.9-next.3
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+
+## 0.2.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/plugin-scaffolder-node@0.2.9-next.2
+
+## 0.2.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-scaffolder-node@0.2.9-next.1
+
+## 0.2.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/plugin-scaffolder-node@0.2.9-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.2.10
+
+### Patch Changes
+
+- 26ca97ebaa: Add examples for `gitlab:projectAccessToken:create` scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/integration@1.7.2
+  - @backstage/plugin-scaffolder-node@0.2.8
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.2.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.8-next.2
+
+## 0.2.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/plugin-scaffolder-node@0.2.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.2.10-next.0
+
+### Patch Changes
+
+- 26ca97ebaa: Add examples for `gitlab:projectAccessToken:create` scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.8-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-scaffolder-node@0.2.6
+  - @backstage/config@1.1.1
+
+## 0.2.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/plugin-scaffolder-node@0.2.6-next.2
+  - @backstage/config@1.1.1-next.0
+
+## 0.2.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.5-next.1
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.1-next.0
+
+## 0.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/plugin-scaffolder-node@0.2.5-next.0
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/plugin-scaffolder-node@0.2.3
+
+## 0.2.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/integration@1.7.0-next.3
+  - @backstage/plugin-scaffolder-node@0.2.3-next.3
+
+## 0.2.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/plugin-scaffolder-node@0.2.3-next.2
+  - @backstage/errors@1.2.1
+
+## 0.2.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/plugin-scaffolder-node@0.2.3-next.1
+  - @backstage/errors@1.2.1
+
+## 0.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/plugin-scaffolder-node@0.2.2-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.0
+  - @backstage/integration@1.6.0
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 0.2.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.6-next.2
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.1.6-next.1
+  - @backstage/integration@1.5.1
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/integration@1.5.1
+  - @backstage/plugin-scaffolder-node@0.1.6-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- dd367967e2e1: Fixed a bug in `gitlab:group:ensureExists` where `repos` was always set as the root group.
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/config@1.0.8
+  - @backstage/integration@1.5.1
+  - @backstage/plugin-scaffolder-node@0.1.5
+
 ## 0.2.2-next.1
 
 ### Patch Changes

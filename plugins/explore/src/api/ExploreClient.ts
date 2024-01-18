@@ -71,7 +71,7 @@ export class ExploreClient implements ExploreApi {
       filter?.lifecycle?.map(l => `lifecycle=${encodeURIComponent(l)}`) ?? [];
     const query = [...tags, ...lifecycles].join('&');
 
-    const response = await fetch(`${baseUrl}/tools?${query}`);
+    const response = await fetch(`${baseUrl}/tools${query ? `?${query}` : ''}`);
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);

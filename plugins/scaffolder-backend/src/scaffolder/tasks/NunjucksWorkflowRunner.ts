@@ -25,7 +25,7 @@ import * as winston from 'winston';
 import fs from 'fs-extra';
 import path from 'path';
 import nunjucks from 'nunjucks';
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 import { InputError, NotAllowedError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
@@ -76,6 +76,7 @@ type TemplateContext = {
     entity?: UserEntity;
     ref?: string;
   };
+  each?: JsonValue;
 };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
@@ -275,61 +276,97 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           return;
         }
       }
+      const iterations = (
+        step.each
+          ? Object.entries(this.render(step.each, context, renderTemplate)).map(
+              ([key, value]) => ({
+                each: { key, value },
+              }),
+            )
+          : [{}]
+      ).map(i => ({
+        ...i,
+        // Secrets are only passed when templating the input to actions for security reasons
+        input: step.input
+          ? this.render(
+              step.input,
+              { ...context, secrets: task.secrets ?? {}, ...i },
+              renderTemplate,
+            )
+          : {},
+      }));
+      for (const iteration of iterations) {
+        const actionId = `${action.id}${
+          iteration.each ? `[${iteration.each.key}]` : ''
+        }`;
 
-      // Secrets are only passed when templating the input to actions for security reasons
-      const input =
-        (step.input &&
-          this.render(
-            step.input,
-            { ...context, secrets: task.secrets ?? {} },
-            renderTemplate,
-          )) ??
-        {};
-
-      if (action.schema?.input) {
-        const validateResult = validateJsonSchema(input, action.schema.input);
-        if (!validateResult.valid) {
-          const errors = validateResult.errors.join(', ');
-          throw new InputError(
-            `Invalid input passed to action ${action.id}, ${errors}`,
+        if (action.schema?.input) {
+          const validateResult = validateJsonSchema(
+            iteration.input,
+            action.schema.input,
+          );
+          if (!validateResult.valid) {
+            const errors = validateResult.errors.join(', ');
+            throw new InputError(
+              `Invalid input passed to action ${actionId}, ${errors}`,
+            );
+          }
+        }
+        if (
+          !isActionAuthorized(decision, {
+            action: action.id,
+            input: iteration.input,
+          })
+        ) {
+          throw new NotAllowedError(
+            `Unauthorized action: ${actionId}. The action is not allowed. Input: ${JSON.stringify(
+              iteration.input,
+              null,
+              2,
+            )}`,
           );
         }
       }
-
-      if (!isActionAuthorized(decision, { action: action.id, input })) {
-        throw new NotAllowedError(
-          `Unauthorized action: ${
-            action.id
-          }. The action is not allowed. Input: ${JSON.stringify(
-            input,
-            null,
-            2,
-          )}`,
-        );
-      }
-
       const tmpDirs = new Array<string>();
       const stepOutput: { [outputName: string]: JsonValue } = {};
 
-      await action.handler({
-        input,
-        secrets: task.secrets ?? {},
-        logger: taskLogger,
-        logStream: streamLogger,
-        workspacePath,
-        createTemporaryDirectory: async () => {
-          const tmpDir = await fs.mkdtemp(`${workspacePath}_step-${step.id}-`);
-          tmpDirs.push(tmpDir);
-          return tmpDir;
-        },
-        output(name: string, value: JsonValue) {
-          stepOutput[name] = value;
-        },
-        templateInfo: task.spec.templateInfo,
-        user: task.spec.user,
-        isDryRun: task.isDryRun,
-        signal: task.cancelSignal,
-      });
+      for (const iteration of iterations) {
+        if (iteration.each) {
+          taskLogger.info(
+            `Running step each: ${JSON.stringify(
+              iteration.each,
+              (k, v) => (k ? v.toString() : v),
+              0,
+            )}`,
+          );
+        }
+        await action.handler({
+          input: iteration.input,
+          secrets: task.secrets ?? {},
+          logger: taskLogger,
+          logStream: streamLogger,
+          workspacePath,
+          createTemporaryDirectory: async () => {
+            const tmpDir = await fs.mkdtemp(
+              `${workspacePath}_step-${step.id}-`,
+            );
+            tmpDirs.push(tmpDir);
+            return tmpDir;
+          },
+          output(name: string, value: JsonValue) {
+            if (step.each) {
+              stepOutput[name] = stepOutput[name] || [];
+              (stepOutput[name] as JsonArray).push(value);
+            } else {
+              stepOutput[name] = value;
+            }
+          },
+          templateInfo: task.spec.templateInfo,
+          user: task.spec.user,
+          isDryRun: task.isDryRun,
+          signal: task.cancelSignal,
+        });
+      }
 
       // Remove all temporary directories that were created when executing the action
       for (const tmpDir of tmpDirs) {

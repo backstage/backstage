@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export const ComponentAccordion = (props: {
-  title: string;
+  title?: string;
   expanded?: boolean;
   Content: () => JSX.Element;
   Actions?: () => JSX.Element;

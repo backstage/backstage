@@ -19,75 +19,99 @@
  * A module for the search backend that exports TechDocs modules.
  */
 
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
+  createExtensionPoint,
 } from '@backstage/backend-plugin-api';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { TechDocsCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-techdocs';
 
-import {
-  DefaultTechDocsCollatorFactory,
-  TechDocsCollatorFactoryOptions,
-} from '@backstage/plugin-search-backend-module-techdocs';
+/** @alpha */
+export interface TechDocsCollatorEntityTransformerExtensionPoint {
+  setTransformer(transformer: TechDocsCollatorEntityTransformer): void;
+}
 
 /**
+ * Extension point used to customize the TechDocs collator entity transformer.
+ *
  * @alpha
- * Options for {@link searchModuleTechDocsCollator}.
  */
-export type SearchModuleTechDocsCollatorOptions = Omit<
-  TechDocsCollatorFactoryOptions,
-  'logger' | 'discovery' | 'tokenManager'
-> & {
-  schedule?: TaskScheduleDefinition;
-};
+export const techdocsCollatorEntityTransformerExtensionPoint =
+  createExtensionPoint<TechDocsCollatorEntityTransformerExtensionPoint>({
+    id: 'search.techdocsCollator.transformer',
+  });
 
 /**
  * @alpha
  * Search backend module for the TechDocs index.
  */
-export const searchModuleTechDocsCollator = createBackendModule(
-  (options?: SearchModuleTechDocsCollatorOptions) => ({
-    moduleId: 'techDocsCollator',
-    pluginId: 'search',
-    register(env) {
-      env.registerInit({
-        deps: {
-          config: coreServices.config,
-          logger: coreServices.logger,
-          discovery: coreServices.discovery,
-          tokenManager: coreServices.tokenManager,
-          scheduler: coreServices.scheduler,
-          indexRegistry: searchIndexRegistryExtensionPoint,
-        },
-        async init({
-          config,
-          logger,
-          discovery,
-          tokenManager,
-          scheduler,
-          indexRegistry,
-        }) {
-          const defaultSchedule = {
-            frequency: { minutes: 10 },
-            timeout: { minutes: 15 },
-            initialDelay: { seconds: 3 },
-          };
+export default createBackendModule({
+  pluginId: 'search',
+  moduleId: 'techdocs-collator',
+  register(env) {
+    let transformer: TechDocsCollatorEntityTransformer | undefined;
 
-          indexRegistry.addCollator({
-            schedule: scheduler.createScheduledTaskRunner(
-              options?.schedule ?? defaultSchedule,
-            ),
-            factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
-              ...options,
-              discovery,
-              tokenManager,
-              logger: loggerToWinstonLogger(logger),
-            }),
-          });
+    env.registerExtensionPoint(
+      techdocsCollatorEntityTransformerExtensionPoint,
+      {
+        setTransformer(newTransformer) {
+          if (transformer) {
+            throw new Error(
+              'TechDocs collator entity transformer may only be set once',
+            );
+          }
+          transformer = newTransformer;
         },
-      });
-    },
-  }),
-);
+      },
+    );
+
+    env.registerInit({
+      deps: {
+        config: coreServices.rootConfig,
+        logger: coreServices.logger,
+        discovery: coreServices.discovery,
+        tokenManager: coreServices.tokenManager,
+        scheduler: coreServices.scheduler,
+        catalog: catalogServiceRef,
+        indexRegistry: searchIndexRegistryExtensionPoint,
+      },
+      async init({
+        config,
+        logger,
+        discovery,
+        tokenManager,
+        scheduler,
+        catalog,
+        indexRegistry,
+      }) {
+        const defaultSchedule = {
+          frequency: { minutes: 10 },
+          timeout: { minutes: 15 },
+          initialDelay: { seconds: 3 },
+        };
+
+        const schedule = config.has('search.collators.techdocs.schedule')
+          ? readTaskScheduleDefinitionFromConfig(
+              config.getConfig('search.collators.techdocs.schedule'),
+            )
+          : defaultSchedule;
+
+        indexRegistry.addCollator({
+          schedule: scheduler.createScheduledTaskRunner(schedule),
+          factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
+            discovery,
+            tokenManager,
+            logger: loggerToWinstonLogger(logger),
+            catalogClient: catalog,
+            entityTransformer: transformer,
+          }),
+        });
+      },
+    });
+  },
+});

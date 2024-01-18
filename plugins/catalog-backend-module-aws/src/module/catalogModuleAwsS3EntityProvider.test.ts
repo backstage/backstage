@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { coreServices } from '@backstage/backend-plugin-api';
-import {
-  PluginTaskScheduler,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
-import { startTestBackend } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Duration } from 'luxon';
 import { catalogModuleAwsS3EntityProvider } from './catalogModuleAwsS3EntityProvider';
@@ -38,14 +32,14 @@ describe('catalogModuleAwsS3EntityProvider', () => {
       },
     };
     const runner = jest.fn();
-    const scheduler = {
-      createScheduledTaskRunner: (schedule: TaskScheduleDefinition) => {
+    const scheduler = mockServices.scheduler.mock({
+      createScheduledTaskRunner(schedule) {
         usedSchedule = schedule;
-        return runner;
+        return { run: runner };
       },
-    } as unknown as PluginTaskScheduler;
+    });
 
-    const config = new ConfigReader({
+    const config = {
       catalog: {
         providers: {
           awsS3: {
@@ -57,16 +51,15 @@ describe('catalogModuleAwsS3EntityProvider', () => {
           },
         },
       },
-    });
+    };
 
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
-      services: [
-        [coreServices.config, config],
-        [coreServices.logger, getVoidLogger()],
-        [coreServices.scheduler, scheduler],
+      features: [
+        catalogModuleAwsS3EntityProvider(),
+        mockServices.rootConfig.factory({ data: config }),
+        scheduler.factory,
       ],
-      features: [catalogModuleAwsS3EntityProvider()],
     });
 
     expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));

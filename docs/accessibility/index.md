@@ -15,35 +15,35 @@ There are multiple ways to contribute to making Backstage more accessible, you'l
 If your plugin lives in the [Backstage main repository](https://github.com/backstage/backstage/) you can modify the [urls in the Lighthouse config](https://github.com/backstage/backstage/blob/39ba2284d73885b7ca8290cb38e2b1e4d983c8d6/lighthouserc.js#L19-L34) to run the Lighthouse checks on urls where your plugin exists as well. E.g.
 
 ```diff
- ci: {
-    collect: {
-      url: [
+  ci: {
+     collect: {
+       url: [
+         /** Software Catalog */
+         'http://localhost:3000/catalog',
+         'http://localhost:3000/catalog-import',
+         'http://localhost:3000/catalog/default/component/backstage',
+         ...
 +        /** Your plugin paths */
 +        'http://localhost:3000/your-plugin-path,
-        /** Software Catalog */
-        'http://localhost:3000/catalog',
-        'http://localhost:3000/catalog-import',
-        'http://localhost:3000/catalog/default/component/backstage',
+       ],
+       settings: {
         ...
-      ],
-      settings: {
-       ...
-      },
-     ...
-    },
-    assert: {
+       },
       ...
-    },
-  },
+     },
+     assert: {
+       ...
+     },
+   },
 ```
 
-To make sure the [Accessibility Github workflow](https://github.com/backstage/backstage/blob/master/.github/workflows/verify_accessibility.yml) is running when changes are made to your plugin folders, modify the [list of paths](https://github.com/backstage/backstage/blob/10759b6ad2561bd86183ad940256f9a309c7a6b0/.github/workflows/verify_accessibility.yml#L7-L16).
+To make sure the [Accessibility GitHub workflow](https://github.com/backstage/backstage/blob/master/.github/workflows/verify_accessibility.yml) is running when changes are made to your plugin folders, modify the [list of paths](https://github.com/backstage/backstage/blob/10759b6ad2561bd86183ad940256f9a309c7a6b0/.github/workflows/verify_accessibility.yml#L7-L16).
 
 ### Run the Lighthouse CLI locally when developing new features
 
 If you want to use the Lighthouse CLI and run the checks based on the config you can use the following command:
 
-```
+```shell
 yarn dlx @lhci/cli@0.11.x autorun
 ```
 

@@ -64,7 +64,7 @@ The recommended approach would be to represent information in catalog-info files
 
 **Naming strategies:**
 
-- Ldap: Internal ldap usernames as entity names. e.g., owner: user:myuser or user: my-team-name.
+- Ldap: Internal ldap usernames as entity names. e.g., owner: user:my-user or user: my-team-name.
 
 **Ownership strategies:**
 

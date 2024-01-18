@@ -27,14 +27,15 @@ import {
 /** @public */
 export interface HasSystemsCardProps {
   variant?: InfoCardVariants;
+  title?: string;
 }
 
 export function HasSystemsCard(props: HasSystemsCardProps) {
-  const { variant = 'gridItem' } = props;
+  const { variant = 'gridItem', title = 'Has systems' } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
-      title="Has systems"
+      title={title}
       entityKind="System"
       relationType={RELATION_HAS_PART}
       columns={systemEntityColumns}

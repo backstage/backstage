@@ -20,12 +20,14 @@
 import { createBackend } from '@backstage/backend-defaults';
 import {
   coreServices,
+  createBackendModule,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
 import { IncrementalEntityProvider } from '.';
-import { catalogModuleIncrementalIngestionEntityProvider } from './alpha';
+import catalogModuleIncrementalIngestionEntityProvider, {
+  incrementalIngestionProvidersExtensionPoint,
+} from './alpha';
 
 const provider: IncrementalEntityProvider<number, {}> = {
   getProviderName: () => 'test-provider',
@@ -51,29 +53,36 @@ async function main() {
     },
   };
 
-  const backend = createBackend({
-    services: [
-      createServiceFactory({
-        service: coreServices.config,
-        deps: {},
-        factory: () => new ConfigReader(config),
-      }),
-    ],
-  });
+  const backend = createBackend();
 
-  backend.add(catalogPlugin());
   backend.add(
-    catalogModuleIncrementalIngestionEntityProvider({
-      providers: [
-        {
-          provider: provider,
-          options: {
-            burstInterval: { seconds: 1 },
-            burstLength: { seconds: 10 },
-            restLength: { seconds: 10 },
+    createServiceFactory({
+      service: coreServices.rootConfig,
+      deps: {},
+      factory: () => new ConfigReader(config),
+    }),
+  );
+  backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+  backend.add(catalogModuleIncrementalIngestionEntityProvider());
+  backend.add(
+    createBackendModule({
+      pluginId: 'catalog',
+      moduleId: 'incremental-test-provider',
+      register(reg) {
+        reg.registerInit({
+          deps: { extension: incrementalIngestionProvidersExtensionPoint },
+          async init({ extension }) {
+            extension.addProvider({
+              provider: provider,
+              options: {
+                burstInterval: { seconds: 1 },
+                burstLength: { seconds: 10 },
+                restLength: { seconds: 10 },
+              },
+            });
           },
-        },
-      ],
+        });
+      },
     }),
   );
 

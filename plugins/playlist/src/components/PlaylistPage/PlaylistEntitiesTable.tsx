@@ -21,7 +21,7 @@ import {
   Table,
   TableFilter,
 } from '@backstage/core-components';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { errorApiRef, useApi, alertApiRef } from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { permissions } from '@backstage/plugin-playlist-common';
@@ -42,6 +42,7 @@ export const PlaylistEntitiesTable = ({
 }) => {
   const errorApi = useApi(errorApiRef);
   const playlistApi = useApi(playlistApiRef);
+  const alertApi = useApi(alertApiRef);
   const [openAddEntitiesDrawer, setOpenAddEntitiesDrawer] = useState(false);
 
   const { allowed: editAllowed } = usePermission({
@@ -71,18 +72,32 @@ export const PlaylistEntitiesTable = ({
   );
 
   const removeEntity = useCallback(
-    async (_, entity: Entity | Entity[]) => {
+    async (_: unknown, entity: Entity | Entity[]) => {
       try {
+        const entityArray = [entity].flat();
+        const entityNames = entityArray.map(
+          item => item.metadata.title ?? item.metadata.name,
+        );
         await playlistApi.removePlaylistEntities(
           playlistId,
           [entity].flat().map(stringifyEntityRef),
         );
         loadEntities();
+        const message =
+          entityNames.length === 1
+            ? `Removed entity '${entityNames[0]}'`
+            : `Removed entities: '${entityNames.join("', '")}'`;
+
+        alertApi.post({
+          message,
+          severity: 'success',
+          display: 'transient',
+        });
       } catch (e) {
         errorApi.post(e);
       }
     },
-    [errorApi, loadEntities, playlistApi, playlistId],
+    [errorApi, loadEntities, playlistApi, playlistId, alertApi],
   );
 
   const singularTitleLowerCase = useTitle({
@@ -93,7 +108,7 @@ export const PlaylistEntitiesTable = ({
   const actions = editAllowed
     ? [
         {
-          icon: DeleteIcon,
+          icon: () => <DeleteIcon color="secondary" />,
           tooltip: `Remove from ${singularTitleLowerCase}`,
           onClick: removeEntity,
         },

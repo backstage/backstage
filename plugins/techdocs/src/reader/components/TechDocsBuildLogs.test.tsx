@@ -20,6 +20,7 @@ import {
   TechDocsBuildLogs,
   TechDocsBuildLogsDrawerContent,
 } from './TechDocsBuildLogs';
+import { userEvent } from '@testing-library/user-event';
 
 // The <AutoSizer> inside <LogViewer> needs mocking to render in jsdom
 jest.mock('react-virtualized-auto-sizer', () => ({
@@ -38,7 +39,7 @@ describe('<TechDocsBuildLogs />', () => {
 
   it('should open drawer', async () => {
     const rendered = await renderInTestApp(<TechDocsBuildLogs buildLog={[]} />);
-    rendered.getByText(/Show Build Logs/i).click();
+    await userEvent.click(rendered.getByText(/Show Build Logs/i));
     expect(rendered.getByText(/Build Details/i)).toBeInTheDocument();
   });
 });

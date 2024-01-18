@@ -8,6 +8,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { Observable } from '@backstage/types';
 import { Shortcut as Shortcut_2 } from '@backstage/plugin-shortcuts';
 import { ShortcutApi as ShortcutApi_2 } from '@backstage/plugin-shortcuts';
@@ -51,13 +52,13 @@ export interface ShortcutApi {
 }
 
 // @public (undocumented)
-export const Shortcuts: (props: ShortcutsProps) => JSX.Element;
+export const Shortcuts: (props: ShortcutsProps) => JSX_2.Element;
 
 // @public (undocumented)
 export const shortcutsApiRef: ApiRef<ShortcutApi>;
 
 // @public (undocumented)
-export const shortcutsPlugin: BackstagePlugin<{}, {}, {}>;
+export const shortcutsPlugin: BackstagePlugin<{}, {}>;
 
 // @public
 export interface ShortcutsProps {

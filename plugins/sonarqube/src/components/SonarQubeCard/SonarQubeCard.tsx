@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import {
   sonarQubeApiRef,
   useProjectInfo,
@@ -38,7 +41,6 @@ import {
   EmptyState,
   InfoCard,
   InfoCardVariants,
-  MissingAnnotationEmptyState,
   Progress,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
@@ -67,9 +69,6 @@ const useStyles = makeStyles(theme => ({
   },
   lastAnalyzed: {
     color: theme.palette.text.secondary,
-  },
-  disabled: {
-    backgroundColor: theme.palette.background.default,
   },
 }));
 
@@ -163,9 +162,6 @@ export const SonarQubeCard = (props: {
           action: classes.action,
         },
       }}
-      className={
-        !loading && (!projectTitle || !value) ? classes.disabled : undefined
-      }
     >
       {loading && <Progress />}
 

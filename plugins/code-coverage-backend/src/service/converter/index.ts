@@ -17,3 +17,4 @@
 export * from './Converter';
 export { Cobertura } from './cobertura';
 export { Jacoco } from './jacoco';
+export { Lcov } from './lcov';

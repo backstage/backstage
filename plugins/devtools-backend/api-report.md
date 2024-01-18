@@ -27,7 +27,8 @@ export class DevToolsBackendApi {
 }
 
 // @public
-export const devtoolsPlugin: () => BackendFeature;
+const devtoolsPlugin: () => BackendFeature;
+export default devtoolsPlugin;
 
 // @public (undocumented)
 export interface RouterOptions {

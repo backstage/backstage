@@ -1,5 +1,107 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/types@1.1.1
+
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/types@1.1.1
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/types@1.1.1
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.9-next.0
+
+## 0.1.4
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 12e644aa4eef: Show resource utilization in `DevTools` plugin
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.8
+  - @backstage/types@1.1.1
+
+## 0.1.4-next.2
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.8-next.2
+  - @backstage/types@1.1.1-next.0
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.8-next.1
+  - @backstage/types@1.1.0
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 12e644aa4eef: Show resource utilization in `DevTools` plugin
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.8-next.0
+  - @backstage/types@1.1.0
+
+## 0.1.3
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.1.0
+  - @backstage/plugin-permission-common@0.7.7
+
 ## 0.1.2-next.0
 
 ### Patch Changes

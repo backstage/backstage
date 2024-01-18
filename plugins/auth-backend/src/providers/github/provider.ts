@@ -14,41 +14,16 @@
  * limitations under the License.
  */
 
-import express from 'express';
 import { Profile as PassportProfile } from 'passport';
-import { Strategy as GithubStrategy } from 'passport-github2';
-import {
-  executeFetchUserProfileStrategy,
-  executeFrameHandlerStrategy,
-  executeRedirectStrategy,
-  executeRefreshTokenStrategy,
-  makeProfileInfo,
-  PassportDoneCallback,
-} from '../../lib/passport';
-import {
-  OAuthStartResponse,
-  AuthHandler,
-  SignInResolver,
-  StateEncoder,
-  AuthResolverContext,
-} from '../types';
-import {
-  OAuthAdapter,
-  OAuthProviderOptions,
-  OAuthHandlers,
-  OAuthEnvironmentHandler,
-  OAuthStartRequest,
-  encodeState,
-  OAuthRefreshRequest,
-} from '../../lib/oauth';
+import { AuthHandler, StateEncoder } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { BACKSTAGE_SESSION_EXPIRATION } from '../../lib/session';
-
-const ACCESS_TOKEN_PREFIX = 'access-token.';
-
-type PrivateInfo = {
-  refreshToken?: string;
-};
+import {
+  createOAuthProviderFactory,
+  OAuthAuthenticatorResult,
+  ProfileTransform,
+  SignInResolver,
+} from '@backstage/plugin-auth-node';
+import { githubAuthenticator } from '@backstage/plugin-auth-backend-module-github-provider';
 
 /** @public */
 export type GithubOAuthResult = {
@@ -61,170 +36,6 @@ export type GithubOAuthResult = {
   accessToken: string;
   refreshToken?: string;
 };
-
-export type GithubAuthProviderOptions = OAuthProviderOptions & {
-  tokenUrl?: string;
-  userProfileUrl?: string;
-  authorizationUrl?: string;
-  signInResolver?: SignInResolver<GithubOAuthResult>;
-  authHandler: AuthHandler<GithubOAuthResult>;
-  stateEncoder: StateEncoder;
-  resolverContext: AuthResolverContext;
-};
-
-export class GithubAuthProvider implements OAuthHandlers {
-  private readonly _strategy: GithubStrategy;
-  private readonly signInResolver?: SignInResolver<GithubOAuthResult>;
-  private readonly authHandler: AuthHandler<GithubOAuthResult>;
-  private readonly resolverContext: AuthResolverContext;
-  private readonly stateEncoder: StateEncoder;
-
-  constructor(options: GithubAuthProviderOptions) {
-    this.signInResolver = options.signInResolver;
-    this.authHandler = options.authHandler;
-    this.stateEncoder = options.stateEncoder;
-    this.resolverContext = options.resolverContext;
-    this._strategy = new GithubStrategy(
-      {
-        clientID: options.clientId,
-        clientSecret: options.clientSecret,
-        callbackURL: options.callbackUrl,
-        tokenURL: options.tokenUrl,
-        userProfileURL: options.userProfileUrl,
-        authorizationURL: options.authorizationUrl,
-      },
-      (
-        accessToken: any,
-        refreshToken: any,
-        params: any,
-        fullProfile: any,
-        done: PassportDoneCallback<GithubOAuthResult, PrivateInfo>,
-      ) => {
-        done(undefined, { fullProfile, params, accessToken }, { refreshToken });
-      },
-    );
-  }
-
-  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
-    return await executeRedirectStrategy(req, this._strategy, {
-      scope: req.scope,
-      state: (await this.stateEncoder(req)).encodedState,
-    });
-  }
-
-  async handler(req: express.Request) {
-    const { result, privateInfo } = await executeFrameHandlerStrategy<
-      GithubOAuthResult,
-      PrivateInfo
-    >(req, this._strategy);
-
-    let refreshToken = privateInfo.refreshToken;
-
-    // If we do not have a real refresh token and we have a non-expiring
-    // access token, then we use that as our refresh token.
-    if (!refreshToken && !result.params.expires_in) {
-      refreshToken = ACCESS_TOKEN_PREFIX + result.accessToken;
-    }
-
-    return {
-      response: await this.handleResult(result),
-      refreshToken,
-    };
-  }
-
-  async refresh(req: OAuthRefreshRequest) {
-    // We've enable persisting scope in the OAuth provider, so scope here will
-    // be whatever was stored in the cookie
-    const { scope, refreshToken } = req;
-
-    // This is the OAuth App flow. A non-expiring access token is stored in the
-    // refresh token cookie. We use that token to fetch the user profile and
-    // refresh the Backstage session when needed.
-    if (refreshToken?.startsWith(ACCESS_TOKEN_PREFIX)) {
-      const accessToken = refreshToken.slice(ACCESS_TOKEN_PREFIX.length);
-
-      const fullProfile = await executeFetchUserProfileStrategy(
-        this._strategy,
-        accessToken,
-      ).catch(error => {
-        if (error.oauthError?.statusCode === 401) {
-          throw new Error('Invalid access token');
-        }
-        throw error;
-      });
-
-      return {
-        response: await this.handleResult({
-          fullProfile,
-          params: { scope },
-          accessToken,
-        }),
-        refreshToken,
-      };
-    }
-
-    // This is the App flow, which is close to a standard OAuth refresh flow. It has a
-    // pretty long session expiration, and it also ignores the requested scope, instead
-    // just allowing access to whatever is configured as part of the app installation.
-    const result = await executeRefreshTokenStrategy(
-      this._strategy,
-      refreshToken,
-      scope,
-    );
-    return {
-      response: await this.handleResult({
-        fullProfile: await executeFetchUserProfileStrategy(
-          this._strategy,
-          result.accessToken,
-        ),
-        params: { ...result.params, scope },
-        accessToken: result.accessToken,
-      }),
-      refreshToken: result.refreshToken,
-    };
-  }
-
-  private async handleResult(result: GithubOAuthResult) {
-    const { profile } = await this.authHandler(result, this.resolverContext);
-
-    const expiresInStr = result.params.expires_in;
-    let expiresInSeconds =
-      expiresInStr === undefined ? undefined : Number(expiresInStr);
-
-    let backstageIdentity = undefined;
-
-    if (this.signInResolver) {
-      backstageIdentity = await this.signInResolver(
-        {
-          result,
-          profile,
-        },
-        this.resolverContext,
-      );
-
-      // GitHub sessions last longer than Backstage sessions, so if we're using
-      // GitHub for sign-in, then we need to expire the sessions earlier
-      if (expiresInSeconds) {
-        expiresInSeconds = Math.min(
-          expiresInSeconds,
-          BACKSTAGE_SESSION_EXPIRATION,
-        );
-      } else {
-        expiresInSeconds = BACKSTAGE_SESSION_EXPIRATION;
-      }
-    }
-
-    return {
-      backstageIdentity,
-      providerInfo: {
-        accessToken: result.accessToken,
-        scope: result.params.scope,
-        expiresInSeconds,
-      },
-      profile,
-    };
-  }
-}
 
 /**
  * Auth provider integration for GitHub auth
@@ -267,60 +78,55 @@ export const github = createAuthProviderIntegration({
      */
     stateEncoder?: StateEncoder;
   }) {
-    return ({ providerId, globalConfig, config, resolverContext }) =>
-      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-        const clientId = envConfig.getString('clientId');
-        const clientSecret = envConfig.getString('clientSecret');
-        const enterpriseInstanceUrl = envConfig
-          .getOptionalString('enterpriseInstanceUrl')
-          ?.replace(/\/$/, '');
-        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-        const authorizationUrl = enterpriseInstanceUrl
-          ? `${enterpriseInstanceUrl}/login/oauth/authorize`
-          : undefined;
-        const tokenUrl = enterpriseInstanceUrl
-          ? `${enterpriseInstanceUrl}/login/oauth/access_token`
-          : undefined;
-        const userProfileUrl = enterpriseInstanceUrl
-          ? `${enterpriseInstanceUrl}/api/v3/user`
-          : undefined;
-        const callbackUrl =
-          customCallbackUrl ||
-          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-
-        const authHandler: AuthHandler<GithubOAuthResult> = options?.authHandler
-          ? options.authHandler
-          : async ({ fullProfile }) => ({
-              profile: makeProfileInfo(fullProfile),
-            });
-
-        const stateEncoder: StateEncoder =
-          options?.stateEncoder ??
-          (async (
-            req: OAuthStartRequest,
-          ): Promise<{ encodedState: string }> => {
-            return { encodedState: encodeState(req.state) };
-          });
-
-        const provider = new GithubAuthProvider({
-          clientId,
-          clientSecret,
-          callbackUrl,
-          tokenUrl,
-          userProfileUrl,
-          authorizationUrl,
-          signInResolver: options?.signIn?.resolver,
-          authHandler,
-          stateEncoder,
-          resolverContext,
-        });
-
-        return OAuthAdapter.fromConfig(globalConfig, provider, {
-          persistScopes: true,
-          providerId,
-          callbackUrl,
-        });
-      });
+    const authHandler = options?.authHandler;
+    const signInResolver = options?.signIn?.resolver;
+    return createOAuthProviderFactory({
+      authenticator: githubAuthenticator,
+      profileTransform:
+        authHandler &&
+        ((async (result, ctx) =>
+          authHandler!(
+            {
+              fullProfile: result.fullProfile,
+              accessToken: result.session.accessToken,
+              params: {
+                scope: result.session.scope,
+                expires_in: result.session.expiresInSeconds
+                  ? String(result.session.expiresInSeconds)
+                  : '',
+                refresh_token_expires_in: result.session
+                  .refreshTokenExpiresInSeconds
+                  ? String(result.session.refreshTokenExpiresInSeconds)
+                  : '',
+              },
+            },
+            ctx,
+          )) as ProfileTransform<OAuthAuthenticatorResult<PassportProfile>>),
+      signInResolver:
+        signInResolver &&
+        ((async ({ profile, result }, ctx) =>
+          signInResolver(
+            {
+              profile: profile,
+              result: {
+                fullProfile: result.fullProfile,
+                accessToken: result.session.accessToken,
+                refreshToken: result.session.refreshToken,
+                params: {
+                  scope: result.session.scope,
+                  expires_in: result.session.expiresInSeconds
+                    ? String(result.session.expiresInSeconds)
+                    : '',
+                  refresh_token_expires_in: result.session
+                    .refreshTokenExpiresInSeconds
+                    ? String(result.session.refreshTokenExpiresInSeconds)
+                    : '',
+                },
+              },
+            },
+            ctx,
+          )) as SignInResolver<OAuthAuthenticatorResult<PassportProfile>>),
+    });
   },
   resolvers: {
     /**

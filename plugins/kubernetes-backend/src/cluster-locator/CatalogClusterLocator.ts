@@ -20,12 +20,17 @@ import {
   ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-  ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP,
   ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY,
   ANNOTATION_KUBERNETES_DASHBOARD_URL,
   ANNOTATION_KUBERNETES_DASHBOARD_APP,
+  ANNOTATION_KUBERNETES_DASHBOARD_PARAMETERS,
 } from '@backstage/plugin-kubernetes-common';
+import { JsonObject } from '@backstage/types';
+
+function isObject(obj: unknown): obj is JsonObject {
+  return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
+}
 
 export class CatalogClusterLocator implements KubernetesClustersSupplier {
   private catalogClient: CatalogApi;
@@ -55,36 +60,38 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
       filter: [filter],
     });
     return clusters.items.map(entity => {
+      const annotations = entity.metadata.annotations!;
       const clusterDetails: ClusterDetails = {
         name: entity.metadata.name,
-        url: entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER]!,
-        caData:
-          entity.metadata.annotations![ANNOTATION_KUBERNETES_API_SERVER_CA]!,
-        authProvider:
-          entity.metadata.annotations![ANNOTATION_KUBERNETES_AUTH_PROVIDER]!,
-        oidcTokenProvider:
-          entity.metadata.annotations![
-            ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER
-          ]!,
+        url: annotations[ANNOTATION_KUBERNETES_API_SERVER],
+        authMetadata: annotations,
+        caData: annotations[ANNOTATION_KUBERNETES_API_SERVER_CA],
         skipMetricsLookup:
-          entity.metadata.annotations![
-            ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP
-          ]! === 'true'
-            ? true
-            : false,
+          annotations[ANNOTATION_KUBERNETES_SKIP_METRICS_LOOKUP] === 'true',
         skipTLSVerify:
-          entity.metadata.annotations![
-            ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY
-          ]! === 'true'
-            ? true
-            : false,
-        dashboardUrl:
-          entity.metadata.annotations![ANNOTATION_KUBERNETES_DASHBOARD_URL]!,
-        dashboardApp:
-          entity.metadata.annotations![ANNOTATION_KUBERNETES_DASHBOARD_APP]!,
+          annotations[ANNOTATION_KUBERNETES_SKIP_TLS_VERIFY] === 'true',
+        dashboardUrl: annotations[ANNOTATION_KUBERNETES_DASHBOARD_URL],
+        dashboardApp: annotations[ANNOTATION_KUBERNETES_DASHBOARD_APP],
+        dashboardParameters: this.getDashboardParameters(annotations),
       };
 
       return clusterDetails;
     });
+  }
+
+  private getDashboardParameters(
+    annotations: Record<string, string>,
+  ): JsonObject | undefined {
+    const dashboardParamsString =
+      annotations[ANNOTATION_KUBERNETES_DASHBOARD_PARAMETERS];
+    if (dashboardParamsString) {
+      try {
+        const dashboardParams = JSON.parse(dashboardParamsString);
+        return isObject(dashboardParams) ? dashboardParams : undefined;
+      } catch {
+        return undefined;
+      }
+    }
+    return undefined;
   }
 }

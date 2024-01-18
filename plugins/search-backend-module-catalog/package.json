@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-search-backend-module-catalog",
   "description": "A module for the search backend that exports catalog modules",
-  "version": "0.1.3-next.0",
+  "version": "0.1.13",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -26,6 +26,12 @@
   "backstage": {
     "role": "backend-plugin-module"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/search-backend-module-catalog"
+  },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
@@ -42,7 +48,9 @@
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^"
@@ -54,6 +62,8 @@
     "msw": "^1.0.0"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }

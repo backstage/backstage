@@ -38,6 +38,9 @@ const linguistResultMock = Promise.resolve({
       '/readme.md': 'Markdown',
       '/no-lang': null,
     },
+    alternatives: {
+      '~/alternatives.asc': ['AsciiDoc', 'Public Key'],
+    },
   },
   languages: {
     count: 3,

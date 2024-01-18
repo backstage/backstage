@@ -1,6 +1,7 @@
 # CircleCI Plugin
 
-Website: [https://circleci.com/](https://circleci.com/)
+> [!IMPORTANT]
+> This plugin is now developed & maintained by CircleCI. Please refer to [their up-to-date documentation](https://github.com/CircleCI-Public/backstage-plugin) & [plugin repository](https://github.com/CircleCI-Public/backstage-plugin/) for help.
 
 ## Screenshots
 
@@ -14,7 +15,7 @@ Website: [https://circleci.com/](https://circleci.com/)
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-circleci
+yarn add --cwd packages/app @circleci/backstage-plugin
 ```
 
 2. Add the `EntityCircleCIContent` extension to the entity page in your app:
@@ -24,7 +25,7 @@ yarn add --cwd packages/app @backstage/plugin-circleci
 import {
   EntityCircleCIContent,
   isCircleCIAvailable,
-} from '@backstage/plugin-circleci';
+} from '@circleci/backstage-plugin';
 
 // For example in the CI/CD section
 const cicdContent = (

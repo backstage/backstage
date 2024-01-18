@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, SingleHostDiscovery } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
+import { getVoidLogger, HostDiscovery } from '@backstage/backend-common';
+import {
+  ConfigSources,
+  MutableConfigSource,
+  StaticConfigSource,
+} from '@backstage/config-loader';
 import express from 'express';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -56,34 +60,36 @@ describe('createRouter reloadable configuration', () => {
     const logger = getVoidLogger();
 
     // Grab the subscriber function and use mutable config data to mock a config file change
-    let subscriber: () => void;
-    const mutableConfigData: any = {
-      backend: {
-        baseUrl: 'http://localhost:7007',
-        listen: {
-          port: 7007,
-        },
-      },
-      proxy: {
-        '/test': {
-          target: 'https://non-existing-example.com',
-          pathRewrite: {
-            '.*': '/',
+    const mutableConfigSource = MutableConfigSource.create({ data: {} });
+    const config = await ConfigSources.toConfig(
+      ConfigSources.merge([
+        StaticConfigSource.create({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost:7007',
+              listen: {
+                port: 7007,
+              },
+            },
+            proxy: {
+              endpoints: {
+                '/test': {
+                  target: 'https://non-existing-example.com',
+                  pathRewrite: {
+                    '.*': '/',
+                  },
+                },
+              },
+            },
           },
-        },
-      },
-    };
+        }),
+        mutableConfigSource,
+      ]),
+    );
 
-    const mockConfig = Object.assign(new ConfigReader(mutableConfigData), {
-      subscribe: (s: () => void) => {
-        subscriber = s;
-        return { unsubscribe: () => {} };
-      },
-    });
-
-    const discovery = SingleHostDiscovery.fromConfig(mockConfig);
+    const discovery = HostDiscovery.fromConfig(config);
     const router = await createRouter({
-      config: mockConfig,
+      config,
       logger,
       discovery,
     });
@@ -100,13 +106,18 @@ describe('createRouter reloadable configuration', () => {
 
     expect(response1.status).toEqual(200);
 
-    mutableConfigData.proxy['/test2'] = {
-      target: 'https://non-existing-example.com',
-      pathRewrite: {
-        '.*': '/',
+    mutableConfigSource.setData({
+      proxy: {
+        endpoints: {
+          '/test2': {
+            target: 'https://non-existing-example.com',
+            pathRewrite: {
+              '.*': '/',
+            },
+          },
+        },
       },
-    };
-    subscriber!();
+    });
 
     const response2 = await agent.get('/test2');
 

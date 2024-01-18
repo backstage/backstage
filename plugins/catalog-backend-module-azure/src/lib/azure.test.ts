@@ -18,10 +18,39 @@ import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { codeSearch, CodeSearchResponse } from './azure';
+import {
+  DefaultAzureDevOpsCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
+import { ConfigReader } from '@backstage/config';
 
 describe('azure', () => {
   const server = setupServer();
   setupRequestMockHandlers(server);
+
+  const createFixture = (host: string, token: string) => {
+    const azureConfig = {
+      host: host,
+      credentials: [
+        {
+          personalAccessToken: token,
+        },
+      ],
+    };
+    const scmIntegrations = ScmIntegrations.fromConfig(
+      new ConfigReader({
+        integrations: {
+          azure: [azureConfig],
+        },
+      }),
+    );
+
+    return {
+      azureConfig: scmIntegrations.azure.byHost(host)?.config!,
+      credentialsProvider:
+        DefaultAzureDevOpsCredentialsProvider.fromIntegrations(scmIntegrations),
+    };
+  };
 
   describe('codeSearch', () => {
     it('returns empty when nothing is found', async () => {
@@ -34,6 +63,12 @@ describe('azure', () => {
             expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
             expect(req.body).toEqual({
               searchText: 'path:/catalog-info.yaml repo:* proj:engineering',
+              $orderBy: [
+                {
+                  field: 'path',
+                  sortOrder: 'ASC',
+                },
+              ],
               $skip: 0,
               $top: 1000,
             });
@@ -42,9 +77,14 @@ describe('azure', () => {
         ),
       );
 
+      const { credentialsProvider, azureConfig } = createFixture(
+        'dev.azure.com',
+        'ABC',
+      );
       await expect(
         codeSearch(
-          { host: 'dev.azure.com', token: 'ABC' },
+          credentialsProvider,
+          azureConfig,
           'shopify',
           'engineering',
           '',
@@ -88,6 +128,12 @@ describe('azure', () => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
             searchText: 'path:/catalog-info.yaml repo:* proj:engineering',
+            $orderBy: [
+              {
+                field: 'path',
+                sortOrder: 'ASC',
+              },
+            ],
             $skip: 0,
             $top: 1000,
           });
@@ -96,9 +142,14 @@ describe('azure', () => {
       ),
     );
 
+    const { credentialsProvider, azureConfig } = createFixture(
+      'dev.azure.com',
+      'ABC',
+    );
     await expect(
       codeSearch(
-        { host: 'dev.azure.com', token: 'ABC' },
+        credentialsProvider,
+        azureConfig,
         'shopify',
         'engineering',
         '',
@@ -132,6 +183,12 @@ describe('azure', () => {
           expect(req.body).toEqual({
             searchText:
               'path:/catalog-info.yaml repo:backstage proj:engineering',
+            $orderBy: [
+              {
+                field: 'path',
+                sortOrder: 'ASC',
+              },
+            ],
             $skip: 0,
             $top: 1000,
           });
@@ -140,9 +197,15 @@ describe('azure', () => {
       ),
     );
 
+    const { credentialsProvider, azureConfig } = createFixture(
+      'dev.azure.com',
+      'ABC',
+    );
+
     await expect(
       codeSearch(
-        { host: 'dev.azure.com', token: 'ABC' },
+        credentialsProvider,
+        azureConfig,
         'shopify',
         'engineering',
         'backstage',
@@ -175,6 +238,12 @@ describe('azure', () => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
           expect(req.body).toEqual({
             searchText: 'path:/catalog-info.yaml repo:* proj:engineering',
+            $orderBy: [
+              {
+                field: 'path',
+                sortOrder: 'ASC',
+              },
+            ],
             $skip: 0,
             $top: 1000,
           });
@@ -183,9 +252,15 @@ describe('azure', () => {
       ),
     );
 
+    const { credentialsProvider, azureConfig } = createFixture(
+      'azuredevops.mycompany.com',
+      'ABC',
+    );
+
     await expect(
       codeSearch(
-        { host: 'azuredevops.mycompany.com', token: 'ABC' },
+        credentialsProvider,
+        azureConfig,
         'shopify',
         'engineering',
         '',
@@ -236,9 +311,15 @@ describe('azure', () => {
       ),
     );
 
+    const { credentialsProvider, azureConfig } = createFixture(
+      'dev.azure.com',
+      'ABC',
+    );
+
     await expect(
       codeSearch(
-        { host: 'dev.azure.com', token: 'ABC' },
+        credentialsProvider,
+        azureConfig,
         'shopify',
         'engineering',
         'backstage',

@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { Command } from 'commander';
 import { findRoleFromCommand } from './role';
+
+const mockDir = createMockDirectory();
+
+jest.mock('./paths', () => ({
+  paths: {
+    resolveTarget(filename: string) {
+      return mockDir.resolve(filename);
+    },
+  },
+}));
 
 describe('findRoleFromCommand', () => {
   function mkCommand(args: string) {
@@ -27,7 +37,7 @@ describe('findRoleFromCommand', () => {
   }
 
   beforeEach(() => {
-    mockFs({
+    mockDir.setContent({
       'package.json': JSON.stringify({
         name: 'test',
         backstage: {
@@ -35,10 +45,6 @@ describe('findRoleFromCommand', () => {
         },
       }),
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('provides role info by role', async () => {

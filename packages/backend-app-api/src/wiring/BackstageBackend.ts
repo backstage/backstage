@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-import { ServiceFactory, BackendFeature } from '@backstage/backend-plugin-api';
+import { BackendFeature, ServiceFactory } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-import { ServiceRegistry } from './ServiceRegistry';
 import { Backend } from './types';
 
 export class BackstageBackend implements Backend {
-  #services: ServiceRegistry;
   #initializer: BackendInitializer;
 
-  constructor(apiFactories: ServiceFactory[]) {
-    this.#services = new ServiceRegistry(apiFactories);
-    this.#initializer = new BackendInitializer(this.#services);
+  constructor(defaultServiceFactories: ServiceFactory[]) {
+    this.#initializer = new BackendInitializer(defaultServiceFactories);
   }
 
-  add(feature: BackendFeature): void {
-    this.#initializer.add(feature);
+  add(
+    feature:
+      | BackendFeature
+      | (() => BackendFeature)
+      | Promise<{ default: BackendFeature | (() => BackendFeature) }>,
+  ): void {
+    if (isPromise(feature)) {
+      this.#initializer.add(feature.then(f => unwrapFeature(f.default)));
+    } else {
+      this.#initializer.add(unwrapFeature(feature));
+    }
   }
 
   async start(): Promise<void> {
@@ -39,4 +45,38 @@ export class BackstageBackend implements Backend {
   async stop(): Promise<void> {
     await this.#initializer.stop();
   }
+}
+
+function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'then' in value &&
+    typeof value.then === 'function'
+  );
+}
+
+function unwrapFeature(
+  feature:
+    | BackendFeature
+    | (() => BackendFeature)
+    | { default: BackendFeature | (() => BackendFeature) },
+): BackendFeature {
+  if (typeof feature === 'function') {
+    return feature();
+  }
+  if ('$$type' in feature) {
+    return feature;
+  }
+  // This is a workaround where default exports get transpiled to `exports['default'] = ...`
+  // in CommonJS modules, which in turn results in a double `{ default: { default: ... } }` nesting
+  // when importing using a dynamic import.
+  // TODO: This is a broader issue than just this piece of code, and should move away from CommonJS.
+  if ('default' in feature) {
+    const defaultFeature = feature.default;
+    return typeof defaultFeature === 'function'
+      ? defaultFeature()
+      : defaultFeature;
+  }
+  return feature;
 }

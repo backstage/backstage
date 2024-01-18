@@ -29,12 +29,12 @@ import { PuppetDbEntityProvider } from '../providers/PuppetDbEntityProvider';
  */
 export const catalogModulePuppetDbEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'puppetDbEntityProvider',
+  moduleId: 'puppetdb-entity-provider',
   register(env) {
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },

@@ -102,9 +102,9 @@ const Plugins = () => {
       <div
         className={clsx('container', 'padding--lg', pluginsStyles.pluginsPage)}
       >
-        <div className="marketplaceBanner">
-          <div className="marketplaceContent">
-            <h2>Plugin Marketplace</h2>
+        <div className="directoryBanner">
+          <div className="directoryContent">
+            <h2>Plugin directory</h2>
 
             <p>
               Open source plugins that you can add to your Backstage deployment.
@@ -113,10 +113,10 @@ const Plugins = () => {
           </div>
 
           <Link
-            to="/docs/plugins/add-to-marketplace"
+            to="/docs/plugins/add-to-directory"
             className="button button--outline button--primary"
           >
-            Add to Marketplace
+            Add to Directory
           </Link>
         </div>
 
@@ -151,6 +151,12 @@ const Plugins = () => {
         {showOtherPlugins && (
           <div>
             <h2>All Plugins</h2>
+            <p>
+              Friendly reminder: While we love the variety and contributions of
+              our open source plugins, they haven't been fully vetted by the
+              core Backstage team. We encourage you to exercise caution and do
+              your due diligence before installing. Happy exploring!
+            </p>
             <div className="pluginsContainer margin-bottom--lg">
               {plugins.otherPlugins
                 .filter(

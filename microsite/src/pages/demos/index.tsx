@@ -175,12 +175,16 @@ const Demos = () => {
             <BannerSectionGrid>
               <ContentBlock
                 title={<h1>{demoItem.title}</h1>}
-                actionButtons={[
-                  {
-                    link: demoItem.actionItemLink,
-                    label: 'WATCH NOW',
-                  },
-                ]}
+                actionButtons={
+                  demoItem.actionItemLink
+                    ? [
+                        {
+                          link: demoItem.actionItemLink,
+                          label: 'WATCH NOW',
+                        },
+                      ]
+                    : []
+                }
               >
                 {demoItem.content}
               </ContentBlock>

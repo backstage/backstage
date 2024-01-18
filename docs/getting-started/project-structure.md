@@ -186,7 +186,7 @@ a dash-suffix. `-backend` means it’s a backend plugin and so on.
 One reason for splitting a plugin is because of its dependencies. Another reason
 is for clear separation of concerns.
 
-Take a look at our [Plugin Marketplace](https://backstage.io/plugins) or browse
+Take a look at our [Plugin Directory](https://backstage.io/plugins) or browse
 through the
 [`plugins/`](https://github.com/backstage/backstage/tree/master/plugins) folder.
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
+import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { JsonObject } from '@backstage/types';
 import { UiSchema } from '@rjsf/utils';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
@@ -39,7 +40,10 @@ export interface ParsedTemplateSchema {
  */
 export const useTemplateSchema = (
   manifest: TemplateParameterSchema,
-): { steps: ParsedTemplateSchema[] } => {
+): {
+  steps: ParsedTemplateSchema[];
+  presentation?: TemplatePresentationV1beta3;
+} => {
   const featureFlags = useApi(featureFlagsApiRef);
   const steps = manifest.steps.map(({ title, description, schema }) => ({
     title,
@@ -55,14 +59,19 @@ export const useTemplateSchema = (
       return stepFeatureFlag ? featureFlags.isActive(stepFeatureFlag) : true;
     })
     // Then filter out the properties that are not enabled with feature flag
-    .map(step => ({
-      ...step,
-      schema: {
-        ...step.schema,
-        // Title is rendered at the top of the page, so let's ignore this from jsonschemaform
-        title: undefined,
-        properties: Object.fromEntries(
-          Object.entries((step.schema?.properties ?? []) as JsonObject).filter(
+    .map(step => {
+      const strippedSchema = {
+        ...step,
+        schema: {
+          ...step.schema,
+          // Title is rendered at the top of the page, so let's ignore this from jsonschemaform
+          title: undefined,
+        },
+      } as ParsedTemplateSchema;
+
+      if (step.schema?.properties || !step.schema?.dependencies) {
+        strippedSchema.schema.properties = Object.fromEntries(
+          Object.entries((step.schema?.properties ?? {}) as JsonObject).filter(
             ([key]) => {
               const stepFeatureFlag =
                 step.uiSchema[key]?.['ui:backstage']?.featureFlag;
@@ -71,11 +80,14 @@ export const useTemplateSchema = (
                 : true;
             },
           ),
-        ),
-      },
-    }));
+        );
+      }
+
+      return strippedSchema;
+    });
 
   return {
+    presentation: manifest.presentation,
     steps: returningSteps,
   };
 };

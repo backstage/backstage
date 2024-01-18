@@ -25,9 +25,9 @@ import {
   configApiRef,
   errorApiRef,
 } from '@backstage/core-plugin-api';
-import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { rootRouteRef } from '../../routes';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
 jest.mock('../useWorkflowRuns', () => ({
   useWorkflowRuns: jest.fn(),
@@ -74,55 +74,54 @@ describe('<RecentWorkflowRunsCard />', () => {
     jest.resetAllMocks();
   });
 
-  const renderSubject = (props: any = {}) =>
-    render(
-      wrapInTestApp(
-        <TestApiProvider
-          apis={[
-            [errorApiRef, mockErrorApi],
-            [configApiRef, configApi],
-          ]}
-        >
-          <EntityProvider entity={entity}>
-            <RecentWorkflowRunsCard {...props} />
-          </EntityProvider>
-        </TestApiProvider>,
-        {
-          mountedRoutes: {
-            '/ci-cd': rootRouteRef,
-          },
+  const renderSubject = async (props: any = {}) => {
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [errorApiRef, mockErrorApi],
+          [configApiRef, configApi],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <RecentWorkflowRunsCard {...props} />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/ci-cd': rootRouteRef,
         },
-      ),
+      },
     );
+  };
 
   it('renders a table with a row for each workflow', async () => {
-    const subject = renderSubject();
+    await renderSubject();
 
     workflowRuns.forEach(run => {
-      expect(subject.getByText(run.message)).toBeInTheDocument();
+      expect(screen.getByText(run.message)).toBeInTheDocument();
     });
   });
 
   it('renders a workflow row correctly', async () => {
-    const subject = renderSubject();
+    await renderSubject();
     const [run] = workflowRuns;
-    expect(subject.getByText(run.message).closest('a')).toHaveAttribute(
+    expect(screen.getByText(run.message).closest('a')).toHaveAttribute(
       'href',
       `/ci-cd/${run.id}`,
     );
-    expect(subject.getByText(run.source.branchName)).toBeInTheDocument();
+    expect(screen.getByText(run.source.branchName)).toBeInTheDocument();
   });
 
   it('requests only the required number of workflow runs', async () => {
     const limit = 3;
-    renderSubject({ limit });
+    await renderSubject({ limit });
     expect(useWorkflowRuns).toHaveBeenCalledWith(
       expect.objectContaining({ initialPageSize: limit }),
     );
   });
 
   it('uses the github hostname, repo and owner from the entity annotations', async () => {
-    renderSubject();
+    await renderSubject();
     expect(useWorkflowRuns).toHaveBeenCalledWith(
       expect.objectContaining({
         hostname: 'ghes.acme.co',
@@ -134,7 +133,7 @@ describe('<RecentWorkflowRunsCard />', () => {
 
   it('filters workflows by branch if one is specified', async () => {
     const branch = 'master';
-    renderSubject({ branch });
+    await renderSubject({ branch });
     expect(useWorkflowRuns).toHaveBeenCalledWith(
       expect.objectContaining({ branch }),
     );
@@ -147,7 +146,7 @@ describe('<RecentWorkflowRunsCard />', () => {
     });
 
     it('sends the error to the errorApi', async () => {
-      renderSubject();
+      await renderSubject();
       expect(mockErrorApi.post).toHaveBeenCalledWith(error);
     });
   });

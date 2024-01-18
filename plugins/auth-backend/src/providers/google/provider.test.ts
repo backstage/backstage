@@ -14,74 +14,57 @@
  * limitations under the License.
  */
 
-import { GoogleAuthProvider } from './provider';
-import * as helpers from '../../lib/passport/PassportStrategyHelper';
-import { OAuthResult } from '../../lib/oauth';
-import { AuthResolverContext } from '../types';
+import { googleAuthenticator } from '@backstage/plugin-auth-backend-module-google-provider';
+import { createOAuthProviderFactory } from '@backstage/plugin-auth-node';
+import { google } from './provider';
 
-jest.mock('../../lib/passport/PassportStrategyHelper', () => {
-  return {
-    executeFrameHandlerStrategy: jest.fn(),
-    executeRefreshTokenStrategy: jest.fn(),
-    executeFetchUserProfileStrategy: jest.fn(),
-  };
-});
-
-const mockFrameHandler = jest.spyOn(
-  helpers,
-  'executeFrameHandlerStrategy',
-) as unknown as jest.MockedFunction<
-  () => Promise<{ result: OAuthResult; privateInfo: any }>
->;
+jest.mock('@backstage/plugin-auth-node', () => ({
+  ...jest.requireActual('@backstage/plugin-auth-node'),
+  createOAuthProviderFactory: jest.fn(() => 'provider-factory'),
+}));
 
 describe('createGoogleProvider', () => {
-  it('should auth', async () => {
-    const provider = new GoogleAuthProvider({
-      resolverContext: {} as AuthResolverContext,
-      authHandler: async ({ fullProfile }) => ({
-        profile: {
-          email: fullProfile.emails![0]!.value,
-          displayName: fullProfile.displayName,
-          picture: 'http://google.com/lols',
-        },
-      }),
-      clientId: 'mock',
-      clientSecret: 'mock',
-      callbackUrl: 'mock',
-    });
+  afterEach(() => jest.clearAllMocks());
 
-    mockFrameHandler.mockResolvedValueOnce({
-      result: {
-        fullProfile: {
-          emails: [{ value: 'conrad@example.com' }],
-          displayName: 'Conrad',
-          id: 'conrad',
-          provider: 'google',
-        },
-        params: {
-          id_token: 'idToken',
-          scope: 'scope',
-          expires_in: 123,
-        },
-        accessToken: 'accessToken',
-      },
-      privateInfo: {
-        refreshToken: 'wacka',
-      },
+  it('should be created', async () => {
+    expect(google.create()).toBe('provider-factory');
+
+    expect(createOAuthProviderFactory).toHaveBeenCalledWith({
+      authenticator: googleAuthenticator,
     });
-    const { response } = await provider.handler({} as any);
-    expect(response).toEqual({
-      providerInfo: {
-        accessToken: 'accessToken',
-        expiresInSeconds: 123,
-        idToken: 'idToken',
-        scope: 'scope',
-      },
-      profile: {
-        email: 'conrad@example.com',
-        displayName: 'Conrad',
-        picture: 'http://google.com/lols',
-      },
+  });
+
+  it('should be created with sign-in resolver', async () => {
+    expect(google.create({ signIn: { resolver: jest.fn() } })).toBe(
+      'provider-factory',
+    );
+
+    expect(createOAuthProviderFactory).toHaveBeenCalledWith({
+      authenticator: googleAuthenticator,
+      signInResolver: expect.any(Function),
+    });
+  });
+
+  it('should be created with sign-in resolver and auth handler', async () => {
+    expect(
+      google.create({
+        signIn: { resolver: jest.fn() },
+        authHandler: jest.fn(),
+      }),
+    ).toBe('provider-factory');
+
+    expect(createOAuthProviderFactory).toHaveBeenCalledWith({
+      authenticator: googleAuthenticator,
+      signInResolver: expect.any(Function),
+      profileTransform: expect.any(Function),
+    });
+  });
+
+  it('should have resolvers', () => {
+    expect(google.resolvers).toEqual({
+      emailLocalPartMatchingUserEntityName: expect.any(Function),
+      emailMatchingUserEntityAnnotation: expect.any(Function),
+      emailMatchingUserEntityProfileEmail: expect.any(Function),
     });
   });
 });

@@ -42,7 +42,6 @@ import {
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
-import { deleteOrphanedEntities } from './operations/util/deleteOrphanedEntities';
 import { generateStableHash } from './util';
 import { EventBroker, EventParams } from '@backstage/plugin-events-node';
 import { DateTime } from 'luxon';
@@ -138,6 +137,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         type,
       }),
     );
+
     await tx.batchInsert(
       'relations',
       this.deduplicateRelations(relationRows),
@@ -274,11 +274,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     return { entityRefs };
   }
 
-  async deleteOrphanedEntities(txOpaque: Transaction): Promise<number> {
-    const tx = txOpaque as Knex.Transaction;
-    return await deleteOrphanedEntities({ tx });
-  }
-
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
     try {
       let result: T | undefined = undefined;
@@ -374,7 +369,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               entityRef,
               newLocationKey: locationKey,
               existingLocationKey: conflictingKey,
-              lastConflictAt: DateTime.now().toISO(),
+              lastConflictAt: DateTime.now().toISO()!,
             },
           };
           await this.options.eventBroker?.publish(eventParams);

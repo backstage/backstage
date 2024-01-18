@@ -16,6 +16,9 @@
 
 import { Playlist } from '@backstage/plugin-playlist-common';
 
+/**
+ * @public
+ */
 export type PlaylistFilter = {
   getBackendFilters?: () => Record<string, string | string[] | null>;
 

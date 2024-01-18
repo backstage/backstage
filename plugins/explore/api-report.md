@@ -8,6 +8,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { default as default_2 } from 'react';
+import { DependencyGraphTypes } from '@backstage/core-components';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { DomainEntity } from '@backstage/catalog-model';
 import { ExploreToolsConfig } from '@backstage/plugin-explore-react';
@@ -16,6 +17,8 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { GetExploreToolsRequest } from '@backstage/plugin-explore-common';
 import { GetExploreToolsResponse } from '@backstage/plugin-explore-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -36,15 +39,17 @@ export const catalogEntityRouteRef: ExternalRouteRef<
 export const CatalogKindExploreContent: (props: {
   title?: string;
   kind: string;
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const DomainCard: (props: { entity: DomainEntity }) => JSX.Element;
+export const DomainCard: (props: {
+  entity: DomainEntity;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const DomainExplorerContent: (props: {
   title?: string | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public
 export interface ExploreApi {
@@ -67,7 +72,7 @@ export class ExploreClient implements ExploreApi {
 
 // @public
 export const ExploreLayout: {
-  (props: ExploreLayoutProps): JSX.Element;
+  (props: ExploreLayoutProps): default_2.JSX.Element;
   Route: (props: SubRoute) => null;
 };
 
@@ -79,7 +84,7 @@ export type ExploreLayoutProps = {
 };
 
 // @public (undocumented)
-export const ExplorePage: () => JSX.Element;
+export const ExplorePage: () => JSX_2.Element;
 
 // @public (undocumented)
 const explorePlugin: BackstagePlugin<
@@ -95,8 +100,7 @@ const explorePlugin: BackstagePlugin<
       },
       true
     >;
-  },
-  {}
+  }
 >;
 export { explorePlugin };
 export { explorePlugin as plugin };
@@ -107,7 +111,8 @@ export const exploreRouteRef: RouteRef<undefined>;
 // @public (undocumented)
 export const GroupsExplorerContent: (props: {
   title?: string | undefined;
-}) => JSX.Element;
+  direction?: DependencyGraphTypes.Direction | undefined;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export type SubRoute = {
@@ -125,7 +130,7 @@ export type SubRoute = {
 // @public (undocumented)
 export const ToolExplorerContent: (props: {
   title?: string | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const ToolSearchResultListItem: (

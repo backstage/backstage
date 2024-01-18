@@ -1,6 +1,9 @@
 app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
+  experimental:
+    packages: all # ✨
+
   #datadogRum:
   #  clientToken: '123456789'
   #  applicationId: qwerty
@@ -19,6 +22,8 @@ app:
         links:
           - url: https://discord.gg/backstage-687207715902193673
             title: '#backstage'
+
+  packageName: example-app
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
@@ -49,80 +54,83 @@ backend:
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  '/circleci/api':
-    target: https://circleci.com/api/v1.1
-    headers:
-      Circle-Token: ${CIRCLECI_AUTH_TOKEN}
+  endpoints:
+    '/circleci/api':
+      target: https://circleci.com/api/v1.1
+      headers:
+        Circle-Token: ${CIRCLECI_AUTH_TOKEN}
 
-  '/jenkins/api':
-    target: http://localhost:8080
-    headers:
-      Authorization: ${JENKINS_BASIC_AUTH_HEADER}
+    '/jenkins/api':
+      target: http://localhost:8080
+      headers:
+        Authorization: ${JENKINS_BASIC_AUTH_HEADER}
 
-  '/travisci/api':
-    target: https://api.travis-ci.com
-    changeOrigin: true
-    headers:
-      Authorization: ${TRAVISCI_AUTH_TOKEN}
-      travis-api-version: '3'
+    '/travisci/api':
+      target: https://api.travis-ci.com
+      changeOrigin: true
+      headers:
+        Authorization: ${TRAVISCI_AUTH_TOKEN}
+        travis-api-version: '3'
 
-  '/newrelic/apm/api':
-    target: https://api.newrelic.com/v2
-    headers:
-      X-Api-Key: ${NEW_RELIC_REST_API_KEY}
+    '/newrelic/apm/api':
+      target: https://api.newrelic.com/v2
+      headers:
+        X-Api-Key: ${NEW_RELIC_REST_API_KEY}
+      allowedHeaders:
+        - link
 
-  '/newrelic/api':
-    target: https://api.newrelic.com
-    headers:
-      X-Api-Key: ${NEW_RELIC_USER_KEY}
+    '/newrelic/api':
+      target: https://api.newrelic.com
+      headers:
+        X-Api-Key: ${NEW_RELIC_USER_KEY}
 
-  '/pagerduty':
-    target: https://api.pagerduty.com
-    headers:
-      Authorization: Token token=${PAGERDUTY_TOKEN}
+    '/pagerduty':
+      target: https://api.pagerduty.com
+      headers:
+        Authorization: Token token=${PAGERDUTY_TOKEN}
 
-  '/buildkite/api':
-    target: https://api.buildkite.com/v2/
-    headers:
-      Authorization: ${BUILDKITE_TOKEN}
+    '/buildkite/api':
+      target: https://api.buildkite.com/v2/
+      headers:
+        Authorization: ${BUILDKITE_TOKEN}
 
-  '/sentry/api':
-    target: https://sentry.io/api/
-    allowedMethods: ['GET']
-    headers:
-      Authorization: ${SENTRY_TOKEN}
+    '/sentry/api':
+      target: https://sentry.io/api/
+      allowedMethods: ['GET']
+      headers:
+        Authorization: ${SENTRY_TOKEN}
 
-  '/ilert':
-    target: https://api.ilert.com
-    allowedMethods: ['GET', 'POST', 'PUT']
-    allowedHeaders: ['Authorization']
-    headers:
-      Authorization: ${ILERT_AUTH_HEADER}
+    '/ilert':
+      target: https://api.ilert.com
+      allowedMethods: ['GET', 'POST', 'PUT']
+      allowedHeaders: ['Authorization']
+      headers:
+        Authorization: ${ILERT_AUTH_HEADER}
 
-  '/airflow':
-    target: https://your.airflow.instance.com/api/v1
-    headers:
-      Authorization: ${AIRFLOW_BASIC_AUTH_HEADER}
+    '/airflow':
+      target: https://your.airflow.instance.com/api/v1
+      headers:
+        Authorization: ${AIRFLOW_BASIC_AUTH_HEADER}
 
-  '/gocd':
-    target: https://your.gocd.instance.com/go/api
-    allowedMethods: ['GET']
-    allowedHeaders: ['Authorization']
-    headers:
-      Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
+    '/gocd':
+      target: https://your.gocd.instance.com/go/api
+      allowedMethods: ['GET']
+      allowedHeaders: ['Authorization']
+      headers:
+        Authorization: Basic ${GOCD_AUTH_CREDENTIALS}
 
-  '/dynatrace':
-    target: https://your.dynatrace.instance.com/api/v2
-    headers:
-      Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
+    '/dynatrace':
+      target: https://your.dynatrace.instance.com/api/v2
+      headers:
+        Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
 
-  '/stackstorm':
-    target: https://your.stackstorm.instance.com/api
-    headers:
-      St2-Api-Key: ${ST2_API_KEY}
+    '/stackstorm':
+      target: https://your.stackstorm.instance.com/api
+      headers:
+        St2-Api-Key: ${ST2_API_KEY}
 
-  '/puppetdb':
-    target: https://your.puppetdb.instance.com
+    '/puppetdb':
+      target: https://your.puppetdb.instance.com
 
 organization:
   name: My Company
@@ -211,7 +219,7 @@ integrations:
   #    clientEmail: 'example@example.com'
   #    privateKey: ${GCS_PRIVATE_KEY}
   awsS3:
-    - host: amazonaws.com
+    - endpoint: ${AWS_S3_ENDPOINT}
       accessKeyId: ${AWS_ACCESS_KEY_ID}
       secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
@@ -227,6 +235,12 @@ catalog:
         - System
         - Domain
         - Location
+  providers:
+    openapi:
+      plugins:
+        - catalog
+        - search
+        - todo
 
   processors:
     ldapOrg:
@@ -283,9 +297,6 @@ catalog:
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
       rules:
         - allow: [Template]
-    # Backstage end-to-end tests of TechDocs
-    - type: file
-      target: ../../cypress/e2e-fixture.catalog.info.yaml
 scaffolder:
   # Use to customize default commit author info used when new components are created
   # defaultAuthor:
@@ -352,8 +363,6 @@ auth:
         metadataUrl: ${AUTH_OIDC_METADATA_URL}
         clientId: ${AUTH_OIDC_CLIENT_ID}
         clientSecret: ${AUTH_OIDC_CLIENT_SECRET}
-        authorizationUrl: ${AUTH_OIDC_AUTH_URL}
-        tokenUrl: ${AUTH_OIDC_TOKEN_URL}
         tokenEndpointAuthMethod: ${AUTH_OIDC_TOKEN_ENDPOINT_AUTH_METHOD} # default='client_secret_basic'
         tokenSignedResponseAlg: ${AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG} # default='RS256'
         scope: ${AUTH_OIDC_SCOPE} # default='openid profile email'
@@ -434,8 +443,10 @@ costInsights:
       kind: 'PINTS_OF_ICE_CREAM'
       unit: 'ice cream pint'
       rate: 5.5
-pagerduty:
+
+pagerDuty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
+
 jenkins:
   instances:
     - name: default

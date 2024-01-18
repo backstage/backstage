@@ -49,9 +49,6 @@ export async function command() {
       if (scripts.build?.includes('--minify')) {
         buildCmd.push('--minify');
       }
-      if (scripts.build?.includes('--experimental-type-build')) {
-        buildCmd.push('--experimental-type-build');
-      }
       if (scripts.build?.includes('--config')) {
         buildCmd.push(...(scripts.build.match(configArgPattern) ?? []));
       }

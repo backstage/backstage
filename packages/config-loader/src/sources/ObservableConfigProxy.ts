@@ -16,6 +16,7 @@
 
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
+import isEqual from 'lodash/isEqual';
 
 export class ObservableConfigProxy implements Config {
   private config: Config = new ConfigReader({});
@@ -40,12 +41,22 @@ export class ObservableConfigProxy implements Config {
     if (this.parent) {
       throw new Error('immutable');
     }
+
+    // We only notify subscribers if the data contents of the config actually
+    // changed. If they didn't, there's no point in callers trying to re-read
+    // them. However we still want to replace the local config object, since its
+    // runtime implementation could be entirely different.
+    const changed = !isEqual(this.config.get(), config.get());
+
     this.config = config;
-    for (const subscriber of this.subscribers) {
-      try {
-        subscriber();
-      } catch (error) {
-        console.error(`Config subscriber threw error, ${error}`);
+
+    if (changed) {
+      for (const subscriber of this.subscribers) {
+        try {
+          subscriber();
+        } catch (error) {
+          console.error(`Config subscriber threw error, ${error}`);
+        }
       }
     }
   }

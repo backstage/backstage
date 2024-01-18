@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-sonarqube-backend",
-  "version": "0.2.1-next.1",
+  "version": "0.2.11",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -11,6 +11,12 @@
   },
   "backstage": {
     "role": "backend-plugin"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/sonarqube-backend"
   },
   "scripts": {
     "start": "backstage-cli package start",
@@ -23,6 +29,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@types/express": "*",

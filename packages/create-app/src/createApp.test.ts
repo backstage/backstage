@@ -15,11 +15,13 @@
  */
 
 import inquirer from 'inquirer';
-import mockFs from 'mock-fs';
 import path from 'path';
 import { Command } from 'commander';
 import * as tasks from './lib/tasks';
 import createApp from './createApp';
+import { findPaths } from '@backstage/cli-common';
+import { tmpdir } from 'os';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 jest.mock('./lib/tasks');
 
@@ -34,24 +36,11 @@ const templatingMock = jest.spyOn(tasks, 'templatingTask');
 const checkAppExistsMock = jest.spyOn(tasks, 'checkAppExistsTask');
 const tryInitGitRepositoryMock = jest.spyOn(tasks, 'tryInitGitRepository');
 const readGitConfig = jest.spyOn(tasks, 'readGitConfig');
-const createTemporaryAppFolderMock = jest.spyOn(
-  tasks,
-  'createTemporaryAppFolderTask',
-);
 const moveAppMock = jest.spyOn(tasks, 'moveAppTask');
 const buildAppMock = jest.spyOn(tasks, 'buildAppTask');
 
 describe('command entrypoint', () => {
-  beforeEach(() => {
-    mockFs({
-      [`${__dirname}/package.json`]: '', // required by `findPaths(__dirname)`
-      'templates/': mockFs.load(path.resolve(__dirname, '../templates/')),
-    });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
-  });
+  const mockDir = createMockDirectory({ mockOsTmpDir: true });
 
   beforeEach(() => {
     promptMock.mockResolvedValueOnce({
@@ -64,6 +53,7 @@ describe('command entrypoint', () => {
   });
 
   afterEach(() => {
+    mockDir.clear();
     jest.resetAllMocks();
   });
 
@@ -71,9 +61,19 @@ describe('command entrypoint', () => {
     const cmd = {} as unknown as Command;
     await createApp(cmd);
     expect(checkAppExistsMock).toHaveBeenCalled();
-    expect(createTemporaryAppFolderMock).toHaveBeenCalled();
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
+    expect(templatingMock.mock.lastCall?.[0]).toEqual(
+      findPaths(__dirname).resolveTarget(
+        'packages',
+        'create-app',
+        'templates',
+        'default-app',
+      ),
+    );
+    expect(templatingMock.mock.lastCall?.[1]).toContain(
+      path.join(tmpdir(), 'MyApp'),
+    );
     expect(moveAppMock).toHaveBeenCalled();
     expect(buildAppMock).toHaveBeenCalled();
   });
@@ -84,6 +84,47 @@ describe('command entrypoint', () => {
     expect(checkPathExistsMock).toHaveBeenCalled();
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
+    expect(templatingMock.mock.lastCall?.[0]).toEqual(
+      findPaths(__dirname).resolveTarget(
+        'packages',
+        'create-app',
+        'templates',
+        'default-app',
+      ),
+    );
+    expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
+    expect(buildAppMock).toHaveBeenCalled();
+  });
+
+  it('should call expected tasks with relative --template-path option', async () => {
+    const cmd = {
+      path: 'myDirectory',
+      templatePath: 'templateDirectory',
+    } as unknown as Command;
+    await createApp(cmd);
+    expect(checkPathExistsMock).toHaveBeenCalled();
+    expect(tryInitGitRepositoryMock).toHaveBeenCalled();
+    expect(templatingMock).toHaveBeenCalled();
+    expect(templatingMock.mock.lastCall?.[0]).toEqual(
+      findPaths(__dirname).resolveTarget('templateDirectory'),
+    );
+    expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
+    expect(buildAppMock).toHaveBeenCalled();
+  });
+
+  it('should call expected tasks with absolute --template-path option', async () => {
+    const cmd = {
+      path: 'myDirectory',
+      templatePath: path.resolve('somewhere', 'templateDirectory'),
+    } as unknown as Command;
+    await createApp(cmd);
+    expect(checkPathExistsMock).toHaveBeenCalled();
+    expect(tryInitGitRepositoryMock).toHaveBeenCalled();
+    expect(templatingMock).toHaveBeenCalled();
+    expect(templatingMock.mock.lastCall?.[0]).toEqual(
+      path.resolve('somewhere', 'templateDirectory'),
+    );
+    expect(templatingMock.mock.lastCall?.[1]).toEqual('myDirectory');
     expect(buildAppMock).toHaveBeenCalled();
   });
 

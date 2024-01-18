@@ -227,6 +227,11 @@ export type BackstageIdentityResponse = {
   token: string;
 
   /**
+   * The time at which the token expires. If not set, it can be assumed that the token does not expire.
+   */
+  expiresAt?: Date;
+
+  /**
    * Identity information derived from the token.
    */
   identity: BackstageUserIdentity;

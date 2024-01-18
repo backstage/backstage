@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-playlist",
-  "version": "0.1.12-next.2",
+  "version": "0.2.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -12,11 +12,13 @@
   "backstage": {
     "role": "frontend-plugin"
   },
+  "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/playlist"
   },
+  "sideEffects": false,
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
@@ -37,10 +39,10 @@
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/plugin-playlist-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
@@ -48,22 +50,19 @@
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/plugin-search-common": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^8.0.0",
-    "@testing-library/jest-dom": "^5.10.1",
-    "@testing-library/react": "^12.1.3",
-    "@testing-library/react-hooks": "^8.0.0",
-    "@testing-library/user-event": "^14.0.0",
-    "@types/node": "*",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@testing-library/dom": "^9.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
     "msw": "^1.0.0",
     "swr": "^2.0.0"
   },

@@ -66,10 +66,14 @@ have to supply a (unique) name, and accept a connection from the environment
 through which you can issue writes. The rest is up to the individual provider
 implementation.
 
-It is up to you where you put the code for this new processor class. For quick
+It is up to you where you put the code for this new provider class. For quick
 experimentation you could place it in your backend package, but we recommend
-putting all extensions like this in a backend plugin package of their own in the
-`plugins` folder of your Backstage repo.
+putting all extensions like this in a backend module package of their own in the
+`plugins` folder of your Backstage repo:
+
+```sh
+yarn new --select backend-module --option id=catalog
+```
 
 The class will have this basic structure:
 
@@ -495,8 +499,12 @@ subclass that can be added to this catalog builder.
 
 It is up to you where you put the code for this new processor class. For quick
 experimentation you could place it in your backend package, but we recommend
-putting all extensions like this in a backend plugin package of their own in the
-`plugins` folder of your Backstage repo.
+putting all extensions like this in a backend module package of their own in the
+`plugins` folder of your Backstage repo:
+
+```sh
+yarn new --select backend-module --option id=catalog
+```
 
 The class will have this basic structure:
 

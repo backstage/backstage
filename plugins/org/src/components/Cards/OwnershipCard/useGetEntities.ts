@@ -16,9 +16,9 @@
 
 import {
   Entity,
+  parseEntityRef,
   RELATION_MEMBER_OF,
   RELATION_PARENT_OF,
-  parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -31,6 +31,8 @@ import limiterFactory from 'p-limit';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import qs from 'qs';
+import { EntityRelationAggregation as EntityRelationsAggregation } from './types';
+import { uniq } from 'lodash';
 
 const limiter = limiterFactory(10);
 
@@ -57,78 +59,114 @@ const getQueryParams = (
   return qs.stringify({ filters }, { arrayFormat: 'repeat' });
 };
 
-const getOwnersEntityRef = (owner: Entity): string[] => {
-  let owners = [stringifyEntityRef(owner)];
-  if (owner.kind === 'User') {
-    const ownerGroups = getEntityRelations(owner, RELATION_MEMBER_OF, {
-      kind: 'Group',
-    });
-    const ownerGroupsName = ownerGroups.map(ownerGroup =>
-      stringifyEntityRef({
-        kind: ownerGroup.kind,
-        namespace: ownerGroup.namespace,
-        name: ownerGroup.name,
-      }),
-    );
-    owners = [...owners, ...ownerGroupsName];
-  }
-  return owners;
+const getMemberOfEntityRefs = (owner: Entity): string[] => {
+  const parentGroups = getEntityRelations(owner, RELATION_MEMBER_OF, {
+    kind: 'Group',
+  });
+
+  const ownerGroupsNames = parentGroups.map(({ kind, namespace, name }) =>
+    stringifyEntityRef({
+      kind,
+      namespace,
+      name,
+    }),
+  );
+
+  return [...ownerGroupsNames, stringifyEntityRef(owner)];
 };
 
-const getAggregatedOwnersEntityRef = async (
-  parentGroup: Entity,
+const isEntity = (entity: Entity | undefined): entity is Entity =>
+  entity !== undefined;
+
+const getChildOwnershipEntityRefs = async (
+  entity: Entity,
+  catalogApi: CatalogApi,
+  alreadyRetrievedParentRefs: string[] = [],
+): Promise<string[]> => {
+  const childGroups = getEntityRelations(entity, RELATION_PARENT_OF, {
+    kind: 'Group',
+  });
+
+  const hasChildGroups = childGroups.length > 0;
+
+  const entityRef = stringifyEntityRef(entity);
+  if (hasChildGroups) {
+    const entityRefs = childGroups.map(r => stringifyEntityRef(r));
+    const childGroupResponse = await catalogApi.getEntitiesByRefs({
+      fields: ['kind', 'metadata.namespace', 'metadata.name', 'relations'],
+      entityRefs,
+    });
+    const childGroupEntities = childGroupResponse.items.filter(isEntity);
+
+    const unknownChildren = childGroupEntities.filter(
+      childGroupEntity =>
+        !alreadyRetrievedParentRefs.includes(
+          stringifyEntityRef(childGroupEntity),
+        ),
+    );
+    const childrenRefs = (
+      await Promise.all(
+        unknownChildren.map(childGroupEntity =>
+          limiter(() =>
+            getChildOwnershipEntityRefs(childGroupEntity, catalogApi, [
+              ...alreadyRetrievedParentRefs,
+              entityRef,
+            ]),
+          ),
+        ),
+      )
+    ).flatMap(aggregated => aggregated);
+
+    return uniq([...childrenRefs, entityRef]);
+  }
+
+  return [entityRef];
+};
+
+const getOwners = async (
+  entity: Entity,
+  relations: EntityRelationsAggregation,
   catalogApi: CatalogApi,
 ): Promise<string[]> => {
-  const requestedEntities: Entity[] = [];
-  const outstandingEntities = new Map<string, Promise<Entity | undefined>>();
-  const processedEntities = new Set<string>();
-  requestedEntities.push(parentGroup);
-  let currentEntity = parentGroup;
+  const isGroup = entity.kind === 'Group';
+  const isAggregated = relations === 'aggregated';
+  const isUserEntity = entity.kind === 'User';
 
-  while (requestedEntities.length > 0) {
-    const childRelations = getEntityRelations(
-      currentEntity,
-      RELATION_PARENT_OF,
-      {
-        kind: 'Group',
-      },
-    );
-
-    await Promise.all(
-      childRelations.map(childGroup =>
-        limiter(async () => {
-          const promise = catalogApi.getEntityByRef(childGroup);
-          outstandingEntities.set(childGroup.name, promise);
-          try {
-            const processedEntity = await promise;
-            if (processedEntity) {
-              requestedEntities.push(processedEntity);
-            }
-          } finally {
-            outstandingEntities.delete(childGroup.name);
-          }
-        }),
-      ),
-    );
-    requestedEntities.shift();
-    processedEntities.add(
-      stringifyEntityRef({
-        kind: currentEntity.kind,
-        namespace: currentEntity.metadata.namespace,
-        name: currentEntity.metadata.name,
-      }),
-    );
-    // always set currentEntity to the first element of array requestedEntities
-    currentEntity = requestedEntities[0];
+  if (isAggregated && isGroup) {
+    return getChildOwnershipEntityRefs(entity, catalogApi);
   }
 
-  return Array.from(processedEntities);
+  if (isAggregated && isUserEntity) {
+    return getMemberOfEntityRefs(entity);
+  }
+
+  return [stringifyEntityRef(entity)];
 };
+
+const getOwnedEntitiesByOwners = (
+  owners: string[],
+  kinds: string[],
+  catalogApi: CatalogApi,
+) =>
+  catalogApi.getEntities({
+    filter: [
+      {
+        kind: kinds,
+        'relations.ownedBy': owners,
+      },
+    ],
+    fields: [
+      'kind',
+      'metadata.name',
+      'metadata.namespace',
+      'spec.type',
+      'relations',
+    ],
+  });
 
 export function useGetEntities(
   entity: Entity,
-  relationsType: string,
-  isGroup: boolean,
+  relations: EntityRelationsAggregation,
   entityFilterKind?: string[],
   entityLimit = 6,
 ): {
@@ -151,25 +189,13 @@ export function useGetEntities(
     error,
     value: componentsWithCounters,
   } = useAsync(async () => {
-    const owners =
-      relationsType === 'aggregated' && isGroup
-        ? await getAggregatedOwnersEntityRef(entity, catalogApi)
-        : getOwnersEntityRef(entity);
-    const ownedEntitiesList = await catalogApi.getEntities({
-      filter: [
-        {
-          kind: kinds,
-          'relations.ownedBy': owners,
-        },
-      ],
-      fields: [
-        'kind',
-        'metadata.name',
-        'metadata.namespace',
-        'spec.type',
-        'relations',
-      ],
-    });
+    const owners = await getOwners(entity, relations, catalogApi);
+
+    const ownedEntitiesList = await getOwnedEntitiesByOwners(
+      owners,
+      kinds,
+      catalogApi,
+    );
 
     const counts = ownedEntitiesList.items.reduce(
       (acc: EntityTypeProps[], ownedEntity) => {
@@ -204,7 +230,7 @@ export function useGetEntities(
       kind: string;
       queryParams: string;
     }>;
-  }, [catalogApi, entity, relationsType]);
+  }, [catalogApi, entity, relations]);
 
   return {
     componentsWithCounters,

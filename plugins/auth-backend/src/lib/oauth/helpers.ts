@@ -16,36 +16,28 @@
 
 import express from 'express';
 import { OAuthState } from './types';
-import pickBy from 'lodash/pickBy';
 import { CookieConfigurer } from '../../providers/types';
+import {
+  decodeOAuthState,
+  encodeOAuthState,
+} from '@backstage/plugin-auth-node';
 
-/** @public */
-export const readState = (stateString: string): OAuthState => {
-  const state = Object.fromEntries(
-    new URLSearchParams(Buffer.from(stateString, 'hex').toString('utf-8')),
-  );
-  if (
-    !state.nonce ||
-    !state.env ||
-    state.nonce?.length === 0 ||
-    state.env?.length === 0
-  ) {
-    throw Error(`Invalid state passed via request`);
-  }
+/**
+ * @public
+ * @deprecated Use `decodeOAuthState` from `@backstage/plugin-auth-node` instead
+ */
+export const readState = decodeOAuthState;
 
-  return state as OAuthState;
-};
+/**
+ * @public
+ * @deprecated Use `encodeOAuthState` from `@backstage/plugin-auth-node` instead
+ */
+export const encodeState = encodeOAuthState;
 
-/** @public */
-export const encodeState = (state: OAuthState): string => {
-  const stateString = new URLSearchParams(
-    pickBy<string>(state, value => value !== undefined),
-  ).toString();
-
-  return Buffer.from(stateString, 'utf-8').toString('hex');
-};
-
-/** @public */
+/**
+ * @public
+ * @deprecated Use inline logic to make sure the session and state nonce matches instead.
+ */
 export const verifyNonce = (req: express.Request, providerId: string) => {
   const cookieNonce = req.cookies[`${providerId}-nonce`];
   const state: OAuthState = readState(req.query.state?.toString() ?? '');

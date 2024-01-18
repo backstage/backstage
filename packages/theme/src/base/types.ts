@@ -114,3 +114,49 @@ export type BackstageThemeAdditions = {
   page: PageTheme;
   getPageTheme: (selector: PageThemeSelector) => PageTheme;
 };
+
+/**
+ * Custom Typography
+ *
+ * @public
+ */
+export type BackstageTypography = {
+  htmlFontSize: number;
+  fontFamily: string;
+  h1: {
+    fontFamily?: string;
+    fontSize: number | string;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h2: {
+    fontFamily?: string;
+    fontSize: number | string;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h3: {
+    fontFamily?: string;
+    fontSize: number | string;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h4: {
+    fontFamily?: string;
+    fontSize: number | string;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h5: {
+    fontFamily?: string;
+    fontSize: number | string;
+    fontWeight: number;
+    marginBottom: number;
+  };
+  h6: {
+    fontFamily?: string;
+    fontSize: number | string;
+    fontWeight: number;
+    marginBottom: number;
+  };
+};

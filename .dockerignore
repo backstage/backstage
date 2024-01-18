@@ -2,7 +2,6 @@
 .yarn/cache
 .yarn/install-state.gz
 docs
-cypress
 microsite
 node_modules
 packages/*/src

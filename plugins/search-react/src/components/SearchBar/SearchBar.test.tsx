@@ -17,7 +17,7 @@
 import React from 'react';
 import { screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { configApiRef, analyticsApiRef } from '@backstage/core-plugin-api';
+import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/core-app-api';
 import {
   MockAnalyticsApi,
@@ -43,10 +43,6 @@ const createInitialState = ({
 describe('SearchBar', () => {
   const user = userEvent.setup({ delay: null });
 
-  const query = jest.fn().mockResolvedValue({ results: [] });
-
-  const searchApiMock = { query };
-
   const configApiMock = new ConfigReader({
     app: {
       title: 'Mock title',
@@ -57,6 +53,8 @@ describe('SearchBar', () => {
       },
     },
   });
+
+  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -172,7 +170,7 @@ describe('SearchBar', () => {
 
     await waitFor(() => expect(textbox).toHaveValue(value));
 
-    expect(query).toHaveBeenLastCalledWith(
+    expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
 
@@ -204,7 +202,7 @@ describe('SearchBar', () => {
 
     await waitFor(() => expect(textbox).toHaveValue(''));
 
-    expect(query).toHaveBeenLastCalledWith(
+    expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: '' }),
     );
   });
@@ -255,7 +253,7 @@ describe('SearchBar', () => {
     await user.type(textbox, value);
 
     await waitFor(() =>
-      expect(query).not.toHaveBeenLastCalledWith(
+      expect(searchApiMock.query).not.toHaveBeenLastCalledWith(
         expect.objectContaining({ term: value }),
       ),
     );
@@ -266,7 +264,7 @@ describe('SearchBar', () => {
 
     await waitFor(() => expect(textbox).toHaveValue(value));
 
-    expect(query).toHaveBeenLastCalledWith(
+    expect(searchApiMock.query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
 
@@ -299,63 +297,5 @@ describe('SearchBar', () => {
     await waitFor(() => expect(textbox).toHaveValue(value));
 
     expect(analyticsApiMock.getEvents()).toHaveLength(0);
-  });
-
-  it('Captures analytics events if enabled in app', async () => {
-    const analyticsApiMock = new MockAnalyticsApi();
-
-    const types = ['techdocs', 'software-catalog'];
-
-    await renderWithEffects(
-      <TestApiProvider
-        apis={[
-          [configApiRef, configApiMock],
-          [searchApiRef, searchApiMock],
-          [analyticsApiRef, analyticsApiMock],
-        ]}
-      >
-        <SearchContextProvider initialState={createInitialState({ types })}>
-          <SearchBar debounceTime={0} />
-        </SearchContextProvider>
-      </TestApiProvider>,
-    );
-
-    const textbox = screen.getByLabelText('Search');
-
-    let value = 'value';
-    await user.type(textbox, value);
-    await waitFor(() => {
-      expect(analyticsApiMock.getEvents()).toHaveLength(1);
-      expect(textbox).toHaveValue(value);
-      expect(analyticsApiMock.getEvents()[0]).toEqual({
-        action: 'search',
-        context: {
-          extension: 'SearchBar',
-          pluginId: 'search',
-          routeRef: 'unknown',
-          searchTypes: types.toString(),
-        },
-        subject: value,
-      });
-    });
-
-    value = 'new value';
-    await user.clear(textbox);
-    // make sure new term is captured
-    await user.type(textbox, value);
-    await waitFor(() => {
-      expect(analyticsApiMock.getEvents()).toHaveLength(2);
-      expect(textbox).toHaveValue(value);
-      expect(analyticsApiMock.getEvents()[1]).toEqual({
-        action: 'search',
-        context: {
-          extension: 'SearchBar',
-          pluginId: 'search',
-          routeRef: 'unknown',
-          searchTypes: types.toString(),
-        },
-        subject: value,
-      });
-    });
   });
 });

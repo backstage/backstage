@@ -19,8 +19,12 @@ import {
   createTemplateAction as createTemplateActionNode,
   TaskSecrets as TaskSecretsNode,
   TemplateAction as TemplateActionNode,
+  executeShellCommand as executeShellCommandNode,
+  ExecuteShellCommandOptions as ExecuteShellCommandOptionsNode,
+  fetchContents as fetchContentsNode,
 } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
+import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessorModule } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 
 /**
  * @public
@@ -47,3 +51,36 @@ export type TaskSecrets = TaskSecretsNode;
  */
 export type TemplateAction<TInput extends JsonObject> =
   TemplateActionNode<TInput>;
+
+/**
+ * Options for {@link executeShellCommand}.
+ *
+ * @public
+ * @deprecated Use `ExecuteShellCommandOptions` from `@backstage/plugin-scaffolder-node` instead
+ */
+export type RunCommandOptions = ExecuteShellCommandOptionsNode;
+
+/**
+ * Run a command in a sub-process, normally a shell command.
+ *
+ * @public
+ * @deprecated Use `executeShellCommand` from `@backstage/plugin-scaffolder-node` instead
+ */
+export const executeShellCommand = executeShellCommandNode;
+
+/**
+ * A helper function that reads the contents of a directory from the given URL.
+ * Can be used in your own actions, and also used behind fetch:template and fetch:plain
+ *
+ * @public
+ * @deprecated Use `fetchContents` from `@backstage/plugin-scaffolder-node` instead
+ */
+export const fetchContents = fetchContentsNode;
+
+/**
+ * Adds support for scaffolder specific entity kinds to the catalog.
+ *
+ * @public
+ * @deprecated Import from `@backstage/plugin-catalog-backend-module-scaffolder-entity-model` instead
+ */
+export const ScaffolderEntitiesProcessor = ScaffolderEntitiesProcessorModule;

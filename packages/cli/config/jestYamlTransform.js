@@ -25,7 +25,7 @@ function createTransformer(config) {
 
   const getCacheKey = sourceText => {
     return crypto
-      .createHash('md5')
+      .createHash('sha256')
       .update(sourceText)
       .update(Buffer.alloc(1))
       .update(JSON.stringify(config))

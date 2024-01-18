@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-gocd",
   "description": "A Backstage plugin that integrates towards GoCD",
-  "version": "0.1.26-next.2",
+  "version": "0.1.35",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -19,6 +19,7 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/gocd"
   },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",
@@ -34,7 +35,6 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
@@ -44,8 +44,8 @@
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
@@ -53,15 +53,13 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^8.0.0",
-    "@testing-library/jest-dom": "^5.10.1",
-    "@testing-library/react": "^12.1.3",
+    "@testing-library/dom": "^9.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/lodash": "^4.14.173",
     "@types/luxon": "^3.0.0",
-    "@types/node": "^16.11.26",
-    "@types/react": "^16.13.1 || ^17.0.0",
-    "msw": "^1.0.0"
+    "@types/react": "^16.13.1 || ^17.0.0"
   },
   "files": [
     "dist",

@@ -133,7 +133,9 @@ export const TechDocsReaderPageHeader = (
           }
         />
       )}
-      {lifecycle ? <HeaderLabel label="Lifecycle" value={lifecycle} /> : null}
+      {lifecycle ? (
+        <HeaderLabel label="Lifecycle" value={String(lifecycle)} />
+      ) : null}
       {locationMetadata &&
       locationMetadata.type !== 'dir' &&
       locationMetadata.type !== 'file' ? (

@@ -1,5 +1,363 @@
 # @backstage/plugin-app-backend
 
+## 0.3.57
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/config-loader@1.6.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.9
+
+## 0.3.57-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-app-node@0.1.9-next.2
+  - @backstage/config-loader@1.6.1-next.0
+
+## 0.3.57-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.6.1-next.0
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.9-next.1
+
+## 0.3.57-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.9-next.0
+
+## 0.3.56
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/config-loader@1.6.0
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.8
+
+## 0.3.56-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.8-next.3
+
+## 0.3.56-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.6.0-next.0
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.8-next.2
+
+## 0.3.56-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.5.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.8-next.1
+
+## 0.3.56-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.5.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.8-next.0
+
+## 0.3.55
+
+### Patch Changes
+
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- Updated dependencies
+  - @backstage/config-loader@1.5.3
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.7
+
+## 0.3.55-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-app-node@0.1.7-next.2
+  - @backstage/config-loader@1.5.3-next.0
+
+## 0.3.55-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/config-loader@1.5.3-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.7-next.1
+
+## 0.3.55-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.5.2-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.7-next.0
+
+## 0.3.54
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/config-loader@1.5.1
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.6
+
+## 0.3.54-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/config-loader@1.5.1-next.1
+  - @backstage/backend-plugin-api@0.6.6-next.2
+  - @backstage/config@1.1.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.6-next.2
+
+## 0.3.53-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/config@1.1.0
+  - @backstage/config-loader@1.5.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.5-next.1
+
+## 0.3.53-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.5.1-next.0
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.5-next.0
+
+## 0.3.51
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/types@1.1.1
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/config-loader@1.5.0
+  - @backstage/plugin-app-node@0.1.3
+
+## 0.3.51-next.3
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/types@1.1.1-next.0
+  - @backstage/backend-plugin-api@0.6.3-next.3
+  - @backstage/backend-common@0.19.5-next.3
+  - @backstage/config-loader@1.5.0-next.3
+  - @backstage/plugin-app-node@0.1.3-next.3
+
+## 0.3.51-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.5.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/types@1.1.0
+  - @backstage/plugin-app-node@0.1.3-next.2
+
+## 0.3.51-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/config-loader@1.5.0-next.1
+  - @backstage/plugin-app-node@0.1.3-next.1
+  - @backstage/types@1.1.0
+
+## 0.3.50-next.0
+
+### Patch Changes
+
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/config-loader@1.5.0-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+  - @backstage/plugin-app-node@0.1.2-next.0
+
+## 0.3.48
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- d564ad142b17: Migrated the alpha `appBackend` export to use static configuration and extension points rather than accepting options.
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/config-loader@1.4.0
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-app-node@0.1.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 0.3.48-next.2
+
+### Patch Changes
+
+- d564ad142b17: Migrated the alpha `appBackend` export to use static configuration and extension points rather than accepting options.
+- Updated dependencies
+  - @backstage/plugin-app-node@0.1.0-next.0
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/config-loader@1.4.0-next.1
+
+## 0.3.48-next.1
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/config-loader@1.4.0-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 0.3.48-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.4.0-next.0
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/backend-plugin-api@0.5.5-next.0
+  - @backstage/config@1.0.8
+  - @backstage/types@1.1.0
+
+## 0.3.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/config@1.0.8
+  - @backstage/config-loader@1.3.2
+  - @backstage/types@1.1.0
+
 ## 0.3.47-next.0
 
 ### Patch Changes

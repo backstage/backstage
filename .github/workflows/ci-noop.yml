@@ -7,6 +7,9 @@ on:
     paths:
       - 'microsite/**'
 
+permissions:
+  contents: read
+
 jobs:
   # The verify jobs runs all the verification that doesn't require a
   # diff towards master, since it takes some time to fetch that.
@@ -15,10 +18,15 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [18.x, 20.x]
 
     name: Verify ${{ matrix.node-version }}
     steps:
+      # - name: Harden Runner
+      #   uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+      #   with:
+      #     egress-policy: audit
+
       - run: echo NOOP
 
   test-noop:
@@ -26,8 +34,13 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [18.x, 20.x]
 
     name: Test ${{ matrix.node-version }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        with:
+          egress-policy: audit
+
       - run: echo NOOP

@@ -2,6 +2,20 @@
 
 Welcome to the sonarqube-backend backend plugin!
 
+## New Backend System
+
+The Sonarqube backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
+  const backend = createBackend();
+  // ... other feature additions
++ backend.add(import('@backstage/plugin-sonarqube-backend'));
+  backend.start();
+```
+
 ## Integrating into a backstage instance
 
 This plugin needs to be added to an existing backstage instance.
@@ -133,6 +147,34 @@ sonarqube:
   baseUrl: https://default-sonarqube.example.com
   apiKey: 123456789abcdef0123456789abcedf012
   instances:
+    - name: specialProject
+      baseUrl: https://special-project-sonarqube.example.com
+      apiKey: abcdef0123456789abcedf0123456789ab
+```
+
+#### Example - Different frontend and backend URLs
+
+In some instances, you might want to use one URL for the backend and another for the frontend.
+This can be achieved by using the optional `externalBaseUrl` property in the config.
+
+##### Single instance config
+
+```yaml
+sonarqube:
+  baseUrl: https://sonarqube-internal.example.com
+  externalBaseUrl: https://sonarqube.example.com
+  apiKey: 123456789abcdef0123456789abcedf012
+```
+
+##### Multiple instance config
+
+```yaml
+sonarqube:
+  instances:
+    - name: default
+      baseUrl: https://default-sonarqube-internal.example.com
+      externalBaseUrl: https://default-sonarqube.example.com
+      apiKey: 123456789abcdef0123456789abcedf012
     - name: specialProject
       baseUrl: https://special-project-sonarqube.example.com
       apiKey: abcdef0123456789abcedf0123456789ab

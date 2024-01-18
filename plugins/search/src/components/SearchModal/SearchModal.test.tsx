@@ -36,16 +36,17 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('SearchModal', () => {
-  const query = jest.fn().mockResolvedValue({ results: [] });
+  const configApiMock = new ConfigReader({ app: { title: 'Mock app' } });
+  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
 
   const apiRegistry = TestApiRegistry.from(
-    [configApiRef, new ConfigReader({ app: { title: 'Mock app' } })],
-    [searchApiRef, { query }],
+    [configApiRef, configApiMock],
+    [searchApiRef, searchApiMock],
   );
 
   beforeEach(() => {
-    query.mockClear();
     navigate.mockClear();
+    searchApiMock.query.mockClear();
   });
 
   const toggleModal = jest.fn();
@@ -63,7 +64,7 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(query).toHaveBeenCalledTimes(1);
+    expect(searchApiMock.query).toHaveBeenCalledTimes(1);
   });
 
   it('Should use parent search context if defined', async () => {
@@ -88,7 +89,7 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(query).toHaveBeenCalledWith(initialState);
+    expect(searchApiMock.query).toHaveBeenCalledWith(initialState);
   });
 
   it('Should create a local search context if a parent is not defined', async () => {
@@ -104,7 +105,7 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(query).toHaveBeenCalledWith({
+    expect(searchApiMock.query).toHaveBeenCalledWith({
       term: '',
       filters: {},
       types: [],
@@ -141,7 +142,7 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(query).toHaveBeenCalledTimes(1);
+    expect(searchApiMock.query).toHaveBeenCalledTimes(1);
     await userEvent.keyboard('{Escape}');
     expect(toggleModal).toHaveBeenCalledTimes(1);
   });
@@ -198,11 +199,11 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(query).toHaveBeenCalledWith(
+    expect(searchApiMock.query).toHaveBeenCalledWith(
       expect.objectContaining({ term: 'term' }),
     );
 
-    const input = screen.getByLabelText('Search');
+    const input = screen.getByLabelText<HTMLInputElement>('Search');
     await userEvent.clear(input);
     await userEvent.type(input, 'new term{enter}');
 
@@ -230,7 +231,7 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(query).toHaveBeenCalledWith(
+    expect(searchApiMock.query).toHaveBeenCalledWith(
       expect.objectContaining({ term: 'term' }),
     );
 

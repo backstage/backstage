@@ -7,6 +7,8 @@ authorImageURL: https://avatars.githubusercontent.com/u/4984472?v=4
 
 ![backend system alpha header image](assets/2023-02-15/backend-system-alpha.gif)
 
+> UPDATE: The backend system is now released! See [the v1.18 release notes](https://backstage.io/docs/releases/v1.18.0).
+
 For the past year, the Backstage maintainer team has been spending time to give the [old Backstage backend system](https://backstage.io/docs/plugins/backend-plugin) a much needed revamp. Our goal was not to build something completely new from scratch, but rather to solidify the existing foundations that have grown organically. We wanted to make plugin installation a lot simpler, while maintaining and even improving the ways in which you can customize your backend setups.
 
 We’re happy to announce that the [v1.11](https://backstage.io/docs/releases/v1.11.0) release includes the public alpha of the [new Backstage backend system](https://backstage.io/docs/backend-system/)! The system has already been available to use for some time, as some of you have already found, but this alpha release marks the point where we are finally ready to encourage widespread adoption by plugin builders. We still don’t recommend that you use this new system in your production setups just yet, more on that later.
@@ -26,7 +28,6 @@ When we set out on this project, we had a few primary goals. First, we intended 
 - Make it easier to create and maintain backend installations.
 - Align how plugins provide points of customization and how those customizations are installed.
 - Make it much easier to maintain plugins, in particular keeping the API stable.
-- Simplify the process of splitting plugins out into separate deployments with shared environments.
 - Improve the local development and testing experience.
 
 Prioritizing simplicity is often a guiding principle that we use for designs that span multiple ownership roles. We decide on which parts of the system that we think are the most important to have as simple as possible, or, viewed from the opposite end, where in the system we put necessary complexity. In this case, we optimized for keeping the backend setup as simple as possible, followed by modules and plugins, then libraries, and lastly the framework itself. What this guidance means in practice is that when there is complexity that needs to be added to implement a certain feature, we place as much of it as possible within the framework itself, then libraries, plugins and modules, and if absolutely needed, the backend setup.

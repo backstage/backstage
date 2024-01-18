@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import { coreServices } from '@backstage/backend-plugin-api';
-import {
-  PluginTaskScheduler,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { startTestBackend, mockServices } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
@@ -43,20 +39,21 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
       },
     };
     const runner = jest.fn();
-    const scheduler = {
-      createScheduledTaskRunner: (schedule: TaskScheduleDefinition) => {
+    const scheduler = mockServices.scheduler.mock({
+      createScheduledTaskRunner(schedule) {
         usedSchedule = schedule;
-        return runner;
+        return { run: runner };
       },
-    } as unknown as PluginTaskScheduler;
+    });
 
     await startTestBackend({
       extensionPoints: [
         [catalogProcessingExtensionPoint, catalogExtensionPointImpl],
         [eventsExtensionPoint, eventsExtensionPointImpl],
       ],
-      services: [
-        mockServices.config.factory({
+      features: [
+        catalogModuleBitbucketCloudEntityProvider(),
+        mockServices.rootConfig.factory({
           data: {
             catalog: {
               providers: {
@@ -71,9 +68,8 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
             },
           },
         }),
-        [coreServices.scheduler, scheduler],
+        scheduler.factory,
       ],
-      features: [catalogModuleBitbucketCloudEntityProvider()],
     });
 
     expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));

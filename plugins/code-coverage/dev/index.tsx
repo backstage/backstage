@@ -16,11 +16,65 @@
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { codeCoveragePlugin, EntityCodeCoverageContent } from '../src/plugin';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { codeCoverageApiRef, CodeCoverageApi } from '../src/api';
+import coverageForEntity from './__fixtures__/coverage-for-entity.json';
+import coverageHistoryForEntity from './__fixtures__/coverage-history-for-entity.json';
+import fileContentFromEntity from './__fixtures__/get-file-content-from-entity';
+
+const mockEntity: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'backstage',
+    description: 'backstage.io',
+    annotations: {
+      'backstage.io/code-coverage': 'enabled',
+    },
+  },
+  spec: {
+    lifecycle: 'production',
+    type: 'website',
+    owner: 'user:guest',
+  },
+};
+
+const mockCodeCoverageApi: CodeCoverageApi = {
+  async getCoverageForEntity(_entity: CompoundEntityRef) {
+    return coverageForEntity as any;
+  },
+  async getFileContentFromEntity(_entity: CompoundEntityRef, filePath: string) {
+    switch (filePath) {
+      case 'src/index.js':
+        return fileContentFromEntity['src/index.js'];
+      case 'src/math.js':
+        return fileContentFromEntity['src/math.js'];
+      default:
+        return '';
+    }
+  },
+  async getCoverageHistoryForEntity(
+    _entity: CompoundEntityRef,
+    _limit?: number,
+  ) {
+    return coverageHistoryForEntity;
+  },
+};
 
 createDevApp()
+  .registerApi({
+    api: codeCoverageApiRef,
+    deps: {},
+    factory: () => mockCodeCoverageApi,
+  })
   .registerPlugin(codeCoveragePlugin)
   .addPage({
-    element: <EntityCodeCoverageContent />,
+    element: (
+      <EntityProvider entity={mockEntity}>
+        <EntityCodeCoverageContent />
+      </EntityProvider>
+    ),
     title: 'Root Page',
   })
   .render();

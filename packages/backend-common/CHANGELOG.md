@@ -1,5 +1,495 @@
 # @backstage/backend-common
 
+## 0.20.1
+
+### Patch Changes
+
+- 3b24eae: Adding support for removing file from git index
+- 454d17c: Do not call fetch directly but rather use `fetchResponse` facility
+- b6b15b2: Use sha256 instead of md5 for hash key calculation in caches
+
+  This can have a side effect of invalidating caches (when cache key was >250 characters)
+  This improves compliance with FIPS nodejs
+
+- Updated dependencies
+  - @backstage/config-loader@1.6.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/backend-dev-utils@0.1.3
+  - @backstage/backend-app-api@0.5.10
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
+## 0.20.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-dev-utils@0.1.3-next.0
+  - @backstage/backend-app-api@0.5.10-next.2
+  - @backstage/config-loader@1.6.1-next.0
+
+## 0.20.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.6.1-next.0
+  - @backstage/backend-app-api@0.5.10-next.1
+  - @backstage/integration@1.8.0
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/config@1.1.1
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.20.1-next.0
+
+### Patch Changes
+
+- b6b15b2: Use sha256 instead of md5 for hash key calculation in caches
+
+  This can have a side effect of invalidating caches (when cache key was >250 characters)
+  This improves compliance with FIPS nodejs
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.10-next.0
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.0
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
+## 0.20.0
+
+### Minor Changes
+
+- 870db76: Implemented `readTree` for Gitea provider to support TechDocs functionality
+
+### Patch Changes
+
+- 7f04128: Allow a default cache TTL to be set through the app config
+- 1ad8906: Use `Readable.from` to fix some of the stream issues
+- d86a007: Fixed the AwsS3UrlReader host regex and host to allow the S3 reading for CN AWS domain
+- bc67498: Updated dependency `archiver` to `^6.0.0`.
+  Updated dependency `@types/archiver` to `^6.0.0`.
+- 706fc3a: Updated dependency `@kubernetes/client-node` to `0.20.0`.
+- 2666675: Updated dependency `@google-cloud/storage` to `^7.0.0`.
+- d15d483: Add command `--runAsDefaultUser` for `@techdocs/cli generate` to bypass running the docker builds as host user for macOS and Linux.
+- d1e00aa: Expose an `onAuth` handler for `git` actions to provide custom credentials
+- Updated dependencies
+  - @backstage/config-loader@1.6.0
+  - @backstage/backend-app-api@0.5.9
+  - @backstage/integration@1.8.0
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
+## 0.20.0-next.3
+
+### Patch Changes
+
+- d86a007: Fixed the AwsS3UrlReader host regex and host to allow the S3 reading for CN AWS domain
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.9-next.3
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.0-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
+## 0.20.0-next.2
+
+### Patch Changes
+
+- bc67498: Updated dependency `archiver` to `^6.0.0`.
+  Updated dependency `@types/archiver` to `^6.0.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.6.0-next.0
+  - @backstage/backend-app-api@0.5.9-next.2
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
+## 0.20.0-next.1
+
+### Patch Changes
+
+- 2666675457: Updated dependency `@google-cloud/storage` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.9-next.1
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.5.3
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
+## 0.20.0-next.0
+
+### Minor Changes
+
+- 870db76a45: Implemented `readTree` for Gitea provider to support TechDocs functionality
+
+### Patch Changes
+
+- 7f04128bbc: Allow a default cache TTL to be set through the app config
+- 1ad8906a9e: Use `Readable.from` to fix some of the stream issues
+- 706fc3a7e1: Updated dependency `@kubernetes/client-node` to `0.20.0`.
+- d15d483a49: Add command `--runAsDefaultUser` for `@techdocs/cli generate` to bypass running the docker builds as host user for macOS and Linux.
+- d1e00aa17a: Expose an `onAuth` handler for `git` actions to provide custom credentials
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.0
+  - @backstage/backend-app-api@0.5.9-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.5.3
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
+## 0.19.9
+
+### Patch Changes
+
+- aa13482090: Limit the database creation concurrency to one, defensively
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+- 3d043526f4: Updated dependency `aws-sdk-client-mock` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.5.3
+  - @backstage/integration@1.7.2
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/backend-app-api@0.5.8
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.19.9-next.2
+
+### Patch Changes
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-app-api@0.5.8-next.2
+  - @backstage/config-loader@1.5.3-next.0
+
+## 0.19.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.7.2-next.0
+  - @backstage/backend-app-api@0.5.8-next.1
+  - @backstage/config-loader@1.5.3-next.0
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/types@1.1.1
+
+## 0.19.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.5.2-next.0
+  - @backstage/backend-app-api@0.5.8-next.0
+  - @backstage/integration@1.7.1
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.19.8
+
+### Patch Changes
+
+- 74491c9602: The `HostDiscovery` export has been deprecated, import it from `@backstage/backend-app-api` instead.
+- b95d66d4ea: Properly close write stream when writing temporary archive for processing zip-based `.readTree()` responses.
+- b94f32271e: Added the ability to fetch git tags through the `Git` class. This is useful for scaffolder actions that want to take action based on tag versions in a cloned repository
+- 0b55f773a7: Removed some unused dependencies
+- 4c39e38f1e: Added `/testUtils` entry point, with a utility for mocking resolve package paths as returned by `resolvePackagePath`.
+- 9101c0d1b6: Updated dependency `@kubernetes/client-node` to `0.19.0`.
+- a250ad775f: Removed `mock-fs` dev dependency.
+- 2a40cd46a8: Adds the optional flag for useRedisSets for the Redis cache to the config.
+- 1c3d6fa2b2: The `useHotCleanup` and `useHotMemoize` helpers are now deprecated, since hot module reloads for backend are being phased out.
+- Updated dependencies
+  - @backstage/integration@1.7.1
+  - @backstage/backend-dev-utils@0.1.2
+  - @backstage/config-loader@1.5.1
+  - @backstage/errors@1.2.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/backend-app-api@0.5.6
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/types@1.1.1
+
+## 0.19.8-next.2
+
+### Patch Changes
+
+- 74491c9602: The `HostDiscovery` export has been deprecated, import it from `@backstage/backend-app-api` instead.
+- b95d66d4ea: Properly close write stream when writing temporary archive for processing zip-based `.readTree()` responses.
+- 0b55f773a7: Removed some unused dependencies
+- 4c39e38f1e: Added `/testUtils` entry point, with a utility for mocking resolve package paths as returned by `resolvePackagePath`.
+- a250ad775f: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/config-loader@1.5.1-next.1
+  - @backstage/integration@1.7.1-next.1
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/backend-app-api@0.5.6-next.2
+  - @backstage/backend-dev-utils@0.1.2-next.0
+  - @backstage/backend-plugin-api@0.6.6-next.2
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config@1.1.1-next.0
+  - @backstage/integration-aws-node@0.1.7-next.0
+  - @backstage/types@1.1.1
+
+## 0.19.7-next.1
+
+### Patch Changes
+
+- b94f32271e: Added the ability to fetch git tags through the `Git` class. This is useful for scaffolder actions that want to take action based on tag versions in a cloned repository
+- Updated dependencies
+  - @backstage/backend-dev-utils@0.1.2-next.0
+  - @backstage/backend-app-api@0.5.5-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/config@1.1.0
+  - @backstage/integration-aws-node@0.1.6
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config-loader@1.5.1-next.0
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/types@1.1.1
+
+## 0.19.7-next.0
+
+### Patch Changes
+
+- 1c3d6fa2b2: The `useHotCleanup` and `useHotMemoize` helpers are now deprecated, since hot module reloads for backend are being phased out.
+- Updated dependencies
+  - @backstage/integration@1.7.1-next.0
+  - @backstage/config-loader@1.5.1-next.0
+  - @backstage/cli-common@0.1.13-next.0
+  - @backstage/config@1.1.0
+  - @backstage/integration-aws-node@0.1.6
+  - @backstage/backend-app-api@0.5.5-next.0
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
+## 0.19.5
+
+### Patch Changes
+
+- 6847cd6225d6: Avoid starting database keepalive loop in tests.
+- fd3fdd0e3338: The root logger is now initialized lazily, fixing a circular dependency issue with `@backstage/backend-app-api` that would result in `Cannot read properties of undefined (reading 'redacter')`.
+- 5f1a92b9f19f: Use `DefaultAzureDevOpsCredentialsProvider` to retrieve credentials for Azure DevOps.
+- 19a140418cc8: Added retries for initial database creation, as well as set minimum connection pool size for the database creation client to 0 and lowered the connection acquisition timeout.
+- 05508a9757d2: Minor internal refactor
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.3
+  - @backstage/config@1.1.0
+  - @backstage/errors@1.2.2
+  - @backstage/integration@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/config-loader@1.5.0
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/integration-aws-node@0.1.6
+
+## 0.19.5-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.3-next.3
+  - @backstage/config@1.1.0-next.2
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/integration@1.7.0-next.3
+  - @backstage/types@1.1.1-next.0
+  - @backstage/backend-plugin-api@0.6.3-next.3
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config-loader@1.5.0-next.3
+  - @backstage/integration-aws-node@0.1.6-next.2
+
+## 0.19.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.3-next.2
+  - @backstage/config-loader@1.5.0-next.2
+  - @backstage/config@1.1.0-next.1
+  - @backstage/integration@1.7.0-next.2
+  - @backstage/integration-aws-node@0.1.6-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.19.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/integration@1.7.0-next.1
+  - @backstage/backend-app-api@0.5.3-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/config-loader@1.5.0-next.1
+  - @backstage/integration-aws-node@0.1.6-next.0
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.19.4-next.0
+
+### Patch Changes
+
+- 5f1a92b9f19f: Use `DefaultAzureDevOpsCredentialsProvider` to retrieve credentials for Azure DevOps.
+- cfc3ca6ce060: Changes needed to support MySQL
+- Updated dependencies
+  - @backstage/integration@1.7.0-next.0
+  - @backstage/config-loader@1.5.0-next.0
+  - @backstage/backend-app-api@0.5.2-next.0
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/types@1.1.0
+
+## 0.19.2
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 443afcf7f567: To improve performance, `GerritUrlReader.readTree()` now uses Gitiles to fetch an archive instead of cloning the repository.
+  If `gitilesBaseUrl` is not configured, `readTree` still uses Git to clone the repository.
+
+  Added `stripFirstDirectory` option to `ReadTreeResponseFactory.fromTarArchive()`, allowing to disable stripping first directory
+  for `tar` archives.
+
+- 4b82382ed8c2: Fixed invalid configuration schema. The configuration schema may be more strict as a result.
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.0
+  - @backstage/config-loader@1.4.0
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/integration@1.6.0
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.19.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.0-next.2
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/config-loader@1.4.0-next.1
+
+## 0.19.2-next.1
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 4b82382ed8c2: Fixed invalid configuration schema. The configuration schema may be more strict as a result.
+- Updated dependencies
+  - @backstage/config-loader@1.4.0-next.1
+  - @backstage/backend-app-api@0.5.0-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/integration@1.5.1
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 0.19.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.4.0-next.0
+  - @backstage/backend-app-api@0.4.6-next.0
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.5-next.0
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/errors@1.2.1
+  - @backstage/integration@1.5.1
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/types@1.1.0
+
+## 0.19.1
+
+### Patch Changes
+
+- 787ddcc5ef99: use `Readable.from` to explicitly convert the `buffer` from `node-fetch` to a `Readable` stream
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/backend-app-api@0.4.5
+  - @backstage/backend-dev-utils@0.1.1
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/cli-common@0.1.12
+  - @backstage/config@1.0.8
+  - @backstage/config-loader@1.3.2
+  - @backstage/integration@1.5.1
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/types@1.1.0
+
 ## 0.19.1-next.0
 
 ### Patch Changes

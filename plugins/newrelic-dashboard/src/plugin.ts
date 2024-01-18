@@ -52,7 +52,7 @@ export const newRelicDashboardPlugin = createPlugin({
 /** @public */
 export const EntityNewRelicDashboardContent = newRelicDashboardPlugin.provide(
   createComponentExtension({
-    name: 'EntityNewRelicDashboardPage',
+    name: 'EntityNewRelicDashboardContent',
     component: {
       lazy: () => import('./Router').then(m => m.Router),
     },
@@ -62,7 +62,7 @@ export const EntityNewRelicDashboardContent = newRelicDashboardPlugin.provide(
 /** @public */
 export const EntityNewRelicDashboardCard = newRelicDashboardPlugin.provide(
   createComponentExtension({
-    name: 'EntityNewRelicDashboardListComponent',
+    name: 'EntityNewRelicDashboardCard',
     component: {
       lazy: () =>
         import('./components/NewRelicDashboard/DashboardEntityList').then(
@@ -80,14 +80,44 @@ export const EntityNewRelicDashboardCard = newRelicDashboardPlugin.provide(
  *
  * @public
  */
-export const DashboardSnapshotComponent = newRelicDashboardPlugin.provide(
+export const DashboardSnapshot = newRelicDashboardPlugin.provide(
   createComponentExtension({
-    name: 'DashboardSnapshotComponent',
+    name: 'DashboardSnapshot',
     component: {
       lazy: () =>
         import(
           './components/NewRelicDashboard/DashboardSnapshotList/DashboardSnapshot'
         ).then(m => m.DashboardSnapshot),
+    },
+  }),
+);
+
+/**
+ * Render dashboard snapshots from Newrelic in backstage. Use dashboards which have the tag `isDashboardPage: true`
+ *
+ * @deprecated
+ * Use DashboardSnapshot export name instead
+ *
+ * @public
+ */
+export const DashboardSnapshotComponent = DashboardSnapshot;
+
+/**
+ * Render a dashboard snapshots list from Newrelic in backstage. Use dashboards which have the tag `isDashboardPage: true`
+ *
+ * @remarks
+ * This can be helpful for rendering dashboards outside of Entity Catalog.
+ *
+ * @public
+ */
+export const DashboardSnapshotList = newRelicDashboardPlugin.provide(
+  createComponentExtension({
+    name: 'DashboardSnapshotList',
+    component: {
+      lazy: () =>
+        import(
+          './components/NewRelicDashboard/DashboardSnapshotList/DashboardSnapshotList'
+        ).then(m => m.DashboardSnapshotList),
     },
   }),
 );

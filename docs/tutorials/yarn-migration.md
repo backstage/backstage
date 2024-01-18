@@ -4,8 +4,6 @@ title: Migration to Yarn 3
 description: Guide for how to migrate a Backstage project to use Yarn 3
 ---
 
-> NOTE: We do not yet recommend all projects to migrate to Yarn 3. Only do so if you have specific reasons for it.
-
 While Backstage projects created with `@backstage/create-app` use [Yarn 1](https://classic.yarnpkg.com/) by default, it
 is possible to switch them to instead use [Yarn 3](https://yarnpkg.com/). Tools like `yarn backstage-cli versions:bump` will
 still work, as they recognize both lockfile formats.

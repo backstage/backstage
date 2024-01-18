@@ -4,7 +4,7 @@ title: Writing custom step layouts
 description: How to override the default step form layout
 ---
 
-Every form in each step rendered in the frontend uses the default form layout from [react-json-schema-form](https://react-jsonschema-form.readthedocs.io/). It is possible to override this behaviour by supplying a `ui:ObjectFieldTemplate` property for a particular step:
+Every form in each step rendered in the frontend uses the default form layout from [react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form/docs/). It is possible to override this behaviour by supplying a `ui:ObjectFieldTemplate` property for a particular step:
 
 ```yaml
 parameters:
@@ -12,7 +12,7 @@ parameters:
     ui:ObjectFieldTemplate: TwoColumn
 ```
 
-This is the same [field](https://react-jsonschema-form.readthedocs.io/en/latest/advanced-customization/custom-templates/#objectfieldtemplate) used by [react-json-schema-form](https://react-jsonschema-form.readthedocs.io/) but we need to add a couple of steps to ensure that the string value of `TwoColumn` above is resolved to a react component.
+This is the same [field](https://rjsf-team.github.io/react-jsonschema-form/docs/advanced-customization/custom-templates#objectfieldtemplate) used by [react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form/docs/) but we need to add a couple of steps to ensure that the string value of `TwoColumn` above is resolved to a react component.
 
 ## Registering a React component as a custom step layout
 

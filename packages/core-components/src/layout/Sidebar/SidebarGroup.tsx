@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import BottomNavigationAction, {
   BottomNavigationActionProps,
 } from '@material-ui/core/BottomNavigationAction';
-import { makeStyles } from '@material-ui/core/styles';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from '../../components/Link/Link';
 import { SidebarConfig, SidebarConfigContext } from './config';
-import { MobileSidebarContext } from './MobileSidebar';
+import { MobileSidebarContext } from './MobileSidebarContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
 
 /**
@@ -48,7 +47,7 @@ export interface SidebarGroupProps extends BottomNavigationActionProps {
   children?: React.ReactNode;
 }
 
-const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
+const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
   theme => ({
     root: {
       flexGrow: 0,

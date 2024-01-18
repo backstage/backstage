@@ -19,8 +19,10 @@ import {
   ContentHeader,
   SupportButton,
 } from '@backstage/core-components';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { SonarQubeCard } from '../SonarQubeCard';
 import {

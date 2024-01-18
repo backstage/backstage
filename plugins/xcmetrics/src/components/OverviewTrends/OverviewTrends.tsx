@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Grid, makeStyles, useTheme } from '@material-ui/core';
 import React, { useState } from 'react';
 import { Progress, Select } from '@backstage/core-components';
@@ -30,7 +31,6 @@ import {
   getValues,
   sumField,
 } from '../../utils';
-import { BackstageTheme } from '@backstage/theme';
 
 const useStyles = makeStyles({
   spacingTop: {
@@ -51,7 +51,7 @@ const DAYS_SELECT_ITEMS = [
 
 export const OverviewTrends = () => {
   const [days, setDays] = useState(14);
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
   const classes = useStyles();
   const client = useApi(xcmetricsApiRef);
   const buildCountsResult = useAsync(

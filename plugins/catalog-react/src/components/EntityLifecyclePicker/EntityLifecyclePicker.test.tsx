@@ -74,9 +74,10 @@ describe('<EntityLifecyclePicker/>', () => {
       </TestApiProvider>,
     );
 
-    await waitFor(() => expect(catalogApi.getEntityFacets).toHaveBeenCalled());
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      lifecycles: new EntityLifecycleFilter(['experimental']),
+    await waitFor(() => {
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        lifecycles: new EntityLifecycleFilter(['experimental']),
+      });
     });
   });
 
@@ -119,9 +120,10 @@ describe('<EntityLifecyclePicker/>', () => {
       </TestApiProvider>,
     );
 
-    await waitFor(() => expect(catalogApi.getEntityFacets).toHaveBeenCalled());
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      lifecycles: new EntityLifecycleFilter(['production']),
+    await waitFor(() => {
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        lifecycles: new EntityLifecycleFilter(['production']),
+      });
     });
     fireEvent.click(screen.getByTestId('lifecycles-picker-expand'));
     expect(screen.getByLabelText('production')).toBeChecked();
@@ -147,9 +149,10 @@ describe('<EntityLifecyclePicker/>', () => {
       </TestApiProvider>,
     );
 
-    await waitFor(() => expect(catalogApi.getEntityFacets).toHaveBeenCalled());
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      lifecycles: new EntityLifecycleFilter(['experimental']),
+    await waitFor(() => {
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        lifecycles: new EntityLifecycleFilter(['experimental']),
+      });
     });
 
     rendered.rerender(
@@ -210,9 +213,10 @@ describe('<EntityLifecyclePicker/>', () => {
       </TestApiProvider>,
     );
 
-    await waitFor(() => expect(catalogApi.getEntityFacets).toHaveBeenCalled());
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      lifecycles: new EntityLifecycleFilter(['production']),
+    await waitFor(() => {
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        lifecycles: new EntityLifecycleFilter(['production']),
+      });
     });
   });
 });

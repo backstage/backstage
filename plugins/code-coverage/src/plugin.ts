@@ -21,6 +21,7 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 /**
@@ -34,8 +35,9 @@ export const codeCoveragePlugin = createPlugin({
   apis: [
     createApiFactory({
       api: codeCoverageApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new CodeCoverageRestApi(discoveryApi),
+      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new CodeCoverageRestApi({ discoveryApi, fetchApi }),
     }),
   ],
 });

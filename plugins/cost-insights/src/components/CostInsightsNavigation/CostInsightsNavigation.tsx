@@ -44,7 +44,6 @@ const NavigationMenuItem = ({ navigation, icon, title }: NavigationItem) => {
   const [, setScroll] = useScroll();
   return (
     <MenuItem
-      button
       data-testid={`menu-item-${navigation}`}
       className={classes.menuItem}
       onClick={() => setScroll(navigation)}

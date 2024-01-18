@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-github-actions
+  title: '@backstage/plugin-github-actions'
+  description: A Backstage plugin that integrates towards GitHub Actions
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

@@ -91,7 +91,8 @@ export type TodoParserResult = {
 };
 
 // @public
-export const todoPlugin: () => BackendFeature;
+const todoPlugin: () => BackendFeature;
+export default todoPlugin;
 
 // @public (undocumented)
 export interface TodoReader {

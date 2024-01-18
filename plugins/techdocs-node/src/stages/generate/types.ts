@@ -41,6 +41,7 @@ export type GeneratorConfig = {
   pullImage?: boolean;
   omitTechdocsCoreMkdocsPlugin?: boolean;
   legacyCopyReadmeMdToIndexMd?: boolean;
+  defaultPlugins?: string[];
 };
 
 /**
@@ -63,6 +64,7 @@ export type GeneratorRunOptions = {
   logger: Logger;
   logStream?: Writable;
   siteOptions?: { name?: string };
+  runAsDefaultUser?: boolean;
 };
 
 /**

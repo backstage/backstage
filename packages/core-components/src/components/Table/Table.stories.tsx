@@ -89,6 +89,43 @@ export const DefaultTable = () => {
   );
 };
 
+export const LoadingTable = () => {
+  const classes = useStyles();
+  const columns: TableColumn[] = [
+    {
+      title: 'Column 1',
+      field: 'col1',
+      highlight: true,
+    },
+    {
+      title: 'Column 2',
+      field: 'col2',
+    },
+    {
+      title: 'Numeric value',
+      field: 'number',
+      type: 'numeric',
+    },
+    {
+      title: 'A Date',
+      field: 'date',
+      type: 'date',
+    },
+  ];
+
+  return (
+    <div className={classes.container}>
+      <Table
+        options={{ paging: false }}
+        data={[]}
+        columns={columns}
+        isLoading
+        title="Backstage Table"
+      />
+    </div>
+  );
+};
+
 export const EmptyTable = () => {
   const classes = useStyles();
   const columns: TableColumn[] = [

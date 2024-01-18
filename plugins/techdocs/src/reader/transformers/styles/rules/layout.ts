@@ -120,7 +120,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
 .md-footer__title {
   background-color: unset;
 }
-.md-footer-nav__link {
+.md-footer-nav__link, .md-footer__link {
   width: 16rem;
 }
 

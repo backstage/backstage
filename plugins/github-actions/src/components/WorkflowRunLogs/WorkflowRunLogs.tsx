@@ -23,7 +23,6 @@ import {
   Fade,
   makeStyles,
   Modal,
-  Theme,
   Tooltip,
   Typography,
   Zoom,
@@ -35,7 +34,7 @@ import { getProjectNameFromEntity } from '../getProjectNameFromEntity';
 import { useDownloadWorkflowRunLogs } from './useDownloadWorkflowRunLogs';
 import { getHostnameFromEntity } from '../getHostnameFromEntity';
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   button: {
     order: -1,
     marginRight: 0,

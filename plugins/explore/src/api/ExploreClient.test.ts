@@ -83,6 +83,22 @@ describe('ExploreClient', () => {
       });
       expect(response).toEqual(expectedResponse);
     });
+
+    it('should request explore tools without filters', async () => {
+      const expectedResponse: GetExploreToolsResponse = {
+        tools: mockTools,
+      };
+
+      server.use(
+        rest.get(`${mockBaseUrl}/tools`, (req, res, ctx) => {
+          expect(req.url.search).toBe('');
+          return res(ctx.json(expectedResponse));
+        }),
+      );
+
+      const response = await client.getTools();
+      expect(response).toEqual(expectedResponse);
+    });
   });
 
   describe('when using exploreToolsConfig for backwards compatibility', () => {

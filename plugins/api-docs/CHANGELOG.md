@@ -1,5 +1,364 @@
 # @backstage/plugin-api-docs
 
+## 0.10.3
+
+### Patch Changes
+
+- 8a69cc9: Fix custom http resolvers for AsyncAPI widget.
+- 062b8f2: Add permission check to Register Existing API button
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-permission-react@0.4.19
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/plugin-catalog@1.16.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-catalog-common@1.0.20
+
+## 0.10.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.16.1-next.2
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
+## 0.10.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/plugin-catalog@1.16.1-next.1
+  - @backstage/plugin-catalog-react@1.9.3-next.1
+  - @backstage/catalog-model@1.4.3
+
+## 0.10.3-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.0
+  - @backstage/plugin-catalog@1.16.1-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+
+## 0.10.2
+
+### Patch Changes
+
+- 816d331: Add dependency on `graphql-config` to compensate for `graphql-language-service` needing it but not shipping the dep properly
+- 615159e: Updated dependency `graphiql` to `3.0.10`.
+- e16e7ce: Updated dependency `@asyncapi/react-component` to `1.2.2`.
+- 82fb18b: Updated dependency `@asyncapi/react-component` to `1.2.6`.
+- 53e2c06: Updated dependency `@asyncapi/react-component` to `1.1.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-catalog@1.16.0
+  - @backstage/catalog-model@1.4.3
+
+## 0.10.2-next.4
+
+### Patch Changes
+
+- 82fb18b: Updated dependency `@asyncapi/react-component` to `1.2.6`.
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog@1.16.0-next.4
+  - @backstage/plugin-catalog-react@1.9.2-next.3
+
+## 0.10.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog@1.16.0-next.3
+  - @backstage/plugin-catalog-react@1.9.2-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+
+## 0.10.2-next.2
+
+### Patch Changes
+
+- e16e7ce6a5: Updated dependency `@asyncapi/react-component` to `1.2.2`.
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.1
+  - @backstage/plugin-catalog@1.16.0-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/theme@0.5.0-next.0
+
+## 0.10.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.16.0-next.1
+
+## 0.10.2-next.0
+
+### Patch Changes
+
+- 816d331d16: Add dependency on `graphql-config` to compensate for `graphql-language-service` needing it but not shipping the dep properly
+- 615159e536: Updated dependency `graphiql` to `3.0.10`.
+- 53e2c06f41: Updated dependency `@asyncapi/react-component` to `1.1.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-react@1.9.2-next.0
+  - @backstage/core-components@0.13.9-next.0
+  - @backstage/plugin-catalog@1.16.0-next.0
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/catalog-model@1.4.3
+
+## 0.10.0
+
+### Minor Changes
+
+- 0ac0e10822: Replace GraphiQL playground with DocExplorer
+- 62310404b7: Define a default for oauth2RedirectUrl option of swagger-ui-react to match documentation
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- 613a55911f: Updated dependency `graphiql` to `3.0.9`.
+- 4ad15278e6: Updated dependency `@graphiql/react` to `^0.20.0`.
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.0
+  - @backstage/core-components@0.13.8
+  - @backstage/plugin-catalog@1.15.0
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/theme@0.4.4
+  - @backstage/catalog-model@1.4.3
+
+## 0.10.0-next.2
+
+### Minor Changes
+
+- [#20743](https://github.com/backstage/backstage/pull/20743) [`0ac0e10822`](https://github.com/backstage/backstage/commit/0ac0e10822179a0185c70a5e63cd6d24b85beb3a) Thanks [@taras](https://github.com/taras)! - Replace GraphiQL playground with DocExplorer
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.8-next.2
+  - @backstage/plugin-catalog@1.15.0-next.2
+  - @backstage/plugin-catalog-react@1.9.0-next.2
+
+## 0.9.13-next.1
+
+### Patch Changes
+
+- 62b5922916: Internal theme type updates
+- Updated dependencies
+  - @backstage/plugin-catalog@1.15.0-next.1
+  - @backstage/plugin-catalog-react@1.9.0-next.1
+  - @backstage/core-components@0.13.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+
+## 0.9.13-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-components@0.13.7-next.0
+  - @backstage/plugin-catalog@1.15.0-next.0
+  - @backstage/plugin-catalog-react@1.9.0-next.0
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/theme@0.4.4-next.0
+  - @backstage/catalog-model@1.4.3
+
+## 0.9.12
+
+### Patch Changes
+
+- 0117a6b47e: Adding `requestInterceptor` option to `api-docs` and pass it to SwaggerUI. This will enable to configure a proxy or headers to be sent to all the request made through the `Try it out` button on SwaggerUI.
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- 18f1756908: added aria-label on api definition button for better a11y.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5
+  - @backstage/plugin-catalog@1.14.0
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/core-components@0.13.6
+  - @backstage/catalog-model@1.4.3
+  - @backstage/theme@0.4.3
+
+## 0.9.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.6-next.2
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/catalog-model@1.4.3-next.0
+  - @backstage/plugin-catalog-react@1.8.5-next.2
+  - @backstage/plugin-catalog@1.14.0-next.2
+  - @backstage/theme@0.4.3-next.0
+
+## 0.9.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.14.0-next.1
+  - @backstage/core-components@0.13.6-next.1
+  - @backstage/plugin-catalog-react@1.8.5-next.1
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/theme@0.4.2
+
+## 0.9.12-next.0
+
+### Patch Changes
+
+- 0117a6b47e: Adding `requestInterceptor` option to `api-docs` and pass it to SwaggerUI. This will enable to configure a proxy or headers to be sent to all the request made through the `Try it out` button on SwaggerUI.
+- 18f1756908: added aria-label on api definition button for better a11y.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.5-next.0
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/plugin-catalog@1.14.0-next.0
+  - @backstage/core-components@0.13.6-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/theme@0.4.2
+
+## 0.9.11
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/plugin-catalog@1.13.0
+  - @backstage/plugin-catalog-react@1.8.4
+  - @backstage/core-components@0.13.5
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/theme@0.4.2
+
+## 0.9.11-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/core-components@0.13.5-next.3
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/plugin-catalog@1.13.0-next.3
+  - @backstage/plugin-catalog-react@1.8.4-next.3
+  - @backstage/theme@0.4.2-next.0
+
+## 0.9.11-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/plugin-catalog@1.13.0-next.2
+  - @backstage/core-components@0.13.5-next.2
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-catalog-react@1.8.4-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+  - @backstage/theme@0.4.1
+
+## 0.9.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.4-next.1
+  - @backstage/core-components@0.13.5-next.1
+  - @backstage/plugin-catalog@1.12.5-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/theme@0.4.1
+
+## 0.9.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.12.4-next.0
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/core-components@0.13.5-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.3-next.0
+
+## 0.9.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4
+  - @backstage/plugin-catalog@1.12.1
+  - @backstage/plugin-catalog-react@1.8.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+
+## 0.9.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.8.1-next.1
+  - @backstage/plugin-catalog@1.12.1-next.2
+
+## 0.9.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.12.1-next.1
+  - @backstage/catalog-model@1.4.1
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+
+## 0.9.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.4-next.0
+  - @backstage/plugin-catalog@1.12.1-next.0
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-catalog-react@1.8.1-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/theme@0.4.1
+
+## 0.9.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.4.1
+  - @backstage/plugin-catalog-react@1.8.0
+  - @backstage/plugin-catalog@1.12.0
+  - @backstage/core-components@0.13.3
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+
 ## 0.9.6-next.2
 
 ### Patch Changes

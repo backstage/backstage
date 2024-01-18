@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Modal,
-  Tooltip,
-} from '@material-ui/core';
-import DescriptionIcon from '@material-ui/icons/Description';
+import { humanizeEntityRef, useEntity } from '@backstage/plugin-catalog-react';
+import { Box, Modal, makeStyles } from '@material-ui/core';
+import FolderIcon from '@material-ui/icons/Folder';
+import FileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import { Alert } from '@material-ui/lab';
 import React, { Fragment, useEffect, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
@@ -37,6 +31,19 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    marginTop: theme.spacing(2),
+  },
+  icon: {
+    marginRight: theme.spacing(1),
+  },
+  link: {
+    color: theme.palette.primary.main,
+    cursor: 'pointer',
+  },
+}));
 
 type FileStructureObject = Record<string, any>;
 
@@ -143,6 +150,7 @@ export const getObjectsAtPath = (
 };
 
 export const FileExplorer = () => {
+  const styles = useStyles();
   const { entity } = useEntity();
   const [curData, setCurData] = useState<CoverageTableRow | undefined>();
   const [tableData, setTableData] = useState<CoverageTableRow[] | undefined>();
@@ -173,7 +181,9 @@ export const FileExplorer = () => {
   }
   if (!value) {
     return (
-      <Alert severity="warning">No code coverage found for ${entity}</Alert>
+      <Alert severity="warning">
+        No code coverage found for {humanizeEntityRef(entity)}
+      </Alert>
     );
   }
 
@@ -188,6 +198,7 @@ export const FileExplorer = () => {
 
   const moveUpIntoPath = (idx: number) => {
     const path = curPath.split('/').slice(0, idx + 1);
+    setCurFile('');
     setCurPath(path.join('/'));
     setTableData(getObjectsAtPath(curData, path.slice(1)));
   };
@@ -197,43 +208,32 @@ export const FileExplorer = () => {
       title: 'Path',
       type: 'string',
       field: 'path',
-      render: (row: CoverageTableRow) => {
-        if (row.files?.length) {
-          return (
-            <div
-              role="button"
-              tabIndex={row.tableData!.id}
-              style={{ color: 'lightblue', cursor: 'pointer' }}
-              onKeyDown={() => {
-                setCurPath(`${curPath}/${row.path}`);
-                moveDownIntoPath(row.path);
-              }}
-              onClick={() => {
-                setCurPath(`${curPath}/${row.path}`);
-                moveDownIntoPath(row.path);
-              }}
-            >
-              {row.path}
-            </div>
-          );
-        }
-
-        return (
-          <Box display="flex" alignItems="center">
-            {row.path}
-            <Tooltip title="View file content">
-              <DescriptionIcon
-                fontSize="small"
-                style={{ color: 'lightblue', cursor: 'pointer' }}
-                onClick={() => {
-                  setCurFile(`${curPath.slice(1)}/${row.path}`);
-                  setModalOpen(true);
-                }}
-              />
-            </Tooltip>
-          </Box>
-        );
-      },
+      render: (row: CoverageTableRow) => (
+        <Box
+          display="flex"
+          alignItems="center"
+          role="button"
+          tabIndex={row.tableData!.id}
+          className={styles.link}
+          onClick={() => {
+            if (row.files?.length) {
+              setCurPath(`${curPath}/${row.path}`);
+              moveDownIntoPath(row.path);
+            } else {
+              setCurFile(`${curPath.slice(1)}/${row.path}`);
+              setModalOpen(true);
+            }
+          }}
+        >
+          {row.files?.length > 0 && (
+            <FolderIcon fontSize="small" className={styles.icon} />
+          )}
+          {row.files?.length === 0 && (
+            <FileOutlinedIcon fontSize="small" className={styles.icon} />
+          )}
+          {row.path}
+        </Box>
+      ),
     },
     {
       title: 'Coverage',
@@ -264,42 +264,50 @@ export const FileExplorer = () => {
   }
 
   return (
-    <Card>
-      <CardHeader title="Explore Files" />
-      <CardContent>
-        <Box mb={2} display="flex">
-          {pathArray.map((pathElement, idx) => (
-            <Fragment key={pathElement || 'root'}>
-              <div
-                role="button"
-                tabIndex={idx}
-                style={{
-                  color: `${idx !== lastPathElementIndex && 'lightblue'}`,
-                  cursor: `${idx !== lastPathElementIndex && 'pointer'}`,
-                }}
-                onKeyDown={() => moveUpIntoPath(idx)}
-                onClick={() => moveUpIntoPath(idx)}
-              >
-                {pathElement || 'root'}
-              </div>
-              <div>{'\u00A0/\u00A0'}</div>
-            </Fragment>
-          ))}
-        </Box>
-        <Table
-          emptyContent={<>No files found</>}
-          data={tableData || []}
-          columns={columns}
-        />
-        <Modal
-          open={modalOpen}
-          onClick={event => event.stopPropagation()}
-          onClose={() => setModalOpen(false)}
-          style={{ overflow: 'scroll' }}
-        >
-          <FileContent filename={curFile} coverage={fileCoverage} />
-        </Modal>
-      </CardContent>
-    </Card>
+    <Box className={styles.container}>
+      <Table
+        emptyContent={<>No files found</>}
+        data={tableData || []}
+        columns={columns}
+        title={
+          <>
+            <Box>Explore Files</Box>
+            <Box
+              mt={1}
+              style={{
+                fontSize: '0.875rem',
+                fontWeight: 'normal',
+                display: 'flex',
+              }}
+            >
+              {pathArray.map((pathElement, idx) => (
+                <Fragment key={pathElement || 'root'}>
+                  <div
+                    role="button"
+                    tabIndex={idx}
+                    className={
+                      idx !== lastPathElementIndex ? styles.link : undefined
+                    }
+                    onKeyDown={() => moveUpIntoPath(idx)}
+                    onClick={() => moveUpIntoPath(idx)}
+                  >
+                    {pathElement || 'root'}
+                  </div>
+                  {idx !== lastPathElementIndex && <div>{'\u00A0/\u00A0'}</div>}
+                </Fragment>
+              ))}
+            </Box>
+          </>
+        }
+      />
+      <Modal
+        open={modalOpen}
+        onClick={event => event.stopPropagation()}
+        onClose={() => setModalOpen(false)}
+        style={{ overflow: 'scroll' }}
+      >
+        <FileContent filename={curFile} coverage={fileCoverage} />
+      </Modal>
+    </Box>
   );
 };

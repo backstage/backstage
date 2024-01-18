@@ -31,6 +31,7 @@ export function filterByVisibility(
   data: JsonObject,
   includeVisibilities: ConfigVisibility[],
   visibilityByDataPath: Map<string, ConfigVisibility>,
+  deepVisibilityByDataPath: Map<string, ConfigVisibility>,
   deprecationByDataPath: Map<string, string>,
   transformFunc?: TransformFunc<number | string | boolean>,
   withFilteredKeys?: boolean,
@@ -47,10 +48,16 @@ export function filterByVisibility(
     jsonVal: JsonValue,
     visibilityPath: string, // Matches the format we get from ajv
     filterPath: string, // Matches the format of the ConfigReader
+    inheritedVisibility: ConfigVisibility,
   ): JsonValue | undefined {
     const visibility =
-      visibilityByDataPath.get(visibilityPath) ?? DEFAULT_CONFIG_VISIBILITY;
+      visibilityByDataPath.get(visibilityPath) ?? inheritedVisibility;
     const isVisible = includeVisibilities.includes(visibility);
+
+    // If a deep visibility is set for our current path, then we that as our
+    // default visibility for all children until we encounter a different deep visibility
+    const newInheritedVisibility =
+      deepVisibilityByDataPath.get(visibilityPath) ?? inheritedVisibility;
 
     // deprecated keys are added regardless of visibility indicator
     const deprecation = deprecationByDataPath.get(visibilityPath);
@@ -61,7 +68,7 @@ export function filterByVisibility(
     if (typeof jsonVal !== 'object') {
       if (isVisible) {
         if (transformFunc) {
-          return transformFunc(jsonVal, { visibility });
+          return transformFunc(jsonVal, { visibility, path: filterPath });
         }
         return jsonVal;
       }
@@ -84,7 +91,12 @@ export function filterByVisibility(
           path = `${visibilityPath}/${index}`;
         }
 
-        const out = transform(value, path, `${filterPath}[${index}]`);
+        const out = transform(
+          value,
+          path,
+          `${filterPath}[${index}]`,
+          newInheritedVisibility,
+        );
 
         if (out !== undefined) {
           arr.push(out);
@@ -108,6 +120,7 @@ export function filterByVisibility(
         value,
         `${visibilityPath}/${key}`,
         filterPath ? `${filterPath}.${key}` : key,
+        newInheritedVisibility,
       );
       if (out !== undefined) {
         outObj[key] = out;
@@ -124,7 +137,8 @@ export function filterByVisibility(
   return {
     filteredKeys: withFilteredKeys ? filteredKeys : undefined,
     deprecatedKeys: withDeprecatedKeys ? deprecatedKeys : undefined,
-    data: (transform(data, '', '') as JsonObject) ?? {},
+    data:
+      (transform(data, '', '', DEFAULT_CONFIG_VISIBILITY) as JsonObject) ?? {},
   };
 }
 

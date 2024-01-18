@@ -209,9 +209,8 @@ export interface Config {
              */
             schedule?: TaskScheduleDefinitionConfig;
           }
-        | Record<
-            string,
-            {
+        | {
+            [name: string]: {
               /**
                * The prefix of the target that this matches on, e.g.
                * "https://graph.microsoft.com/v1.0", with no trailing slash.
@@ -296,8 +295,8 @@ export interface Config {
                * (Optional) TaskScheduleDefinition for the refresh.
                */
               schedule?: TaskScheduleDefinitionConfig;
-            }
-          >;
+            };
+          };
     };
   };
 }

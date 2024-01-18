@@ -31,7 +31,7 @@ export const azureDevOpsPlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         reader: coreServices.urlReader,
         httpRouter: coreServices.httpRouter,

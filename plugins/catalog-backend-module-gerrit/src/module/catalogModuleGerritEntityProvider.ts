@@ -27,12 +27,12 @@ import { GerritEntityProvider } from '../providers/GerritEntityProvider';
  */
 export const catalogModuleGerritEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'gerritEntityProvider',
+  moduleId: 'gerrit-entity-provider',
   register(env) {
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },

@@ -31,6 +31,9 @@ import useDebounce from 'react-use/lib/useDebounce';
 import { usePlaylistList } from '../../hooks';
 import { PlaylistFilter } from '../../types';
 
+/**
+ * @public
+ */
 export class PlaylistTextFilter implements PlaylistFilter {
   constructor(readonly value: string) {}
 
@@ -52,6 +55,9 @@ const useStyles = makeStyles(_theme => ({
   },
 }));
 
+/**
+ * @public
+ */
 export const PlaylistSearchBar = () => {
   const classes = useStyles();
 

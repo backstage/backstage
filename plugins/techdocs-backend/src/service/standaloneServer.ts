@@ -18,7 +18,7 @@ import {
   CacheManager,
   createServiceBuilder,
   DockerContainerRunner,
-  SingleHostDiscovery,
+  HostDiscovery,
   UrlReader,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
@@ -51,7 +51,7 @@ export async function startStandaloneServer(
       },
     },
   });
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const discovery = HostDiscovery.fromConfig(config);
   const mockUrlReader: jest.Mocked<UrlReader> = {
     readUrl: jest.fn(),
     readTree: jest.fn(),

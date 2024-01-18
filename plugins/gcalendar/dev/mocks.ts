@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { DateTime } from 'luxon';
 import { GCalendar, GCalendarEvent } from '../src/api';
 
@@ -38,11 +39,11 @@ export const eventsMock: GCalendarEvent[] = [...Array(3).keys()].map(i => ({
   start: {
     dateTime: DateTime.now()
       .minus({ hour: i + 1 })
-      .toISO(),
+      .toISO()!,
     timeZone: 'Europe/London',
   },
   end: {
-    dateTime: DateTime.now().minus({ hour: i }).toISO(),
+    dateTime: DateTime.now().minus({ hour: i }).toISO()!,
     timeZone: 'Europe/London',
   },
   description: '<h3>Dummy title</h3><p>Dummy description</p>',

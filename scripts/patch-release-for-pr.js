@@ -81,12 +81,15 @@ async function findCurrentReleaseVersion() {
   throw new Error('No stable release found');
 }
 
-async function main(prNumberStr) {
-  const prNumber = parseInt(prNumberStr, 10);
-  if (!Number.isInteger(prNumber)) {
-    throw new Error('Must provide a PR number as the first argument');
-  }
-  console.log(`PR number: ${prNumber}`);
+async function main(args) {
+  const prNumbers = args.map(s => {
+    const num = parseInt(s, 10);
+    if (!Number.isInteger(num)) {
+      throw new Error(`Must provide valid PR number arguments, got ${s}`);
+    }
+    return num;
+  });
+  console.log(`PR number(s): ${prNumbers.join(', ')}`);
 
   if (await run('git', 'status', '--porcelain')) {
     throw new Error('Cannot run with a dirty working tree');
@@ -105,44 +108,46 @@ async function main(prNumberStr) {
     await run('git', 'push', 'origin', '-u', patchBranch);
   }
 
-  const { data } = await octokit.pulls.get({
-    owner,
-    repo,
-    pull_number: prNumber,
-  });
-
-  const headSha = data.head.sha;
-  if (!headSha) {
-    throw new Error('head sha not available');
-  }
-  const baseSha = data.base.sha;
-  if (!baseSha) {
-    throw new Error('base sha not available');
-  }
-  const mergeBaseSha = await run('git', 'merge-base', headSha, baseSha);
-
   // Create new branch, apply changes from all commits on PR branch, commit, push
-  const branchName = `patch-release-pr-${prNumber}`;
+  const branchName = `patch-release-pr-${prNumbers.join('-')}`;
   await run('git', 'checkout', '-b', branchName);
 
-  const logLines = await run(
-    'git',
-    'log',
-    `${mergeBaseSha}...${headSha}`,
-    '--reverse',
-    '--pretty=%H',
-  );
-  for (const logSha of logLines.split(/\r?\n/)) {
-    await run('git', 'cherry-pick', '-n', logSha);
+  for (const prNumber of prNumbers) {
+    const { data } = await octokit.pulls.get({
+      owner,
+      repo,
+      pull_number: prNumber,
+    });
+
+    const headSha = data.head.sha;
+    if (!headSha) {
+      throw new Error('head sha not available');
+    }
+    const baseSha = data.base.sha;
+    if (!baseSha) {
+      throw new Error('base sha not available');
+    }
+    const mergeBaseSha = await run('git', 'merge-base', headSha, baseSha);
+
+    const logLines = await run(
+      'git',
+      'log',
+      `${mergeBaseSha}...${headSha}`,
+      '--reverse',
+      '--pretty=%H',
+    );
+    for (const logSha of logLines.split(/\r?\n/)) {
+      await run('git', 'cherry-pick', '-n', logSha);
+    }
+    await run(
+      'git',
+      'commit',
+      '--signoff',
+      '--no-verify',
+      '-m',
+      `Patch from PR #${prNumber}`,
+    );
   }
-  await run(
-    'git',
-    'commit',
-    '--signoff',
-    '--no-verify',
-    '-m',
-    `Patch from PR #${prNumber}`,
-  );
 
   console.log('Running "yarn release" ...');
   await run('yarn', 'release');
@@ -159,8 +164,13 @@ async function main(prNumberStr) {
 
   await run('git', 'push', 'origin', '-u', branchName);
 
+  const params = new URLSearchParams({
+    expand: 1,
+    body: 'This release fixes an issue where',
+    title: `Patch release of ${prNumbers.map(nr => `#${nr}`).join(', ')}`,
+  });
   console.log(
-    `https://github.com/backstage/backstage/compare/${patchBranch}...${branchName}?expand=1&body=This%20release%20fixes%20an%20issue%20where&title=Patch%20release%20of%20%23${prNumber}`,
+    `https://github.com/backstage/backstage/compare/${patchBranch}...${branchName}?${params}`,
   );
 }
 

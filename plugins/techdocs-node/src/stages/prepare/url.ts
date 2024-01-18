@@ -47,6 +47,11 @@ export class UrlPreparer implements PreparerBase {
     this.reader = reader;
   }
 
+  /** {@inheritDoc PreparerBase.shouldCleanPreparedDirectory} */
+  shouldCleanPreparedDirectory() {
+    return true;
+  }
+
   /** {@inheritDoc PreparerBase.prepare} */
   async prepare(
     entity: Entity,

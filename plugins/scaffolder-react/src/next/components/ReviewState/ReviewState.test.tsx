@@ -94,10 +94,10 @@ describe('ReviewState', () => {
       },
     ];
 
-    const { queryByRole } = render(
+    const { queryByRole, getAllByRole } = render(
       <ReviewState formState={formState} schemas={schemas} />,
     );
-
+    expect(getAllByRole('row').length).toEqual(1);
     expect(queryByRole('row', { name: 'Name ******' })).not.toBeInTheDocument();
   });
 
@@ -135,5 +135,71 @@ describe('ReviewState', () => {
     );
 
     expect(getByRole('row', { name: 'Name lols' })).toBeInTheDocument();
+  });
+
+  it('should display enum label from enumNames', async () => {
+    const formState = {
+      name: 'type2',
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              default: 'type1',
+              enum: ['type1', 'type2', 'type3'],
+              enumNames: ['Label-type1', 'Label-type2', 'Label-type3'],
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+        description: 'asd',
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(
+      queryByRole('row', { name: 'Name Label-type2' }),
+    ).toBeInTheDocument();
+  });
+
+  it('should display enum value if no corresponding enumNames', async () => {
+    const formState = {
+      name: 'type4',
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              default: 'type1',
+              enum: ['type1', 'type2', 'type3', 'type4'],
+              enumNames: ['Label-type1', 'Label-type2', 'Label-type3'],
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+        description: 'asd',
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(queryByRole('row', { name: 'Name type4' })).toBeInTheDocument();
   });
 });

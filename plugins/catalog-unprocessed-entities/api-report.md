@@ -8,6 +8,8 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
@@ -25,19 +27,18 @@ export type CatalogUnprocessedEntitiesApiResponse = {
 };
 
 // @public
-export const CatalogUnprocessedEntitiesPage: () => JSX.Element;
+export const CatalogUnprocessedEntitiesPage: () => JSX_2.Element;
 
 // @public
 export const catalogUnprocessedEntitiesPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 
 // @public (undocumented)
-export const UnprocessedEntitiesContent: () => JSX.Element;
+export const UnprocessedEntitiesContent: () => React_2.JSX.Element;
 
 // @public
 export type UnprocessedEntity = {

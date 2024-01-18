@@ -261,7 +261,7 @@ export class LinguistBackendClient implements LinguistBackendApi {
 
   /** @internal */
   async getLinguistResults(dir: string): Promise<Results> {
-    const results = await linguist(dir, this.linguistJsOptions);
+    const results = await linguist(dir, { ...this.linguistJsOptions });
     return results;
   }
 }

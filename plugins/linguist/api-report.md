@@ -7,15 +7,16 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { JSX as JSX_2 } from 'react';
 
 // @public (undocumented)
-export const EntityLinguistCard: () => JSX.Element;
+export const EntityLinguistCard: () => JSX_2.Element;
 
 // @public (undocumented)
 export const isLinguistAvailable: (entity: Entity) => boolean;
 
 // @public (undocumented)
-export const linguistPlugin: BackstagePlugin<{}, {}, {}>;
+export const linguistPlugin: BackstagePlugin<{}, {}>;
 
 // (No @packageDocumentation comment for this package)
 ```

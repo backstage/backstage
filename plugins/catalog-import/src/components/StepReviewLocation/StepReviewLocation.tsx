@@ -42,7 +42,7 @@ export const StepReviewLocation = ({
   const configApi = useApi(configApiRef);
   const analytics = useAnalytics();
 
-  const appTitle = configApi.getOptional('app.title') || 'Backstage';
+  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string>();

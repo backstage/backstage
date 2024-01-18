@@ -27,20 +27,28 @@ import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 
 const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 const GITLAB_ACTIONS_ANNOTATION = 'gitlab.com/project-slug';
+const AZURE_ACTIONS_ANNOTATION = 'dev.azure.com/project-repo';
 
 /** @public */
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   constructor(
-    private readonly opts: { scmIntegrationRegistry: ScmIntegrationRegistry },
+    private readonly opts: {
+      scmIntegrationRegistry: ScmIntegrationRegistry;
+      kinds?: string[];
+    },
   ) {}
 
   getProcessorName(): string {
     return 'AnnotateScmSlugEntityProcessor';
   }
 
-  static fromConfig(config: Config): AnnotateScmSlugEntityProcessor {
+  static fromConfig(
+    config: Config,
+    options?: { kinds?: string[] },
+  ): AnnotateScmSlugEntityProcessor {
     return new AnnotateScmSlugEntityProcessor({
       scmIntegrationRegistry: ScmIntegrations.fromConfig(config),
+      kinds: options?.kinds,
     });
   }
 
@@ -48,7 +56,13 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
     entity: Entity,
     location: LocationSpec,
   ): Promise<Entity> {
-    if (entity.kind !== 'Component' || location.type !== 'url') {
+    const applicableKinds = (this.opts.kinds ?? ['Component']).map(k =>
+      k.toLocaleLowerCase('en-US'),
+    );
+    if (
+      !applicableKinds.includes(entity.kind.toLocaleLowerCase('en-US')) ||
+      location.type !== 'url'
+    ) {
       return entity;
     }
 
@@ -67,6 +81,9 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
         break;
       case 'gitlab':
         annotation = GITLAB_ACTIONS_ANNOTATION;
+        break;
+      case 'azure':
+        annotation = AZURE_ACTIONS_ANNOTATION;
         break;
       default:
         return entity;

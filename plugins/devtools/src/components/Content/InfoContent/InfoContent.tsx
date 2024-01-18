@@ -15,24 +15,21 @@
  */
 
 import { Progress } from '@backstage/core-components';
-import {
-  Avatar,
-  Box,
-  createStyles,
-  Divider,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  makeStyles,
-  Paper,
-  Theme,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Avatar from '@material-ui/core/Avatar';
+import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
 import DescriptionIcon from '@material-ui/icons/Description';
+import MemoryIcon from '@material-ui/icons/Memory';
 import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
@@ -57,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
   if (about) {
-    let formatted = `OS: ${about.operatingSystem}\nnode: ${about.nodeJsVersion}\nbackstage: ${about.backstageVersion}\nDependencies:\n`;
+    let formatted = `OS: ${about.operatingSystem}\nResources: ${about.resourceUtilization}\nnode: ${about.nodeJsVersion}\nbackstage: ${about.backstageVersion}\nDependencies:\n`;
     const deps = about.dependencies;
     for (const key in deps) {
       if (Object.prototype.hasOwnProperty.call(deps, key)) {
@@ -91,6 +88,17 @@ export const InfoContent = () => {
             <ListItemText
               primary="Operating System"
               secondary={about?.operatingSystem}
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemAvatar>
+              <Avatar>
+                <MemoryIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary="Resource utilization"
+              secondary={about?.resourceUtilization}
             />
           </ListItem>
           <ListItem>

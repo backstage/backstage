@@ -38,6 +38,8 @@ type Response =
 const requestType = '@backstage/cli/channel/request';
 const responseType = '@backstage/cli/channel/response';
 
+const IPC_TIMEOUT_MS = 5000;
+
 /**
  * The client side of an IPC communication channel.
  *
@@ -78,43 +80,43 @@ export class BackstageIpcClient {
         body,
       };
 
-      this.#sendMessage(request, (e: Error) => {
-        if (e) {
-          reject(e);
+      let timeout: NodeJS.Timeout | undefined = undefined;
+
+      const messageHandler = (response: Response) => {
+        if (response?.type !== responseType) {
+          return;
+        }
+        if (response.id !== id) {
           return;
         }
 
-        let timeout: NodeJS.Timeout | undefined = undefined;
+        clearTimeout(timeout);
+        timeout = undefined;
+        process.removeListener('message', messageHandler);
 
-        const messageHandler = (response: Response) => {
-          if (response?.type !== responseType) {
-            return;
+        if ('error' in response) {
+          const error = new Error(response.error.message);
+          if (response.error.name) {
+            error.name = response.error.name;
           }
-          if (response.id !== id) {
-            return;
-          }
+          reject(error);
+        } else {
+          resolve(response.body as TResponseBody);
+        }
+      };
 
-          if ('error' in response) {
-            const error = new Error(response.error.message);
-            if (response.error.name) {
-              error.name = response.error.name;
-            }
-            reject(error);
-          } else {
-            resolve(response.body as TResponseBody);
-          }
+      timeout = setTimeout(() => {
+        reject(new Error(`IPC request '${method}' with ID ${id} timed out`));
+        process.removeListener('message', messageHandler);
+      }, IPC_TIMEOUT_MS);
+      timeout.unref();
 
-          clearTimeout(timeout);
-          process.removeListener('message', messageHandler);
-        };
+      process.addListener('message', messageHandler as () => void);
 
-        timeout = setTimeout(() => {
-          reject(new Error(`IPC request '${method}' with ID ${id} timed out`));
-          process.removeListener('message', messageHandler);
-        }, 5000);
-        timeout.unref();
-
-        process.addListener('message', messageHandler as () => void);
+      this.#sendMessage(request, (e: Error) => {
+        if (e) {
+          reject(e);
+        }
       });
     });
   }

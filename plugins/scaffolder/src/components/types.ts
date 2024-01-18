@@ -13,25 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { UiSchema } from '@rjsf/utils';
-import { JsonObject } from '@backstage/types';
-
-/**
- * The props for the Last Step in scaffolder template form.
- * Which represents the summary of the input provided by the end user.
- *
- * @public
- */
-export type ReviewStepProps = {
-  disableButtons: boolean;
-  formData: JsonObject;
-  handleBack: () => void;
-  handleReset: () => void;
-  handleCreate: () => void;
-  steps: {
-    uiSchema: UiSchema;
-    mergedSchema: JsonObject;
-    schema: JsonObject;
-  }[];
-};

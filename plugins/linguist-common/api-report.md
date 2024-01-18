@@ -23,7 +23,7 @@ export type Language = {
   name: string;
   percentage: number;
   bytes: number;
-  type: string;
+  type: LanguageType;
   color?: `#${string}`;
 };
 
@@ -34,6 +34,9 @@ export type Languages = {
   processedDate: string;
   breakdown: Language[];
 };
+
+// @public (undocumented)
+export type LanguageType = 'programming' | 'data' | 'markup' | 'prose';
 
 // @public (undocumented)
 export const LINGUIST_ANNOTATION = 'backstage.io/linguist';

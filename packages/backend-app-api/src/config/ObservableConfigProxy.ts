@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { ConfigService } from '@backstage/backend-plugin-api';
-import { ConfigReader } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
 
-export class ObservableConfigProxy implements ConfigService {
-  private config: ConfigService = new ConfigReader({});
+export class ObservableConfigProxy implements Config {
+  private config: Config = new ConfigReader({});
 
   private readonly subscribers: (() => void)[] = [];
 
@@ -32,7 +31,7 @@ export class ObservableConfigProxy implements ConfigService {
     }
   }
 
-  setConfig(config: ConfigService) {
+  setConfig(config: Config) {
     if (this.parent) {
       throw new Error('immutable');
     }
@@ -62,9 +61,9 @@ export class ObservableConfigProxy implements ConfigService {
     };
   }
 
-  private select(required: true): ConfigService;
-  private select(required: false): ConfigService | undefined;
-  private select(required: boolean): ConfigService | undefined {
+  private select(required: true): Config;
+  private select(required: false): Config | undefined;
+  private select(required: boolean): Config | undefined {
     if (this.parent && this.parentKey) {
       if (required) {
         return this.parent.select(true).getConfig(this.parentKey);
@@ -87,19 +86,19 @@ export class ObservableConfigProxy implements ConfigService {
   getOptional<T = JsonValue>(key?: string): T | undefined {
     return this.select(false)?.getOptional(key);
   }
-  getConfig(key: string): ConfigService {
+  getConfig(key: string): Config {
     return new ObservableConfigProxy(this, key);
   }
-  getOptionalConfig(key: string): ConfigService | undefined {
+  getOptionalConfig(key: string): Config | undefined {
     if (this.select(false)?.has(key)) {
       return new ObservableConfigProxy(this, key);
     }
     return undefined;
   }
-  getConfigArray(key: string): ConfigService[] {
+  getConfigArray(key: string): Config[] {
     return this.select(true).getConfigArray(key);
   }
-  getOptionalConfigArray(key: string): ConfigService[] | undefined {
+  getOptionalConfigArray(key: string): Config[] | undefined {
     return this.select(false)?.getOptionalConfigArray(key);
   }
   getNumber(key: string): number {

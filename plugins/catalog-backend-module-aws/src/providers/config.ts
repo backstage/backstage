@@ -46,6 +46,7 @@ function readAwsS3Config(id: string, config: Config): AwsS3Config {
   const bucketName = config.getString('bucketName');
   const region = config.getOptionalString('region');
   const prefix = config.getOptionalString('prefix');
+  const accountId = config.getOptionalString('accountId');
 
   const schedule = config.has('schedule')
     ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
@@ -57,5 +58,6 @@ function readAwsS3Config(id: string, config: Config): AwsS3Config {
     region,
     prefix,
     schedule,
+    accountId,
   };
 }

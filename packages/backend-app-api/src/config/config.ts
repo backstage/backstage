@@ -72,6 +72,7 @@ export async function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
   additionalConfigs?: AppConfig[];
+  watch?: boolean;
 }): Promise<{ config: Config }> {
   const args = parseArgs(options.argv);
 
@@ -89,30 +90,35 @@ export async function loadBackendConfig(options: {
     configRoot: paths.targetRoot,
     configTargets: configTargets,
     remote: options.remote,
-    watch: {
-      onChange(newConfigs) {
-        console.info(
-          `Reloaded config from ${newConfigs.map(c => c.context).join(', ')}`,
-        );
-        const configsToMerge = [...newConfigs];
-        if (options.additionalConfigs) {
-          configsToMerge.push(...options.additionalConfigs);
-        }
-        config.setConfig(ConfigReader.fromConfigs(configsToMerge));
-      },
-      stopSignal: new Promise(resolve => {
-        if (currentCancelFunc) {
-          currentCancelFunc();
-        }
-        currentCancelFunc = resolve;
+    watch:
+      options.watch ?? true
+        ? {
+            onChange(newConfigs) {
+              console.info(
+                `Reloaded config from ${newConfigs
+                  .map(c => c.context)
+                  .join(', ')}`,
+              );
+              const configsToMerge = [...newConfigs];
+              if (options.additionalConfigs) {
+                configsToMerge.push(...options.additionalConfigs);
+              }
+              config.setConfig(ConfigReader.fromConfigs(configsToMerge));
+            },
+            stopSignal: new Promise(resolve => {
+              if (currentCancelFunc) {
+                currentCancelFunc();
+              }
+              currentCancelFunc = resolve;
 
-        // TODO(Rugvip): We keep this here for now to avoid breaking the old system
-        //               since this is re-used in backend-common
-        if (module.hot) {
-          module.hot.addDisposeHandler(resolve);
-        }
-      }),
-    },
+              // TODO(Rugvip): We keep this here for now to avoid breaking the old system
+              //               since this is re-used in backend-common
+              if (module.hot) {
+                module.hot.addDisposeHandler(resolve);
+              }
+            }),
+          }
+        : undefined,
   });
   console.info(
     `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`,

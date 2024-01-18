@@ -19,6 +19,8 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { Entity } from '@backstage/catalog-model';
 
+jest.setTimeout(60_000);
+
 describe('DatabaseBadgesStore', () => {
   const entity: Entity = {
     apiVersion: 'v1',

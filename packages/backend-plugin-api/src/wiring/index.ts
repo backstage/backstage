@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-export { createSharedEnvironment } from './createSharedEnvironment';
-export type {
-  SharedBackendEnvironment,
-  SharedBackendEnvironmentConfig,
-} from './createSharedEnvironment';
 export type {
   BackendModuleConfig,
   BackendPluginConfig,
@@ -32,6 +27,5 @@ export {
 export type {
   BackendModuleRegistrationPoints,
   BackendPluginRegistrationPoints,
-  BackendFeature,
   ExtensionPoint,
 } from './types';

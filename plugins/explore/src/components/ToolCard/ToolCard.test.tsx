@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { ToolCard } from './ToolCard';
 
@@ -30,38 +30,36 @@ const minProps = {
 };
 
 describe('<ToolCard />', () => {
-  it('renders without exploding', () => {
-    const { getByText } = render(wrapInTestApp(<ToolCard {...minProps} />));
-    expect(getByText('Explore')).toBeInTheDocument();
+  it('renders without exploding', async () => {
+    await renderInTestApp(<ToolCard {...minProps} />);
+    expect(screen.getByText('Explore')).toBeInTheDocument();
   });
 
-  it('renders props correctly', () => {
-    const { getByRole, getByText } = render(
-      wrapInTestApp(<ToolCard {...minProps} />),
-    );
+  it('renders props correctly', async () => {
+    await renderInTestApp(<ToolCard {...minProps} />);
     expect(
-      getByRole('heading', { name: minProps.card.title }),
+      screen.getByRole('heading', { name: minProps.card.title }),
     ).toBeInTheDocument();
-    expect(getByText(minProps.card.description)).toBeInTheDocument();
+    expect(screen.getByText(minProps.card.description)).toBeInTheDocument();
   });
 
-  it('should link out', () => {
-    const rendered = render(wrapInTestApp(<ToolCard {...minProps} />));
-    const anchor = rendered.container.querySelector('a');
+  it('should link out', async () => {
+    const { container } = await renderInTestApp(<ToolCard {...minProps} />);
+    const anchor = container.querySelector('a');
     expect(anchor).toHaveAttribute('href', minProps.card.url);
   });
 
-  it('renders default description when missing', () => {
+  it('renders default description when missing', async () => {
     const card = {
       title: 'Title',
       url: 'http://spotify.com/',
       image: 'https://developer.spotify.com/assets/WebAPI_intro.png',
     };
-    const { getByText } = render(wrapInTestApp(<ToolCard card={card} />));
-    expect(getByText('Description missing')).toBeInTheDocument();
+    await renderInTestApp(<ToolCard card={card} />);
+    expect(screen.getByText('Description missing')).toBeInTheDocument();
   });
 
-  it('renders lifecycle correctly', () => {
+  it('renders lifecycle correctly', async () => {
     const propsWithLifecycle = {
       card: {
         title: 'Title',
@@ -70,15 +68,13 @@ describe('<ToolCard />', () => {
         lifecycle: 'GA',
       },
     };
-    const { queryByText } = render(
-      wrapInTestApp(<ToolCard {...propsWithLifecycle} />),
-    );
-    expect(queryByText('GA')).not.toBeInTheDocument();
+    await renderInTestApp(<ToolCard {...propsWithLifecycle} />);
+    expect(screen.queryByText('GA')).not.toBeInTheDocument();
   });
 
-  it('renders tags correctly', () => {
-    const { getByText } = render(wrapInTestApp(<ToolCard {...minProps} />));
-    expect(getByText(minProps.card.tags[0])).toBeInTheDocument();
-    expect(getByText(minProps.card.tags[1])).toBeInTheDocument();
+  it('renders tags correctly', async () => {
+    await renderInTestApp(<ToolCard {...minProps} />);
+    expect(screen.getByText(minProps.card.tags[0])).toBeInTheDocument();
+    expect(screen.getByText(minProps.card.tags[1])).toBeInTheDocument();
   });
 });

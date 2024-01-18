@@ -16,23 +16,6 @@
 
 import { InputError } from '@backstage/errors';
 
-export const parseIntegerParam = (
-  str: unknown,
-  ctx: string,
-): number | undefined => {
-  if (str === undefined) {
-    return undefined;
-  }
-  if (typeof str !== 'string') {
-    throw new InputError(`invalid ${ctx}, must be a string`);
-  }
-  const parsed = parseInt(str, 10);
-  if (!Number.isInteger(parsed) || String(parsed) !== str) {
-    throw new InputError(`invalid ${ctx}, not an integer`);
-  }
-  return parsed;
-};
-
 export const parseOrderByParam = <T extends readonly string[]>(
   str: unknown,
   allowedFields: T,

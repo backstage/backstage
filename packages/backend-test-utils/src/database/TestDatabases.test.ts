@@ -60,6 +60,99 @@ describe('TestDatabases', () => {
     const dbs = TestDatabases.create();
 
     itIfDocker(
+      'obeys a provided connection string for postgres 16',
+      async () => {
+        const { host, port, user, password, stop } =
+          await startPostgresContainer('postgres:16');
+
+        try {
+          // Leave a mark
+          process.env.BACKSTAGE_TEST_DATABASE_POSTGRES16_CONNECTION_STRING = `postgresql://${user}:${password}@${host}:${port}`;
+          const input = await dbs.init('POSTGRES_16');
+          await input.schema.createTable('a', table =>
+            table.string('x').primary(),
+          );
+          await input.insert({ x: 'y' }).into('a');
+
+          // Look for the mark
+          const database = input.client.config.connection.database;
+          const output = knexFactory({
+            client: 'pg',
+            connection: { host, port, user, password, database },
+          });
+          // eslint-disable-next-line jest/no-standalone-expect
+          await expect(output.select('x').from('a')).resolves.toEqual([
+            { x: 'y' },
+          ]);
+        } finally {
+          await stop();
+        }
+      },
+    );
+
+    itIfDocker(
+      'obeys a provided connection string for postgres 15',
+      async () => {
+        const { host, port, user, password, stop } =
+          await startPostgresContainer('postgres:15');
+
+        try {
+          // Leave a mark
+          process.env.BACKSTAGE_TEST_DATABASE_POSTGRES15_CONNECTION_STRING = `postgresql://${user}:${password}@${host}:${port}`;
+          const input = await dbs.init('POSTGRES_15');
+          await input.schema.createTable('a', table =>
+            table.string('x').primary(),
+          );
+          await input.insert({ x: 'y' }).into('a');
+
+          // Look for the mark
+          const database = input.client.config.connection.database;
+          const output = knexFactory({
+            client: 'pg',
+            connection: { host, port, user, password, database },
+          });
+          // eslint-disable-next-line jest/no-standalone-expect
+          await expect(output.select('x').from('a')).resolves.toEqual([
+            { x: 'y' },
+          ]);
+        } finally {
+          await stop();
+        }
+      },
+    );
+
+    itIfDocker(
+      'obeys a provided connection string for postgres 14',
+      async () => {
+        const { host, port, user, password, stop } =
+          await startPostgresContainer('postgres:14');
+
+        try {
+          // Leave a mark
+          process.env.BACKSTAGE_TEST_DATABASE_POSTGRES14_CONNECTION_STRING = `postgresql://${user}:${password}@${host}:${port}`;
+          const input = await dbs.init('POSTGRES_14');
+          await input.schema.createTable('a', table =>
+            table.string('x').primary(),
+          );
+          await input.insert({ x: 'y' }).into('a');
+
+          // Look for the mark
+          const database = input.client.config.connection.database;
+          const output = knexFactory({
+            client: 'pg',
+            connection: { host, port, user, password, database },
+          });
+          // eslint-disable-next-line jest/no-standalone-expect
+          await expect(output.select('x').from('a')).resolves.toEqual([
+            { x: 'y' },
+          ]);
+        } finally {
+          await stop();
+        }
+      },
+    );
+
+    itIfDocker(
       'obeys a provided connection string for postgres 13',
       async () => {
         const { host, port, user, password, stop } =

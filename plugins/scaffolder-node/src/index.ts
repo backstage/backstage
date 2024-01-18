@@ -22,7 +22,5 @@
 
 export * from './actions';
 export * from './tasks';
-export {
-  scaffolderActionsExtensionPoint,
-  type ScaffolderActionsExtensionPoint,
-} from './extensions';
+export * from './files';
+export type { TemplateFilter, TemplateGlobal } from './types';

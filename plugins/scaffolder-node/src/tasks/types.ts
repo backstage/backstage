@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { JsonObject, Observable } from '@backstage/types';
+
 /**
  * TaskSecrets
  *
@@ -22,3 +25,124 @@
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
 };
+
+/**
+ * The status of each step of the Task
+ *
+ * @public
+ */
+export type TaskStatus =
+  | 'cancelled'
+  | 'completed'
+  | 'failed'
+  | 'open'
+  | 'processing';
+
+/**
+ * The state of a completed task.
+ *
+ * @public
+ */
+export type TaskCompletionState = 'failed' | 'completed';
+
+/**
+ * SerializedTask
+ *
+ * @public
+ */
+export type SerializedTask = {
+  id: string;
+  spec: TaskSpec;
+  status: TaskStatus;
+  createdAt: string;
+  lastHeartbeatAt?: string;
+  createdBy?: string;
+  secrets?: TaskSecrets;
+};
+
+/**
+ * TaskEventType
+ *
+ * @public
+ */
+export type TaskEventType = 'completion' | 'log' | 'cancelled';
+
+/**
+ * SerializedTaskEvent
+ *
+ * @public
+ */
+export type SerializedTaskEvent = {
+  id: number;
+  taskId: string;
+  body: JsonObject;
+  type: TaskEventType;
+  createdAt: string;
+};
+
+/**
+ * The result of {@link TaskBroker.dispatch}
+ *
+ * @public
+ */
+export type TaskBrokerDispatchResult = {
+  taskId: string;
+};
+
+/**
+ * The options passed to {@link TaskBroker.dispatch}
+ * Currently a spec and optional secrets
+ *
+ * @public
+ */
+export type TaskBrokerDispatchOptions = {
+  spec: TaskSpec;
+  secrets?: TaskSecrets;
+  createdBy?: string;
+};
+
+/**
+ * Task
+ *
+ * @public
+ */
+export interface TaskContext {
+  cancelSignal: AbortSignal;
+  spec: TaskSpec;
+  secrets?: TaskSecrets;
+  createdBy?: string;
+  done: boolean;
+  isDryRun?: boolean;
+
+  complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
+
+  emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
+
+  getWorkspaceName(): Promise<string>;
+}
+
+/**
+ * TaskBroker
+ *
+ * @public
+ */
+export interface TaskBroker {
+  cancel?(taskId: string): Promise<void>;
+
+  claim(): Promise<TaskContext>;
+
+  dispatch(
+    options: TaskBrokerDispatchOptions,
+  ): Promise<TaskBrokerDispatchResult>;
+
+  vacuumTasks(options: { timeoutS: number }): Promise<void>;
+
+  event$(options: {
+    taskId: string;
+    after: number | undefined;
+  }): Observable<{ events: SerializedTaskEvent[] }>;
+
+  get(taskId: string): Promise<SerializedTask>;
+
+  list?(options?: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
+}

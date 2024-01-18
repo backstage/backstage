@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { catalogModuleBitbucketCloudEntityProvider } from './catalogModuleBitbucketCloudEntityProvider';
+export { catalogModuleBitbucketCloudEntityProvider as default } from './catalogModuleBitbucketCloudEntityProvider';

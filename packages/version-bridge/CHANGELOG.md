@@ -1,5 +1,35 @@
 # @backstage/version-bridge
 
+## 1.0.7
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+
+## 1.0.7-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+
+## 1.0.6
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+
+## 1.0.5
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+
+## 1.0.5-next.0
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+
 ## 1.0.4
 
 ### Patch Changes

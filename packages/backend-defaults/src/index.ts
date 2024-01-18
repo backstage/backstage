@@ -25,5 +25,4 @@
 // TODO(Rugvip): Remove this once backend-common is no longer used by backend-app-api
 import '@backstage/backend-common';
 
-export type { CreateBackendOptions } from './CreateBackend';
 export { createBackend } from './CreateBackend';

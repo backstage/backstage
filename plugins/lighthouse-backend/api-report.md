@@ -30,7 +30,8 @@ export function createScheduler(
 ): Promise<void>;
 
 // @public
-export const lighthousePlugin: () => BackendFeature;
+const lighthousePlugin: () => BackendFeature;
+export default lighthousePlugin;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { catalogModulePuppetDbEntityProvider } from './catalogModulePuppetDbEntityProvider';
+export { catalogModulePuppetDbEntityProvider as default } from './catalogModulePuppetDbEntityProvider';

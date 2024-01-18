@@ -23,3 +23,7 @@
 export * from './stages';
 export * from './helpers';
 export * from './techdocsTypes';
+export {
+  techdocsBuildsExtensionPoint,
+  type TechdocsBuildsExtensionPoint,
+} from './extensions';

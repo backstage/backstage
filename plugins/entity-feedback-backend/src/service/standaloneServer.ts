@@ -18,8 +18,7 @@ import {
   createServiceBuilder,
   DatabaseManager,
   loadBackendConfig,
-  SingleHostDiscovery,
-  useHotMemoize,
+  HostDiscovery,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -38,18 +37,16 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'entity-feedback-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
-  const discovery = SingleHostDiscovery.fromConfig(config);
+  const discovery = HostDiscovery.fromConfig(config);
 
-  const database = useHotMemoize(module, () => {
-    const manager = DatabaseManager.fromConfig(
-      new ConfigReader({
-        backend: {
-          database: { client: 'better-sqlite3', connection: ':memory:' },
-        },
-      }),
-    );
-    return manager.forPlugin('entity-feedback');
-  });
+  const manager = DatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: { client: 'better-sqlite3', connection: ':memory:' },
+      },
+    }),
+  );
+  const database = manager.forPlugin('entity-feedback');
 
   const identity = DefaultIdentityClient.create({
     discovery,

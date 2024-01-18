@@ -19,9 +19,10 @@ import {
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { UserProfileCard } from './UserProfileCard';
+import { screen } from '@testing-library/react';
 
 describe('UserSummary Test', () => {
   const userEntity: UserEntity = {
@@ -48,29 +49,27 @@ describe('UserSummary Test', () => {
   };
 
   it('Display Profile Card', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <EntityProvider entity={userEntity}>
-          <UserProfileCard variant="gridItem" />
-        </EntityProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+    await renderInTestApp(
+      <EntityProvider entity={userEntity}>
+        <UserProfileCard variant="gridItem" />
+      </EntityProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      ),
+      },
     );
 
-    expect(rendered.getByText('calum-leavy@example.com')).toBeInTheDocument();
-    expect(rendered.getByAltText('Calum Leavy')).toHaveAttribute(
+    expect(screen.getByText('calum-leavy@example.com')).toBeInTheDocument();
+    expect(screen.getByAltText('Calum Leavy')).toHaveAttribute(
       'src',
       'https://example.com/staff/calum.jpeg',
     );
-    expect(rendered.getByText('examplegroup')).toHaveAttribute(
+    expect(screen.getByText('examplegroup').closest('a')).toHaveAttribute(
       'href',
       '/catalog/default/group/examplegroup',
     );
-    expect(rendered.getByText('Super awesome human')).toBeInTheDocument();
+    expect(screen.getByText('Super awesome human')).toBeInTheDocument();
   });
 });
 
@@ -98,20 +97,18 @@ describe('Edit Button', () => {
       ],
     };
 
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <EntityProvider entity={userEntity}>
-          <UserProfileCard variant="gridItem" />
-        </EntityProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+    await renderInTestApp(
+      <EntityProvider entity={userEntity}>
+        <UserProfileCard variant="gridItem" />
+      </EntityProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      ),
+      },
     );
 
-    expect(rendered.queryByTitle('Edit Metadata')).not.toBeInTheDocument();
+    expect(screen.queryByTitle('Edit Metadata')).not.toBeInTheDocument();
   });
 
   it('Should be visible when edit URL annotation is present', async () => {
@@ -141,19 +138,17 @@ describe('Edit Button', () => {
       ],
     };
 
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <EntityProvider entity={userEntity}>
-          <UserProfileCard variant="gridItem" />
-        </EntityProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+    await renderInTestApp(
+      <EntityProvider entity={userEntity}>
+        <UserProfileCard variant="gridItem" />
+      </EntityProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      ),
+      },
     );
-    expect(rendered.getByRole('button')).toBeInTheDocument();
+    expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
   it('Should not show links by default', async () => {
@@ -194,20 +189,18 @@ describe('Edit Button', () => {
       ],
     };
 
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <EntityProvider entity={userEntity}>
-          <UserProfileCard variant="gridItem" />
-        </EntityProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+    await renderInTestApp(
+      <EntityProvider entity={userEntity}>
+        <UserProfileCard variant="gridItem" />
+      </EntityProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      ),
+      },
     );
-    expect(rendered.queryByText('Slack')).toBeNull();
-    expect(rendered.queryByText('Google')).toBeNull();
+    expect(screen.queryByText('Slack')).toBeNull();
+    expect(screen.queryByText('Google')).toBeNull();
   });
 
   it('Should show the links if showLinks is set', async () => {
@@ -248,19 +241,17 @@ describe('Edit Button', () => {
       ],
     };
 
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <EntityProvider entity={userEntity}>
-          <UserProfileCard showLinks variant="gridItem" />
-        </EntityProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
+    await renderInTestApp(
+      <EntityProvider entity={userEntity}>
+        <UserProfileCard showLinks variant="gridItem" />
+      </EntityProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      ),
+      },
     );
-    expect(rendered.getByText('Slack')).toBeInTheDocument();
-    expect(rendered.getByText('Google')).toBeInTheDocument();
+    expect(screen.getByText('Slack')).toBeInTheDocument();
+    expect(screen.getByText('Google')).toBeInTheDocument();
   });
 });

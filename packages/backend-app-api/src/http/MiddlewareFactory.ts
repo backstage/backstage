@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { ConfigService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  RootConfigService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import {
   Request,
   Response,
@@ -47,7 +50,7 @@ import { NotImplementedError } from '@backstage/errors';
  * @public
  */
 export interface MiddlewareFactoryOptions {
-  config: ConfigService;
+  config: RootConfigService;
   logger: LoggerService;
 }
 
@@ -78,7 +81,7 @@ export interface MiddlewareFactoryErrorOptions {
  * @public
  */
 export class MiddlewareFactory {
-  #config: ConfigService;
+  #config: RootConfigService;
   #logger: LoggerService;
 
   /**

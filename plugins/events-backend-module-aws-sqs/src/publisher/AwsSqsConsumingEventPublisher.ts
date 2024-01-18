@@ -111,7 +111,7 @@ export class AwsSqsConsumingEventPublisher implements EventPublisher {
   }
 
   private async deleteMessages(messages?: Message[]): Promise<void> {
-    if (!messages) {
+    if (!messages || messages.length === 0) {
       return;
     }
 
@@ -129,7 +129,7 @@ export class AwsSqsConsumingEventPublisher implements EventPublisher {
       const result = await this.sqs.send(
         new DeleteMessageBatchCommand(deleteParams),
       );
-      if (result.Failed) {
+      if (result.Failed && result.Failed.length > 0) {
         this.logger.error(
           `Failed to delete ${result.Failed!.length} of ${
             messages.length

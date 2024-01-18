@@ -6,8 +6,6 @@ sidebar_label: Testing
 description: Learn how to test your backend plugins and modules
 ---
 
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
-
 Utilities for testing backend plugins and modules are available in
 `@backstage/backend-test-utils`. This section describes those facilities.
 
@@ -36,8 +34,10 @@ describe('myPlugin', () => {
     const fakeConfig = { myPlugin: { value: 7 } };
 
     const { server } = await startTestBackend({
-      features: [myPlugin()],
-      services: [mockServices.config.factory({ data: fakeConfig })],
+      features: [
+        myPlugin(),
+        mockServices.rootConfig.factory({ data: fakeConfig }),
+      ],
     });
 
     const response = await request(server).get('/api/example/get-value');
@@ -118,7 +118,7 @@ describe('MyDatabaseClass', () => {
   // "physical" databases to test against is much costlier than creating the
   // "logical" databases within them that the individual tests use.
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['POSTGRES_16', 'POSTGRES_12', 'SQLITE_3', 'MYSQL_8'],
   });
 
   // Just an example of how to conveniently bundle up the setup code
@@ -150,8 +150,10 @@ your test database.
 ```ts
 const { knex, subject } = await createSubject(databaseId);
 const { server } = await startTestBackend({
-  features: [myPlugin()],
-  services: [[coreServices.database, { getClient: async () => knex }]],
+  features: [
+    myPlugin(),
+    mockServices.database.mock({ getClient: async () => knex }),
+  ],
 });
 ```
 
@@ -166,3 +168,37 @@ it'll take into account when present.
 - `BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING`
 - `BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING`
 - `BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING`
+
+## Testing Service Factories
+
+To facilitate testing of service factories, the `@backstage/backend-test-utils`
+package provides a `ServiceFactoryTester` helper that lets you instantiate services
+in a controlled context.
+
+The following example shows how to test a service factory where we also provide
+a mocked implementation of the `rootConfig` service.
+
+```ts
+import {
+  mockServices,
+  ServiceFactoryTester,
+} from '@backstage/backend-test-utils';
+import { myServiceFactory } from './myServiceFactory.ts';
+
+describe('myServiceFactory', () => {
+  it('should provide value', async () => {
+    const fakeConfig = { myConfiguredValue: 7 };
+
+    const tester = ServiceFactoryTester.from(myServiceFactory, {
+      dependencies: [mockServices.rootConfig.factory({ data: fakeConfig })],
+    });
+
+    const myService = await tester.get('test-plugin');
+
+    expect(myService.getValue()).toBe(7);
+  });
+});
+```
+
+The service factory tester also provides mocked implementations of the majority
+of all core services by default.

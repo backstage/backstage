@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
@@ -41,12 +42,11 @@ export const codeClimatePlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 
 // @public (undocumented)
-export const EntityCodeClimateCard: () => JSX.Element;
+export const EntityCodeClimateCard: () => JSX_2.Element;
 
 // @public (undocumented)
 export class MockCodeClimateApi implements CodeClimateApi {

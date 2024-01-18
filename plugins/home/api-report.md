@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CardConfig as CardConfig_2 } from '@backstage/plugin-home-react';
 import { CardExtensionProps as CardExtensionProps_2 } from '@backstage/plugin-home-react';
@@ -13,11 +14,16 @@ import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
 import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
+import { EntityFilterQuery } from '@backstage/catalog-client';
+import { ErrorApi } from '@backstage/core-plugin-api';
+import { IdentityApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { StorageApi } from '@backstage/core-plugin-api';
 
 // @public
 export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -42,13 +48,13 @@ export type ClockConfig = {
 
 // @public (undocumented)
 export const ComponentAccordion: (props: {
-  title: string;
+  title?: string | undefined;
   expanded?: boolean | undefined;
   Content: () => JSX.Element;
   Actions?: (() => JSX.Element) | undefined;
   Settings?: (() => JSX.Element) | undefined;
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public @deprecated (undocumented)
 export type ComponentParts = ComponentParts_2;
@@ -61,7 +67,7 @@ export const ComponentTab: (props: {
   title: string;
   Content: () => JSX.Element;
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const ComponentTabs: (props: {
@@ -70,7 +76,7 @@ export const ComponentTabs: (props: {
     label: string;
     Component: () => JSX.Element;
   }[];
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public @deprecated (undocumented)
 export const createCardExtension: typeof createCardExtension_2;
@@ -78,7 +84,7 @@ export const createCardExtension: typeof createCardExtension_2;
 // @public
 export const CustomHomepageGrid: (
   props: CustomHomepageGridProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type CustomHomepageGridProps = {
@@ -97,46 +103,69 @@ export type CustomHomepageGridProps = {
 };
 
 // @public
+export const FeaturedDocsCard: (
+  props: CardExtensionProps_2<FeaturedDocsCardProps>,
+) => JSX_2.Element;
+
+// @public
+export type FeaturedDocsCardProps = {
+  filter: EntityFilterQuery;
+  emptyState?: React_2.JSX.Element;
+  linkDestination?: string;
+  responseLimit?: number;
+  subLinkText?: string;
+};
+
+// @public
 export const HeaderWorldClock: (props: {
   clockConfigs: ClockConfig[];
   customTimeFormat?: Intl.DateTimeFormatOptions | undefined;
-}) => JSX.Element | null;
+}) => JSX_2.Element | null;
 
 // @public
 export const HomePageCompanyLogo: (props: {
   logo?: ReactNode;
   className?: string | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const HomepageCompositionRoot: (props: {
   title?: string | undefined;
   children?: ReactNode;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const HomePageRandomJoke: (
   props: CardExtensionProps_2<{
     defaultCategory?: 'any' | 'programming' | undefined;
   }>,
-) => JSX.Element;
+) => JSX_2.Element;
+
+// @public
+export const HomePageRecentlyVisited: (
+  props: CardExtensionProps_2<Partial<VisitedByTypeProps>>,
+) => JSX_2.Element;
 
 // @public
 export const HomePageStarredEntities: (
-  props: CardExtensionProps_2<unknown>,
-) => JSX.Element;
+  props: CardExtensionProps_2<Partial<StarredEntitiesProps>>,
+) => JSX_2.Element;
 
 // @public
 export const HomePageToolkit: (
   props: CardExtensionProps_2<ToolkitContentProps>,
-) => JSX.Element;
+) => JSX_2.Element;
+
+// @public
+export const HomePageTopVisited: (
+  props: CardExtensionProps_2<Partial<VisitedByTypeProps>>,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export const homePlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 
@@ -147,6 +176,9 @@ export type LayoutConfiguration = {
   y: number;
   width: number;
   height: number;
+  movable?: boolean;
+  deletable?: boolean;
+  resizable?: boolean;
 };
 
 // @public @deprecated (undocumented)
@@ -156,9 +188,15 @@ export type RendererProps = RendererProps_2;
 export const SettingsModal: (props: {
   open: boolean;
   close: Function;
-  componentName: string;
+  componentName?: string | undefined;
   children: JSX.Element;
-}) => JSX.Element;
+}) => JSX_2.Element;
+
+// @public
+export type StarredEntitiesProps = {
+  noStarredEntitiesMessage?: React_2.ReactNode | undefined;
+  groupByKind?: boolean;
+};
 
 // @public (undocumented)
 export const TemplateBackstageLogo: (props: {
@@ -166,10 +204,10 @@ export const TemplateBackstageLogo: (props: {
     svg: string;
     path: string;
   };
-}) => JSX.Element;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const TemplateBackstageLogoIcon: () => JSX.Element;
+export const TemplateBackstageLogoIcon: () => React_2.JSX.Element;
 
 // @public (undocumented)
 export type Tool = {
@@ -184,5 +222,103 @@ export type ToolkitContentProps = {
 };
 
 // @public
-export const WelcomeTitle: () => JSX.Element;
+export type Visit = {
+  id: string;
+  name: string;
+  pathname: string;
+  hits: number;
+  timestamp: number;
+  entityRef?: string;
+};
+
+// @public (undocumented)
+export type VisitedByTypeKind = 'recent' | 'top';
+
+// @public (undocumented)
+export type VisitedByTypeProps = {
+  visits?: Array<Visit>;
+  numVisitsOpen?: number;
+  numVisitsTotal?: number;
+  loading?: boolean;
+  kind: VisitedByTypeKind;
+};
+
+// @public
+export const VisitListener: ({
+  children,
+  toEntityRef,
+  visitName,
+}: {
+  children?: React_2.ReactNode;
+  toEntityRef?:
+    | (({ pathname }: { pathname: string }) => string | undefined)
+    | undefined;
+  visitName?: (({ pathname }: { pathname: string }) => string) | undefined;
+}) => JSX.Element;
+
+// @public
+export interface VisitsApi {
+  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
+}
+
+// @public
+export type VisitsApiQueryParams = {
+  limit?: number;
+  orderBy?: Array<{
+    field: keyof Visit;
+    direction: 'asc' | 'desc';
+  }>;
+  filterBy?: Array<{
+    field: keyof Visit;
+    operator: '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
+    value: string | number;
+  }>;
+};
+
+// @public (undocumented)
+export const visitsApiRef: ApiRef<VisitsApi>;
+
+// @public
+export type VisitsApiSaveParams = {
+  visit: Omit<Visit, 'id' | 'hits' | 'timestamp'>;
+};
+
+// @public
+export class VisitsStorageApi implements VisitsApi {
+  // (undocumented)
+  static create(options: VisitsStorageApiOptions): VisitsStorageApi;
+  list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
+  save(saveParams: VisitsApiSaveParams): Promise<Visit>;
+}
+
+// @public (undocumented)
+export type VisitsStorageApiOptions = {
+  limit?: number;
+  storageApi: StorageApi;
+  identityApi: IdentityApi;
+};
+
+// @public
+export class VisitsWebStorageApi {
+  // (undocumented)
+  static create(options: VisitsWebStorageApiOptions): VisitsStorageApi;
+}
+
+// @public (undocumented)
+export type VisitsWebStorageApiOptions = {
+  limit?: number;
+  identityApi: IdentityApi;
+  errorApi: ErrorApi;
+};
+
+// @public
+export const WelcomeTitle: ({
+  language,
+}: WelcomeTitleLanguageProps) => JSX_2.Element;
+
+// @public (undocumented)
+export type WelcomeTitleLanguageProps = {
+  language?: string[];
+};
 ```

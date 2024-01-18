@@ -23,10 +23,6 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
-  SerializedTaskEvent,
-  SerializedTask,
-  TaskStatus,
-  TaskEventType,
   TaskStore,
   TaskStoreEmitOptions,
   TaskStoreListEventsOptions,
@@ -34,6 +30,12 @@ import {
   TaskStoreCreateTaskResult,
   TaskStoreShutDownTaskOptions,
 } from './types';
+import {
+  SerializedTaskEvent,
+  SerializedTask,
+  TaskStatus,
+  TaskEventType,
+} from '@backstage/plugin-scaffolder-node';
 import { DateTime } from 'luxon';
 
 const migrationsDir = resolvePackagePath(
@@ -69,7 +71,7 @@ export type DatabaseTaskStoreOptions = {
 };
 
 /**
- * Typeguard to help DatabaseTaskStore understand when database is PluginDatabaseManager vs. when database is a Knex instance.
+ * Type guard to help DatabaseTaskStore understand when database is PluginDatabaseManager vs. when database is a Knex instance.
  *
  * * @public
  */
@@ -81,7 +83,13 @@ function isPluginDatabaseManager(
 
 const parseSqlDateToIsoString = <T>(input: T): T | string => {
   if (typeof input === 'string') {
-    return DateTime.fromSQL(input, { zone: 'UTC' }).toISO();
+    const parsed = DateTime.fromSQL(input, { zone: 'UTC' });
+    if (!parsed.isValid) {
+      throw new Error(
+        `Failed to parse database timestamp '${input}', ${parsed.invalidReason}: ${parsed.invalidExplanation}`,
+      );
+    }
+    return parsed.toISO()!;
   }
 
   return input;
@@ -261,18 +269,21 @@ export class DatabaseTaskStore implements TaskStore {
     tasks: { taskId: string }[];
   }> {
     const { timeoutS } = options;
-
+    let heartbeatInterval = this.db.raw(`? - interval '${timeoutS} seconds'`, [
+      this.db.fn.now(),
+    ]);
+    if (this.db.client.config.client.includes('mysql')) {
+      heartbeatInterval = this.db.raw(
+        `date_sub(now(), interval ${timeoutS} second)`,
+      );
+    } else if (this.db.client.config.client.includes('sqlite3')) {
+      heartbeatInterval = this.db.raw(`datetime('now', ?)`, [
+        `-${timeoutS} seconds`,
+      ]);
+    }
     const rawRows = await this.db<RawDbTaskRow>('tasks')
       .where('status', 'processing')
-      .andWhere(
-        'last_heartbeat_at',
-        '<=',
-        this.db.client.config.client.includes('sqlite3')
-          ? this.db.raw(`datetime('now', ?)`, [`-${timeoutS} seconds`])
-          : this.db.raw(`? - interval '${timeoutS} seconds'`, [
-              this.db.fn.now(),
-            ]),
-      );
+      .andWhere('last_heartbeat_at', '<=', heartbeatInterval);
     const tasks = rawRows.map(row => ({
       taskId: row.id,
     }));

@@ -25,10 +25,10 @@ type SlackChannel = {
 };
 
 /** @public */
-export type ErrorBoundaryProps = {
+export type ErrorBoundaryProps = React.PropsWithChildren<{
   slackChannel?: string | SlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
-};
+}>;
 
 type State = {
   error?: Error;

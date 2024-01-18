@@ -19,10 +19,6 @@ import {
   createRouteRef,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
-import {
-  CostInsightsInputPluginOptions,
-  CostInsightsPluginOptions,
-} from './options';
 
 export const rootRouteRef = createRouteRef({
   id: 'cost-insights',
@@ -44,14 +40,6 @@ export const costInsightsPlugin = createPlugin({
     root: rootRouteRef,
     growthAlerts: projectGrowthAlertRef,
     unlabeledDataflowAlerts: unlabeledDataflowAlertRef,
-  },
-  __experimentalConfigure(
-    options?: CostInsightsInputPluginOptions,
-  ): CostInsightsPluginOptions {
-    const defaultOptions = {
-      hideTrendLine: false,
-    };
-    return { ...defaultOptions, ...options };
   },
 });
 

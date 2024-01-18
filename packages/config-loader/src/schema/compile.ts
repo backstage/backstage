@@ -28,6 +28,9 @@ import {
 import { SchemaObject } from 'json-schema-traverse';
 import { normalizeAjvPath } from './utils';
 
+// Used to keep track of the internal deepVisibility inherited through the schema.
+const inheritedVisibility = Symbol('inherited-visibility');
+
 /**
  * This takes a collection of Backstage configuration schemas from various
  * sources and compiles them down into a single schema validation function.
@@ -45,6 +48,7 @@ export function compileConfigSchemas(
   // output during validation. We work around this by having this extra piece
   // of state that we reset before each validation.
   const visibilityByDataPath = new Map<string, ConfigVisibility>();
+  const deepVisibilityByDataPath = new Map<string, ConfigVisibility>();
   const deprecationByDataPath = new Map<string, string>();
 
   const ajv = new Ajv({
@@ -69,6 +73,32 @@ export function compileConfigSchemas(
           if (visibility && visibility !== 'backend') {
             const normalizedPath = normalizeAjvPath(context.instancePath);
             visibilityByDataPath.set(normalizedPath, visibility);
+          }
+          return true;
+        };
+      },
+    })
+    .addKeyword({
+      keyword: 'deepVisibility',
+      metaSchema: {
+        type: 'string',
+        /**
+         * Disallow 'backend' deepVisibility to prevent cases of permission escaping.
+         *
+         * Something like:
+         * - deepVisibility secret -> backend -> frontend.
+         * - deepVisibility secret -> backend -> visibility frontend.
+         */
+        enum: ['frontend', 'secret'],
+      },
+      compile(visibility: 'frontend' | 'secret') {
+        return (_data, context) => {
+          if (context?.instancePath === undefined) {
+            return false;
+          }
+          if (visibility) {
+            const normalizedPath = normalizeAjvPath(context.instancePath);
+            deepVisibilityByDataPath.set(normalizedPath, visibility);
           }
           return true;
         };
@@ -101,17 +131,51 @@ export function compileConfigSchemas(
 
   const merged = mergeConfigSchemas(schemas.map(_ => _.value));
 
-  if (options?.noUndeclaredProperties) {
-    traverse(merged, (schema: SchemaObject) => {
-      /**
-       * The `additionalProperties` key can only be applied to `type: object` in the JSON
-       *  schema.
-       */
-      if (schema?.type === 'object') {
-        schema.additionalProperties ||= false;
+  traverse(
+    merged,
+    (
+      schema: SchemaObject & { [inheritedVisibility]?: ConfigVisibility },
+      jsonPtr: string,
+      _1: any,
+      _2: any,
+      _3?: any,
+      parentSchema?: SchemaObject & {
+        [inheritedVisibility]?: ConfigVisibility;
+      },
+    ) => {
+      // Inherit parent deepVisibility if we don't define one ourselves.
+      // This is used to detect situations where conflicting deep visibilities are set.
+      schema[inheritedVisibility] ??=
+        schema?.deepVisibility ?? parentSchema?.[inheritedVisibility];
+
+      if (schema[inheritedVisibility]) {
+        // Validate that we're not trying to set a conflicting visibility. This can be done
+        // either by setting a conflicting visibility directly or deep visibility
+        const values = [
+          schema.visibility,
+          schema[inheritedVisibility],
+          parentSchema?.[inheritedVisibility],
+        ];
+        const hasFrontend = values.some(e => e === 'frontend');
+        const hasSecret = values.some(e => e === 'secret');
+        if (hasFrontend && hasSecret) {
+          throw new Error(
+            `Config schema visibility is both 'frontend' and 'secret' for ${jsonPtr}`,
+          );
+        }
       }
-    });
-  }
+
+      if (options?.noUndeclaredProperties) {
+        /**
+         * The `additionalProperties` key can only be applied to `type: object` in the JSON
+         *  schema.
+         */
+        if (schema?.type === 'object') {
+          schema.additionalProperties ||= false;
+        }
+      }
+    },
+  );
 
   const validate = ajv.compile(merged);
 
@@ -120,12 +184,16 @@ export function compileConfigSchemas(
     if (schema.visibility && schema.visibility !== 'backend') {
       visibilityBySchemaPath.set(normalizeAjvPath(path), schema.visibility);
     }
+    if (schema.deepVisibility) {
+      visibilityBySchemaPath.set(normalizeAjvPath(path), schema.deepVisibility);
+    }
   });
 
   return configs => {
     const config = ConfigReader.fromConfigs(configs).get();
 
     visibilityByDataPath.clear();
+    deepVisibilityByDataPath.clear();
 
     const valid = validate(config);
 
@@ -133,6 +201,7 @@ export function compileConfigSchemas(
       return {
         errors: validate.errors ?? [],
         visibilityByDataPath: new Map(visibilityByDataPath),
+        deepVisibilityByDataPath: new Map(deepVisibilityByDataPath),
         visibilityBySchemaPath,
         deprecationByDataPath,
       };
@@ -140,6 +209,7 @@ export function compileConfigSchemas(
 
     return {
       visibilityByDataPath: new Map(visibilityByDataPath),
+      deepVisibilityByDataPath: new Map(deepVisibilityByDataPath),
       visibilityBySchemaPath,
       deprecationByDataPath,
     };

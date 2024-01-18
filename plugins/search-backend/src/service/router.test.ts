@@ -21,8 +21,9 @@ import { IndexBuilder } from '@backstage/plugin-search-backend-node';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import express from 'express';
 import request from 'supertest';
-
 import { createRouter } from './router';
+import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
+import { Server } from 'http';
 
 const mockPermissionEvaluator: PermissionEvaluator = {
   authorize: () => {
@@ -34,7 +35,7 @@ const mockPermissionEvaluator: PermissionEvaluator = {
 };
 
 describe('createRouter', () => {
-  let app: express.Express;
+  let app: express.Express | Server;
   let mockSearchEngine: jest.Mocked<SearchEngine>;
 
   beforeAll(async () => {
@@ -61,12 +62,12 @@ describe('createRouter', () => {
       },
       config: new ConfigReader({
         permissions: { enabled: false },
-        search: { maxPageLimit: 200 },
+        search: { maxPageLimit: 200, maxTermLength: 20 },
       }),
       permissions: mockPermissionEvaluator,
       logger,
     });
-    app = express().use(router);
+    app = wrapInOpenApiTestServer(express().use(router));
   });
 
   beforeEach(() => {
@@ -79,6 +80,7 @@ describe('createRouter', () => {
       mockSearchEngine.query.mockRejectedValueOnce(error);
 
       const response = await request(app).get('/query');
+      console.log((response as any).text);
 
       expect(response.status).toEqual(500);
       expect(response.body).toMatchObject(
@@ -159,6 +161,19 @@ describe('createRouter', () => {
       expect(response.body).toMatchObject({
         error: {
           message: /The page limit "twohundred" is not a number"/i,
+        },
+      });
+    });
+
+    it('should reject term length over configured max', async () => {
+      const response = await request(app).get(
+        `/query?term=HelloWorld1234567890!`,
+      );
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toMatchObject({
+        error: {
+          message: /The term length "21" is greater than "20"/i,
         },
       });
     });

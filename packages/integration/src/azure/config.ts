@@ -36,6 +36,8 @@ export type AzureIntegrationConfig = {
    * The authorization token to use for requests.
    *
    * If no token is specified, anonymous access is used.
+   *
+   * @deprecated Use `credentials` instead.
    */
   token?: string;
 
@@ -43,17 +45,52 @@ export type AzureIntegrationConfig = {
    * The credential to use for requests.
    *
    * If no credential is specified anonymous access is used.
+   *
+   * @deprecated Use `credentials` instead.
    */
-  credential?: AzureCredential;
+  credential?: AzureDevOpsCredential;
+
+  /**
+   * The credentials to use for requests. If multiple credentials are specified the first one that matches the organization is used.
+   * If not organization matches the first credential without an organization is used.
+   *
+   * If no credentials are specified at all, either a default credential (for Azure DevOps) or anonymous access (for Azure DevOps Server) is used.
+   */
+  credentials?: AzureDevOpsCredential[];
 };
 
 /**
- * Authenticate using a client secret that was generated for an App Registration.
+ * The kind of Azure DevOps credential.
  * @public
  */
-export type AzureClientSecretCredential = {
+export type AzureDevOpsCredentialKind =
+  | 'PersonalAccessToken'
+  | 'ClientSecret'
+  | 'ManagedIdentity';
+
+/**
+ * Common fields for the Azure DevOps credentials.
+ * @public
+ */
+export type AzureCredentialBase = {
   /**
-   * The Azure Active Directory tenant
+   * The kind of credential.
+   */
+  kind: AzureDevOpsCredentialKind;
+  /**
+   * The Azure DevOps organizations for which to use this credential.
+   */
+  organizations?: string[];
+};
+
+/**
+ * A client secret credential that was generated for an App Registration.
+ * @public
+ */
+export type AzureClientSecretCredential = AzureCredentialBase & {
+  kind: 'ClientSecret';
+  /**
+   * The Entra ID tenant
    */
   tenantId: string;
   /**
@@ -68,10 +105,11 @@ export type AzureClientSecretCredential = {
 };
 
 /**
- * Authenticate using a managed identity available at the deployment environment.
+ * A managed identity credential.
  * @public
  */
-export type AzureManagedIdentityCredential = {
+export type AzureManagedIdentityCredential = AzureCredentialBase & {
+  kind: 'ManagedIdentity';
   /**
    * The clientId
    */
@@ -79,33 +117,77 @@ export type AzureManagedIdentityCredential = {
 };
 
 /**
- * Credential used to authenticate to Azure Active Directory.
+ * A personal access token credential.
  * @public
  */
-export type AzureCredential =
+export type PersonalAccessTokenCredential = AzureCredentialBase & {
+  kind: 'PersonalAccessToken';
+  personalAccessToken: string;
+};
+
+/**
+ * The general shape of a credential that can be used to authenticate to Azure DevOps.
+ * @public
+ */
+export type AzureDevOpsCredentialLike = Omit<
+  Partial<AzureClientSecretCredential> &
+    Partial<AzureManagedIdentityCredential> &
+    Partial<PersonalAccessTokenCredential>,
+  'kind'
+>;
+
+/**
+ * Credential used to authenticate to Azure DevOps.
+ * @public
+ */
+export type AzureDevOpsCredential =
   | AzureClientSecretCredential
-  | AzureManagedIdentityCredential;
-export const isAzureClientSecretCredential = (
-  credential: Partial<AzureCredential>,
-): credential is AzureClientSecretCredential => {
-  const clientSecretCredential = credential as AzureClientSecretCredential;
+  | AzureManagedIdentityCredential
+  | PersonalAccessTokenCredential;
 
-  return (
-    Object.keys(credential).length === 3 &&
-    clientSecretCredential.clientId !== undefined &&
-    clientSecretCredential.clientSecret !== undefined &&
-    clientSecretCredential.tenantId !== undefined
-  );
-};
+const AzureDevOpsCredentialFields = [
+  'clientId',
+  'clientSecret',
+  'tenantId',
+  'personalAccessToken',
+] as const;
+type AzureDevOpsCredentialField = (typeof AzureDevOpsCredentialFields)[number];
 
-export const isAzureManagedIdentityCredential = (
-  credential: Partial<AzureCredential>,
-): credential is AzureManagedIdentityCredential => {
-  return (
-    Object.keys(credential).length === 1 &&
-    (credential as AzureManagedIdentityCredential).clientId !== undefined
-  );
-};
+const AzureDevopsCredentialFieldMap = new Map<
+  AzureDevOpsCredentialKind,
+  AzureDevOpsCredentialField[]
+>([
+  ['ClientSecret', ['clientId', 'clientSecret', 'tenantId']],
+  ['ManagedIdentity', ['clientId']],
+  ['PersonalAccessToken', ['personalAccessToken']],
+]);
+
+function asAzureDevOpsCredential(
+  credential: AzureDevOpsCredentialLike,
+): AzureDevOpsCredential {
+  for (const entry of AzureDevopsCredentialFieldMap.entries()) {
+    const [kind, requiredFields] = entry;
+
+    const forbiddenFields = AzureDevOpsCredentialFields.filter(
+      field => !requiredFields.includes(field as AzureDevOpsCredentialField),
+    );
+
+    if (
+      requiredFields.every(field => credential[field] !== undefined) &&
+      forbiddenFields.every(field => credential[field] === undefined)
+    ) {
+      return {
+        kind,
+        organizations: credential.organizations,
+        ...requiredFields.reduce((acc, field) => {
+          acc[field] = credential[field];
+          return acc;
+        }, {} as Record<string, any>),
+      } as AzureDevOpsCredential;
+    }
+  }
+  throw new Error('is not a valid credential');
+}
 
 /**
  * Reads a single Azure integration config.
@@ -117,15 +199,62 @@ export function readAzureIntegrationConfig(
   config: Config,
 ): AzureIntegrationConfig {
   const host = config.getOptionalString('host') ?? AZURE_HOST;
+
+  let credentialConfigs = config
+    .getOptionalConfigArray('credentials')
+    ?.map(credential => {
+      const result: Partial<AzureDevOpsCredentialLike> = {
+        organizations: credential.getOptionalStringArray('organizations'),
+        personalAccessToken: credential.getOptionalString(
+          'personalAccessToken',
+        ),
+        tenantId: credential.getOptionalString('tenantId'),
+        clientId: credential.getOptionalString('clientId'),
+        clientSecret: credential.getOptionalString('clientSecret'),
+      };
+
+      return result;
+    });
+
   const token = config.getOptionalString('token');
 
-  const credential = config.getOptional<AzureCredential>('credential')
-    ? {
+  if (
+    config.getOptional('credential') !== undefined &&
+    config.getOptional('credentials') !== undefined
+  ) {
+    throw new Error(
+      `Invalid Azure integration config, 'credential' and 'credentials' cannot be used together. Use 'credentials' instead.`,
+    );
+  }
+
+  if (
+    config.getOptional('token') !== undefined &&
+    config.getOptional('credentials') !== undefined
+  ) {
+    throw new Error(
+      `Invalid Azure integration config, 'token' and 'credentials' cannot be used together. Use 'credentials' instead.`,
+    );
+  }
+
+  if (token !== undefined) {
+    const mapped = [{ personalAccessToken: token }];
+    credentialConfigs = credentialConfigs?.concat(mapped) ?? mapped;
+  }
+
+  if (config.getOptional('credential') !== undefined) {
+    const mapped = [
+      {
+        organizations: config.getOptionalStringArray(
+          'credential.organizations',
+        ),
+        token: config.getOptionalString('credential.token'),
         tenantId: config.getOptionalString('credential.tenantId'),
         clientId: config.getOptionalString('credential.clientId'),
         clientSecret: config.getOptionalString('credential.clientSecret'),
-      }
-    : undefined;
+      },
+    ];
+    credentialConfigs = credentialConfigs?.concat(mapped) ?? mapped;
+  }
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -133,29 +262,92 @@ export function readAzureIntegrationConfig(
     );
   }
 
-  if (
-    credential &&
-    !isAzureClientSecretCredential(credential) &&
-    !isAzureManagedIdentityCredential(credential)
-  ) {
-    throw new Error(
-      `Invalid Azure integration config, credential is not valid`,
+  let credentials: AzureDevOpsCredential[] | undefined = undefined;
+  if (credentialConfigs !== undefined) {
+    const errors = credentialConfigs
+      ?.reduce((acc, credentialConfig, index) => {
+        let error: string | undefined = undefined;
+        try {
+          asAzureDevOpsCredential(credentialConfig);
+        } catch (e) {
+          error = e.message;
+        }
+
+        if (error !== undefined) {
+          acc.push(`credential at position ${index + 1} ${error}`);
+        }
+
+        return acc;
+      }, Array.of<string>())
+      .concat(
+        Object.entries(
+          credentialConfigs
+            .filter(
+              credential =>
+                credential.organizations !== undefined &&
+                credential.organizations.length > 0,
+            )
+            .reduce((acc, credential, index) => {
+              credential.organizations?.forEach(organization => {
+                if (!acc[organization]) {
+                  acc[organization] = [];
+                }
+
+                acc[organization].push(index + 1);
+              });
+
+              return acc;
+            }, {} as Record<string, number[]>),
+        )
+          .filter(([_, indexes]) => indexes.length > 1)
+          .reduce((acc, [org, indexes]) => {
+            acc.push(
+              `organization ${org} is specified multiple times in credentials at positions ${indexes
+                .slice(0, indexes.length - 1)
+                .join(', ')} and ${indexes[indexes.length - 1]}`,
+            );
+            return acc;
+          }, Array.of<string>()),
+      );
+
+    if (errors?.length > 0) {
+      throw new Error(
+        `Invalid Azure integration config for ${host}: ${errors.join('; ')}`,
+      );
+    }
+
+    credentials = credentialConfigs.map(credentialConfig =>
+      asAzureDevOpsCredential(credentialConfig),
     );
+
+    if (
+      credentials.some(
+        credential => credential.kind !== 'PersonalAccessToken',
+      ) &&
+      host !== AZURE_HOST
+    ) {
+      throw new Error(
+        `Invalid Azure integration config for ${host}, only personal access tokens can be used with hosts other than ${AZURE_HOST}`,
+      );
+    }
+
+    if (
+      credentials.filter(
+        credential =>
+          credential.organizations === undefined ||
+          credential.organizations.length === 0,
+      ).length > 1
+    ) {
+      throw new Error(
+        `Invalid Azure integration config for ${host}, you cannot specify multiple credentials without organizations`,
+      );
+    }
   }
 
-  if (credential && host !== AZURE_HOST) {
-    throw new Error(
-      `Invalid Azure integration config, credential can only be used with ${AZURE_HOST}`,
-    );
-  }
-
-  if (credential && token) {
-    throw new Error(
-      `Invalid Azure integration config, specify either a token or a credential but not both`,
-    );
-  }
-
-  return { host, token, credential };
+  return {
+    host,
+    credentials,
+  };
 }
 
 /**

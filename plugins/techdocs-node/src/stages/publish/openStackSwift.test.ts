@@ -23,13 +23,14 @@ import {
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
-import mockFs from 'mock-fs';
 import fs from 'fs-extra';
 import path from 'path';
 import { OpenStackSwiftPublish } from './openStackSwift';
 import { PublisherBase, TechDocsMetadata } from './types';
-import { storageRootDir } from '../../testUtils/StorageFilesMock';
 import { Stream, Readable } from 'stream';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+
+const mockDir = createMockDirectory();
 
 jest.mock('@trendyol-js/openstack-swift-sdk', () => {
   const {
@@ -45,7 +46,7 @@ jest.mock('@trendyol-js/openstack-swift-sdk', () => {
   const checkFileExists = async (Key: string): Promise<boolean> => {
     // Key will always have / as file separator irrespective of OS since cloud providers expects /.
     // Normalize Key to OS specific path before checking if file exists.
-    const filePath = path.join(storageRootDir, Key);
+    const filePath = mockDir.resolve(Key);
 
     try {
       await fs.access(filePath, fs.constants.F_OK);
@@ -96,7 +97,7 @@ jest.mock('@trendyol-js/openstack-swift-sdk', () => {
         stream: Readable,
       ) {
         try {
-          const filePath = path.join(storageRootDir, destination);
+          const filePath = mockDir.resolve(destination);
           const fileBuffer = await streamToBuffer(stream);
 
           await fs.writeFile(filePath, fileBuffer);
@@ -114,7 +115,7 @@ jest.mock('@trendyol-js/openstack-swift-sdk', () => {
       }
 
       async download(_containerName: string, file: string) {
-        const filePath = path.join(storageRootDir, file);
+        const filePath = mockDir.resolve(file);
         const fileExists = await checkFileExists(file);
         if (!fileExists) {
           return new NotFound();
@@ -151,7 +152,7 @@ const getEntityRootDir = (entity: Entity) => {
     metadata: { namespace, name },
   } = entity;
 
-  return path.join(storageRootDir, namespace || DEFAULT_NAMESPACE, kind, name);
+  return mockDir.resolve(namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
 const getPosixEntityRootDir = (entity: Entity) => {
@@ -193,11 +194,11 @@ beforeEach(() => {
   publisher = OpenStackSwiftPublish.fromConfig(mockConfig, logger);
 });
 
-afterEach(() => {
-  mockFs.restore();
-});
-
 describe('OpenStackSwiftPublish', () => {
+  afterEach(() => {
+    mockDir.clear();
+  });
+
   describe('getReadiness', () => {
     it('should validate correct config', async () => {
       expect(await publisher.getReadiness()).toEqual({
@@ -239,7 +240,7 @@ describe('OpenStackSwiftPublish', () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
-      mockFs({
+      mockDir.setContent({
         [entityRootDir]: {
           'index.html': '',
           '404.html': '',
@@ -254,12 +255,9 @@ describe('OpenStackSwiftPublish', () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
-      expect(
-        await publisher.publish({
-          entity,
-          directory: entityRootDir,
-        }),
-      ).toMatchObject({
+      await expect(
+        publisher.publish({ entity, directory: entityRootDir }),
+      ).resolves.toMatchObject({
         objects: expect.arrayContaining([
           'test-namespace/TestKind/test-component-name/404.html',
           `test-namespace/TestKind/test-component-name/index.html`,
@@ -269,8 +267,7 @@ describe('OpenStackSwiftPublish', () => {
     });
 
     it('should fail to publish a directory', async () => {
-      const wrongPathToGeneratedDirectory = path.join(
-        storageRootDir,
+      const wrongPathToGeneratedDirectory = mockDir.resolve(
         'wrong',
         'path',
         'to',
@@ -290,13 +287,9 @@ describe('OpenStackSwiftPublish', () => {
         directory: wrongPathToGeneratedDirectory,
       });
 
-      // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
-      // Issue reported https://github.com/tschaub/mock-fs/issues/118
-      await expect(fails).rejects.toMatchObject({
-        message: expect.stringContaining(
-          `Unable to upload file(s) to OpenStack Swift. Error: Failed to read template directory: ENOENT, no such file or directory`,
-        ),
-      });
+      await expect(fails).rejects.toThrow(
+        `Unable to upload file(s) to OpenStack Swift. Error: Failed to read template directory: ENOENT: no such file or directory, scandir '${wrongPathToGeneratedDirectory}'`,
+      );
       await expect(fails).rejects.toMatchObject({
         message: expect.stringContaining(wrongPathToGeneratedDirectory),
       });
@@ -308,7 +301,7 @@ describe('OpenStackSwiftPublish', () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
-      mockFs({
+      mockDir.setContent({
         [entityRootDir]: {
           'index.html': 'file-content',
         },
@@ -330,7 +323,7 @@ describe('OpenStackSwiftPublish', () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
-      mockFs({
+      mockDir.setContent({
         [entityRootDir]: {
           'techdocs_metadata.json':
             '{"site_name": "backstage", "site_description": "site_content", "etag": "etag", "build_timestamp": 612741599}',
@@ -353,7 +346,7 @@ describe('OpenStackSwiftPublish', () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
-      mockFs({
+      mockDir.setContent({
         [entityRootDir]: {
           'techdocs_metadata.json': `{'site_name': 'backstage', 'site_description': 'site_content', 'etag': 'etag', 'build_timestamp': 612741599}`,
         },
@@ -393,7 +386,7 @@ describe('OpenStackSwiftPublish', () => {
 
     beforeEach(() => {
       app = express().use(publisher.docsRouter());
-      mockFs({
+      mockDir.setContent({
         [entityRootDir]: {
           html: {
             'unsafe.html': '<html></html>',

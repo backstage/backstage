@@ -34,7 +34,7 @@ export const lighthousePlugin = createBackendPlugin({
     env.registerInit({
       deps: {
         catalogClient: catalogServiceRef,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         tokenManager: coreServices.tokenManager,

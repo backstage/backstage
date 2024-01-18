@@ -18,6 +18,8 @@ APIs.
         target: https://api.newrelic.com/v2
         headers:
           X-Api-Key: ${NEW_RELIC_REST_API_KEY}
+        allowedHeaders:
+          - link
     ```
 
     There is some types of api key on new relic, to this use must be `User` type of key, In your production deployment of Backstage, you would also need to ensure that
@@ -33,6 +35,8 @@ APIs.
       '/newrelic/apm/api':
         headers:
           X-Api-Key: NRRA-YourActualApiKey
+        allowedHeaders:
+          - link
     ```
 
     Read more about how to find or generate this key in

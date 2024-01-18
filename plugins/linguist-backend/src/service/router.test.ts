@@ -25,7 +25,7 @@ import {
 import express from 'express';
 import request from 'supertest';
 import { ConfigReader } from '@backstage/config';
-import { createRouter } from './router';
+import { createRouter, createRouterFromConfig } from './router';
 import { LinguistBackendApi } from '../api';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 
@@ -69,26 +69,57 @@ describe('createRouter', () => {
   let linguistBackendApi: jest.Mocked<LinguistBackendApi>;
   let app: express.Express;
 
-  beforeAll(async () => {
-    const router = await createRouter(
-      { schedule: schedule, age: { days: 30 }, useSourceLocation: false },
-      {
-        linguistBackendApi: linguistBackendApi,
-        discovery: testDiscovery,
-        database: createDatabase(),
-        reader: mockUrlReader,
-        logger: getVoidLogger(),
-        tokenManager: mockedTokenManager,
-      },
-    );
-    app = express().use(router);
-  });
-
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   describe('GET /health', () => {
+    beforeAll(async () => {
+      const router = await createRouter(
+        { schedule: schedule, age: { days: 30 }, useSourceLocation: false },
+        {
+          linguistBackendApi: linguistBackendApi,
+          discovery: testDiscovery,
+          database: createDatabase(),
+          reader: mockUrlReader,
+          logger: getVoidLogger(),
+          tokenManager: mockedTokenManager,
+        },
+      );
+      app = express().use(router);
+    });
+    it('returns ok', async () => {
+      const response = await request(app).get('/health');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
+
+  describe('GET /health from config', () => {
+    beforeAll(async () => {
+      const config = new ConfigReader({
+        linguist: {
+          schedule: {
+            frequency: { minutes: 2 },
+            timeout: { minutes: 15 },
+            initialDelay: { seconds: 15 },
+          },
+          age: { days: 30 },
+          useSourceLocation: false,
+        },
+      });
+      const router = await createRouterFromConfig({
+        linguistBackendApi: linguistBackendApi,
+        discovery: testDiscovery,
+        database: createDatabase(),
+        reader: mockUrlReader,
+        logger: getVoidLogger(),
+        config,
+        tokenManager: mockedTokenManager,
+      });
+      app = express().use(router);
+    });
     it('returns ok', async () => {
       const response = await request(app).get('/health');
 

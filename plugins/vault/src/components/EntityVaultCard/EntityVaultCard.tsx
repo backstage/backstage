@@ -15,11 +15,13 @@
  */
 
 import React from 'react';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import { isVaultAvailable } from '../../conditions';
 import { VAULT_SECRET_PATH_ANNOTATION } from '../../constants';
 import { EntityVaultTable } from '../EntityVaultTable';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 export const EntityVaultCard = () => {
   const { entity } = useEntity();

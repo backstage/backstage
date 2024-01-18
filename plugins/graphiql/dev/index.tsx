@@ -21,9 +21,9 @@ import {
   errorApiRef,
   IconComponent,
 } from '@backstage/core-plugin-api';
-import GraphiQLIcon from '../src/assets/graphiql.icon.svg';
 import {
   graphiqlPlugin,
+  GraphiQLIcon,
   GraphQLEndpoints,
   graphQlBrowseApiRef,
   GraphiQLPage,

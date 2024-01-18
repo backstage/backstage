@@ -16,12 +16,7 @@
 
 import React from 'react';
 import { waitFor } from '@testing-library/react';
-import {
-  wrapInTestApp,
-  renderInTestApp,
-  renderWithEffects,
-  TestApiProvider,
-} from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { createPlugin } from '@backstage/core-plugin-api';
 
 import { searchApiRef } from '../../api';
@@ -165,17 +160,15 @@ describe('SearchResult', () => {
       },
     ];
     const query = jest.fn().mockResolvedValue({ results });
-    await renderWithEffects(
-      wrapInTestApp(
-        <TestApiProvider apis={[[searchApiRef, { query }]]}>
-          <SearchResult query={{ types: ['techdocs'] }}>
-            {value => {
-              expect(value.results).toStrictEqual(results);
-              return <></>;
-            }}
-          </SearchResult>
-        </TestApiProvider>,
-      ),
+    await renderInTestApp(
+      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+        <SearchResult query={{ types: ['techdocs'] }}>
+          {value => {
+            expect(value.results).toStrictEqual(results);
+            return <></>;
+          }}
+        </SearchResult>
+      </TestApiProvider>,
     );
 
     expect(query).toHaveBeenCalledWith({

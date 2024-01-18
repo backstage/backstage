@@ -27,13 +27,12 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { BackstageTheme } from '@backstage/theme';
 import { Target } from '../../api';
 import { formatSecondsInterval, formatPercentage } from '../../utils';
 
 const EMPTY_HEIGHT = 100;
 
-const useStyles = makeStyles((theme: BackstageTheme) =>
+const useStyles = makeStyles(theme =>
   createStyles({
     toolTip: {
       backgroundColor: theme.palette.background.paper,

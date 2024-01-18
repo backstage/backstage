@@ -14,11 +14,14 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FactSchema } from '@backstage/plugin-tech-insights-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
+import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
-export const BooleanCheck: (props: { checkResult: CheckResult }) => JSX.Element;
+export const BooleanCheck: (props: {
+  checkResult: CheckResult;
+}) => React_2.JSX.Element;
 
 // @public
 export type Check = {
@@ -43,14 +46,14 @@ export const EntityTechInsightsScorecardCard: (props: {
   title: string;
   description?: string | undefined;
   checksId?: string[] | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityTechInsightsScorecardContent: (props: {
   title: string;
   description?: string | undefined;
   checksId?: string[] | undefined;
-}) => JSX.Element;
+}) => JSX_2.Element;
 
 // @public
 export interface InsightFacts {
@@ -64,6 +67,18 @@ export interface InsightFacts {
 
 // @public
 export const jsonRulesEngineCheckResultRenderer: CheckResultRenderer;
+
+// @public (undocumented)
+export const ScorecardInfo: (props: {
+  checkResults: CheckResult[];
+  title: string;
+  description?: string | undefined;
+}) => JSX_2.Element;
+
+// @public (undocumented)
+export const ScorecardsList: (props: {
+  checkResults: CheckResult[];
+}) => JSX_2.Element;
 
 // @public
 export interface TechInsightsApi {
@@ -122,7 +137,6 @@ export const techInsightsPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 

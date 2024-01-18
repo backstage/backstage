@@ -50,6 +50,16 @@ export class TaskWorker {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
+
+    let workCheckFrequency = this.workCheckFrequency;
+    const isCron = !settings?.cadence.startsWith('P');
+    if (!isCron) {
+      const cadence = Duration.fromISO(settings.cadence);
+      if (cadence < workCheckFrequency) {
+        workCheckFrequency = cadence;
+      }
+    }
+
     let attemptNum = 1;
     (async () => {
       for (;;) {
@@ -63,11 +73,12 @@ export class TaskWorker {
 
           while (!options?.signal?.aborted) {
             const runResult = await this.runOnce(options?.signal);
+
             if (runResult.result === 'abort') {
               break;
             }
 
-            await sleep(this.workCheckFrequency, options?.signal);
+            await sleep(workCheckFrequency, options?.signal);
           }
 
           this.logger.info(`Task worker finished: ${this.taskId}`);
@@ -165,37 +176,67 @@ export class TaskWorker {
 
     const isCron = !settings?.cadence.startsWith('P');
 
-    let startAt: Knex.Raw;
+    let startAt: Knex.Raw | undefined;
+    let nextStartAt: Knex.Raw | undefined;
     if (settings.initialDelayDuration) {
       startAt = nowPlus(
         Duration.fromISO(settings.initialDelayDuration),
         this.knex,
       );
-    } else if (isCron) {
+    }
+
+    if (isCron) {
       const time = new CronTime(settings.cadence)
         .sendAt()
         .minus({ seconds: 1 }) // immediately, if "* * * * * *"
-        .toUTC()
-        .toISO();
-      startAt = this.knex.client.config.client.includes('sqlite3')
-        ? this.knex.raw('datetime(?)', [time])
-        : this.knex.raw(`?`, [time]);
+        .toUTC();
+
+      nextStartAt = this.nextRunAtRaw(time);
+      startAt ||= nextStartAt;
     } else {
-      startAt = this.knex.fn.now();
+      startAt ||= this.knex.fn.now();
+      nextStartAt = nowPlus(Duration.fromISO(settings.cadence), this.knex);
     }
 
     this.logger.debug(`task: ${this.taskId} configured to run at: ${startAt}`);
 
     // It's OK if the task already exists; if it does, just replace its
     // settings with the new value and start the loop as usual.
+    const settingsJson = JSON.stringify(settings);
     await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .insert({
         id: this.taskId,
-        settings_json: JSON.stringify(settings),
+        settings_json: settingsJson,
         next_run_start_at: startAt,
       })
       .onConflict('id')
-      .merge(['settings_json']);
+      .merge(
+        this.knex.client.config.client.includes('mysql')
+          ? {
+              settings_json: settingsJson,
+              next_run_start_at: this.knex.raw(
+                `CASE WHEN ?? < ?? THEN ?? ELSE ?? END`,
+                [
+                  nextStartAt,
+                  'next_run_start_at',
+                  nextStartAt,
+                  'next_run_start_at',
+                ],
+              ),
+            }
+          : {
+              settings_json: this.knex.ref('excluded.settings_json'),
+              next_run_start_at: this.knex.raw(
+                `CASE WHEN ?? < ?? THEN ?? ELSE ?? END`,
+                [
+                  nextStartAt,
+                  `${DB_TASKS_TABLE}.next_run_start_at`,
+                  nextStartAt,
+                  `${DB_TASKS_TABLE}.next_run_start_at`,
+                ],
+              ),
+            },
+      );
   }
 
   /**
@@ -279,11 +320,10 @@ export class TaskWorker {
 
     let nextRun: Knex.Raw;
     if (isCron) {
-      const time = new CronTime(settings.cadence).sendAt().toUTC().toISO();
+      const time = new CronTime(settings.cadence).sendAt().toUTC();
       this.logger.debug(`task: ${this.taskId} will next occur around ${time}`);
-      nextRun = this.knex.client.config.client.includes('sqlite3')
-        ? this.knex.raw('datetime(?)', [time])
-        : this.knex.raw(`?`, [time]);
+
+      nextRun = this.nextRunAtRaw(time);
     } else {
       const dt = Duration.fromISO(settings.cadence).as('seconds');
       this.logger.debug(
@@ -319,5 +359,14 @@ export class TaskWorker {
       });
 
     return rows === 1;
+  }
+
+  private nextRunAtRaw(time: DateTime): Knex.Raw {
+    if (this.knex.client.config.client.includes('sqlite3')) {
+      return this.knex.raw('datetime(?)', [time.toISO()]);
+    } else if (this.knex.client.config.client.includes('mysql')) {
+      return this.knex.raw(`?`, [time.toSQL({ includeOffset: false })]);
+    }
+    return this.knex.raw(`?`, [time.toISO()]);
   }
 }

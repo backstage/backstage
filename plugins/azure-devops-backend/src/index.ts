@@ -22,4 +22,5 @@
 
 export { AzureDevOpsApi } from './api';
 export * from './service/router';
-export { azureDevOpsPlugin } from './plugin';
+export { azureDevOpsPlugin as default } from './plugin';
+export { AzureDevOpsAnnotatorProcessor } from './processor';

@@ -24,7 +24,7 @@ import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 export const permissionsServiceFactory = createServiceFactory({
   service: coreServices.permissions,
   deps: {
-    config: coreServices.config,
+    config: coreServices.rootConfig,
     discovery: coreServices.discovery,
     tokenManager: coreServices.tokenManager,
   },

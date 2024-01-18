@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, SingleHostDiscovery } from '@backstage/backend-common';
+import { getVoidLogger, HostDiscovery } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { Request, Response } from 'express';
 import * as http from 'http';
@@ -45,15 +46,17 @@ describe('createRouter', () => {
         },
       },
       proxy: {
-        '/test': {
-          target: 'https://example.com',
-          headers: {
-            Authorization: 'Bearer supersecret',
+        endpoints: {
+          '/test': {
+            target: 'https://example.com',
+            headers: {
+              Authorization: 'Bearer supersecret',
+            },
           },
         },
       },
     });
-    const discovery = SingleHostDiscovery.fromConfig(config);
+    const discovery = HostDiscovery.fromConfig(config);
 
     beforeEach(() => {
       mockCreateProxyMiddleware.mockClear();
@@ -66,6 +69,32 @@ describe('createRouter', () => {
         discovery,
       });
       expect(router).toBeDefined();
+    });
+
+    it('supports deprecated proxy configuration', async () => {
+      const router = await createRouter({
+        config: mockServices.rootConfig({
+          data: {
+            proxy: {
+              '/test': {
+                target: 'https://example.com',
+                headers: {
+                  Authorization: 'Bearer supersecret',
+                },
+              },
+            },
+          },
+        }),
+        logger,
+        discovery,
+      });
+      expect(router).toBeDefined();
+      expect(mockCreateProxyMiddleware).toHaveBeenCalledWith(
+        expect.any(Function),
+        expect.objectContaining({
+          target: 'https://example.com',
+        }),
+      );
     });
 
     it('revives request bodies when set', async () => {
@@ -112,21 +141,27 @@ describe('createRouter', () => {
         },
         // no target would cause the buildMiddleware to fail
         proxy: {
-          '/test': {
-            headers: {
-              Authorization: 'Bearer supersecret',
+          endpoints: {
+            '/test': {
+              headers: {
+                Authorization: 'Bearer supersecret',
+              },
             },
           },
         },
       });
-      const discovery = SingleHostDiscovery.fromConfig(config);
+      const discovery = HostDiscovery.fromConfig(config);
       await expect(
         createRouter({
           config,
           logger,
           discovery,
         }),
-      ).rejects.toThrow(new Error('Proxy target must be a string'));
+      ).rejects.toThrow(
+        new Error(
+          'Proxy target for route "/test" must be a string, but is of type undefined',
+        ),
+      );
     });
 
     it('works if skip failures is set', async () => {
@@ -141,14 +176,16 @@ describe('createRouter', () => {
         },
         // no target would cause the buildMiddleware to fail
         proxy: {
-          '/test': {
-            headers: {
-              Authorization: 'Bearer supersecret',
+          endpoints: {
+            '/test': {
+              headers: {
+                Authorization: 'Bearer supersecret',
+              },
             },
           },
         },
       });
-      const discovery = SingleHostDiscovery.fromConfig(config);
+      const discovery = HostDiscovery.fromConfig(config);
       const router = await createRouter({
         config,
         logger,
@@ -156,7 +193,7 @@ describe('createRouter', () => {
         skipInvalidProxies: true,
       });
       expect((logger.warn as jest.Mock).mock.calls[0][0]).toEqual(
-        'skipped configuring /test due to Proxy target must be a string',
+        'skipped configuring /test due to Proxy target for route "/test" must be a string, but is of type undefined',
       );
       expect(router).toBeDefined();
     });

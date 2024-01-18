@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   IconComponent,
   useAnalytics,
   useElementFilter,
 } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
 import Badge from '@material-ui/core/Badge';
 import Box from '@material-ui/core/Box';
 import { makeStyles, styled, Theme } from '@material-ui/core/styles';
@@ -34,7 +34,7 @@ import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
 import classnames from 'classnames';
-import { Location } from 'history';
+import type { Location } from 'history';
 import React, {
   ComponentProps,
   ComponentType,
@@ -90,7 +90,7 @@ export type SidebarItemClassKey =
   | 'selected';
 
 const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
-  makeStyles<BackstageTheme>(
+  makeStyles(
     theme => ({
       root: {
         color: theme.palette.navigation.color,
@@ -312,7 +312,11 @@ const sidebarSubmenuType = React.createElement(SidebarSubmenu).type;
 //               properly yet, matching for example /foobar with /foo.
 export const WorkaroundNavLink = React.forwardRef<
   HTMLAnchorElement,
-  NavLinkProps & { activeStyle?: CSSProperties; activeClassName?: string }
+  NavLinkProps & {
+    children?: ReactNode;
+    activeStyle?: CSSProperties;
+    activeClassName?: string;
+  }
 >(function WorkaroundNavLinkWithRef(
   {
     to,
@@ -351,7 +355,7 @@ export const WorkaroundNavLink = React.forwardRef<
       aria-current={ariaCurrent}
       style={{ ...style, ...(isActive ? activeStyle : undefined) }}
       className={classnames([
-        className,
+        typeof className !== 'function' ? className : undefined,
         isActive ? activeClassName : undefined,
       ])}
     />
@@ -361,7 +365,10 @@ export const WorkaroundNavLink = React.forwardRef<
 /**
  * Common component used by SidebarItem & SidebarItemWithSubmenu
  */
-const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
+const SidebarItemBase = forwardRef<
+  any,
+  SidebarItemProps & { children: ReactNode }
+>((props, ref) => {
   const {
     icon: Icon,
     text,
@@ -494,7 +501,7 @@ const SidebarItemWithSubmenu = ({
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
   const isActive = useLocationMatch(children, location);
-  const isSmallScreen = useMediaQuery<BackstageTheme>((theme: BackstageTheme) =>
+  const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
 
@@ -553,7 +560,10 @@ const SidebarItemWithSubmenu = ({
  * @remarks
  * If children contain a `SidebarSubmenu` component the `SidebarItem` will have a expandable submenu
  */
-export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
+export const SidebarItem = forwardRef<
+  any,
+  SidebarItemProps & { children: ReactNode }
+>((props, ref) => {
   // Filter children for SidebarSubmenu components
   const [submenu] = useElementFilter(props.children, elements =>
     // Directly comparing child.type with SidebarSubmenu will not work with in
@@ -716,7 +726,7 @@ export const SidebarExpandButton = () => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useMemoStyles(sidebarConfig);
   const { isOpen, setOpen } = useSidebarOpenState();
-  const isSmallScreen = useMediaQuery<BackstageTheme>(
+  const isSmallScreen = useMediaQuery<Theme>(
     theme => theme.breakpoints.down('md'),
     { noSsr: true },
   );

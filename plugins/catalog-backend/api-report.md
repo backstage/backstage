@@ -10,6 +10,7 @@ import { AnalyzeLocationExistingEntity as AnalyzeLocationExistingEntity_2 } from
 import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
+import { AnalyzeOptions as AnalyzeOptions_2 } from '@backstage/plugin-catalog-node';
 import { CatalogApi } from '@backstage/catalog-client';
 import type { CatalogCollatorEntityTransformer as CatalogCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
@@ -27,7 +28,9 @@ import { Config } from '@backstage/config';
 import { DefaultCatalogCollatorFactory as DefaultCatalogCollatorFactory_2 } from '@backstage/plugin-search-backend-module-catalog';
 import type { DefaultCatalogCollatorFactoryOptions as DefaultCatalogCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DeferredEntity as DeferredEntity_2 } from '@backstage/plugin-catalog-node';
+import { EntitiesSearchFilter as EntitiesSearchFilter_2 } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
+import { EntityFilter as EntityFilter_2 } from '@backstage/plugin-catalog-node';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityProvider as EntityProvider_2 } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection as EntityProviderConnection_2 } from '@backstage/plugin-catalog-node';
@@ -50,6 +53,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
@@ -69,11 +73,8 @@ export type AnalyzeLocationRequest = AnalyzeLocationRequest_2;
 // @public @deprecated (undocumented)
 export type AnalyzeLocationResponse = AnalyzeLocationResponse_2;
 
-// @public (undocumented)
-export type AnalyzeOptions = {
-  url: string;
-  catalogFilename?: string;
-};
+// @public @deprecated (undocumented)
+export type AnalyzeOptions = AnalyzeOptions_2;
 
 // @public (undocumented)
 export class AnnotateLocationEntityProcessor implements CatalogProcessor_2 {
@@ -91,9 +92,17 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor_2 {
 
 // @public (undocumented)
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor_2 {
-  constructor(opts: { scmIntegrationRegistry: ScmIntegrationRegistry });
+  constructor(opts: {
+    scmIntegrationRegistry: ScmIntegrationRegistry;
+    kinds?: string[];
+  });
   // (undocumented)
-  static fromConfig(config: Config): AnnotateScmSlugEntityProcessor;
+  static fromConfig(
+    config: Config,
+    options?: {
+      kinds?: string[];
+    },
+  ): AnnotateScmSlugEntityProcessor;
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)
@@ -126,7 +135,7 @@ export class CatalogBuilder {
     ...providers: Array<EntityProvider_2 | Array<EntityProvider_2>>
   ): CatalogBuilder;
   addLocationAnalyzers(
-    ...analyzers: Array<ScmLocationAnalyzer | Array<ScmLocationAnalyzer>>
+    ...analyzers: Array<ScmLocationAnalyzer_2 | Array<ScmLocationAnalyzer_2>>
   ): CatalogBuilder;
   addPermissionRules(
     ...permissionRules: Array<
@@ -184,7 +193,7 @@ export type CatalogEnvironment = {
 // @public
 export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
+> = PermissionRule<Entity, EntitiesSearchFilter_2, 'catalog-entity', TParams>;
 
 // @public
 export interface CatalogProcessingEngine {
@@ -306,24 +315,11 @@ export type DefaultCatalogCollatorFactoryOptions =
 // @public @deprecated (undocumented)
 export type DeferredEntity = DeferredEntity_2;
 
-// @public
-export type EntitiesSearchFilter = {
-  key: string;
-  values?: string[];
-};
+// @public @deprecated (undocumented)
+export type EntitiesSearchFilter = EntitiesSearchFilter_2;
 
-// @public
-export type EntityFilter =
-  | {
-      allOf: EntityFilter[];
-    }
-  | {
-      anyOf: EntityFilter[];
-    }
-  | {
-      not: EntityFilter;
-    }
-  | EntitiesSearchFilter;
+// @public @deprecated (undocumented)
+export type EntityFilter = EntityFilter_2;
 
 // @public @deprecated (undocumented)
 export type EntityProvider = EntityProvider_2;
@@ -357,7 +353,7 @@ export type LocationAnalyzer = {
   ): Promise<AnalyzeLocationResponse>;
 };
 
-// @public (undocumented)
+// @public @deprecated
 export class LocationEntityProcessor implements CatalogProcessor_2 {
   constructor(options: LocationEntityProcessorOptions);
   // (undocumented)
@@ -370,7 +366,7 @@ export class LocationEntityProcessor implements CatalogProcessor_2 {
   ): Promise<Entity>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LocationEntityProcessorOptions = {
   integrations: ScmIntegrationRegistry;
 };
@@ -460,13 +456,8 @@ export const processingResult: Readonly<{
   readonly refresh: (key: string) => CatalogProcessorResult_2;
 }>;
 
-// @public (undocumented)
-export type ScmLocationAnalyzer = {
-  supports(url: string): boolean;
-  analyze(options: AnalyzeOptions): Promise<{
-    existing: AnalyzeLocationExistingEntity[];
-  }>;
-};
+// @public @deprecated (undocumented)
+export type ScmLocationAnalyzer = ScmLocationAnalyzer_2;
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor_2 {

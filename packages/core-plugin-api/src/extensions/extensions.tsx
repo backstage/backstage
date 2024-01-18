@@ -21,7 +21,6 @@ import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
-import { PluginProvider } from '../plugin-options';
 import { routableExtensionRenderedEvent } from '../analytics/Tracker';
 
 /**
@@ -258,9 +257,7 @@ export function createReactExtension<
                   ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >
-                <PluginProvider plugin={plugin}>
-                  <Component {...props} />
-                </PluginProvider>
+                <Component {...props} />
               </AnalyticsContext>
             </PluginErrorBoundary>
           </Suspense>

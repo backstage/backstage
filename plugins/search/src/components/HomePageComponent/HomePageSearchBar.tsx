@@ -57,18 +57,11 @@ export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
     handleSearch({ query: ref.current?.value ?? '' });
   }, [handleSearch]);
 
-  const handleChange = useCallback(
-    value => {
-      setQuery(value);
-    },
-    [setQuery],
-  );
-
   return (
     <SearchBarBase
       value={query}
       onSubmit={handleSubmit}
-      onChange={handleChange}
+      onChange={setQuery}
       inputProps={{ ref }}
       InputProps={{
         ...props.InputProps,

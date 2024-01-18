@@ -134,6 +134,9 @@ export async function createRouter(
     const user = await identity.getIdentity({ request: req });
     const rating = req.body.rating;
     if (!user || !rating) {
+      logger.warn(
+        `Can't save rating because there is not enough info: user=${user}, rating=${rating}`,
+      );
       res.status(400).end();
       return;
     }
@@ -188,6 +191,7 @@ export async function createRouter(
     const { response, comments, consent } = req.body;
 
     if (!user) {
+      logger.warn(`Could not identify user to save responses, user=${user}`);
       res.status(400).end();
       return;
     }

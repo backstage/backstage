@@ -24,6 +24,9 @@ import { getDockerImageForName } from '../util/getDockerImageForName';
  * @public
  */
 export type TestDatabaseId =
+  | 'POSTGRES_16'
+  | 'POSTGRES_15'
+  | 'POSTGRES_14'
   | 'POSTGRES_13'
   | 'POSTGRES_12'
   | 'POSTGRES_11'
@@ -40,12 +43,35 @@ export type TestDatabaseProperties = {
 
 export type Instance = {
   stopContainer?: () => Promise<void>;
+  dropDatabases?: () => Promise<void>;
   databaseManager: DatabaseManager;
   connections: Array<Knex>;
+  databaseNames: Array<string>;
 };
 
 export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =
   Object.freeze({
+    POSTGRES_16: {
+      name: 'Postgres 16.x',
+      driver: 'pg',
+      dockerImageName: getDockerImageForName('postgres:16'),
+      connectionStringEnvironmentVariableName:
+        'BACKSTAGE_TEST_DATABASE_POSTGRES16_CONNECTION_STRING',
+    },
+    POSTGRES_15: {
+      name: 'Postgres 15.x',
+      driver: 'pg',
+      dockerImageName: getDockerImageForName('postgres:15'),
+      connectionStringEnvironmentVariableName:
+        'BACKSTAGE_TEST_DATABASE_POSTGRES15_CONNECTION_STRING',
+    },
+    POSTGRES_14: {
+      name: 'Postgres 14.x',
+      driver: 'pg',
+      dockerImageName: getDockerImageForName('postgres:14'),
+      connectionStringEnvironmentVariableName:
+        'BACKSTAGE_TEST_DATABASE_POSTGRES14_CONNECTION_STRING',
+    },
     POSTGRES_13: {
       name: 'Postgres 13.x',
       driver: 'pg',

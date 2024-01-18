@@ -27,14 +27,16 @@ import {
 export const SettingsModal = (props: {
   open: boolean;
   close: Function;
-  componentName: string;
+  componentName?: string;
   children: JSX.Element;
 }) => {
   const { open, close, componentName, children } = props;
 
   return (
     <Dialog open={open} onClose={() => close()}>
-      <DialogTitle>Settings - {componentName}</DialogTitle>
+      <DialogTitle>
+        {componentName ? `Settings - ${componentName}` : 'Settings'}
+      </DialogTitle>
       <DialogContent>{children}</DialogContent>
       <DialogActions>
         <Button onClick={() => close()} color="primary" variant="contained">

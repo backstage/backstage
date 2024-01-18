@@ -20,4 +20,4 @@
  * @packageDocumentation
  */
 export * from './service/router';
-export { entityFeedbackPlugin } from './plugin';
+export { entityFeedbackPlugin as default } from './plugin';

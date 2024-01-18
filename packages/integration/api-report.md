@@ -39,16 +39,58 @@ export type AwsS3IntegrationConfig = {
 };
 
 // @public
-export type AzureClientSecretCredential = {
+export type AzureClientSecretCredential = AzureCredentialBase & {
+  kind: 'ClientSecret';
   tenantId: string;
   clientId: string;
   clientSecret: string;
 };
 
 // @public
-export type AzureCredential =
+export type AzureCredentialBase = {
+  kind: AzureDevOpsCredentialKind;
+  organizations?: string[];
+};
+
+// @public
+export type AzureDevOpsCredential =
   | AzureClientSecretCredential
-  | AzureManagedIdentityCredential;
+  | AzureManagedIdentityCredential
+  | PersonalAccessTokenCredential;
+
+// @public
+export type AzureDevOpsCredentialKind =
+  | 'PersonalAccessToken'
+  | 'ClientSecret'
+  | 'ManagedIdentity';
+
+// @public
+export type AzureDevOpsCredentialLike = Omit<
+  Partial<AzureClientSecretCredential> &
+    Partial<AzureManagedIdentityCredential> &
+    Partial<PersonalAccessTokenCredential>,
+  'kind'
+>;
+
+// @public
+export type AzureDevOpsCredentials = {
+  headers: {
+    [name: string]: string;
+  };
+  token: string;
+  type: AzureDevOpsCredentialType;
+};
+
+// @public
+export interface AzureDevOpsCredentialsProvider {
+  // (undocumented)
+  getCredentials(opts: {
+    url: string;
+  }): Promise<AzureDevOpsCredentials | undefined>;
+}
+
+// @public
+export type AzureDevOpsCredentialType = 'bearer' | 'pat';
 
 // @public
 export class AzureIntegration implements ScmIntegration {
@@ -75,11 +117,13 @@ export class AzureIntegration implements ScmIntegration {
 export type AzureIntegrationConfig = {
   host: string;
   token?: string;
-  credential?: AzureCredential;
+  credential?: AzureDevOpsCredential;
+  credentials?: AzureDevOpsCredential[];
 };
 
 // @public
-export type AzureManagedIdentityCredential = {
+export type AzureManagedIdentityCredential = AzureCredentialBase & {
+  kind: 'ManagedIdentity';
   clientId: string;
 };
 
@@ -173,6 +217,28 @@ export type BitbucketServerIntegrationConfig = {
 };
 
 // @public
+export function buildGerritGitilesArchiveUrl(
+  config: GerritIntegrationConfig,
+  project: string,
+  branch: string,
+  filePath: string,
+): string;
+
+// @public
+export class DefaultAzureDevOpsCredentialsProvider
+  implements AzureDevOpsCredentialsProvider
+{
+  // (undocumented)
+  static fromIntegrations(
+    integrations: ScmIntegrationRegistry,
+  ): DefaultAzureDevOpsCredentialsProvider;
+  // (undocumented)
+  getCredentials(opts: {
+    url: string;
+  }): Promise<AzureDevOpsCredentials | undefined>;
+}
+
+// @public
 export class DefaultGithubCredentialsProvider
   implements GithubCredentialsProvider
 {
@@ -242,7 +308,7 @@ export function getAzureDownloadUrl(url: string): string;
 // @public
 export function getAzureFileFetchUrl(url: string): string;
 
-// @public
+// @public @deprecated
 export function getAzureRequestOptions(
   config: AzureIntegrationConfig,
   additionalHeaders?: Record<string, string>,
@@ -354,7 +420,25 @@ export function getGerritRequestOptions(config: GerritIntegrationConfig): {
 };
 
 // @public
+export function getGiteaArchiveUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+): string;
+
+// @public
+export function getGiteaEditContentsUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+): string;
+
+// @public
 export function getGiteaFileContentsUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+): string;
+
+// @public
+export function getGiteaLatestCommitUrl(
   config: GiteaIntegrationConfig,
   url: string,
 ): string;
@@ -591,6 +675,24 @@ export function parseGerritGitilesUrl(
 
 // @public
 export function parseGerritJsonResponse(response: Response): Promise<unknown>;
+
+// @public
+export function parseGiteaUrl(
+  config: GiteaIntegrationConfig,
+  url: string,
+): {
+  url: string;
+  owner: string;
+  name: string;
+  ref: string;
+  path: string;
+};
+
+// @public
+export type PersonalAccessTokenCredential = AzureCredentialBase & {
+  kind: 'PersonalAccessToken';
+  personalAccessToken: string;
+};
 
 // @public
 export function readAwsS3IntegrationConfig(

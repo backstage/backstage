@@ -20,6 +20,7 @@ export interface Config {
     /**
      * The authentication token for accessing the Rollbar API
      * @see https://explorer.docs.rollbar.com/#section/Authentication
+     * @visibility secret
      */
     accountToken: string;
   };

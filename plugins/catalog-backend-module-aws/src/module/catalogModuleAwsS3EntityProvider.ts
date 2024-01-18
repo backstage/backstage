@@ -29,11 +29,11 @@ import { AwsS3EntityProvider } from '../providers';
  */
 export const catalogModuleAwsS3EntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'awsS3EntityProvider',
+  moduleId: 'aws-s3-entity-provider',
   register(env) {
     env.registerInit({
       deps: {
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         catalog: catalogProcessingExtensionPoint,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,

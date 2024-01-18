@@ -14,39 +14,29 @@
  * limitations under the License.
  */
 
+import {
+  ServiceFactoryTester,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { httpRouterServiceFactory } from './httpRouterServiceFactory';
 
 describe('httpRouterFactory', () => {
   it('should register plugin paths', async () => {
-    const rootHttpRouter = { use: jest.fn() };
-    const factory = httpRouterServiceFactory() as any;
+    const rootHttpRouter = mockServices.rootHttpRouter.mock();
+    const tester = ServiceFactoryTester.from(httpRouterServiceFactory, {
+      dependencies: [rootHttpRouter.factory],
+    });
 
-    const handler1 = () => {};
-    const router1 = await factory.factory(
-      {
-        rootHttpRouter,
-        plugin: { getId: () => 'test1' },
-        lifecycle: { addStartupHook() {}, addShutdownHook() {} },
-      },
-      undefined,
-    );
-    router1.use(handler1);
+    const router1 = await tester.get('test1');
+    router1.use(() => {});
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(
       '/api/test1',
       expect.any(Function),
     );
 
-    const handler2 = () => {};
-    const router2 = await factory.factory(
-      {
-        rootHttpRouter,
-        plugin: { getId: () => 'test2' },
-        lifecycle: { addStartupHook() {}, addShutdownHook() {} },
-      },
-      undefined,
-    );
-    router2.use(handler2);
+    const router2 = await tester.get('test2');
+    router2.use(() => {});
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(
       '/api/test2',
@@ -55,37 +45,24 @@ describe('httpRouterFactory', () => {
   });
 
   it('should use custom path generator', async () => {
-    const rootHttpRouter = { use: jest.fn() };
-    const factory = httpRouterServiceFactory({
-      getPath: id => `/some/${id}/path`,
-    }) as any;
-
-    const handler1 = () => {};
-    const router1 = await factory.factory(
-      {
-        rootHttpRouter,
-        plugin: { getId: () => 'test1' },
-        lifecycle: { addStartupHook() {}, addShutdownHook() {} },
-      },
-      undefined,
+    const rootHttpRouter = mockServices.rootHttpRouter.mock();
+    const tester = ServiceFactoryTester.from(
+      httpRouterServiceFactory({
+        getPath: id => `/some/${id}/path`,
+      }),
+      { dependencies: [rootHttpRouter.factory] },
     );
-    router1.use(handler1);
+
+    const router1 = await tester.get('test1');
+    router1.use(() => {});
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(
       '/some/test1/path',
       expect.any(Function),
     );
 
-    const handler2 = () => {};
-    const router2 = await factory.factory(
-      {
-        rootHttpRouter,
-        plugin: { getId: () => 'test2' },
-        lifecycle: { addStartupHook() {}, addShutdownHook() {} },
-      },
-      undefined,
-    );
-    router2.use(handler2);
+    const router2 = await tester.get('test2');
+    router2.use(() => {});
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(
       '/some/test2/path',

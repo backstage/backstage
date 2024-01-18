@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-explore
+  title: '@backstage/plugin-explore'
+  description: >-
+    A Backstage plugin for building an exploration page of your software
+    ecosystem
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: sda-se-reviewers

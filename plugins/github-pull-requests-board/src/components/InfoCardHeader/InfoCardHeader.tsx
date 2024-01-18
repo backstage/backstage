@@ -21,7 +21,7 @@ type Props = {
   onRefresh: () => void;
 };
 
-const InfoCardHeader: FunctionComponent<Props> = (
+const InfoCardHeader: FunctionComponent<PropsWithChildren<Props>> = (
   props: PropsWithChildren<Props>,
 ) => {
   const { children, onRefresh } = props;

@@ -23,16 +23,12 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
-import {
-  Box,
-  createStyles,
-  Grid,
-  makeStyles,
-  Paper,
-  Theme,
-  Typography,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useExternalDependencies } from '../../../hooks';
 

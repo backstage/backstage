@@ -66,7 +66,7 @@ describe('Select', () => {
         />,
       );
       user.tab();
-      userEvent.keyboard('{enter}');
+      await userEvent.keyboard('{enter}');
 
       expect(rendered.getAllByText(testItems[0].label)).toHaveLength(2);
       expect(rendered.getByText(testItems[1].label)).toBeInTheDocument();

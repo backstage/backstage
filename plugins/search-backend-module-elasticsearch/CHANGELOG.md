@@ -1,5 +1,367 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.3.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-search-backend-node@1.2.13
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.3.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-search-backend-node@1.2.13-next.2
+
+## 1.3.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-backend-node@1.2.13-next.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.3.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.13-next.0
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.3.11
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-search-backend-node@1.2.12
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.3.11-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.12-next.3
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.11-next.2
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.12-next.2
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.12-next.1
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/plugin-search-backend-node@1.2.12-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.10
+
+### Patch Changes
+
+- 006df4a581: Support AWS OpenSearch Serverless search backend. Does not support `_refresh` endpoint.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.2.11
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.10-next.2
+
+### Patch Changes
+
+- [#20212](https://github.com/backstage/backstage/pull/20212) [`006df4a581`](https://github.com/backstage/backstage/commit/006df4a58152be772fbbc9acc312195625fcd83a) Thanks [@aochsner](https://github.com/aochsner)! - Support AWS OpenSearch Serverless search backend. Does not support `_refresh` endpoint.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/plugin-search-backend-node@1.2.11-next.2
+
+## 1.3.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/plugin-search-backend-node@1.2.11-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/plugin-search-common@1.2.7
+
+## 1.3.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.2.11-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/backend-plugin-api@0.6.7-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.7
+
+## 1.3.9
+
+### Patch Changes
+
+- 3963d0b885: Ensure that all relevant config fields are properly marked as secret
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/backend-plugin-api@0.6.6
+  - @backstage/plugin-search-backend-node@1.2.10
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.7
+  - @backstage/plugin-search-common@1.2.7
+
+## 1.3.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/plugin-search-backend-node@1.2.10-next.2
+  - @backstage/backend-plugin-api@0.6.6-next.2
+  - @backstage/config@1.1.1-next.0
+  - @backstage/integration-aws-node@0.1.7-next.0
+  - @backstage/plugin-search-common@1.2.7-next.0
+
+## 1.3.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+  - @backstage/plugin-search-backend-node@1.2.9-next.1
+  - @backstage/config@1.1.0
+  - @backstage/integration-aws-node@0.1.6
+  - @backstage/plugin-search-common@1.2.6
+
+## 1.3.8-next.0
+
+### Patch Changes
+
+- 3963d0b885: Ensure that all relevant config fields are properly marked as secret
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/config@1.1.0
+  - @backstage/integration-aws-node@0.1.6
+  - @backstage/backend-plugin-api@0.6.5-next.0
+  - @backstage/plugin-search-backend-node@1.2.9-next.0
+  - @backstage/plugin-search-common@1.2.6
+
+## 1.3.6
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.5
+  - @backstage/config@1.1.0
+  - @backstage/plugin-search-common@1.2.6
+  - @backstage/backend-plugin-api@0.6.3
+  - @backstage/integration-aws-node@0.1.6
+  - @backstage/plugin-search-backend-node@1.2.7
+
+## 1.3.6-next.3
+
+### Patch Changes
+
+- 71114ac50e02: The export for the new backend system has been moved to be the `default` export.
+
+  For example, if you are currently importing the plugin using the following pattern:
+
+  ```ts
+  import { examplePlugin } from '@backstage/plugin-example-backend';
+
+  backend.add(examplePlugin);
+  ```
+
+  It should be migrated to this:
+
+  ```ts
+  backend.add(import('@backstage/plugin-example-backend'));
+  ```
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.2
+  - @backstage/plugin-search-common@1.2.6-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.3
+  - @backstage/backend-common@0.19.5-next.3
+  - @backstage/integration-aws-node@0.1.6-next.2
+  - @backstage/plugin-search-backend-node@1.2.7-next.3
+
+## 1.3.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.1
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/integration-aws-node@0.1.6-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.2
+  - @backstage/plugin-search-backend-node@1.2.7-next.2
+  - @backstage/plugin-search-common@1.2.6-next.1
+
+## 1.3.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.0-next.0
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+  - @backstage/integration-aws-node@0.1.6-next.0
+  - @backstage/plugin-search-backend-node@1.2.7-next.1
+  - @backstage/plugin-search-common@1.2.6-next.0
+
+## 1.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+  - @backstage/config@1.0.8
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/plugin-search-backend-node@1.2.6-next.0
+  - @backstage/plugin-search-common@1.2.5
+
+## 1.3.3
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 12a8c94eda8d: Add package repository and homepage metadata
+- 631eb3816b48: Index templates can now be configured through configuration under the `search.elasticsearch.indexTemplates`. In addition, the `ElasticSearchSearchEngine.fromConfig` now also accepts a `LoggerService` as the `logger` option as well as a new `translator` option.
+
+  The alpha `searchModuleElasticsearchEngine` export no longer accepts options and a new alpha `elasticsearchTranslatorExtensionPoint` export has been added which lets you customize the query translator.
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-plugin-api@0.6.0
+  - @backstage/plugin-search-backend-node@1.2.4
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/config@1.0.8
+  - @backstage/plugin-search-common@1.2.5
+
+## 1.3.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-common@0.19.2-next.2
+  - @backstage/plugin-search-backend-node@1.2.4-next.2
+
+## 1.3.3-next.1
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/plugin-search-backend-node@1.2.4-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/config@1.0.8
+  - @backstage/plugin-search-common@1.2.5
+
+## 1.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.2.4-next.0
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/backend-plugin-api@0.5.5-next.0
+  - @backstage/config@1.0.8
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/plugin-search-common@1.2.5
+
+## 1.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1
+  - @backstage/backend-plugin-api@0.5.4
+  - @backstage/config@1.0.8
+  - @backstage/integration-aws-node@0.1.5
+  - @backstage/plugin-search-backend-node@1.2.3
+  - @backstage/plugin-search-common@1.2.5
+
 ## 1.3.2-next.0
 
 ### Patch Changes

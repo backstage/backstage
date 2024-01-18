@@ -91,10 +91,14 @@ Options:
   --docker-option <DOCKER_OPTION...>          Extra options to pass to the docker run command, e.g. "--add-host=internal.host:192.168.11.12"
                                               (can be added multiple times).
   --no-docker                                 Do not use Docker, use MkDocs executable in current user environment.
+  --mkdocs-parameter-clean                    Pass "--clean" parameter to mkdocs server running in containerized environment.
+  --mkdocs-parameter-dirtyreload              Pass "--dirtyreload" parameter to mkdocs server running in containerized environment.
+  --mkdocs-parameter-strict                   Pass "--strict" parameter to mkdocs server running in containerized environment.
   --mkdocs-port <PORT>                        Port for MkDocs server to use (default: "8000")
   --preview-app-bundle-path <PATH_TO_BUNDLE>  Preview documentation using a web app other than the included one.
   --preview-app-port <PORT>                   Port where the preview will be served.
                                               Can only be used with "--preview-app-bundle-path". (default: "3000")
+  -c, --mkdocs-config-file-name <FILENAME>    Yaml file to use as config by mkdocs.
   -v --verbose                                Enable verbose output. (default: false)
   -h, --help                                  display help for command
 ```
@@ -141,10 +145,12 @@ Options:
                                   if not found.
   --etag <ETAG>                   A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored
                                   in techdocs_metadata.json.
+  --defaultPlugin <PLUGIN_NAME>   Plugins which should be added automatically to the mkdocs.yaml file. (default: [])
   --omitTechdocsCoreMkdocsPlugin  An option to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
                                   Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
   --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md
                                   in case a default <docs-dir>/index.md is not provided. (default: false)
+  --runAsDefaultUser              Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
   -v --verbose                    Enable verbose output. (default: false)
   -h, --help                      display help for command
 ```

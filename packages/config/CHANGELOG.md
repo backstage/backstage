@@ -1,5 +1,65 @@
 # @backstage/config
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.3-next.0
+  - @backstage/types@1.1.1
+
+## 1.1.0
+
+### Minor Changes
+
+- 62f448edb0b5: Added a `readDurationFromConfig` function
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/errors@1.2.2
+  - @backstage/types@1.1.1
+
+## 1.1.0-next.2
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/errors@1.2.2-next.0
+  - @backstage/types@1.1.1-next.0
+
+## 1.1.0-next.1
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
+## 1.1.0-next.0
+
+### Minor Changes
+
+- 62f448edb0b5: Added a `readDurationFromConfig` function
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.1
+  - @backstage/types@1.1.0
+
 ## 1.0.8
 
 ### Patch Changes

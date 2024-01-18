@@ -31,9 +31,19 @@ export interface Config {
       secret?: string;
     };
 
+    /**
+     * JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
+     * Must match one of the algorithms defined for IdentityClient.
+     * When setting a different algorithm, check if the `key` field
+     * of the `signing_keys` table can fit the length of the generated keys.
+     * If not, add a knex migration file in the migrations folder.
+     * More info on supported algorithms: https://github.com/panva/jose
+     */
+    identityTokenAlgorithm?: string;
+
     /** To control how to store JWK data in auth-backend */
     keyStore?: {
-      provider?: 'database' | 'memory' | 'firestore';
+      provider?: 'database' | 'memory' | 'firestore' | 'static';
       firestore?: {
         /** The host to connect to */
         host?: string;
@@ -55,6 +65,21 @@ export interface Config {
         /** Timeout used for database operations. Defaults to 10000ms */
         timeout?: number;
       };
+      static?: {
+        /** Must be declared at least once and the first one will be used for signing */
+        keys: Array<{
+          /** Path to the public key file in the SPKI format */
+          publicKeyFile: string;
+          /** Path to the matching private key file in the PKCS#8 format */
+          privateKeyFile: string;
+          /** id to uniquely identify this key within the JWK set */
+          keyId: string;
+          /** JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
+           * Must match the algorithm used to generate the keys in the provided files
+           */
+          algorithm?: string;
+        }>;
+      };
     };
 
     /**
@@ -62,6 +87,7 @@ export interface Config {
      * @additionalProperties true
      */
     providers?: {
+      /** @visibility frontend */
       google?: {
         [authEnv: string]: {
           clientId: string;
@@ -72,6 +98,7 @@ export interface Config {
           callbackUrl?: string;
         };
       };
+      /** @visibility frontend */
       github?: {
         [authEnv: string]: {
           clientId: string;
@@ -83,17 +110,7 @@ export interface Config {
           enterpriseInstanceUrl?: string;
         };
       };
-      gitlab?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          audience?: string;
-          callbackUrl?: string;
-        };
-      };
+      /** @visibility frontend */
       saml?: {
         entryPoint: string;
         logoutUrl?: string;
@@ -117,19 +134,7 @@ export interface Config {
         digestAlgorithm?: string;
         acceptedClockSkewMs?: number;
       };
-      okta?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          audience: string;
-          authServerId?: string;
-          idp?: string;
-          callbackUrl?: string;
-        };
-      };
+      /** @visibility frontend */
       oauth2?: {
         [authEnv: string]: {
           clientId: string;
@@ -143,6 +148,7 @@ export interface Config {
           disableRefresh?: boolean;
         };
       };
+      /** @visibility frontend */
       oidc?: {
         [authEnv: string]: {
           clientId: string;
@@ -152,10 +158,13 @@ export interface Config {
           clientSecret: string;
           callbackUrl?: string;
           metadataUrl: string;
+          tokenEndpointAuthMethod?: string;
+          tokenSignedResponseAlg?: string;
           scope?: string;
           prompt?: string;
         };
       };
+      /** @visibility frontend */
       auth0?: {
         [authEnv: string]: {
           clientId: string;
@@ -170,6 +179,7 @@ export interface Config {
           connectionScope?: string;
         };
       };
+      /** @visibility frontend */
       microsoft?: {
         [authEnv: string]: {
           clientId: string;
@@ -181,6 +191,7 @@ export interface Config {
           callbackUrl?: string;
         };
       };
+      /** @visibility frontend */
       onelogin?: {
         [authEnv: string]: {
           clientId: string;
@@ -192,10 +203,12 @@ export interface Config {
           callbackUrl?: string;
         };
       };
+      /** @visibility frontend */
       awsalb?: {
         iss?: string;
         region: string;
       };
+      /** @visibility frontend */
       cfaccess?: {
         teamName: string;
       };

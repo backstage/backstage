@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import { TestApiProvider, MockErrorApi } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { AnsiLine } from './AnsiProcessor';
@@ -40,7 +40,7 @@ const lines = [
 describe('useLogViewerSelection', () => {
   it('should manage a selection', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
           {children}
         </TestApiProvider>

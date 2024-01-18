@@ -1,7 +1,7 @@
 {
   "name": "@techdocs/cli",
   "description": "Utility CLI for managing TechDocs sites in Backstage.",
-  "version": "1.4.4-next.0",
+  "version": "1.8.1",
   "publishConfig": {
     "access": "public"
   },
@@ -27,9 +27,8 @@
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
-    "test:e2e": "backstage-cli test --config e2e-test.config.js",
-    "test:e2e:ci": "backstage-cli test --config e2e-test.config.js --watchAll=false --ci",
-    "test:cypress": "cypress open",
+    "test:e2e": "backstage-cli test --config cli-e2e-test.config.js",
+    "test:e2e:ci": "backstage-cli test --config cli-e2e-test.config.js --watchAll=false --ci",
     "prepack": "./scripts/prepack.sh"
   },
   "bin": {
@@ -37,16 +36,14 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@frsource/cypress-plugin-visual-regression-diff": "^3.2.8",
     "@types/commander": "^2.12.2",
     "@types/fs-extra": "^9.0.6",
     "@types/http-proxy": "^1.17.4",
-    "@types/node": "^16.11.26",
+    "@types/node": "^18.17.8",
     "@types/serve-handler": "^6.1.0",
     "@types/webpack-env": "^1.15.3",
-    "cypress": "^10.0.0",
     "find-process": "^1.4.5",
-    "nodemon": "^2.0.2",
+    "nodemon": "^3.0.1",
     "techdocs-cli-embedded-app": "link:../techdocs-cli-embedded-app",
     "ts-node": "^10.0.0"
   },

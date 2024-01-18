@@ -4,17 +4,7 @@
 
 ```ts
 import { Backend } from '@backstage/backend-app-api';
-import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
-import { SharedBackendEnvironment } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
-export function createBackend(options?: CreateBackendOptions): Backend;
-
-// @public (undocumented)
-export interface CreateBackendOptions {
-  // (undocumented)
-  env?: SharedBackendEnvironment;
-  // (undocumented)
-  services?: ServiceFactoryOrFunction[];
-}
+export function createBackend(): Backend;
 ```

@@ -24,6 +24,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { useAsyncEntity } from '@backstage/plugin-catalog-react';
 import { IconButton } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import ThumbDownOutlinedIcon from '@material-ui/icons/ThumbDownOutlined';
@@ -127,9 +128,13 @@ export const LikeDislikeButtons = (props: LikeDislikeButtonsProps) => {
         onClick={() => applyRating(FeedbackRatings.like)}
       >
         {rating === FeedbackRatings.like ? (
-          <ThumbUpIcon fontSize="small" />
+          <Tooltip title="Liked">
+            <ThumbUpIcon fontSize="small" />
+          </Tooltip>
         ) : (
-          <ThumbUpOutlinedIcon fontSize="small" />
+          <Tooltip title="Like">
+            <ThumbUpOutlinedIcon fontSize="small" />
+          </Tooltip>
         )}
       </IconButton>
       <IconButton
@@ -137,9 +142,13 @@ export const LikeDislikeButtons = (props: LikeDislikeButtonsProps) => {
         onClick={() => applyRating(FeedbackRatings.dislike)}
       >
         {rating === FeedbackRatings.dislike ? (
-          <ThumbDownIcon fontSize="small" />
+          <Tooltip title="Disliked">
+            <ThumbDownIcon fontSize="small" />
+          </Tooltip>
         ) : (
-          <ThumbDownOutlinedIcon fontSize="small" />
+          <Tooltip title="Dislike">
+            <ThumbDownOutlinedIcon fontSize="small" />
+          </Tooltip>
         )}
       </IconButton>
       <FeedbackResponseDialog

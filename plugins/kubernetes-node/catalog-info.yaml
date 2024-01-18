@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-kubernetes-node
+  title: '@backstage/plugin-kubernetes-node'
+  description: Node.js library for the kubernetes plugin
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: kubernetes-maintainers

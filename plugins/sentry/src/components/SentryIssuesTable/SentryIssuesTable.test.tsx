@@ -63,7 +63,7 @@ describe('SentryIssuesTable', () => {
         },
         count: '101',
         userCount: 202,
-        lastSeen: DateTime.now().toISO(),
+        lastSeen: DateTime.now().toISO()!,
       },
     ];
     const table = await renderInTestApp(

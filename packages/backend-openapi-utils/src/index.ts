@@ -22,4 +22,14 @@
 import * as internal from './types';
 
 export { internal };
+export type {
+  Request,
+  Response,
+  QueryParameters,
+  HeaderParameters,
+  CookieParameters,
+  PathParameters,
+} from './utility';
 export type { ApiRouter } from './router';
+export { createValidatedOpenApiRouter, getOpenApiSpecRoute } from './stub';
+export { wrapInOpenApiTestServer } from './testUtils';

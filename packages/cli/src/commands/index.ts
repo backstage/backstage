@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { assertError } from '@backstage/errors';
 import { Command } from 'commander';
+import { assertError } from '@backstage/errors';
 import { exitWithError } from '../lib/errors';
 
 const configOption = [
@@ -68,6 +68,15 @@ export function registerRepoCommand(program: Command) {
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
 
   command
+    .command('fix')
+    .description('Automatically fix packages in the project')
+    .option(
+      '--check',
+      'Fail if any packages would have been changed by the command',
+    )
+    .action(lazy(() => import('./repo/fix').then(m => m.command)));
+
+  command
     .command('clean')
     .description('Delete cache and output directories')
     .action(lazy(() => import('./repo/clean').then(m => m.command)));
@@ -106,9 +115,9 @@ export function registerScriptCommand(program: Command) {
     .option(...configOption)
     .option('--role <name>', 'Run the command with an explicit package role')
     .option('--check', 'Enable type checking and linting if available')
-    .option('--inspect', 'Enable debugger in Node.js environments')
+    .option('--inspect [host]', 'Enable debugger in Node.js environments')
     .option(
-      '--inspect-brk',
+      '--inspect-brk [host]',
       'Enable debugger in Node.js environments, breaking before code starts',
     )
     .action(lazy(() => import('./start').then(m => m.command)));
@@ -120,10 +129,6 @@ export function registerScriptCommand(program: Command) {
     .option(
       '--minify',
       'Minify the generated code. Does not apply to app or backend packages.',
-    )
-    .option(
-      '--experimental-type-build',
-      'Enable experimental type build. Does not apply to app or backend packages. [DEPRECATED]',
     )
     .option(
       '--skip-build-dependencies',
@@ -158,12 +163,6 @@ export function registerScriptCommand(program: Command) {
     .helpOption(', --backstage-cli-help') // Let Jest handle help
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
     .action(lazy(() => import('./test').then(m => m.default)));
-
-  command
-    .command('fix', { hidden: true })
-    .description('Applies automated fixes to the package. [EXPERIMENTAL]')
-    .option('--deps', 'Only fix monorepo dependencies in package.json')
-    .action(lazy(() => import('./fix').then(m => m.command)));
 
   command
     .command('clean')
@@ -365,6 +364,8 @@ export function registerCommands(program: Command) {
       '--format <format>',
       'Format to print the schema in, either json or yaml [yaml]',
     )
+    .option('--merge', 'Print the config schemas merged', true)
+    .option('--no-merge', 'Print the config schemas not merged')
     .description('Print configuration schema')
     .action(lazy(() => import('./config/schema').then(m => m.default)));
 

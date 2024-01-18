@@ -1,5 +1,272 @@
 # @backstage/backend-defaults
 
+## 0.2.9
+
+### Patch Changes
+
+- 516fd3e: Updated README to reflect release status
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/backend-app-api@0.5.10
+
+## 0.2.9-next.2
+
+### Patch Changes
+
+- 516fd3e: Updated README to reflect release status
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-app-api@0.5.10-next.2
+  - @backstage/backend-common@0.20.1-next.2
+
+## 0.2.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.10-next.1
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-app-api@0.5.10-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/backend-app-api@0.5.9
+  - @backstage/backend-plugin-api@0.6.8
+
+## 0.2.8-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/backend-app-api@0.5.9-next.3
+  - @backstage/backend-plugin-api@0.6.8-next.3
+
+## 0.2.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/backend-app-api@0.5.9-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+
+## 0.2.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.9-next.1
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+
+## 0.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.0
+  - @backstage/backend-app-api@0.5.9-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.0
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9
+  - @backstage/backend-plugin-api@0.6.7
+  - @backstage/backend-app-api@0.5.8
+
+## 0.2.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.7-next.2
+  - @backstage/backend-common@0.19.9-next.2
+  - @backstage/backend-app-api@0.5.8-next.2
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.9-next.1
+  - @backstage/backend-app-api@0.5.8-next.1
+  - @backstage/backend-plugin-api@0.6.7-next.1
+
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.8-next.0
+  - @backstage/backend-common@0.19.9-next.0
+  - @backstage/backend-plugin-api@0.6.7-next.0
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8
+  - @backstage/backend-app-api@0.5.6
+  - @backstage/backend-plugin-api@0.6.6
+
+## 0.2.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.8-next.2
+  - @backstage/backend-app-api@0.5.6-next.2
+  - @backstage/backend-plugin-api@0.6.6-next.2
+
+## 0.2.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.1
+  - @backstage/backend-app-api@0.5.5-next.1
+  - @backstage/backend-plugin-api@0.6.5-next.1
+
+## 0.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.7-next.0
+  - @backstage/backend-app-api@0.5.5-next.0
+  - @backstage/backend-plugin-api@0.6.5-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.3
+  - @backstage/backend-common@0.19.5
+  - @backstage/backend-plugin-api@0.6.3
+
+## 0.2.3-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.3-next.3
+  - @backstage/backend-plugin-api@0.6.3-next.3
+  - @backstage/backend-common@0.19.5-next.3
+
+## 0.2.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.3-next.2
+  - @backstage/backend-common@0.19.5-next.2
+  - @backstage/backend-plugin-api@0.6.3-next.2
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.3-next.1
+  - @backstage/backend-common@0.19.5-next.1
+  - @backstage/backend-plugin-api@0.6.3-next.1
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.4-next.0
+  - @backstage/backend-app-api@0.5.2-next.0
+  - @backstage/backend-plugin-api@0.6.2-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- d008aefef808: **BREAKING**: Removing shared environments concept from the new experimental backend system.
+- a6d7983f349c: **BREAKING**: Removed the `services` option from `createBackend`. Service factories are now `BackendFeature`s and should be installed with `backend.add(...)` instead. The following should be migrated:
+
+  ```ts
+  const backend = createBackend({ services: [myCustomServiceFactory] });
+  ```
+
+  To instead pass the service factory via `backend.add(...)`:
+
+  ```ts
+  const backend = createBackend();
+  backend.add(customRootLoggerServiceFactory);
+  ```
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- Updated dependencies
+  - @backstage/backend-common@0.19.2
+  - @backstage/backend-app-api@0.5.0
+  - @backstage/backend-plugin-api@0.6.0
+
+## 0.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.0-next.2
+  - @backstage/backend-plugin-api@0.6.0-next.2
+  - @backstage/backend-common@0.19.2-next.2
+
+## 0.2.0-next.1
+
+### Minor Changes
+
+- d008aefef808: **BREAKING**: Removing shared environments concept from the new experimental backend system.
+
+### Patch Changes
+
+- 629cbd194a87: Use `coreServices.rootConfig` instead of `coreService.config`
+- Updated dependencies
+  - @backstage/backend-common@0.19.2-next.1
+  - @backstage/backend-app-api@0.5.0-next.1
+  - @backstage/backend-plugin-api@0.6.0-next.1
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.4.6-next.0
+  - @backstage/backend-common@0.19.2-next.0
+  - @backstage/backend-plugin-api@0.5.5-next.0
+
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.19.1
+  - @backstage/backend-app-api@0.4.5
+  - @backstage/backend-plugin-api@0.5.4
+
 ## 0.1.12-next.0
 
 ### Patch Changes

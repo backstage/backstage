@@ -34,6 +34,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { usePlaylistList } from '../../hooks';
 import { PlaylistFilter } from '../../types';
 
+/**
+ * @public
+ */
 export class PlaylistOwnerFilter implements PlaylistFilter {
   constructor(readonly values: string[]) {}
 
@@ -49,6 +52,9 @@ export class PlaylistOwnerFilter implements PlaylistFilter {
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+/**
+ * @public
+ */
 export const PlaylistOwnerPicker = () => {
   const {
     updateFilters,

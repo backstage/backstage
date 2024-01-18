@@ -9,8 +9,8 @@ import type { AppConfig } from '@backstage/config';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheClient } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { ConfigService } from '@backstage/backend-plugin-api';
 import { CorsOptions } from 'cors';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ErrorRequestHandler } from 'express';
 import { Express as Express_2 } from 'express';
 import { Format } from 'logform';
@@ -26,10 +26,10 @@ import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
@@ -43,7 +43,14 @@ import { UrlReader } from '@backstage/backend-common';
 // @public (undocumented)
 export interface Backend {
   // (undocumented)
-  add(feature: BackendFeature): void;
+  add(
+    feature:
+      | BackendFeature
+      | (() => BackendFeature)
+      | Promise<{
+          default: BackendFeature | (() => BackendFeature);
+        }>,
+  ): void;
   // (undocumented)
   start(): Promise<void>;
   // (undocumented)
@@ -52,17 +59,6 @@ export interface Backend {
 
 // @public (undocumented)
 export const cacheServiceFactory: () => ServiceFactory<CacheClient, 'plugin'>;
-
-// @public (undocumented)
-export interface ConfigFactoryOptions {
-  argv?: string[];
-  remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
-}
-
-// @public (undocumented)
-export const configServiceFactory: (
-  options?: ConfigFactoryOptions | undefined,
-) => ServiceFactory<ConfigService, 'root'>;
 
 // @public (undocumented)
 export function createConfigSecretEnumerator(options: {
@@ -92,7 +88,7 @@ export function createSpecializedBackend(
 // @public (undocumented)
 export interface CreateSpecializedBackendOptions {
   // (undocumented)
-  services: ServiceFactoryOrFunction[];
+  defaultServiceFactories: ServiceFactoryOrFunction[];
 }
 
 // @public (undocumented)
@@ -118,7 +114,7 @@ export interface DefaultRootHttpRouterOptions {
 
 // @public (undocumented)
 export const discoveryServiceFactory: () => ServiceFactory<
-  PluginEndpointDiscovery,
+  DiscoveryService,
   'plugin'
 >;
 
@@ -130,6 +126,20 @@ export interface ExtendedHttpServer extends http.Server {
   start(): Promise<void>;
   // (undocumented)
   stop(): Promise<void>;
+}
+
+// @public
+export class HostDiscovery implements DiscoveryService {
+  static fromConfig(
+    config: Config,
+    options?: {
+      basePath?: string;
+    },
+  ): HostDiscovery;
+  // (undocumented)
+  getBaseUrl(pluginId: string): Promise<string>;
+  // (undocumented)
+  getExternalBaseUrl(pluginId: string): Promise<string>;
 }
 
 // @public (undocumented)
@@ -194,6 +204,7 @@ export function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
   additionalConfigs?: AppConfig[];
+  watch?: boolean;
 }): Promise<{
   config: Config;
 }>;
@@ -224,7 +235,7 @@ export interface MiddlewareFactoryErrorOptions {
 // @public
 export interface MiddlewareFactoryOptions {
   // (undocumented)
-  config: ConfigService;
+  config: RootConfigService;
   // (undocumented)
   logger: LoggerService;
 }
@@ -245,11 +256,22 @@ export function readHelmetOptions(config?: Config): HelmetOptions;
 export function readHttpServerOptions(config?: Config): HttpServerOptions;
 
 // @public (undocumented)
+export interface RootConfigFactoryOptions {
+  argv?: string[];
+  remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
+}
+
+// @public (undocumented)
+export const rootConfigServiceFactory: (
+  options?: RootConfigFactoryOptions | undefined,
+) => ServiceFactory<RootConfigService, 'root'>;
+
+// @public (undocumented)
 export interface RootHttpRouterConfigureContext {
   // (undocumented)
   app: Express_2;
   // (undocumented)
-  config: ConfigService;
+  config: RootConfigService;
   // (undocumented)
   lifecycle: LifecycleService;
   // (undocumented)

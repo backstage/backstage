@@ -29,19 +29,14 @@ import {
 } from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
 
-type KeysMatchingCondition<T, V, K> = T extends V ? K : never;
-type KeysMatching<T, V> = {
-  [K in keyof T]-?: KeysMatchingCondition<T[K], V, K>;
+/** @public */
+export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
+  [K in keyof T]-?: NonNullable<T[K]> extends EntityFilter & {
+    values: string[];
+  }
+    ? K
+    : never;
 }[keyof T];
-
-type AllowedEntityFilters<T extends DefaultEntityFilters> = KeysMatching<
-  T,
-  EntityFilter & { values: string[] }
->;
-
-interface ConstructableFilter<T> {
-  new (values: string[]): T;
-}
 
 /** @public */
 export type EntityAutocompletePickerProps<
@@ -52,7 +47,7 @@ export type EntityAutocompletePickerProps<
   name: Name;
   path: string;
   showCounts?: boolean;
-  Filter: ConstructableFilter<NonNullable<T[Name]>>;
+  Filter: { new (values: string[]): NonNullable<T[Name]> };
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
 };
@@ -135,7 +130,7 @@ export function EntityAutocompletePicker<
     <Box pb={1} pt={1}>
       <Typography variant="button" component="label">
         {label}
-        <Autocomplete
+        <Autocomplete<string, true>
           multiple
           disableCloseOnSelect
           options={availableOptions}

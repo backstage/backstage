@@ -20,22 +20,28 @@ import {
   Button,
   Drawer,
   Grid,
+  Theme,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import { BackstageTheme } from '@backstage/theme';
 
 /** @public */
-export const Filters = (props: { children: React.ReactNode }) => {
-  const isMidSizeScreen = useMediaQuery<BackstageTheme>(theme =>
-    theme.breakpoints.down('md'),
+export const Filters = (props: {
+  children: React.ReactNode;
+  options?: {
+    drawerBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
+    drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
+  };
+}) => {
+  const isScreenSmallerThanBreakpoint = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down(props.options?.drawerBreakpoint ?? 'md'),
   );
-  const theme = useTheme<BackstageTheme>();
+  const theme = useTheme();
   const [filterDrawerOpen, setFilterDrawerOpen] = useState<boolean>(false);
 
-  return isMidSizeScreen ? (
+  return isScreenSmallerThanBreakpoint ? (
     <>
       <Button
         style={{ marginTop: theme.spacing(1), marginLeft: theme.spacing(1) }}
@@ -47,7 +53,7 @@ export const Filters = (props: { children: React.ReactNode }) => {
       <Drawer
         open={filterDrawerOpen}
         onClose={() => setFilterDrawerOpen(false)}
-        anchor="left"
+        anchor={props.options?.drawerAnchor ?? 'left'}
         disableAutoFocus
         keepMounted
         variant="temporary"

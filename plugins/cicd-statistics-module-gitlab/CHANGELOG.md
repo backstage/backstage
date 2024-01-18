@@ -1,5 +1,248 @@
 # @backstage/plugin-cicd-statistics-module-gitlab
 
+## 0.1.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-cicd-statistics@0.1.31
+
+## 0.1.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-cicd-statistics@0.1.31-next.2
+
+## 0.1.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/plugin-cicd-statistics@0.1.31-next.1
+  - @backstage/catalog-model@1.4.3
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-cicd-statistics@0.1.31-next.0
+
+## 0.1.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-cicd-statistics@0.1.30
+  - @backstage/catalog-model@1.4.3
+
+## 0.1.24-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-cicd-statistics@0.1.30-next.3
+
+## 0.1.24-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-cicd-statistics@0.1.30-next.2
+
+## 0.1.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-cicd-statistics@0.1.30-next.1
+  - @backstage/catalog-model@1.4.3
+
+## 0.1.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/plugin-cicd-statistics@0.1.30-next.0
+  - @backstage/catalog-model@1.4.3
+
+## 0.1.22
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-cicd-statistics@0.1.28
+  - @backstage/catalog-model@1.4.3
+
+## 0.1.22-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-cicd-statistics@0.1.28-next.2
+
+## 0.1.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-cicd-statistics@0.1.28-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.0-next.0
+
+## 0.1.22-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/plugin-cicd-statistics@0.1.28-next.0
+  - @backstage/catalog-model@1.4.3
+
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/plugin-cicd-statistics@0.1.27
+  - @backstage/catalog-model@1.4.3
+
+## 0.1.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/plugin-cicd-statistics@0.1.27-next.2
+  - @backstage/catalog-model@1.4.3-next.0
+
+## 0.1.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/catalog-model@1.4.2
+  - @backstage/plugin-cicd-statistics@0.1.27-next.1
+
+## 0.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/plugin-cicd-statistics@0.1.27-next.0
+  - @backstage/catalog-model@1.4.2
+
+## 0.1.20
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/plugin-cicd-statistics@0.1.26
+
+## 0.1.20-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.2-next.2
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/plugin-cicd-statistics@0.1.26-next.3
+
+## 0.1.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-cicd-statistics@0.1.26-next.2
+  - @backstage/catalog-model@1.4.2-next.1
+
+## 0.1.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-cicd-statistics@0.1.26-next.1
+  - @backstage/catalog-model@1.4.2-next.0
+  - @backstage/core-plugin-api@1.6.0-next.1
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-cicd-statistics@0.1.25-next.0
+
+## 0.1.17
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-cicd-statistics@0.1.23
+
+## 0.1.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-cicd-statistics@0.1.23-next.1
+
+## 0.1.17-next.1
+
+### Patch Changes
+
+- 12a8c94eda8d: Add package repository and homepage metadata
+- Updated dependencies
+  - @backstage/catalog-model@1.4.1
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-cicd-statistics@0.1.23-next.0
+
+## 0.1.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-cicd-statistics@0.1.23-next.0
+
+## 0.1.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/catalog-model@1.4.1
+  - @backstage/plugin-cicd-statistics@0.1.22
+
 ## 0.1.16-next.2
 
 ### Patch Changes

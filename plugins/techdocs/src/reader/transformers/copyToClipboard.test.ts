@@ -17,7 +17,7 @@
 import { createTestShadowDom } from '../../test-utils';
 import { copyToClipboard } from './copyToClipboard';
 import { lightTheme } from '@backstage/theme';
-import { waitFor } from '@testing-library/react';
+import { act, waitFor } from '@testing-library/react';
 import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 
 const clipboardSpy = jest.fn();
@@ -43,8 +43,11 @@ describe('copyToClipboard', () => {
     spy.mockReturnValue([{}, copy]);
 
     const expectedClipboard = 'function foo() {return "bar";}';
-    const shadowDom = await createTestShadowDom(
-      `
+
+    let shadowDom: ShadowRoot;
+    await act(async () => {
+      shadowDom = await createTestShadowDom(
+        `
       <!DOCTYPE html>
       <html>
         <body>
@@ -52,13 +55,20 @@ describe('copyToClipboard', () => {
         </body>
       </html>
     `,
-      {
-        preTransformers: [],
-        postTransformers: [copyToClipboard(lightTheme)],
-      },
-    );
+        {
+          preTransformers: [],
+          postTransformers: [copyToClipboard(lightTheme)],
+        },
+      );
+    });
 
-    shadowDom.querySelector('button')?.click();
+    await waitFor(() => {
+      expect(shadowDom.querySelector('button')).not.toBe(null);
+    });
+
+    await act(async () => {
+      shadowDom.querySelector('button')!.click();
+    });
 
     await waitFor(() => {
       const tooltip = document.querySelector('[role="tooltip"]');

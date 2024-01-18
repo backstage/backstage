@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
+import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
+import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
 
 const logger = getVoidLogger();
 
@@ -66,6 +68,7 @@ const expectedEntities: Entity[] = [
       annotations: {
         'backstage.io/techdocs-ref': './',
       },
+      tags: ['tag1', 'tag2'],
     },
     spec: {
       type: 'dog',
@@ -174,10 +177,15 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
     it('maps a returned entity with a custom locationTemplate', async () => {
       // Provide an alternate location template.
-      factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
+      const _config = new ConfigReader({
+        ...config.get(),
+        search: {
+          collators: { techdocs: { locationTemplate: '/software/:name' } },
+        },
+      });
+      factory = DefaultTechDocsCollatorFactory.fromConfig(_config, {
         discovery: mockDiscoveryApi,
         tokenManager: mockTokenManager,
-        locationTemplate: '/software/:name',
         logger,
       });
       collator = await factory.getCollator();
@@ -194,10 +202,17 @@ describe('DefaultTechDocsCollatorFactory', () => {
       // A parallelismLimit of 1 is a catalog limit of 50 per request. Code
       // above in the /entities handler ensures valid entities are only
       // returned on the second page.
-      factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
-        ...options,
-        parallelismLimit: 1,
+      const _config = new ConfigReader({
+        ...config.get(),
+        search: {
+          collators: {
+            techdocs: {
+              parallelismLimit: 1,
+            },
+          },
+        },
       });
+      factory = DefaultTechDocsCollatorFactory.fromConfig(_config, options);
       collator = await factory.getCollator();
 
       const pipeline = TestPipeline.fromCollator(collator);
@@ -205,6 +220,9 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       // Only 1 entity with TechDocs configured multiplied by 3 pages.
       expect(documents).toHaveLength(3);
+      expect(_config.get('search.collators.techdocs.parallelismLimit')).toEqual(
+        1,
+      );
     });
 
     describe('with legacyPathCasing configuration', () => {
@@ -238,6 +256,43 @@ describe('DefaultTechDocsCollatorFactory', () => {
             kind: entity.kind,
             name: entity.metadata.name,
           });
+        });
+      });
+    });
+
+    it('should transform the entity using the entityTransformer function', async () => {
+      const entityTransformer: TechDocsCollatorEntityTransformer = (
+        entity: Entity,
+      ) => {
+        return {
+          ...defaultTechDocsCollatorEntityTransformer(entity),
+          tags: entity.metadata.tags,
+        };
+      };
+
+      factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
+        ...options,
+        entityTransformer,
+      });
+
+      collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+      const entity = expectedEntities[0];
+      documents.forEach((document, idx) => {
+        expect(document).toMatchObject({
+          title: mockSearchDocIndex.docs[idx].title,
+          location: `/docs/default/component/${entity.metadata.name}/${mockSearchDocIndex.docs[idx].location}`,
+          text: mockSearchDocIndex.docs[idx].text,
+          namespace: 'default',
+          entityTitle: entity!.metadata.title,
+          componentType: entity!.spec!.type,
+          lifecycle: entity!.spec!.lifecycle,
+          owner: '',
+          kind: entity.kind.toLocaleLowerCase('en-US'),
+          name: entity.metadata.name,
+          tags: entity.metadata.tags,
         });
       });
     });

@@ -25,7 +25,7 @@ exports.up = async function up(knex) {
       'The table for tech insight fact schemas. Containing a versioned data model definition for a collection of facts.',
     );
     table
-      .text('id')
+      .string('id')
       .notNullable()
       .comment('Identifier of the fact retriever plugin/package');
     table

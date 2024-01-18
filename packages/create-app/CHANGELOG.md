@@ -1,5 +1,361 @@
 # @backstage/create-app
 
+## 0.5.9
+
+### Patch Changes
+
+- c9f71fb: Bumped create-app version.
+- ac277f3: Bumped create-app version.
+- 7acbb5a: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.9-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.5.9-next.1
+
+### Patch Changes
+
+- 7acbb5a: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.9-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.8
+
+### Patch Changes
+
+- 8ece804: Bumped create-app version.
+- 0351e09: Bumped create-app version.
+- 3f1192f: Bumped create-app version.
+- a96c2d4: Include the `<EntityLinksCard />` for group entities by default
+- 375b6f7: CircelCI plugin moved permanently
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.8-next.4
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.8-next.3
+
+### Patch Changes
+
+- a96c2d4: Include the `<EntityLinksCard />` for group entities by default
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.8-next.2
+
+### Patch Changes
+
+- 375b6f7d68: CircelCI plugin moved permanently
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.5.8-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.7
+
+### Patch Changes
+
+- 770763487a: Cleaned up cases where deprecated code was being used but had a new location they should be imported from
+- 013611b42e: `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+  You can do the same in your own Backstage repository to ensure that you get future node 18+ relevant updates, by having the following lines in your `packages/backend/package.json`:
+
+  ```
+  "dependencies": {
+    // ...
+    "knex": "^3.0.0"
+  },
+  "devDependencies": {
+    // ...
+    "better-sqlite3": "^9.0.0",
+  ```
+
+- f577e1176f: Bumped create-app version.
+- 6c2b872153: Add official support for React 18.
+- ae1602e54d: If create app installs dependencies, don't suggest to user that they also need to do it.
+- e6b7ab8d2b: Added missing node-gyp dependency to fix Docker image build
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.7-next.2
+
+### Patch Changes
+
+- [#20771](https://github.com/backstage/backstage/pull/20771) [`770763487a`](https://github.com/backstage/backstage/commit/770763487a5d14f33748643ceaa2f2981f1f918b) Thanks [@awanlin](https://github.com/awanlin)! - Cleaned up cases where deprecated code was being used but had a new location they should be imported from
+
+- [#20570](https://github.com/backstage/backstage/pull/20570) [`013611b42e`](https://github.com/backstage/backstage/commit/013611b42ed457fefa9bb85fddf416cf5e0c1f76) Thanks [@freben](https://github.com/freben)! - `knex` has been bumped to major version 3 and `better-sqlite3` to major version 9, which deprecate node 16 support.
+
+  You can do the same in your own Backstage repository to ensure that you get future node 18+ relevant updates, by having the following lines in your `packages/backend/package.json`:
+
+  ```
+  "dependencies": {
+    // ...
+    "knex": "^3.0.0"
+  },
+  "devDependencies": {
+    // ...
+    "better-sqlite3": "^9.0.0",
+  ```
+
+- [#20695](https://github.com/backstage/backstage/pull/20695) [`e6b7ab8d2b`](https://github.com/backstage/backstage/commit/e6b7ab8d2bc179d543648e143fa1f2eecb08809e) Thanks [@fjudith](https://github.com/fjudith)! - Added missing node-gyp dependency to fix Docker image build
+
+## 0.5.7-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- ae1602e54d: If create app installs dependencies, don't suggest to user that they also need to do it.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.6
+
+### Patch Changes
+
+- ba6a3b59c1: Removed duplicate `apple-touch-icon` link from `packages/app/public/index.html` that linked to nonexistent icon.
+- c8ec0dea4a: Create unique temp directory for each `create-app` execution.
+- e43d3eb1b7: Bumped create-app version.
+- b665f2ce65: Change base node image from node:18-bullseye-slim to node:18-bookworm-slim due to Docker build error on bullseye.
+
+  You can apply these change to your own `Dockerfile` by replacing `node:18-bullseye-slim` with `node:18-bookworm-slim`
+
+- deed089a3d: Bump `cypress` to fix the end-to-end tests
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- 04a3f65e15: Bump Docker base images to `node:18-bookworm-slim` to fix node compatibility issues raised during image build.
+
+  You can apply these change to your own `Dockerfile` by replacing `node:16-bullseye-slim` with `node:18-bookworm-slim`
+
+- 9864f263ba: Bump dev dependencies `lerna@7.3.0` on the template
+- 5eacd5d213: The E2E test setup based on Cypress has been replaced with one based on [Playwright](https://playwright.dev/). Migrating existing apps is not required as this is a standalone setup, only do so if you also want to switch from Cypress to Playwright.
+
+  The scripts to run the E2E tests have been removed from `packages/app/package.json`, as they are now instead run from the root. Instead, a new script has been added to the root `package.json`, `yarn test:e2e`, which runs the E2E tests in development mode, unless `CI` is set in the environment.
+
+  The Playwright setup uses utilities from the new `@backstage/e2e-test-utils` package to find and include all packages in the monorepo that have an `e2e-tests` folder.
+
+- 8d2e640af4: Added missing `.eslintignore` file
+
+  To apply this change to an existing app, create a new `.eslintignore` file at the root of your project with the following content:
+
+  ```diff
+  + playwright.config.ts
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.6-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13-next.0
+
+## 0.5.6-next.1
+
+### Patch Changes
+
+- 8d2e640af4: Added missing `.eslintignore` file
+
+  To apply this change to an existing app, create a new `.eslintignore` file at the root of your project with the following content:
+
+  ```diff
+  + playwright.config.ts
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13-next.0
+
+## 0.5.6-next.0
+
+### Patch Changes
+
+- ba6a3b59c1: Removed duplicate `apple-touch-icon` link from `packages/app/public/index.html` that linked to nonexistent icon.
+- c8ec0dea4a: Create unique temp directory for each `create-app` execution.
+- b665f2ce65: Change base node image from node:18-bullseye-slim to node:18-bookworm-slim due to Docker build error on bullseye.
+
+  You can apply these change to your own `Dockerfile` by replacing `node:18-bullseye-slim` with `node:18-bookworm-slim`
+
+- deed089a3d: Bump `cypress` to fix the end-to-end tests
+- de42eebaaf: Bumped dev dependencies `@types/node` and `mock-fs`.
+- 04a3f65e15: Bump Docker base images to `node:18-bookworm-slim` to fix node compatibility issues raised during image build.
+
+  You can apply these change to your own `Dockerfile` by replacing `node:16-bullseye-slim` with `node:18-bookworm-slim`
+
+- 5eacd5d213: The E2E test setup based on Cypress has been replaced with one based on [Playwright](https://playwright.dev/). Migrating existing apps is not required as this is a standalone setup, only do so if you also want to switch from Cypress to Playwright.
+
+  The scripts to run the E2E tests have been removed from `packages/app/package.json`, as they are now instead run from the root. Instead, a new script has been added to the root `package.json`, `yarn test:e2e`, which runs the E2E tests in development mode, unless `CI` is set in the environment.
+
+  The Playwright setup uses utilities from the new `@backstage/e2e-test-utils` package to find and include all packages in the monorepo that have an `e2e-tests` folder.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13-next.0
+
+## 0.5.5
+
+### Patch Changes
+
+- 05508a9757d2: Updated the backend template to no longer create duplicate connection pools to plugins that use the task scheduler.
+
+  To apply this change in your own repository, perform the following small update:
+
+  ```diff
+  // in packages/backend/src/index.ts
+  -  const taskScheduler = TaskScheduler.fromConfig(config);
+  +  const taskScheduler = TaskScheduler.fromConfig(config, { databaseManager });
+  ```
+
+- a4c08241ad92: Switched the template to use TypeScript 5.2 by default.
+- f8c8e8de37b6: Bumped create-app version.
+- fc1a38bc5723: Bumped create-app version.
+- 4606e005df5d: Added a `fix` scripts that calls the new `backstage-cli repo fix` command.
+
+  To apply this change to an existing app, make the following change to your root `package.json`:
+
+  ```diff
+       "test": "backstage-cli repo test",
+       "test:all": "backstage-cli repo test --coverage",
+  +    "fix": "backstage-cli repo fix",
+       "lint": "backstage-cli repo lint --since origin/master",
+  ```
+
+- 612594022245: Add a notification when `yarn install` is taking a long time.
+- 8db70ecbb325: Updated Dockerfile to include `apt-get update` when installing the SQLite dependency
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.5-next.3
+
+### Patch Changes
+
+- 4606e005df5d: Added a `fix` scripts that calls the new `backstage-cli repo fix` command.
+
+  To apply this change to an existing app, make the following change to your root `package.json`:
+
+  ```diff
+       "test": "backstage-cli repo test",
+       "test:all": "backstage-cli repo test --coverage",
+  +    "fix": "backstage-cli repo fix",
+       "lint": "backstage-cli repo lint --since origin/master",
+  ```
+
+- 612594022245: Add a notification when `yarn install` is taking a long time.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.5-next.2
+
+### Patch Changes
+
+- 8db70ecbb325: Updated Dockerfile to include `apt-get update` when installing the SQLite dependency
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.5-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.4
+
+### Patch Changes
+
+- b441642fbe0d: Bumped create-app version.
+- 572abc7edf55: Bumped create-app version.
+- 74f77f151a96: Bumped create-app version.
+- 5cc0ac5ef3d1: Bump to a newer version of the `concurrently` library
+- 46c9a798e41d: Updated the `app-config.yaml` template to use `proxy.endpoints`.
+- 971bdd6a4732: Bumped internal `nodemon` dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.4-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.5.4-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
+## 0.5.3
+
+### Patch Changes
+
+- 76b83a4422bb: Post-create message - added instruction to run `yarn install` when app was created with `--skip-install`
+- d72e2eeba6f1: Bumped create-app version.
+- e3ce5dd3f89a: add cy.\*\*.should to cypress eslintrc
+- f920a61031c5: Enable specifying an external application template when using the `create-app` CLI command.
+- 294b1629de28: Display a warning alert if relations are defined, which don't exist in the catalog.
+- 4f7292c74dff: Updated included Dockerfile to include `g++`. Also updated the comments to note that some of the dependencies are also needed by isolated-vm
+- Updated dependencies
+  - @backstage/cli-common@0.1.12
+
 ## 0.5.3-next.2
 
 ### Patch Changes

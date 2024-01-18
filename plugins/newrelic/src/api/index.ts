@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
+import {
+  createApiRef,
+  DiscoveryApi,
+  FetchApi,
+} from '@backstage/core-plugin-api';
+
+import parseLinkHeader from 'parse-link-header';
 
 export type NewRelicApplication = {
   id: number;
@@ -61,6 +67,7 @@ const DEFAULT_PROXY_PATH_BASE = '/newrelic';
 
 type Options = {
   discoveryApi: DiscoveryApi;
+  fetchApi: FetchApi;
   /**
    * Path to use for requests via the proxy, defaults to /newrelic
    */
@@ -71,39 +78,72 @@ export interface NewRelicApi {
   getApplications(): Promise<NewRelicApplications>;
 }
 
+interface NewRelicPageReadResult {
+  nextPageUrl: string | undefined;
+  applicationsFromReadPage: NewRelicApplication[];
+}
+
 export class NewRelicClient implements NewRelicApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly fetchApi: FetchApi;
   private readonly proxyPathBase: string;
+  private baseUrl: string;
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
+    this.fetchApi = options.fetchApi;
     this.proxyPathBase = options.proxyPathBase ?? DEFAULT_PROXY_PATH_BASE;
+    this.baseUrl = '';
   }
 
   async getApplications(): Promise<NewRelicApplications> {
-    const url = await this.getApiUrl('apm', 'applications.json');
-    const response = await fetch(url);
-    let responseJson;
-
-    try {
-      responseJson = await response.json();
-    } catch (e) {
-      responseJson = { applications: [] };
+    if (!this.baseUrl) {
+      const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
+      this.baseUrl = `${proxyUrl}${this.proxyPathBase}/apm/api/applications.json`;
     }
 
-    if (response.status !== 200) {
+    const applications: NewRelicApplication[] = [];
+    let targetUrl = this.baseUrl;
+
+    do {
+      const { nextPageUrl, applicationsFromReadPage } =
+        await this.fetchNewRelic(targetUrl);
+
+      targetUrl = nextPageUrl ?? '';
+      applications.push(...applicationsFromReadPage);
+    } while (!!targetUrl);
+
+    return { applications };
+  }
+
+  private async fetchNewRelic(
+    targetUrl: string,
+  ): Promise<NewRelicPageReadResult> {
+    const response = await this.fetchApi.fetch(targetUrl);
+
+    if (!response.ok) {
+      let specificErrorTitle = undefined;
+      try {
+        specificErrorTitle = (await response.json())?.error?.title;
+      } catch (e) {
+        /* empty */
+      }
+
       throw new Error(
         `Error communicating with New Relic: ${
-          responseJson?.error?.title || response.statusText
+          specificErrorTitle || response.statusText
         }`,
       );
     }
 
-    return responseJson;
-  }
+    const readResponse = (await response.json()) as NewRelicApplications;
+    const linkHeader = response.headers.get('link');
+    const parseResult = parseLinkHeader(linkHeader);
+    const nextPageNumber = parseResult?.next?.page;
 
-  private async getApiUrl(product: string, path: string) {
-    const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
-    return `${proxyUrl}${this.proxyPathBase}/${product}/api/${path}`;
+    return {
+      nextPageUrl: nextPageNumber && `${this.baseUrl}?page=${nextPageNumber}`,
+      applicationsFromReadPage: readResponse.applications,
+    };
   }
 }

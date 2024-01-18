@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-repo-tools
+  title: '@backstage/repo-tools'
+  description: 'CLI for Backstage repo tooling '
+spec:
+  lifecycle: experimental
+  type: backstage-cli
+  owner: maintainers

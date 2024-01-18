@@ -222,7 +222,8 @@ either, it becomes _orphaned_. The end result is as follows:
 - The stitching process injects a `backstage.io/orphan: 'true'` annotation on
   the child entity.
 - The child entity is _not_ removed from the catalog, but stays around until
-  explicitly deleted via the catalog API, or "reclaimed" by the original parent
+  explicitly deleted via the catalog API, implicitly if `orphanStrategy: delete`
+  configuration is set, or until it is "reclaimed" by the original parent
   or another parent starting to reference it.
 - The catalog page in Backstage for the child entity detects the new annotation
   and informs users about the orphan status.
@@ -259,9 +260,13 @@ entities without explicit owner consent. The catalog therefore takes the stance
 that entities that often were added by direct user action should also be deleted
 only by direct user action.
 
-It is possible to use the catalog API to build automated "reaper" systems that
-finally delete entities that are orphaned. This is however not something that's
-provided out of the box.
+However, if you want to delete orphaned entities automatically anyway, you can
+enable the automated clean up with the following app-config option.
+
+```
+catalog:
+  orphanStrategy: delete
+```
 
 ## Implicit Deletion
 
@@ -336,7 +341,7 @@ the three-dots menu option of entity views does offer this option, and the
 orphaned status can be seen in an info box at the top of the entity's overview
 page.
 
-However, if you were to try to do an explicit depletion on an entity that's
+However, if you were to try to do an explicit deletion on an entity that's
 being kept actively updated by a parent entity, it would just reappear again
 shortly thereafter when the processing loops reconsider the parent entity that's
 still in there.

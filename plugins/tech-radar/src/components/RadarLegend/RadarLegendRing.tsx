@@ -63,6 +63,7 @@ export const RadarLegendRing = ({
             >
               <RadarLegendLink
                 classes={classes}
+                entryId={entry.id}
                 url={entry.url}
                 title={entry.title}
                 description={entry.description}

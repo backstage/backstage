@@ -31,6 +31,16 @@ export const StepTime = (props: {
   const [time, setTime] = useState('');
   const { step } = props;
 
+  const getDelay = () => {
+    if (step.startedAt && step.endedAt && time) {
+      return null;
+    }
+    if (step.startedAt && step.endedAt) {
+      return 1;
+    }
+    return 1000;
+  };
+
   const calculate = useCallback(() => {
     if (!step.startedAt) {
       setTime('');
@@ -49,9 +59,8 @@ export const StepTime = (props: {
     setTime(humanizeDuration(formatted, { round: true }));
   }, [step.endedAt, step.startedAt]);
 
-  useMountEffect(() => calculate());
-
-  useInterval(() => !step.endedAt && calculate(), 1000);
+  useMountEffect(calculate);
+  useInterval(calculate, getDelay());
 
   return <Typography variant="caption">{time}</Typography>;
 };

@@ -27,7 +27,7 @@ In order to be able to navigate to the graphQL voyager page, a new route needs t
 
   const routes = (
     <FlatRoutes>
-      <Route path="/graphql-voyager" element={<GraphqlVoyagerPage title="This is Voyager!"/>}/>
+      <Route path="/graphql-voyager" element={<GraphQLVoyagerPage title="This is Voyager!"/>}/>
 ```
 
 ### Configuration

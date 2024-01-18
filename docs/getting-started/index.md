@@ -15,7 +15,7 @@ system using tools like apt-get, npm, yarn, curl. Docker knowledge is also
 helpful for making the best use of your Backstage installation.
 
 If you are planning to contribute plugins or to the project in general, we advise
-you to use the [Contributors](contributors.md) guide to do a repository-based installation.
+you to use the [Contributors](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) guide to do a repository-based installation.
 
 ### Prerequisites
 
@@ -26,7 +26,7 @@ you to use the [Contributors](contributors.md) guide to do a repository-based in
   On MacOS, you will want to have run `xcode-select --install` to get the XCode command line build tooling in place.
 - An account with elevated rights to install the dependencies
 - `curl` or `wget` installed
-- Node.js [Active LTS Release](https://nodejs.org/en/blog/release/) installed using one of these
+- Node.js [Active LTS Release](https://nodejs.org/en/about/previous-releases) installed using one of these
   methods:
   - Using `nvm` (recommended)
     - [Installing nvm](https://github.com/nvm-sh/nvm#install--update-script)

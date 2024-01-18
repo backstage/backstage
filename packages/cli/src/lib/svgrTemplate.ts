@@ -34,6 +34,8 @@ export function svgrTemplate(
 ${imports}
 import SvgIcon from '@material-ui/core/SvgIcon';
 
+console.log('DEPRECATION WARNING: The .icon.svg extension is deprecated, inline the SVG elements in a MUI SvgIcon instead.', Object.assign(new Error(), {name: 'Warning'}).stack);
+
 ${interfaces}
 
 const ${name} = (${props}) => React.createElement(SvgIcon, ${props}, ${jsx.children});

@@ -20,18 +20,12 @@
  * @packageDocumentation
  */
 
-import GraphiQLIconComponent from './assets/graphiql.icon.svg';
-import { IconComponent } from '@backstage/core-plugin-api';
-
 export {
   graphiqlPlugin,
   graphiqlPlugin as plugin,
   GraphiQLPage,
 } from './plugin';
+export { GraphiQLIcon } from './GraphiQLIcon';
 export { GraphiQLPage as Router } from './components';
 export * from './lib/api';
 export * from './route-refs';
-
-/** @public */
-export const GraphiQLIcon: IconComponent =
-  GraphiQLIconComponent as IconComponent;

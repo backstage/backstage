@@ -14,18 +14,31 @@
  * limitations under the License.
  */
 
+import { FSWatcher, watch } from 'chokidar';
+
 import { BackendServeOptions } from '../bundler/types';
 import type { ChildProcess } from 'child_process';
-import { fileURLToPath } from 'url';
-import { isAbsolute as isAbsolutePath } from 'path';
-import { FSWatcher, watch } from 'chokidar';
+import { ctrlc } from 'ctrlc-windows';
 import { IpcServer } from './IpcServer';
 import { ServerDataStore } from './ServerDataStore';
 import debounce from 'lodash/debounce';
-import spawn from 'cross-spawn';
+import { fileURLToPath, pathToFileURL } from 'url';
+import { isAbsolute as isAbsolutePath } from 'path';
 import { paths } from '../paths';
+import spawn from 'cross-spawn';
 
-const loaderArgs = ['--require', require.resolve('@esbuild-kit/cjs-loader')];
+const [nodeMajor, nodeMinor] = process.versions.node.split('.').map(Number);
+const supportsModuleLoaderRegister =
+  nodeMajor > 20 ||
+  (nodeMajor === 20 && nodeMinor >= 6) ||
+  (nodeMajor === 18 && nodeMinor >= 19);
+
+const loaderArgs = [
+  '--require',
+  require.resolve('tsx/preflight'),
+  supportsModuleLoaderRegister ? '--import' : '--loader',
+  pathToFileURL(require.resolve('tsx')).toString(), // Windows prefers a URL here
+];
 
 export async function startBackendExperimental(options: BackendServeOptions) {
   const envEnv = process.env as { NODE_ENV: string };
@@ -51,7 +64,11 @@ export async function startBackendExperimental(options: BackendServeOptions) {
     if (child && !child.killed && child.exitCode === null) {
       // We always wait for the existing process to exit, to make sure we don't get IPC conflicts
       shutdownPromise = new Promise(resolve => child!.once('exit', resolve));
-      child.kill();
+      if (process.platform === 'win32' && child.pid) {
+        ctrlc(child.pid);
+      } else {
+        child.kill();
+      }
       await shutdownPromise;
       shutdownPromise = undefined;
     }
@@ -63,9 +80,17 @@ export async function startBackendExperimental(options: BackendServeOptions) {
 
     const optionArgs = new Array<string>();
     if (options.inspectEnabled) {
-      optionArgs.push('--inspect');
+      const inspect =
+        typeof options.inspectEnabled === 'string'
+          ? `--inspect=${options.inspectEnabled}`
+          : '--inspect';
+      optionArgs.push(inspect);
     } else if (options.inspectBrkEnabled) {
-      optionArgs.push('--inspect-brk');
+      const inspect =
+        typeof options.inspectBrkEnabled === 'string'
+          ? `--inspect-brk=${options.inspectBrkEnabled}`
+          : '--inspect-brk';
+      optionArgs.push(inspect);
     }
 
     const userArgs = process.argv
@@ -76,7 +101,7 @@ export async function startBackendExperimental(options: BackendServeOptions) {
       process.execPath,
       [...loaderArgs, ...optionArgs, options.entry, ...userArgs],
       {
-        stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
+        stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
         env: {
           ...process.env,
           BACKSTAGE_CLI_CHANNEL: '1',
@@ -105,9 +130,8 @@ export async function startBackendExperimental(options: BackendServeOptions) {
 
   restart();
 
-  watcher = watch([paths.targetDir], {
+  watcher = watch([], {
     cwd: process.cwd(),
-    ignored: ['**/.*/**', '**/node_modules/**'],
     ignoreInitial: true,
     ignorePermissionErrors: true,
   }).on('all', restart);

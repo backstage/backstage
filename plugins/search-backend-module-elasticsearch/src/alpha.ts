@@ -16,59 +16,66 @@
 import {
   coreServices,
   createBackendModule,
+  createExtensionPoint,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-
 import {
-  ElasticSearchCustomIndexTemplate,
   ElasticSearchQueryTranslator,
   ElasticSearchSearchEngine,
 } from '@backstage/plugin-search-backend-module-elasticsearch';
 
-/**
- * @alpha
- * Options for {@link searchModuleElasticsearchEngine}.
- */
-export type SearchModuleElasticsearchEngineOptions = {
-  translator?: ElasticSearchQueryTranslator;
-  indexTemplate?: ElasticSearchCustomIndexTemplate;
-};
+/** @alpha */
+export interface ElasticSearchQueryTranslatorExtensionPoint {
+  setTranslator(translator: ElasticSearchQueryTranslator): void;
+}
 
 /**
+ * Extension point used to customize the ElasticSearch query translator.
+ *
  * @alpha
+ */
+export const elasticsearchTranslatorExtensionPoint =
+  createExtensionPoint<ElasticSearchQueryTranslatorExtensionPoint>({
+    id: 'search.elasticsearchEngine.translator',
+  });
+
+/**
  * Search backend module for the Elasticsearch engine.
+ *
+ * @alpha
  */
-export const searchModuleElasticsearchEngine = createBackendModule(
-  (options?: SearchModuleElasticsearchEngineOptions) => ({
-    moduleId: 'elasticsearchEngine',
-    pluginId: 'search',
-    register(env) {
-      env.registerInit({
-        deps: {
-          searchEngineRegistry: searchEngineRegistryExtensionPoint,
-          logger: coreServices.logger,
-          config: coreServices.config,
-        },
-        async init({ searchEngineRegistry, logger, config }) {
-          const searchEngine = await ElasticSearchSearchEngine.fromConfig({
-            logger: loggerToWinstonLogger(logger),
-            config: config,
-          });
+export default createBackendModule({
+  pluginId: 'search',
+  moduleId: 'elasticsearch-engine',
+  register(env) {
+    let translator: ElasticSearchQueryTranslator | undefined;
 
-          // set custom translator if available
-          if (options?.translator) {
-            searchEngine.setTranslator(options.translator);
-          }
+    env.registerExtensionPoint(elasticsearchTranslatorExtensionPoint, {
+      setTranslator(newTranslator) {
+        if (translator) {
+          throw new Error(
+            'ElasticSearch query translator may only be set once',
+          );
+        }
+        translator = newTranslator;
+      },
+    });
 
-          // set custom index template if available
-          if (options?.indexTemplate) {
-            searchEngine.setIndexTemplate(options.indexTemplate);
-          }
-
-          searchEngineRegistry.setSearchEngine(searchEngine);
-        },
-      });
-    },
-  }),
-);
+    env.registerInit({
+      deps: {
+        searchEngineRegistry: searchEngineRegistryExtensionPoint,
+        logger: coreServices.logger,
+        config: coreServices.rootConfig,
+      },
+      async init({ searchEngineRegistry, logger, config }) {
+        searchEngineRegistry.setSearchEngine(
+          await ElasticSearchSearchEngine.fromConfig({
+            logger,
+            config,
+            translator,
+          }),
+        );
+      },
+    });
+  },
+});

@@ -39,6 +39,7 @@ describe('compileConfigSchemas', () => {
         },
       ],
       visibilityByDataPath: new Map(),
+      deepVisibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
       deprecationByDataPath: new Map(),
     });
@@ -53,6 +54,7 @@ describe('compileConfigSchemas', () => {
         },
       ],
       visibilityByDataPath: new Map(),
+      deepVisibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
       deprecationByDataPath: new Map(),
     });
@@ -70,7 +72,7 @@ describe('compileConfigSchemas', () => {
             c: { type: 'string' },
             d: {
               type: 'array',
-              visibility: 'secret',
+              visibility: 'frontend',
               items: { type: 'string', visibility: 'frontend' },
             },
           },
@@ -86,7 +88,7 @@ describe('compileConfigSchemas', () => {
             c: { type: 'string', visibility: 'backend' },
             d: {
               type: 'array',
-              visibility: 'secret',
+              visibility: 'frontend',
               items: { type: 'string' },
             },
           },
@@ -102,15 +104,16 @@ describe('compileConfigSchemas', () => {
         Object.entries({
           '/a': 'frontend',
           '/b': 'secret',
-          '/d': 'secret',
+          '/d': 'frontend',
           '/d/0': 'frontend',
         }),
       ),
+      deepVisibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(
         Object.entries({
           '/properties/a': 'frontend',
           '/properties/b': 'secret',
-          '/properties/d': 'secret',
+          '/properties/d': 'frontend',
           '/properties/d/items': 'frontend',
         }),
       ),
@@ -166,6 +169,7 @@ describe('compileConfigSchemas', () => {
           '/b': 'deprecation reason for b',
         }),
       ),
+      deepVisibilityByDataPath: new Map(),
       visibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(),
     });
@@ -221,6 +225,7 @@ describe('compileConfigSchemas', () => {
           '//circleci/api/headers/Circle-Token': 'secret',
         }),
       ),
+      deepVisibilityByDataPath: new Map(),
       visibilityBySchemaPath: new Map(
         Object.entries({
           '/properties//circleci/api/properties/headers/properties/Circle-Token':
@@ -229,5 +234,213 @@ describe('compileConfigSchemas', () => {
       ),
       deprecationByDataPath: new Map(),
     });
+  });
+});
+
+describe('deepVisibility', () => {
+  it('should pass secret visibility to children, but respect existing backend/secret visibility', () => {
+    const validate = compileConfigSchemas([
+      {
+        path: 'a1',
+        value: {
+          type: 'object',
+          properties: {
+            a: { type: 'string', visibility: 'backend' },
+            b: { type: 'string', visibility: 'backend' },
+            c: { type: 'string' },
+            d: {
+              type: 'array',
+              items: { type: 'string' },
+            },
+          },
+        },
+      },
+      {
+        path: 'a2',
+        value: {
+          type: 'object',
+          deepVisibility: 'secret',
+          properties: {
+            a: { type: 'string' },
+            b: { type: 'string', visibility: 'secret' },
+            c: { type: 'string', visibility: 'backend' },
+            d: {
+              type: 'array',
+              items: { type: 'string' },
+            },
+          },
+        },
+      },
+    ]);
+    expect(
+      validate([
+        {
+          data: { a: 'a', b: 'b', c: 'c', d: ['d'] },
+          context: 'test',
+        },
+      ]),
+    ).toEqual({
+      visibilityByDataPath: new Map(
+        Object.entries({
+          '/b': 'secret',
+        }),
+      ),
+      deepVisibilityByDataPath: new Map(
+        Object.entries({
+          '': 'secret',
+        }),
+      ),
+      visibilityBySchemaPath: new Map(
+        Object.entries({
+          '': 'secret',
+          '/properties/b': 'secret',
+        }),
+      ),
+      deprecationByDataPath: new Map(),
+    });
+  });
+
+  it('should pass secret visibility to children, but throws when overriding with frontend visibility', () => {
+    expect(() =>
+      compileConfigSchemas([
+        {
+          path: 'a1',
+          value: {
+            type: 'object',
+            properties: {
+              a: { type: 'string', visibility: 'frontend' },
+              b: { type: 'string', visibility: 'backend' },
+              c: { type: 'string' },
+              d: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+            },
+          },
+        },
+        {
+          path: 'a2',
+          value: {
+            type: 'object',
+            deepVisibility: 'secret',
+            visibility: 'secret',
+            properties: {
+              a: { type: 'string' },
+              b: { type: 'string', visibility: 'secret' },
+              c: { type: 'string', visibility: 'frontend' },
+              d: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+            },
+          },
+        },
+      ]),
+    ).toThrow(
+      "Config schema visibility is both 'frontend' and 'secret' for /properties/a",
+    );
+  });
+
+  it('should throw when children have a different deepVisibility', () => {
+    expect(() =>
+      compileConfigSchemas([
+        {
+          path: 'a2',
+          value: {
+            type: 'object',
+            deepVisibility: 'secret',
+            properties: {
+              a: {
+                type: 'object',
+                properties: {
+                  a: { type: 'string', deepVisibility: 'frontend' },
+                },
+              },
+              b: { type: 'string', visibility: 'secret' },
+              c: { type: 'string', visibility: 'backend' },
+              d: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+            },
+          },
+        },
+      ]),
+    ).toThrow(
+      `Config schema visibility is both 'frontend' and 'secret' for /properties/a`,
+    );
+  });
+
+  it('should throw when the same schema node has a conflicting deepVisibility', () => {
+    expect(() =>
+      compileConfigSchemas([
+        {
+          path: 'a2',
+          value: {
+            type: 'object',
+            properties: {
+              a: {
+                type: 'string',
+                deepVisibility: 'secret',
+                visibility: 'frontend',
+              },
+            },
+          },
+        },
+      ]),
+    ).toThrow(
+      `Config schema visibility is both 'frontend' and 'secret' for /properties/a`,
+    );
+  });
+
+  it('should throw when ancestor and children have a different deepVisibility', () => {
+    expect(() =>
+      compileConfigSchemas([
+        {
+          path: 'a1',
+          value: {
+            type: 'object',
+            properties: {
+              a: {
+                type: 'object',
+                properties: {
+                  a: { type: 'string' },
+                },
+              },
+              b: { type: 'string', visibility: 'backend' },
+              c: { type: 'string' },
+              d: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+            },
+          },
+        },
+        {
+          path: 'a2',
+          value: {
+            type: 'object',
+            deepVisibility: 'secret',
+            properties: {
+              a: {
+                type: 'object',
+                deepVisibility: 'frontend',
+                properties: {
+                  a: { type: 'string', visibility: 'frontend' },
+                },
+              },
+              b: { type: 'string', visibility: 'secret' },
+              c: { type: 'string', visibility: 'backend' },
+              d: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+            },
+          },
+        },
+      ]),
+    ).toThrow(
+      `Config schema visibility is both 'frontend' and 'secret' for /properties/a`,
+    );
   });
 });

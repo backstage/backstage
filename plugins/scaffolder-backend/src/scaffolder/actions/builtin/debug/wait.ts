@@ -16,45 +16,12 @@
 
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { HumanDuration } from '@backstage/types';
-import yaml from 'yaml';
 import { Duration } from 'luxon';
+import { examples } from './wait.examples';
 
 const id = 'debug:wait';
 
 const MAX_WAIT_TIME_IN_ISO = 'T00:00:30';
-
-const examples = [
-  {
-    description: 'Waiting for 5 seconds',
-    example: yaml.stringify({
-      steps: [
-        {
-          action: id,
-          id: 'wait-5sec',
-          name: 'Waiting for 5 seconds',
-          input: {
-            seconds: 5,
-          },
-        },
-      ],
-    }),
-  },
-  {
-    description: 'Waiting for 5 minutes',
-    example: yaml.stringify({
-      steps: [
-        {
-          action: id,
-          id: 'wait-5min',
-          name: 'Waiting for 5 minutes',
-          input: {
-            minutes: 5,
-          },
-        },
-      ],
-    }),
-  },
-];
 
 /**
  * Waits for a certain period of time.

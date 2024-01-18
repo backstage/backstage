@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { appPlugin } from './service/appPlugin';
-export type { AppPluginOptions } from './service/appPlugin';
+export { appPlugin as default } from './service/appPlugin';

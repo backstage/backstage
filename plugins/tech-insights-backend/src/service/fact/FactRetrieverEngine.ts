@@ -175,6 +175,7 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
       try {
         facts = await factRetriever.handler({
           ...this.factRetrieverContext,
+          logger: this.logger.child({ factRetrieverId: factRetriever.id }),
           entityFilter: factRetriever.entityFilter,
         });
         this.logger.debug(

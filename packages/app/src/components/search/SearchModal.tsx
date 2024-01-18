@@ -29,7 +29,7 @@ import {
   useSearch,
 } from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
-import { CatalogSearchResultListItem } from '@internal/plugin-catalog-customized';
+import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 import {
   Box,
   DialogActions,

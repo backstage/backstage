@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { errorApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { BackstageTheme } from '@backstage/theme';
+import {
+  errorApiRef,
+  useApi,
+  useRouteRef,
+  alertApiRef,
+} from '@backstage/core-plugin-api';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {
   permissions,
   PlaylistMetadata,
 } from '@backstage/plugin-playlist-common';
-import { Button, IconButton, useMediaQuery } from '@material-ui/core';
+import { Button, IconButton, Theme, useMediaQuery } from '@material-ui/core';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -31,16 +35,20 @@ import { playlistRouteRef } from '../../routes';
 import { PlaylistEditDialog } from '../PlaylistEditDialog';
 import { useTitle } from '../../hooks';
 
+/**
+ * @public
+ */
 export const CreatePlaylistButton = () => {
   const navigate = useNavigate();
   const errorApi = useApi(errorApiRef);
+  const alertApi = useApi(alertApiRef);
   const playlistApi = useApi(playlistApiRef);
   const playlistRoute = useRouteRef(playlistRouteRef);
   const [openDialog, setOpenDialog] = useState(false);
   const { allowed } = usePermission({
     permission: permissions.playlistListCreate,
   });
-  const isXSScreen = useMediaQuery<BackstageTheme>(theme =>
+  const isXSScreen = useMediaQuery<Theme>(theme =>
     theme.breakpoints.down('xs'),
   );
 
@@ -49,11 +57,16 @@ export const CreatePlaylistButton = () => {
       try {
         const playlistId = await playlistApi.createPlaylist(playlist);
         navigate(playlistRoute({ playlistId }));
+        alertApi.post({
+          message: `Added playlist '${playlist.name}'`,
+          severity: 'success',
+          display: 'transient',
+        });
       } catch (e) {
         errorApi.post(e);
       }
     },
-    [errorApi, navigate, playlistApi, playlistRoute],
+    [errorApi, navigate, playlistApi, playlistRoute, alertApi],
   );
 
   const singularTitle = useTitle({

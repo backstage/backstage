@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export {};
+import { TestDatabases } from '@backstage/backend-test-utils';
+import { Settings } from 'luxon';
+
+// TS still thinks that methods can return null / placeholders, but we still want to throw as soon as possible when things go wrong
+Settings.throwOnInvalid = true;
+
+TestDatabases.setDefaults({
+  ids: ['MYSQL_8', 'POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
+});

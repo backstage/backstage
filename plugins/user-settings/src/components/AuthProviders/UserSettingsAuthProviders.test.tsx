@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  renderWithEffects,
-  TestApiRegistry,
-  wrapInTestApp,
-} from '@backstage/test-utils';
-import { fireEvent } from '@testing-library/react';
+import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
+import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { UserSettingsAuthProviders } from './UserSettingsAuthProviders';
 
@@ -56,22 +52,20 @@ const apiRegistry = TestApiRegistry.from(
 
 describe('<UserSettingsAuthProviders />', () => {
   it('displays a provider and calls its sign-in handler on click', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <ApiProvider apis={apiRegistry}>
-          <UserSettingsAuthProviders />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <UserSettingsAuthProviders />
+      </ApiProvider>,
     );
 
-    expect(rendered.getByText('Google')).toBeInTheDocument();
+    expect(screen.getByText('Google')).toBeInTheDocument();
     expect(
-      rendered.getByText(
+      screen.getByText(
         'Provides authentication towards Google APIs and identities',
       ),
     ).toBeInTheDocument();
 
-    const button = rendered.getByTitle('Sign in to Google');
+    const button = screen.getByTitle('Sign in to Google');
     fireEvent.click(button);
     expect(mockSignInHandler).toHaveBeenCalledTimes(1);
   });

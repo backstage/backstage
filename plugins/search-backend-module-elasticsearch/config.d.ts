@@ -43,6 +43,33 @@ export interface Config {
          */
         fragmentDelimiter?: string;
       };
+
+      /** Elasticsearch specific index template bodies */
+      indexTemplates?: Array<{
+        name: string;
+        body: {
+          /**
+           * Array of wildcard (*) expressions used to match the names of data streams and indices during creation.
+           */
+          index_patterns: string[];
+
+          /**
+           * An ordered list of component template names.
+           * Component templates are merged in the order specified,
+           * meaning that the last component template specified has the highest precedence.
+           */
+          composed_of?: string[];
+
+          /**
+           * See available properties of template
+           * https://www.elastic.co/guide/en/elasticsearch/reference/7.15/indices-put-template.html#put-index-template-api-request-body
+           */
+          template?: {
+            [key: string]: unknown;
+          };
+        };
+      }>;
+
       /** Miscellaneous options for the client */
       clientOptions?: {
         ssl?: {
@@ -88,6 +115,19 @@ export interface Config {
              * Eg. https://my-es-cluster.eu-west-1.es.amazonaws.com
              */
             node: string;
+
+            /**
+             * The AWS region.
+             * Only needed if using a custom DNS record.
+             */
+            region?: string;
+
+            /**
+             * The AWS service used for request signature.
+             * Either 'es' for "Managed Clusters" or 'aoss' for "Serverless".
+             * Only needed if using a custom DNS record.
+             */
+            service?: 'es' | 'aoss';
           }
 
         /**
@@ -128,7 +168,7 @@ export interface Config {
                 };
             /* TODO(kuangp): unsupported until @elastic/elasticsearch@7.14 is released
     | {
- 
+
       /**
        * Bearer authentication token to connect to the cluster.
        * See: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-service-token.html
@@ -165,6 +205,9 @@ export interface Config {
                   password: string;
                 }
               | {
+                  /**
+                   * @visibility secret
+                   */
                   apiKey: string;
                 };
           }

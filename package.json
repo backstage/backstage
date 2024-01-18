@@ -2,22 +2,28 @@
   "name": "root",
   "private": true,
   "engines": {
-    "node": "16 || 18"
+    "node": "18 || 20"
   },
   "scripts": {
-    "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
+    "dev": "concurrently 'yarn start' 'yarn start-backend'",
+    "dev:next": "concurrently 'yarn start:next' 'yarn start-backend:next'",
     "start": "yarn workspace example-app start",
     "start-backend": "yarn workspace example-backend start",
+    "start:next": "yarn workspace example-app-next start",
+    "start-backend:next": "yarn workspace example-backend-next start",
     "build:backend": "yarn workspace example-backend build",
     "build:all": "backstage-cli repo build --all",
     "build:api-reports": "yarn build:api-reports:only --tsc",
     "build:api-reports:only": "backstage-repo-tools api-reports --allow-warnings 'packages/core-components,plugins/+(catalog|catalog-import|git-release-manager|jenkins|kubernetes)' -o ae-wrong-input-file-type --validate-release-tags",
     "build:api-docs": "LANG=en_EN yarn build:api-reports --docs",
+    "build:plugins-report": "node ./scripts/build-plugins-report",
     "tsc": "tsc",
     "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false",
     "clean": "backstage-cli repo clean",
     "test": "backstage-cli repo test",
     "test:all": "backstage-cli repo test --coverage",
+    "test:e2e": "playwright test",
+    "fix": "backstage-cli repo fix",
     "lint": "backstage-cli repo lint --since origin/master",
     "lint:docs": "node ./scripts/check-docs-quality",
     "lint:all": "backstage-cli repo lint",
@@ -44,44 +50,50 @@
     ]
   },
   "resolutions": {
-    "@types/react": "^17",
-    "@types/react-dom": "^17"
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch",
+    "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
+    "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch"
   },
-  "version": "1.16.0-next.2",
+  "version": "1.22.0",
   "dependencies": {
     "@backstage/errors": "workspace:^",
-    "@manypkg/get-packages": "^1.1.3"
+    "@manypkg/get-packages": "^1.1.3",
+    "@useoptic/optic": "^0.50.10"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:*",
     "@backstage/codemods": "workspace:*",
     "@backstage/create-app": "workspace:*",
+    "@backstage/e2e-test-utils": "workspace:*",
     "@backstage/repo-tools": "workspace:*",
     "@changesets/cli": "^2.14.0",
     "@octokit/rest": "^19.0.3",
+    "@playwright/test": "^1.32.3",
     "@spotify/eslint-plugin": "^14.1.3",
     "@spotify/prettier-config": "^14.0.0",
     "@techdocs/cli": "workspace:*",
-    "@types/node": "^16.11.26",
+    "@types/node": "^18.17.8",
     "@types/webpack": "^5.28.0",
     "command-exists": "^1.2.9",
-    "concurrently": "^7.0.0",
+    "concurrently": "^8.0.0",
     "cross-env": "^7.0.0",
     "e2e-test": "workspace:*",
     "eslint": "^8.6.0",
     "eslint-plugin-notice": "^0.9.10",
     "eslint-plugin-react": "^7.28.0",
-    "eslint-plugin-testing-library": "^5.9.1",
+    "eslint-plugin-testing-library": "^6.0.0",
     "fs-extra": "10.1.0",
     "husky": "^8.0.0",
-    "lint-staged": "^13.0.0",
+    "lint-staged": "^15.0.0",
     "minimist": "^1.2.5",
-    "node-gyp": "^9.4.0",
+    "node-gyp": "^10.0.0",
     "prettier": "^2.2.1",
     "semver": "^7.5.3",
     "shx": "^0.3.2",
     "ts-node": "^10.4.0",
-    "typescript": "~5.0.0"
+    "typescript": "~5.2.0"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {
@@ -94,6 +106,13 @@
     ],
     "*.md": [
       "node ./scripts/check-docs-quality"
+    ],
+    "{plugins,packages}/*/catalog-info.yaml": [
+      "yarn backstage-repo-tools generate-catalog-info --ci"
+    ],
+    "{.github/CODEOWNERS,package.json}": [
+      "yarn backstage-repo-tools generate-catalog-info",
+      "git add */catalog-info.yaml"
     ],
     "./yarn.lock": [
       "node ./scripts/verify-lockfile-duplicates --fix"

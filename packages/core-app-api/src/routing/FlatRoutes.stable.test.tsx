@@ -56,7 +56,7 @@ function makeRouteRenderer(node: ReactNode) {
     );
     if (rendered) {
       rendered.unmount();
-      rendered.rerender(content);
+      rendered = render(content);
     } else {
       rendered = render(content);
     }

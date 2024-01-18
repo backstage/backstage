@@ -22,4 +22,5 @@ export type AwsS3Config = {
   prefix?: string;
   region?: string;
   schedule?: TaskScheduleDefinition;
+  accountId?: string;
 };

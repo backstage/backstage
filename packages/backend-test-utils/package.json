@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-test-utils",
   "description": "Test helpers library for Backstage backends",
-  "version": "0.1.39-next.0",
+  "version": "0.2.10",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -46,16 +46,22 @@
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "better-sqlite3": "^8.0.0",
+    "better-sqlite3": "^9.0.0",
     "express": "^4.17.1",
-    "knex": "^2.0.0",
+    "fs-extra": "^10.0.1",
+    "knex": "^3.0.0",
     "msw": "^1.0.0",
     "mysql2": "^2.2.5",
-    "pg": "^8.3.0",
+    "pg": "^8.11.3",
     "testcontainers": "^8.1.2",
+    "textextensions": "^5.16.0",
     "uuid": "^8.0.0"
+  },
+  "peerDependencies": {
+    "@types/jest": "*"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

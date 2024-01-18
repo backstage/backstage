@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { coreServices } from '@backstage/backend-plugin-api';
-import { startTestBackend } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
 import { eventsModuleAwsSqsConsumingEventPublisher } from './eventsModuleAwsSqsConsumingEventPublisher';
@@ -25,31 +22,6 @@ import { AwsSqsConsumingEventPublisher } from '../publisher/AwsSqsConsumingEvent
 
 describe('eventsModuleAwsSqsConsumingEventPublisher', () => {
   it('should be correctly wired and set up', async () => {
-    const config = new ConfigReader({
-      events: {
-        modules: {
-          awsSqs: {
-            awsSqsConsumingEventPublisher: {
-              topics: {
-                fake1: {
-                  queue: {
-                    region: 'eu-west-1',
-                    url: 'https://fake1.queue.url',
-                  },
-                },
-                fake2: {
-                  queue: {
-                    region: 'us-east-1',
-                    url: 'https://fake2.queue.url',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-
     let addedPublishers: AwsSqsConsumingEventPublisher[] | undefined;
     const extensionPoint = {
       addPublishers: (publishers: any) => {
@@ -57,18 +29,40 @@ describe('eventsModuleAwsSqsConsumingEventPublisher', () => {
       },
     };
 
-    const scheduler = {
-      scheduleTask: jest.fn(),
-    };
+    const scheduler = mockServices.scheduler.mock();
 
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
-      services: [
-        [coreServices.config, config],
-        [coreServices.logger, getVoidLogger()],
-        [coreServices.scheduler, scheduler],
+      features: [
+        eventsModuleAwsSqsConsumingEventPublisher(),
+        mockServices.rootConfig.factory({
+          data: {
+            events: {
+              modules: {
+                awsSqs: {
+                  awsSqsConsumingEventPublisher: {
+                    topics: {
+                      fake1: {
+                        queue: {
+                          region: 'eu-west-1',
+                          url: 'https://fake1.queue.url',
+                        },
+                      },
+                      fake2: {
+                        queue: {
+                          region: 'us-east-1',
+                          url: 'https://fake2.queue.url',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }),
+        scheduler.factory,
       ],
-      features: [eventsModuleAwsSqsConsumingEventPublisher()],
     });
 
     expect(addedPublishers).not.toBeUndefined();

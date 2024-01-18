@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import { applySearchFilter, useLogViewerSearch } from './useLogViewerSearch';
 import { AnsiLine } from './AnsiProcessor';
 

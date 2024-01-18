@@ -31,10 +31,12 @@ import { TypographyProps } from '@material-ui/core';
 // @public (undocumented)
 export const AutocompleteFilter: (
   props: SearchAutocompleteFilterProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const CheckboxFilter: (props: SearchFilterComponentProps) => JSX.Element;
+export const CheckboxFilter: (
+  props: SearchFilterComponentProps,
+) => React_2.JSX.Element;
 
 // @public
 export const createSearchResultListItemExtension: <
@@ -46,7 +48,7 @@ export const createSearchResultListItemExtension: <
 // @public (undocumented)
 export const DefaultResultListItem: (
   props: DefaultResultListItemProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type DefaultResultListItemProps = {
@@ -62,7 +64,7 @@ export type DefaultResultListItemProps = {
 // @public (undocumented)
 export const HighlightedSearchResultText: (
   props: HighlightedSearchResultTextProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type HighlightedSearchResultTextProps = {
@@ -100,7 +102,7 @@ export type SearchAutocompleteComponent = <Option>(
 // @public
 export const SearchAutocompleteDefaultOption: (
   props: SearchAutocompleteDefaultOptionProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type SearchAutocompleteDefaultOptionProps = {
@@ -151,7 +153,7 @@ export type SearchBarProps = Partial<SearchBarBaseProps>;
 // @public
 export const SearchContextProvider: (
   props: SearchContextProviderProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type SearchContextProviderProps =
@@ -187,16 +189,16 @@ export type SearchContextValue = {
 
 // @public (undocumented)
 export const SearchFilter: {
-  (props: SearchFilterWrapperProps): JSX.Element;
+  (props: SearchFilterWrapperProps): React_2.JSX.Element;
   Checkbox(
     props: Omit<SearchFilterWrapperProps, 'component'> &
       SearchFilterComponentProps,
-  ): JSX.Element;
+  ): React_2.JSX.Element;
   Select(
     props: Omit<SearchFilterWrapperProps, 'component'> &
       SearchFilterComponentProps,
-  ): JSX.Element;
-  Autocomplete(props: SearchAutocompleteFilterProps): JSX.Element;
+  ): React_2.JSX.Element;
+  Autocomplete(props: SearchAutocompleteFilterProps): React_2.JSX.Element;
 };
 
 // @public (undocumented)
@@ -216,12 +218,14 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 };
 
 // @public
-export const SearchPagination: (props: SearchPaginationProps) => JSX.Element;
+export const SearchPagination: (
+  props: SearchPaginationProps,
+) => React_2.JSX.Element;
 
 // @public
 export const SearchPaginationBase: (
   props: SearchPaginationBaseProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type SearchPaginationBaseProps = {
@@ -267,7 +271,7 @@ export type SearchPaginationProps = Omit<
 >;
 
 // @public
-export const SearchResult: (props: SearchResultProps) => JSX.Element;
+export const SearchResult: (props: SearchResultProps) => React_2.JSX.Element;
 
 // @public
 export const SearchResultApi: (
@@ -280,7 +284,9 @@ export type SearchResultApiProps = SearchResultContextProps & {
 };
 
 // @public
-export const SearchResultComponent: (props: SearchResultProps) => JSX.Element;
+export const SearchResultComponent: (
+  props: SearchResultProps,
+) => React_2.JSX.Element;
 
 // @public
 export const SearchResultContext: (
@@ -298,12 +304,12 @@ export type SearchResultContextProps = {
 // @public
 export function SearchResultGroup<FilterOption>(
   props: SearchResultGroupProps<FilterOption>,
-): JSX.Element;
+): React_2.JSX.Element;
 
 // @public
 export const SearchResultGroupFilterFieldLayout: (
   props: SearchResultGroupFilterFieldLayoutProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type SearchResultGroupFilterFieldLayoutProps = PropsWithChildren<{
@@ -321,7 +327,7 @@ export type SearchResultGroupFilterFieldPropsWith<T> = T &
 // @public
 export function SearchResultGroupLayout<FilterOption>(
   props: SearchResultGroupLayoutProps<FilterOption>,
-): JSX.Element;
+): React_2.JSX.Element;
 
 // @public
 export type SearchResultGroupLayoutProps<FilterOption> = ListProps & {
@@ -363,7 +369,7 @@ export type SearchResultGroupProps<FilterOption> = Pick<
 // @public
 export const SearchResultGroupSelectFilterField: (
   props: SearchResultGroupSelectFilterFieldProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type SearchResultGroupSelectFilterFieldProps =
@@ -374,14 +380,16 @@ export type SearchResultGroupSelectFilterFieldProps =
 // @public
 export const SearchResultGroupTextFilterField: (
   props: SearchResultGroupTextFilterFieldProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type SearchResultGroupTextFilterFieldProps =
   SearchResultGroupFilterFieldPropsWith<{}>;
 
 // @public
-export const SearchResultList: (props: SearchResultListProps) => JSX.Element;
+export const SearchResultList: (
+  props: SearchResultListProps,
+) => React_2.JSX.Element;
 
 // @public
 export type SearchResultListItemExtensionOptions<
@@ -405,7 +413,7 @@ export type SearchResultListItemExtensionProps<Props extends {} = {}> = Props &
 // @public
 export const SearchResultListItemExtensions: (
   props: SearchResultListItemExtensionsProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type SearchResultListItemExtensionsProps = Omit<ListProps, 'results'> & {
@@ -415,7 +423,7 @@ export type SearchResultListItemExtensionsProps = Omit<ListProps, 'results'> & {
 // @public
 export const SearchResultListLayout: (
   props: SearchResultListLayoutProps,
-) => JSX.Element;
+) => React_2.JSX.Element;
 
 // @public
 export type SearchResultListLayoutProps = ListProps & {
@@ -436,7 +444,7 @@ export type SearchResultListProps = Pick<SearchResultStateProps, 'query'> &
   Omit<SearchResultListLayoutProps, 'loading' | 'error' | 'resultItems'>;
 
 // @public (undocumented)
-export const SearchResultPager: () => JSX.Element;
+export const SearchResultPager: () => React_2.JSX.Element;
 
 // @public
 export type SearchResultProps = Pick<SearchResultStateProps, 'query'> &
@@ -446,14 +454,18 @@ export type SearchResultProps = Pick<SearchResultStateProps, 'query'> &
   };
 
 // @public
-export const SearchResultState: (props: SearchResultStateProps) => JSX.Element;
+export const SearchResultState: (
+  props: SearchResultStateProps,
+) => React_2.JSX.Element;
 
 // @public
 export type SearchResultStateProps = SearchResultContextProps &
   Partial<SearchResultApiProps>;
 
 // @public (undocumented)
-export const SelectFilter: (props: SearchFilterComponentProps) => JSX.Element;
+export const SelectFilter: (
+  props: SearchFilterComponentProps,
+) => React_2.JSX.Element;
 
 // @public
 export const useSearch: () => SearchContextValue;
@@ -464,5 +476,5 @@ export const useSearchContextCheck: () => boolean;
 // @public
 export const useSearchResultListItemExtensions: (
   children: ReactNode,
-) => (result: SearchResult_2, key?: number) => JSX.Element;
+) => (result: SearchResult_2, key?: number) => React_2.JSX.Element;
 ```

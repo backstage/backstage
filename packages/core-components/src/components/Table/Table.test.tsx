@@ -48,6 +48,11 @@ describe('<Table />', () => {
     expect(rendered.getByText('second value, second row')).toBeInTheDocument();
   });
 
+  it('renders loading without exploding', async () => {
+    const rendered = await renderInTestApp(<Table {...minProps} isLoading />);
+    expect(rendered.getByTestId('loading-indicator')).toBeInTheDocument();
+  });
+
   describe('with style rows', () => {
     describe('with CSS Properties object', () => {
       const styledColumn2 = {

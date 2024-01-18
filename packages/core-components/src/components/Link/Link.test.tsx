@@ -14,37 +14,34 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import React, { ComponentType } from 'react';
+import { fireEvent, waitFor, screen, renderHook } from '@testing-library/react';
 import {
   MockAnalyticsApi,
   TestApiProvider,
-  wrapInTestApp,
+  renderInTestApp,
 } from '@backstage/test-utils';
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { isExternalUri, Link, useResolvedPath } from './Link';
 import { Route, Routes } from 'react-router-dom';
-import { renderHook, WrapperComponent } from '@testing-library/react-hooks';
 import { ConfigReader } from '@backstage/config';
 
 describe('<Link />', () => {
   it('navigates using react-router', async () => {
     const testString = 'This is test string';
     const linkText = 'Navigate!';
-    const { getByText } = render(
-      wrapInTestApp(
-        <>
-          <Link to="/test">{linkText}</Link>
-          <Routes>
-            <Route path="/test" element={<p>{testString}</p>} />
-          </Routes>
-        </>,
-      ),
+    await renderInTestApp(
+      <>
+        <Link to="/test">{linkText}</Link>
+        <Routes>
+          <Route path="/test" element={<p>{testString}</p>} />
+        </Routes>
+      </>,
     );
-    expect(() => getByText(testString)).toThrow();
-    fireEvent.click(getByText(linkText));
+    expect(() => screen.getByText(testString)).toThrow();
+    fireEvent.click(screen.getByText(linkText));
     await waitFor(() => {
-      expect(getByText(testString)).toBeInTheDocument();
+      expect(screen.getByText(testString)).toBeInTheDocument();
     });
   });
 
@@ -53,17 +50,15 @@ describe('<Link />', () => {
     const analyticsApi = new MockAnalyticsApi();
     const customOnClick = jest.fn();
 
-    const { getByText } = render(
-      wrapInTestApp(
-        <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
-          <Link to="/test" onClick={customOnClick}>
-            {linkText}
-          </Link>
-        </TestApiProvider>,
-      ),
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
+        <Link to="/test" onClick={customOnClick}>
+          {linkText}
+        </Link>
+      </TestApiProvider>,
     );
 
-    fireEvent.click(getByText(linkText));
+    fireEvent.click(screen.getByText(linkText));
 
     // Analytics event should have been fired.
     await waitFor(() => {
@@ -85,17 +80,15 @@ describe('<Link />', () => {
     const analyticsApi = new MockAnalyticsApi();
     const customOnClick = jest.fn();
 
-    const { getByText } = render(
-      wrapInTestApp(
-        <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
-          <Link to="/test" onClick={customOnClick} noTrack>
-            {linkText}
-          </Link>
-        </TestApiProvider>,
-      ),
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
+        <Link to="/test" onClick={customOnClick} noTrack>
+          {linkText}
+        </Link>
+      </TestApiProvider>,
     );
 
-    fireEvent.click(getByText(linkText));
+    fireEvent.click(screen.getByText(linkText));
 
     // Analytics event should have been fired.
     await waitFor(() => {
@@ -134,7 +127,9 @@ describe('<Link />', () => {
   });
 
   describe('useResolvedPath', () => {
-    const wrapper: WrapperComponent<{}> = ({ children }) => {
+    const wrapper: ComponentType<React.PropsWithChildren<{}>> = ({
+      children,
+    }) => {
       const configApi = new ConfigReader({
         app: { baseUrl: 'http://localhost:3000/example' },
       });
@@ -174,11 +169,11 @@ describe('<Link />', () => {
     });
   });
 
-  it('throws an error when attempting to link to script code', () => {
-    expect(() =>
+  it('throws an error when attempting to link to script code', async () => {
+    await expect(
       // eslint-disable-next-line no-script-url
-      render(wrapInTestApp(<Link to="javascript:alert('hello')">Script</Link>)),
-    ).toThrowErrorMatchingInlineSnapshot(
+      renderInTestApp(<Link to="javascript:alert('hello')">Script</Link>),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Link component rejected javascript: URL as a security precaution"`,
     );
   });

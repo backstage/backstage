@@ -32,6 +32,17 @@ module.exports = {
         'http://localhost:3000/create/templates/default/react-ssr-template',
         /** Search */
         'http://localhost:3000/search',
+        /** Miscellaneous */
+        'http://localhost:3000/settings',
+        /** plugin-devtools */
+        'http://localhost:3000/devtools',
+        'http://localhost:3000/devtools/config',
+        /** plugin-explore */
+        'http://localhost:3000/explore',
+        'http://localhost:3000/explore/groups',
+        'http://localhost:3000/explore/tools',
+        /** plugin-tech-radar */
+        'http://localhost:3000/tech-radar',
       ],
       settings: {
         onlyCategories: ['accessibility'],

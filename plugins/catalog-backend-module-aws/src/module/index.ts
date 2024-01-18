@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { catalogModuleAwsS3EntityProvider } from './catalogModuleAwsS3EntityProvider';
+export { catalogModuleAwsS3EntityProvider as default } from './catalogModuleAwsS3EntityProvider';

@@ -130,13 +130,14 @@ export default async function createPlugin(
   builder.addProcessor(new ScaffolderEntitiesProcessor());
   /* highlight-add-start */
   const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
-      id: 'production',
-      orgUrl: 'https://github.com/backstage',
-      logger: env.logger,
-      schedule: env.scheduler.createScheduledTaskRunner({
-        frequency: { minutes: 60 },
-        timeout: { minutes: 15 },
-      }),
+    id: 'production',
+    orgUrl: 'https://github.com/backstage',
+    logger: env.logger,
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 60 },
+      timeout: { minutes: 15 },
+    }),
+  });
   env.eventBroker.subscribe(githubOrgProvider);
   builder.addEntityProvider(githubOrgProvider);
   /* highlight-add-end */
@@ -254,23 +255,32 @@ configured such an email in their own account. The API will only return these
 values when using GitHub App authentication and with the correct app permission
 allowing access to emails.
 
-You can decorate the `defaultUserTransformer` to replace the org email in the
+You can decorate the default `userTransformer` to replace the org email in the
 returned identity.
 
-```typescript
-async (user, ctx): Promise<UserEntity | undefined> => {
-  const entity = await defaultUserTransformer(user, ctx);
-
-  if (entity && user.organizationVerifiedDomainEmails?.length) {
-    entity.spec.profile!.email = user.organizationVerifiedDomainEmails[0];
-  }
-
-  return entity;
-},
+```ts title="packages/backend/src/plugins/catalog.ts"
+const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
+  id: 'production',
+  orgUrl: 'https://github.com/backstage',
+  logger: env.logger,
+  schedule: env.scheduler.createScheduledTaskRunner({
+    frequency: { minutes: 60 },
+    timeout: { minutes: 15 },
+  }),
+  /* highlight-add-start */
+  userTransformer: async (user, ctx) => {
+    const entity = await defaultUserTransformer(user, ctx);
+    if (entity && user.organizationVerifiedDomainEmails?.length) {
+      entity.spec.profile!.email = user.organizationVerifiedDomainEmails[0];
+    }
+    return entity;
+  },
+  /* highlight-add-end */
+});
 ```
 
-Once you have imported the emails you can resolve users in your sign-in in
-resolver using the catalog entity search via email
+Once you have imported the emails you can resolve users in your [sign-in
+resolver](../../auth/github/provider.md) using the catalog entity search via email
 
 ```typescript title="packages/backend/src/plugins/auth.ts"
 ctx.signInWithCatalogUser({

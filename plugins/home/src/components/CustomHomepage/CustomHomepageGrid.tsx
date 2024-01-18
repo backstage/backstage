@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import {
   ElementCollection,
@@ -40,6 +40,7 @@ import { WidgetSettingsOverlay } from './WidgetSettingsOverlay';
 import { AddWidgetDialog } from './AddWidgetDialog';
 import { CustomHomepageButtons } from './CustomHomepageButtons';
 import {
+  CustomHomepageGridProps,
   CustomHomepageGridStateV1,
   CustomHomepageGridStateV1Schema,
   GridWidget,
@@ -68,7 +69,6 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(2),
     },
     widgetWrapper: {
-      overflow: 'hidden',
       '& > div[class*="MuiCard-root"]': {
         width: '100%',
         height: '100%',
@@ -158,6 +158,9 @@ const convertConfigToDefaultWidgets = (
         isResizable: false,
       },
       settings: {},
+      movable: conf.movable,
+      deletable: conf.deletable,
+      resizable: conf.resizable,
     };
   });
   return compact(ret);
@@ -191,82 +194,6 @@ const availableWidgetsFilter = (elements: ElementCollection) => {
 };
 
 /**
- * Breakpoint options for <CustomHomepageGridProps/>
- *
- * @public
- */
-export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-
-/**
- * Props customizing the <CustomHomepageGrid/> component.
- *
- * @public
- */
-export type CustomHomepageGridProps = {
-  /**
-   * Children contain all widgets user can configure on their own homepage.
-   */
-  children?: ReactNode;
-  /**
-   * Default layout for the homepage before users have modified it.
-   */
-  config?: LayoutConfiguration[];
-  /**
-   * Height of grid row in pixels.
-   * @defaultValue 60
-   */
-  rowHeight?: number;
-  /**
-   * Screen width in pixels for different breakpoints.
-   * @defaultValue theme breakpoints
-   */
-  breakpoints?: Record<Breakpoint, number>;
-  /**
-   * Number of grid columns for different breakpoints.
-   * @defaultValue \{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 \}
-   */
-  cols?: Record<Breakpoint, number>;
-  /**
-   * Grid container padding (x, y) in pixels for all or specific breakpoints.
-   * @defaultValue [0, 0]
-   * @example [10, 10]
-   * @example \{ lg: [10, 10] \}
-   */
-  containerPadding?: [number, number] | Record<Breakpoint, [number, number]>;
-  /**
-   * Grid container margin (x, y) in pixels for all or specific breakpoints.
-   * @defaultValue [0, 0]
-   * @example [10, 10]
-   * @example \{ lg: [10, 10] \}
-   */
-  containerMargin?: [number, number] | Record<Breakpoint, [number, number]>;
-  /**
-   * Maximum number of rows user can have in the grid.
-   * @defaultValue unlimited
-   */
-  maxRows?: number;
-  /**
-   * Custom style for grid.
-   */
-  style?: React.CSSProperties;
-  /**
-   * Compaction type of widgets in the grid. This controls where widgets are moved in case
-   * they are overlapping in the grid.
-   */
-  compactType?: 'vertical' | 'horizontal' | null;
-  /**
-   * Controls if widgets can overlap in the grid. If true, grid can be placed one over the other.
-   * @defaultValue false
-   */
-  allowOverlap?: boolean;
-  /**
-   * Controls if widgets can collide with each other. If true, grid items won't change position when being dragged over.
-   * @defaultValue false
-   */
-  preventCollision?: boolean;
-};
-
-/**
  * A component that allows customizing components in home grid layout.
  *
  * @public
@@ -279,10 +206,11 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     availableWidgetsFilter,
     [props],
   );
-
-  const defaultLayout = props.config
-    ? convertConfigToDefaultWidgets(props.config, availableWidgets)
-    : [];
+  const defaultLayout = useMemo(() => {
+    return props.config
+      ? convertConfigToDefaultWidgets(props.config, availableWidgets)
+      : [];
+  }, [props.config, availableWidgets]);
   const [widgets, setWidgets] = useHomeStorage(defaultLayout);
   const [addWidgetDialogOpen, setAddWidgetDialogOpen] = React.useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
@@ -318,6 +246,9 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           isDraggable: editMode,
         },
         settings: {},
+        movable: widget.movable,
+        deletable: widget.deletable,
+        resizable: widget.resizable,
       },
     ]);
     setAddWidgetDialogOpen(false);
@@ -348,9 +279,11 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     setEditMode(mode);
     setWidgets(
       widgets.map(w => {
+        const resizable = w.resizable === false ? false : mode;
+        const movable = w.movable === false ? false : mode;
         return {
           ...w,
-          layout: { ...w.layout, isDraggable: mode, isResizable: mode },
+          layout: { ...w.layout, isDraggable: movable, isResizable: resizable },
         };
       }),
     );
@@ -370,7 +303,20 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
 
   const handleRestoreDefaultConfig = () => {
-    setWidgets(defaultLayout);
+    setWidgets(
+      defaultLayout.map(w => {
+        const resizable = w.resizable === false ? false : editMode;
+        const movable = w.movable === false ? false : editMode;
+        return {
+          ...w,
+          layout: {
+            ...w.layout,
+            isDraggable: movable,
+            isResizable: resizable,
+          },
+        };
+      }),
+    );
   };
 
   return (
@@ -404,7 +350,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
         style={props.style}
         allowOverlap={props.allowOverlap}
         preventCollision={props.preventCollision}
-        draggableCancel=".overlayGridItem,.widgetSettingsDialog"
+        draggableCancel=".overlayGridItem,.widgetSettingsDialog,.disabled"
         containerPadding={props.containerPadding}
         margin={props.containerMargin}
         breakpoints={
@@ -435,7 +381,9 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           return (
             <div
               key={l.i}
-              className={`${styles.widgetWrapper} ${editMode && 'edit'}`}
+              className={`${styles.widgetWrapper} ${editMode && 'edit'} ${
+                w.movable === false && 'disabled'
+              }`}
             >
               <ErrorBoundary>
                 <widget.component.type {...widgetProps} />
@@ -447,6 +395,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
                   handleRemove={handleRemove}
                   handleSettingsSave={handleSettingsSave}
                   settings={w.settings}
+                  deletable={w.deletable}
                 />
               )}
             </div>

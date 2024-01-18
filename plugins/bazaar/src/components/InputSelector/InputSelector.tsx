@@ -60,7 +60,7 @@ export const InputSelector = ({ name, options, control, error }: Props) => {
           >
             {options.map(option => {
               return (
-                <MenuItem button key={option} value={option}>
+                <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>
               );

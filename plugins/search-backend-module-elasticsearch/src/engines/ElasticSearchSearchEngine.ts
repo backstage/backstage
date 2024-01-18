@@ -26,7 +26,10 @@ import { isEmpty, isNumber, isNaN as nan } from 'lodash';
 import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';
 import { RequestSigner } from 'aws4';
 import { Config } from '@backstage/config';
-import { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
+import {
+  ElasticSearchClientOptions,
+  OpenSearchElasticSearchClientOptions,
+} from './ElasticSearchClientOptions';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchCustomIndexTemplate } from './types';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
@@ -38,6 +41,7 @@ import {
   AwsCredentialProvider,
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export type { ElasticSearchClientOptions };
 
@@ -73,10 +77,11 @@ export type ElasticSearchQueryTranslator = (
  * @public
  */
 export type ElasticSearchOptions = {
-  logger: Logger;
+  logger: Logger | LoggerService;
   config: Config;
   aliasPostfix?: string;
   indexPrefix?: string;
+  translator?: ElasticSearchQueryTranslator;
 };
 
 /**
@@ -126,7 +131,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
     private readonly aliasPostfix: string,
     private readonly indexPrefix: string,
-    private readonly logger: Logger,
+    private readonly logger: Logger | LoggerService,
     private readonly batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
   ) {
@@ -149,6 +154,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       config,
       aliasPostfix = `search`,
       indexPrefix = ``,
+      translator,
     } = options;
     const credentialProvider = DefaultAwsCredentialsManager.fromConfig(config);
     const clientOptions = await this.createElasticSearchClientOptions(
@@ -165,7 +171,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       logger.info('Initializing ElasticSearch search engine.');
     }
 
-    return new ElasticSearchSearchEngine(
+    const engine = new ElasticSearchSearchEngine(
       clientOptions,
       aliasPostfix,
       indexPrefix,
@@ -176,6 +182,18 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         'search.elasticsearch.highlightOptions',
       ),
     );
+
+    for (const indexTemplate of this.readIndexTemplateConfig(
+      config.getConfig('search.elasticsearch'),
+    )) {
+      await engine.setIndexTemplate(indexTemplate);
+    }
+
+    if (translator) {
+      await engine.setTranslator(translator);
+    }
+
+    return engine;
   }
 
   /**
@@ -221,11 +239,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
             .boolQuery()
             .should(value.map(it => esb.matchQuery(key, it.toString())));
         }
-        this.logger.error(
-          'Failed to query, unrecognized filter type',
+        this.logger.error('Failed to query, unrecognized filter type', {
           key,
           value,
-        );
+        });
         throw new Error(
           'Failed to add filters to query. Unrecognized filter type',
         );
@@ -288,6 +305,11 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       elasticSearchClientWrapper: this.elasticSearchClientWrapper,
       logger: indexerLogger,
       batchSize: this.batchSize,
+      skipRefresh:
+        (
+          this
+            .elasticSearchClientOptions as OpenSearchElasticSearchClientOptions
+        )?.service === 'aoss',
     });
 
     // Attempt cleanup upon failure.
@@ -459,6 +481,8 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       return {
         provider: 'aws',
         node: config.getString('node'),
+        region: config.getOptionalString('region'),
+        service,
         ...(sslConfig
           ? {
               ssl: {
@@ -517,6 +541,24 @@ export class ElasticSearchSearchEngine implements SearchEngine {
           }
         : {}),
     };
+  }
+
+  private static readIndexTemplateConfig(
+    config: Config,
+  ): ElasticSearchCustomIndexTemplate[] {
+    return (
+      config.getOptionalConfigArray('indexTemplates')?.map(templateConfig => {
+        const bodyConfig = templateConfig.getConfig('body');
+        return {
+          name: templateConfig.getString('name'),
+          body: {
+            index_patterns: bodyConfig.getStringArray('index_patterns'),
+            composed_of: bodyConfig.getOptionalStringArray('composed_of'),
+            template: bodyConfig.getOptionalConfig('template')?.get(),
+          },
+        };
+      }) ?? []
+    );
   }
 }
 

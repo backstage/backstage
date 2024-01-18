@@ -6,8 +6,6 @@ sidebar_label: Plugins
 description: Backend plugins
 ---
 
-> **DISCLAIMER: The new backend system is in alpha, and still under active development. While we have reviewed the interfaces carefully, they may still be iterated on before the stable release.**
-
 Plugins provide the actual base features of a Backstage backend. Each plugin operates completely independently of all other plugins and they only communicate with each other through network calls. This means that there is a strong degree of isolation between plugins, and that each plugin can be considered a separate microservice. While a default Backstage project has all plugins installed within a single backend, it is also possible to split this setup into multiple backends, with each backend housing one or more plugins.
 
 ## Defining a Plugin
@@ -41,44 +39,32 @@ The `env` object passed to the `register` callback contains different methods th
 The `createBackendPlugin` return value is exported as `examplePlugin`, which is a factory function used to create the actual plugin instance. For example, to install the plugin in your backend instance, you would do the following:
 
 ```ts
+import { examplePlugin } from 'backstage-plugin-example-backend';
+
 backend.add(examplePlugin());
 ```
 
-The reason for why our plugin instance has been wrapped up in a factory function is so that you can always chose to add options to your plugin in the future, without breaking existing usage. To add options you wrap the object passed to `createBackendPlugin` in a callback that accepts the desired options. For example:
+By convention every plugin package should export its plugin instance as the default export from the package:
 
 ```ts
-export interface ExamplePluginOptions {
-  skipHello: boolean;
-}
-
-export const examplePlugin = createBackendPlugin(
-  (options?: ExamplePluginOptions) => ({
-    pluginId: 'example',
-    register(env) {
-      env.registerInit({
-        deps: {
-          logger: coreServices.logger,
-        },
-        async init({ logger }) {
-          if (!options?.skipHello) {
-            logger.info('Hello from example plugin');
-          }
-        },
-      });
-    },
-  }),
-);
+// plugins/example-backend/src/index.ts
+export { examplePlugin as default } from './plugin.ts';
 ```
 
-Now your plugin accepts an optional options object, which can be used to configure each plugin instance. To supply options to the plugin, you pass them to the plugin factory method:
+This allows you to install the plugin in your backend instance by just referencing the package:
 
 ```ts
-backend.add(examplePlugin({ skipHello: true }));
+backend.add(import('backstage-plugin-example-backend'));
 ```
 
-It is also possible to make the options required, simply remove the `?` from the parameter declaration. This will be reflected in the returned factory function, which will now require the options parameter.
+To make your plugins customizable you should generally prefer to use [static configuration](../../conf/defining.md). By convention plugins should place their configuration under a top-level configuration key that matches the plugin ID. For example, our example plugin might be configured as follows:
 
-Options are a simple way to allow for more lightweight customization of a plugin, but they do not allow for more complex extensions that require access to services. For that, you need to create and register extension points for your plugin, which are covered in the [next section](./05-extension-points.md).
+```yaml
+example:
+  message: Welcome to the example plugin
+```
+
+For situations where static configuration is too limiting, you can instead register extension points for your plugin. Extension Points are covered in the [next section](./05-extension-points.md).
 
 ## Rules of Plugins
 

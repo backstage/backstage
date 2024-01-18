@@ -21,6 +21,9 @@ import { VaultSecret, VaultClient } from './api';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 
 describe('api', () => {
+  let api: VaultClient;
+  let fetchApiSpy: jest.SpyInstance<Promise<Response>>;
+
   const server = setupServer();
   setupRequestMockHandlers(server);
 
@@ -64,37 +67,48 @@ describe('api', () => {
     );
   };
 
-  it('should return secrets', async () => {
+  beforeEach(() => {
     setupHandlers();
-    const api = new VaultClient({ discoveryApi, fetchApi });
+
+    api = new VaultClient({ discoveryApi, fetchApi });
+    fetchApiSpy = jest.spyOn(fetchApi, 'fetch');
+  });
+
+  it('should return secrets', async () => {
     expect(await api.listSecrets('test/success')).toEqual(
       mockSecretsResult.items,
+    );
+    expect(fetchApiSpy).toHaveBeenCalledWith(
+      `${mockBaseUrl}/v1/secrets/test%2Fsuccess?`,
+      expect.anything(),
+    );
+  });
+
+  it('should return secrets with custom engine', async () => {
+    expect(
+      await api.listSecrets('test/success', { secretEngine: 'kv' }),
+    ).toEqual(mockSecretsResult.items);
+    expect(fetchApiSpy).toHaveBeenCalledWith(
+      `${mockBaseUrl}/v1/secrets/test%2Fsuccess?engine=kv`,
+      expect.anything(),
     );
   });
 
   it('should return empty secret list', async () => {
-    setupHandlers();
-    const api = new VaultClient({ discoveryApi, fetchApi });
     expect(await api.listSecrets('test/empty')).toEqual([]);
   });
 
   it('should return all the secrets if no path defined', async () => {
-    setupHandlers();
-    const api = new VaultClient({ discoveryApi, fetchApi });
     expect(await api.listSecrets('')).toEqual(mockSecretsResult.items);
   });
 
   it('should throw an error if the Vault API responds with an HTTP 404', async () => {
-    setupHandlers();
-    const api = new VaultClient({ discoveryApi, fetchApi });
     await expect(api.listSecrets('test/not-found')).rejects.toThrow(
       "No secrets found in path 'v1/secrets/test%2Fnot-found'",
     );
   });
 
   it('should throw an error if the Vault API responds with a non-successful HTTP status code', async () => {
-    setupHandlers();
-    const api = new VaultClient({ discoveryApi, fetchApi });
     await expect(api.listSecrets('test/error')).rejects.toThrow(
       'Request failed with 400 Error',
     );

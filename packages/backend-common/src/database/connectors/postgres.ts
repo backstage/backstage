@@ -126,6 +126,10 @@ export async function ensurePgDatabaseExists(
     connection: {
       database: 'postgres',
     },
+    pool: {
+      min: 0,
+      acquireTimeoutMillis: 10000,
+    },
   });
 
   try {
@@ -142,7 +146,23 @@ export async function ensurePgDatabaseExists(
       await admin.raw(`CREATE DATABASE ??`, [database]);
     };
 
-    await Promise.all(databases.map(ensureDatabase));
+    await Promise.all(
+      databases.map(async database => {
+        // For initial setup we use a smaller timeout but several retries. Given that this
+        // is a separate connection pool we should never really run into issues with connection
+        // acquisition timeouts, but we do anyway. This might be a bug in knex or some other dependency.
+        let lastErr: Error | undefined = undefined;
+        for (let i = 0; i < 3; i++) {
+          try {
+            return await ensureDatabase(database);
+          } catch (err) {
+            lastErr = err;
+          }
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        throw lastErr;
+      }),
+    );
   } finally {
     await admin.destroy();
   }
@@ -180,6 +200,24 @@ export async function ensurePgSchemaExists(
 }
 
 /**
+ * Drops the Postgres databases.
+ *
+ * @param dbConfig - The database config
+ * @param databases - The name of the databases to drop
+ */
+export async function dropPgDatabase(
+  dbConfig: Config,
+  ...databases: Array<string>
+) {
+  const admin = createPgDatabaseClient(dbConfig);
+  await Promise.all(
+    databases.map(async database => {
+      await admin.raw(`DROP DATABASE ??`, [database]);
+    }),
+  );
+}
+
+/**
  * PostgreSQL database connector.
  *
  * Exposes database connector functionality via an immutable object.
@@ -191,4 +229,5 @@ export const pgConnector: DatabaseConnector = Object.freeze({
   createNameOverride: defaultNameOverride,
   createSchemaOverride: defaultSchemaOverride,
   parseConnectionString: parsePgConnectionString,
+  dropDatabase: dropPgDatabase,
 });

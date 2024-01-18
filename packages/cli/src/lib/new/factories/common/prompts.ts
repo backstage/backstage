@@ -33,6 +33,22 @@ export function pluginIdPrompt(): Prompt<{ id: string }> {
   };
 }
 
+export function moduleIdIdPrompt(): Prompt<{ moduleId: string }> {
+  return {
+    type: 'input',
+    name: 'moduleId',
+    message: 'Enter the ID of the module [required]',
+    validate: (value: string) => {
+      if (!value) {
+        return 'Please enter the ID of the module';
+      } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
+        return 'Module IDs must be lowercase and contain only letters, digits, and dashes.';
+      }
+      return true;
+    },
+  };
+}
+
 export function ownerPrompt(): Prompt<{
   owner?: string;
   codeOwnersPath?: string;

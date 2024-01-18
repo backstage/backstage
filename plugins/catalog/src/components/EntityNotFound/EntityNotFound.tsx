@@ -17,10 +17,9 @@
 import React from 'react';
 import { Grid, Button, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { BackstageTheme } from '@backstage/theme';
 import { Illo } from './Illo';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   container: {
     paddingTop: theme.spacing(24),
     paddingLeft: theme.spacing(8),

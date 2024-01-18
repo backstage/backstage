@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import * as os from 'os';
-import mockFs from 'mock-fs';
 import { resolve as resolvePath } from 'path';
 import { createFilesystemDeleteAction } from './delete';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
 import fs from 'fs-extra';
-
-const root = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
-const workspacePath = resolvePath(root, 'my-workspace');
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('fs:delete', () => {
   const action = createFilesystemDeleteAction();
+
+  const mockDir = createMockDirectory();
+  const workspacePath = resolvePath(mockDir.path, 'workspace');
 
   const mockContext = {
     input: {
@@ -42,7 +41,7 @@ describe('fs:delete', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
 
-    mockFs({
+    mockDir.setContent({
       [workspacePath]: {
         'unit-test-a.js': 'hello',
         'unit-test-b.js': 'world',
@@ -51,10 +50,6 @@ describe('fs:delete', () => {
         },
       },
     });
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('should throw an error when files is not an array', async () => {

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-rollbar
+  title: '@backstage/plugin-rollbar'
+  description: A Backstage plugin that integrates towards Rollbar
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: andrewthauer

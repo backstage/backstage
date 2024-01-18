@@ -17,7 +17,7 @@
 import {
   Backend,
   cacheServiceFactory,
-  configServiceFactory,
+  rootConfigServiceFactory,
   createSpecializedBackend,
   databaseServiceFactory,
   discoveryServiceFactory,
@@ -33,19 +33,10 @@ import {
   urlReaderServiceFactory,
   identityServiceFactory,
 } from '@backstage/backend-app-api';
-import {
-  ServiceFactory,
-  ServiceFactoryOrFunction,
-  SharedBackendEnvironment,
-} from '@backstage/backend-plugin-api';
-
-// Internal import of the type to avoid needing to export this.
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
-import type { InternalSharedBackendEnvironment } from '@backstage/backend-plugin-api/src/wiring/createSharedEnvironment';
 
 export const defaultServiceFactories = [
   cacheServiceFactory(),
-  configServiceFactory(),
+  rootConfigServiceFactory(),
   databaseServiceFactory(),
   discoveryServiceFactory(),
   httpRouterServiceFactory(),
@@ -64,44 +55,6 @@ export const defaultServiceFactories = [
 /**
  * @public
  */
-export interface CreateBackendOptions {
-  env?: SharedBackendEnvironment;
-  services?: ServiceFactoryOrFunction[];
-}
-
-/**
- * @public
- */
-export function createBackend(options?: CreateBackendOptions): Backend {
-  const services = new Array<ServiceFactory>();
-
-  // Highest priority: Services passed directly to createBackend
-  const providedServices = (options?.services ?? []).map(sf =>
-    typeof sf === 'function' ? sf() : sf,
-  );
-  services.push(...providedServices);
-
-  // Middle priority: Services from the shared environment
-  if (options?.env) {
-    const env = options.env as unknown as InternalSharedBackendEnvironment;
-    if (env.version !== 'v1') {
-      throw new Error(
-        `Shared environment version '${env.version}' is invalid or not supported`,
-      );
-    }
-
-    const environmentServices =
-      env.services?.filter(
-        sf => !services.some(({ service }) => sf.service.id === service.id),
-      ) ?? [];
-    services.push(...environmentServices);
-  }
-
-  // Lowest priority: Default services that are not already provided by environment or directly to createBackend
-  const defaultServices = defaultServiceFactories.filter(
-    sf => !services.some(({ service }) => service.id === sf.service.id),
-  );
-  services.push(...defaultServices);
-
-  return createSpecializedBackend({ services });
+export function createBackend(): Backend {
+  return createSpecializedBackend({ defaultServiceFactories });
 }

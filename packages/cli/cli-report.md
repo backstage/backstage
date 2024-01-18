@@ -97,6 +97,8 @@ Usage: backstage-cli config:schema [options]
 Options:
   --package <name>
   --format <format>
+  --merge
+  --no-merge
   -h, --help
 ```
 
@@ -222,7 +224,6 @@ Usage: backstage-cli package build [options]
 Options:
   --role <name>
   --minify
-  --experimental-type-build
   --skip-build-dependencies
   --stats
   --config <path>
@@ -276,8 +277,8 @@ Options:
   --config <path>
   --role <name>
   --check
-  --inspect
-  --inspect-brk
+  --inspect [host]
+  --inspect-brk [host]
   -h, --help
 ```
 
@@ -342,11 +343,13 @@ Options:
   --notifyMode
   -o, --onlyChanged
   -f, --onlyFailures
+  --openHandlesTimeout
   --outputFile
   --passWithNoTests
   --preset
   --prettierPath
   --projects
+  --randomize
   --reporters
   --resetMocks
   --resetModules
@@ -390,6 +393,7 @@ Options:
   --watchAll
   --watchPathIgnorePatterns
   --watchman
+  --workerThreads
 ```
 
 ### `backstage-cli repo`
@@ -403,6 +407,7 @@ Options:
 Commands:
   build [options]
   lint [options]
+  fix [options]
   clean
   list-deprecations [options]
   test [options]
@@ -426,6 +431,16 @@ Options:
 Usage: backstage-cli repo clean [options]
 
 Options:
+  -h, --help
+```
+
+### `backstage-cli repo fix`
+
+```
+Usage: backstage-cli repo fix [options]
+
+Options:
+  --check
   -h, --help
 ```
 
@@ -523,11 +538,13 @@ Options:
   --notifyMode
   -o, --onlyChanged
   -f, --onlyFailures
+  --openHandlesTimeout
   --outputFile
   --passWithNoTests
   --preset
   --prettierPath
   --projects
+  --randomize
   --reporters
   --resetMocks
   --resetModules
@@ -571,6 +588,7 @@ Options:
   --watchAll
   --watchPathIgnorePatterns
   --watchman
+  --workerThreads
 ```
 
 ### `backstage-cli versions:bump`

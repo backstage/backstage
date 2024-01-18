@@ -22,68 +22,88 @@
 import {
   coreServices,
   createBackendModule,
+  createExtensionPoint,
 } from '@backstage/backend-plugin-api';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
-import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
+  CatalogCollatorEntityTransformer,
   DefaultCatalogCollatorFactory,
-  DefaultCatalogCollatorFactoryOptions,
 } from '@backstage/plugin-search-backend-module-catalog';
+import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { readScheduleConfigOptions } from './collators/config';
 
 /**
+ * Options for {@link catalogCollatorExtensionPoint}.
+ *
  * @alpha
- * Options for {@link searchModuleCatalogCollator}.
  */
-export type SearchModuleCatalogCollatorOptions = Omit<
-  DefaultCatalogCollatorFactoryOptions,
-  'discovery' | 'tokenManager'
-> & {
-  schedule?: TaskScheduleDefinition;
+export type CatalogCollatorExtensionPoint = {
+  /**
+   * Allows you to customize how entities are shaped into documents.
+   */
+  setEntityTransformer(transformer: CatalogCollatorEntityTransformer): void;
 };
 
 /**
+ * Extension point for customizing how catalog entities are shaped into
+ * documents for the search backend.
+ *
  * @alpha
- * Search backend module for the Catalog index.
  */
-export const searchModuleCatalogCollator = createBackendModule(
-  (options?: SearchModuleCatalogCollatorOptions) => ({
-    moduleId: 'catalogCollator',
-    pluginId: 'search',
-    register(env) {
-      env.registerInit({
-        deps: {
-          config: coreServices.config,
-          discovery: coreServices.discovery,
-          tokenManager: coreServices.tokenManager,
-          scheduler: coreServices.scheduler,
-          indexRegistry: searchIndexRegistryExtensionPoint,
-        },
-        async init({
-          config,
-          discovery,
-          tokenManager,
-          scheduler,
-          indexRegistry,
-        }) {
-          const defaultSchedule = {
-            frequency: { minutes: 10 },
-            timeout: { minutes: 15 },
-            initialDelay: { seconds: 3 },
-          };
+export const catalogCollatorExtensionPoint =
+  createExtensionPoint<CatalogCollatorExtensionPoint>({
+    id: 'search.catalogCollator.extension',
+  });
 
-          indexRegistry.addCollator({
-            schedule: scheduler.createScheduledTaskRunner(
-              options?.schedule ?? defaultSchedule,
-            ),
-            factory: DefaultCatalogCollatorFactory.fromConfig(config, {
-              ...options,
-              discovery,
-              tokenManager,
-            }),
-          });
-        },
-      });
-    },
-  }),
-);
+/**
+ * Search backend module for the Catalog index.
+ *
+ * @alpha
+ */
+export default createBackendModule({
+  pluginId: 'search',
+  moduleId: 'catalog-collator',
+  register(env) {
+    let entityTransformer: CatalogCollatorEntityTransformer | undefined;
+
+    env.registerExtensionPoint(catalogCollatorExtensionPoint, {
+      setEntityTransformer(transformer) {
+        if (entityTransformer) {
+          throw new Error('setEntityTransformer can only be called once');
+        }
+        entityTransformer = transformer;
+      },
+    });
+
+    env.registerInit({
+      deps: {
+        config: coreServices.rootConfig,
+        discovery: coreServices.discovery,
+        tokenManager: coreServices.tokenManager,
+        scheduler: coreServices.scheduler,
+        indexRegistry: searchIndexRegistryExtensionPoint,
+        catalog: catalogServiceRef,
+      },
+      async init({
+        config,
+        discovery,
+        tokenManager,
+        scheduler,
+        indexRegistry,
+        catalog,
+      }) {
+        indexRegistry.addCollator({
+          schedule: scheduler.createScheduledTaskRunner(
+            readScheduleConfigOptions(config),
+          ),
+          factory: DefaultCatalogCollatorFactory.fromConfig(config, {
+            entityTransformer,
+            discovery,
+            tokenManager,
+            catalogClient: catalog,
+          }),
+        });
+      },
+    });
+  },
+});

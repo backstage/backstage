@@ -16,7 +16,8 @@
 
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
-import { renderHook } from '@testing-library/react-hooks';
+import { waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
 import Observable from 'zen-observable';
 import { StarredEntitiesApi, starredEntitiesApiRef } from '../apis';
@@ -83,18 +84,16 @@ describe('useStarredEntity', () => {
         );
         mockStarredEntitiesApi.toggleStarred.mockResolvedValue();
 
-        const { result, waitForNextUpdate } = renderHook(
-          () => useStarredEntity(entityOrRef),
-          {
-            wrapper,
-          },
-        );
+        const { result } = renderHook(() => useStarredEntity(entityOrRef), {
+          wrapper,
+        });
 
         // the initial value will always be false because the observable triggers async
         expect(result.current.isStarredEntity).toBe(false);
-        await waitForNextUpdate();
 
-        expect(result.current.isStarredEntity).toBe(true);
+        await waitFor(() => {
+          expect(result.current.isStarredEntity).toBe(true);
+        });
       });
     });
   });

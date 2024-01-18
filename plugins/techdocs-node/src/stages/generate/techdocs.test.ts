@@ -157,4 +157,24 @@ describe('readGeneratorConfig', () => {
       legacyCopyReadmeMdToIndexMd: true,
     });
   });
+
+  it('should read the default plugins config', () => {
+    const config = new ConfigReader({
+      techdocs: {
+        generator: {
+          runIn: 'docker',
+          dockerImage: 'my-org/techdocs',
+          pullImage: false,
+          mkdocs: { defaultPlugins: ['mkdocs-custom-plugin'] },
+        },
+      },
+    });
+
+    expect(readGeneratorConfig(config, logger)).toEqual({
+      runIn: 'docker',
+      dockerImage: 'my-org/techdocs',
+      pullImage: false,
+      defaultPlugins: ['mkdocs-custom-plugin'],
+    });
+  });
 });

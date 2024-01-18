@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-bazaar",
-  "version": "0.2.11-next.2",
+  "version": "0.2.21",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -12,6 +12,13 @@
   "backstage": {
     "role": "frontend-plugin"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/bazaar"
+  },
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",
@@ -24,34 +31,31 @@
   "dependencies": {
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/cli": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/plugin-catalog": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@date-io/luxon": "1.x",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@material-ui/pickers": "^3.3.10",
-    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0",
     "luxon": "^3.0.0",
     "material-ui-search-bar": "^1.0.0",
     "react-hook-form": "^7.13.0",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
-    "@testing-library/jest-dom": "^5.10.1",
-    "@types/react": "^16.13.1 || ^17.0.0"
+    "@testing-library/jest-dom": "^6.0.0"
   },
   "files": [
     "dist"

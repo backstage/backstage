@@ -15,93 +15,41 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { appPlugin } from '@backstage/plugin-app-backend/alpha';
-import { catalogPlugin } from '@backstage/plugin-catalog-backend/alpha';
-import { kubernetesPlugin } from '@backstage/plugin-kubernetes-backend/alpha';
-import {
-  permissionModuleAllowAllPolicy,
-  permissionPlugin,
-} from '@backstage/plugin-permission-backend/alpha';
-import { scaffolderPlugin } from '@backstage/plugin-scaffolder-backend/alpha';
-import { catalogModuleTemplateKind } from '@backstage/plugin-scaffolder-backend/alpha';
-import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
-import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
-import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
-import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
-import { techdocsPlugin } from '@backstage/plugin-techdocs-backend/alpha';
-import { todoPlugin } from '@backstage/plugin-todo-backend';
-import { entityFeedbackPlugin } from '@backstage/plugin-entity-feedback-backend';
-import { catalogModuleUnprocessedEntities } from '@backstage/plugin-catalog-backend-module-unprocessed';
-import { badgesPlugin } from '@backstage/plugin-badges-backend';
-import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend';
-import { linguistPlugin } from '@backstage/plugin-linguist-backend';
-import { devtoolsPlugin } from '@backstage/plugin-devtools-backend';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
-import { adrPlugin } from '@backstage/plugin-adr-backend';
-import { lighthousePlugin } from '@backstage/plugin-lighthouse-backend';
 
 const backend = createBackend();
 
-backend.add(appPlugin({ appPackageName: 'example-app' }));
-
-// Badges
-backend.add(badgesPlugin());
-
-// Azure DevOps
-backend.add(azureDevOpsPlugin());
-
-// DevTools
-backend.add(devtoolsPlugin());
-
-// Entity Feedback
-backend.add(entityFeedbackPlugin());
-
-// Linguist
-const linguistSchedule: TaskScheduleDefinition = {
-  frequency: { minutes: 2 },
-  timeout: { minutes: 15 },
-  initialDelay: { seconds: 15 },
-};
-
+backend.add(import('@backstage/plugin-adr-backend'));
+backend.add(import('@backstage/plugin-app-backend/alpha'));
+backend.add(import('@backstage/plugin-azure-devops-backend'));
+backend.add(import('@backstage/plugin-badges-backend'));
+backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 backend.add(
-  linguistPlugin({
-    schedule: linguistSchedule,
-    age: { days: 30 },
-    batchSize: 2,
-    useSourceLocation: false,
-  }),
+  import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
-
-// Todo
-backend.add(todoPlugin());
-
-backend.add(adrPlugin());
-
-// Techdocs
-backend.add(techdocsPlugin());
-
-// Catalog
-backend.add(catalogPlugin());
-backend.add(catalogModuleTemplateKind());
-
-backend.add(scaffolderPlugin());
-
-// Search
-backend.add(searchPlugin());
-backend.add(searchModuleCatalogCollator());
-backend.add(searchModuleTechDocsCollator());
-backend.add(searchModuleExploreCollator());
-
-// Kubernetes
-backend.add(kubernetesPlugin());
-
-// Lighthouse
-backend.add(lighthousePlugin());
-
-// Permissions
-backend.add(permissionPlugin());
-backend.add(permissionModuleAllowAllPolicy());
-
-backend.add(catalogModuleUnprocessedEntities());
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-devtools-backend'));
+backend.add(import('@backstage/plugin-entity-feedback-backend'));
+backend.add(import('@backstage/plugin-jenkins-backend'));
+backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
+backend.add(import('@backstage/plugin-lighthouse-backend'));
+backend.add(import('@backstage/plugin-linguist-backend'));
+backend.add(import('@backstage/plugin-playlist-backend'));
+backend.add(import('@backstage/plugin-nomad-backend'));
+backend.add(
+  import('@backstage/plugin-permission-backend-module-allow-all-policy'),
+);
+backend.add(import('@backstage/plugin-permission-backend/alpha'));
+backend.add(import('@backstage/plugin-proxy-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-explore/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-backstage-openapi'),
+);
+backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
+backend.add(import('@backstage/plugin-todo-backend'));
+backend.add(import('@backstage/plugin-sonarqube-backend'));
 
 backend.start();

@@ -36,7 +36,6 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
 
 jest.setTimeout(60_000);
-jest.useFakeTimers();
 
 const testFactRetriever: FactRetriever = {
   id: 'test_factretriever',
@@ -65,14 +64,14 @@ const testFactRetriever: FactRetriever = {
     ];
   }),
 };
+
 const defaultCadence = '1 * * * *';
+
 describe('FactRetrieverEngine', () => {
   let engine: FactRetrieverEngine;
   type FactSchemaAssertionCallback = (
     factSchemaDefinition: FactSchemaDefinition,
   ) => void;
-
-  jest.setTimeout(15000);
 
   type FactInsertionAssertionCallback = ({
     facts,
@@ -118,7 +117,7 @@ describe('FactRetrieverEngine', () => {
   }
 
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
   });
 
   async function createEngine(
@@ -203,30 +202,36 @@ describe('FactRetrieverEngine', () => {
         });
       }
 
-      const handler = jest.fn();
-      engine = await createEngine(
-        databaseId,
-        insertCallback,
-        () => {},
-        undefined,
-        { ...testFactRetriever, handler },
-      );
-      await engine.schedule();
-      const job = await engine.getJobRegistration(testFactRetriever.id);
-      expect(job.cadence!!).toEqual(defaultCadence);
+      jest.useFakeTimers();
 
-      await engine.triggerJob(job.factRetriever.id);
-      jest.advanceTimersByTime(5000);
+      try {
+        const handler = jest.fn();
+        engine = await createEngine(
+          databaseId,
+          insertCallback,
+          () => {},
+          undefined,
+          { ...testFactRetriever, handler },
+        );
+        await engine.schedule();
+        const job = await engine.getJobRegistration(testFactRetriever.id);
+        expect(job.cadence!!).toEqual(defaultCadence);
 
-      const handlerParam = await new Promise(resolve =>
-        handler.mockImplementation(resolve),
-      );
+        await engine.triggerJob(job.factRetriever.id);
+        jest.advanceTimersByTime(5000);
 
-      await expect(handlerParam).toEqual(
-        expect.objectContaining({
-          entityFilter: testFactRetriever.entityFilter,
-        }),
-      );
+        const handlerParam = await new Promise(resolve =>
+          handler.mockImplementation(resolve),
+        );
+
+        await expect(handlerParam).toEqual(
+          expect.objectContaining({
+            entityFilter: testFactRetriever.entityFilter,
+          }),
+        );
+      } finally {
+        jest.useRealTimers();
+      }
     },
   );
 });

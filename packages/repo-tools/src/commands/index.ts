@@ -32,14 +32,18 @@ function registerSchemaCommand(program: Command) {
     .description(
       'Verify that all OpenAPI schemas are valid and have a matching `schemas/openapi.generated.ts` file.',
     )
-    .action(lazy(() => import('./openapi/verify').then(m => m.bulkCommand)));
+    .action(
+      lazy(() => import('./openapi/schema/verify').then(m => m.bulkCommand)),
+    );
 
   openApiCommand
     .command('generate [paths...]')
     .description(
       'Generates a Typescript file from an OpenAPI yaml spec. For use with the `@backstage/backend-openapi-utils` ApiRouter type.',
     )
-    .action(lazy(() => import('./openapi/generate').then(m => m.bulkCommand)));
+    .action(
+      lazy(() => import('./openapi/schema/generate').then(m => m.bulkCommand)),
+    );
 
   openApiCommand
     .command('lint [paths...]')
@@ -49,6 +53,27 @@ function registerSchemaCommand(program: Command) {
       'Fail on any linting severity messages, not just errors.',
     )
     .action(lazy(() => import('./openapi/lint').then(m => m.bulkCommand)));
+
+  openApiCommand
+    .command('test [paths...]')
+    .description('Test OpenAPI schemas against written tests')
+    .option('--update', 'Update the spec on failure.')
+    .action(lazy(() => import('./openapi/test').then(m => m.bulkCommand)));
+
+  openApiCommand
+    .command('init <paths...>')
+    .description('Creates any config needed for the test command.')
+    .action(lazy(() => import('./openapi/test/init').then(m => m.default)));
+
+  openApiCommand
+    .command('generate-client')
+    .requiredOption('--input-spec <file>')
+    .requiredOption('--output-directory <directory>')
+    .action(
+      lazy(() =>
+        import('./openapi/client/generate').then(m => m.singleCommand),
+      ),
+    );
 }
 
 export function registerCommands(program: Command) {
@@ -95,6 +120,25 @@ export function registerCommands(program: Command) {
     .command('type-deps')
     .description('Find inconsistencies in types of all packages and plugins')
     .action(lazy(() => import('./type-deps/type-deps').then(m => m.default)));
+
+  program
+    .command('generate-catalog-info')
+    .option(
+      '--dry-run',
+      'Shows what would happen without actually writing any yaml.',
+    )
+    .option(
+      '--ci',
+      'CI run checks that there are no changes to catalog-info.yaml files',
+    )
+    .description('Create or fix info yaml files for all backstage packages')
+    .action(
+      lazy(() =>
+        import('./generate-catalog-info/generate-catalog-info').then(
+          m => m.default,
+        ),
+      ),
+    );
 
   registerSchemaCommand(program);
 }

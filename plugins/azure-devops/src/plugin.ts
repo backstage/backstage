@@ -15,11 +15,6 @@
  */
 
 import {
-  AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
-  AZURE_DEVOPS_PROJECT_ANNOTATION,
-  AZURE_DEVOPS_REPO_ANNOTATION,
-} from './constants';
-import {
   azurePipelinesEntityContentRouteRef,
   azurePullRequestDashboardRouteRef,
   azureGitTagsEntityContentRouteRef,
@@ -37,6 +32,11 @@ import {
 import { AzureDevOpsClient } from './api/AzureDevOpsClient';
 import { Entity } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from './api/AzureDevOpsApi';
+import {
+  AZURE_DEVOPS_REPO_ANNOTATION,
+  AZURE_DEVOPS_PROJECT_ANNOTATION,
+  AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
+} from '@backstage/plugin-azure-devops-common';
 
 /** @public */
 export const isAzureDevOpsAvailable = (entity: Entity) =>

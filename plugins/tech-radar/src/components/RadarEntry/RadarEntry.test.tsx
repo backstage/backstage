@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
@@ -27,6 +27,7 @@ const minProps: Props = {
   y: 2,
   value: 2,
   color: 'red',
+  entryId: 'Typescript',
 };
 
 const optionalProps: Props = {
@@ -56,6 +57,11 @@ describe('RadarEntry', () => {
     expect(radarEntry).toBeInTheDocument();
     expect(radarEntry.getAttribute('transform')).toBe(`translate(${x}, ${y})`);
     expect(screen.getByText(String(minProps.value))).toBeInTheDocument();
+    expect(
+      within(radarEntry)
+        .getByText(String(minProps.value))
+        .getAttribute('aria-labelledby'),
+    ).toBe(minProps.entryId);
   });
 
   it('should render with description', async () => {
@@ -73,6 +79,11 @@ describe('RadarEntry', () => {
     const radarDescription = screen.getByTestId('radar-description');
     expect(radarDescription).toBeInTheDocument();
     expect(screen.getByText(String(minProps.value))).toBeInTheDocument();
+    expect(
+      within(radarEntry)
+        .getByText(String(minProps.value))
+        .getAttribute('aria-labelledby'),
+    ).toBe(minProps.entryId);
   });
 
   it('should render blip with url equal to # if description present', async () => {
@@ -87,5 +98,11 @@ describe('RadarEntry', () => {
     );
 
     expect(screen.getByRole('button')).toHaveAttribute('href', '#');
+    const radarEntry = screen.getByTestId('radar-entry');
+    expect(
+      within(radarEntry)
+        .getByText(String(minProps.value))
+        .getAttribute('aria-labelledby'),
+    ).toBe(minProps.entryId);
   });
 });

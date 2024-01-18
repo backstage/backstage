@@ -144,14 +144,14 @@ site
 # Sensitive credentials
 *-credentials.yaml
 
-# e2e tests
-cypress/cypress/*
-
 # Possible leftover from build:api-reports
 tsconfig.tmp.json
 
 # vscode database functionality support files
 *.session.sql
+
+# E2E test reports
+e2e-test-report/
 
 # Lighthouse CI Reports
 **/.lighthouseci/*
@@ -160,3 +160,6 @@ tsconfig.tmp.json
 # VS Code backing up svg files
 *svg.bkp
 *svg.dtmp
+
+# Scripts
+plugins-report.csv

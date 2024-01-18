@@ -31,6 +31,7 @@ import {
   SubRouteRef,
 } from '@backstage/core-plugin-api';
 import { joinPaths } from './helpers';
+import mapValues from 'lodash/mapValues';
 
 /**
  * Resolves the absolute route ref that our target route ref is pointing pointing to, as well
@@ -225,7 +226,23 @@ export class RouteResolver {
       );
 
     const routeFunc: RouteFunc<Params> = (...[params]) => {
-      return joinPaths(basePath, generatePath(targetPath, params));
+      // We selectively encode some some known-dangerous characters in the
+      // params. The reason that we don't perform a blanket `encodeURIComponent`
+      // here is that this encoding was added defensively long after the initial
+      // release of this code. There's likely to be many users of this code that
+      // already encode their parameters knowing that this code didn't do this
+      // for them in the past. Therefore, we are extra careful NOT to include
+      // the percent character in this set, even though that might seem like a
+      // bad idea.
+      const encodedParams =
+        params &&
+        mapValues(params, value => {
+          if (typeof value === 'string') {
+            return value.replaceAll(/[&?#;\/]/g, c => encodeURIComponent(c));
+          }
+          return value;
+        });
+      return joinPaths(basePath, generatePath(targetPath, encodedParams));
     };
     return routeFunc;
   }

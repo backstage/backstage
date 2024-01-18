@@ -22,9 +22,8 @@ export interface Config {
       /**
        * GitlabDiscoveryEntityProvider configuration
        */
-      gitlab?: Record<
-        string,
-        {
+      gitlab?: {
+        [name: string]: {
           /**
            * (Required) Gitlab's host name.
            */
@@ -51,17 +50,21 @@ export interface Config {
           /**
            * (Optional) RegExp for the Project Name Pattern
            */
-          projectPattern?: RegExp;
+          projectPattern?: string;
           /**
            * (Optional) RegExp for the User Name Pattern
            */
-          userPattern?: RegExp;
+          userPattern?: string;
           /**
            * (Optional) RegExp for the Group Name Pattern
            */
-          groupPattern?: RegExp;
-        }
-      >;
+          groupPattern?: string;
+          /**
+           * (Optional) Skip forked repository
+           */
+          skipForkedRepos?: boolean;
+        };
+      };
     };
   };
 }

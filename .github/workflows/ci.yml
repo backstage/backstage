@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [18.x, 20.x]
 
     env:
       CI: true
@@ -26,16 +26,21 @@ jobs:
 
     name: Install ${{ matrix.node-version }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Harden Runner
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@v4.1.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.4
+        uses: backstage/actions/yarn-install@v0.6.5
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -49,7 +54,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [18.x, 20.x]
 
     env:
       CI: true
@@ -57,16 +62,21 @@ jobs:
 
     name: Verify ${{ matrix.node-version }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Harden Runner
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@v4.1.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.4
+        uses: backstage/actions/yarn-install@v0.6.5
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -78,6 +88,9 @@ jobs:
 
       - name: verify local dependency ranges
         run: node scripts/verify-local-dependencies.js
+
+      - name: check for missing repo fixes
+        run: yarn fix --check
 
       - name: validate config
         run: yarn backstage-cli config:check --lax
@@ -94,6 +107,9 @@ jobs:
 
       - name: verify api reference
         run: node scripts/verify-api-reference.js
+
+      - name: verify catalog-info.yaml consistency
+        run: yarn backstage-repo-tools generate-catalog-info --ci
 
       - name: lint openapi yaml files
         run: yarn backstage-repo-tools schema openapi lint
@@ -133,12 +149,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [18.x, 20.x]
 
     name: Test ${{ matrix.node-version }}
     services:
-      postgres13:
-        image: postgres:13
+      postgres16:
+        image: postgres:16
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -148,8 +164,8 @@ jobs:
           --health-retries 5
         ports:
           - 5432/tcp
-      postgres9:
-        image: postgres:9
+      postgres12:
+        image: postgres:12
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -180,18 +196,18 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.1.1
       - name: fetch branch master
         run: git fetch origin master
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.4
+        uses: backstage/actions/yarn-install@v0.6.5
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -202,9 +218,13 @@ jobs:
         run: yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M --since origin/master
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
-          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES16_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres16.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES12_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres12.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
+
+      # We run the test cases before verifying the specs to prevent any failing tests from causing errors.
+      - name: verify openapi specs against test cases
+        run: yarn backstage-repo-tools schema openapi test
 
       - name: ensure clean working directory
         run: |

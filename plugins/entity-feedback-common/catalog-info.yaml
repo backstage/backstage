@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-entity-feedback-common
+  title: '@backstage/plugin-entity-feedback-common'
+  description: Common functionalities for the entity-feedback plugin
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: kuangp

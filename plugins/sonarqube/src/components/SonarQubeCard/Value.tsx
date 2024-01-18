@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
-const useStyles = makeStyles((theme: BackstageTheme) => {
+const useStyles = makeStyles(theme => {
   return {
     value: {
       fontSize: '1.5rem',

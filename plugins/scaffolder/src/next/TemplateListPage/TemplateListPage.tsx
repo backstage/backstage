@@ -38,7 +38,6 @@ import {
 import {
   ScaffolderPageContextMenu,
   TemplateCategoryPicker,
-  TemplateGroupFilter,
   TemplateGroups,
 } from '@backstage/plugin-scaffolder-react/alpha';
 
@@ -52,6 +51,7 @@ import {
   viewTechDocRouteRef,
 } from '../../routes';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 
 /**
  * @alpha
@@ -66,6 +66,11 @@ export type TemplateListPageProps = {
     editor?: boolean;
     actions?: boolean;
     tasks?: boolean;
+  };
+  headerOptions?: {
+    pageTitleOverride?: string;
+    title?: string;
+    subtitle?: string;
   };
 };
 
@@ -93,6 +98,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     TemplateCardComponent,
     groups: givenGroups = [],
     templateFilter,
+    headerOptions,
   } = props;
   const navigate = useNavigate();
   const editorLink = useRouteRef(editRouteRef);
@@ -151,11 +157,12 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
 
   return (
     <EntityListProvider>
-      <Page themeId="website">
+      <Page themeId="home">
         <Header
           pageTitleOverride="Create a new component"
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
+          {...headerOptions}
         >
           <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
         </Header>

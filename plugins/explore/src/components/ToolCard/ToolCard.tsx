@@ -15,7 +15,6 @@
  */
 
 import { ExploreTool } from '@backstage/plugin-explore-react';
-import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Card,
@@ -24,6 +23,7 @@ import {
   CardMedia,
   Chip,
   makeStyles,
+  Theme,
   Typography,
 } from '@material-ui/core';
 import { LinkButton } from '@backstage/core-components';
@@ -32,27 +32,32 @@ import React from 'react';
 
 // TODO: Align styling between Domain and ToolCard
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  media: {
-    height: 128,
+const useStyles = makeStyles<Theme>(
+  theme => ({
+    media: {
+      height: 128,
+    },
+    mediaContain: {
+      backgroundSize: 'contain',
+    },
+    lifecycle: {
+      lineHeight: '0.8em',
+      color: theme.palette.common.white,
+    },
+    ga: {
+      backgroundColor: theme.palette.status.ok,
+    },
+    alpha: {
+      backgroundColor: theme.palette.status.error,
+    },
+    beta: {
+      backgroundColor: theme.palette.status.warning,
+    },
+  }),
+  {
+    name: 'ExploreToolCard',
   },
-  mediaContain: {
-    backgroundSize: 'contain',
-  },
-  lifecycle: {
-    lineHeight: '0.8em',
-    color: theme.palette.common.white,
-  },
-  ga: {
-    backgroundColor: theme.palette.status.ok,
-  },
-  alpha: {
-    backgroundColor: theme.palette.status.error,
-  },
-  beta: {
-    backgroundColor: theme.palette.status.warning,
-  },
-}));
+);
 
 type Props = {
   card: ExploreTool;

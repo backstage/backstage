@@ -15,4 +15,4 @@
  */
 
 export * from './service/createScheduler';
-export { lighthousePlugin } from './plugin';
+export { lighthousePlugin as default } from './plugin';

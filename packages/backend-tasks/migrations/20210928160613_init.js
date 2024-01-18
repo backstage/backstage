@@ -26,7 +26,7 @@ exports.up = async function up(knex) {
   await knex.schema.createTable('backstage_backend_tasks__tasks', table => {
     table.comment('Tasks used for scheduling work on multiple workers');
     table
-      .text('id')
+      .string('id')
       .primary()
       .notNullable()
       .comment('The unique ID of this particular task');

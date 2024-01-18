@@ -15,7 +15,6 @@
  */
 
 import fs from 'fs-extra';
-import mockFs from 'mock-fs';
 import {
   NormalizedOutputOptions,
   OutputAsset,
@@ -24,6 +23,7 @@ import {
 } from 'rollup';
 
 import { forwardFileImports } from './plugins';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const context = {
   meta: {
@@ -91,16 +91,18 @@ describe('forwardFileImports', () => {
     );
   });
 
-  describe('with mock fs', () => {
-    beforeEach(() => {
-      mockFs({
-        '/dev/src/my-module.ts': '',
-        '/dev/src/dir/my-image.png': 'my-image',
-      });
-    });
+  describe('with createMockDirectory', () => {
+    const mockDir = createMockDirectory();
 
-    afterEach(() => {
-      mockFs.restore();
+    beforeEach(() => {
+      mockDir.setContent({
+        dev: {
+          src: {
+            'my-module.ts': '',
+            dir: { 'my-image.png': 'my-image' },
+          },
+        },
+      });
     });
 
     it('should extract files', async () => {
@@ -111,23 +113,33 @@ describe('forwardFileImports', () => {
         throw new Error('options.external is not a function');
       }
 
-      expect(options.external('./my-module', '/dev/src/index.ts', false)).toBe(
-        false,
-      );
       expect(
-        options.external('./my-image.png', '/dev/src/dir/index.ts', false),
+        options.external(
+          './my-module',
+          mockDir.resolve('dev/src/index.ts'),
+          false,
+        ),
+      ).toBe(false);
+      expect(
+        options.external(
+          './my-image.png',
+          mockDir.resolve('dev', 'src', 'dir', 'index.ts'),
+          false,
+        ),
       ).toBe(true);
 
-      const outPath = '/dev/dist/dir/my-image.png';
+      const outPath = mockDir.resolve('dev', 'dist', 'dir', 'my-image.png');
       await expect(fs.pathExists(outPath)).resolves.toBe(false);
 
       await plugin.generateBundle?.call(
         context,
-        { dir: '/dev/dist' } as NormalizedOutputOptions,
+        {
+          dir: mockDir.resolve('dev/dist'),
+        } as NormalizedOutputOptions,
         {
           ['index.js']: {
             type: 'chunk',
-            facadeModuleId: '/dev/src/index.ts',
+            facadeModuleId: mockDir.resolve('dev/src/index.ts'),
           } as OutputChunk,
         },
         false, // isWrite = false -> no write
@@ -136,7 +148,9 @@ describe('forwardFileImports', () => {
 
       await plugin.generateBundle?.call(
         context,
-        { dir: '/dev/dist' } as NormalizedOutputOptions,
+        {
+          dir: mockDir.resolve('dev/dist'),
+        } as NormalizedOutputOptions,
         {
           // output assets should not cause a write
           ['index.js']: { type: 'asset' } as OutputAsset,
@@ -150,11 +164,13 @@ describe('forwardFileImports', () => {
       // output chunk + isWrite -> generate files
       await plugin.generateBundle?.call(
         context,
-        { dir: '/dev/dist' } as NormalizedOutputOptions,
+        {
+          dir: mockDir.resolve('dev/dist'),
+        } as NormalizedOutputOptions,
         {
           ['index.js']: {
             type: 'chunk',
-            facadeModuleId: '/dev/src/index.ts',
+            facadeModuleId: mockDir.resolve('dev/src/index.ts'),
           } as OutputChunk,
         },
         true,
@@ -164,11 +180,13 @@ describe('forwardFileImports', () => {
       // should not break when triggering another write
       await plugin.generateBundle?.call(
         context,
-        { file: '/dev/dist/my-output.js' } as NormalizedOutputOptions,
+        {
+          file: mockDir.resolve('dev/dist/my-output.js'),
+        } as NormalizedOutputOptions,
         {
           ['index.js']: {
             type: 'chunk',
-            facadeModuleId: '/dev/src/index.ts',
+            facadeModuleId: mockDir.resolve('dev/src/index.ts'),
           } as OutputChunk,
         },
         true,

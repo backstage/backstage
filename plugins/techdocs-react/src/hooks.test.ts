@@ -19,7 +19,7 @@ import {
   useShadowRootElements,
   useShadowRootSelection,
 } from './hooks';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { fireEvent, waitFor } from '@testing-library/react';
 
 const fireSelectionChangeEvent = (window: Window) => {

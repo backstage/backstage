@@ -37,7 +37,7 @@ jest.setTimeout(60_000);
 
 describe('StaticAssetsStore', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['MYSQL_8', 'POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
   });
 
   it.each(databases.eachSupportedId())(
@@ -73,7 +73,7 @@ describe('StaticAssetsStore', () => {
       expect(bar!.path).toBe('dir/bar.txt');
       expect(
         Math.abs(bar!.lastModifiedAt.getTime() - foo!.lastModifiedAt.getTime()),
-      ).toBeLessThan(1000);
+      ).toBeLessThan(1001); // 1s resolution on the timestamps
       expect(bar!.content).toEqual(Buffer.from('bar'));
 
       await expect(
@@ -153,14 +153,18 @@ describe('StaticAssetsStore', () => {
           content: async () => Buffer.alloc(0),
         },
       ]);
-
+      // interval check for postgresql
+      let hourPast = `now() + interval '-3600 seconds'`;
+      if (knex.client.config.client.includes('mysql')) {
+        hourPast = `date_sub(now(), interval 3600 second)`;
+      } else if (knex.client.config.client.includes('sqlite3')) {
+        hourPast = `datetime('now', '-3600 seconds')`;
+      }
       // Rewrite modified time of "old" to be 1h in the past
       const updated = await knex('static_assets_cache')
         .where({ path: 'old' })
         .update({
-          last_modified_at: knex.client.config.client.includes('sqlite3')
-            ? knex.raw(`datetime('now', '-3600 seconds')`)
-            : knex.raw(`now() + interval '-3600 seconds'`),
+          last_modified_at: knex.raw(hourPast),
         });
       expect(updated).toBe(1);
 

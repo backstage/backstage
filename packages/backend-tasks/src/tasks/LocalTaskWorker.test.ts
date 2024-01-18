@@ -82,14 +82,18 @@ describe('LocalTaskWorker', () => {
 
   it('can trigger to abort wait', async () => {
     const fn = jest.fn();
+    const controller = new AbortController();
 
     const worker = new LocalTaskWorker('a', fn, logger);
-    worker.start({
-      version: 2,
-      initialDelayDuration: 'PT0.2S',
-      cadence: 'PT0.2S',
-      timeoutAfterDuration: 'PT1S',
-    });
+    worker.start(
+      {
+        version: 2,
+        initialDelayDuration: 'PT0.2S',
+        cadence: 'PT0.2S',
+        timeoutAfterDuration: 'PT1S',
+      },
+      { signal: controller.signal },
+    );
 
     // TODO(freben): Rewrite to fake timers - tried, but it wouldn't work
     expect(fn).toHaveBeenCalledTimes(0);
@@ -100,5 +104,6 @@ describe('LocalTaskWorker', () => {
     worker.trigger();
     await new Promise(r => setTimeout(r, 10));
     expect(fn).toHaveBeenCalledTimes(2);
+    controller.abort();
   });
 });

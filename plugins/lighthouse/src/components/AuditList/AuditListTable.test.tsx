@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import {
-  wrapInTestApp,
+  renderInTestApp,
   setupRequestMockHandlers,
   TestApiRegistry,
 } from '@backstage/test-utils';
@@ -56,9 +56,9 @@ describe('AuditListTable', () => {
       </ApiProvider>
     );
   };
-  it('renders the link to each website', () => {
-    const rendered = render(wrapInTestApp(auditList(websiteListResponse)));
-    const link = rendered.queryByText('https://anchor.fm');
+  it('renders the link to each website', async () => {
+    await renderInTestApp(auditList(websiteListResponse));
+    const link = screen.queryByText('https://anchor.fm');
     const website = websiteListResponse.items.find(
       w => w.url === 'https://anchor.fm',
     );
@@ -68,34 +68,34 @@ describe('AuditListTable', () => {
     expect(link).toHaveAttribute('href', `/audit/${website.lastAudit.id}`);
   });
 
-  it('renders the dates that are available for a given row', () => {
-    const rendered = render(wrapInTestApp(auditList(websiteListResponse)));
+  it('renders the dates that are available for a given row', async () => {
+    await renderInTestApp(auditList(websiteListResponse));
     const website = websiteListResponse.items.find(
       w => w.url === 'https://anchor.fm',
     );
     if (!website)
       throw new Error('https://anchor.fm must be present in fixture');
     expect(
-      rendered.getByText(formatTime(website.lastAudit.timeCreated)),
+      screen.getByText(formatTime(website.lastAudit.timeCreated)),
     ).toBeInTheDocument();
   });
 
   it('renders the status for a given row', async () => {
-    const rendered = render(wrapInTestApp(auditList(websiteListResponse)));
+    await renderInTestApp(auditList(websiteListResponse));
 
-    const completed = await rendered.findAllByText('COMPLETED');
+    const completed = await screen.findAllByText('COMPLETED');
     expect(completed).toHaveLength(
       websiteListResponse.items.filter(w => w.lastAudit.status === 'COMPLETED')
         .length,
     );
 
-    const failed = await rendered.findAllByText('FAILED');
+    const failed = await screen.findAllByText('FAILED');
     expect(failed).toHaveLength(
       websiteListResponse.items.filter(w => w.lastAudit.status === 'FAILED')
         .length,
     );
 
-    const running = await rendered.findAllByText('FAILED');
+    const running = await screen.findAllByText('FAILED');
     expect(running).toHaveLength(
       websiteListResponse.items.filter(w => w.lastAudit.status === 'RUNNING')
         .length,
@@ -103,17 +103,17 @@ describe('AuditListTable', () => {
   });
 
   describe('sparklines', () => {
-    it('correctly maps the data from the website payload', () => {
-      const rendered = render(wrapInTestApp(auditList(websiteListResponse)));
-      const backstageSEO = rendered.getByTitle(
+    it('correctly maps the data from the website payload', async () => {
+      await renderInTestApp(auditList(websiteListResponse));
+      const backstageSEO = screen.getByTitle(
         'trendline for SEO category of https://backstage.io',
       );
       expect(backstageSEO).toBeInTheDocument();
     });
 
-    it('does not break when no data is available', () => {
-      const rendered = render(wrapInTestApp(auditList(websiteListResponse)));
-      const anchorSEO = rendered.queryByTitle(
+    it('does not break when no data is available', async () => {
+      await renderInTestApp(auditList(websiteListResponse));
+      const anchorSEO = screen.queryByTitle(
         'trendline for SEO category of https://anchor.fm',
       );
       expect(anchorSEO).not.toBeInTheDocument();

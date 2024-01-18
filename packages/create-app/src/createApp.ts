@@ -20,12 +20,12 @@ import inquirer, { Answers } from 'inquirer';
 import { resolve as resolvePath } from 'path';
 import { findPaths } from '@backstage/cli-common';
 import os from 'os';
+import fs from 'fs-extra';
 import {
   Task,
   buildAppTask,
   checkAppExistsTask,
   checkPathExistsTask,
-  createTemporaryAppFolderTask,
   moveAppTask,
   templatingTask,
   tryInitGitRepository,
@@ -37,7 +37,6 @@ const DEFAULT_BRANCH = 'master';
 export default async (opts: OptionValues): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
-
   const answers: Answers = await inquirer.prompt([
     {
       type: 'input',
@@ -65,8 +64,9 @@ export default async (opts: OptionValues): Promise<void> => {
     },
   ]);
 
-  const templateDir = paths.resolveOwn('templates/default-app');
-  const tempDir = resolvePath(os.tmpdir(), answers.name);
+  const templateDir = opts.templatePath
+    ? paths.resolveTarget(opts.templatePath)
+    : paths.resolveOwn('templates/default-app');
 
   // Use `--path` argument as application directory when specified, otherwise
   // create a directory using `answers.name`
@@ -98,7 +98,7 @@ export default async (opts: OptionValues): Promise<void> => {
       await checkAppExistsTask(paths.targetDir, answers.name);
 
       Task.section('Creating a temporary app directory');
-      await createTemporaryAppFolderTask(tempDir);
+      const tempDir = await fs.mkdtemp(resolvePath(os.tmpdir(), answers.name));
 
       Task.section('Preparing files');
       await templatingTask(templateDir, tempDir, {
@@ -129,14 +129,18 @@ export default async (opts: OptionValues): Promise<void> => {
     );
     Task.log();
     Task.section('All set! Now you might want to');
-    if (!opts.skipInstall) {
+    if (opts.skipInstall) {
       Task.log(
         `  Install the dependencies: ${chalk.cyan(
-          `cd ${answers.name} && yarn install`,
+          `cd ${opts.path ?? answers.name} && yarn install`,
         )}`,
       );
     }
-    Task.log(`  Run the app: ${chalk.cyan(`cd ${answers.name} && yarn dev`)}`);
+    Task.log(
+      `  Run the app: ${chalk.cyan(
+        `cd ${opts.path ?? answers.name} && yarn dev`,
+      )}`,
+    );
     Task.log(
       '  Set up the software catalog: https://backstage.io/docs/features/software-catalog/configuration',
     );

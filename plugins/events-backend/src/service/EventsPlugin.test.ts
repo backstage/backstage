@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { errorHandler, getVoidLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
+import { errorHandler } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { startTestBackend } from '@backstage/backend-test-utils';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import {
   TestEventBroker,
@@ -37,14 +37,6 @@ describe('eventPlugin', () => {
     const eventBroker = new TestEventBroker();
     const publisher = new TestEventPublisher();
     const subscriber = new TestEventSubscriber('sub', ['fake']);
-
-    const config = new ConfigReader({
-      events: {
-        http: {
-          topics: ['fake'],
-        },
-      },
-    });
 
     const httpRouter = Router();
     httpRouter.use(express.json());
@@ -70,12 +62,25 @@ describe('eventPlugin', () => {
 
     await startTestBackend({
       extensionPoints: [],
-      services: [
-        [coreServices.config, config],
-        [coreServices.httpRouter, httpRouter],
-        [coreServices.logger, getVoidLogger()],
+      features: [
+        eventsPlugin(),
+        testModule(),
+        mockServices.logger.factory(),
+        mockServices.rootConfig.factory({
+          data: {
+            events: {
+              http: {
+                topics: ['fake'],
+              },
+            },
+          },
+        }),
+        createServiceFactory({
+          service: coreServices.httpRouter,
+          deps: {},
+          factory: async () => httpRouter,
+        }),
       ],
-      features: [eventsPlugin(), testModule()],
     });
 
     expect(publisher.eventBroker).toBe(eventBroker);

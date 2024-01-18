@@ -27,7 +27,7 @@ import parseGitUrl from 'git-url-parse';
 import {
   AnalyzeOptions,
   ScmLocationAnalyzer,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import {
   PluginEndpointDiscovery,
   TokenManager,

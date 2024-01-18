@@ -32,6 +32,11 @@ export interface BackendModuleConfig {
 // @public
 export interface BackendModuleRegistrationPoints {
   // (undocumented)
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
+  // (undocumented)
   registerInit<
     Deps extends {
       [name in string]: unknown;
@@ -93,13 +98,10 @@ export type CacheServiceSetOptions = {
   ttl?: number;
 };
 
-// @public (undocumented)
-export interface ConfigService extends Config {}
-
 // @public
 export namespace coreServices {
   const cache: ServiceRef<CacheService, 'plugin'>;
-  const config: ServiceRef<ConfigService, 'root'>;
+  const rootConfig: ServiceRef<RootConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
   const discovery: ServiceRef<DiscoveryService, 'plugin'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
@@ -117,14 +119,14 @@ export namespace coreServices {
 }
 
 // @public
-export function createBackendModule<TOptions extends [options?: object] = []>(
-  config: BackendModuleConfig | ((...params: TOptions) => BackendModuleConfig),
-): (...params: TOptions) => BackendFeature;
+export function createBackendModule(
+  config: BackendModuleConfig,
+): () => BackendFeature;
 
 // @public
-export function createBackendPlugin<TOptions extends [options?: object] = []>(
-  config: BackendPluginConfig | ((...params: TOptions) => BackendPluginConfig),
-): (...params: TOptions) => BackendFeature;
+export function createBackendPlugin(
+  config: BackendPluginConfig,
+): () => BackendFeature;
 
 // @public
 export function createExtensionPoint<T>(
@@ -136,7 +138,7 @@ export function createServiceFactory<
   TService,
   TImpl extends TService,
   TDeps extends {
-    [name in string]: ServiceRef<unknown>;
+    [name in string]: ServiceRef<unknown, 'root'>;
   },
   TOpts extends object | undefined = undefined,
 >(
@@ -148,24 +150,12 @@ export function createServiceFactory<
   TService,
   TImpl extends TService,
   TDeps extends {
-    [name in string]: ServiceRef<unknown>;
+    [name in string]: ServiceRef<unknown, 'root'>;
   },
   TOpts extends object | undefined = undefined,
 >(
   config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService, 'root'>;
-
-// @public
-export function createServiceFactory<
-  TService,
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown>;
-  },
-  TOpts extends object | undefined = undefined,
->(
-  config: (options: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
-): (options: TOpts) => ServiceFactory<TService, 'root'>;
 
 // @public
 export function createServiceFactory<
@@ -196,23 +186,6 @@ export function createServiceFactory<
 ): (options?: TOpts) => ServiceFactory<TService, 'plugin'>;
 
 // @public
-export function createServiceFactory<
-  TService,
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown>;
-  },
-  TContext = undefined,
-  TOpts extends object | undefined = undefined,
->(
-  config:
-    | PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>
-    | ((
-        options: TOpts,
-      ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>),
-): (options: TOpts) => ServiceFactory<TService, 'plugin'>;
-
-// @public
 export function createServiceRef<TService>(
   config: ServiceRefConfig<TService, 'plugin'>,
 ): ServiceRef<TService, 'plugin'>;
@@ -221,15 +194,6 @@ export function createServiceRef<TService>(
 export function createServiceRef<TService>(
   config: ServiceRefConfig<TService, 'root'>,
 ): ServiceRef<TService, 'root'>;
-
-// @public
-export function createSharedEnvironment<
-  TOptions extends [options?: object] = [],
->(
-  config:
-    | SharedBackendEnvironmentConfig
-    | ((...params: TOptions) => SharedBackendEnvironmentConfig),
-): (...options: TOptions) => SharedBackendEnvironment;
 
 // @public
 export interface DatabaseService {
@@ -390,6 +354,9 @@ export type ReadUrlResponse = {
 };
 
 // @public (undocumented)
+export interface RootConfigService extends Config {}
+
+// @public (undocumented)
 export interface RootHttpRouterService {
   use(path: string, handler: Handler): void;
 }
@@ -442,9 +409,7 @@ export type SearchResponseFile = {
 export interface ServiceFactory<
   TService = unknown,
   TScope extends 'plugin' | 'root' = 'plugin' | 'root',
-> {
-  // (undocumented)
-  $$type: '@backstage/ServiceFactory';
+> extends BackendFeature {
   // (undocumented)
   service: ServiceRef<TService, TScope>;
 }
@@ -474,18 +439,6 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   id: string;
   // (undocumented)
   scope?: TScope;
-}
-
-// @public
-export interface SharedBackendEnvironment {
-  // (undocumented)
-  $$type: '@backstage/SharedBackendEnvironment';
-}
-
-// @public
-export interface SharedBackendEnvironmentConfig {
-  // (undocumented)
-  services?: ServiceFactoryOrFunction[];
 }
 
 // @public

@@ -20,7 +20,7 @@ import {
   getVoidLogger,
   PluginEndpointDiscovery,
   ServerTokenManager,
-  SingleHostDiscovery,
+  HostDiscovery,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import type { Entity } from '@backstage/catalog-model';
@@ -113,7 +113,7 @@ describe('createRouter', () => {
       },
     );
 
-    discovery = SingleHostDiscovery.fromConfig(config);
+    discovery = HostDiscovery.fromConfig(config);
     const tokenManager = ServerTokenManager.noop();
     const router = await createRouter({
       badgeBuilder,

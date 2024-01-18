@@ -125,7 +125,7 @@ describe('oauth helpers', () => {
       postMessageResponse(mockResponse, appOrigin, data);
       expect(responseBody.match(/.postMessage\(/g)).toHaveLength(2);
       expect(
-        responseBody.match(/.postMessage\([a-zA-z.()]*, \'\*\'\)/g),
+        responseBody.match(/.postMessage\([a-zA-Z.()]*, \'\*\'\)/g),
       ).toHaveLength(1);
 
       const errData: WebMessageResponse = {
@@ -135,7 +135,7 @@ describe('oauth helpers', () => {
       postMessageResponse(mockResponse, appOrigin, errData);
       expect(responseBody.match(/.postMessage\(/g)).toHaveLength(2);
       expect(
-        responseBody.match(/.postMessage\([a-zA-z.()]*, \'\*\'\)/g),
+        responseBody.match(/.postMessage\([a-zA-Z.()]*, \'\*\'\)/g),
       ).toHaveLength(1);
     });
 

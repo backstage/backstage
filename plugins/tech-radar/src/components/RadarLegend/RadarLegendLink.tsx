@@ -21,6 +21,7 @@ import { RadarDescription } from '../RadarDescription';
 import type { EntrySnapshot } from '../../utils/types';
 
 type RadarLegendLinkProps = {
+  entryId: string;
   url?: string;
   description?: string;
   title?: string;
@@ -31,6 +32,7 @@ type RadarLegendLinkProps = {
 };
 
 export const RadarLegendLink = ({
+  entryId,
   url,
   description,
   title,
@@ -66,6 +68,7 @@ export const RadarLegendLink = ({
         >
           <Typography
             component="span"
+            id={entryId}
             className={active ? classes.activeEntry : classes.entry}
           >
             {title}
@@ -89,6 +92,7 @@ export const RadarLegendLink = ({
     <WithLink url={url} className={classes.entryLink}>
       <Typography
         component="span"
+        id={entryId}
         className={active ? classes.activeEntry : classes.entry}
       >
         {title}

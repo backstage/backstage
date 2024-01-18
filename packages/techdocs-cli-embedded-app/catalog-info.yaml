@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: techdocs-cli-embedded-app
+  title: techdocs-cli-embedded-app
+spec:
+  lifecycle: production
+  type: backstage-frontend
+  owner: techdocs-maintainers

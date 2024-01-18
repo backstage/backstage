@@ -17,3 +17,8 @@
 export { catalogServiceRef } from './catalogService';
 export type { CatalogProcessingExtensionPoint } from './extensions';
 export { catalogProcessingExtensionPoint } from './extensions';
+export type { CatalogAnalysisExtensionPoint } from './extensions';
+export { catalogAnalysisExtensionPoint } from './extensions';
+export type { CatalogPermissionRuleInput } from './extensions';
+export type { CatalogPermissionExtensionPoint } from './extensions';
+export { catalogPermissionExtensionPoint } from './extensions';

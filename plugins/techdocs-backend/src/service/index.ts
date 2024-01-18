@@ -20,7 +20,3 @@ export type {
   RecommendedDeploymentOptions,
   OutOfTheBoxDeploymentOptions,
 } from './router';
-export type {
-  DocsBuildStrategy,
-  ShouldBuildParameters,
-} from './DocsBuildStrategy';

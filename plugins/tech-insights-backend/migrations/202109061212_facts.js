@@ -25,7 +25,7 @@ exports.up = async function up(knex) {
       'The table for tech insight fact collections. Contains facts for individual fact retriever namespace/ref.',
     );
     table
-      .text('id')
+      .string('id')
       .notNullable()
       .comment('Unique identifier of the fact retriever plugin/package');
     table
@@ -40,7 +40,7 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('The timestamp when this entry was created');
     table
-      .text('entity')
+      .string('entity')
       .notNullable()
       .comment('Identifier of the entity these facts relate to');
     table

@@ -51,7 +51,7 @@ The TechDocs plugin has supported integrations to Search, meaning that it
 provides a default collator factory ready to be used.
 
 The purpose of this guide is to walk you through how to register the
-[DefaultTechDocsCollatorFactory](https://github.com/backstage/backstage/blob/de294ce5c410c9eb56da6870a1fab795268f60e3/plugins/techdocs-backend/src/search/DefaultTechDocsCollatorFactory.ts)
+[DefaultTechDocsCollatorFactory](https://github.com/backstage/backstage/blob/1adc2c7/plugins/search-backend-module-techdocs/src/collators/DefaultTechDocsCollatorFactory.ts)
 in your App, so that you can get TechDocs documents indexed.
 
 If you have been through the
@@ -61,10 +61,10 @@ so, you can go ahead and follow this guide - if not, start by going through the
 getting started guide.
 
 1. Import the `DefaultTechDocsCollatorFactory` from
-   `@backstage/plugin-techdocs-backend`.
+   `@backstage/plugin-search-backend-module-techdocs`.
 
    ```typescript
-   import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
+   import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
    ```
 
 2. If there isn't an existing schedule you'd like to run the collator on, be
@@ -114,18 +114,18 @@ of the `SearchType` component.
 
 > Check out the documentation around [integrating search into plugins](../../plugins/integrating-search-into-plugins.md#create-a-collator) for how to create your own collator.
 
-## How to customize fields in the Software Catalog index
+## How to customize fields in the Software Catalog or TechDocs index
 
-Sometimes you will might want to have ability to control
-which data passes to search index in catalog collator, or to customize data for specific kind.
-You can easily do that by passing `entityTransformer` callback to `DefaultCatalogCollatorFactory`.
-You can either just simply amend default behaviour, or even to write completely new document
-(which should follow some required basic structure though).
+Sometimes, you might want to have the ability to control which data passes into the search index
+in the catalog collator or customize data for a specific kind. You can easily achieve this
+by passing an `entityTransformer` callback to the `DefaultCatalogCollatorFactory`. This behavior
+is also possible for the `DefaultTechDocsCollatorFactory`. You can either simply amend the default behavior
+or even write an entirely new document (which should still follow some required basic structure).
 
 > `authorization` and `location` cannot be modified via a `entityTransformer`, `location` can be modified only through `locationTemplate`.
 
 ```ts title="packages/backend/src/plugins/search.ts"
-const entityTransformer: CatalogCollatorEntityTransformer = (
+const catalogEntityTransformer: CatalogCollatorEntityTransformer = (
   entity: Entity,
 ) => {
   if (entity.kind === 'SomeKind') {
@@ -146,7 +146,26 @@ indexBuilder.addCollator({
     discovery: env.discovery,
     tokenManager: env.tokenManager,
     /* highlight-add-next-line */
-    entityTransformer,
+    entityTransformer: catalogEntityTransformer,
+  }),
+});
+
+const techDocsEntityTransformer: TechDocsCollatorEntityTransformer = (
+  entity: Entity,
+) => {
+  return {
+    // add more fields to the index
+    ...defaultTechDocsCollatorEntityTransformer(entity),
+    tags: entity.metadata.tags,
+  };
+};
+
+indexBuilder.addCollator({
+  collator: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
+    /* highlight-add-next-line */
+    entityTransformer: techDocsEntityTransformer,
   }),
 });
 ```
@@ -371,8 +390,6 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => (
 There are other more specific search results layout components that also accept result item extensions, check their documentation: [SearchResultList](https://backstage.io/storybook/?path=/story/plugins-search-searchresultlist--with-result-item-extensions) and [SearchResultGroup](https://backstage.io/storybook/?path=/story/plugins-search-searchresultgroup--with-result-item-extensions).
 
 ## How to migrate your backend installation to use Search together with the new backend system
-
-> DISCLAIMER: The new backend system is in alpha, and so are the search backend support for the new backend system. We don't recommend you to migrate your backend installations to the new system yet. But if you want to experiment, this is the guide for you!
 
 Recently, the Backstage maintainers [announced the new Backend System](https://backstage.io/blog/2023/02/15/backend-system-alpha). The search plugins are now migrated to support the new backend system. In this guide you will learn how to update your backend set up.
 

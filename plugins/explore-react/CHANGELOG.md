@@ -1,5 +1,152 @@
 # @backstage/plugin-explore-react
 
+## 0.0.35
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.35-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.35-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.34-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.34-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1-next.0
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.33
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- 4aa43f62aa: Updated dependency `cross-fetch` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.33-next.0
+
+### Patch Changes
+
+- 6c2b872153: Add official support for React 18.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.0-next.0
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.32
+
+### Patch Changes
+
+- 9a1fce352e: Updated dependency `@testing-library/jest-dom` to `^6.0.0`.
+- f95af4e540: Updated dependency `@testing-library/dom` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.32-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.1
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.7.0-next.0
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.31
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.0.31-next.3
+
+### Patch Changes
+
+- 406b786a2a2c: Mark package as being free of side effects, allowing more optimized Webpack builds.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.3
+  - @backstage/plugin-explore-common@0.0.2-next.0
+
+## 0.0.31-next.2
+
+### Patch Changes
+
+- 8cec7664e146: Removed `@types/node` dependency
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.2
+  - @backstage/plugin-explore-common@0.0.1
+
+## 0.0.31-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.1
+  - @backstage/plugin-explore-common@0.0.1
+
+## 0.0.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.6.0-next.0
+  - @backstage/plugin-explore-common@0.0.1
+
+## 0.0.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.5.3
+  - @backstage/plugin-explore-common@0.0.1
+
 ## 0.0.30-next.1
 
 ### Patch Changes

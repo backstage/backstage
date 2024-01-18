@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 import { Box, Typography } from '@material-ui/core';
-import { OctopusEnvironment, OctopusReleaseProgression } from '../../api';
+import {
+  OctopusEnvironment,
+  OctopusProject,
+  OctopusReleaseProgression,
+  OctopusPluginConfig,
+} from '../../api';
 
 import React from 'react';
 import {
+  BottomLink,
+  BottomLinkProps,
   ResponseErrorPanel,
   StatusAborted,
   StatusError,
@@ -33,6 +40,8 @@ import { OctopusDeployIcon } from '../OctopusDeployIcon';
 type ReleaseTableProps = {
   environments?: OctopusEnvironment[];
   releases?: OctopusReleaseProgression[];
+  project?: OctopusProject;
+  config?: OctopusPluginConfig;
   loading: boolean;
   error?: Error;
 };
@@ -93,6 +102,8 @@ export const getDeploymentStatusComponent = (state: string | undefined) => {
 export const ReleaseTable = ({
   environments,
   releases,
+  project,
+  config,
   loading,
   error,
 }: ReleaseTableProps) => {
@@ -130,24 +141,39 @@ export const ReleaseTable = ({
     })) ?? []),
   ];
 
+  const deepLink: BottomLinkProps | null =
+    project?.Links?.Web && config?.WebUiBaseUrl
+      ? {
+          link: `${config.WebUiBaseUrl}${project.Links.Web}`,
+          title: 'Go to project',
+          onClick: e => {
+            e.preventDefault();
+            window.open(`${config?.WebUiBaseUrl}${project?.Links.Web}`);
+          },
+        }
+      : null;
+
   return (
-    <Table
-      isLoading={loading}
-      columns={columns}
-      options={{
-        search: true,
-        paging: true,
-        pageSize: 5,
-        showEmptyDataSourceMessage: !loading,
-      }}
-      title={
-        <Box display="flex" alignItems="center">
-          <OctopusDeployIcon style={{ fontSize: 30 }} />
-          <Box mr={1} />
-          Octopus Deploy - Releases ({releases ? releases.length : 0})
-        </Box>
-      }
-      data={releases ?? []}
-    />
+    <Box>
+      <Table
+        isLoading={loading}
+        columns={columns}
+        options={{
+          search: true,
+          paging: true,
+          pageSize: 5,
+          showEmptyDataSourceMessage: !loading,
+        }}
+        title={
+          <Box display="flex" alignItems="center">
+            <OctopusDeployIcon style={{ fontSize: 30 }} />
+            <Box mr={1} />
+            Octopus Deploy - Releases ({releases ? releases.length : 0})
+          </Box>
+        }
+        data={releases ?? []}
+      />
+      {deepLink !== null && <BottomLink {...deepLink} />}
+    </Box>
   );
 };

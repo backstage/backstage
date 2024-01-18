@@ -17,7 +17,10 @@
 import React from 'react';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { GithubDeployment, githubDeploymentsApiRef } from '../api';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import {
   GITHUB_PROJECT_SLUG_ANNOTATION,
   isGithubDeploymentsAvailable,
@@ -28,11 +31,7 @@ import {
   ANNOTATION_SOURCE_LOCATION,
 } from '@backstage/catalog-model';
 
-import {
-  MissingAnnotationEmptyState,
-  ResponseErrorPanel,
-  TableColumn,
-} from '@backstage/core-components';
+import { ResponseErrorPanel, TableColumn } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 const GithubDeploymentsComponent = ({

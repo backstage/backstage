@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { WithLink } from '../../utils/components';
 import { RadarDescription } from '../RadarDescription';
 import type { EntrySnapshot } from '../../utils/types';
@@ -23,6 +23,7 @@ import type { EntrySnapshot } from '../../utils/types';
 export type Props = {
   x: number;
   y: number;
+  entryId: string;
   value: number;
   color: string;
   url?: string;
@@ -36,7 +37,7 @@ export type Props = {
   onClick?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
 };
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles(theme => ({
   text: {
     pointerEvents: 'none',
     userSelect: 'none',
@@ -76,6 +77,7 @@ const RadarEntry = (props: Props): JSX.Element => {
     url,
     links,
     value,
+    entryId,
     x,
     y,
     onMouseEnter,
@@ -126,15 +128,16 @@ const RadarEntry = (props: Props): JSX.Element => {
           href="#"
           tabIndex={0}
           onKeyPress={toggle}
+          aria-labelledby={entryId}
         >
           {blip}
         </a>
       ) : (
-        <WithLink url={url} className={classes.link}>
+        <WithLink url={url} className={classes.link} aria-labelledby={entryId}>
           {blip}
         </WithLink>
       )}
-      <text y={3} className={classes.text}>
+      <text aria-labelledby={entryId} y={3} className={classes.text}>
         {value}
       </text>
     </g>

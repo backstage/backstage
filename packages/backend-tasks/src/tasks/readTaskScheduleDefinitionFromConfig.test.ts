@@ -76,7 +76,7 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
     );
   });
 
-  it('invalid frequency value', () => {
+  it('invalid frequency key', () => {
     const config = new ConfigReader({
       frequency: {
         invalid: 'value',
@@ -85,7 +85,20 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
     });
 
     expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
-      'HumanDuration needs at least one of',
+      "Failed to read duration from config at 'frequency', Error: Needs one or more of 'years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'",
+    );
+  });
+
+  it('invalid frequency value', () => {
+    const config = new ConfigReader({
+      frequency: {
+        minutes: 'value',
+      },
+      timeout: 'PT3M',
+    });
+
+    expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
+      "Failed to read duration from config, Error: Unable to convert config value for key 'frequency.minutes' in 'mock-config' to a number",
     );
   });
 
@@ -99,7 +112,7 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
     });
 
     expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
-      'HumanDuration does not contain properties: invalid',
+      "Failed to read duration from config at 'frequency', Error: Unknown property 'invalid'; expected one or more of 'years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'",
     );
   });
 

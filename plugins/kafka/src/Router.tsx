@@ -17,10 +17,12 @@
 import { Entity } from '@backstage/catalog-model';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import {
+  useEntity,
+  MissingAnnotationEmptyState,
+} from '@backstage/plugin-catalog-react';
 import { KAFKA_CONSUMER_GROUP_ANNOTATION } from './constants';
 import { KafkaTopicsForConsumer } from './components/ConsumerGroupOffsets/ConsumerGroupOffsets';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 /** @public */
 export const isPluginApplicableToEntity = (entity: Entity) =>

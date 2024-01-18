@@ -57,6 +57,10 @@ export interface Config {
          */
         fragmentDelimiter?: string;
       };
+      /**
+       * Batch size to use when indexing
+       */
+      indexerBatchSize?: number;
     };
   };
 }

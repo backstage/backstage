@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { PagerDutyChangeEvent } from '../types';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { pagerDutyApiRef } from '../../api';
 import { ApiProvider } from '@backstage/core-app-api';
 import { ChangeEvents } from './ChangeEvents';
@@ -32,15 +33,15 @@ describe('Incidents', () => {
       .fn()
       .mockImplementationOnce(async () => ({ change_events: [] }));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <ChangeEvents serviceId="abc" refreshEvents={false} />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ChangeEvents serviceId="abc" refreshEvents={false} />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('No change events to display yet.')).toBeInTheDocument();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(
+      screen.getByText('No change events to display yet.'),
+    ).toBeInTheDocument();
   });
 
   it('Renders all change events', async () => {
@@ -76,19 +77,17 @@ describe('Incidents', () => {
           },
         ] as PagerDutyChangeEvent[],
       }));
-    const { getByText, getAllByTitle, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <ChangeEvents serviceId="abc" refreshEvents={false} />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ChangeEvents serviceId="abc" refreshEvents={false} />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('summary of event')).toBeInTheDocument();
-    expect(getByText('sum of EVENT')).toBeInTheDocument();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getByText('summary of event')).toBeInTheDocument();
+    expect(screen.getByText('sum of EVENT')).toBeInTheDocument();
 
     // assert links, mailto and hrefs, date calculation
-    expect(getAllByTitle('View in PagerDuty').length).toEqual(2);
+    expect(screen.getAllByTitle('View in PagerDuty').length).toEqual(2);
   });
 
   it('Does not render a pagerduty link when html_url is not present in response', async () => {
@@ -123,19 +122,17 @@ describe('Incidents', () => {
           },
         ] as PagerDutyChangeEvent[],
       }));
-    const { getByText, getAllByTitle, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <ChangeEvents serviceId="abc" refreshEvents={false} />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ChangeEvents serviceId="abc" refreshEvents={false} />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('summary of event')).toBeInTheDocument();
-    expect(getByText('sum of EVENT')).toBeInTheDocument();
+    await waitFor(() => !screen.queryByTestId('progress'));
+    expect(screen.getByText('summary of event')).toBeInTheDocument();
+    expect(screen.getByText('sum of EVENT')).toBeInTheDocument();
 
     // assert links, mailto and hrefs, date calculation
-    expect(getAllByTitle('View in PagerDuty').length).toEqual(1);
+    expect(screen.getAllByTitle('View in PagerDuty').length).toEqual(1);
   });
 
   it('Handle errors', async () => {
@@ -143,16 +140,16 @@ describe('Incidents', () => {
       .fn()
       .mockRejectedValueOnce(new Error('Error occurred'));
 
-    const { getByText, queryByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <ChangeEvents serviceId="abc" refreshEvents={false} />
-        </ApiProvider>,
-      ),
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ChangeEvents serviceId="abc" refreshEvents={false} />
+      </ApiProvider>,
     );
-    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(() => !screen.queryByTestId('progress'));
     expect(
-      getByText('Error encountered while fetching information. Error occurred'),
+      screen.getByText(
+        'Error encountered while fetching information. Error occurred',
+      ),
     ).toBeInTheDocument();
   });
 });

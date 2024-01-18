@@ -14,39 +14,25 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core-plugin-api';
 import { Playlist } from '@backstage/plugin-playlist-common';
-import { compact, isEqual } from 'lodash';
-import qs from 'qs';
-import React, {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
-import { useLocation } from 'react-router-dom';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
-import useDebounce from 'react-use/lib/useDebounce';
-import useMountedState from 'react-use/lib/useMountedState';
-
-import { playlistApiRef } from '../api';
+import { createContext, useContext } from 'react';
 import { PersonalListFilter } from '../components/PersonalListPicker';
 import { PlaylistOwnerFilter } from '../components/PlaylistOwnerPicker';
 import { PlaylistTextFilter } from '../components/PlaylistSearchBar';
-import {
-  DefaultPlaylistSortTypes,
-  DefaultSortCompareFunctions,
-} from '../components/PlaylistSortPicker';
 import { PlaylistFilter, PlaylistSortCompareFunction } from '../types';
 
-class NoopFilter implements PlaylistFilter {
+/**
+ * @public
+ */
+export class NoopFilter implements PlaylistFilter {
   getBackendFilters() {
     return { '': null };
   }
 }
 
+/**
+ * @public
+ */
 export type DefaultPlaylistFilters = {
   noop?: NoopFilter;
   owners?: PlaylistOwnerFilter;
@@ -99,181 +85,6 @@ export type PlaylistListContextProps<
 export const PlaylistListContext = createContext<
   PlaylistListContextProps<any> | undefined
 >(undefined);
-
-const reduceBackendFilters = (
-  filters: PlaylistFilter[],
-): Record<string, string | string[] | null> => {
-  return filters.reduce((compoundFilter, filter) => {
-    return {
-      ...compoundFilter,
-      ...(filter.getBackendFilters ? filter.getBackendFilters() : {}),
-    };
-  }, {} as Record<string, string | string[] | null>);
-};
-
-type OutputState<PlaylistFilters extends DefaultPlaylistFilters> = {
-  appliedFilters: PlaylistFilters;
-  playlists: Playlist[];
-  backendPlaylists: Playlist[];
-};
-
-export const PlaylistListProvider = <
-  PlaylistFilters extends DefaultPlaylistFilters,
->({
-  children,
-}: PropsWithChildren<{}>) => {
-  const isMounted = useMountedState();
-  const playlistApi = useApi(playlistApiRef);
-  const [sortCompareFn, setSortCompareFn] =
-    useState<PlaylistSortCompareFunction>(
-      () => DefaultSortCompareFunctions[DefaultPlaylistSortTypes.popular],
-    );
-  const [requestedFilters, setRequestedFilters] = useState<PlaylistFilters>(
-    {} as PlaylistFilters,
-  );
-
-  // We use react-router's useLocation hook so updates from external sources trigger an update to
-  // the queryParameters in outputState. Updates from this hook use replaceState below and won't
-  // trigger a useLocation change; this would instead come from an external source, such as a manual
-  // update of the URL or two sidebar links with different filters.
-  const location = useLocation();
-  const queryParameters = useMemo(
-    () =>
-      (qs.parse(location.search, {
-        ignoreQueryPrefix: true,
-      }).filters ?? {}) as Record<string, string | string[]>,
-    [location],
-  );
-
-  const [outputState, setOutputState] = useState<OutputState<PlaylistFilters>>({
-    appliedFilters: {
-      noop: new NoopFilter(), // Init with a noop filter to trigger intial request
-    } as PlaylistFilters,
-    playlists: [],
-    backendPlaylists: [],
-  });
-
-  // The main async filter worker. Note that while it has a lot of dependencies
-  // in terms of its implementation, the triggering only happens (debounced)
-  // based on the requested filters/sortCompareFn changing.
-  const [{ loading, error }, refresh] = useAsyncFn(
-    async () => {
-      const compacted: PlaylistFilter[] = compact(
-        Object.values(requestedFilters),
-      );
-      const playlistFilter = (p: Playlist) =>
-        compacted.every(
-          filter => !filter.filterPlaylist || filter.filterPlaylist(p),
-        );
-      const backendFilter = reduceBackendFilters(compacted);
-      const previousBackendFilter = reduceBackendFilters(
-        compact(Object.values(outputState.appliedFilters)),
-      );
-
-      const queryParams = Object.keys(requestedFilters).reduce(
-        (params, key) => {
-          const filter = requestedFilters[key as keyof PlaylistFilters] as
-            | PlaylistFilter
-            | undefined;
-          if (filter?.toQueryValue) {
-            params[key] = filter.toQueryValue();
-          }
-          return params;
-        },
-        {} as Record<string, string | string[]>,
-      );
-
-      if (!isEqual(previousBackendFilter, backendFilter)) {
-        const response = await playlistApi.getAllPlaylists({
-          filter: backendFilter,
-        });
-        setOutputState({
-          appliedFilters: requestedFilters,
-          backendPlaylists: response,
-          playlists: response.filter(playlistFilter).sort(sortCompareFn),
-        });
-      } else {
-        setOutputState({
-          appliedFilters: requestedFilters,
-          backendPlaylists: outputState.backendPlaylists,
-          playlists: outputState.backendPlaylists
-            .filter(playlistFilter)
-            .sort(sortCompareFn),
-        });
-      }
-
-      if (isMounted()) {
-        const oldParams = qs.parse(location.search, {
-          ignoreQueryPrefix: true,
-        });
-        const newParams = qs.stringify(
-          { ...oldParams, filters: queryParams },
-          { addQueryPrefix: true, arrayFormat: 'repeat' },
-        );
-        const newUrl = `${window.location.pathname}${newParams}`;
-        // We use direct history manipulation since useSearchParams and
-        // useNavigate in react-router-dom cause unnecessary extra rerenders.
-        // Also make sure to replace the state rather than pushing, since we
-        // don't want there to be back/forward slots for every single filter
-        // change.
-        window.history?.replaceState(null, document.title, newUrl);
-      }
-    },
-    [
-      playlistApi,
-      queryParameters,
-      requestedFilters,
-      sortCompareFn,
-      outputState,
-    ],
-    { loading: true },
-  );
-
-  // Slight debounce on the refresh, since (especially on page load) several
-  // filters will be calling this in rapid succession.
-  useDebounce(refresh, 10, [requestedFilters, sortCompareFn]);
-
-  const updateFilters = useCallback(
-    (
-      update:
-        | Partial<PlaylistFilters>
-        | ((prevFilters: PlaylistFilters) => Partial<PlaylistFilters>),
-    ) => {
-      setRequestedFilters(prevFilters => {
-        const newFilters =
-          typeof update === 'function' ? update(prevFilters) : update;
-        return { ...prevFilters, ...newFilters };
-      });
-    },
-    [],
-  );
-
-  const updateSort = useCallback(
-    (compareFn: PlaylistSortCompareFunction) =>
-      setSortCompareFn(() => compareFn),
-    [],
-  );
-
-  const value = useMemo(
-    () => ({
-      filters: outputState.appliedFilters,
-      playlists: outputState.playlists,
-      backendPlaylists: outputState.backendPlaylists,
-      updateFilters,
-      updateSort,
-      queryParameters,
-      loading,
-      error,
-    }),
-    [outputState, updateFilters, updateSort, queryParameters, loading, error],
-  );
-
-  return (
-    <PlaylistListContext.Provider value={value}>
-      {children}
-    </PlaylistListContext.Provider>
-  );
-};
 
 export function usePlaylistList<
   PlaylistFilters extends DefaultPlaylistFilters = DefaultPlaylistFilters,

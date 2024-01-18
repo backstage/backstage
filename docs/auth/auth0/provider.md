@@ -41,14 +41,18 @@ auth:
     secret: ${AUTH_SESSION_SECRET}
 ```
 
-The Auth0 provider is a structure with three configuration keys:
+The Auth0 provider is a structure with these configuration keys:
 
 - `clientId`: The Application client ID, found on the Auth0 Application page
 - `clientSecret`: The Application client secret, found on the Auth0 Application
   page
 - `domain`: The Application domain, found on the Auth0 Application page
 
-Because Auth0 requires a session you need to give the session a secret key.
+It additionally relies on the following configuration to function:
+
+- `session.secret`: The session secret is a key used for signing and/or encrypting cookies set by the application to maintain session state. In this case, 'your session secret' should be replaced with a long, complex, and unique string that only your application knows.
+
+Auth0 requires a session, so you need to give the session a secret key.
 
 ## Optional Configuration
 

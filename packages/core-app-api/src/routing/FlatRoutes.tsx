@@ -16,7 +16,11 @@
 
 import React, { ReactNode, useMemo } from 'react';
 import { useRoutes } from 'react-router-dom';
-import { useApp, useElementFilter } from '@backstage/core-plugin-api';
+import {
+  attachComponentData,
+  useApp,
+  useElementFilter,
+} from '@backstage/core-plugin-api';
 import { isReactRouterBeta } from '../app/isReactRouterBeta';
 
 let warned = false;
@@ -115,3 +119,5 @@ export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
 
   return useRoutes(withNotFound);
 };
+
+attachComponentData(FlatRoutes, 'core.type', 'FlatRoutes');

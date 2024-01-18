@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -37,7 +36,7 @@ spec:
   lifecycle: production
   owner: guest`;
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles(theme => ({
   code: {
     borderRadius: 6,
     margin: theme.spacing(2, 0),

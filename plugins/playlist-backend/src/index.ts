@@ -26,3 +26,4 @@ export {
   isPlaylistPermission,
   playlistConditions,
 } from './permissions';
+export { playlistPlugin as default } from './plugin';
