@@ -101,7 +101,7 @@ export class CloudbuildClient implements CloudbuildApi {
       Authorization: `Bearer ${await this.getToken()}`,
       ...(process.env.NODE_ENV === 'production'
         ? {
-            'User-Agent': `backstage/cloudbuild/${packageinfo.version}`,
+            'X-Goog-Api-Client': `backstage/cloudbuild/${packageinfo.version}`,
           }
         : {}),
     };
