@@ -5,18 +5,49 @@
 ```ts
 /// <reference types="react" />
 
+import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
+import { PathParams } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
+import { RouteRef } from '@backstage/frontend-plugin-api';
+import { SubRouteRef } from '@backstage/frontend-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
+
+// @alpha (undocumented)
+const _default: BackstagePlugin<
+  {
+    root: RouteRef<undefined>;
+    selectedTemplate: SubRouteRef<
+      PathParams<'/templates/:namespace/:templateName'>
+    >;
+    ongoingTask: SubRouteRef<PathParams<'/tasks/:taskId'>>;
+    actions: SubRouteRef<undefined>;
+    listTasks: SubRouteRef<undefined>;
+    edit: SubRouteRef<undefined>;
+  },
+  {
+    registerComponent: ExternalRouteRef<undefined, true>;
+    viewTechDoc: ExternalRouteRef<
+      {
+        name: string;
+        kind: string;
+        namespace: string;
+      },
+      true
+    >;
+  }
+>;
+export default _default;
 
 // @alpha @deprecated
 export type FormProps = Pick<

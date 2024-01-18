@@ -10,13 +10,13 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
+    "./alpha": "./src/alpha.tsx",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.ts"
+        "src/alpha.tsx"
       ],
       "package.json": [
         "package.json"
@@ -48,9 +48,11 @@
   "dependencies": {
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
