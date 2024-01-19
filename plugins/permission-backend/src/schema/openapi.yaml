@@ -188,7 +188,6 @@ components:
         - resourceType
         - rule
       additionalProperties: false
-    
 
     PermissionCriteria:
       oneOf:
@@ -223,7 +222,6 @@ components:
           required:
             - not
         - $ref: '#/components/schemas/PermissionCondition'
-
 
     DefinitivePolicyDecision:
       type: object
