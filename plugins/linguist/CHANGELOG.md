@@ -1,5 +1,31 @@
 # @backstage/plugin-linguist
 
+## 0.1.14
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- 4f42918: Added alpha support for the New Frontend System (Declarative Integration)
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.1
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-linguist-common@0.1.2
+
+## 0.1.14-next.2
+
+### Patch Changes
+
+- 4f42918: Added alpha support for the New Frontend System (Declarative Integration)
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.1-next.2
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
 ## 0.1.14-next.1
 
 ### Patch Changes

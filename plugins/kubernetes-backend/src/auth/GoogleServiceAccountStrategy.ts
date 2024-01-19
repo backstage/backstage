@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthenticationStrategy, KubernetesCredential } from './types';
+
+import {
+  AuthMetadata,
+  AuthenticationStrategy,
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 import * as container from '@google-cloud/container';
 
 /**
@@ -35,5 +40,9 @@ export class GoogleServiceAccountStrategy implements AuthenticationStrategy {
 
   public validateCluster(): Error[] {
     return [];
+  }
+
+  public presentAuthMetadata(_authMetadata: AuthMetadata): AuthMetadata {
+    return {};
   }
 }

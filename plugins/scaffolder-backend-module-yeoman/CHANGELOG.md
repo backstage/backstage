@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.2.30
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.10
+  - @backstage/types@1.1.1
+
+## 0.2.30-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.2.10-next.2
+
 ## 0.2.30-next.1
 
 ### Patch Changes

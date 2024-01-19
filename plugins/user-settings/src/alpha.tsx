@@ -16,13 +16,16 @@
 import {
   coreExtensionData,
   createExtensionInput,
+  createNavItemExtension,
   createPageExtension,
   createPlugin,
 } from '@backstage/frontend-plugin-api';
 import {
   convertLegacyRouteRef,
+  convertLegacyRouteRefs,
   compatWrapper,
 } from '@backstage/core-compat-api';
+import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from './plugin';
 
 import React from 'react';
@@ -50,13 +53,20 @@ const userSettingsPage = createPageExtension({
     ),
 });
 
+/** @alpha */
+export const settingsNavItem = createNavItemExtension({
+  routeRef: convertLegacyRouteRef(settingsRouteRef),
+  title: 'Settings',
+  icon: SettingsIcon,
+});
+
 /**
  * @alpha
  */
 export default createPlugin({
   id: 'user-settings',
-  extensions: [userSettingsPage],
-  routes: {
-    root: convertLegacyRouteRef(settingsRouteRef),
-  },
+  extensions: [userSettingsPage, settingsNavItem],
+  routes: convertLegacyRouteRefs({
+    root: settingsRouteRef,
+  }),
 });

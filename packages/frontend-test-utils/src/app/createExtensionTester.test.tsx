@@ -219,10 +219,14 @@ describe('createExtensionTester', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'See details' }));
 
     await waitFor(() =>
-      expect(analyticsApiMock.getEvents()[0]).toMatchObject({
-        action: 'click',
-        subject: 'See details',
-      }),
+      expect(analyticsApiMock.getEvents()).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            action: 'click',
+            subject: 'See details',
+          }),
+        ]),
+      ),
     );
   });
 });

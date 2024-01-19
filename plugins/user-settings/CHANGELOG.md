@@ -1,5 +1,36 @@
 # @backstage/plugin-user-settings
 
+## 0.8.0
+
+### Minor Changes
+
+- 56b2fb0: Updated the user settings selector to use a select component that displays native language names instead of language codes if possible.
+
+### Patch Changes
+
+- eea0849: add user-settings declarative integration core nav item
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.1
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/core-app-api@1.11.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0
+  - @backstage/types@1.1.1
+
+## 0.8.0-next.2
+
+### Patch Changes
+
+- eea0849: add user-settings declarative integration core nav item
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.1-next.2
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
 ## 0.8.0-next.1
 
 ### Minor Changes

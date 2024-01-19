@@ -81,10 +81,15 @@ export function resolveExtensionDefinition<TConfig>(
     );
   }
 
+  const id = kind ? `${kind}:${namePart}` : namePart;
+
   return {
     ...rest,
     $$type: '@backstage/Extension',
     version: 'v1',
-    id: kind ? `${kind}:${namePart}` : namePart,
-  } as InternalExtension<TConfig>;
+    id,
+    toString() {
+      return `Extension{id=${id}}`;
+    },
+  } as Extension<TConfig>;
 }

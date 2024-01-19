@@ -56,7 +56,7 @@ For current known issues with the Material UI v5 migration, follow our [Mileston
 
 To migrate your plugin to Material UI v5, you can build on the resources available.
 
-1. Manually fix the imports from named to default imports to match the new [linting rules for minimizing bundle size](https://mui.com/material-ui/guides/minimizing-bundle-size).
+1. Manually fix the imports from named to default imports to match the new [linting rules for minimizing bundle size](https://mui.com/material-ui/guides/minimizing-bundle-size). Note: you can use the [new `@backstage/no-top-level-material-ui-4-imports` ESLint](https://github.com/backstage/backstage/blob/master/packages/eslint-plugin/docs/rules/no-top-level-material-ui-4-imports.md) rule to help with this.
 2. Run the migration `codemod` for the path of the specific plugin: `npx @mui/codemod v5.0.0/preset-safe plugins/<path>`.
 3. Take a look at possible `TODO:` items the `codemod` could not fix.
 4. Remove types & methods from `@backstage/theme` which are marked as `@deprecated`.

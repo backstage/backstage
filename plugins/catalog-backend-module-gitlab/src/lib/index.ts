@@ -16,8 +16,17 @@
 
 export { GitLabClient, paginated } from './client';
 export type {
+  GitLabUser,
+  GitLabGroup,
+  GitLabGroupSamlIdentity,
   GitLabProject,
   GitlabProviderConfig,
   GitlabGroupDescription,
+  GroupNameTransformer,
+  GroupNameTransformerOptions,
+  GroupTransformer,
+  GroupTransformerOptions,
+  UserTransformer,
+  UserTransformerOptions,
 } from './types';
 export { readGitlabConfigs } from '../providers/config';

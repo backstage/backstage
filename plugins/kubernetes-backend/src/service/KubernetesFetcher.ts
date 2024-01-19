@@ -216,21 +216,15 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     let requestInit: RequestInit;
     const authProvider =
       clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
-    if (
-      authProvider === 'serviceAccount' &&
-      !clusterDetails.authMetadata.serviceAccountToken &&
-      fs.pathExistsSync(Config.SERVICEACCOUNT_CA_PATH)
-    ) {
+
+    if (this.isServiceAccountAuthentication(authProvider, clusterDetails)) {
       [url, requestInit] = this.fetchArgsInCluster(credential);
-    } else if (
-      credential.type === 'bearer token' ||
-      authProvider === 'localKubectlProxy'
-    ) {
+    } else if (!this.isCredentialMissing(authProvider, credential)) {
       [url, requestInit] = this.fetchArgs(clusterDetails, credential);
     } else {
       return Promise.reject(
         new Error(
-          `no bearer token for cluster '${clusterDetails.name}' and not running in Kubernetes`,
+          `no bearer token or client cert for cluster '${clusterDetails.name}' and not running in Kubernetes`,
         ),
       );
     }
@@ -246,6 +240,26 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     }
 
     return fetch(url, requestInit);
+  }
+
+  private isServiceAccountAuthentication(
+    authProvider: string,
+    clusterDetails: ClusterDetails,
+  ) {
+    return (
+      authProvider === 'serviceAccount' &&
+      !clusterDetails.authMetadata.serviceAccountToken &&
+      fs.pathExistsSync(Config.SERVICEACCOUNT_CA_PATH)
+    );
+  }
+
+  private isCredentialMissing(
+    authProvider: string,
+    credential: KubernetesCredential,
+  ) {
+    return (
+      authProvider !== 'localKubectlProxy' && credential.type === 'anonymous'
+    );
   }
 
   private fetchArgs(
@@ -272,6 +286,10 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
             clusterDetails.caData,
           ) ?? undefined,
         rejectUnauthorized: !clusterDetails.skipTLSVerify,
+        ...(credential.type === 'x509 client certificate' && {
+          cert: credential.cert,
+          key: credential.key,
+        }),
       });
     }
     return [url, requestInit];
