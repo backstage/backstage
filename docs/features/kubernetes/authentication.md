@@ -81,12 +81,23 @@ kubernetes:
     - type: 'config'
       clusters:
         - url: https://<unique-identifier>.<region>.eks.amazonaws.com
-          name: <cluster-name-to-use>
+          name: ${CLUSTER_NAME_TO_DISPLAY}
           authProvider: 'aws'
           caData: ${EKS_CA_DATA}
+          authMetadata:
+            kubernetes.io/aws-assume-role: ${ROLE_ARN_TO_ASSUME}
+            kubernetes.io/aws-external-id: ${ID_FROM_AWS_ADMIN}
+            kubernetes.io/x-k8s-aws-id: ${CLUSTER_NAME_IN_AWS_CONSOLE}
 ```
 
-You get both, the cluster `url` and `caData` directly from the AWS console by going to `EKS` > `Your cluster` > `Overview` > `Details`. You will find them under 'API server endpoint' and 'Certificate authority' respectively.
+You get both the cluster URL and CA directly from the AWS console by going to
+`EKS` > `Your cluster` > `Overview` > `Details`. You will find them under 'API
+server endpoint' and 'Certificate authority' respectively.
+
+If Backstage needs to assume a role when authenticating with EKS clusters, the
+`kubernetes.io/aws-assume-role` parameter can be set to the ARN of the desired
+role. the `kubernetes.io/aws-external-id` parameter in the config corresponds to
+the `ExternalId` parameter of the [`AssumeRole` API in STS][8].
 
 ### Azure
 
@@ -141,3 +152,4 @@ The providers available as client side are:
 [5]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
 [6]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html
 [7]: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+[8]: https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
