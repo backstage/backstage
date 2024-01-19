@@ -16,6 +16,7 @@
 import { ConfigReader } from '@backstage/config';
 import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
+  ANNOTATION_KUBERNETES_AWS_CLUSTER_ID,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
 } from '@backstage/plugin-kubernetes-common';
 import { AwsIamStrategy } from './AwsIamStrategy';
@@ -56,7 +57,7 @@ jest.mock('@aws-sdk/credential-providers', () => ({
 describe('AwsIamStrategy#getCredential', () => {
   const config = new ConfigReader({});
 
-  it('returns a presigned url for cluster name', async () => {
+  it('returns a presigned url', async () => {
     const strategy = new AwsIamStrategy({ config });
 
     const credential = await strategy.getCredential({
@@ -77,7 +78,30 @@ describe('AwsIamStrategy#getCredential', () => {
     );
   });
 
-  it('returns a signed url for AWS credentials with assume role', async () => {
+  it('returns a presigned url for specified cluster ID', async () => {
+    const strategy = new AwsIamStrategy({ config });
+
+    const credential = await strategy.getCredential({
+      name: 'cluster-name',
+      url: '',
+      authMetadata: {
+        [ANNOTATION_KUBERNETES_AWS_CLUSTER_ID]: 'other-name',
+      },
+    });
+
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'k8s-aws-v1.aHR0cHM6Ly9odHRwczovL2V4YW1wbGUuY29tL2FzZGY_',
+    });
+    expect(signer.presign).toHaveBeenCalledWith(
+      expect.objectContaining({
+        headers: expect.objectContaining({ 'x-k8s-aws-id': 'other-name' }),
+      }),
+      expect.anything(),
+    );
+  });
+
+  it('returns a presigned url for AWS credentials with assumed role', async () => {
     const strategy = new AwsIamStrategy({ config });
 
     const credential = await strategy.getCredential({
@@ -106,7 +130,7 @@ describe('AwsIamStrategy#getCredential', () => {
     });
   });
 
-  it('returns a signed url for AWS credentials and passes the external id', async () => {
+  it('returns a presigned url for AWS credentials and passes the external id', async () => {
     const strategy = new AwsIamStrategy({ config });
 
     const credential = await strategy.getCredential({
