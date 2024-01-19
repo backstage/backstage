@@ -335,6 +335,8 @@ As proposed above, the change to the model will be a backwards compatible change
 List any dependencies that this work has on other BEPs or features.
 -->
 
+None that we know of.
+
 ## Alternatives
 
 <!--
@@ -342,10 +344,6 @@ What other approaches did you consider, and why did you rule them out? These do
 not need to be as detailed as the proposal, but should include enough
 information to express the idea and why it was not acceptable.
 -->
-
-- Supplying override data on the Component itself.
-- Relations as separate objects
--
 
 ## 1. Supplying override data on the Component itself.
 
