@@ -32,7 +32,10 @@ import {
 } from '@backstage/frontend-plugin-api';
 import React, { Children, ReactNode, isValidElement } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { convertLegacyRouteRef } from './convertLegacyRouteRef';
+import {
+  convertLegacyRouteRef,
+  convertLegacyRouteRefs,
+} from './convertLegacyRouteRef';
 import { compatWrapper } from './compatWrapper';
 
 /*
@@ -244,6 +247,8 @@ export function collectLegacyRoutes(
           createApiExtension({ factory }),
         ),
       ],
+      routes: convertLegacyRouteRefs(plugin.routes ?? {}),
+      externalRoutes: convertLegacyRouteRefs(plugin.externalRoutes ?? {}),
     }),
   );
 }
