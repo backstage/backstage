@@ -36,7 +36,7 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 The summary of the BEP is a few paragraphs long and give a high-level overview of the features to be implemented. It should be possible to read *only* the summary and understand what the BEP is proposing to accomplish and what impact it has for users.
 -->
 
-Metadata on relations is an important step forward to enabling more advanced use cases of the catalog's relational layer. While users will not be directly impacted by this update, plugin developers will be able to leverage this work for richer experiences. This BEP builds on decisions made during the last catalog rewrite, introduces a new way of defining annotations, and modifies some of the core catalog stitching loop.
+Metadata on relations is an important step forward to enabling more advanced use cases of the catalog's relational layer. While users will not be directly impacted by this update, plugin developers will be able to leverage this work for richer experiences. This BEP builds on decisions made during the last catalog rewrite, introduces a new way of defining relations, and modifies some of the core catalog stitching loop.
 
 ## Glossary
 
@@ -65,8 +65,7 @@ In order to classify this BEP as a success, we expect the following to be implem
 
 1. A new schema for defining relations that supports adding metadata.
 1. The catalog is updated to ingest relations and their metadata successfully.
-1. The catalog correctly de-duplicates annotations and their metadata.
-1. There is a new client side way to access `metadata.annotation` keys.
+1. The catalog correctly de-duplicates relations and their metadata.
 1. The two tickets listed above, environment support and API versioning, are unblocked.
 
 ### Non-Goals
@@ -78,8 +77,8 @@ and make progress.
 
 Adding metadata to relations could have far reaching consequences for the catalog, to restrict this to a sane set of concerns we propose the following.
 
-1. Implementing search of annotation metadata is outside of the scope of this BEP, the metadata that will be accessed will be accessed as part of the entity definition and not queried separately.
-1. Updating the catalog ingestion cycle to use an array of metadata not just a single metadata. Metadata on annotation will be used to overwrite metadata on Entities client-side. If that data is something preprocessed by a `Processor`/`Provider`, that processor will need to process _all_ relation metadata overwrites. This is a significant shift in thinking around the ingestion loop and for this BEP will not be considered.
+1. Implementing search of relation metadata is outside of the scope of this BEP, the metadata that will be accessed will be accessed as part of the entity definition and not queried separately.
+1. Updating the catalog ingestion cycle to use an array of metadata not just a single metadata. Metadata on relation will be used to overwrite metadata on Entities client-side. If that data is something preprocessed by a `Processor`/`Provider`, that processor will need to process _all_ relation metadata overwrites. This is a significant shift in thinking around the ingestion loop and for this BEP will not be considered.
 1. Updating individual plugins to support the above is out of scope of this BEP.
 
 ## Proposal
@@ -95,29 +94,18 @@ This work has 3 parts,
 
 1. Defining and implementing a schema / import layer for relations with metadata.
 1. Storing and processing relations with metadata.
-1. Accessing relations with metadata on the clientside.
 
 ### Schema / import layer
 
-As a `catalog-info.yaml`, I should be able to continue defining annotations with the simple schema that exists currently.
+As a `catalog-info.yaml`, I should be able to continue defining relations with the simple schema that exists currently.
 
-We propose adding a more complex schema that can be interchanged as needed to allow more complex annotations that have attached metadata.
+We propose adding a more complex schema that can be interchanged as needed to allow more complex relations that have attached metadata.
 
 ### Storage and processing
 
-As an `catalog-info.yaml` writer, I should be able to continue to use their simple annotations as well as start to use complex annotations along side them.
+As an `catalog-info.yaml` writer, I should be able to continue to use their simple relations as well as start to use complex relations along side them.
 
-We propose overriding the existing annotation type to support metadata and adding support for these new annotations in the entity stitching cycle.
-
-Open questions:
-
-- Is metadata on relations single directional or bidirectional?
-
-### Clientside access
-
-As a plugin developer, I should be able to easily get access to entity metadata as well as context relevant overrides.
-
-We propose a simple API for this and recommendations for implementations that may use these context relevant overrides.
+We propose overriding the existing relation type to support metadata and adding support for these new relations in the entity stitching cycle.
 
 ## Design Details
 
@@ -148,8 +136,9 @@ This could then be used like so,
 providesApis:
   - targetRef: wayback-search
     metadata:
-      annotations:
-        backstage.io/version: '1'
+      someMetadata: 'myMetadataKey'
+      someOtherMetadata:
+        key1: value1
   - wayback-ingestor
 ```
 
@@ -168,9 +157,7 @@ export type EntityRelation = {
   type: string;
   targetRef: string;
 
-  /**
-   * New property. We'll choose annotations right now to simplify the problem.
-   */
+  // Added.
   metadata?: EntityMeta;
 };
 ```
@@ -296,29 +283,6 @@ class DefaultProcessingDatabase {
 }
 ```
 
-### Clientside access
-
-<!--
-This is less flushed out and definitely needs feedback/iteration.
--->
-
-We propose the creation of a new frontend API for accessing entity metadata with context,
-
-```ts
-const EntityFieldResolverContext = createContext<{
-  resolver: (entity: Entity, field: string) => string;
-}>({
-  resolver: (entity, field) => _.get(entity, field),
-});
-
-const useEntityMetadata = (entity: Entity, field: string) => {
-  const { resolvers } = useContext(EntityFieldResolverContext);
-  return resolvers.resolve(entity, field);
-};
-```
-
-Separate pages could override this context for specific use cases. An environment use case could provide a `EnvironmentEntityFieldResolverContext` that resolves field overrides based on metadata on relations attached between a selected environment and the current Component you're looking at.
-
 ## Release Plan
 
 <!--
@@ -354,11 +318,9 @@ kind: Component
 spec:
   environmentOverrides:
     production:
-      annotations:
-        sentry-id: prod-id
+      key1: value1
     development:
-      annotations:
-        sentry-id: dev-id
+      key1: value2
 ```
 
 The primary downside of this approach is that this is a fragile API that doesn't scale well to additional use cases. There's no easy way to add a new override for an entirely different context. Either you have to start nesting keys,
@@ -368,7 +330,7 @@ overrides:
   environment:
     production: ...
   otherOverride:
-    key1: ...
+    key2: ...
 ```
 
 or you have to start defining top level keys,
@@ -377,7 +339,7 @@ or you have to start defining top level keys,
 environmentOverrides:
   production: ...
 otherOverride:
-  key1: ...
+  key2: ...
 ```
 
 And both of those don't scale well with complexity. We also have the connection between the two entities we care about, and in all cases there are multiple entities involved. That connection should contain the data, not an entity participating in that connection.
