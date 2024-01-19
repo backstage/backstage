@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.22.0",
       "releases/v1.21.0",
       "releases/v1.20.0",
       "releases/v1.19.0",
@@ -410,7 +411,11 @@
       {
         "type": "category",
         "label": "Building Plugins",
-        "items": ["frontend-system/building-plugins/testing"]
+        "items": [
+          "frontend-system/building-plugins/index",
+          "frontend-system/building-plugins/testing",
+          "frontend-system/building-plugins/extension-types"
+        ]
       },
       {
         "type": "category",
@@ -447,6 +452,7 @@
       "tutorials/journey",
       "tutorials/quickstart-app-plugin",
       "tutorials/react-router-stable-migration",
+      "tutorials/react18-migration",
       "tutorials/package-role-migration",
       "tutorials/migrating-away-from-core",
       "tutorials/configuring-plugin-databases",

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.13.10-next.1",
+  "version": "0.13.10",
   "publishConfig": {
     "access": "public"
   },
@@ -92,6 +92,7 @@
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
+    "@backstage/app-defaults": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/test-utils": "workspace:^",

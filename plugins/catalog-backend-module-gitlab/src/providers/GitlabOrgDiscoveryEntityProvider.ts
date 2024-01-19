@@ -18,8 +18,6 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
-  GroupEntity,
-  UserEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
@@ -37,7 +35,19 @@ import {
   paginated,
   readGitlabConfigs,
 } from '../lib';
-import { GitLabGroup, GitLabUser, PagedResponse } from '../lib/types';
+import {
+  GitLabGroup,
+  GitLabUser,
+  PagedResponse,
+  UserTransformer,
+  GroupTransformer as GroupEntitiesTransformer,
+  GroupNameTransformer,
+} from '../lib/types';
+import {
+  defaultGroupNameTransformer,
+  defaultGroupEntitiesTransformer,
+  defaultUserTransformer,
+} from '../lib/defaultTransformers';
 
 type Result = {
   scanned: number;
@@ -59,6 +69,9 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   private readonly logger: Logger;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
+  private userTransformer: UserTransformer;
+  private groupEntitiesTransformer: GroupEntitiesTransformer;
+  private groupNameTransformer: GroupNameTransformer;
 
   static fromConfig(
     config: Config,
@@ -66,6 +79,9 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
+      userTransformer?: UserTransformer;
+      groupEntitiesTransformer?: GroupEntitiesTransformer;
+      groupNameTransformer?: GroupNameTransformer;
     },
   ): GitlabOrgDiscoveryEntityProvider[] {
     if (!options.schedule && !options.scheduler) {
@@ -122,6 +138,9 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     integration: GitLabIntegration;
     logger: Logger;
     taskRunner: TaskRunner;
+    userTransformer?: UserTransformer;
+    groupEntitiesTransformer?: GroupEntitiesTransformer;
+    groupNameTransformer?: GroupNameTransformer;
   }) {
     this.config = options.config;
     this.integration = options.integration;
@@ -129,6 +148,11 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       target: this.getProviderName(),
     });
     this.scheduleFn = this.createScheduleFn(options.taskRunner);
+    this.userTransformer = options.userTransformer ?? defaultUserTransformer;
+    this.groupEntitiesTransformer =
+      options.groupEntitiesTransformer ?? defaultGroupEntitiesTransformer;
+    this.groupNameTransformer =
+      options.groupNameTransformer ?? defaultGroupNameTransformer;
   }
 
   getProviderName(): string {
@@ -271,12 +295,19 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     });
 
     const userEntities = res.matches.map(p =>
-      this.createUserEntity(p, this.integration.config.host),
+      this.userTransformer({
+        user: p,
+        integrationConfig: this.integration.config,
+        providerConfig: this.config,
+        groupNameTransformer: this.groupNameTransformer,
+      }),
     );
-    const groupEntities = this.createGroupEntities(
-      groupsWithUsers,
-      this.integration.config.host,
-    );
+
+    const groupEntities = this.groupEntitiesTransformer({
+      groups: groupsWithUsers,
+      providerConfig: this.config,
+      groupNameTransformer: this.groupNameTransformer,
+    });
 
     await this.connection.applyMutation({
       type: 'full',
@@ -289,32 +320,6 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         ),
       })),
     });
-  }
-
-  private createGroupEntities(
-    groupResult: GitLabGroup[],
-    host: string,
-  ): GroupEntity[] {
-    const idMapped: { [groupId: number]: GitLabGroup } = {};
-    const entities: GroupEntity[] = [];
-
-    for (const group of groupResult) {
-      idMapped[group.id] = group;
-    }
-
-    for (const group of groupResult) {
-      const entity = this.createGroupEntity(group, host);
-
-      if (group.parent_id && idMapped.hasOwnProperty(group.parent_id)) {
-        entity.spec.parent = this.groupName(
-          idMapped[group.parent_id].full_path,
-        );
-      }
-
-      entities.push(entity);
-    }
-
-    return entities;
   }
 
   private withLocations(host: string, baseUrl: string, entity: Entity): Entity {
@@ -333,91 +338,5 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       },
       entity,
     ) as Entity;
-  }
-
-  private createUserEntity(user: GitLabUser, host: string): UserEntity {
-    const annotations: { [annotationName: string]: string } = {};
-
-    annotations[`${host}/user-login`] = user.web_url;
-    if (user?.group_saml_identity?.extern_uid) {
-      annotations[`${host}/saml-external-uid`] =
-        user.group_saml_identity.extern_uid;
-    }
-
-    const entity: UserEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'User',
-      metadata: {
-        name: user.username,
-        annotations: annotations,
-      },
-      spec: {
-        profile: {
-          displayName: user.name || undefined,
-          picture: user.avatar_url || undefined,
-        },
-        memberOf: [],
-      },
-    };
-
-    if (user.email) {
-      if (!entity.spec) {
-        entity.spec = {};
-      }
-
-      if (!entity.spec.profile) {
-        entity.spec.profile = {};
-      }
-
-      entity.spec.profile.email = user.email;
-    }
-
-    if (user.groups) {
-      for (const group of user.groups) {
-        if (!entity.spec.memberOf) {
-          entity.spec.memberOf = [];
-        }
-        entity.spec.memberOf.push(this.groupName(group.full_path));
-      }
-    }
-
-    return entity;
-  }
-
-  private groupName(full_path: string): string {
-    if (this.config.group && full_path.startsWith(`${this.config.group}/`)) {
-      return full_path
-        .replace(`${this.config.group}/`, '')
-        .replaceAll('/', '-');
-    }
-    return full_path.replaceAll('/', '-');
-  }
-
-  private createGroupEntity(group: GitLabGroup, host: string): GroupEntity {
-    const annotations: { [annotationName: string]: string } = {};
-
-    annotations[`${host}/team-path`] = group.full_path;
-
-    const entity: GroupEntity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Group',
-      metadata: {
-        name: this.groupName(group.full_path),
-        annotations: annotations,
-      },
-      spec: {
-        type: 'team',
-        children: [],
-        profile: {
-          displayName: group.name,
-        },
-      },
-    };
-
-    if (group.description) {
-      entity.metadata.description = group.description;
-    }
-
-    return entity;
   }
 }

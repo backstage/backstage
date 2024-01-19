@@ -51,6 +51,7 @@ describe('createTranslationExtension', () => {
         resource: createTranslationExtension.translationDataRef,
       },
       factory: expect.any(Function),
+      toString: expect.any(Function),
     });
 
     expect((extension as any).factory({} as any)).toEqual({
@@ -88,6 +89,7 @@ describe('createTranslationExtension', () => {
         resource: createTranslationExtension.translationDataRef,
       },
       factory: expect.any(Function),
+      toString: expect.any(Function),
     });
 
     expect((extension as any).factory({} as any)).toEqual({ resource });
@@ -126,6 +128,7 @@ describe('createTranslationExtension', () => {
         resource: createTranslationExtension.translationDataRef,
       },
       factory: expect.any(Function),
+      toString: expect.any(Function),
     });
   });
 });

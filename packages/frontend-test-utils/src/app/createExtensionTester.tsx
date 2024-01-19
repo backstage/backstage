@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, useContext, useState } from 'react';
+import React from 'react';
 import { MemoryRouter, Link } from 'react-router-dom';
 import { RenderResult, render } from '@testing-library/react';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
   ExtensionDefinition,
   IconComponent,
-  IdentityApi,
   RouteRef,
-  configApiRef,
   coreExtensionData,
   createExtension,
   createExtensionInput,
   createExtensionOverrides,
   createNavItemExtension,
-  useApi,
+  createRouterExtension,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
@@ -37,15 +35,7 @@ import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { createSignInPageExtension } from '../../../frontend-plugin-api/src/extensions/createSignInPageExtension';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/createExtension';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { InternalAppContext } from '../../../frontend-app-api/src/wiring/InternalAppContext';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { SignInPageProps } from '../../../core-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { getBasePath } from '../../../core-app-api/src/app/AppRouter';
 
 const NavItem = (props: {
   routeRef: RouteRef<undefined>;
@@ -63,7 +53,7 @@ const NavItem = (props: {
   );
 };
 
-const TestCoreNavExtension = createExtension({
+const TestAppNavExtension = createExtension({
   namespace: 'app',
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
@@ -90,97 +80,6 @@ const TestCoreNavExtension = createExtension({
             ))}
           </ul>
         </nav>
-      ),
-    };
-  },
-});
-
-const AuthenticationProvider = (props: {
-  signInPage?: ComponentType<SignInPageProps>;
-  children: ReactNode;
-}) => {
-  const { signInPage: SignInPage, children } = props;
-  const configApi = useApi(configApiRef);
-  const signOutTargetUrl = getBasePath(configApi) || '/';
-
-  const internalAppContext = useContext(InternalAppContext);
-  if (!internalAppContext) {
-    throw new Error('AppRouter must be rendered within the AppProvider');
-  }
-
-  const { appIdentityProxy } = internalAppContext;
-  const [identityApi, setIdentityApi] = useState<IdentityApi>();
-
-  if (!SignInPage) {
-    appIdentityProxy.setTarget(
-      {
-        getUserId: () => 'guest',
-        getIdToken: async () => undefined,
-        getProfile: () => ({
-          email: 'guest@example.com',
-          displayName: 'Guest',
-        }),
-        getProfileInfo: async () => ({
-          email: 'guest@example.com',
-          displayName: 'Guest',
-        }),
-        getBackstageIdentity: async () => ({
-          type: 'user',
-          userEntityRef: 'user:default/guest',
-          ownershipEntityRefs: ['user:default/guest'],
-        }),
-        getCredentials: async () => ({}),
-        signOut: async () => {},
-      },
-      { signOutTargetUrl },
-    );
-
-    return children;
-  }
-
-  if (!identityApi) {
-    return <SignInPage onSignInSuccess={setIdentityApi} />;
-  }
-
-  appIdentityProxy.setTarget(identityApi, {
-    signOutTargetUrl,
-  });
-
-  return children;
-};
-
-const TestCoreRouterExtension = createExtension({
-  namespace: 'app',
-  name: 'router',
-  attachTo: { id: 'app', input: 'root' },
-  inputs: {
-    signInPage: createExtensionInput(
-      {
-        component: createSignInPageExtension.componentDataRef,
-      },
-      { singleton: true, optional: true },
-    ),
-    children: createExtensionInput(
-      {
-        element: coreExtensionData.reactElement,
-      },
-      { singleton: true },
-    ),
-  },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
-  factory({ inputs }) {
-    const SignInPage = inputs.signInPage?.output.component;
-    const children = inputs.children.output.element;
-
-    return {
-      element: (
-        <MemoryRouter>
-          <AuthenticationProvider signInPage={SignInPage}>
-            {children}
-          </AuthenticationProvider>
-        </MemoryRouter>
       ),
     };
   },
@@ -278,8 +177,13 @@ export class ExtensionTester {
         createExtensionOverrides({
           extensions: [
             ...this.#extensions.map(extension => extension.definition),
-            TestCoreNavExtension,
-            TestCoreRouterExtension,
+            TestAppNavExtension,
+            createRouterExtension({
+              namespace: 'test',
+              Component: ({ children }) => (
+                <MemoryRouter>{children}</MemoryRouter>
+              ),
+            }),
           ],
         }),
       ],

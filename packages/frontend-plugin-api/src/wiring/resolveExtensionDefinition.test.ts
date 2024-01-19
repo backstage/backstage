@@ -37,6 +37,7 @@ describe('resolveExtensionDefinition', () => {
       ...definition,
     } as ExtensionDefinition<unknown>);
     expect(resolved.id).toBe(expected);
+    expect(String(resolved)).toBe(`Extension{id=${expected}}`);
   });
 
   it('should fail to resolve extension ID without namespace', () => {

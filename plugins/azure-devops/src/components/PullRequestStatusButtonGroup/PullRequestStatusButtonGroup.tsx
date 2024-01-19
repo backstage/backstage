@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Button, ButtonGroup } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 
 import { PullRequestStatus } from '@backstage/plugin-azure-devops-common';
 import React from 'react';

@@ -1,5 +1,30 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- d076ee4: Updated dependency `azure-devops-node-api` to `^12.0.0`.
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-catalog-node@1.6.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-azure-devops-common@0.3.2
+  - @backstage/plugin-catalog-common@1.0.20
+
+## 0.5.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-catalog-node@1.6.1-next.2
+
 ## 0.5.1-next.1
 
 ### Patch Changes

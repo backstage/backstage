@@ -10,8 +10,12 @@ import { OAuthAuthenticator } from '@backstage/plugin-auth-node';
 import { Strategy } from 'openid-client';
 import { TokenSet } from 'openid-client';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const authModulePinnipedProvider: () => BackendFeature;
+
+// @public (undocumented)
+const authModulePinnipedProvider_2: () => BackendFeature;
+export default authModulePinnipedProvider_2;
 
 // @public (undocumented)
 export const pinnipedAuthenticator: OAuthAuthenticator<

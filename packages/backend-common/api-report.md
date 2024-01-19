@@ -277,6 +277,12 @@ export class DockerContainerRunner implements ContainerRunner {
 }
 
 // @public
+export function dropDatabase(
+  dbConfig: Config,
+  ...databases: Array<string>
+): Promise<void>;
+
+// @public
 export function ensureDatabaseExists(
   dbConfig: Config,
   ...databases: Array<string>
@@ -417,6 +423,7 @@ export class Git {
     force?: boolean;
   }): Promise<PushResult>;
   readCommit(options: { dir: string; sha: string }): Promise<ReadCommitResult>;
+  remove(options: { dir: string; filepath: string }): Promise<void>;
   resolveRef(options: { dir: string; ref: string }): Promise<string>;
 }
 

@@ -1,5 +1,29 @@
 # @backstage/plugin-kubernetes
 
+## 0.11.4
+
+### Patch Changes
+
+- d5d2c67: Add `authuser` search parameter to GKE cluster link formatter in k8s plugin
+
+  Thanks to this, people with multiple simultaneously logged-in accounts in their GCP console will automatically view objects with the same email as the one signed in to the Google auth provider in Backstage.
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-kubernetes-react@0.2.1
+  - @backstage/plugin-kubernetes-common@0.7.3
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/catalog-model@1.4.3
+
+## 0.11.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
 ## 0.11.4-next.1
 
 ### Patch Changes

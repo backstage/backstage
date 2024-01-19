@@ -65,20 +65,72 @@ This is an array used to determine where to retrieve cluster configuration from.
 Valid cluster locator methods are:
 
 - [`catalog`](#catalog)
-- [`localKubectlProxy`](#localkubectlproxy)
 - [`config`](#config)
 - [`gke`](#gke)
+- [`localKubectlProxy`](#localkubectlproxy)
 - [custom `KubernetesClustersSupplier`](#custom-kubernetesclusterssupplier)
 
 #### `catalog`
 
-This cluster locator method will read cluster information from the catalog.
+This cluster locator method will gather
+[Resources](https://backstage.io/docs/features/software-catalog/system-model#resource)
+of
+[type](https://backstage.io/docs/features/software-catalog/descriptor-format#spectype-required-4)
+`kubernetes-cluster` from the catalog and treat them as clusters for the
+purposes of the Kubernetes plugin. In order for a resource to be detected by
+this method, it must also have the following
+[annotations](https://backstage.io/docs/features/software-catalog/descriptor-format#annotations-optional)
+(as seen
+[here](https://github.com/backstage/backstage/blob/86baccb2d7d378baed74eaebf017c60b410986e5/plugins/kubernetes-backend/src/cluster-locator/CatalogClusterLocator.ts#L51-L61)
+in the code):
 
-#### `localKubectlProxy`
+- [`kubernetes.io/api-server`](https://backstage.io/docs/reference/plugin-kubernetes-common.annotation_kubernetes_api_server/),
+  denoting the base URL of the Kubernetes control plane
+- [`kubernetes.io/api-server-certificate-authority`](https://backstage.io/docs/reference/plugin-kubernetes-common.annotation_kubernetes_api_server_ca/),
+  containing a base64-encoded certificate authority bundle in PEM format;
+  Backstage will check that the control plane presents a certificate signed by
+  this authority.
+- [`kubernetes.io/auth-provider`](https://backstage.io/docs/reference/plugin-kubernetes-common.annotation_kubernetes_auth_provider/),
+  denoting the strategy to use to authenticate with the control plane.
 
-This cluster locator method will assume a locally running [`kubectl proxy`](https://kubernetes.io/docs/tasks/extend-kubernetes/http-proxy-access-api/#using-kubectl-to-start-a-proxy-server) process using the default port (8001).
+There are many other annotations that can be applied to a cluster resource to
+configure the way Backstage communicates, documented
+[here](https://backstage.io/docs/reference/plugin-kubernetes-common#variables)
+in the API reference. Here is a YAML snippet illustrating an example of a
+cluster in the catalog:
 
-NOTE: This cluster locator method is for local development only and should not be used in production.
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: my-cluster
+  annotations:
+    kubernetes.io/api-server: 'https://127.0.0.1:53725'
+    kubernetes.io/api-server-certificate-authority: # base64-encoded CA
+    kubernetes.io/auth-provider: 'oidc'
+    kubernetes.io/oidc-token-provider: 'microsoft'
+    kubernetes.io/skip-metrics-lookup: 'true'
+spec:
+  type: kubernetes-cluster
+  owner: user:guest
+```
+
+Note that it is insecure to store a Kubernetes service account token in an
+annotation on a catalog entity (where it could easily be accidentally revealed
+by the catalog API) -- therefore there is no annotation corresponding to the
+[`serviceAccountToken` field](#clustersserviceaccounttoken-optional) used by
+the [`config`](#config) cluster locator. Accordingly, the catalog cluster
+locator does not support the [`serviceAccount`](#clustersauthprovider) auth
+strategy.
+
+This method can be quite helpful when used in combination with an ingestion
+procedure like the
+[`GkeEntityProvider`](https://backstage.io/docs/reference/plugin-catalog-backend-module-gcp.gkeentityprovider/)
+(installation documented
+[here](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-gcp#installation))
+or the
+[`AwsEKSClusterProcessor`](https://backstage.io/docs/reference/plugin-catalog-backend-module-aws.awseksclusterprocessor/)
+to automatically update the set of clusters tracked by Backstage.
 
 #### `config`
 
@@ -341,6 +393,7 @@ For example:
 - type: 'gke'
   projectId: 'gke-clusters'
   region: 'europe-west1' # optional
+  authProvider: 'google' # optional
   skipTLSVerify: false # optional
   skipMetricsLookup: false # optional
   exposeDashboard: false # optional
@@ -365,6 +418,18 @@ The Google Cloud project to look for Kubernetes clusters in.
 The Google Cloud region to look for Kubernetes clusters in. Defaults to all
 regions.
 
+##### `authProvider` (optional)
+
+Set the authentication method for discovering clusters and gathering information
+about resources.
+
+Defaults to `google` which leverages the logged in user's Google OAuth credentials.
+
+Set to `googleServiceAccount` to leverage
+Application Default Credentials (https://cloud.google.com/docs/authentication/application-default-credentials).
+To use a service account JSON key (not recommended), set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable
+on the Backstage backend to the path of the service account key file.
+
 ##### `skipTLSVerify` (optional)
 
 This determines whether the Kubernetes client verifies the TLS certificate
@@ -387,6 +452,12 @@ Defaults to `false`.
 
 Array of key value labels used to filter out clusters which don't have the matching
 [resource labels](https://cloud.google.com/resource-manager/docs/creating-managing-labels).
+
+#### `localKubectlProxy`
+
+This cluster locator method will assume a locally running [`kubectl proxy`](https://kubernetes.io/docs/tasks/extend-kubernetes/http-proxy-access-api/#using-kubectl-to-start-a-proxy-server) process using the default port (8001).
+
+NOTE: This cluster locator method is for local development only and should not be used in production.
 
 #### Custom `KubernetesClustersSupplier`
 
@@ -593,7 +664,7 @@ SingleTenant Cluster:
 
 In the example above, we configured the "backstage.io/kubernetes-cluster" annotation on the entity `catalog-info.yaml` file to specify that the current component is running in a single cluster called "dice-cluster", so this cluster must have been specified in the `app-config.yaml`, under the Kubernetes clusters configuration (for more details, see [`Configuring Kubernetes clusters`](#configuring-kubernetes-clusters)).
 
-If you do not specify the annotation by `default Backstage fetches all` defined Kubernetes cluster.
+If you do not specify the annotation, by default Backstage fetches from all defined Kubernetes clusters.
 
 [1]: https://cloud.google.com/kubernetes-engine
 [2]: https://cloud.google.com/docs/authentication/production#linux-or-macos

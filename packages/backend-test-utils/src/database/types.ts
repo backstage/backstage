@@ -43,8 +43,10 @@ export type TestDatabaseProperties = {
 
 export type Instance = {
   stopContainer?: () => Promise<void>;
+  dropDatabases?: () => Promise<void>;
   databaseManager: DatabaseManager;
   connections: Array<Knex>;
+  databaseNames: Array<string>;
 };
 
 export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =

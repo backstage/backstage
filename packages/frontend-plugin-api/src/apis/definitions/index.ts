@@ -40,6 +40,7 @@ export * from './DiscoveryApi';
 export * from './ErrorApi';
 export * from './FeatureFlagsApi';
 export * from './FetchApi';
+export * from './IconsApi';
 export * from './IdentityApi';
 export * from './OAuthRequestApi';
 export * from './StorageApi';

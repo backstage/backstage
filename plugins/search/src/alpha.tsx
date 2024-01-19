@@ -70,6 +70,7 @@ import { UrlUpdater } from './components/SearchPage/SearchPage';
 import {
   compatWrapper,
   convertLegacyRouteRef,
+  convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
 
 /** @alpha */
@@ -248,7 +249,7 @@ export const searchNavItem = createNavItemExtension({
 export default createPlugin({
   id: 'search',
   extensions: [searchApi, searchPage, searchNavItem],
-  routes: {
-    root: convertLegacyRouteRef(rootRouteRef),
-  },
+  routes: convertLegacyRouteRefs({
+    root: rootRouteRef,
+  }),
 });

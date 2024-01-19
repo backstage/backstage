@@ -47,6 +47,7 @@ describe('createApiExtension', () => {
         }),
       },
       factory: expect.any(Function),
+      toString: expect.any(Function),
     });
   });
 
@@ -83,6 +84,7 @@ describe('createApiExtension', () => {
         }),
       },
       factory: expect.any(Function),
+      toString: expect.any(Function),
     });
   });
 });

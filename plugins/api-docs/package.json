@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-api-docs",
   "description": "A Backstage plugin that helps represent API entities in the frontend",
-  "version": "0.10.3-next.1",
+  "version": "0.10.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -33,12 +33,14 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@asyncapi/react-component": "1.2.6",
+    "@asyncapi/react-component": "1.2.13",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-permission-react": "workspace:^",
     "@graphiql/react": "^0.20.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
