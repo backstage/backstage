@@ -24,7 +24,7 @@ import {
   OAuthAuthenticatorStartInput,
   OAuthState,
 } from '@backstage/plugin-auth-node';
-import { SignJWT } from 'jose';
+import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
@@ -50,8 +50,18 @@ describe('vmwareCloudAuthenticator', () => {
     context_name: 'orgId',
     email: 'user@example.com',
   };
+  const accessTokenClaims = {
+    context_name: 'orgId',
+    authorization_details: [],
+    domain: 'example.com',
+    perms: ['csp:org_owner', 'csp:org_member'],
+    acct: 'user@example.com',
+    username: 'user',
+  };
 
   let idToken: string;
+  let accessToken: string;
+  let publicKey: JWK;
 
   let authResponse: {
     access_token: string;
@@ -63,12 +73,21 @@ describe('vmwareCloudAuthenticator', () => {
   let authenticatorCtx: VMwareCloudAuthenticatorContext;
 
   beforeAll(async () => {
+    const keyPair = await generateKeyPair('ES256');
+    const privateKey = await exportJWK(keyPair.privateKey);
+    publicKey = await exportJWK(keyPair.publicKey);
+    publicKey.alg = privateKey.alg = 'ES256';
+
     idToken = await new SignJWT(signInInfo)
-      .setProtectedHeader({ alg: 'HS256' })
-      .sign(Buffer.from('signing key'));
+      .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
+      .sign(keyPair.privateKey);
+
+    accessToken = await new SignJWT(accessTokenClaims)
+      .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
+      .sign(keyPair.privateKey);
 
     authResponse = {
-      access_token: 'accessToken',
+      access_token: accessToken,
       refresh_token: 'refreshToken',
       id_token: idToken,
     };
@@ -81,7 +100,11 @@ describe('vmwareCloudAuthenticator', () => {
         ({ request }) =>
           request.headers.get('Authorization')
             ? HttpResponse.json(authResponse)
-            : HttpResponse.json(null, { status: 500 }),
+            : HttpResponse.json(null, { status: 401 }),
+      ),
+      http.get(
+        'https://console.cloud.vmware.com/csp/gateway/am/api/auth/keys',
+        () => HttpResponse.json({ keys: [{ ...publicKey }] }),
       ),
     );
 
@@ -331,7 +354,7 @@ describe('vmwareCloudAuthenticator', () => {
           'https://console.cloud.vmware.com/csp/gateway/am/api/auth/token',
           () =>
             HttpResponse.json({
-              access_token: 'accessToken',
+              access_token: accessToken,
               id_token: inadequateIdToken,
             }),
         ),
@@ -377,6 +400,38 @@ describe('vmwareCloudAuthenticator', () => {
           authenticatorCtx,
         ),
       ).rejects.toThrow('Unexpected redirect');
+    });
+
+    it('fails when access token is not signed by a known key', async () => {
+      const unknownKeyPair = await generateKeyPair('ES256');
+      const unknownPrivateKey = await exportJWK(unknownKeyPair.privateKey);
+      const unknownPublicKey = await exportJWK(unknownKeyPair.publicKey);
+      unknownPublicKey.alg = unknownPrivateKey.alg = 'ES256';
+
+      const unknownAccessToken = await new SignJWT(accessTokenClaims)
+        .setProtectedHeader({
+          alg: unknownPrivateKey.alg,
+          kid: unknownPrivateKey.kid,
+        })
+        .sign(unknownKeyPair.privateKey);
+
+      server.use(
+        http.post(
+          'https://console.cloud.vmware.com/csp/gateway/am/api/auth/token',
+          () =>
+            HttpResponse.json({
+              access_token: unknownAccessToken,
+              id_token: idToken,
+            }),
+        ),
+      );
+
+      return expect(
+        vmwareCloudAuthenticator.authenticate(
+          authenticateRequest,
+          authenticatorCtx,
+        ),
+      ).rejects.toThrow('signature verification failed');
     });
   });
 
@@ -472,6 +527,35 @@ describe('vmwareCloudAuthenticator', () => {
         email: signInInfo.email,
         displayName: `${signInInfo.given_name} ${signInInfo.family_name}`,
       });
+    });
+
+    it('fails when access token is not signed by a known key', async () => {
+      const unknownKeyPair = await generateKeyPair('ES256');
+      const unknownPrivateKey = await exportJWK(unknownKeyPair.privateKey);
+      const unknownPublicKey = await exportJWK(unknownKeyPair.publicKey);
+      unknownPublicKey.alg = unknownPrivateKey.alg = 'ES256';
+
+      const unknownAccessToken = await new SignJWT(accessTokenClaims)
+        .setProtectedHeader({
+          alg: unknownPrivateKey.alg,
+          kid: unknownPrivateKey.kid,
+        })
+        .sign(unknownKeyPair.privateKey);
+
+      server.use(
+        http.post(
+          'https://console.cloud.vmware.com/csp/gateway/am/api/auth/token',
+          () =>
+            HttpResponse.json({
+              access_token: unknownAccessToken,
+              id_token: idToken,
+            }),
+        ),
+      );
+
+      return expect(
+        vmwareCloudAuthenticator.refresh(refreshRequest, authenticatorCtx),
+      ).rejects.toThrow('signature verification failed');
     });
   });
 });

@@ -22,7 +22,14 @@ import {
   PassportOAuthDoneCallback,
   PassportProfile,
 } from '@backstage/plugin-auth-node';
-import { decodeJwt } from 'jose';
+import {
+  FlattenedJWSInput,
+  JWSHeaderParameters,
+  KeyLike,
+  createRemoteJWKSet,
+  decodeJwt,
+  jwtVerify,
+} from 'jose';
 import {
   Metadata,
   StateStoreStoreCallback,
@@ -33,6 +40,10 @@ import {
 /** @public */
 export interface VMwareCloudAuthenticatorContext {
   organizationId?: string;
+  jwks: (
+    protectedHeader?: JWSHeaderParameters,
+    token?: FlattenedJWSInput,
+  ) => Promise<KeyLike>;
   providerStrategy: OAuth2Strategy;
   helper: PassportOAuthAuthenticatorHelper;
 }
@@ -106,6 +117,7 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
     const clientSecret = '';
     const authorizationUrl = `${consoleEndpoint}/csp/gateway/discovery`;
     const tokenUrl = `${consoleEndpoint}/csp/gateway/am/api/auth/token`;
+    const jwksUrl = `${consoleEndpoint}/csp/gateway/am/api/auth/keys`;
     const scope = config.getOptionalString('scope') ?? 'openid';
 
     const providerStrategy = new OAuth2Strategy(
@@ -180,6 +192,7 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
 
     return {
       organizationId,
+      jwks: createRemoteJWKSet(new URL(jwksUrl)),
       providerStrategy,
       helper: PassportOAuthAuthenticatorHelper.from(providerStrategy),
     };
@@ -209,23 +222,27 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
   },
 
   async authenticate(input, ctx) {
-    return ctx.helper.authenticate(input).then(result => ({
+    const result = await ctx.helper.authenticate(input);
+    await jwtVerify(result.session.accessToken, ctx.jwks);
+    return {
       ...result,
       fullProfile: {
         ...result.fullProfile,
         organizationId: ctx.organizationId,
       } as VMwarePassportProfile,
-    }));
+    };
   },
 
   async refresh(input, ctx) {
-    return ctx.helper.refresh(input).then(result => ({
+    const result = await ctx.helper.refresh(input);
+    await jwtVerify(result.session.accessToken, ctx.jwks);
+    return {
       ...result,
       fullProfile: {
         ...result.fullProfile,
         organizationId: ctx.organizationId,
       } as VMwarePassportProfile,
-    }));
+    };
   },
 });
 

@@ -4,6 +4,9 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { FlattenedJWSInput } from 'jose';
+import { JWSHeaderParameters } from 'jose';
+import { KeyLike } from 'jose';
 import { OAuthAuthenticator } from '@backstage/plugin-auth-node';
 import { OAuthAuthenticatorResult } from '@backstage/plugin-auth-node';
 import { PassportOAuthAuthenticatorHelper } from '@backstage/plugin-auth-node';
@@ -25,6 +28,11 @@ export const vmwareCloudAuthenticator: OAuthAuthenticator<
 export interface VMwareCloudAuthenticatorContext {
   // (undocumented)
   helper: PassportOAuthAuthenticatorHelper;
+  // (undocumented)
+  jwks: (
+    protectedHeader?: JWSHeaderParameters,
+    token?: FlattenedJWSInput,
+  ) => Promise<KeyLike>;
   // (undocumented)
   organizationId?: string;
   // (undocumented)
