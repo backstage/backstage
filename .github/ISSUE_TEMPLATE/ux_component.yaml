@@ -6,34 +6,37 @@ body:
   - type: markdown
     attributes:
       value: |
-        We value your time and efforts to submit this UX Component form. 🙏
+        We value your time and efforts to submit this RFC form. 🙏
   - type: textarea
     id: ux-general
     validations:
       required: true
     attributes:
       label: '🔖 General'
-      description: |
-        'Write a nice note to the community requesting the creation of a new component. Include an image of your component. Bonus points for a GIF!'
+      description: 'Write a nice note to the community requesting the creation of a new component.'
+      placeholder: 'Include an image of your component. Bonus points for a GIF!'
   - type: textarea
     id: usage
     validations:
       required: true
     attributes:
       label: '💻 Usage'
-      description: "Tell us what's the point of this component/pattern is. How does it help? How should it work? Any rules?"
+      description: "Tell us what's the point of this component/pattern is."
+      placeholder: 'How does it help? How should it work? Any rules?'
   - type: textarea
     id: specs
     validations:
       required: true
     attributes:
       label: '📐 Specs'
-      description: "Include images that detail the redlines for your component. Once we get our Figma workspace set up, we'll be posting the Figma files rather than doing specs by hand."
+      description: 'Include images that detail the redlines for your component.'
+      placeholder: "Once we get our Figma workspace set up, we'll be posting the Figma files rather than doing specs by hand."
   - type: textarea
     id: future
     attributes:
       label: '🔮 Future'
       description: 'List out any upcoming, exciting functionality for this component.'
+      placeholder: 'The component will have ...'
   - type: checkboxes
     id: no-duplicate-issues
     attributes:
