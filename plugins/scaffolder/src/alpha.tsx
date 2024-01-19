@@ -50,8 +50,6 @@ export {
   type TemplateWizardPageProps,
 } from './next';
 
-export * from './legacy';
-
 const scaffolderApi = createApiExtension({
   factory: createApiFactory({
     api: scaffolderApiRef,
