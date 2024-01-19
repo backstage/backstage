@@ -233,11 +233,15 @@ In order for relational metadata to show up on relations, we'll need to add the 
 
 ```diff
 knex
-      .distinct({
-        relationType: 'type',
-        relationTarget: 'target_entity_ref',
-      })
-+      .select('metadata')
+-     .distinct({
+-       relationType: 'type',
+-       relationTarget: 'target_entity_ref',
+-      })
++      .select({
++        metadata: 'metadata',
++        relationType: 'type',
++        relationTarget: 'target_entity_ref',
++      })
       .from('relations')
 ```
 
