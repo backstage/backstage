@@ -31,7 +31,6 @@ import {
   AppRouter,
   ConfigReader,
   defaultConfigLoader,
-  FeatureFlagged,
   FlatRoutes,
 } from '@backstage/core-app-api';
 import {
@@ -64,7 +63,6 @@ import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
 import { HomepageCompositionRoot, VisitListener } from '@backstage/plugin-home';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
-import { LegacyScaffolderPage } from '@backstage/plugin-scaffolder/alpha';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import {
   ScaffolderFieldExtensions,
@@ -96,10 +94,7 @@ import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
 import { homePage } from './components/home/HomePage';
 import { Root } from './components/Root';
-import {
-  DelayingComponentFieldExtension,
-  LowerCaseValuePickerFieldExtension,
-} from './components/scaffolder/customScaffolderExtensions';
+import { DelayingComponentFieldExtension } from './components/scaffolder/customScaffolderExtensions';
 import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTemplate';
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
@@ -236,53 +231,28 @@ const routes = (
         <LightBox />
       </TechDocsAddons>
     </Route>
-    <FeatureFlagged with="scaffolder-legacy">
-      <Route
-        path="/create"
-        element={
-          <LegacyScaffolderPage
-            groups={[
-              {
-                title: 'Recommended',
-                filter: entity =>
-                  entity?.metadata?.tags?.includes('recommended') ?? false,
-              },
-            ]}
-          />
-        }
-      >
-        <ScaffolderFieldExtensions>
-          <LowerCaseValuePickerFieldExtension />
-        </ScaffolderFieldExtensions>
-        <ScaffolderLayouts>
-          <TwoColumnLayout />
-        </ScaffolderLayouts>
-      </Route>
-    </FeatureFlagged>
-    <FeatureFlagged without="scaffolder-legacy">
-      <Route
-        path="/create"
-        element={
-          <ScaffolderPage
-            defaultPreviewTemplate={defaultPreviewTemplate}
-            groups={[
-              {
-                title: 'Recommended',
-                filter: entity =>
-                  entity?.metadata?.tags?.includes('recommended') ?? false,
-              },
-            ]}
-          />
-        }
-      >
-        <ScaffolderFieldExtensions>
-          <DelayingComponentFieldExtension />
-        </ScaffolderFieldExtensions>
-        <ScaffolderLayouts>
-          <TwoColumnLayout />
-        </ScaffolderLayouts>
-      </Route>
-    </FeatureFlagged>
+    <Route
+      path="/create"
+      element={
+        <ScaffolderPage
+          defaultPreviewTemplate={defaultPreviewTemplate}
+          groups={[
+            {
+              title: 'Recommended',
+              filter: entity =>
+                entity?.metadata?.tags?.includes('recommended') ?? false,
+            },
+          ]}
+        />
+      }
+    >
+      <ScaffolderFieldExtensions>
+        <DelayingComponentFieldExtension />
+      </ScaffolderFieldExtensions>
+      <ScaffolderLayouts>
+        <TwoColumnLayout />
+      </ScaffolderLayouts>
+    </Route>
     <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"
