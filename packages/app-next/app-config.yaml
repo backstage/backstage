@@ -5,6 +5,7 @@ app:
     bindings:
       plugin.pages.externalRoutes.pageX: plugin.pages.routes.pageX
       plugin.catalog.externalRoutes.viewTechDoc: plugin.techdocs.routes.docRoot
+      plugin.catalog.externalRoutes.createComponent: plugin.catalog-import.routes.importPage
 
   extensions:
     # - apis.plugin.graphiql.browse.gitlab: true
