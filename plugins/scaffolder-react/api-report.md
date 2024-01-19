@@ -277,6 +277,7 @@ export type ScaffolderOutputText = {
   title?: string;
   icon?: string;
   content?: string;
+  default?: boolean;
 };
 
 // @public
