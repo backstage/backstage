@@ -13966,8 +13966,8 @@ __metadata:
   linkType: hard
 
 "@openapitools/openapi-generator-cli@npm:^2.4.26, @openapitools/openapi-generator-cli@npm:^2.7.0":
-  version: 2.8.0
-  resolution: "@openapitools/openapi-generator-cli@npm:2.8.0"
+  version: 2.8.1
+  resolution: "@openapitools/openapi-generator-cli@npm:2.8.1"
   dependencies:
     "@nestjs/axios": 3.0.1
     "@nestjs/common": 10.3.0
@@ -13981,14 +13981,14 @@ __metadata:
     console.table: 0.10.0
     fs-extra: 10.1.0
     glob: 7.2.3
-    inquirer: 8.2.5
+    inquirer: 8.2.6
     lodash: 4.17.21
     reflect-metadata: 0.1.13
-    rxjs: 7.8.0
+    rxjs: 7.8.1
     tslib: 2.6.2
   bin:
     openapi-generator-cli: main.js
-  checksum: 76a43d3087b2a4eb521814369ce99ade622fc146bb2414f52c01a7565f81fa94a6d42f2bf6889a4b25814744f0462613853a609d97c12a608c5717aed2e3898a
+  checksum: 5e0e5460ec8cf5f96338703820066265d187ce984f24cfcf6f1abe70049b38a8953f0835658f5915ec41304a98bd76cf17ec9fb50fa746701116be6502dca39e
   languageName: node
   linkType: hard
 
@@ -29536,30 +29536,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inquirer@npm:8.2.5":
-  version: 8.2.5
-  resolution: "inquirer@npm:8.2.5"
-  dependencies:
-    ansi-escapes: ^4.2.1
-    chalk: ^4.1.1
-    cli-cursor: ^3.1.0
-    cli-width: ^3.0.0
-    external-editor: ^3.0.3
-    figures: ^3.0.0
-    lodash: ^4.17.21
-    mute-stream: 0.0.8
-    ora: ^5.4.1
-    run-async: ^2.4.0
-    rxjs: ^7.5.5
-    string-width: ^4.1.0
-    strip-ansi: ^6.0.0
-    through: ^2.3.6
-    wrap-ansi: ^7.0.0
-  checksum: f13ee4c444187786fb393609dedf6b30870115a57b603f2e6424f29a99abc13446fd45ee22461c33c9c40a92a60a8df62d0d6b25d74fc6676fa4cb211de55b55
-  languageName: node
-  linkType: hard
-
-"inquirer@npm:^8.0.0, inquirer@npm:^8.2.0":
+"inquirer@npm:8.2.6, inquirer@npm:^8.0.0, inquirer@npm:^8.2.0":
   version: 8.2.6
   resolution: "inquirer@npm:8.2.6"
   dependencies:
@@ -39930,12 +39907,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:7.8.0":
-  version: 7.8.0
-  resolution: "rxjs@npm:7.8.0"
+"rxjs@npm:7.8.1, rxjs@npm:^7.2.0, rxjs@npm:^7.5.5, rxjs@npm:^7.8.1":
+  version: 7.8.1
+  resolution: "rxjs@npm:7.8.1"
   dependencies:
     tslib: ^2.1.0
-  checksum: 61b4d4fd323c1043d8d6ceb91f24183b28bcf5def4f01ca111511d5c6b66755bc5578587fe714ef5d67cf4c9f2e26f4490d4e1d8cabf9bd5967687835e9866a2
+  checksum: de4b53db1063e618ec2eca0f7965d9137cabe98cf6be9272efe6c86b47c17b987383df8574861bcced18ebd590764125a901d5506082be84a8b8e364bf05f119
   languageName: node
   linkType: hard
 
@@ -39945,15 +39922,6 @@ __metadata:
   dependencies:
     tslib: ^1.9.0
   checksum: bc334edef1bb8bbf56590b0b25734ba0deaf8825b703256a93714308ea36dff8a11d25533671adf8e104e5e8f256aa6fdfe39b2e248cdbd7a5f90c260acbbd1b
-  languageName: node
-  linkType: hard
-
-"rxjs@npm:^7.2.0, rxjs@npm:^7.5.5, rxjs@npm:^7.8.1":
-  version: 7.8.1
-  resolution: "rxjs@npm:7.8.1"
-  dependencies:
-    tslib: ^2.1.0
-  checksum: de4b53db1063e618ec2eca0f7965d9137cabe98cf6be9272efe6c86b47c17b987383df8574861bcced18ebd590764125a901d5506082be84a8b8e364bf05f119
   languageName: node
   linkType: hard
 
