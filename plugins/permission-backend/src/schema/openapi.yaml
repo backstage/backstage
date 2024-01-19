@@ -3,6 +3,7 @@ info:
   title: '@backstage/permission-backend'
   description: Permission schema
   version: 0.0.1
+  contact: {}
 servers:
   - url: /
   - url: permission
@@ -10,6 +11,7 @@ paths:
   /authorize:
     post:
       operationId: Authorize
+      description: Check if the current user if authorized to access various resources.
       responses:
         '200':
           description: Success
@@ -34,8 +36,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PostAuthorizeRequestBody'
+      security:
+        - {}
+        - JWT: []
   /health:
     get:
+      operationId: GetHealth
+      description: Health check for this plugin.
       responses:
         '200':
           description: 200 response
@@ -43,6 +50,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetHealth200ResponseBody'
+      security:
+        - {}
+        - JWT: []
 components:
   responses:
     ErrorResponse:
@@ -261,40 +271,6 @@ components:
         - conditions
       additionalProperties: false
 
-    PostAuthorize400ResponseBody:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            name:
-              type: string
-            message:
-              type: string
-          required:
-            - name
-            - message
-        request:
-          type: object
-          properties:
-            method:
-              type: string
-            url:
-              type: string
-          required:
-            - method
-            - url
-        response:
-          type: object
-          properties:
-            statusCode:
-              type: number
-          required:
-            - statusCode
-      required:
-        - error
-        - request
-        - response
     GetHealth200ResponseBody:
       type: object
       properties:
@@ -302,3 +278,8 @@ components:
           type: string
       required:
         - status
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
