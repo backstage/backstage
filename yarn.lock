@@ -8079,6 +8079,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-git@workspace:plugins/scaffolder-backend-module-git":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-git@workspace:plugins/scaffolder-backend-module-git"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-github@workspace:^, @backstage/plugin-scaffolder-backend-module-github@workspace:plugins/scaffolder-backend-module-github":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-github@workspace:plugins/scaffolder-backend-module-github"
