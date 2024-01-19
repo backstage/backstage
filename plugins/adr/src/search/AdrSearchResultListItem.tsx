@@ -18,8 +18,6 @@ import React, { ReactNode } from 'react';
 import {
   Box,
   Chip,
-  Divider,
-  ListItem,
   ListItemIcon,
   ListItemText,
   makeStyles,
@@ -68,66 +66,63 @@ export function AdrSearchResultListItem(props: AdrSearchResultListItemProps) {
   if (!result) return null;
 
   return (
-    <>
-      <ListItem alignItems="flex-start" className={classes.item}>
-        {icon && <ListItemIcon>{icon}</ListItemIcon>}
-        <div className={classes.flexContainer}>
-          <ListItemText
-            className={classes.itemText}
-            primaryTypographyProps={{ variant: 'h6' }}
-            primary={
-              <Link noTrack to={result.location}>
-                {highlight?.fields.title ? (
-                  <HighlightedSearchResultText
-                    text={highlight?.fields.title || ''}
-                    preTag={highlight?.preTag || ''}
-                    postTag={highlight?.postTag || ''}
-                  />
-                ) : (
-                  result.title
-                )}
-              </Link>
-            }
-            secondary={
-              <Typography
-                component="span"
-                style={{
-                  display: '-webkit-box',
-                  WebkitBoxOrient: 'vertical',
-                  WebkitLineClamp: lineClamp,
-                  overflow: 'hidden',
-                }}
-              >
-                {highlight?.fields.text ? (
-                  <HighlightedSearchResultText
-                    text={highlight.fields.text}
-                    preTag={highlight.preTag}
-                    postTag={highlight.postTag}
-                  />
-                ) : (
-                  result.text
-                )}
-              </Typography>
-            }
+    <div className={classes.item}>
+      {icon && <ListItemIcon>{icon}</ListItemIcon>}
+      <div className={classes.flexContainer}>
+        <ListItemText
+          className={classes.itemText}
+          primaryTypographyProps={{ variant: 'h6' }}
+          primary={
+            <Link noTrack to={result.location}>
+              {highlight?.fields.title ? (
+                <HighlightedSearchResultText
+                  text={highlight?.fields.title || ''}
+                  preTag={highlight?.preTag || ''}
+                  postTag={highlight?.postTag || ''}
+                />
+              ) : (
+                result.title
+              )}
+            </Link>
+          }
+          secondary={
+            <Typography
+              component="span"
+              style={{
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: lineClamp,
+                overflow: 'hidden',
+              }}
+              color="textSecondary"
+              variant="body2"
+            >
+              {highlight?.fields.text ? (
+                <HighlightedSearchResultText
+                  text={highlight.fields.text}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
+                />
+              ) : (
+                result.text
+              )}
+            </Typography>
+          }
+        />
+        <Box>
+          <Chip
+            label={`Entity: ${
+              result.entityTitle ??
+              humanizeEntityRef(parseEntityRef(result.entityRef))
+            }`}
+            size="small"
           />
-          <Box>
-            <Chip
-              label={`Entity: ${
-                result.entityTitle ??
-                humanizeEntityRef(parseEntityRef(result.entityRef))
-              }`}
-              size="small"
-            />
-            {result.status && (
-              <Chip label={`Status: ${result.status}`} size="small" />
-            )}
-            {result.date && (
-              <Chip label={`Date: ${result.date}`} size="small" />
-            )}
-          </Box>
-        </div>
-      </ListItem>
-      <Divider component="li" />
-    </>
+          {result.status && (
+            <Chip label={`Status: ${result.status}`} size="small" />
+          )}
+          {result.date && <Chip label={`Date: ${result.date}`} size="small" />}
+        </Box>
+      </div>
+    </div>
   );
 }
