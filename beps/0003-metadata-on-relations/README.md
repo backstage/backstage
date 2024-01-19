@@ -36,10 +36,12 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 The summary of the BEP is a few paragraphs long and give a high-level overview of the features to be implemented. It should be possible to read *only* the summary and understand what the BEP is proposing to accomplish and what impact it has for users.
 -->
 
-This BEP proposes to add metadata to relations.
+Metadata on relations is an important step forward to enabling more advanced use cases of the catalog's relational layer. While users will not be directly impacted by this update, plugin developers will be able to leverage this work for richer experiences. This BEP builds on decisions made during the last catalog rewrite, introduces a new way of defining annotations, and modifies some of the core catalog stitching loop.
 
-- metadata on relations
-  - supports
+## Glossary
+
+- "Simple Relations": Relations defined as an entity reference, "kind:namespace/name".
+- "Complex Relations": Relations with metadata.
 
 ## Motivation
 
@@ -48,9 +50,7 @@ This section is for explicitly listing the motivation, goals, and non-goals of
 this BEP. Describe why the change is important and the benefits to users.
 -->
 
-Metadata on relations has been an ask for a long time ([earliest comment](https://github.com/backstage/backstage/issues/1964#issuecomment-674246175) being late 2020). Currently, relations are limited to just a type name and a source and target entity. This enables a vast majority of use cases around denoting relationships in the software catalog but falls short for cases where .
-
-There's a clear path forward to use metadata on relations to move the needle on at least 2 difficult community problems, [#16389](https://github.com/backstage/backstage/issues/16389) and [#11027](https://github.com/backstage/backstage/issues/11027).
+Metadata on relations has been an ask for a long time ([earliest comment](https://github.com/backstage/backstage/issues/1964#issuecomment-674246175) being late 2020). Currently, relations are limited to just a type name and a source and target entity. This enables a vast majority of use cases around denoting relationships in the software catalog but falls short for cases where relations _should_ store more metadata about the relationship. A few identified use cases are [environment specific metadata overrides](https://github.com/backstage/backstage/issues/11027) and [what API version a Component is using](https://github.com/backstage/backstage/issues/16389). By supporting metadata on relations (complex relations), we can enable these use cases.
 
 ### Goals
 
@@ -295,6 +295,29 @@ class DefaultProcessingDatabase {
   }
 }
 ```
+
+### Clientside access
+
+<!--
+This is less flushed out and definitely needs feedback/iteration.
+-->
+
+We propose the creation of a new frontend API for accessing entity metadata with context,
+
+```ts
+const EntityFieldResolverContext = createContext<{
+  resolver: (entity: Entity, field: string) => string;
+}>({
+  resolver: (entity, field) => _.get(entity, field),
+});
+
+const useEntityMetadata = (entity: Entity, field: string) => {
+  const { resolvers } = useContext(EntityFieldResolverContext);
+  return resolvers.resolve(entity, field);
+};
+```
+
+Separate pages could override this context for specific use cases. An environment use case could provide a `EnvironmentEntityFieldResolverContext` that resolves field overrides based on metadata on relations attached between a selected environment and the current Component you're looking at.
 
 ## Release Plan
 
