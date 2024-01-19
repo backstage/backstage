@@ -262,7 +262,7 @@ entity.relations = relationsResult
     .map<EntityRelation>(row => ({
       type: row.relationType!,
       targetRef: row.relationTarget!,
-      metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
++     metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
     }))
 ```
 
