@@ -33,6 +33,7 @@ import { catalogApiRef } from '../api';
 import { starredEntitiesApiRef, MockStarredEntitiesApi } from '../apis';
 import {
   EntityKindFilter,
+  EntityTextFilter,
   EntityTypeFilter,
   EntityUserFilter,
 } from '../filters';
@@ -171,6 +172,30 @@ describe('<EntityListProvider />', () => {
     });
   });
 
+  it('ignores search text when not paginating', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+      initialProps: {
+        userFilter: 'all',
+      },
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        text: new EntityTextFilter('1'),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.entities.length).toBe(1);
+      expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+      expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
+        filter: { kind: 'component' },
+      });
+    });
+  });
+
   it('resolves query param filter values', async () => {
     const query = qs.stringify({
       filters: { kind: 'component', type: 'service' },
@@ -287,6 +312,34 @@ describe('<EntityListProvider pagination />', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('sends search text to the backend', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+      initialProps: {
+        userFilter: 'all',
+      },
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        text: new EntityTextFilter('2'),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.entities.length).toBe(1);
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
+        filter: { kind: 'component' },
+        limit,
+        orderFields,
+        fullTextFilter: {
+          term: '2',
+        },
+      });
+    });
   });
 
   it('should send backend filters', async () => {
