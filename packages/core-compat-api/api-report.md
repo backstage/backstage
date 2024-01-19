@@ -40,5 +40,26 @@ export function convertLegacyRouteRef<
   ref: ExternalRouteRef<TParams, TOptional>,
 ): ExternalRouteRef_2<TParams, TOptional>;
 
+// @public
+export function convertLegacyRouteRefs<
+  TRefs extends {
+    [name in string]: RouteRef | SubRouteRef | ExternalRouteRef;
+  },
+>(
+  refs: TRefs,
+): {
+  [KName in keyof TRefs]: ToNewRouteRef<TRefs[KName]>;
+};
+
+// @public
+export type ToNewRouteRef<T extends RouteRef | SubRouteRef | ExternalRouteRef> =
+  T extends RouteRef<infer IParams>
+    ? RouteRef_2<IParams>
+    : T extends SubRouteRef<infer IParams>
+    ? SubRouteRef_2<IParams>
+    : T extends ExternalRouteRef<infer IParams, infer IOptional>
+    ? ExternalRouteRef_2<IParams, IOptional>
+    : never;
+
 // (No @packageDocumentation comment for this package)
 ```
