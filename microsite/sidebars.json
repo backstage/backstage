@@ -309,7 +309,8 @@
           "auth/google/gcp-iap-auth",
           "auth/okta/provider",
           "auth/oauth2-proxy/provider",
-          "auth/onelogin/provider"
+          "auth/onelogin/provider",
+          "auth/vmware-cloud/provider"
         ]
       },
       "auth/identity-resolver",
