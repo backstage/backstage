@@ -7,6 +7,9 @@ area:discoverability: # search + home
   - plugins/search-*/**/*
   - packages/search-*/**/*
   - plugins/home/**/*
+area:kubernetes:
+  - plugins/kubernetes/**/*
+  - plugins/kubernetes-*/**/*
 area:permission:
   - plugins/permission-*/**/*
 area:scaffolder:
