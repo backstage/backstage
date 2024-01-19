@@ -414,7 +414,8 @@
           "frontend-system/building-plugins/index",
           "frontend-system/building-plugins/testing",
           "frontend-system/building-plugins/extension-types",
-          "frontend-system/building-plugins/built-in-data-refs"
+          "frontend-system/building-plugins/built-in-data-refs",
+          "frontend-system/building-plugins/migrating"
         ]
       },
       {
