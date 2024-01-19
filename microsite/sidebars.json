@@ -433,6 +433,11 @@
       },
       {
         "type": "category",
+        "label": "Building Apps",
+        "items": ["frontend-system/building-apps/migrating"]
+      },
+      {
+        "type": "category",
         "label": "Building Plugins",
         "items": [
           "frontend-system/building-plugins/index",
