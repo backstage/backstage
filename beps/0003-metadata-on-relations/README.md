@@ -1,11 +1,11 @@
 ---
-title: BEP Title
+title: Support Metadata on Relations
 status: provisional
 authors:
   - '@sennyeya'
 project-areas:
   - catalog
-creation-date: yyyy-mm-dd
+creation-date: 2024-01-18
 ---
 
 <!--
