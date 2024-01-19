@@ -383,7 +383,7 @@ export interface RootConfigService extends Config {}
 // @public
 export interface RootFeatureRegistryService {
   // (undocumented)
-  getFeatures(): BackendFeatureRegistration[];
+  getFeatures(): Promise<BackendFeatureRegistration[]>;
 }
 
 // @public
