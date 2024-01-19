@@ -25041,8 +25041,8 @@ __metadata:
   linkType: hard
 
 "elastic-builder@npm:^2.16.0":
-  version: 2.23.0
-  resolution: "elastic-builder@npm:2.23.0"
+  version: 2.24.0
+  resolution: "elastic-builder@npm:2.24.0"
   dependencies:
     lodash.has: ^4.5.2
     lodash.hasin: ^4.5.2
@@ -25052,7 +25052,7 @@ __metadata:
     lodash.isobject: ^3.0.2
     lodash.isstring: ^4.0.1
     lodash.omit: ^4.5.0
-  checksum: 6cd3d6fd3ea20adb2f48a21d3bd25fd89dd9f692feab95357356b8a814f5a36579c7a8326e818127fc5ec50774c1818c4f8e5d0aeea00cccd0aeda5563e17123
+  checksum: 4bbfa66a179b78dbd90a0a3ee19cf7fc2105deca195c65d3047cf2ef2e6fa4925049038ed1f28d46a3ce96daa47f2cf8d924ea2e2fc0c585569a5a7acd09f2ed
   languageName: node
   linkType: hard
 
