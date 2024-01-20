@@ -144,7 +144,7 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
   const scaffolderPageContextMenuProps = {
     onEditorClicked: () => navigate(editorLink()),
     onActionsClicked: () => navigate(actionsLink()),
-    onTasksClicked: () => undefined,
+    onTasksClicked: undefined,
     onCreateClicked: () => navigate(createLink()),
   };
   return (
