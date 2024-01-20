@@ -18,7 +18,6 @@ import {
   EmptyState,
   ErrorPanel,
   Header,
-  Lifecycle,
   Link,
   Page,
   Progress,
@@ -139,11 +138,7 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
     <Page themeId="home">
       <Header
         pageTitleOverride="Templates Tasks"
-        title={
-          <>
-            List template tasks <Lifecycle shorthand alpha />
-          </>
-        }
+        title={<>List template tasks</>}
         subtitle="All tasks that have been started"
       />
       <Content>
