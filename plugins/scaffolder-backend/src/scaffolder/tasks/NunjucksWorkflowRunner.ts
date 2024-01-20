@@ -418,7 +418,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const context: TemplateContext = {
         parameters: task.spec.parameters,
-        EXPERIMENTAL_recovery: task.spec.EXPERIMENTAL_recovery,
         steps: {},
         user: task.spec.user,
       };

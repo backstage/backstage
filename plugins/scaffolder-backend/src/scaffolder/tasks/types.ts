@@ -170,7 +170,9 @@ export interface TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
 
-  recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<string[]>;
+  recoverTasks?(
+    options: TaskStoreRecoverTaskOptions,
+  ): Promise<{ id: string }[]>;
 
   getTask(taskId: string): Promise<SerializedTask>;
 

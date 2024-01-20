@@ -20,7 +20,7 @@ import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
-import { assertError } from '@backstage/errors';
+import { assertError, stringifyError } from '@backstage/errors';
 import { TemplateFilter, TemplateGlobal } from '../../lib';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
@@ -36,6 +36,7 @@ export type TaskWorkerOptions = {
   };
   concurrentTasksLimit: number;
   permissions?: PermissionEvaluator;
+  logger?: Logger;
 };
 
 /**
@@ -74,8 +75,10 @@ export type CreateWorkerOptions = {
  */
 export class TaskWorker {
   private taskQueue: PQueue;
+  private logger: Logger | undefined;
 
   private constructor(private readonly options: TaskWorkerOptions) {
+    this.logger = options.logger;
     this.taskQueue = new PQueue({
       concurrency: options.concurrentTasksLimit,
     });
@@ -115,7 +118,8 @@ export class TaskWorker {
   async recoverTasks() {
     try {
       await this.options.taskBroker.recoverTasks?.();
-    } catch (_err) {
+    } catch (err) {
+      this.logger?.error(stringifyError(err));
       // ignore
     }
   }

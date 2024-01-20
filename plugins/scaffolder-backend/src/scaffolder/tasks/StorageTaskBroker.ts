@@ -205,7 +205,7 @@ export class StorageTaskBroker implements TaskBroker {
     });
   }
 
-  public async recoverTasks(): Promise<boolean> {
+  public async recoverTasks(): Promise<void> {
     const enabled =
       (this.config &&
         this.config.getOptionalBoolean(
@@ -214,21 +214,20 @@ export class StorageTaskBroker implements TaskBroker {
       false;
 
     if (enabled) {
+      const defaultTimeout = { seconds: 30 };
+      const timeout = readDuration(
+        this.config,
+        'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
+        defaultTimeout,
+      );
       const recoveredTaskIds =
         (await this.storage.recoverTasks?.({
-          timeout: readDuration(
-            this.config,
-            'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
-            {
-              seconds: 30,
-            },
-          ),
+          timeout,
         })) ?? [];
-      recoveredTaskIds.forEach(() => {
+      if (recoveredTaskIds.length > 0) {
         this.signalDispatch();
-      });
+      }
     }
-    return enabled;
   }
 
   /**

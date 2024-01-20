@@ -36,10 +36,11 @@ import {
   SerializedTask,
   TaskStatus,
   TaskEventType,
+  TaskSecrets,
 } from '@backstage/plugin-scaffolder-node';
 import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { compactEvents } from './taskRecoveryHelper';
+import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -128,6 +129,16 @@ export class DatabaseTaskStore implements TaskStore {
       return JSON.parse(spec);
     } catch (error) {
       throw new Error(`Failed to parse spec of task '${id}', ${error}`);
+    }
+  }
+
+  private parseTaskSecrets(taskRow: RawDbTaskRow): TaskSecrets | undefined {
+    try {
+      return taskRow.secrets ? JSON.parse(taskRow.secrets) : undefined;
+    } catch (error) {
+      throw new Error(
+        `Failed to parse secrets of task '${taskRow.id}', ${error}`,
+      );
     }
   }
 
@@ -255,7 +266,7 @@ export class DatabaseTaskStore implements TaskStore {
         return undefined;
       }
 
-      const secrets = task.secrets ? JSON.parse(task.secrets) : undefined;
+      const secrets = this.parseTaskSecrets(task);
       return {
         id: task.id,
         spec,
@@ -264,7 +275,7 @@ export class DatabaseTaskStore implements TaskStore {
         createdAt: task.created_at,
         createdBy: task.created_by ?? undefined,
         secrets,
-      } as SerializedTask;
+      };
     });
   }
 
@@ -426,7 +437,7 @@ export class DatabaseTaskStore implements TaskStore {
       }
     });
 
-    return compactEvents(events);
+    return trimEventsTillLastRecovery(events);
   }
 
   async shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void> {
@@ -480,7 +491,9 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<string[]> {
+  async recoverTasks(
+    options: TaskStoreRecoverTaskOptions,
+  ): Promise<{ id: string }[]> {
     const taskIdsToRecover: string[] = [];
     const timeoutS = Duration.fromObject(options.timeout).as('seconds');
 
@@ -525,6 +538,6 @@ export class DatabaseTaskStore implements TaskStore {
       }
     });
 
-    return taskIdsToRecover;
+    return taskIdsToRecover.map(id => ({ id }));
   }
 }

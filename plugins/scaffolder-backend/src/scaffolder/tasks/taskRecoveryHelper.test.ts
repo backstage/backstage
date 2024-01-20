@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { compactEvents } from './taskRecoveryHelper';
+import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
 import { SerializedTaskEvent } from './types';
 
 const toLogEvent = (stepId: string) =>
@@ -41,7 +41,7 @@ describe('taskRecoveryHelper', () => {
 
       const events = [...logEvents, toRecoveredEvent('startOver')];
 
-      expect(compactEvents(events)).toEqual({ events: [] });
+      expect(trimEventsTillLastRecovery(events)).toEqual({ events: [] });
     });
   });
 });

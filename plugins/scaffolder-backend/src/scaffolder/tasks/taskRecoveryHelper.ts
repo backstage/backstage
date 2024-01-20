@@ -17,7 +17,7 @@
 import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
 import { TaskRecoverStrategy } from '@backstage/plugin-scaffolder-common';
 
-export const compactEvents = (
+export const trimEventsTillLastRecovery = (
   events: SerializedTaskEvent[],
 ): { events: SerializedTaskEvent[] } => {
   const recoveredEventInd = events
