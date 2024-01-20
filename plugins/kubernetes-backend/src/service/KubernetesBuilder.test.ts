@@ -16,6 +16,9 @@
 
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
+  ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
+  ANNOTATION_KUBERNETES_DASHBOARD_URL,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
@@ -44,6 +47,7 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import {
+  AuthMetadata,
   KubernetesObjectsProvider,
   kubernetesAuthStrategyExtensionPoint,
   kubernetesClusterSupplierExtensionPoint,
@@ -173,6 +177,103 @@ describe('API integration tests', () => {
             name: 'some-other-cluster',
             authProvider: 'oidc',
             oidcTokenProvider: 'google',
+          },
+        ],
+      });
+    });
+
+    it('happy path: lists clusters with custom AuthStrategy and custom auth metadata', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          minimalValidConfigService,
+          import('@backstage/plugin-kubernetes-backend/alpha'),
+          createBackendModule({
+            pluginId: 'kubernetes',
+            moduleId: 'testObjectsProvider',
+            register(env) {
+              env.registerInit({
+                deps: { extension: kubernetesObjectsProviderExtensionPoint },
+                async init({ extension }) {
+                  extension.addObjectsProvider(objectsProviderMock);
+                },
+              });
+            },
+          }),
+          withClusters([
+            {
+              name: 'some-cluster',
+              url: 'https://localhost:1234',
+              authMetadata: {
+                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'customAuth',
+                [ANNOTATION_KUBERNETES_DASHBOARD_URL]:
+                  'https://127.0.0.1:8443/dashboard',
+                [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: '12650152165654',
+                [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'my_aws_role',
+              },
+            },
+          ]),
+          createBackendModule({
+            pluginId: 'kubernetes',
+            moduleId: 'testAuthStrategy',
+            register(env) {
+              env.registerInit({
+                deps: { extension: kubernetesAuthStrategyExtensionPoint },
+                async init({ extension }) {
+                  extension.addAuthStrategy('customAuth', {
+                    getCredential: jest
+                      .fn<
+                        Promise<KubernetesCredential>,
+                        [ClusterDetails, KubernetesRequestAuth]
+                      >()
+                      .mockImplementation(async (_, requestAuth) => ({
+                        type: 'bearer token',
+                        token: requestAuth.custom as string,
+                      })),
+                    validateCluster: jest.fn().mockReturnValue([]),
+                    presentAuthMetadata: (
+                      authMetadata: AuthMetadata,
+                    ): AuthMetadata => {
+                      const authMetadataFilter = Object.entries(authMetadata)
+                        .filter(([key, _value]) => {
+                          return [
+                            ANNOTATION_KUBERNETES_DASHBOARD_URL,
+                            ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
+                          ].includes(key);
+                        })
+                        .reduce(
+                          (
+                            accumulator: AuthMetadata,
+                            currentValue: [string, string],
+                          ) => {
+                            accumulator[currentValue[0]] = currentValue[1];
+                            return accumulator;
+                          },
+                          {},
+                        );
+
+                      return authMetadataFilter;
+                    },
+                  });
+                },
+              });
+            },
+          }),
+        ],
+      });
+      app = server;
+
+      const response = await request(app).get('/api/kubernetes/clusters');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toStrictEqual({
+        items: [
+          {
+            name: 'some-cluster',
+            authProvider: 'customAuth',
+            auth: {
+              'kubernetes.io/aws-assume-role': 'my_aws_role',
+              'kubernetes.io/dashboard-url': 'https://127.0.0.1:8443/dashboard',
+            },
           },
         ],
       });
@@ -340,6 +441,7 @@ describe('API integration tests', () => {
                         token: requestAuth.custom as string,
                       })),
                     validateCluster: jest.fn().mockReturnValue([]),
+                    presentAuthMetadata: jest.fn().mockReturnValue({}),
                   });
                 },
               });
@@ -508,6 +610,7 @@ metadata:
                       >()
                       .mockResolvedValue({ type: 'anonymous' }),
                     validateCluster: jest.fn().mockReturnValue([]),
+                    presentAuthMetadata: jest.fn().mockReturnValue({}),
                   });
                 },
               });
@@ -530,6 +633,7 @@ metadata:
       const authStrategy = {
         getCredential: jest.fn().mockResolvedValue({ type: 'anonymous' }),
         validateCluster: jest.fn().mockReturnValue([]),
+        presentAuthMetadata: jest.fn().mockReturnValue({}),
       };
       worker.use(
         rest.get('http://my.cluster/api', (_req, res, ctx) =>
@@ -613,6 +717,7 @@ metadata:
                       >()
                       .mockResolvedValue({ type: 'anonymous' }),
                     validateCluster: jest.fn().mockReturnValue([]),
+                    presentAuthMetadata: jest.fn().mockReturnValue({}),
                   });
                 },
               });

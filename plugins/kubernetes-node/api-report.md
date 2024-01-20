@@ -25,6 +25,8 @@ export interface AuthenticationStrategy {
     authConfig: KubernetesRequestAuth,
   ): Promise<KubernetesCredential>;
   // (undocumented)
+  presentAuthMetadata(authMetadata: AuthMetadata): AuthMetadata;
+  // (undocumented)
   validateCluster(authMetadata: AuthMetadata): Error[];
 }
 
@@ -99,6 +101,11 @@ export type KubernetesCredential =
   | {
       type: 'bearer token';
       token: string;
+    }
+  | {
+      type: 'x509 client certificate';
+      cert: string;
+      key: string;
     }
   | {
       type: 'anonymous';

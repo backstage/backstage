@@ -20,7 +20,11 @@ export * from './DatabaseManager';
  * Undocumented API surface from connection is being reduced for future deprecation.
  * Avoid exporting additional symbols.
  */
-export { createDatabaseClient, ensureDatabaseExists } from './connection';
+export {
+  createDatabaseClient,
+  ensureDatabaseExists,
+  dropDatabase,
+} from './connection';
 
 export type { PluginDatabaseManager } from './types';
 export { isDatabaseConflictError } from './util';

@@ -20,7 +20,7 @@ import { useIsPodExecTerminalSupported } from './useIsPodExecTerminalSupported';
 
 jest.mock('@backstage/core-plugin-api');
 
-describe('useIsClusterShellEnabled', () => {
+describe('useIsPodExecTerminalSupported', () => {
   let clusters: { authProvider: string }[] = [];
 
   beforeEach(() => {

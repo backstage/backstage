@@ -18,7 +18,9 @@ This guide assumes that you already have a Backstage project set up. Even if you
 
 To create a frontend plugin, run `yarn new`, select `plugin`, and fill out the rest of the prompts. This will create a new package at `plugins/<pluginId>`, which will be the main entrypoint for your plugin.
 
-> **NOT: The created plugin will currently be templated for use in the legacy frontend system, and you will need to replace the existing plugin wiring code.**
+:::info
+The created plugin will currently be templated for use in the legacy frontend system, and you will need to replace the existing plugin wiring code.
+:::
 
 ## The plugin instance
 
@@ -67,7 +69,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from './routes';
 
-// Note that these extensions aren't exported, only the plugin itself it.
+// Note that these extensions aren't exported, only the plugin itself is.
 // You can export it locally for testing purposes, but don't export it from the plugin package.
 const examplePage = createPageExtension({
   routeRef: rootRouteRef,
@@ -104,7 +106,7 @@ export const examplePlugin = createPlugin({
 
 What we've built here is a very common type of plugin. It's a top-level tool that provides a single page, along with a method for navigating to that page. The implementation of the page component, in this case the highlighted `ExamplePage`, can be arbitrarily complex. It can be anything from a single simple information page, to a full-blown application with multiple sub-pages.
 
-We have also provided external access to our route reference by passing it to the plugin `routes` option. This makes it possible for app integrators to bind an external link from a different plugin to our plugin page. You can read more about how this works in the [External Route References](../architecture/07-routes.md#external-router-references) section.
+We have also provided external access to our route reference by passing it to the plugin `routes` option. This makes it possible for app integrators to bind an external link from a different plugin to our plugin page. You can read more about how this works in the [External Route References](../architecture/07-routes.md#external-route-references) section.
 
 ## Utility APIs
 
@@ -141,7 +143,7 @@ export function ExamplePage() {
   return (
     <div>
       <h1>Example Page</h1>
-      <p>Example: {exampleApi.getExample()}</p>
+      <p>Example: {exampleApi.getExample().example}</p>
     </div>
   );
 }
@@ -182,14 +184,14 @@ export const examplePlugin = createPlugin({
 
 ## Plugin specific extensions
 
-There are many different plugins that you can extend with additional functionality through extensions. One such plugin is the catalog plugin, one of the core features of Backstage. It lets you catalog the software in your organization, where each item in the catalog has its own page that can be populated with tools and information relating to that catalog entity. In this example we will explore how our plugin can provide such a tool to display on an entity page.
+There are many different plugins that you can extend with additional functionality through extensions. One such plugin is [the catalog plugin](../../features/software-catalog/), one of the core features of Backstage. It lets you catalog the software in your organization, where each item in the catalog has its own page that can be populated with tools and information relating to that catalog entity. In this example we will explore how our plugin can provide such a tool to display on an entity page.
 
 ```tsx title="in src/plugin.ts - An example entity content extension"
 import { createEntityContentExtension } from '@backstage/plugin-catalog-react';
 
-// Entity content extension are similar to page extensions in that they are rendered at a route,
+// Entity content extensions are similar to page extensions in that they are rendered at a route,
 // although they also have a title to support in-line navigation between the different content.
-// Just like a page extensions the content is lazy loaded, and you can also provide a
+// Just like a page extension the content is lazy loaded, and you can also provide a
 // route reference if you want to be able to generate a URL that links to the content.
 const exampleEntityContent = createEntityContentExtension({
   defaultPath: 'example',
@@ -199,8 +201,22 @@ const exampleEntityContent = createEntityContentExtension({
       <m.ExampleEntityContent />
     )),
 });
+
+export const examplePlugin = createPlugin({
+  id: 'example',
+  extensions: [
+    // highlight-add-next-line
+    exampleEntityContent
+    exampleApi,
+    examplePage,
+    exampleNavItem,
+  ],
+  routes: {
+    root: rootRouteRef,
+  },
+});
 ```
 
-The `ExampleEntityContent` itself is again a regular React component where you can implement any functionality you want. To access the entity that the content is being rendered for, you can use the `useEntity` hook from `@backstage/plugin-catalog-react`. You can see a full list of API provided by the catalog React library in [the API reference](../../reference/plugin-catalog-react.md).
+The `ExampleEntityContent` itself is again a regular React component where you can implement any functionality you want. To access the entity that the content is being rendered for, you can use the `useEntity` hook from `@backstage/plugin-catalog-react`. You can see a full list of APIs provided by the catalog React library in [the API reference](../../reference/plugin-catalog-react.md).
 
 For a more complete list of the different types of extensions that you can create for your plugin, see the [extension types](./03-extension-types.md) section.

@@ -19,10 +19,11 @@ import {
   createDatabaseClient,
   createNameOverride,
   createSchemaOverride,
+  dropDatabase,
   ensureSchemaExists,
   parseConnectionString,
 } from './connection';
-import { pgConnector } from './connectors';
+import { mysqlConnector, pgConnector } from './connectors';
 
 const mocked = (f: Function) => f as jest.Mock;
 
@@ -30,8 +31,13 @@ jest.mock('./connectors', () => {
   const connectors = jest.requireActual('./connectors');
   return {
     ...connectors,
+    mysqlConnector: {
+      ...connectors.mysqlConnector,
+      dropDatabase: jest.fn(),
+    },
     pgConnector: {
       ...connectors.pgConnector,
+      dropDatabase: jest.fn(),
       ensureSchemaExists: jest.fn(),
     },
   };
@@ -219,6 +225,76 @@ describe('database connection', () => {
     it('throws error for non pg client', () => {
       return expect(
         ensureSchemaExists(
+          new ConfigReader({
+            client: 'better-sqlite3',
+            schema: 'catalog',
+            connection: ':memory:',
+          }),
+          'catalog',
+        ),
+      ).resolves.toBeUndefined();
+    });
+  });
+
+  describe('dropDatabase', () => {
+    it('returns successfully with pg client', async () => {
+      await dropDatabase(
+        new ConfigReader({
+          client: 'pg',
+          schema: 'catalog',
+          connection: 'postgresql://testuser:testpass@acme:5432/userdbname',
+        }),
+        'backstage_plugin_foobar',
+      );
+
+      const mockCalls = mocked(
+        pgConnector.dropDatabase as Function,
+      ).mock.calls.splice(-1);
+      const [baseConfig, databaseName] = mockCalls[0];
+
+      expect(baseConfig.get()).toMatchObject({
+        client: 'pg',
+        connection: 'postgresql://testuser:testpass@acme:5432/userdbname',
+      });
+
+      expect(databaseName).toEqual('backstage_plugin_foobar');
+    });
+
+    it('returns successfully with mysql client', async () => {
+      await dropDatabase(
+        new ConfigReader({
+          client: 'mysql2',
+          connection: {
+            host: '127.0.0.1',
+            user: 'foo',
+            password: 'bar',
+            database: 'dbname',
+          },
+        }),
+        'backstage_plugin_foobar',
+      );
+
+      const mockCalls = mocked(
+        mysqlConnector.dropDatabase as Function,
+      ).mock.calls.splice(-1);
+      const [baseConfig, databaseName] = mockCalls[0];
+
+      expect(baseConfig.get()).toMatchObject({
+        client: 'mysql2',
+        connection: {
+          host: '127.0.0.1',
+          user: 'foo',
+          password: 'bar',
+          database: 'dbname',
+        },
+      });
+
+      expect(databaseName).toEqual('backstage_plugin_foobar');
+    });
+
+    it('does nothing in other database drivers', () => {
+      return expect(
+        dropDatabase(
           new ConfigReader({
             client: 'better-sqlite3',
             schema: 'catalog',

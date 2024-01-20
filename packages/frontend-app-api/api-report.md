@@ -8,12 +8,16 @@ import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
 export function createApp(options?: {
+  icons?: {
+    [key in string]: IconComponent;
+  };
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   configLoader?: () => Promise<{
     config: ConfigApi;
@@ -49,6 +53,9 @@ export function createExtensionTree(options: { config: Config }): ExtensionTree;
 
 // @public
 export function createSpecializedApp(options?: {
+  icons?: {
+    [key in string]: IconComponent;
+  };
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;

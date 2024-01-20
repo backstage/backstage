@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/verify_microsite.yml'
       - 'microsite/**'
+      - 'beps/**'
       - 'mkdocs.yml'
       - 'docs/**'
 

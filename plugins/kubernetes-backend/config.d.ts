@@ -84,6 +84,8 @@ export interface Config {
           /** @visibility frontend */
           region?: string;
           /** @visibility frontend */
+          authProvider?: string;
+          /** @visibility frontend */
           skipTLSVerify?: boolean;
           /** @visibility frontend */
           skipMetricsLookup?: boolean;

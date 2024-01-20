@@ -10,15 +10,15 @@ description: Frontend routes
 
 ## Introduction
 
-Each Backstage plugin is an isolated piece of functionality that doesn't typically communicate directly with other plugins. In order to achieve this, there are many parts of the frontend system that provide a layer of indirection for cross-plugin communication, and they routing system is one of them.
+Each Backstage plugin is an isolated piece of functionality that doesn't typically communicate directly with other plugins. In order to achieve this, there are many parts of the frontend system that provide a layer of indirection for cross-plugin communication, and the routing system is one of them.
 
 The Backstage routing system makes it possible to implement navigation across plugin boundaries, without each individual plugin knowing the concrete path or location of other plugins in the routing hierarchy, or even its own. This is achieved through the concept of route references, which are opaque reference values that can be shared and used to create concrete links to different parts of an app. The route ref paths can be configured both at plugin level (by plugin developers) and at the app level (by integrators). It is up to plugin developers to create route references for any page content in their plugin that they want it to be possible to link to or from.
 
 ## Route References
 
-Plugin developers create a `RouteRef` to expose a path in Backstage's routing system. You will see below how routes are defined programmatically, but before diving into code, let us explain how to configure them at app level. In spite of the fact that plugin developers choose a default route path for the routes their plugin provides, paths are configurable, so app integrators can set a custom path to a route whenever they like to (more information in the following sections).
+Plugin developers create a `RouteRef` to expose a path in Backstage's routing system. You will see below how routes are defined programmatically, but before diving into code, let us explain how to configure them at the app level. In spite of the fact that plugin developers choose a default route path for the routes their plugin provides, paths are configurable, so app integrators can set a custom path to a route whenever they like to (more information in the following sections).
 
-There are 3 types of route references: regular route, sub route, and external route, and we will cover both the concept and code definition for each.
+There are three types of route references: regular route, sub route, and external route, and we will cover both the concept and code definition for each.
 
 ### Creating a Route Reference
 
@@ -31,7 +31,7 @@ import { createRouteRef } from '@backstage/frontend-plugin-api';
 export const indexRouteRef = createRouteRef();
 ```
 
-Note that you often want to create the route references themselves in a different file than the one that creates the plugin instance, for example a top-level routes.ts. This is to avoid circular imports when you use the route references from other parts of the same plugin.
+Note that you often want to create the route references themselves in a different file than the one that creates the plugin instance, for example a top-level `routes.ts`. This is to avoid circular imports when you use the route references from other parts of the same plugin.
 
 Route refs do not have any behavior themselves. They are an opaque value that represents route targets in an app, which are bound to specific paths at runtime. Their role is to provide a level of indirection to help link together different pages that otherwise wouldn't know how to route to each other.
 
@@ -68,7 +68,7 @@ export default createPlugin({
 
 In the example above we associated the `indexRouteRef` with the `catalogIndexPage` extension and provided both the route ref and page via the Catalog plugin. So, When this plugin is installed in the app, the index page will become associated with the newly created `RouteRef`, making it possible to use the route ref to navigate the page extension.
 
-It may be unclear why we configure the routes option when creating a plugin as the route has already been passed to the extension. We do that to make it possible for other plugins to route to our page, which is explained in detail in the [binding routes](#binding-external-route-references) section.
+It may seem unclear why we configure the `routes` option when creating a plugin as the route has already been passed to the extension. We do that to make it possible for other plugins to route to our page, which is explained in detail in the [binding routes](#binding-external-route-references) section.
 
 ### Defining References with Path Parameters
 
@@ -86,7 +86,7 @@ export const detailsRouteRef = createRouteRef({
 
 ### Using a Route Reference
 
-Route references can be used to link to page in the same plugin, or to pages in a different plugins. In this section we will cover the first scenario, if you are interested in link to a page of a different plugin, please go to the [external routes](#external-router-references) section below.
+Route references can be used to link to page in the same plugin, or to pages in different plugins. In this section we will cover the first scenario. If you are interested in linking to a page of a different plugin, please go to the [external routes](#external-route-references) section below.
 
 Suppose we are creating a plugin that renders a Catalog index page with a link to a "Foo" component details page. Here is the code for the index page:
 
@@ -117,7 +117,7 @@ export const IndexPage = () => {
 };
 ```
 
-We use the `useRouteRef` hook to create a link generator function that returns the details page path. We then call the link generator, passing it an object with the kind, namespace, and name. These parameters are used to construct a concrete path to details the "Foo" details page.
+We use the `useRouteRef` hook to create a link generator function that returns the details page path. We then call the link generator, passing it an object with the kind, namespace, and name. These parameters are used to construct a concrete path to the "Foo" details page.
 
 Let's see how the details page can get the parameters from the URL:
 
@@ -148,12 +148,12 @@ In the code above, we are using the `useRouteRefParams` hook to retrieve the ent
 
 Since we are linking to pages of the same package, we are using a route ref directly. However, in the following sections, you will see how to link to pages of different plugins.
 
-## External Router References
+## External Route References
 
 External routes are made for linking to a page of an external plugin.
 For this section example, let's assume that we want to link from the Catalog entities list page to the Scaffolder create component page.
 
-We don't want to reference the Scaffolder plugin directly, since that would create an unnecessary dependency. It would also provided little flexibility in allowing the app to tie plugins together, with the links instead being dictated by the plugins themselves. To solve this, we use an `ExternalRouteRef`. Much like regular route references, they can be passed to `useRouteRef` to create concrete URLs, but they can not be used in page extensions and instead have to be associated with a target route using route bindings in the app.
+We don't want to reference the Scaffolder plugin directly, since that would create an unnecessary dependency. It would also provide little flexibility in allowing the app to tie plugins together, with the links instead being dictated by the plugins themselves. To solve this, we use an `ExternalRouteRef`. Much like regular route references, they can be passed to `useRouteRef` to create concrete URLs, but they can not be used in page extensions and instead have to be associated with a target route using route bindings in the app.
 
 We create a new `RouteRef` inside the Scaffolder plugin, using a neutral name that describes its role in the plugin rather than a specific plugin page that it might be linking to, allowing the app to decide the final target. If the Catalog entity list page for example wants to link the Scaffolder create component page in the header, it might declare an `ExternalRouteRef` similar to this:
 
@@ -241,10 +241,10 @@ app:
     bindings:
       # point to the Scaffolder create component page when the Catalog create component ref is used
       # highlight-next-line
-      plugin.catalog.externalRoutes.createComponent: plugin.scaffolder.routes.index
+      catalog.createComponent: scaffolder.index
       # point to the Catalog details page when the Scaffolder component details ref is used
       # highlight-next-line
-      plugin.scaffolder.externalRoutes.componentDetails: plugin.catalog.routes.details
+      scaffolder.componentDetails: catalog.details
 ```
 
 We also have the ability to express this in code as an option to `createApp`, but you of course only need to use one of these two methods:
@@ -272,7 +272,7 @@ export default app.createRoot();
 
 Note that we are not importing and using the `RouteRef`s directly in the app, and instead rely on the plugin instance to access routes of the plugins. This provides better namespacing and discoverability of routes, as well as reduce the number of separate exports from each plugin package.
 
-Another thing to note is that this indirection in the routing is particularly useful for open source plugins that need to leave flexibility in how they are integrated. For plugins that you build internally for your own Backstage application, you can choose to go the route of direct imports or even use concrete routes directly. Although there can be some benefits to using the full routing system even in internal plugins. It can help you structure your routes, and as you will see further down it also helps you manage route parameters.
+Another thing to note is that this indirection in the routing is particularly useful for open source plugins that need to provide flexibility in how they are integrated. For plugins that you build internally for your own Backstage application, you can choose to use direct imports or even concrete route path strings directly. Although there can be some benefits to using the full routing system even in internal plugins: it can help you structure your routes, and as you will see further down it also helps you manage route parameters.
 
 ### Optional External Route References
 
@@ -312,7 +312,7 @@ export const IndexPage = () => {
 
 ## Sub Route References
 
-The last kind of route refs that can be created are `SubRouteRef`s, which can be used to create a route ref with a fixed path relative to an absolute `RouteRef`. They are useful if you have a page that internally is mounted at a sub route of a page extension component, and you want other plugins to be able to route to that page. And they can be a useful utility to handle routing within a plugin itself as well.
+The last kind of route ref that can be created is a `SubRouteRef`, which can be used to create a route ref with a fixed path relative to an absolute `RouteRef`. They are useful if you have a page that internally is mounted at a sub route of a page extension component, and you want other plugins to be able to route to that page. And they can be a useful utility to handle routing within a plugin itself as well.
 
 For example:
 

@@ -212,15 +212,3 @@ export const EntityTagsPickerFieldExtension = scaffolderPlugin.provide(
     schema: EntityTagsPickerSchema,
   }),
 );
-
-/**
- * @alpha
- * The Router and main entrypoint to the Alpha Scaffolder plugin.
- */
-export const LegacyScaffolderPage = scaffolderPlugin.provide(
-  createRoutableExtension({
-    name: 'LegacyScaffolderPage',
-    component: () => import('./legacy/Router').then(m => m.LegacyRouter),
-    mountPoint: rootRouteRef,
-  }),
-);
