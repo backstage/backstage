@@ -34,6 +34,7 @@ import { useProjectName } from '../useProjectName';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { Breadcrumbs, Link, WarningPanel } from '@backstage/core-components';
+import { getLocation } from '../useLocation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -63,8 +64,9 @@ const useStyles = makeStyles(theme => ({
 export const WorkflowRunDetails = (props: { entity: Entity }) => {
   const { value: projectName, loading, error } = useProjectName(props.entity);
   const [projectId] = (projectName ?? '/').split('/');
+  const location = getLocation(props.entity);
 
-  const details = useWorkflowRunsDetails(projectId);
+  const details = useWorkflowRunsDetails(projectId, location);
 
   const classes = useStyles();
   if (error) {
@@ -96,9 +98,9 @@ export const WorkflowRunDetails = (props: { entity: Entity }) => {
           <TableBody>
             <TableRow>
               <TableCell>
-                <Typography noWrap>Branch</Typography>
+                <Typography noWrap>Ref</Typography>
               </TableCell>
-              <TableCell>{details.value?.substitutions.BRANCH_NAME}</TableCell>
+              <TableCell>{details.value?.substitutions.REF_NAME}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
