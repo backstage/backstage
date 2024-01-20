@@ -3,9 +3,9 @@ app:
     packages: 'all' # ✨
   routes:
     bindings:
-      plugin.pages.externalRoutes.pageX: plugin.pages.routes.pageX
-      plugin.catalog.externalRoutes.viewTechDoc: plugin.techdocs.routes.docRoot
-      plugin.catalog.externalRoutes.createComponent: plugin.catalog-import.routes.importPage
+      pages.pageX: pages.pageX
+      catalog.viewTechDoc: techdocs.docRoot
+      catalog.createComponent: catalog-import.importPage
 
   extensions:
     # - apis.plugin.graphiql.browse.gitlab: true
