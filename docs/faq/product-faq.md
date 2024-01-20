@@ -4,8 +4,6 @@ title: Product FAQs
 description: All FAQs related to Product
 ---
 
-## Product FAQs
-
 ### Can we call Backstage something different? So that it fits our company better?
 
 Yes, Backstage is just a platform for building your own developer portal. We

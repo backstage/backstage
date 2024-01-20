@@ -4,8 +4,6 @@ title: Technical FAQs
 description: All FAQs related to Technical
 ---
 
-## Technical FAQs
-
 ### What technology does Backstage use?
 
 Backstage is a large scale [TypeScript](https://www.typescriptlang.org/)
