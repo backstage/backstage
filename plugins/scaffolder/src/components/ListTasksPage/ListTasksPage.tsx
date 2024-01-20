@@ -138,7 +138,7 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
     <Page themeId="home">
       <Header
         pageTitleOverride="Templates Tasks"
-        title={<>List template tasks</>}
+        title="List template tasks"
         subtitle="All tasks that have been started"
       />
       <Content>
