@@ -1,10 +1,10 @@
 ---
-title: AWS App Developer Tools
+title: OPA on AWS
 author: Amazon Web Services
 authorUrl: https://aws.amazon.com/
 category: Infrastructure
-description: Create and manage AWS Apps within Backstage
-documentation: https://github.com/awslabs/app-development-for-backstage-io-on-aws#readme
-iconUrl: https://github.com/awslabs/app-development-for-backstage-io-on-aws/blob/main/docs/images/AWS_logo.png?raw=true
+description: Orchestrate Platforms and Applications (OPA) allows customers to build and manage AWS Apps & Environments within Backstage
+documentation: https://opaonaws.io
+iconUrl: https://github.com/awslabs/app-development-for-backstage-io-on-aws/blob/main/website/static/img/white_OPA_text02.png?raw=true
 npmPackageName: '@aws/plugin-aws-apps-for-backstage'
 addedDate: '2023-05-10'

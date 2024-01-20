@@ -241,10 +241,10 @@ app:
     bindings:
       # point to the Scaffolder create component page when the Catalog create component ref is used
       # highlight-next-line
-      plugin.catalog.externalRoutes.createComponent: plugin.scaffolder.routes.index
+      catalog.createComponent: scaffolder.index
       # point to the Catalog details page when the Scaffolder component details ref is used
       # highlight-next-line
-      plugin.scaffolder.externalRoutes.componentDetails: plugin.catalog.routes.details
+      scaffolder.componentDetails: catalog.details
 ```
 
 We also have the ability to express this in code as an option to `createApp`, but you of course only need to use one of these two methods:
