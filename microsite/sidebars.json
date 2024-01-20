@@ -473,13 +473,8 @@
       "architecture-decisions/adrs-adr013"
     ],
     "FAQ": [
-      "faq/FAQ",
       "faq/Product FAQs",
-      "faq/Technical FAQs",
-      "faq/Adoption FAQs",
-      "faq/DEPLOYMENT FAQs",
-      "faq/FRAMEWORK FAQs",
-      "faq/CORE FEATURES FAQs"
+      "faq/Technical FAQs"
     ],
     "Accessibility": ["accessibility/index"]
   }
