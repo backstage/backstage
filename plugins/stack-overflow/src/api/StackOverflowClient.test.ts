@@ -27,18 +27,33 @@ const backstageQuestions: StackOverflowQuestion[] = [
   {
     title: 'What is it?',
     link: 'https://example.com:9191/questions/1',
-    tags: ['asdf'],
+    tags: ['backstage'],
     owner: { who: 'me' },
     answer_count: 3,
   },
   {
     title: 'Is it?',
     link: 'https://example.com:9191/questions/2',
-    tags: ['asdf'],
+    tags: ['backstage'],
     owner: { who: 'me' },
     answer_count: 4,
   },
 ];
+
+const vimQuestions: StackOverflowQuestion[] = [
+  {
+    title: 'How do I exit vim?',
+    link: 'https://example.com:9191/questions/3',
+    tags: ['vim'],
+    owner: { who: 'me' },
+    answer_count: 5,
+  },
+];
+
+const questionMap: Record<string, StackOverflowQuestion[]> = {
+  backstage: backstageQuestions,
+  vim: vimQuestions,
+};
 
 describe('StackOverflowClient', () => {
   setupRequestMockHandlers(server);
@@ -48,19 +63,15 @@ describe('StackOverflowClient', () => {
   const setupHandlers = () => {
     server.use(
       rest.get(`${mockBaseUrl}/questions`, (req, res, ctx) => {
-        return res(
-          ctx.json({
-            items:
-              req.url.searchParams.get('tagged') === 'backstage'
-                ? backstageQuestions
-                : [],
-          }),
-        );
+        const taggedParam = req.url.searchParams.get('tagged');
+        const questions = taggedParam ? questionMap[taggedParam] || [] : [];
+
+        return res(ctx.json({ items: questions }));
       }),
     );
   };
 
-  it('list questions should return all questions', async () => {
+  it('list questions should return all questions with the provided tag', async () => {
     setupHandlers();
     const client = StackOverflowClient.fromConfig(
       new ConfigReader({
@@ -70,10 +81,17 @@ describe('StackOverflowClient', () => {
       }),
     );
 
-    const responseQuestions = await client.listQuestions({
+    const bsQuestions = await client.listQuestions({
       requestParams: { tagged: 'backstage' },
     });
-    expect(responseQuestions.length).toEqual(2);
-    expect(responseQuestions).toEqual(backstageQuestions);
+
+    const vQuestions = await client.listQuestions({
+      requestParams: { tagged: 'vim' },
+    });
+
+    expect(bsQuestions.length).toEqual(2);
+    expect(bsQuestions).toEqual(backstageQuestions);
+    expect(vQuestions.length).toEqual(1);
+    expect(vQuestions).toEqual(vimQuestions);
   });
 });

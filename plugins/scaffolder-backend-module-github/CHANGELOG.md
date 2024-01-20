@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.1.1
+
+### Patch Changes
+
+- 5470300: Ensure `teamReviewers` list is unique before calling API
+- bf92ae3: Updated dependency `octokit` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/plugin-scaffolder-node@0.2.10
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+
 ## 0.1.1-next.2
 
 ### Patch Changes

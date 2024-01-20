@@ -76,7 +76,7 @@ jobs:
 
       - name: Cache Manifests File
         if: ${{ steps.event.outputs.ACTION != 'closed' }}
-        uses: actions/cache@v3.3.2
+        uses: actions/cache@v3.3.3
         with:
           path: manifests.rendered.yml
           key: ${{ steps.hash.outputs.MANIFESTS_FILE_HASH }}
@@ -124,7 +124,7 @@ jobs:
           body: |
             ## Uffizzi Ephemeral Environment - Virtual Cluster
 
-            :cloud: deploying ...
+            :cloud: deploying cluster `pr-${{ needs.cache-manifests-file.outputs.pr-number }}`
 
             :gear: Updating now by workflow run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
 

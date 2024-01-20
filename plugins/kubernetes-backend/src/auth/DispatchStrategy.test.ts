@@ -31,6 +31,7 @@ describe('getCredential', () => {
     mockStrategy = {
       getCredential: jest.fn(),
       validateCluster: jest.fn(),
+      presentAuthMetadata: jest.fn(),
     };
     strategy = new DispatchStrategy({
       authStrategyMap: { google: mockStrategy },

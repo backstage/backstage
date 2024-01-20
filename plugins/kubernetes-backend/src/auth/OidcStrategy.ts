@@ -18,8 +18,12 @@ import {
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
-import { AuthenticationStrategy, KubernetesCredential } from './types';
-import { AuthMetadata, ClusterDetails } from '../types/types';
+import {
+  AuthMetadata,
+  AuthenticationStrategy,
+  ClusterDetails,
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 
 /**
  *
@@ -56,5 +60,9 @@ export class OidcStrategy implements AuthenticationStrategy {
       return [new Error(`Must specify a token provider for 'oidc' strategy`)];
     }
     return [];
+  }
+
+  public presentAuthMetadata(_authMetadata: AuthMetadata): AuthMetadata {
+    return {};
   }
 }

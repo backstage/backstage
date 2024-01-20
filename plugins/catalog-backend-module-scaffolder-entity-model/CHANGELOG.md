@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-scaffolder-entity-model
 
+## 0.1.6
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.4.5
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-catalog-node@1.6.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-catalog-common@1.0.20
+
 ## 0.1.6-next.2
 
 ### Patch Changes

@@ -55,6 +55,7 @@ export class BackendInitializer {
   async #getInitDeps(
     deps: { [name: string]: ServiceOrExtensionPoint },
     pluginId: string,
+    moduleId?: string,
   ) {
     const result = new Map<string, unknown>();
     const missingRefs = new Set<ServiceOrExtensionPoint>();
@@ -64,7 +65,7 @@ export class BackendInitializer {
       if (ep) {
         if (ep.pluginId !== pluginId) {
           throw new Error(
-            `Extension point registered for plugin '${ep.pluginId}' may not be used by module for plugin '${pluginId}'`,
+            `Illegal dependency: Module '${moduleId}' for plugin '${pluginId}' attempted to depend on extension point '${ref.id}' for plugin '${ep.pluginId}'. Extension points can only be used within their plugin's scope.`,
           );
         }
         result.set(name, ep.impl);
@@ -260,6 +261,7 @@ export class BackendInitializer {
               const moduleDeps = await this.#getInitDeps(
                 moduleInit.init.deps,
                 pluginId,
+                moduleId,
               );
               await moduleInit.init.func(moduleDeps).catch(error => {
                 throw new ForwardedError(

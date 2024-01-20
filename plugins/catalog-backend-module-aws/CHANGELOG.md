@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.3.3
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- 22e88d0: Added status and e-mail as labels to the AWS Account Resource
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-kubernetes-common@0.7.3
+  - @backstage/plugin-catalog-node@1.6.1
+  - @backstage/backend-tasks@0.5.14
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-catalog-common@1.0.20
+
 ## 0.3.3-next.2
 
 ### Patch Changes

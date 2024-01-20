@@ -37,6 +37,7 @@ import { graphiQLRouteRef } from './route-refs';
 import {
   compatWrapper,
   convertLegacyRouteRef,
+  convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
 
 /** @alpha */
@@ -128,7 +129,7 @@ export default createPlugin({
     graphiqlGitlabGraphiQLEndpointExtension,
     graphiqlNavItem,
   ],
-  routes: {
-    root: convertLegacyRouteRef(graphiQLRouteRef),
-  },
+  routes: convertLegacyRouteRefs({
+    root: graphiQLRouteRef,
+  }),
 });

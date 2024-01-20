@@ -184,6 +184,40 @@ export async function ensureMysqlDatabaseExists(
 }
 
 /**
+ * Drops the given mysql databases.
+ *
+ * @param dbConfig - The database config
+ * @param databases - The names of the databases to create
+ */
+export async function dropMysqlDatabase(
+  dbConfig: Config,
+  ...databases: Array<string>
+) {
+  const admin = createMysqlDatabaseClient(dbConfig, {
+    connection: {
+      database: null as unknown as string,
+    },
+    pool: {
+      min: 0,
+      acquireTimeoutMillis: 10000,
+    },
+  });
+
+  try {
+    const dropDatabase = async (database: string) => {
+      await admin.raw(`DROP DATABASE ??`, [database]);
+    };
+    await Promise.all(
+      databases.map(async database => {
+        return await dropDatabase(database);
+      }),
+    );
+  } finally {
+    await admin.destroy();
+  }
+}
+
+/**
  * MySQL database connector.
  *
  * Exposes database connector functionality via an immutable object.
@@ -193,4 +227,5 @@ export const mysqlConnector: DatabaseConnector = Object.freeze({
   ensureDatabaseExists: ensureMysqlDatabaseExists,
   createNameOverride: defaultNameOverride,
   parseConnectionString: parseMysqlConnectionString,
+  dropDatabase: dropMysqlDatabase,
 });

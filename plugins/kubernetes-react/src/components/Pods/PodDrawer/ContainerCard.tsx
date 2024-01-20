@@ -27,6 +27,7 @@ import { IContainer, IContainerStatus } from 'kubernetes-models/v1';
 import { DateTime } from 'luxon';
 import React from 'react';
 
+import { useIsPodExecTerminalEnabled } from '../../../hooks';
 import { bytesToMiB, formatMillicores } from '../../../utils/resources';
 import { PodExecTerminalDialog } from '../../PodExecTerminal/PodExecTerminalDialog';
 import { ResourceUtilization } from '../../ResourceUtilization';
@@ -108,6 +109,8 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
   containerStatus,
   containerMetrics,
 }: ContainerCardProps) => {
+  const isPodExecTerminalEnabled = useIsPodExecTerminalEnabled();
+
   // This should never be undefined
   if (containerSpec === undefined) {
     return <Typography>error reading pod from cluster</Typography>;
@@ -228,12 +231,14 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
             ...podScope,
           }}
         />
-        <PodExecTerminalDialog
-          clusterName={podScope.clusterName}
-          containerName={containerStatus.name}
-          podName={podScope.podName}
-          podNamespace={podScope.podNamespace}
-        />
+        {isPodExecTerminalEnabled && (
+          <PodExecTerminalDialog
+            clusterName={podScope.clusterName}
+            containerName={containerStatus.name}
+            podName={podScope.podName}
+            podNamespace={podScope.podNamespace}
+          />
+        )}
       </CardActions>
     </Card>
   );

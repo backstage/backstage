@@ -200,6 +200,24 @@ export async function ensurePgSchemaExists(
 }
 
 /**
+ * Drops the Postgres databases.
+ *
+ * @param dbConfig - The database config
+ * @param databases - The name of the databases to drop
+ */
+export async function dropPgDatabase(
+  dbConfig: Config,
+  ...databases: Array<string>
+) {
+  const admin = createPgDatabaseClient(dbConfig);
+  await Promise.all(
+    databases.map(async database => {
+      await admin.raw(`DROP DATABASE ??`, [database]);
+    }),
+  );
+}
+
+/**
  * PostgreSQL database connector.
  *
  * Exposes database connector functionality via an immutable object.
@@ -211,4 +229,5 @@ export const pgConnector: DatabaseConnector = Object.freeze({
   createNameOverride: defaultNameOverride,
   createSchemaOverride: defaultSchemaOverride,
   parseConnectionString: parsePgConnectionString,
+  dropDatabase: dropPgDatabase,
 });

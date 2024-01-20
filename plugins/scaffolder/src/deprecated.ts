@@ -212,3 +212,13 @@ export type LayoutTemplate = LayoutTemplateTemp;
  * @deprecated use import from {@link @backstage/plugin-scaffolder-react#LayoutOptions} instead as this has now been moved.
  */
 export type LayoutOptions = LayoutOptionsTemp;
+
+/**
+ * TaskPageProps for constructing a TaskPage
+ * @public
+ * @deprecated - this is a useless type that is no longer used.
+ */
+export type TaskPageProps = {
+  // Optional loading text shown before a task begins executing.
+  loadingText?: string;
+};

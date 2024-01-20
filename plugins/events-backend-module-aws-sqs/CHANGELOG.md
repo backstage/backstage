@@ -1,5 +1,23 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.2.12
+
+### Patch Changes
+
+- 7b8e551: Fix errors when deleting SQS messages:
+
+  - If zero messages were received, skip deletion to avoid `EmptyBatchRequest` error from the SQS client.
+  - If zero failures were returned from the SQS client during deletion, skip error logging.
+
+- d5ddc4e: Add documentation on how to install the plugins with the new backend system.
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/backend-tasks@0.5.14
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.2.18
+
 ## 0.2.12-next.2
 
 ### Patch Changes

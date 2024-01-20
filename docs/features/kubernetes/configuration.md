@@ -393,6 +393,7 @@ For example:
 - type: 'gke'
   projectId: 'gke-clusters'
   region: 'europe-west1' # optional
+  authProvider: 'google' # optional
   skipTLSVerify: false # optional
   skipMetricsLookup: false # optional
   exposeDashboard: false # optional
@@ -416,6 +417,18 @@ The Google Cloud project to look for Kubernetes clusters in.
 
 The Google Cloud region to look for Kubernetes clusters in. Defaults to all
 regions.
+
+##### `authProvider` (optional)
+
+Set the authentication method for discovering clusters and gathering information
+about resources.
+
+Defaults to `google` which leverages the logged in user's Google OAuth credentials.
+
+Set to `googleServiceAccount` to leverage
+Application Default Credentials (https://cloud.google.com/docs/authentication/application-default-credentials).
+To use a service account JSON key (not recommended), set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable
+on the Backstage backend to the path of the service account key file.
 
 ##### `skipTLSVerify` (optional)
 
@@ -651,7 +664,7 @@ SingleTenant Cluster:
 
 In the example above, we configured the "backstage.io/kubernetes-cluster" annotation on the entity `catalog-info.yaml` file to specify that the current component is running in a single cluster called "dice-cluster", so this cluster must have been specified in the `app-config.yaml`, under the Kubernetes clusters configuration (for more details, see [`Configuring Kubernetes clusters`](#configuring-kubernetes-clusters)).
 
-If you do not specify the annotation by `default Backstage fetches all` defined Kubernetes cluster.
+If you do not specify the annotation, by default Backstage fetches from all defined Kubernetes clusters.
 
 [1]: https://cloud.google.com/kubernetes-engine
 [2]: https://cloud.google.com/docs/authentication/production#linux-or-macos

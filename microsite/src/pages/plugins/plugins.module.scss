@@ -78,6 +78,8 @@
   :global(.dropdown) {
     float: right;
     margin-bottom: 1rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   :global(.button--info) {

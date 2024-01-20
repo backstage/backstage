@@ -29,6 +29,7 @@ interface MatchResourceLabelEntry {
 
 type GkeClusterLocatorOptions = {
   projectId: string;
+  authProvider: string;
   region?: string;
   skipTLSVerify?: boolean;
   skipMetricsLookup?: boolean;
@@ -54,8 +55,14 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
         return { key: mrl.getString('key'), value: mrl.getString('value') };
       }) ?? [];
 
+    const storeAuthProviderString =
+      config.getOptionalString('authProvider') === 'googleServiceAccount'
+        ? 'googleServiceAccount'
+        : 'google';
+
     const options = {
       projectId: config.getString('projectId'),
+      authProvider: storeAuthProviderString,
       region: config.getOptionalString('region') ?? '-',
       skipTLSVerify: config.getOptionalBoolean('skipTLSVerify') ?? false,
       skipMetricsLookup:
@@ -97,6 +104,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
     const {
       projectId,
       region,
+      authProvider,
       skipTLSVerify,
       skipMetricsLookup,
       exposeDashboard,
@@ -121,7 +129,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
           // TODO filter out clusters which don't have name or endpoint
           name: r.name ?? 'unknown',
           url: `https://${r.endpoint ?? ''}`,
-          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: authProvider },
           skipTLSVerify,
           skipMetricsLookup,
           ...(exposeDashboard

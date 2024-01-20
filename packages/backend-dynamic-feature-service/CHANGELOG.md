@@ -1,5 +1,32 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.1.0
+
+### Minor Changes
+
+- eb81f42: New `backend-dynamic-feature-service` package, for the discovery of dynamic frontend and backend plugins (and modules) and the loading of the backend ones inside the backend application.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/cli-node@0.2.2
+  - @backstage/plugin-events-backend@0.2.18
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-node@0.7.20
+  - @backstage/plugin-catalog-backend@1.16.1
+  - @backstage/backend-tasks@0.5.14
+  - @backstage/plugin-auth-node@0.4.3
+  - @backstage/plugin-scaffolder-node@0.2.10
+  - @backstage/plugin-search-backend-node@1.2.13
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.2.18
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.0.5-next.2
 
 ### Patch Changes
