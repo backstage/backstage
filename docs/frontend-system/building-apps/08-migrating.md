@@ -74,7 +74,7 @@ export default app.createRoot();
 
 We've taken all the elements that were previously passed to `app.createRoot(...)`, and instead passed them to `convertLegacyApp(...)`. We then pass the features returned by `convertLegacyApp` and forward them to the `features` option of the new `createApp`.
 
-There is one more details that we need to deal with before moving on. The `app.createRoot()` function now returns a React element rather and a component, so we need to update our app `index.tsx` as follows:
+There is one more detail that we need to deal with before moving on. The `app.createRoot()` function now returns a React element rather and a component, so we need to update our app `index.tsx` as follows:
 
 ```tsx title="in packages/app/src/index.tsx"
 import '@backstage/cli/asset-types';
