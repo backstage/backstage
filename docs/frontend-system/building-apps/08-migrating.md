@@ -21,9 +21,9 @@ import { createApp } from '@backstage/app-defaults';
 import { createApp } from '@backstage/frontend-app-api';
 ```
 
-This immediate switch will lead to a lot of breakages that we need to fix. Let's start by addressing `app.createRoot(...)`, which no longer accepts any arguments.
+This immediate switch will lead to a lot of breakages that we need to fix.
 
-Let's start by addressing the change to `app.createRoot(...)`, which no longer accepts any arguments. This represents a fundamental change that the new frontend system introduces. In the old system the app element tree that you passed to `app.createRoot(...)` was the primary way that you installed and configured plugins and features in your app. In the new system this is instead replaced by extensions that are wired together to an extension tree in the new system. Much more responsibility has been shifted to plugins in the new system, for example you no longer have to manually provide the route path for each plugin page, but instead only configure it if you want to override the default. For more information on how the new system works, see the [architecture](../architecture/01-index.md) section.
+Let's start by addressing the change to `app.createRoot(...)`, which no longer accepts any arguments. This represents a fundamental change that the new frontend system introduces. In the old system the app element tree that you passed to `app.createRoot(...)` was the primary way that you installed and configured plugins and features in your app. In the new system this is instead replaced by extensions that are wired together into an extension tree. Much more responsibility has now been shifted to plugins, for example you no longer have to manually provide the route path for each plugin page, but instead only configure it if you want to override the default. For more information on how the new system works, see the [architecture](../architecture/01-index.md) section.
 
 Given that the app element tree is most of what builds up the app, it's likely also going to be the majority of the migration effort. In order to make the migration as smooth as possible we have provided a helper that lets you convert an existing app element tree into plugins that you can install in a new app. This in turn allows for a gradual migration of individual plugins, rather than needing to migrate the entire app structure at once.
 
@@ -102,12 +102,16 @@ For example, assuming you have a `lightTheme` extension that you want to add to 
 ```ts
 const app = createApp({
   features: [
+    // highlight-add-start
     createExtensionOverrides({
       extensions: [lightTheme],
     }),
+    // highlight-add-end
   ],
 });
 ```
+
+You can then also add any additional extensions that you may need to create as part of this migration to the `extensions` array as well.
 
 ### `apis`
 
@@ -260,8 +264,8 @@ For example, if both the `catalogPlugin` and `scaffolderPlugin` are legacy plugi
 const app = createApp({
   features: convertLegacyApp(...),
   bindRoutes({ bind }) {
-    bind(convertLegacyRouteRefs(catalogPlugin.createComponent), {
-      registerApi: convertLegacyRouteRef(scaffolderPlugin.routes.root),
+    bind(convertLegacyRouteRefs(catalogPlugin.externalRoutes), {
+      createComponent: convertLegacyRouteRef(scaffolderPlugin.routes.root),
     });
   },
 });
