@@ -29,6 +29,7 @@ export type {
 } from './cloudflare-access';
 export type { GithubOAuthResult } from './github';
 export type { OAuth2ProxyResult } from './oauth2-proxy';
+export type { OidcAuthResult } from './oidc';
 export type { SamlAuthResult } from './saml';
 export type { GcpIapResult, GcpIapTokenInfo } from './gcp-iap';
 

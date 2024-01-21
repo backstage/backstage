@@ -25,7 +25,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { OAuth2ProxyResult as OAuth2ProxyResult_2 } from '@backstage/plugin-auth-backend-module-oauth2-proxy-provider';
 import { OAuthEnvironmentHandler as OAuthEnvironmentHandler_2 } from '@backstage/plugin-auth-node';
 import { OAuthState as OAuthState_2 } from '@backstage/plugin-auth-node';
-import { OidcAuthResult } from '@backstage/plugin-auth-backend-module-oidc-provider';
+import { OidcAuthResult as OidcAuthResult_2 } from '@backstage/plugin-auth-backend-module-oidc-provider';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { prepareBackstageIdentityResponse as prepareBackstageIdentityResponse_2 } from '@backstage/plugin-auth-node';
@@ -340,6 +340,9 @@ export type OAuthStartResponse = {
 export type OAuthState = OAuthState_2;
 
 // @public @deprecated (undocumented)
+export type OidcAuthResult = OidcAuthResult_2;
+
+// @public @deprecated (undocumented)
 export const postMessageResponse: (
   res: express.Response,
   appOrigin: string,
@@ -557,10 +560,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OidcAuthResult> | undefined;
+            authHandler?: AuthHandler<OidcAuthResult_2> | undefined;
             signIn?:
               | {
-                  resolver: SignInResolver<OidcAuthResult>;
+                  resolver: SignInResolver<OidcAuthResult_2>;
                 }
               | undefined;
           }
