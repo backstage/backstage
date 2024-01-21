@@ -31676,13 +31676,13 @@ __metadata:
   linkType: hard
 
 "json-schema-to-ts@npm:^2.6.2":
-  version: 2.9.2
-  resolution: "json-schema-to-ts@npm:2.9.2"
+  version: 2.12.0
+  resolution: "json-schema-to-ts@npm:2.12.0"
   dependencies:
     "@babel/runtime": ^7.18.3
     "@types/json-schema": ^7.0.9
-    ts-algebra: ^1.2.0
-  checksum: 64bf7226511a3719075d28e715fbd203576088b6ebcf494d6c5ee2bcf5b24d6081fa0cfce22ce254ad8798b7044603db4e4d19779c6f5765285fb9ddaa0756ef
+    ts-algebra: ^1.2.2
+  checksum: 6dc4bc836591d888beb20e8bf45dfa3b75df4a331f18675bd2e39a2262e105e0dc86012031fff0be408499a07ae8bc30f5a879c24696189b2c30a34edd5fa72f
   languageName: node
   linkType: hard
 
@@ -42550,10 +42550,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-algebra@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "ts-algebra@npm:1.2.0"
-  checksum: 471d3a049dbceadf2355f980e4d0a4cba413b50e66f0c8fb5eece876c238f7d2a270e1c85aa9ebd04349ae70335715f8e6d87338fd8cf755d12e285e884b3d91
+"ts-algebra@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "ts-algebra@npm:1.2.2"
+  checksum: eea0c08fba10c4a758086079c575a32c4c050f50087e06fcc1ccd53b045bdf7bdb0ab9597a52a241a714f058ff047cedbddcb1539de5e66bb424aa5b33c677a1
   languageName: node
   linkType: hard
 
