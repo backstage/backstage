@@ -618,6 +618,8 @@ export class TaskWorker {
   runOneTask(task: TaskContext): Promise<void>;
   // (undocumented)
   start(): void;
+  // (undocumented)
+  stop(): void;
 }
 
 // @public @deprecated (undocumented)
