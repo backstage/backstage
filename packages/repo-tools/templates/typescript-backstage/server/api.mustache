@@ -1,0 +1,45 @@
+{{>licenseInfo}}
+import type {
+  PathTemplate,RequestMatcherByModelAndPath,RequestMatcherByModelAndPathParams
+} from '@backstage/backend-openapi-utils';
+import type {
+{{#imports}}
+  {{classname}},
+{{/imports}}
+} from '{{clientPackageName}}';
+import {Router} from 'express';
+
+type ExtendsString<Path extends string> = Path;
+
+
+{{#operations}}
+
+/**
+ * {{{description}}}{{^description}}no description{{/description}}
+ */
+{{! export interface TypedRouter extends Router { }}
+
+    type InputOutput = {
+        {{#operation}}
+        
+        '#{{httpMethod}}|{{path}}': {
+            path: {
+                {{#pathParams}}
+                    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+                {{/pathParams}}
+            },
+            query: {
+                {{#queryParams}}
+                    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+                {{/queryParams}}
+            },
+            {{#bodyParam}}
+                body: {{{dataType}}},
+            {{/bodyParam}}
+            response: {{{returnType}}}{{^returnType}}void{{/returnType}},
+        },
+        
+        {{/operation}}
+    }
+{{! } }}
+{{/operations}}
