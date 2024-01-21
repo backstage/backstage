@@ -18801,12 +18801,12 @@ __metadata:
   linkType: hard
 
 "@types/recharts@npm:^1.8.14, @types/recharts@npm:^1.8.15":
-  version: 1.8.28
-  resolution: "@types/recharts@npm:1.8.28"
+  version: 1.8.29
+  resolution: "@types/recharts@npm:1.8.29"
   dependencies:
     "@types/d3-shape": ^1
     "@types/react": "*"
-  checksum: b334ed1b34123483a2f03dd4b13bdae3048a4a50b2a46b69e6580545ecd3fd57874a9818e5c2c1d8a98dc0bf8a1b6d45b4790d31fb5c395d7b7c6c268b716634
+  checksum: 091d018298d9c5e22b1a937e1229e721e2f6ac030fb73024717f6d20f3ff18575557560afd2247987f102f5981402b1fa1bf13362147aa0e89656ecc51ac3e2b
   languageName: node
   linkType: hard
 
