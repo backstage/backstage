@@ -41,6 +41,7 @@ import {
 import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
+import { intervalFromNowTill } from './dbUtil';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -294,18 +295,7 @@ export class DatabaseTaskStore implements TaskStore {
     tasks: { taskId: string; recovery?: TaskRecovery }[];
   }> {
     const { timeoutS } = options;
-    let heartbeatInterval = this.db.raw(`? - interval '${timeoutS} seconds'`, [
-      this.db.fn.now(),
-    ]);
-    if (this.db.client.config.client.includes('mysql')) {
-      heartbeatInterval = this.db.raw(
-        `date_sub(now(), interval ${timeoutS} second)`,
-      );
-    } else if (this.db.client.config.client.includes('sqlite3')) {
-      heartbeatInterval = this.db.raw(`datetime('now', ?)`, [
-        `-${timeoutS} seconds`,
-      ]);
-    }
+    const heartbeatInterval = intervalFromNowTill(timeoutS, this.db);
     const rawRows = await this.db<RawDbTaskRow>('tasks')
       .where('status', 'processing')
       .andWhere('last_heartbeat_at', '<=', heartbeatInterval);
@@ -498,19 +488,7 @@ export class DatabaseTaskStore implements TaskStore {
     const timeoutS = Duration.fromObject(options.timeout).as('seconds');
 
     await this.db.transaction(async tx => {
-      let heartbeatInterval = this.db.raw(
-        `? - interval '${timeoutS} seconds'`,
-        [this.db.fn.now()],
-      );
-      if (this.db.client.config.client.includes('mysql')) {
-        heartbeatInterval = this.db.raw(
-          `date_sub(now(), interval ${timeoutS} second)`,
-        );
-      } else if (this.db.client.config.client.includes('sqlite3')) {
-        heartbeatInterval = this.db.raw(`datetime('now', ?)`, [
-          `-${timeoutS} seconds`,
-        ]);
-      }
+      const heartbeatInterval = intervalFromNowTill(timeoutS, this.db);
 
       const result = await tx<RawDbTaskRow>('tasks')
         .where('status', 'processing')
