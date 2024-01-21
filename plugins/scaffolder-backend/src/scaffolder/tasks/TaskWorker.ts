@@ -76,8 +76,10 @@ export type CreateWorkerOptions = {
 export class TaskWorker {
   private taskQueue: PQueue;
   private logger: Logger | undefined;
+  private stopWorkers: boolean;
 
   private constructor(private readonly options: TaskWorkerOptions) {
+    this.stopWorkers = false;
     this.logger = options.logger;
     this.taskQueue = new PQueue({
       concurrency: options.concurrentTasksLimit,
@@ -120,24 +122,29 @@ export class TaskWorker {
       await this.options.taskBroker.recoverTasks?.();
     } catch (err) {
       this.logger?.error(stringifyError(err));
-      // ignore
     }
   }
 
   start() {
     (async () => {
-      for (;;) {
+      while (!this.stopWorkers) {
         await new Promise(resolve => setTimeout(resolve, 10000));
         await this.recoverTasks();
       }
     })();
     (async () => {
-      for (;;) {
+      while (!this.stopWorkers) {
         await this.onReadyToClaimTask();
-        const task = await this.options.taskBroker.claim();
-        this.taskQueue.add(() => this.runOneTask(task));
+        if (!this.stopWorkers) {
+          const task = await this.options.taskBroker.claim();
+          void this.taskQueue.add(() => this.runOneTask(task));
+        }
       }
     })();
+  }
+
+  stop() {
+    this.stopWorkers = true;
   }
 
   protected onReadyToClaimTask(): Promise<void> {

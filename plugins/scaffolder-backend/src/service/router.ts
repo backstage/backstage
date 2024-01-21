@@ -336,8 +336,13 @@ export async function createRouter(
 
   const launchWorkers = () => workers.forEach(worker => worker.start());
 
+  const shutdownWorkers = () => {
+    workers.forEach(worker => worker.stop());
+  };
+
   if (options.lifecycle) {
     options.lifecycle.addStartupHook(launchWorkers);
+    options.lifecycle.addShutdownHook(shutdownWorkers);
   } else {
     launchWorkers();
   }
