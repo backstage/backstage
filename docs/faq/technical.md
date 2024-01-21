@@ -1,7 +1,7 @@
 ---
 id: technical
 title: Technical FAQ
-description: Technical FAQ
+description: General technical questions about Backstage.
 ---
 
 ### What technology does Backstage use?
