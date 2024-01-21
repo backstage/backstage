@@ -1,11 +1,11 @@
 name: Accessibility
 on:
-  # NOTE: If you change these you must update verify_accessibility_core-noop.yml as well
+  # NOTE: If you change these you must update verify_accessibility-noop.yml as well
   pull_request:
     branches: [master]
     paths:
       - 'lighthouserc.js'
-      - '.github/workflows/verify_accessibility_core.yml'
+      - '.github/workflows/verify_accessibility.yml'
       - 'plugins/catalog/src/**'
       - 'plugins/catalog-react/src/**'
       - 'plugins/techdocs/src/**'
