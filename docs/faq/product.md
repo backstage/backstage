@@ -46,7 +46,7 @@ source candidates. (And we'll probably end up writing some brand new ones, too.)
 ### What's the roadmap for Backstage?
 
 We envision three phases, which you can learn about in
-[our project roadmap](overview/roadmap.md). Even though the open source version
+[our project roadmap](../overview/roadmap.md). Even though the open source version
 of Backstage is relatively new compared to our internal version, we have already
 begun work on various aspects of all three phases. Looking at the
 [milestones for active issues](https://github.com/backstage/backstage/milestones)

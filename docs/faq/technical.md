@@ -51,7 +51,7 @@ type of content. Plugins all use a common set of platform APIs and reusable UI
 components. Plugins can fetch data either from the backend or an API exposed
 through the proxy.
 
-Learn more about [the different components](overview/what-is-backstage.md) that
+Learn more about [the different components](../overview/what-is-backstage.md) that
 make up Backstage.
 
 ### Why can't I dynamically install plugins without modifications to the app?
@@ -188,7 +188,7 @@ data is shared with.
 Yes. The core frontend framework could be used for building any large-scale web
 application where (1) multiple teams are building separate parts of the app, and
 (2) you want the overall experience to be consistent. That being said, in
-[Phase 2](overview/roadmap.md) of the project we will add features that are
+[Phase 2](../overview/roadmap.md) of the project we will add features that are
 needed for developer portals and systems for managing software ecosystems. Our
 ambition will be to keep Backstage modular.
 
