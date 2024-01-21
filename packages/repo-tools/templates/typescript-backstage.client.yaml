@@ -1,35 +1,35 @@
 templateDir: templates/typescript-backstage
 
 files:
-  api.mustache:
+  client/api.mustache:
     templateType: API
     # For some reason, they check for destinationFilename differences. We have to change the ending to override the file.
     destinationFilename: .client.ts
-  model.mustache:
+  client/model.mustache:
     templateType: Model
     destinationFilename: .model.ts
-  modelGeneric.mustache:
+  client/models/modelGeneric.mustache:
     templateType: SupportingFiles
-  modelOneOf.mustache:
+  client/models/modelOneOf.mustache:
     templateType: SupportingFiles
-  modelGenericAdditionalProperties.mustache:
+  client/models/modelGenericAdditionalProperties.mustache:
     templateType: SupportingFiles
-  modelGenericEnums.mustache:
+  client/models/ modelGenericEnums.mustache:
     templateType: SupportingFiles
-  modelAlias.mustache:
+  client/models/modelAlias.mustache:
     templateType: SupportingFiles
-  modelEnum.mustache:
+  client/models/modelEnum.mustache:
     templateType: SupportingFiles
-  modelTaggedUnion.mustache:
+  client/models/modelTaggedUnion.mustache:
     templateType: SupportingFiles
-  models/models_all.mustache:
+  client/models/models_all.mustache:
     templateType: SupportingFiles
     destinationFilename: models/index.ts
-  types/fetch.ts: {}
-  types/discovery.ts: {}
-  apis/index.mustache:
+  client/types/fetch.ts: {}
+  client/types/discovery.ts: {}
+  client/apis/index.mustache:
     templateType: SupportingFiles
     destinationFilename: apis/index.ts
-  pluginId.mustache:
+  client/pluginId.mustache:
     templateType: SupportingFiles
     destinationFilename: pluginId.ts

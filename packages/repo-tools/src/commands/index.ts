@@ -103,6 +103,16 @@ function registerRepoCommand(program: Command) {
     .action(
       lazy(() => import('./repo/schema/openapi/test').then(m => m.bulkCommand)),
     );
+
+  openApiCommand
+    .command('generate-server')
+    .requiredOption('--input-spec <file>')
+    .requiredOption('--output-directory <directory>')
+    .action(
+      lazy(() =>
+        import('./openapi/server/generate').then(m => m.singleCommand),
+      ),
+    );
 }
 
 export function registerCommands(program: Command) {

@@ -1,0 +1,61 @@
+{{#lambda.lowercase}}{{httpMethod}}({{/lambda.lowercase}}
+        
+            path: ExtendsString<PathTemplate<`{{path}}`>>,
+            ...handlers: Array<RequestMatcherByModelAndPath<
+            {
+                {{#pathParams}}
+                    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+                {{/pathParams}}
+            }, 
+            {
+                {{#queryParams}}
+                    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+                {{/queryParams}}
+            },
+            {{#hasBodyParam}}
+                {{#bodyParam}}
+                    {{{dataType}}}
+                {{/bodyParam}}
+                {{/hasBodyParam}}
+                {{^hasBodyParam}}
+                    {}
+            {{/hasBodyParam}},
+            {{#responses}}
+                {{^-first}}
+                | 
+                {{/-first}}
+                /**
+                 * {{code}} {{message}}
+                 */
+                {{#dataType}}
+                {{{dataType}}}
+                {{/dataType}}
+            {{/responses}}
+            >>
+        ): this;
+
+    {{#lambda.lowercase}}{{httpMethod}}({{/lambda.lowercase}}
+        
+            path: ExtendsString<PathTemplate<`{{path}}`>>,
+            ...handlers: Array<RequestMatcherByModelAndPathParams<
+            {
+                {{#pathParams}}
+                    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+                {{/pathParams}}
+            }, 
+            {
+                {{#queryParams}}
+                    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+                {{/queryParams}}
+            },
+            {{#hasBodyParam}}
+                {{#bodyParam}}
+                    {{{dataType}}}
+                {{/bodyParam}}
+                {{/hasBodyParam}}
+                {{^hasBodyParam}}
+                    {}
+            {{/hasBodyParam}},
+            {{{returnType}}}{{^returnType}}void{{/returnType}}
+            >>
+        ): this;
