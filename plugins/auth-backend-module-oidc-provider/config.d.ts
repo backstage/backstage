@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-export { oidc } from './provider';
-
-import { OidcAuthResult as OidcAuthResult_ } from '@backstage/plugin-auth-backend-module-oidc-provider';
-
-/**
- * @public
- * @deprecated Use OidcAuthResult from `@backstage/plugin-auth-backend-module-oidc-provider` instead
- */
-export type OidcAuthResult = OidcAuthResult_;
+export interface Config {
+  auth?: {
+    providers?: {
+      /** @visibility frontend */
+      oidc?: {
+        [authEnv: string]: {
+          clientId: string;
+          /**
+           * @visibility secret
+           */
+          clientSecret: string;
+          metadataUrl: string;
+          callbackUrl?: string;
+          tokenEndpointAuthMethod?: string;
+          tokenSignedResponseAlg?: string;
+          scope?: string;
+          prompt?: string;
+        };
+      };
+    };
+  };
+}

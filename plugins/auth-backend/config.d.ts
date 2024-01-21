@@ -149,22 +149,6 @@ export interface Config {
         };
       };
       /** @visibility frontend */
-      oidc?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          callbackUrl?: string;
-          metadataUrl: string;
-          tokenEndpointAuthMethod?: string;
-          tokenSignedResponseAlg?: string;
-          scope?: string;
-          prompt?: string;
-        };
-      };
-      /** @visibility frontend */
       auth0?: {
         [authEnv: string]: {
           clientId: string;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-export { oidc } from './provider';
-
-import { OidcAuthResult as OidcAuthResult_ } from '@backstage/plugin-auth-backend-module-oidc-provider';
-
 /**
- * @public
- * @deprecated Use OidcAuthResult from `@backstage/plugin-auth-backend-module-oidc-provider` instead
+ * The oidc-provider backend module for the auth plugin.
+ *
+ * @packageDocumentation
  */
-export type OidcAuthResult = OidcAuthResult_;
+
+export { oidcAuthenticator } from './authenticator';
+export type { OidcAuthResult } from './authenticator';
+export { authModuleOidcProvider as default } from './module';
+export { oidcSignInResolvers } from './resolvers';
