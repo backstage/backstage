@@ -1,7 +1,7 @@
 ---
-id: Technical FAQs
-title: Technical FAQs
-description: All FAQs related to Technical
+id: technical
+title: Technical FAQ
+description: Technical FAQ
 ---
 
 ### What technology does Backstage use?

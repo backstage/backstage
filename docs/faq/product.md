@@ -1,7 +1,7 @@
 ---
-id: Product FAQs
-title: Product FAQs
-description: All FAQs related to Product
+id: product
+title: Product FAQ
+description: Product FAQ
 ---
 
 ### Can we call Backstage something different? So that it fits our company better?
