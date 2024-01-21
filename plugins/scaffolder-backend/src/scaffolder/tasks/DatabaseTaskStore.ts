@@ -484,7 +484,7 @@ export class DatabaseTaskStore implements TaskStore {
   async recoverTasks(
     options: TaskStoreRecoverTaskOptions,
   ): Promise<{ id: string }[]> {
-    const taskIdsToRecover: string[] = [];
+    const taskIdsToRecover: { id: string }[] = [];
     const timeoutS = Duration.fromObject(options.timeout).as('seconds');
 
     await this.db.transaction(async tx => {
@@ -501,7 +501,7 @@ export class DatabaseTaskStore implements TaskStore {
           ['id', 'spec'],
         );
 
-      taskIdsToRecover.push(...result.map(i => i.id));
+      taskIdsToRecover.push(...result.map(i => ({ id: i.id })));
 
       for (const { id, spec } of result) {
         const taskSpec = JSON.parse(spec as string) as TaskSpec;
@@ -516,6 +516,6 @@ export class DatabaseTaskStore implements TaskStore {
       }
     });
 
-    return taskIdsToRecover.map(id => ({ id }));
+    return taskIdsToRecover;
   }
 }
