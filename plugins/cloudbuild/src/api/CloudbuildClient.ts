@@ -28,11 +28,14 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async reRunWorkflow(options: {
     projectId: string;
+    location: string;
     runId: string;
   }): Promise<void> {
     await this.request(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
+      )}/locations/${encodeURIComponent(
+        options.location,
       )}/builds/${encodeURIComponent(options.runId)}:retry`,
       'POST',
     );
@@ -40,11 +43,15 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async listWorkflowRuns(options: {
     projectId: string;
+    location: string;
+    cloudBuildFilter: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
     const workflowRuns = await this.request(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
-      )}/builds`,
+      )}/locations/${encodeURIComponent(
+        options.location,
+      )}/builds?filter=${encodeURIComponent(options.cloudBuildFilter)}`,
     );
 
     const builds: ActionsListWorkflowRunsForRepoResponseData =
@@ -55,11 +62,14 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async getWorkflow(options: {
     projectId: string;
+    location: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData> {
     const workflow = await this.request(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
+      )}/locations/${encodeURIComponent(
+        options.location,
       )}/builds/${encodeURIComponent(options.id)}`,
     );
 
@@ -70,11 +80,14 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async getWorkflowRun(options: {
     projectId: string;
+    location: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData> {
     const workflow = await this.request(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
+      )}/locations/${encodeURIComponent(
+        options.location,
       )}/builds/${encodeURIComponent(options.id)}`,
     );
     const build: ActionsGetWorkflowResponseData = await workflow.json();

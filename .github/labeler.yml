@@ -2,34 +2,37 @@ area:catalog:
   - plugins/catalog/**/*
   - plugins/catalog-*/**/*
   - packages/catalog-*/**/*
-area:scaffolder:
-  - plugins/scaffolder/**/*
-  - plugins/scaffolder-*/**/*
-search:
-  - plugins/search/**/*
-  - plugins/search-*/**/*
-  - packages/search-*/**/*
-homepage:
-  - plugins/home/**/*
 area:discoverability: # search + home
   - plugins/search/**/*
   - plugins/search-*/**/*
   - packages/search-*/**/*
   - plugins/home/**/*
+area:kubernetes:
+  - plugins/kubernetes/**/*
+  - plugins/kubernetes-*/**/*
+area:permission:
+  - plugins/permission-*/**/*
+area:scaffolder:
+  - plugins/scaffolder/**/*
+  - plugins/scaffolder-*/**/*
 area:techdocs:
   - plugins/techdocs/**/*
   - plugins/techdocs-*/**/*
   - packages/techdocs-*/**/*
-documentation:
-  - docs/**/*
-microsite:
-  - microsite/**/*
-storybook:
-  - storybook/**/*
 auth:
-  - plugins/auth-backend/**/*
+  - plugins/auth-*/**/*
   - packages/core-app-api/src/apis/implementations/auth/**/*
   - packages/core-app-api/src/lib/Auth*/**/*
   - packages/core-plugin-api/src/apis/definitions/auth.ts
-area:permission:
-  - plugins/permission-*/**/*
+documentation:
+  - docs/**/*
+homepage:
+  - plugins/home/**/*
+microsite:
+  - microsite/**/*
+search:
+  - plugins/search/**/*
+  - plugins/search-*/**/*
+  - packages/search-*/**/*
+storybook:
+  - storybook/**/*
