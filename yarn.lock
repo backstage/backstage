@@ -31269,10 +31269,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.14.6, jose@npm:^4.15.1, jose@npm:^4.6.0":
-  version: 4.15.3
-  resolution: "jose@npm:4.15.3"
-  checksum: b76eeccc1d40d0eaf26dfaadc0f88fc15802c9105ab66a24ee223bd84369f7cb217f4a2cb852f5080ff6996170b3a73db2b2d26878b8905d99c36ca432628134
+"jose@npm:^4.14.6, jose@npm:^4.15.4, jose@npm:^4.6.0":
+  version: 4.15.4
+  resolution: "jose@npm:4.15.4"
+  checksum: dccad91cb3357f36423774a0b89ad830dd84b31090de65cd139b85488439f16a00f8c59c0773825e8a1adb0dd9d13ad725ad66e6ea33880ecb3959bb99e1ea5b
   languageName: node
   linkType: hard
 
@@ -35649,14 +35649,14 @@ __metadata:
   linkType: hard
 
 "openid-client@npm:^5.2.1, openid-client@npm:^5.3.0, openid-client@npm:^5.4.3, openid-client@npm:^5.5.0":
-  version: 5.6.1
-  resolution: "openid-client@npm:5.6.1"
+  version: 5.6.4
+  resolution: "openid-client@npm:5.6.4"
   dependencies:
-    jose: ^4.15.1
+    jose: ^4.15.4
     lru-cache: ^6.0.0
     object-hash: ^2.2.0
     oidc-token-hash: ^5.0.3
-  checksum: 9d939cec57540e6dd3f67e9a248ec5ecec3b439b7ab5bd2e9fb4481bd03e8d030deedd87a447348194be7f3e93e84085841b0414033caf86479870f526cdbc2f
+  checksum: 69843f078dacbbc6bad6d65ca6689414ac73f095dfe2f8e606822e6cfc9d9cd7d0dfaf2649352eda604653806f0ea65326ad2d6266da897e4740ec93d26d21f6
   languageName: node
   linkType: hard
 
