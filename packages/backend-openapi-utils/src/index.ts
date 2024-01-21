@@ -31,5 +31,10 @@ export type {
   PathParameters,
 } from './utility';
 export type { ApiRouter } from './router';
+export type {
+  RequestMatcherByModelAndPath,
+  RequestMatcherByModelAndPathParams,
+} from './types/express';
+export type { PathTemplate } from './types/common';
 export { createValidatedOpenApiRouter, getOpenApiSpecRoute } from './stub';
 export { wrapInOpenApiTestServer, wrapServer } from './testUtils';

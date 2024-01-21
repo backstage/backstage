@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export * from "./http/http";
+export * from "./auth/auth";
+export * from "./models/all";
+export { createConfiguration } from "./configuration"
+export { Configuration } from "./configuration"
+export * from "./apis/exception";
+export * from "./servers";
+export { RequiredError } from "./apis/baseapi";
 
-/**
- * An isomorphic client for the catalog backend
- *
- * @packageDocumentation
- */
+export { PromiseMiddleware as Middleware } from './middleware';
+export { PromiseDefaultApi as DefaultApi } from './types/PromiseAPI';
 
-export { CatalogClient } from './CatalogClient';
-// export * from './types';
-
-export * from './generated/models';

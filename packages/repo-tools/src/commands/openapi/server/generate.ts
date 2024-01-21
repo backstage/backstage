@@ -16,30 +16,16 @@
 
 import chalk from 'chalk';
 import { resolve } from 'path';
-import {
-  OPENAPI_IGNORE_FILES,
-  OUTPUT_PATH,
-} from '../../../../../lib/openapi/constants';
-import { paths as cliPaths } from '../../../../../lib/paths';
+import { OPENAPI_IGNORE_FILES, OUTPUT_PATH } from '../constants';
+import { paths as cliPaths } from '../../../lib/paths';
 import { mkdirpSync } from 'fs-extra';
 import fs from 'fs-extra';
-import { exec } from '../../../../../lib/exec';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
-import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers';
+import { exec } from '../../../lib/exec';
+import { resolvePackagePath } from '@backstage/backend-common';
 
-async function generate(
-  outputDirectory: string,
-  clientAdditionalProperties?: string,
-  abortSignal?: AbortController,
-) {
-  const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
-  const resolvedOutputDirectory = cliPaths.resolveTargetRoot(
-    outputDirectory,
-    OUTPUT_PATH,
-  );
-  const additionalProperties = clientAdditionalProperties
-    ? `--additional-properties=${clientAdditionalProperties}`
-    : '';
+async function generate(spec: string, outputDirectory: string) {
+  const resolvedOpenapiPath = resolve(spec);
+  const resolvedOutputDirectory = resolve(outputDirectory, OUTPUT_PATH);
   mkdirpSync(resolvedOutputDirectory);
 
   await fs.mkdirp(resolvedOutputDirectory);
@@ -63,14 +49,13 @@ async function generate(
       '-c',
       resolvePackagePath(
         '@backstage/repo-tools',
-        'templates/typescript-backstage.client.yaml',
+        'templates/typescript-backstage.server.yaml',
       ),
+      `--additional-properties=clientPackageName=@backstage/catalog-client`,
       '--generator-key',
       'v3.0',
-      additionalProperties,
     ],
     {
-      signal: abortSignal?.signal,
       maxBuffer: Number.MAX_VALUE,
       cwd: resolvePackagePath('@backstage/repo-tools'),
       env: {
@@ -81,15 +66,11 @@ async function generate(
 
   await exec(
     `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
-    [],
-    { signal: abortSignal?.signal },
   );
 
   const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
   if (prettier) {
-    await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
-      signal: abortSignal?.signal,
-    });
+    await exec(`${prettier} --write ${resolvedOutputDirectory}`);
   }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
@@ -100,32 +81,21 @@ async function generate(
   });
 }
 
-export async function command(
-  outputPackage: string,
-  clientAdditionalProperties?: string,
-  {
-    abortSignal,
-    isWatch = false,
-  }: { abortSignal?: AbortController; isWatch?: boolean } = {},
-): Promise<void> {
+export async function singleCommand({
+  inputSpec,
+  outputDirectory,
+}: {
+  inputSpec: string;
+  outputDirectory: string;
+}): Promise<void> {
   try {
-    await generate(outputPackage, clientAdditionalProperties, abortSignal);
-    console.log(
-      chalk.green(`Generated client in ${outputPackage}/${OUTPUT_PATH}`),
-    );
+    await generate(inputSpec, outputDirectory);
+    console.log(chalk.green(`Generated client for ${inputSpec}`));
   } catch (err) {
-    if (err.name === 'AbortError') {
-      console.debug('Server generation aborted.');
-      return;
-    }
-    if (isWatch) {
-      console.log(chalk.red(`Client generation failed:`));
-      console.group();
-      console.log(chalk.red(err.message));
-      console.groupEnd();
-    } else {
-      console.log(chalk.red(`Client generation failed.`));
-      console.log(chalk.red(err.message));
-    }
+    console.log();
+    console.log(chalk.red(`Client generation failed in ${outputDirectory}:`));
+    console.log(err);
+
+    process.exit(1);
   }
 }

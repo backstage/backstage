@@ -57,6 +57,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
+import { TypedRouter } from '../generated/apis';
 
 /**
  * Options used by {@link createRouter}.
@@ -85,13 +86,13 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = await createOpenApiRouter({
+  const router = (await createOpenApiRouter({
     validatorOptions: {
       // We want the spec to be up to date with the expected value, but the return type needs
       //  to be controlled by the router implementation not the request validator.
       ignorePaths: /^\/validate-entity\/?$/,
     },
-  });
+  })) as TypedRouter;
   const {
     entitiesCatalog,
     locationAnalyzer,
