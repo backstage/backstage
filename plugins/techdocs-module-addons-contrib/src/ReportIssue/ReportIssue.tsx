@@ -111,8 +111,25 @@ export const ReportIssueAddon = ({
     const mainContentPosition = mainContent!.getBoundingClientRect();
     const selectionPosition = selection.getRangeAt(0).getBoundingClientRect();
 
+    // Calculating the distance between the selection's top and the main content's top
+    const distanceFromTop = selectionPosition.top - mainContentPosition.top;
+    const minDistanceFromTop = 50;
+
+    // Defining a base value for 'top'
+    let top = distanceFromTop < minDistanceFromTop ? 101 : distanceFromTop - 16;
+
+    // Checking if the main content is off-screen towards the top
+    if (mainContentPosition.top < 0) {
+      const absMainContentTop = Math.abs(mainContentPosition.top);
+
+      // Adjusting 'top' if the selection is close to the top edge and the main content is off-screen
+      if (distanceFromTop - absMainContentTop < minDistanceFromTop) {
+        top += 89;
+      }
+    }
+
     setStyle({
-      top: `${selectionPosition.top - mainContentPosition.top - 16}px`,
+      top: `${top}px`,
       left: `${selectionPosition.left + selectionPosition.width / 2}px`,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

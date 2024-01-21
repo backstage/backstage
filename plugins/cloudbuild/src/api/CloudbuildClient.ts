@@ -27,11 +27,14 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async reRunWorkflow(options: {
     projectId: string;
+    location: string;
     runId: string;
   }): Promise<void> {
     await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
+      )}/locations/${encodeURIComponent(
+        options.location,
       )}/builds/${encodeURIComponent(options.runId)}:retry`,
       {
         method: 'POST',
@@ -45,11 +48,15 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async listWorkflowRuns(options: {
     projectId: string;
+    location: string;
+    cloudBuildFilter: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
     const workflowRuns = await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
-      )}/builds`,
+      )}/locations/${encodeURIComponent(
+        options.location,
+      )}/builds?filter=${encodeURIComponent(options.cloudBuildFilter)}`,
       {
         headers: new Headers({
           Accept: '*/*',
@@ -66,11 +73,14 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async getWorkflow(options: {
     projectId: string;
+    location: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData> {
     const workflow = await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
+      )}/locations/${encodeURIComponent(
+        options.location,
       )}/builds/${encodeURIComponent(options.id)}`,
       {
         headers: new Headers({
@@ -87,11 +97,14 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async getWorkflowRun(options: {
     projectId: string;
+    location: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData> {
     const workflow = await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
+      )}/locations/${encodeURIComponent(
+        options.location,
       )}/builds/${encodeURIComponent(options.id)}`,
       {
         headers: new Headers({

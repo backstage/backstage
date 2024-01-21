@@ -1,0 +1,10 @@
+---
+title: Backchat GenAI
+author: benwilcock
+authorUrl: https://github.com/benwilcock
+category: Services
+description: Access your favorite open source GenAI GUIs privately from Backstage. Chat wth large language models in your portal. Choose from hundreds of LLMs. Run inferencing wherever you like - local or remote, CPU or GPU - it's up to you!
+documentation: https://github.com/benwilcock/backstage-plugin-backchat
+iconUrl: /img/backchat-logo.png
+npmPackageName: '@benbravo73/backstage-plugin-backchat'
+addedDate: '2024-01-12'

@@ -58,17 +58,22 @@ export const CLOUDBUILD_ANNOTATION = 'google.com/cloudbuild-project-slug';
 export type CloudbuildApi = {
   listWorkflowRuns: (options: {
     projectId: string;
+    location: string;
+    cloudBuildFilter: string;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
   getWorkflow: (options: {
     projectId: string;
+    location: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
   getWorkflowRun: (options: {
     projectId: string;
+    location: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
   reRunWorkflow: (options: {
     projectId: string;
+    location: string;
     runId: string;
   }) => Promise<any>;
 };
@@ -84,19 +89,27 @@ export class CloudbuildClient implements CloudbuildApi {
   // (undocumented)
   getWorkflow(options: {
     projectId: string;
+    location: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData>;
   // (undocumented)
   getWorkflowRun(options: {
     projectId: string;
+    location: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData>;
   // (undocumented)
   listWorkflowRuns(options: {
     projectId: string;
+    location: string;
+    cloudBuildFilter: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData>;
   // (undocumented)
-  reRunWorkflow(options: { projectId: string; runId: string }): Promise<void>;
+  reRunWorkflow(options: {
+    projectId: string;
+    location: string;
+    runId: string;
+  }): Promise<void>;
 }
 
 // @public (undocumented)
@@ -235,9 +248,9 @@ export interface StorageSource {
 // @public (undocumented)
 export interface Substitutions {
   // (undocumented)
-  BRANCH_NAME: string;
-  // (undocumented)
   COMMIT_SHA: string;
+  // (undocumented)
+  REF_NAME: string;
   // (undocumented)
   REPO_NAME: string;
   // (undocumented)
