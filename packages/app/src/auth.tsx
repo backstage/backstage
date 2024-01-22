@@ -28,8 +28,19 @@ import {
   configApiRef,
   createApiFactory,
   discoveryApiRef,
+  useApi,
 } from '@backstage/core-plugin-api';
 import { AuthProxyDiscoveryApi } from '../src/AuthProxyDiscoveryApi';
+
+// TODO(Rugvip): make this available via some util, or maybe Utility API?
+function readBasePath(configApi: typeof configApiRef.T) {
+  let { pathname } = new URL(
+    configApi.getOptionalString('app.baseUrl') ?? '/',
+    'http://sample.dev', // baseUrl can be specified as just a path
+  );
+  pathname = pathname.replace(/\/*$/, '');
+  return pathname;
+}
 
 const app = createApp({
   apis: [
@@ -54,7 +65,7 @@ const app = createApp({
 });
 
 function RedirectToRoot() {
-  window.location.pathname += '/..';
+  window.location.pathname = readBasePath(useApi(configApiRef));
   return <div />;
 }
 
