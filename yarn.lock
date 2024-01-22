@@ -6906,7 +6906,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@rjsf/utils": 5.15.1
+    "@rjsf/utils": 5.16.1
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/react-grid-layout": ^1.3.2
   peerDependencies:
@@ -6936,10 +6936,10 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
-    "@rjsf/core": 5.15.1
-    "@rjsf/material-ui": 5.15.1
-    "@rjsf/utils": 5.15.1
-    "@rjsf/validator-ajv8": 5.15.1
+    "@rjsf/core": 5.16.1
+    "@rjsf/material-ui": 5.16.1
+    "@rjsf/utils": 5.16.1
+    "@rjsf/validator-ajv8": 5.16.1
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -8319,10 +8319,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^23.0.0
-    "@rjsf/core": 5.15.1
-    "@rjsf/material-ui": 5.15.1
-    "@rjsf/utils": 5.15.1
-    "@rjsf/validator-ajv8": 5.15.1
+    "@rjsf/core": 5.16.1
+    "@rjsf/material-ui": 5.16.1
+    "@rjsf/utils": 5.16.1
+    "@rjsf/validator-ajv8": 5.16.1
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -8382,10 +8382,10 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^23.0.0
-    "@rjsf/core": 5.15.1
-    "@rjsf/material-ui": 5.15.1
-    "@rjsf/utils": 5.15.1
-    "@rjsf/validator-ajv8": 5.15.1
+    "@rjsf/core": 5.16.1
+    "@rjsf/material-ui": 5.16.1
+    "@rjsf/utils": 5.16.1
+    "@rjsf/validator-ajv8": 5.16.1
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
@@ -14877,38 +14877,38 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/core@npm:5.15.1":
-  version: 5.15.1
-  resolution: "@rjsf/core@npm:5.15.1"
+"@rjsf/core@npm:5.16.1":
+  version: 5.16.1
+  resolution: "@rjsf/core@npm:5.16.1"
   dependencies:
     lodash: ^4.17.21
     lodash-es: ^4.17.21
-    markdown-to-jsx: ^7.3.2
-    nanoid: ^3.3.6
+    markdown-to-jsx: ^7.4.0
+    nanoid: ^3.3.7
     prop-types: ^15.8.1
   peerDependencies:
-    "@rjsf/utils": ^5.12.x
+    "@rjsf/utils": ^5.16.x
     react: ^16.14.0 || >=17
-  checksum: d03f05563e7eafbcb3ea72b41867ec1b95547ed95609b10d0af6c09e880f119d50ad3bd76d2c6a903fa7c6c3286007684d43ce0a0c318d910f0e2a35cd7ef8de
+  checksum: 2f88dc6af9dda8ec5c8cbac63f3f9e776a11fe363ce938aa7b5c7a3baaa84a7a2f3796ebf55b361a8cb65267a1715ab880a4743636fb88e06b0240d07f0e4c7b
   languageName: node
   linkType: hard
 
-"@rjsf/material-ui@npm:5.15.1":
-  version: 5.15.1
-  resolution: "@rjsf/material-ui@npm:5.15.1"
+"@rjsf/material-ui@npm:5.16.1":
+  version: 5.16.1
+  resolution: "@rjsf/material-ui@npm:5.16.1"
   peerDependencies:
     "@material-ui/core": ^4.12.3
     "@material-ui/icons": ^4.11.2
-    "@rjsf/core": ^5.12.x
-    "@rjsf/utils": ^5.12.x
+    "@rjsf/core": ^5.16.x
+    "@rjsf/utils": ^5.16.x
     react: ^16.14.0 || >=17
-  checksum: cd282bdeadbb291402e2064e1983e9da8515881bac2011a428a85addf3fcf2935d25333a333d4d3373a61fe6993c7598737c5af75bba008018dd2c7754195ba6
+  checksum: ca237b699d74246622f4a29078674bfbf9c8238adec7fda6a5062e064d11c6f15c6dba117daa21fe3ac778fa2e884fb2366b5c5bb5e9490f91f9b611f7f010fe
   languageName: node
   linkType: hard
 
-"@rjsf/utils@npm:5.15.1":
-  version: 5.15.1
-  resolution: "@rjsf/utils@npm:5.15.1"
+"@rjsf/utils@npm:5.16.1":
+  version: 5.16.1
+  resolution: "@rjsf/utils@npm:5.16.1"
   dependencies:
     json-schema-merge-allof: ^0.8.1
     jsonpointer: ^5.0.1
@@ -14917,21 +14917,21 @@ __metadata:
     react-is: ^18.2.0
   peerDependencies:
     react: ^16.14.0 || >=17
-  checksum: ec0d56bf2627d55759a59090db0d59402244a6fae64528f66dde1f5de2eaaf2a6841dea7bbb185eb36fd344b3abd4825b2b422f3b1b0bb05365847073aa1e790
+  checksum: 0c69527de4ab6f9d6ec4d1a5e05a31a0a38062d40abe2a2da7bc2324b20b08b0e90c188977ac4408f3b004c758c28097444746f3215e21e184c11cad7e9278c1
   languageName: node
   linkType: hard
 
-"@rjsf/validator-ajv8@npm:5.15.1":
-  version: 5.15.1
-  resolution: "@rjsf/validator-ajv8@npm:5.15.1"
+"@rjsf/validator-ajv8@npm:5.16.1":
+  version: 5.16.1
+  resolution: "@rjsf/validator-ajv8@npm:5.16.1"
   dependencies:
     ajv: ^8.12.0
     ajv-formats: ^2.1.1
     lodash: ^4.17.21
     lodash-es: ^4.17.21
   peerDependencies:
-    "@rjsf/utils": ^5.12.x
-  checksum: d32538968d9a9a664a44ffee1b24a835142aaacda3c1ad4671f6d6a4ed564e68e5dea4f37d1c62ee2c03f8a5b55174c0815040eff3c7814260c1181f945adced
+    "@rjsf/utils": ^5.16.x
+  checksum: ab26fc02ad86c7ff36e69aa1285b43a67aa65b2a47e3741a67c243131f74848e55f7215a20416c1a636703aa7f95af7d4270eda9818253f7ea2b3c5f86a26980
   languageName: node
   linkType: hard
 
@@ -33254,12 +33254,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"markdown-to-jsx@npm:^7.3.2":
-  version: 7.3.2
-  resolution: "markdown-to-jsx@npm:7.3.2"
+"markdown-to-jsx@npm:^7.4.0":
+  version: 7.4.0
+  resolution: "markdown-to-jsx@npm:7.4.0"
   peerDependencies:
     react: ">= 0.14.0"
-  checksum: 8885c6343b71570b0a7ec16cd85a49b853a830234790ee7430e2517ea5d8d361ff138bd52147f650790f3e7b3a28a15c755fc16f8856dd01ddf09a6161782e06
+  checksum: 59959d14d7927ed8a97e42d39771e2b445b90fa098477fb6ab040f044d230517dc4a95ba38a4f924cfc965a96b32211d93def150a6184f0e51d2cefdc8cb415d
   languageName: node
   linkType: hard
 
@@ -34714,7 +34714,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.3.6, nanoid@npm:^3.3.7":
+"nanoid@npm:^3.3.7":
   version: 3.3.7
   resolution: "nanoid@npm:3.3.7"
   bin:
