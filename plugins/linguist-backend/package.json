@@ -54,7 +54,7 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@types/supertest": "^2.0.8",
+    "@types/supertest": "^6.0.0",
     "js-yaml": "^4.1.0",
     "supertest": "^6.2.4"
   },

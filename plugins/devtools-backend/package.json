@@ -57,7 +57,7 @@
     "@backstage/cli": "workspace:^",
     "@types/minimist": "^1.2.0",
     "@types/ping": "^0.4.1",
-    "@types/supertest": "^2.0.8",
+    "@types/supertest": "^6.0.0",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "supertest": "^6.2.4"
   },

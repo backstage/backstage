@@ -54,7 +54,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/compression": "^1.7.2",
-    "@types/supertest": "^2.0.8",
+    "@types/supertest": "^6.0.0",
     "msw": "^1.0.0",
     "supertest": "^6.1.6"
   },

@@ -64,7 +64,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@types/http-proxy-middleware": "^0.19.3",
-    "@types/supertest": "^2.0.8",
+    "@types/supertest": "^6.0.0",
     "@types/uuid": "^8.0.0",
     "@types/yup": "^0.29.13",
     "msw": "^1.0.0",

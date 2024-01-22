@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@types/supertest": "^2.0.8"
+    "@types/supertest": "^6.0.0"
   },
   "files": [
     "dist"
