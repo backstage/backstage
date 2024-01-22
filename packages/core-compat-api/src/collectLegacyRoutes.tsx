@@ -172,8 +172,15 @@ export function collectLegacyRoutes(
     flatRoutesElement.props.children,
     (route: ReactNode) => {
       // TODO(freben): Handle feature flag and permissions framework wrapper elements
-      if (!React.isValidElement(route) || route.type !== Route) {
-        throw new Error(`Invalid element inside FlatRoutes, expected Route but found ${route.type}.`);
+      if (!React.isValidElement(route)) {
+        throw new Error(
+          `Invalid element inside FlatRoutes, expected Route but found element of type ${typeof route}.`,
+        );
+      }
+      if (route.type !== Route) {
+        throw new Error(
+          `Invalid element inside FlatRoutes, expected Route but found ${route.type}.`,
+        );
       }
       const routeElement = route.props.element;
       const path: string | undefined = route.props.path;
@@ -185,13 +192,15 @@ export function collectLegacyRoutes(
         routeElement,
         'core.mountPoint',
       );
+      if (!plugin) {
+        throw new Error(
+          `Route with path ${path} has en element that can not be converted as it does not belong to a plugin. Make sure that the top-level React element of the element prop is an extension from a Backstage plugin, or remove the Route completely. See <link-to-app-migration-docs> for more info`,
+        );
+      }
       if (path === undefined) {
         throw new Error(
           `Route element inside FlatRoutes had no path prop value given`,
         );
-      }
-      if (!plugin) {
-        return;
       }
 
       const extensions = getPluginExtensions(plugin);
