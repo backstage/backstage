@@ -271,9 +271,7 @@ export namespace Models {
     description?: string;
     fork_policy?: RepositoryForkPolicyEnum;
     full_name?: string;
-    // (undocumented)
     has_issues?: boolean;
-    // (undocumented)
     has_wiki?: boolean;
     // (undocumented)
     is_private?: boolean;
