@@ -1,5 +1,8 @@
 ---
 '@backstage/core-components': patch
+'@backstage/app-defaults': minor
+'@backstage/playlist': patch
+'@backstage/scaffolder': minor
 ---
 
-Included stack trace display option in ErrorPage component
+Added stack trace display to `ErrorPage` and updated existing refs

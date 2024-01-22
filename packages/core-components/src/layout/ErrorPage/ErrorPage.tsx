@@ -20,9 +20,9 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from '../../components/Link';
-import { CopyTextButton, WarningPanel } from '../../components';
 import { useSupportConfig } from '../../hooks';
 import { MicDrop } from './MicDrop';
+import { StackDetails } from './StackDetails';
 
 interface IErrorPageProps {
   status?: string;
@@ -53,26 +53,6 @@ const useStyles = makeStyles(
     subtitle: {
       color: theme.palette.textSubtle,
     },
-    goBackTitle: {
-      color: theme.palette.textSubtle,
-      marginBottom: theme.spacing(5),
-      [theme.breakpoints.down('xs')]: {
-        marginBottom: theme.spacing(4),
-      },
-    },
-    stackTraceText: {
-      maxHeight: '30vh',
-      overflow: 'scroll',
-      fontFamily: 'monospace',
-      whiteSpace: 'pre',
-      overflowX: 'auto',
-      marginRight: theme.spacing(2),
-    },
-    copyTextContainer: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-      alignItems: 'flex-start',
-    },
   }),
   { name: 'BackstageErrorPage' },
 );
@@ -91,7 +71,7 @@ export function ErrorPage(props: IErrorPageProps) {
 
   return (
     <Grid container className={classes.container}>
-      <Grid item xs={12} md={5}>
+      <Grid item xs={12} sm={8} md={4}>
         <Typography
           data-testid="error"
           variant="body1"
@@ -105,7 +85,7 @@ export function ErrorPage(props: IErrorPageProps) {
         <Typography variant="h2" className={classes.title}>
           Looks like someone dropped the mic!
         </Typography>
-        <Typography variant="h6" className={classes.goBackTitle}>
+        <Typography variant="h6" className={classes.title}>
           <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
             Go back
           </Link>
@@ -113,29 +93,9 @@ export function ErrorPage(props: IErrorPageProps) {
           <Link to={supportUrl || support.url}>contact support</Link> if you
           think this is a bug.
         </Typography>
-        {stack && (
-          <WarningPanel severity="error" title={statusMessage}>
-            <Grid container>
-              <Grid item xs={11}>
-                <Typography variant="subtitle1">Stack Trace</Typography>
-                <Typography
-                  className={classes.stackTraceText}
-                  color="textSecondary"
-                  variant="body2"
-                >
-                  {stack}
-                </Typography>
-              </Grid>
-              <Grid item xs={1} className={classes.copyTextContainer}>
-                <CopyTextButton text={stack} />
-              </Grid>
-            </Grid>
-          </WarningPanel>
-        )}
+        {stack && <StackDetails stack={stack} />}
       </Grid>
-      <Grid item xs={12} md={7}>
-        <MicDrop />
-      </Grid>
+      <MicDrop />
     </Grid>
   );
 }

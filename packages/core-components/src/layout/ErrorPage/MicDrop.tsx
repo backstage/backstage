@@ -21,7 +21,7 @@ import MicDropSvgUrl from './mic-drop.svg';
 const useStyles = makeStyles(
   theme => ({
     micDrop: {
-      maxWidth: '80%',
+      maxWidth: '60%',
       bottom: theme.spacing(2),
       right: theme.spacing(2),
       [theme.breakpoints.down('xs')]: {
