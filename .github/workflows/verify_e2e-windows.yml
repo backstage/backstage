@@ -56,7 +56,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: setup python
-        uses: actions/setup-python@v4.8.0
+        uses: actions/setup-python@v5.0.0
         with:
           python-version: '3.10'
 
