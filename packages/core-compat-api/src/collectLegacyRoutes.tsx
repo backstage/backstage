@@ -194,7 +194,8 @@ export function collectLegacyRoutes(
       );
       if (!plugin) {
         throw new Error(
-          `Route with path ${path} has en element that can not be converted as it does not belong to a plugin. Make sure that the top-level React element of the element prop is an extension from a Backstage plugin, or remove the Route completely. See <link-to-app-migration-docs> for more info`,
+          // TODO(vinzscam): add See <link-to-app-migration-docs> for more info
+          `Route with path ${path} has en element that can not be converted as it does not belong to a plugin. Make sure that the top-level React element of the element prop is an extension from a Backstage plugin, or remove the Route completely.`,
         );
       }
       if (path === undefined) {
