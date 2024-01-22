@@ -118,7 +118,7 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory: () => ServiceFactory<
 
 // @public (undocumented)
 export interface DynamicPluginsSchemaDiscoveryOptions {
-  schemaLocator?: (platform: PackagePlatform) => string;
+  schemaLocator?: (pluginPackage: ScannedPluginPackage) => string;
 }
 
 // @public (undocumented)

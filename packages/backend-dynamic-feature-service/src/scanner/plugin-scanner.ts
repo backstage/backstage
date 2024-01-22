@@ -329,13 +329,15 @@ export class PluginScanner {
  */
 export interface DynamicPluginsSchemaDiscoveryOptions {
   /**
-   * Function that returns the plugin-relative path to the Json schema file for a given platform.
-   * Default behavior is to look for the `configSchema.json` file in the package `dist` sub-directory.
+   * Function that returns the path to the Json schema file for a given scanned plugin package.
+   * The path is either absolute, or relative to the plugin package root directory.
    *
-   * @param platform - The platform of the plugin.
-   * @returns the plugin-relative path to the Json schema file.
+   * Default behavior is to look for the `dist/configSchema.json` relative path.
+   *
+   * @param pluginPackage - The scanned plugin package.
+   * @returns the absolute or plugin-relative path to the Json schema file.
    */
-  schemaLocator?: (platform: PackagePlatform) => string;
+  schemaLocator?: (pluginPackage: ScannedPluginPackage) => string;
 }
 
 /**

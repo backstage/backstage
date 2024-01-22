@@ -21,29 +21,25 @@ import * as path from 'path';
 import * as url from 'url';
 import { isEmpty } from 'lodash';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PackagePlatform, PackageRoles } from '@backstage/cli-node';
 
 export async function gatherDynamicPluginsSchemas(
   packages: ScannedPluginPackage[],
   logger: LoggerService,
-  schemaLocator: (platform: PackagePlatform) => string = () =>
+  schemaLocator: (pluginPackage: ScannedPluginPackage) => string = () =>
     path.join('dist', 'configSchema.json'),
 ): Promise<ConfigSchemaPackageEntry[]> {
   const allSchemas: { value: any; path: string }[] = [];
 
   for (const pluginPackage of packages) {
-    const platform = PackageRoles.getRoleInfo(
-      pluginPackage.manifest.backstage.role,
-    ).platform;
+    let schemaLocation = schemaLocator(pluginPackage);
 
-    let pluginLocation = url.fileURLToPath(pluginPackage.location);
-    if (path.basename(pluginLocation) === 'alpha') {
-      pluginLocation = path.dirname(pluginLocation);
+    if (!path.isAbsolute(schemaLocation)) {
+      let pluginLocation = url.fileURLToPath(pluginPackage.location);
+      if (path.basename(pluginLocation) === 'alpha') {
+        pluginLocation = path.dirname(pluginLocation);
+      }
+      schemaLocation = path.resolve(pluginLocation, schemaLocation);
     }
-    const schemaLocation: string = path.resolve(
-      pluginLocation,
-      schemaLocator(platform),
-    );
 
     if (!(await fs.pathExists(schemaLocation))) {
       continue;
