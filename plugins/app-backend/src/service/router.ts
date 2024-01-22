@@ -35,6 +35,7 @@ import {
 import {
   CACHE_CONTROL_MAX_CACHE,
   CACHE_CONTROL_NO_CACHE,
+  CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
 
 // express uses mime v1 while we only have types for mime v2
@@ -114,6 +115,7 @@ export async function createRouter(
 
   logger.info(`Serving static app content from ${appDistDir}`);
 
+  let injectedConfigPath: string | undefined;
   if (!disableConfigInjection) {
     const appConfigs = await readConfigs({
       config,
@@ -121,7 +123,7 @@ export async function createRouter(
       env: process.env,
     });
 
-    await injectConfig({ appConfigs, logger, staticDir });
+    injectedConfigPath = await injectConfig({ appConfigs, logger, staticDir });
   }
 
   const router = Router();
@@ -132,8 +134,12 @@ export async function createRouter(
   const staticRouter = Router();
   staticRouter.use(
     express.static(resolvePath(appDistDir, 'static'), {
-      setHeaders: res => {
-        res.setHeader('Cache-Control', CACHE_CONTROL_MAX_CACHE);
+      setHeaders: (res, path) => {
+        if (path === injectedConfigPath) {
+          res.setHeader('Cache-Control', CACHE_CONTROL_REVALIDATE_CACHE);
+        } else {
+          res.setHeader('Cache-Control', CACHE_CONTROL_MAX_CACHE);
+        }
       },
     }),
   );

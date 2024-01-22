@@ -79,4 +79,6 @@ export interface DatabaseConnector {
     dbConfig: Config,
     ...schemas: Array<string>
   ): Promise<void>;
+
+  dropDatabase?(dbConfig: Config, ...databases: Array<string>): Promise<void>;
 }

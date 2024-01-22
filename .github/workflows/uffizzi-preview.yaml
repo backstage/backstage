@@ -12,16 +12,23 @@ jobs:
     name: Cache Manifests File
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      # "If you specify the access for any of these scopes, all of those that are not specified are set to none."
+      # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+      actions: read # Access cache
     outputs:
-      manifests-cache-key: ${{ env.MANIFESTS_FILE_HASH }}
-      git-ref: ${{ env.GIT_REF }}
-      pr-number: ${{ env.PR_NUMBER }}
-      action: ${{ env.ACTION }}
+      manifests-cache-key: ${{ steps.hash.outputs.MANIFESTS_FILE_HASH }}
+      git-ref: ${{ steps.event.outputs.GIT_REF }}
+      pr-number: ${{ steps.event.outputs.PR_NUMBER }}
+      action: ${{ steps.event.outputs.ACTION }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
         with:
-          egress-policy: audit
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
 
       - name: 'Download artifacts'
         # Fetch output (zip archive) from the workflow run that triggered this workflow.
@@ -48,59 +55,50 @@ jobs:
             let fs = require('fs');
             fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/preview-spec.zip`, Buffer.from(download.data));
 
-      - name: 'Unzip artifact'
-        run: unzip preview-spec.zip
+      - name: 'Accept event from first stage'
+        run: unzip preview-spec.zip event.json
 
       - name: Read Event into ENV
+        id: event
         run: |
-          echo 'EVENT_JSON<<EOF' >> $GITHUB_ENV
-          cat event.json >> $GITHUB_ENV
-          echo -e '\nEOF' >> $GITHUB_ENV
+          echo PR_NUMBER=$(jq '.number | tonumber' < event.json) >> $GITHUB_OUTPUT
+          echo ACTION=$(jq --raw-output '.action | tostring | [scan("\\w+")][0]' < event.json) >> $GITHUB_OUTPUT
+          echo GIT_REF=$(jq --raw-output '.pull_request.head.sha | tostring | [scan("\\w+")][0]' < event.json) >> $GITHUB_OUTPUT
 
       - name: Hash Rendered Manifests File
         id: hash
         # If the previous workflow was triggered by a PR close event, we will not have a manifests file artifact.
-        if: ${{ fromJSON(env.EVENT_JSON).action != 'closed' }}
+        if: ${{ steps.event.outputs.ACTION != 'closed' }}
         run: |
+          unzip preview-spec.zip manifests.rendered.yml
           ls
-          echo "MANIFESTS_FILE_HASH=$(md5sum manifests.rendered.yml | awk '{ print $1 }')" >> $GITHUB_ENV
+          echo "MANIFESTS_FILE_HASH=$(md5sum manifests.rendered.yml | awk '{ print $1 }')" >> $GITHUB_OUTPUT
 
       - name: Cache Manifests File
-        if: ${{ fromJSON(env.EVENT_JSON).action != 'closed' }}
-        uses: actions/cache@v3.3.2
+        if: ${{ steps.event.outputs.ACTION != 'closed' }}
+        uses: actions/cache@v4.0.0
         with:
           path: manifests.rendered.yml
-          key: ${{ env.MANIFESTS_FILE_HASH }}
-
-      - name: Read PR Number From Event Object
-        id: pr
-        run: echo "PR_NUMBER=${{ fromJSON(env.EVENT_JSON).number }}" >> $GITHUB_ENV
-
-      - name: Read Event Type from Event Object
-        id: action
-        run: echo "ACTION=${{ fromJSON(env.EVENT_JSON).action }}" >> $GITHUB_ENV
-
-      - name: Read Git Ref From Event Object
-        id: ref
-        run: echo "GIT_REF=${{ fromJSON(env.EVENT_JSON).pull_request.head.sha }}" >> $GITHUB_ENV
+          key: ${{ steps.hash.outputs.MANIFESTS_FILE_HASH }}
 
       - name: DEBUG - Print Job Outputs
         if: ${{ runner.debug }}
         run: |
-          echo "PR number: ${{ env.PR_NUMBER }}"
-          echo "Git Ref: ${{ env.GIT_REF }}"
-          echo "Manifests file hash: ${{ env.MANIFESTS_FILE_HASH }}"
+          echo "PR number: ${{ steps.event.outputs.PR_NUMBER }}"
+          echo "Git Ref: ${{ steps.event.outputs.GIT_REF }}"
+          echo "Action: ${{ steps.event.outputs.ACTION }}"
+          echo "Manifests file hash: ${{ steps.hash.outputs.MANIFESTS_FILE_HASH }}"
           cat event.json
 
   deploy-uffizzi-preview:
-    permissions:
-      contents: read
-      pull-requests: write
-      id-token: write
     name: Deploy to Uffizzi Virtual Cluster
     needs:
       - cache-manifests-file
     if: ${{ github.event.workflow_run.conclusion == 'success' && needs.cache-manifests-file.outputs.action != 'closed' }}
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -126,7 +124,7 @@ jobs:
           body: |
             ## Uffizzi Ephemeral Environment - Virtual Cluster
 
-            :cloud: deploying ...
+            :cloud: deploying cluster `pr-${{ needs.cache-manifests-file.outputs.pr-number }}`
 
             :gear: Updating now by workflow run [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
 
@@ -142,8 +140,7 @@ jobs:
 
       - name: Fetch cached Manifests File
         id: cache
-        # if: ${{ contains(fromJSON('["create", "update"]'), env.UFFIZZI_ACTION) }}
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: manifests.rendered.yml
           key: ${{ needs.cache-manifests-file.outputs.manifests-cache-key }}

@@ -9,6 +9,7 @@ on:
       - 'contrib/**'
       - 'docs/**'
       - 'microsite/**'
+      - 'beps/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

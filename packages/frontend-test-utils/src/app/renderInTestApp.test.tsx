@@ -56,9 +56,13 @@ describe('renderInTestApp', () => {
 
     fireEvent.click(screen.getByRole('link', { name: 'See details' }));
 
-    expect(analyticsApiMock.getEvents()[0]).toMatchObject({
-      action: 'click',
-      subject: 'See details',
-    });
+    expect(analyticsApiMock.getEvents()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          action: 'click',
+          subject: 'See details',
+        }),
+      ]),
+    );
   });
 });

@@ -30,6 +30,7 @@ import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { resolveAppTree } from './resolveAppTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { withLogCollector } from '@backstage/test-utils';
 
 const testDataRef = createExtensionDataRef<string>('test');
 const otherDataRef = createExtensionDataRef<number>('other');
@@ -433,8 +434,8 @@ describe('createAppNodeInstance', () => {
     );
   });
 
-  it('should refuse to create an instance with undeclared inputs', () => {
-    expect(() =>
+  it('should warn when creating an instance with undeclared inputs', () => {
+    const { warn } = withLogCollector(['warn'], () =>
       createAppNodeInstance({
         attachments: new Map([
           [
@@ -458,7 +459,7 @@ describe('createAppNodeInstance', () => {
           resolveExtensionDefinition(
             createExtension({
               namespace: 'app',
-              name: 'test',
+              name: 'parent',
               attachTo: { id: 'ignored', input: 'ignored' },
               inputs: {
                 declared: createExtensionInput({
@@ -471,13 +472,15 @@ describe('createAppNodeInstance', () => {
           ),
         ),
       }),
-    ).toThrow(
-      "Failed to instantiate extension 'app/test', received undeclared input 'undeclared' from extension 'app/test'",
     );
+
+    expect(warn).toEqual([
+      "The extension 'app/test' is attached to the input 'undeclared' of the extension 'app/parent', but it has no such input (candidates are 'declared')",
+    ]);
   });
 
   it('should refuse to create an instance with multiple undeclared inputs', () => {
-    expect(() =>
+    const { warn } = withLogCollector(['warn'], () =>
       createAppNodeInstance({
         attachments: new Map([
           [
@@ -496,7 +499,7 @@ describe('createAppNodeInstance', () => {
           resolveExtensionDefinition(
             createExtension({
               namespace: 'app',
-              name: 'test',
+              name: 'parent',
               attachTo: { id: 'ignored', input: 'ignored' },
               output: {},
               factory: () => ({}),
@@ -504,9 +507,12 @@ describe('createAppNodeInstance', () => {
           ),
         ),
       }),
-    ).toThrow(
-      "Failed to instantiate extension 'app/test', received undeclared inputs 'undeclared1' from extension 'app/test' and 'undeclared2' from extensions 'app/test', 'app/test'",
     );
+
+    expect(warn).toEqual([
+      "The extension 'app/test' is attached to the input 'undeclared1' of the extension 'app/parent', but it has no inputs",
+      "The extensions 'app/test', 'app/test' are attached to the input 'undeclared2' of the extension 'app/parent', but it has no inputs",
+    ]);
   });
 
   it('should refuse to create an instance with multiple inputs for required singleton', () => {
@@ -609,8 +615,8 @@ describe('createAppNodeInstance', () => {
           ),
         ),
       }),
-    ).toThrow(
-      "Failed to instantiate extension 'app/test', input 'singleton' did not receive required extension data 'other' from extension 'app/test'",
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Failed to instantiate extension 'app/test', extension 'app/test' could not be attached because its output data ('test', 'other') does not match what the input 'singleton' requires ('other')"`,
     );
   });
 });

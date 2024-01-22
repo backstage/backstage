@@ -92,8 +92,13 @@ export class KubernetesBackendClient implements KubernetesApi {
 
   private async getCredentials(
     authProvider: string,
+    oidcTokenProvider?: string,
   ): Promise<{ token?: string }> {
-    return await this.kubernetesAuthProvidersApi.getCredentials(authProvider);
+    return await this.kubernetesAuthProvidersApi.getCredentials(
+      authProvider === 'oidc'
+        ? `${authProvider}.${oidcTokenProvider}`
+        : authProvider,
+    );
   }
 
   async getObjectsByEntity(
@@ -145,7 +150,10 @@ export class KubernetesBackendClient implements KubernetesApi {
     const { authProvider, oidcTokenProvider } = await this.getCluster(
       options.clusterName,
     );
-    const kubernetesCredentials = await this.getCredentials(authProvider);
+    const kubernetesCredentials = await this.getCredentials(
+      authProvider,
+      oidcTokenProvider,
+    );
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}/proxy${
       options.path
     }`;

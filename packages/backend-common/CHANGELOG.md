@@ -1,5 +1,28 @@
 # @backstage/backend-common
 
+## 0.20.1
+
+### Patch Changes
+
+- 3b24eae: Adding support for removing file from git index
+- 454d17c: Do not call fetch directly but rather use `fetchResponse` facility
+- b6b15b2: Use sha256 instead of md5 for hash key calculation in caches
+
+  This can have a side effect of invalidating caches (when cache key was >250 characters)
+  This improves compliance with FIPS nodejs
+
+- Updated dependencies
+  - @backstage/config-loader@1.6.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/backend-dev-utils@0.1.3
+  - @backstage/backend-app-api@0.5.10
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
 ## 0.20.1-next.2
 
 ### Patch Changes

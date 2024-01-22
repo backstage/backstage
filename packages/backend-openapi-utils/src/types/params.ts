@@ -36,7 +36,7 @@ import {
   SchemaRef,
   ValueOf,
 } from './common';
-import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
+import { FromSchema, JSONSchema } from 'json-schema-to-ts';
 
 /**
  * @public
@@ -96,7 +96,7 @@ export type ParameterSchema<
   Schema extends ImmutableParameterObject['schema'],
 > = SchemaRef<Doc, Schema> extends infer R
   ? R extends ImmutableSchemaObject
-    ? R extends JSONSchema7
+    ? R extends JSONSchema
       ? FromSchema<R>
       : never
     : never

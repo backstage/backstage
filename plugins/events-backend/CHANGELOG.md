@@ -1,5 +1,17 @@
 # @backstage/plugin-events-backend
 
+## 0.2.18
+
+### Patch Changes
+
+- 92ea615: Update `README.md`
+- d5ddc4e: Add documentation on how to install the plugins with the new backend system.
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/config@1.1.1
+  - @backstage/plugin-events-node@0.2.18
+
 ## 0.2.18-next.2
 
 ### Patch Changes

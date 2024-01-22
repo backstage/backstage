@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-scaffolder",
   "description": "The Backstage plugin that helps you create new things",
-  "version": "1.17.1-next.2",
+  "version": "1.17.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -10,13 +10,13 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
+    "./alpha": "./src/alpha.tsx",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.ts"
+        "src/alpha.tsx"
       ],
       "package.json": [
         "package.json"
@@ -48,9 +48,11 @@
   "dependencies": {
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
@@ -66,10 +68,10 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^23.0.0",
-    "@rjsf/core": "5.15.1",
-    "@rjsf/material-ui": "5.15.1",
-    "@rjsf/utils": "5.15.1",
-    "@rjsf/validator-ajv8": "5.15.1",
+    "@rjsf/core": "5.16.1",
+    "@rjsf/material-ui": "5.16.1",
+    "@rjsf/utils": "5.16.1",
+    "@rjsf/validator-ajv8": "5.16.1",
     "@types/react": "^16.13.1 || ^17.0.0",
     "@uiw/react-codemirror": "^4.9.3",
     "classnames": "^2.2.6",

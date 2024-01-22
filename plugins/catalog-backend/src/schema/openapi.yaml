@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: '@backstage/plugin-catalog-backend'
+  title: catalog
   version: '1'
   description: The Backstage backend plugin that provides the Backstage catalog
   license:
@@ -9,7 +9,6 @@ info:
   contact: {}
 servers:
   - url: /
-  - url: catalog
 components:
   examples: {}
   headers: {}

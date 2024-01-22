@@ -7,6 +7,7 @@ import { AnalyticsApi } from '@backstage/core-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
+import { AppComponents } from '@backstage/core-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
@@ -243,6 +244,7 @@ export type TestAppOptions = {
   mountedRoutes?: {
     [path: string]: RouteRef | ExternalRouteRef;
   };
+  components?: Partial<AppComponents>;
 };
 
 // @public

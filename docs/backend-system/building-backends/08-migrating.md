@@ -757,7 +757,7 @@ implementations that they represent, and being exported from there.
 
 ### The Auth Plugin
 
-A basic installation of the auth plugin with a microsoft provider will look as follows.
+A basic installation of the auth plugin with a Microsoft provider will look as follows.
 
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();

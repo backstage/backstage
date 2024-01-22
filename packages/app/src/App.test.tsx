@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { renderWithEffects } from '@backstage/test-utils';
+import { render, waitFor } from '@testing-library/react';
 import App from './App';
 
 describe('App', () => {
@@ -42,7 +42,10 @@ describe('App', () => {
       ] as any,
     };
 
-    const rendered = await renderWithEffects(<App />);
-    expect(rendered.baseElement).toBeInTheDocument();
+    const rendered = render(<App />);
+
+    await waitFor(() => {
+      expect(rendered.baseElement).toBeInTheDocument();
+    });
   });
 });
