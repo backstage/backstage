@@ -38810,8 +38810,8 @@ __metadata:
   linkType: hard
 
 "react-use@npm:^17.2.4, react-use@npm:^17.3.1, react-use@npm:^17.3.2, react-use@npm:^17.4.0":
-  version: 17.4.3
-  resolution: "react-use@npm:17.4.3"
+  version: 17.4.4
+  resolution: "react-use@npm:17.4.4"
   dependencies:
     "@types/js-cookie": ^2.2.6
     "@xobotyi/scrollbar-width": ^1.9.5
@@ -38830,7 +38830,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-dom: "*"
-  checksum: efa54c795ca900902022096c4c87b2a8c2290fe1748f3b2bf4d31ad40bfa35c1520f67e3da5f0a227a6429256df7bca251d9323487652debc924de5208a9cedd
+  checksum: f8c359d2360bd26fdf4ce1f0f8909d138d85a24cdae9ebafc1a9d57edbb8e778c49752793ea6c349b0844353af03878f2f22c5596c791c24f6fc9aed51b29e8f
   languageName: node
   linkType: hard
 
