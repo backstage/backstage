@@ -30472,12 +30472,12 @@ __metadata:
   linkType: hard
 
 "isolated-vm@npm:^4.5.0":
-  version: 4.6.0
-  resolution: "isolated-vm@npm:4.6.0"
+  version: 4.7.2
+  resolution: "isolated-vm@npm:4.7.2"
   dependencies:
     node-gyp: latest
     prebuild-install: ^7.1.1
-  checksum: 011853d46bc934751012f5c1ed3eaba43dc4bd274672e59ff8e4c7eb0df668c93f3e0b91e3b4e812d2b8476c9ace218f34e7a3188b08b343409370e70044a874
+  checksum: 16f43f6413623dc7009a8bb9fa567fb30ffc151e21e9a7ae616f25626e750ba823527fb24e2e17408943c6bbbcc7235db89f41262d43a8d8155ad99e888b0760
   languageName: node
   linkType: hard
 
