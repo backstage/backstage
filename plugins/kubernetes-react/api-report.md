@@ -653,7 +653,7 @@ export interface PendingPodContentProps {
 // @public
 export interface PodAndErrors {
   // (undocumented)
-  clusterName: string;
+  cluster: ClusterAttributes;
   // (undocumented)
   errors: DetectedError[];
   // (undocumented)
