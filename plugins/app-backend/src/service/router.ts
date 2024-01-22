@@ -35,6 +35,7 @@ import {
 import {
   CACHE_CONTROL_MAX_CACHE,
   CACHE_CONTROL_NO_CACHE,
+  CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
 
 // express uses mime v1 while we only have types for mime v2
@@ -135,7 +136,7 @@ export async function createRouter(
     express.static(resolvePath(appDistDir, 'static'), {
       setHeaders: (res, path) => {
         if (path === injectedConfigPath) {
-          res.setHeader('Cache-Control', 'no-cache');
+          res.setHeader('Cache-Control', CACHE_CONTROL_REVALIDATE_CACHE);
         } else {
           res.setHeader('Cache-Control', CACHE_CONTROL_MAX_CACHE);
         }
