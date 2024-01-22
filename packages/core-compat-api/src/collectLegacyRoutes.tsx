@@ -173,7 +173,7 @@ export function collectLegacyRoutes(
     (route: ReactNode) => {
       // TODO(freben): Handle feature flag and permissions framework wrapper elements
       if (!React.isValidElement(route) || route.type !== Route) {
-        throw new Error('Invalid <Route /> element has been detected.');
+        throw new Error(`Invalid element inside FlatRoutes, expected Route but found ${route.type}.`);
       }
       const routeElement = route.props.element;
       const path: string | undefined = route.props.path;
@@ -187,7 +187,7 @@ export function collectLegacyRoutes(
       );
       if (path === undefined) {
         throw new Error(
-          `<Route /> element with invalid path has been detected. Please make sure to pass the path's props`,
+          `Route element inside FlatRoutes had no path prop value given`,
         );
       }
       if (!plugin) {

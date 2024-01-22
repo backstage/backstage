@@ -289,8 +289,7 @@ describe('collectLegacyRoutes', () => {
       createRoutableExtension({
         name: 'Test',
         mountPoint: routeRef,
-        component: () =>
-          Promise.resolve(() => {
+        component: async () => () => {
             const app = useApp();
             return <div>plugins: {app.getPlugins().map(p => p.getId())}</div>;
           }),
