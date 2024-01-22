@@ -3816,7 +3816,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@date-io/core": ^1.3.13
+    "@date-io/core": ^3.0.0
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -5068,7 +5068,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@date-io/luxon": 1.x
+    "@date-io/luxon": 3.x
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -5845,7 +5845,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@date-io/luxon": ^1.3.13
+    "@date-io/luxon": ^3.0.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -6970,7 +6970,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@date-io/luxon": 1.x
+    "@date-io/luxon": 3.x
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -7577,7 +7577,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
-    "@date-io/luxon": 1.x
+    "@date-io/luxon": 3.x
     "@material-ui/core": ^4.9.13
     "@material-ui/icons": ^4.9.1
     "@material-ui/pickers": ^3.3.10
@@ -8687,7 +8687,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@date-io/core": ^1.3.13
+    "@date-io/core": ^3.0.0
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
     "@testing-library/dom": ^9.0.0
@@ -10162,6 +10162,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@date-io/core@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@date-io/core@npm:3.0.0"
+  checksum: 5fdecfb1c6bfe30864096c3ce3f9e73a359a6a12f34a5829504eea7a0327122e361a95d9501ad0eaaf02b2e45322913985d9f47e1c667f3c0a4f7d792c116884
+  languageName: node
+  linkType: hard
+
 "@date-io/date-fns@npm:^1.3.13":
   version: 1.3.13
   resolution: "@date-io/date-fns@npm:1.3.13"
@@ -10173,14 +10180,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-io/luxon@npm:1.x, @date-io/luxon@npm:^1.3.13":
-  version: 1.3.13
-  resolution: "@date-io/luxon@npm:1.3.13"
+"@date-io/luxon@npm:3.x, @date-io/luxon@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@date-io/luxon@npm:3.0.0"
   dependencies:
-    "@date-io/core": ^1.3.13
+    "@date-io/core": ^3.0.0
   peerDependencies:
-    luxon: ^1.21.3
-  checksum: 7dd18ef11ea14111595d8836247ffe756889bd31309796fd98f3bf05b5aaf25f63e8574280d35ae1f511ba11ba6903accc4a584b7103b8affd626b79ab69b056
+    luxon: ^1.21.3 || ^2.x || ^3.x
+  peerDependenciesMeta:
+    luxon:
+      optional: true
+  checksum: ecfa374c43508297317de05ecdf3f571e8e42037837ce236a56a4ec0ca1a084390e679ca5c330d61b7677d2e0c6409fdbbf795797d34290906879c31423ad459
   languageName: node
   linkType: hard
 

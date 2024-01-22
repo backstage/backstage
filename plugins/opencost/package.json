@@ -25,7 +25,7 @@
   "dependencies": {
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@date-io/luxon": "1.x",
+    "@date-io/luxon": "3.x",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/pickers": "^3.3.10",
