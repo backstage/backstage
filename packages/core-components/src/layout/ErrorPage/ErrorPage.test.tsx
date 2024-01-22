@@ -100,7 +100,7 @@ describe('<ErrorPage/>', () => {
     );
   });
 
-  it('should render with stack trace if stack is provided', async () => {
+  it('should render show details if stack is provided', async () => {
     const { getByText } = await renderInTestApp(
       <ErrorPage
         status="500"
@@ -108,6 +108,6 @@ describe('<ErrorPage/>', () => {
         stack="this is my stack trace!"
       />,
     );
-    expect(getByText(/this is my stack trace!/i)).toBeInTheDocument();
+    expect(getByText(/Show more details/i)).toBeInTheDocument();
   });
 });
