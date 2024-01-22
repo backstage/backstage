@@ -5826,13 +5826,13 @@ __metadata:
   linkType: soft
 
 "@backstage/plugin-catalog-common@npm:^1.0.19":
-  version: 1.0.19
-  resolution: "@backstage/plugin-catalog-common@npm:1.0.19"
+  version: 1.0.20
+  resolution: "@backstage/plugin-catalog-common@npm:1.0.20"
   dependencies:
     "@backstage/catalog-model": ^1.4.3
-    "@backstage/plugin-permission-common": ^0.7.11
-    "@backstage/plugin-search-common": ^1.2.9
-  checksum: 692085592f9e4635069bad43deb4ade0ee707c4c1997966c8c90d5a282fc578ecd8674c5d0ee21d8e27ef9595f8019827e9ccab756f62a293c7855fc9a15abee
+    "@backstage/plugin-permission-common": ^0.7.12
+    "@backstage/plugin-search-common": ^1.2.10
+  checksum: 9691e4e022d39b6e2799fe95cbf6397c2f03ff7f0ce7859bb1d90d5df91215a94ee1eed5c174aceaaf2d51d0500eb87c441ae3786a939aae602402f828349dd4
   languageName: node
   linkType: hard
 
@@ -8317,9 +8317,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-permission-common@npm:^0.7.11":
-  version: 0.7.11
-  resolution: "@backstage/plugin-permission-common@npm:0.7.11"
+"@backstage/plugin-permission-common@npm:^0.7.11, @backstage/plugin-permission-common@npm:^0.7.12":
+  version: 0.7.12
+  resolution: "@backstage/plugin-permission-common@npm:0.7.12"
   dependencies:
     "@backstage/config": ^1.1.1
     "@backstage/errors": ^1.2.3
@@ -8327,7 +8327,7 @@ __metadata:
     cross-fetch: ^4.0.0
     uuid: ^8.0.0
     zod: ^3.22.4
-  checksum: 79bb7d3d6ceba80701331d4d0cca32640183dc8466e82c04bd5307048a19c1fb044917b1e6047ff171f377b34c2d34662db65591a24ab468bdc19065f13942ce
+  checksum: 0535539348e59dde0555c54722f1d6ae3f951f8b900c27b65cf94aa10f57a705b2dad756eca673edeebafaca139ff8b1e8b93a4ca8f371a33c9544b3b0fba744
   languageName: node
   linkType: hard
 
@@ -9129,13 +9129,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-search-common@npm:^1.2.9":
-  version: 1.2.9
-  resolution: "@backstage/plugin-search-common@npm:1.2.9"
+"@backstage/plugin-search-common@npm:^1.2.10":
+  version: 1.2.10
+  resolution: "@backstage/plugin-search-common@npm:1.2.10"
   dependencies:
-    "@backstage/plugin-permission-common": ^0.7.11
+    "@backstage/plugin-permission-common": ^0.7.12
     "@backstage/types": ^1.1.1
-  checksum: 5dc4db9870ae0ba816526b5c2531a52af2e2bc5c94adf0636948ed20a9f913937283db6e59a9bdbfa9e62a6da77db9013dcc8ddcfb66132321ad86d3cdf70446
+  checksum: e4faae5e46e34c352c6ecb7e981b9efb5c34c62263275cd32e035fe17a77c929e20200a90230e70958496a89b83139ac7168e476b8c1f6497052f1c48d3e1bdd
   languageName: node
   linkType: hard
 
@@ -24150,9 +24150,9 @@ __metadata:
   linkType: hard
 
 "csstype@npm:^3.0.2, csstype@npm:^3.1.2":
-  version: 3.1.3
-  resolution: "csstype@npm:3.1.3"
-  checksum: 8db785cc92d259102725b3c694ec0c823f5619a84741b5c7991b8ad135dfaa66093038a1cc63e03361a6cd28d122be48f2106ae72334e067dd619a51f49eddf7
+  version: 3.0.9
+  resolution: "csstype@npm:3.0.9"
+  checksum: 199f9af7e673f9f188525c3102a329d637ff46c52f6385a4427ff5cb17adcb736189150170a7af7c5701d18d7704bdad130273f4aa7e44c6c4f9967e6115dc93
   languageName: node
   linkType: hard
 
