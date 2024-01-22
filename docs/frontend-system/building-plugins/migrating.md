@@ -1,6 +1,6 @@
 ---
 id: migrating
-title: Migrating an existing Frontend Plugin to the New Frontend System
+title: Migrating Plugins
 sidebar_label: Migration Guide
 # prettier-ignore
 description: How to migrate an existing frontend plugin to the new frontend system
@@ -17,10 +17,10 @@ Pages that were previously created using the `createRoutableExtension` extension
 For example, given the following page:
 
 ```ts
-export const HomepageRoot = homePlugin.provide(
+export const FooPage = fooPlugin.provide(
   createRoutableExtension({
-    name: 'HomepageRoot',
-    component: () => import('./components').then(m => m.HomepageRoot),
+    name: 'FooPage',
+    component: () => import('./components').then(m => m.FooPage),
     mountPoint: rootRouteRef,
   }),
 );
@@ -29,36 +29,23 @@ export const HomepageRoot = homePlugin.provide(
 it can be migrated as the following:
 
 ```tsx
-const homePage = createPageExtension({
-  defaultPath: '/home',
+import { createPageExtension } from '@backstage/frontend-plugin-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
+
+const fooPage = createPageExtension({
+  defaultPath: '/foo',
   // you can reuse the existing routeRef
   // by wrapping into the convertLegacyRouteRef.
   routeRef: convertLegacyRouteRef(rootRouteRef),
   // these inputs usually match the props required by the component.
-  inputs: {
-    props: createExtensionInput(
-      {
-        children: coreExtensionData.reactElement.optional(),
-        title: titleExtensionDataRef.optional(),
-      },
-
-      {
-        singleton: true,
-        optional: true,
-      },
-    ),
-  },
   loader: ({ inputs }) =>
     import('./components/').then(m =>
       // The compatWrapper utility allows you to use the existing
       // legacy frontend utilities used internally by the components.
-      compatWrapper(
-        <m.HomepageCompositionRoot
-          // make sure to properly map the inputs defined above
-          children={inputs.props?.output.children}
-          title={inputs.props?.output.title}
-        />,
-      ),
+      compatWrapper(<m.FooPage />),
     ),
 });
 ```
