@@ -41,7 +41,7 @@
     "@backstage/cli": "workspace:^",
     "@openapitools/openapi-generator-cli": "^2.4.26",
     "msw": "^1.0.0",
-    "ts-morph": "^20.0.0"
+    "ts-morph": "^21.0.0"
   },
   "files": [
     "dist"
