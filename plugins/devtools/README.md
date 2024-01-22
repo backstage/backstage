@@ -1,14 +1,14 @@
 # DevTools
 
-Welcome to the DevTools plugin! This plugin helps elevate useful information about a Backstage instance through the frontend, which can be helpful for an integrator for troubleshooting, reviewing, and understanding their installation.
+Welcome to the DevTools plugin! This plugin aids in elevating important details about a Backstage instance via the frontend, which may assist an integrator in examining, debugging, and comprehending their installation.
 
 ## Features
 
-The DevTools plugin comes with two tabs out of the box.
+There are two tabs included with the DevTools plugin by default.
 
 ### Info
 
-Lists helpful information about your current running Backstage instance such as: OS, NodeJS version, Backstage version, and package versions.
+Lists useful details about the Backstage instance you are now using, including the operating system, the version of NodeJS, the Backstage version, and the package versions.
 
 ![Example of Info tab](./docs/devtools-info-tab.png)
 
