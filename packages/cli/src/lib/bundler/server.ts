@@ -207,6 +207,13 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       entry: 'src/auth',
       dist: 'dist/auth',
     });
+    if (authPaths) {
+      console.log(
+        chalk.yellow(
+          `⚠️  WARNING: The app /auth entry point is an experimental feature that may receive immediate breaking changes.`,
+        ),
+      );
+    }
     const compiler = authPaths
       ? webpack([
           config,

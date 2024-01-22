@@ -66,6 +66,11 @@ export async function buildBundle(options: BuildOptions) {
     dist: 'dist/auth',
   });
   if (authPaths) {
+    console.log(
+      chalk.yellow(
+        `⚠️  WARNING: The app /auth entry point is an experimental feature that may receive immediate breaking changes.`,
+      ),
+    );
     configs.push(
       await createConfig(authPaths, {
         ...commonConfigOptions,
