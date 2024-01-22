@@ -10,7 +10,7 @@ description: Frontend plugins
 
 ## Introduction
 
-In addition to the existing [`plugins`](../../plugins/index.md) documentation we now want to take a look at plugins in the new frontend system. If you already created a plugin yourself you will recognise a lot of similarity in the new architecture with the existing one.
+In addition to the existing [`plugins`](../../plugins/index.md) documentation let's take a look at what changes for plugins in the new frontend system. If you already created a plugin yourself you will recognise a lot of similarity in the new architecture with the existing one.
 
 Backstage is a single-page application composed of a set of plugins. Each of this plugins should solve exactly one responsibility & follow our suggested [plugin package structure & naming](../../architecture-decisions/adr011-plugin-package-structure.md).
 
@@ -20,13 +20,18 @@ For frontend plugins each plugin should only export a single plugin instance. Th
 
 A plugin is can easily be created, it only requires a plugin `id`:
 
-```ts
+```ts title="plugins/tech-radar/src/index.ts"
 export const techRadarPlugin = createPlugin({
   id: 'tech-radar',
 });
 ```
 
-The created plugin does not yet do anything, it will need some plugin options to be usefull. You can make it reachable through `routes`, link to other parts inside Backstage using `externalRoutes`, provide it `featureFlags` and most importantly give it functionallty, like pages, navigation items or entity cards, through `extensions`.
+The created plugin does not yet do anything, it will need some plugin options to be usefull:
+
+- Extend it's functionallty, through pages, navigation items or entity cards, using `extensions`
+- You can make it reachable through `routes`
+- Link to other plugins in Backstage using `externalRoutes`
+- Pass `featureFlags` to it
 
 ### Plugin ID
 
@@ -36,61 +41,120 @@ You will decide on the `id` when you [create a plugin](../../). The plugin `id` 
 
 So let's make our plugin a bit more useful! Imagine we want to have a TechRadar plugin that displays the recommended technologies at our organisation, [just like in the Backstage demo instance](https://demo.backstage.io/tech-radar). We want the plugin to be displayed on a page & have a navigation item directing to it. This can be achieved by creating a page extension & a navigation item extenssion. When adding those to the plugin they will be imported with the plugin package & can be discovered.
 
-```ts
+```ts title="plugins/tech-radar/src/index.ts"
 export const techRadarPlugin = createPlugin({
   id: 'tech-radar',
   extensions: [techRadarPage, techRadarNavItem],
 });
 ```
 
-<!--
-
- - Example of how this option is used in `createPlugin`
-
-link to relevant docs
-
--->
-
 ### Plugin Routes
 
-<!--
+Now that we have a page extension in our plugin the route of the page is detected & the page is available. Thought to make the route easy accessible through the plugin you are requried to additionally add those routes on the plugin level. If we have a `techRadarRootRef`, that is the route reference for the `techRadarPage`, we would add it to `createPlugin` like the following:
 
- - Example of how this option is used in `createPlugin`
-
-link to relevant docs
-
--->
-
-```ts
-export const myPlugin = createPlugin({
-  id: 'my-plugin',
+```ts title="plugins/tech-radar/src/index.ts"
+export const techRadarPlugin = createPlugin({
+  id: 'tech-radar',
+  extensions: [techRadarPage, techRadarNavItem],
+  routes: {
+    root: techRadarRootRef,
+  },
 });
 ```
 
 ### Plugin External Routes
 
-<!--
+For referencing pages outside of the current plugin `externalRoutes` can be provided. Through this it is possible to map those route refs inside the plugin to the routes outside of the plugin. Your configuration might look something like this, where the `externalRouteRef` is the external link to a page outside of the plugin that can be reconfigured.
 
- - Example of how this option is used in `createPlugin`
+```ts title="plugins/tech-radar/src/routes.ts"
+export const externalRouteRef = createExternalRouteRef({
+  id: 'external-component',
+  optional: true,
+});
+```
 
-link to relevant docs
+```ts title="plugins/tech-radar/src/index.ts"
+export const techRadarPlugin = createPlugin({
+  id: 'tech-radar',
+  extensions: [techRadarPage, techRadarNavItem],
+  routes: {
+    root: techRadarRootRef,
+  },
+  externalRoutes: [
+    {
+      external: externalRouteRef,
+    },
+  ],
+});
+```
 
--->
+A route ref to an external route can be than used just like an internal route ref.
+
+```tsx title="plugins/tech-radar/src/components/SomePage.tsx"
+...
+const SomePage = createPageExtension({
+  ...
+  loader: async () => {
+    const Component = () => {
+      const externalLink = useRouteRef(externalRouteRef);
+
+      ...
+      return (
+        ...
+        <Link to={externalLink()}>External Page</Link>
+        ...
+      );
+    }
+    return <Component />;
+  }
+...
+```
+
+#### External Routes Configuration
+
+Something special with the external routes is, that they will be discovered and can be configured directly through the `app-config.yaml` outside of the specific plugin context. Imagine that the TechRadar has an external route that links to a documentation on the TechRadar. You could configure the external route like the following:
+
+```yaml title="app-config.yaml"
+app:
+  routes:
+    bindings:
+      plugin.techRadar.externalRoutes.external: plugin.other.routes.docOnTechRadar
+```
 
 ### Plugin Feature Flags
 
-<!--
+With the `featureFlags` array we can pass feature flags into the plugin. Imagine you are planning to update your TechRadar, but you only want to allow people with the `show-future-tech` flag to see the current draft to give feedback. Your plugin could expect the flag like the following:
 
- - Example of how this option is used in `createPlugin`
+```ts title="plugins/tech-radar/src/index.ts"
+export const techRadarPlugin = createPlugin({
+  id: 'tech-radar',
+  extensions: [techRadarPage, techRadarNavItem],
+  featureFlags: [{ showFutureTech: 'show-future-tech' }],
+});
+```
 
-link to relevant docs
-
--->
+Now the feature flag can be consumed inside of the plugin using the `FeatureFlagsApi`.
 
 ## Installing a Plugin in an App
 
-<!--
+For a more detailed introduction to the architecture of the app & how plugins fit in there please refer to [the "app" documentation](./02-app.md). There are 2 ways to install a plugin in the new frontend system.
 
-Quick intro, but link back to app docs for more details
+### Package Discovery
 
- -->
+As mentioned in the beginning of this documentation each plugin should be exported by default from an individual package. The default exported plugins will be discovered in the frontend system. If they are not acitvely disabled in the `app-config.yaml` & the `app.experimental.packages` rule does not exclude them, the plugins will be installed in the app by default. more on this
+
+### Manual installation
+
+If you don't want to your plugins to be detected automatically you can deactivate this by setting `app.experimental.packages` `include` or `exclude` property to the plugins you want to have included/excluded. If the package is not discovered it can still be installed like the following:
+
+```ts title="app/App.tsx"
+const app = createApp({
+  features: [
+    techRadarPlugin,
+    ...
+  ],
+  ...
+});
+```
+
+It will be discovered & included in the build. Still it can deactivated through config.
