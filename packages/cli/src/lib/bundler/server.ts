@@ -208,7 +208,13 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       dist: 'dist/auth',
     });
     const compiler = authPaths
-      ? webpack([config, await createConfig(authPaths, commonConfigOptions)])
+      ? webpack([
+          config,
+          await createConfig(authPaths, {
+            ...commonConfigOptions,
+            publicSubPath: '/auth',
+          }),
+        ])
       : webpack(config);
 
     webpackServer = new WebpackDevServer(

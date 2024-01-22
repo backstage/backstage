@@ -66,7 +66,12 @@ export async function buildBundle(options: BuildOptions) {
     dist: 'dist/auth',
   });
   if (authPaths) {
-    configs.push(await createConfig(authPaths, commonConfigOptions));
+    configs.push(
+      await createConfig(authPaths, {
+        ...commonConfigOptions,
+        publicSubPath: '/auth',
+      }),
+    );
   }
 
   const isCi = yn(process.env.CI, { default: false });
