@@ -19,7 +19,7 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 
 <!-- Before merging the initial BEP PR, create a feature issue and update the below link. You can wait with this step until the BEP is ready to be merged. -->
 
-[**Discussion Issue**](https://github.com/backstage/backstage/issues/NNNNN)
+[**Discussion Issue**](https://github.com/backstage/backstage/issues/22423)
 
 - [Summary](#summary)
 - [Motivation](#motivation)
