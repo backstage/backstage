@@ -27,7 +27,7 @@ import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import React, { Fragment } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { collectLegacyRoutes } from './collectLegacyRoutes';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -290,9 +290,9 @@ describe('collectLegacyRoutes', () => {
         name: 'Test',
         mountPoint: routeRef,
         component: async () => () => {
-            const app = useApp();
-            return <div>plugins: {app.getPlugins().map(p => p.getId())}</div>;
-          }),
+          const app = useApp();
+          return <div>plugins: {app.getPlugins().map(p => p.getId())}</div>;
+        },
       }),
     );
 
@@ -304,7 +304,36 @@ describe('collectLegacyRoutes', () => {
           <div />
         </FlatRoutes>,
       ),
-    ).toThrow(/Invalid <Route/);
+    ).toThrow(
+      /Invalid element inside FlatRoutes, expected Route but found div./,
+    );
+  });
+
+  it('should throw if invalid element has been detected', async () => {
+    const plugin = createPlugin({
+      id: 'test',
+    });
+    const routeRef = createRouteRef({ id: 'test' });
+    const Page = plugin.provide(
+      createRoutableExtension({
+        name: 'Test',
+        mountPoint: routeRef,
+        component: async () => () => {
+          const app = useApp();
+          return <div>plugins: {app.getPlugins().map(p => p.getId())}</div>;
+        },
+      }),
+    );
+
+    expect(() =>
+      collectLegacyRoutes(
+        <FlatRoutes>
+          <Route path="/" element={<Page />} />a string
+        </FlatRoutes>,
+      ),
+    ).toThrow(
+      /Invalid element inside FlatRoutes, expected Route but found element of type string./,
+    );
   });
 
   it('should throw if <Route /> has no path', async () => {
@@ -330,6 +359,18 @@ describe('collectLegacyRoutes', () => {
           <Route element={<Page />} />
         </FlatRoutes>,
       ),
-    ).toThrow(/<Route \/> element with invalid path/);
+    ).toThrow(/Route element inside FlatRoutes had no path prop value given/);
+  });
+
+  it('should throw if element cannot be converted', async () => {
+    expect(() =>
+      collectLegacyRoutes(
+        <FlatRoutes>
+          <Route element={<Navigate to="/somewhere" />} />
+        </FlatRoutes>,
+      ),
+    ).toThrow(
+      /Route with path undefined has en element that can not be converted/,
+    );
   });
 });
