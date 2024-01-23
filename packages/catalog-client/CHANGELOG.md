@@ -1,5 +1,17 @@
 # @backstage/catalog-client
 
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 04907c3: Updates the OpenAPI specification title to plugin ID instead of package name.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+
 ## 1.5.2
 
 ### Patch Changes
