@@ -235,6 +235,15 @@ describe('extractPartsFromAsset', () => {
       ext: '.gif',
     });
   });
+
+  it('should return parts from asset with leading . without /', () => {
+    const result = extractPartsFromAsset('[Image 1](.images/sample-1.PNG)');
+    expect(result).toEqual({
+      label: 'Image 1',
+      path: '.images/sample-1',
+      ext: '.PNG',
+    });
+  });
 });
 
 describe('replaceReadme', () => {

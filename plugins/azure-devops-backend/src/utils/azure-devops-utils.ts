@@ -325,7 +325,7 @@ export function extractPartsFromAsset(content: string): {
   return {
     ext,
     label,
-    path: path.startsWith('.') ? path.substring(1, path.length) : path,
+    path: path.startsWith('./') ? path.substring(1, path.length) : path,
   };
 }
 
