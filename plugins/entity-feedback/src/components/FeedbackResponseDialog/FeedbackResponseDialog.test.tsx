@@ -115,4 +115,22 @@ describe('FeedbackResponseDialog', () => {
       );
     });
   });
+
+  it('will not submit "other" without comments', async () => {
+    const rendered = await render();
+
+    await userEvent.click(
+      rendered.getByRole('checkbox', { name: 'Incorrect info' }),
+    );
+    await userEvent.click(
+      rendered.getByRole('checkbox', { name: 'Other (please specify below)' }),
+    );
+    await userEvent.click(
+      rendered.getByTestId('feedback-response-dialog-submit-button'),
+    );
+
+    await waitFor(() => {
+      expect(feedbackApi.recordResponse).toHaveBeenCalledTimes(0);
+    });
+  });
 });
