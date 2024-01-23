@@ -16,3 +16,4 @@
 
 export const CACHE_CONTROL_NO_CACHE = 'no-store, max-age=0';
 export const CACHE_CONTROL_MAX_CACHE = 'public, max-age=1209600'; // 14 days
+export const CACHE_CONTROL_REVALIDATE_CACHE = 'no-cache'; // require revalidating cached responses before reuse them.

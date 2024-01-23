@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,177 +13,157 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Config, ConfigReader } from '@backstage/config';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { getVoidLogger } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { Config, ConfigReader } from '@backstage/config';
+import {
+  AuthProviderConfig,
+  AuthResolverContext,
+  CookieConfigurer,
+} from '@backstage/plugin-auth-node';
 import express from 'express';
-import { Session } from 'express-session';
-import { UnsecuredJWT } from 'jose';
+import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ClientMetadata, IssuerMetadata } from 'openid-client';
-import { OAuthAdapter } from '../../lib/oauth';
-import { oidc, OidcAuthProvider, Options } from './provider';
-import { AuthResolverContext } from '../types';
+import { oidc } from './provider';
 
-const issuerMetadata = {
-  issuer: 'https://oidc.test',
-  authorization_endpoint: 'https://oidc.test/as/authorization.oauth2',
-  token_endpoint: 'https://oidc.test/as/token.oauth2',
-  revocation_endpoint: 'https://oidc.test/as/revoke_token.oauth2',
-  userinfo_endpoint: 'https://oidc.test/idp/userinfo.openid',
-  introspection_endpoint: 'https://oidc.test/as/introspect.oauth2',
-  jwks_uri: 'https://oidc.test/pf/JWKS',
-  scopes_supported: ['openid'],
-  claims_supported: ['email'],
-  response_types_supported: ['code'],
-  id_token_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
-  token_endpoint_auth_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
-  request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
-};
+describe('oidc.create', () => {
+  const userinfo = {
+    sub: 'test',
+    iss: 'https://oidc.test',
+    aud: 'clientId',
+    nonce: 'foo',
+  };
+  const server = setupServer();
+  setupRequestMockHandlers(server);
 
-const clientMetadata: Options = {
-  authHandler: async input => ({
-    profile: {
-      displayName: input.userinfo.email,
-    },
-  }),
-  resolverContext: {} as AuthResolverContext,
-  callbackUrl: 'https://oidc.test/callback',
-  clientId: 'testclientid',
-  clientSecret: 'testclientsecret',
-  metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
-  tokenEndpointAuthMethod: 'none',
-  tokenSignedResponseAlg: 'none',
-};
+  let publicKey: JWK;
+  let tokenset: object;
+  let providerFactoryOptions: {
+    providerId: string;
+    globalConfig: AuthProviderConfig;
+    config: Config;
+    logger: LoggerService;
+    resolverContext: AuthResolverContext;
+    baseUrl: string;
+    appUrl: string;
+    isOriginAllowed: (origin: string) => boolean;
+    cookieConfigurer?: CookieConfigurer;
+  };
 
-describe('OidcAuthProvider', () => {
-  const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  beforeAll(async () => {
+    const keyPair = await generateKeyPair('RS256');
+    const privateKey = await exportJWK(keyPair.privateKey);
+    publicKey = await exportJWK(keyPair.publicKey);
+    publicKey.alg = privateKey.alg = 'RS256';
+
+    tokenset = {
+      id_token: await new SignJWT({
+        iat: Date.now(),
+        exp: Date.now() + 10000,
+        ...userinfo,
+      })
+        .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
+        .sign(keyPair.privateKey),
+      access_token: 'accessToken',
+    };
+  });
 
   beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('hit the metadata url', async () => {
-    const handler = jest.fn((_req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.set('Content-Type', 'application/json'),
-        ctx.json(issuerMetadata),
-      );
-    });
-    worker.use(
-      rest.get('https://oidc.test/.well-known/openid-configuration', handler),
+    server.use(
+      rest.get(
+        'https://oidc.test/.well-known/openid-configuration',
+        (_req, res, ctx) =>
+          res(
+            ctx.json({
+              issuer: 'https://oidc.test',
+              token_endpoint: 'https://oidc.test/oauth2/token',
+              userinfo_endpoint: 'https://oidc.test/idp/userinfo.openid',
+              jwks_uri: 'https://oidc.test/jwks.json',
+            }),
+          ),
+      ),
+      rest.post('https://oidc.test/oauth2/token', (_req, res, ctx) =>
+        res(ctx.json(tokenset)),
+      ),
+      rest.get('https://oidc.test/jwks.json', async (_req, res, ctx) =>
+        res(ctx.json({ keys: [{ ...publicKey }] })),
+      ),
+      rest.get(
+        'https://oidc.test/idp/userinfo.openid',
+        async (_req, res, ctx) => res(ctx.json(userinfo)),
+      ),
     );
-    const provider = new OidcAuthProvider(clientMetadata);
-    const { strategy } = (await (provider as any).implementation) as any as {
-      strategy: {
-        _client: ClientMetadata;
-        _issuer: IssuerMetadata;
-      };
-    };
-    // Assert that the expected request to the metadaurl was made.
-    expect(handler).toHaveBeenCalledTimes(1);
-    const { _client, _issuer } = strategy;
-    expect(_client.client_id).toBe(clientMetadata.clientId);
-    expect(_issuer.token_endpoint).toBe(issuerMetadata.token_endpoint);
-  });
-
-  it('OidcAuthProvider#handler successfully invokes the oidc endpoints', async () => {
-    const sub = 'alice';
-    const iss = 'https://oidc.test';
-    const iat = Date.now();
-    const aud = clientMetadata.clientId;
-    const exp = Date.now() + 10000;
-    const jwt = await new UnsecuredJWT({ iss, sub, aud, iat, exp })
-      .setIssuer(iss)
-      .setAudience(aud)
-      .setSubject(sub)
-      .setIssuedAt(iat)
-      .setExpirationTime(exp)
-      .encode();
-    const requestSequence: Array<string> = [];
-
-    // The array of expected requests executed by the provider handler
-    const requests: Array<{
-      method: 'get' | 'post';
-      url: string;
-      payload: object;
-    }> = [
-      {
-        method: 'get',
-        url: 'https://oidc.test/.well-known/openid-configuration',
-        payload: issuerMetadata,
-      },
-      {
-        method: 'post',
-        url: 'https://oidc.test/as/token.oauth2',
-        payload: {
-          id_token: jwt,
-          access_token: 'test',
-          authorization_signed_response_alg: 'HS256',
-        },
-      },
-      {
-        method: 'get',
-        url: 'https://oidc.test/idp/userinfo.openid',
-        payload: {
-          sub: 'alice',
-          email: 'alice@oidc.test',
-        },
-      },
-    ];
-    worker.use(
-      ...requests.map(r => {
-        return rest[r.method](r.url, (_req, res, ctx) => {
-          requestSequence.push(r.url);
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(r.payload),
-          );
-        });
-      }),
-    );
-    const provider = new OidcAuthProvider(clientMetadata);
-    const req = {
-      method: 'GET',
-      url: 'https://oidc.test/?code=test2',
-      session: { 'oidc:oidc.test': 'test' } as any as Session,
-    } as express.Request;
-    await provider.handler(req);
-    expect(requestSequence).toEqual([0, 1, 2].map(i => requests[i].url));
-  });
-
-  it('oidc.create', async () => {
-    const handler = jest.fn((_req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.set('Content-Type', 'application/json'),
-        ctx.json(issuerMetadata),
-      );
-    });
-    worker.use(
-      rest.get('https://oidc.test/.well-known/openid-configuration', handler),
-    );
-    const config: Config = new ConfigReader({
-      testEnv: {
-        ...clientMetadata,
-        metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
-      },
-    } as any);
-    const provider = oidc.create()({
+    providerFactoryOptions = {
+      providerId: 'myoidc',
+      baseUrl: 'http://backstage.test/api/auth',
+      appUrl: 'http://backstage.test',
+      isOriginAllowed: _ => true,
       globalConfig: {
-        appUrl: 'https://oidc.test',
-        baseUrl: 'https://oidc.test',
+        baseUrl: 'http://backstage.test/api/auth',
+        appUrl: 'http://backstage.test',
+        isOriginAllowed: _ => true,
       },
-      config,
-    } as any) as OAuthAdapter;
-    expect(provider.start).toBeDefined();
-    // Cast provider as any here to be able to inspect private members
-    await (provider as any).handlers.get('testEnv').handlers.implementation;
-    // Assert that the expected request to the metadaurl was made.
-    expect(handler).toHaveBeenCalledTimes(1);
+      config: new ConfigReader({
+        development: {
+          metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+        },
+      }),
+      logger: getVoidLogger(),
+      resolverContext: {
+        issueToken: jest.fn(),
+        findCatalogUser: jest.fn(),
+        signInWithCatalogUser: jest.fn(),
+      },
+    };
+  });
+
+  it('invokes authHandler with tokenset and userinfo response', async () => {
+    const authHandler = jest.fn();
+    const provider = oidc.create({ authHandler })(providerFactoryOptions);
+    const state = Buffer.from('nonce=foo&env=development').toString('hex');
+
+    await provider.frameHandler(
+      {
+        method: 'GET',
+        url: `http://backstage.test/api/auth/myoidc/handler/frame?code=blahblah&state=${state}`,
+        query: { state },
+        cookies: { 'myoidc-nonce': 'foo' },
+        session: { 'oidc:oidc.test': { state, nonce: 'foo' } },
+      } as unknown as express.Request,
+      { setHeader: jest.fn(), end: jest.fn() } as unknown as express.Response,
+    );
+
+    expect(authHandler).toHaveBeenCalledWith(
+      { tokenset, userinfo },
+      providerFactoryOptions.resolverContext,
+    );
+  });
+
+  it('invokes sign-in resolver with tokenset and userinfo response', async () => {
+    const resolver = jest.fn();
+    const provider = oidc.create({ signIn: { resolver } })(
+      providerFactoryOptions,
+    );
+    const state = Buffer.from('nonce=foo&env=development').toString('hex');
+
+    await provider.frameHandler(
+      {
+        method: 'GET',
+        url: `http://backstage.test/api/auth/myoidc/handler/frame?code=blahblah&state=${state}`,
+        query: { state },
+        cookies: { 'myoidc-nonce': 'foo' },
+        session: { 'oidc:oidc.test': { state, nonce: 'foo' } },
+      } as unknown as express.Request,
+      { setHeader: jest.fn(), end: jest.fn() } as unknown as express.Response,
+    );
+
+    expect(resolver).toHaveBeenCalledWith(
+      expect.objectContaining({ result: { tokenset, userinfo } }),
+      providerFactoryOptions.resolverContext,
+    );
   });
 });
