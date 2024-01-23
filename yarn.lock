@@ -6391,7 +6391,6 @@ __metadata:
     "@backstage/types": "workspace:^"
     aws-sdk-client-mock: ^3.0.0
     luxon: ^3.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
