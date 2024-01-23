@@ -79,6 +79,8 @@ export interface EntityFeedbackResponse {
   id: string;
   // (undocumented)
   label: string;
+  // (undocumented)
+  mustComment?: boolean;
 }
 
 // @public (undocumented)
