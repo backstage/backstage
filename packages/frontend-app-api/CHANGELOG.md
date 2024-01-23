@@ -1,5 +1,46 @@
 # @backstage/frontend-app-api
 
+## 0.6.0-next.0
+
+### Minor Changes
+
+- 86346c2: **BREAKING**: The `app.routes.bindings` app-config mapping has been simplified. You now only need to specify the plugin ID and route ID on both sides of the mapping.
+
+  Old form:
+
+  ```yaml
+  app:
+    routes:
+      bindings:
+        plugin.catalog.externalRoutes.viewTechDoc: plugin.techdocs.routes.docRoot
+        plugin.catalog.externalRoutes.createComponent: plugin.catalog-import.routes.importPage
+  ```
+
+  New form:
+
+  ```yaml
+  app:
+    routes:
+      bindings:
+        catalog.viewTechDoc: techdocs.docRoot
+        catalog.createComponent: catalog-import.importPage
+  ```
+
+### Patch Changes
+
+- 42ebf27: Added `IconsApi` implementation and the ability to configure icons through the `icons` option for `createApp` and `createSpecializedApp`. This is not a long-term solution as icons should be installable via extensions instead. This is just a stop-gap to make sure there is feature parity with the existing frontend system.
+- e0a4dd1: Improved the error message when data input/output shapes do not match
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/config@1.1.1
+  - @backstage/core-app-api@1.11.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 0.5.0
 
 ### Minor Changes

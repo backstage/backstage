@@ -1,5 +1,20 @@
 # @backstage/plugin-linguist
 
+## 0.1.15-next.0
+
+### Patch Changes
+
+- 995d280: Updated imports from named to default imports to help with the Material UI v4 to v5 migration
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.2-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-linguist-common@0.1.2
+
 ## 0.1.14
 
 ### Patch Changes
