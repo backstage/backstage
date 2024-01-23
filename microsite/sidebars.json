@@ -418,6 +418,14 @@
       },
       {
         "type": "category",
+        "label": "Building Apps",
+        "items": [
+          "frontend-system/building-apps/index",
+          "frontend-system/building-apps/built-in-extensions"
+        ]
+      },
+      {
+        "type": "category",
         "label": "Utility APIs",
         "items": [
           "frontend-system/utility-apis/index",
