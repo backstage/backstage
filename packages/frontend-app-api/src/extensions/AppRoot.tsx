@@ -31,7 +31,6 @@ import {
   createSignInPageExtension,
 } from '@backstage/frontend-plugin-api';
 import {
-  ConfigApi,
   IdentityApi,
   SignInPageProps,
   configApiRef,
@@ -42,6 +41,7 @@ import { InternalAppContext } from '../wiring/InternalAppContext';
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BrowserRouter } from 'react-router-dom';
 import { RouteTracker } from '../routing/RouteTracker';
+import { getBasePath } from '../routing/getBasePath';
 
 export const AppRoot = createExtension({
   namespace: 'app',
@@ -96,20 +96,6 @@ export const AppRoot = createExtension({
     };
   },
 });
-
-/**
- * Read the configured base path.
- *
- * The returned path does not have a trailing slash.
- */
-function getBasePath(configApi: ConfigApi) {
-  let { pathname } = new URL(
-    configApi.getOptionalString('app.baseUrl') ?? '/',
-    'http://sample.dev', // baseUrl can be specified as just a path
-  );
-  pathname = pathname.replace(/\/*$/, '');
-  return pathname;
-}
 
 // This wraps the sign-in page and waits for sign-in to be completed before rendering the app
 function SignInPageWrapper({

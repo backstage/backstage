@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-export {
-  createExtensionTester,
-  type ExtensionTester,
-} from './createExtensionTester';
+import { ConfigApi } from '@backstage/frontend-plugin-api';
 
-export { renderInTestApp, type TestAppOptions } from './renderInTestApp';
+/** @internal */
+export function getBasePath(configApi: ConfigApi) {
+  let { pathname } = new URL(
+    configApi.getOptionalString('app.baseUrl') ?? '/',
+    'http://sample.dev', // baseUrl can be specified as just a path
+  );
+  pathname = pathname.replace(/\/*$/, '');
+  return pathname;
+}
