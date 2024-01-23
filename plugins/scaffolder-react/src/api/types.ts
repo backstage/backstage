@@ -106,7 +106,7 @@ export type ScaffolderTaskOutput = {
  * @public
  */
 export type LogEvent = {
-  type: 'log' | 'completion' | 'cancelled';
+  type: 'log' | 'completion' | 'cancelled' | 'recovered';
   body: {
     message: string;
     stepId?: string;

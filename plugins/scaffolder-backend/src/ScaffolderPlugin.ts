@@ -86,6 +86,7 @@ export const scaffolderPlugin = createBackendPlugin({
       deps: {
         logger: coreServices.logger,
         config: coreServices.rootConfig,
+        lifecycle: coreServices.rootLifecycle,
         reader: coreServices.urlReader,
         permissions: coreServices.permissions,
         database: coreServices.database,
@@ -95,6 +96,7 @@ export const scaffolderPlugin = createBackendPlugin({
       async init({
         logger,
         config,
+        lifecycle,
         reader,
         database,
         httpRouter,
@@ -145,6 +147,7 @@ export const scaffolderPlugin = createBackendPlugin({
           database,
           catalogClient,
           reader,
+          lifecycle,
           actions,
           taskBroker,
           additionalTemplateFilters,
