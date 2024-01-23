@@ -34,7 +34,6 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { PlaceholderResolver } from '../modules';
-import { defaultEntityDataParser } from '../modules/util/parse';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -42,7 +41,7 @@ class CatalogProcessingExtensionPointImpl
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
   #placeholderResolvers: Record<string, PlaceholderResolver> = {};
-  entityDataParser?: CatalogProcessorParser;
+  #entityDataParser?: CatalogProcessorParser;
 
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
@@ -65,12 +64,12 @@ class CatalogProcessingExtensionPointImpl
   }
 
   setEntityDataParser(parser: CatalogProcessorParser): void {
-    if (this.entityDataParser) {
+    if (this.#entityDataParser) {
       throw new Error(
         'Attempted to install second EntityDataParser. Only one can be set.',
       );
     }
-    this.entityDataParser = parser;
+    this.#entityDataParser = parser;
   }
 
   get processors() {
@@ -83,6 +82,10 @@ class CatalogProcessingExtensionPointImpl
 
   get placeholderResolvers() {
     return this.#placeholderResolvers;
+  }
+
+  get entityDataParser() {
+    return this.#entityDataParser;
   }
 }
 
@@ -176,9 +179,10 @@ export const catalogPlugin = createBackendPlugin({
         });
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);
-        builder.setEntityDataParser(
-          processingExtensions.entityDataParser ?? defaultEntityDataParser,
-        );
+
+        if (processingExtensions.entityDataParser) {
+          builder.setEntityDataParser(processingExtensions.entityDataParser);
+        }
 
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
