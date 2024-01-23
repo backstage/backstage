@@ -107,3 +107,43 @@ export async function findTemplate(options: {
 
   return template as TemplateEntityV1beta3;
 }
+
+/**
+ * Checks if the '--no-node-snapshot' option is included in the NODE_OPTIONS environment variable
+ * or not included in the command line arguments.
+ *
+ * @remarks
+ * This function checks whether the '--no-node-snapshot' option is part of the NODE_OPTIONS environment
+ * variable or is missing from the command line arguments. If either condition is met, the function returns `true`.
+ * This check is especially important when using the "isolated-vm" package with Node.js version 20.x or later.
+ *
+ * According to the "isolated-vm" documentation on GitHub (https://github.com/laverdet/isolated-vm),
+ * if you are using a version of Node.js 20.x or later and you don't pass the '--no-node-snapshot' option,
+ * it can cause the process to crash. This function helps prevent such crashes by ensuring that the option
+ * is correctly provided.
+ *
+ * @returns {boolean} Returns `true` if the '--no-node-snapshot' option is included in the NODE_OPTIONS
+ * environment variable or not included in the command line arguments. Otherwise, it returns `false`.
+ */
+export function isNoNodeSnapshotOptionProvided(): boolean {
+  return (
+    process.env.NODE_OPTIONS?.includes('--no-node-snapshot') ||
+    process.argv.includes('--no-node-snapshot')
+  );
+}
+
+/**
+ * Gets the major version of the currently running Node.js process.
+ *
+ * @remarks
+ * This function extracts the major version from `process.versions.node` (a string representing the Node.js version),
+ * which includes the major, minor, and patch versions. It splits this string by the `.` character to get an array
+ * of these versions, and then parses the first element of this array (the major version) to a number.
+ *
+ * @returns {number} The major version of the currently running Node.js process.
+ */
+export function getMajorNodeVersion(): number {
+  const version = process.versions.node;
+  return parseInt(version.split('.')[0], 10);
+}
+
