@@ -55,7 +55,7 @@
     "@backstage/plugin-search-common": "workspace:^",
     "@google-cloud/storage": "^7.0.0",
     "@smithy/node-http-handler": "^2.1.7",
-    "@trendyol-js/openstack-swift-sdk": "^0.0.6",
+    "@trendyol-js/openstack-swift-sdk": "^0.0.7",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "fs-extra": "10.1.0",

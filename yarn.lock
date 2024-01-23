@@ -9237,7 +9237,7 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@google-cloud/storage": ^7.0.0
     "@smithy/node-http-handler": ^2.1.7
-    "@trendyol-js/openstack-swift-sdk": ^0.0.6
+    "@trendyol-js/openstack-swift-sdk": ^0.0.7
     "@types/express": ^4.17.6
     "@types/fs-extra": ^9.0.5
     "@types/js-yaml": ^4.0.0
@@ -17296,15 +17296,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trendyol-js/openstack-swift-sdk@npm:^0.0.6":
-  version: 0.0.6
-  resolution: "@trendyol-js/openstack-swift-sdk@npm:0.0.6"
+"@trendyol-js/openstack-swift-sdk@npm:^0.0.7":
+  version: 0.0.7
+  resolution: "@trendyol-js/openstack-swift-sdk@npm:0.0.7"
   dependencies:
     agentkeepalive: ^4.1.4
-    axios: ^0.21.1
+    axios: ^1.0.0
     axios-cached-dns-resolve: 0.5.2
     file-type: ^16.5.4
-  checksum: 999a1afa5f0dc2b1f41c1c13104f68d147c488b7ee5836581cc5acb485b9e963fb822177b6996a901339a06a9900dd8ff78ed7fd8b1d29f2c2f7809c5c54c62a
+  checksum: 06d39c350d9c70a4fee0ff7bc12f29784a92e162b5a72dd28aacccfa523826f113d599cbb706b631f534c2dcb48cc252078e853e3dfa953c6223606d052f64b8
   languageName: node
   linkType: hard
 
@@ -20962,7 +20962,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.6.5, axios@npm:^1.4.0, axios@npm:^1.6.0":
+"axios@npm:1.6.5, axios@npm:^1.0.0, axios@npm:^1.4.0, axios@npm:^1.6.0":
   version: 1.6.5
   resolution: "axios@npm:1.6.5"
   dependencies:
