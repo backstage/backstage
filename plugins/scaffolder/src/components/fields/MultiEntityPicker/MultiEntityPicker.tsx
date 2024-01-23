@@ -47,8 +47,6 @@ export { MultiEntityPickerSchema } from './schema';
 /**
  * The underlying component that is rendered in the form for the `MultiEntityPicker`
  * field extension.
- *
- * @public
  */
 export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   const {

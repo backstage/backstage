@@ -16,9 +16,6 @@
 import { z } from 'zod';
 import { makeFieldSchemaFromZod } from '../utils';
 
-/**
- * @public
- */
 export const entityQueryFilterExpressionSchema = z.record(
   z
     .string()
@@ -26,9 +23,6 @@ export const entityQueryFilterExpressionSchema = z.record(
     .or(z.array(z.string())),
 );
 
-/**
- * @public
- */
 export const MultiEntityPickerFieldSchema = makeFieldSchemaFromZod(
   z.array(z.string()),
   z.object({
@@ -59,8 +53,6 @@ export const MultiEntityPickerFieldSchema = makeFieldSchemaFromZod(
 /**
  * The input props that can be specified under `ui:options` for the
  * `EntityPicker` field extension.
- *
- * @public
  */
 export type MultiEntityPickerUiOptions =
   typeof MultiEntityPickerFieldSchema.uiOptionsType;
