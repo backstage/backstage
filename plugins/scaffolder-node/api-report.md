@@ -46,6 +46,63 @@ export type ActionContext<
 };
 
 // @public (undocumented)
+export function addFiles(options: {
+  dir: string;
+  filepath: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: Logger | undefined;
+}): Promise<void>;
+
+// @public (undocumented)
+export function cloneRepo(options: {
+  url: string;
+  dir: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: Logger | undefined;
+  ref?: string | undefined;
+  depth?: number | undefined;
+  noCheckout?: boolean | undefined;
+}): Promise<void>;
+
+// @public (undocumented)
+export function commitAndPushBranch(options: {
+  dir: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: Logger | undefined;
+  commitMessage: string;
+  gitAuthorInfo?: {
+    name?: string;
+    email?: string;
+  };
+  branch?: string;
+  remoteRef?: string;
+  remote?: string;
+}): Promise<{
+  commitHash: string;
+}>;
+
+// @public (undocumented)
 export function commitAndPushRepo(input: {
   dir: string;
   auth:
@@ -67,6 +124,21 @@ export function commitAndPushRepo(input: {
 }): Promise<{
   commitHash: string;
 }>;
+
+// @public (undocumented)
+export function createBranch(options: {
+  dir: string;
+  ref: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: Logger | undefined;
+}): Promise<void>;
 
 // @public
 export const createTemplateAction: <
