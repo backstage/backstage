@@ -26,7 +26,7 @@ describe('ErrorPanel', () => {
         entityName="THIS_ENTITY"
         clustersWithErrors={[
           {
-            cluster: { name: 'THIS_CLUSTER' },
+            cluster: { name: 'THIS_CLUSTER', title: 'This Fine Cluster' },
             resources: [],
             podMetrics: [],
             errors: [
@@ -50,7 +50,7 @@ describe('ErrorPanel', () => {
 
     // message
     expect(screen.getByText('Errors:')).toBeInTheDocument();
-    expect(screen.getByText('Cluster: THIS_CLUSTER')).toBeInTheDocument();
+    expect(screen.getByText('Cluster: This Fine Cluster')).toBeInTheDocument();
     expect(
       screen.getByText(
         "Error fetching Kubernetes resource: 'some/resource', error: SYSTEM_ERROR, status code: 500",
