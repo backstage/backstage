@@ -17,24 +17,27 @@
 import { pathExists } from 'fs-extra';
 import { paths } from '../paths';
 import { YAML_SCHEMA_PATH } from './constants';
-import { join, resolve } from 'path';
+import { resolve } from 'path';
 
 export const getPathToFile = async (directory: string, filename: string) => {
-  const path = resolve(directory, filename);
-  if (!(await pathExists(path))) {
-    throw new Error(`Could not find ${join(directory, filename)}.`);
-  }
-  return path;
+  return resolve(directory, filename);
 };
 
 export const getRelativePathToFile = async (filename: string) => {
   return await getPathToFile(paths.targetDir, filename);
 };
 
+export const assertExists = async (path: string) => {
+  if (!(await pathExists(path))) {
+    throw new Error(`Could not find ${path}.`);
+  }
+  return path;
+};
+
 export const getPathToOpenApiSpec = async (directory: string) => {
-  return await getPathToFile(directory, YAML_SCHEMA_PATH);
+  return await assertExists(await getPathToFile(directory, YAML_SCHEMA_PATH));
 };
 
 export const getPathToCurrentOpenApiSpec = async () => {
-  return await getRelativePathToFile(YAML_SCHEMA_PATH);
+  return await assertExists(await getRelativePathToFile(YAML_SCHEMA_PATH));
 };

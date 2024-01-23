@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import { join } from 'path';
 import { YAML_SCHEMA_PATH } from '../../../../lib/openapi/constants';
-
 import { paths as cliPaths } from '../../../../lib/paths';
-import { runner } from '../../../../lib/runner';
 import chalk from 'chalk';
 import { exec } from '../../../../lib/exec';
-import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
+import {
+  getPathToCurrentOpenApiSpec,
+  getRelativePathToFile,
+} from '../../../../lib/openapi/helpers';
 
 const ROUTER_TEST_PATHS = [
   'src/service/router.test.ts',
@@ -37,7 +37,7 @@ async function init() {
     );
   }
 
-  const opticConfigFilePath = await getPathTo;
+  const opticConfigFilePath = await getRelativePathToFile('optic.yml');
   if (await fs.pathExists(opticConfigFilePath)) {
     throw new Error(`This directory already has an optic.yml file. Exiting.`);
   }
@@ -48,7 +48,9 @@ async function init() {
 capture:
     ${YAML_SCHEMA_PATH}:
         # 🔧 Runnable example with simple get requests.
-        # Run with "PORT=3000 optic capture ${YAML_SCHEMA_PATH} --update interactive" in '${directoryPath}'
+        # Run with "PORT=3000 optic capture ${YAML_SCHEMA_PATH} --update interactive" in '${
+      cliPaths.targetDir
+    }'
         # You can change the server and the 'requests' section to experiment
         server:
             # This will not be used by 'backstage-repo-tools schema openapi test', but may be useful for interactive updates.
@@ -67,27 +69,13 @@ capture:
   }
 }
 
-export default async function initCommand(paths: string[] = []) {
+export async function singleCommand() {
   try {
     await init();
+    console.log(chalk.green(`Successfully configured.`));
   } catch (err) {
     console.log(chalk.red(`OpenAPI tooling initialization failed.`));
     console.log(err.message);
-  }
-  const resultsList = await runner(paths, dir => init(dir), {
-    concurrencyLimit: 5,
-  });
-
-  let failed = false;
-  for (const { relativeDir, resultText } of resultsList) {
-    if (resultText) {
-      failed = true;
-    }
-  }
-
-  if (failed) {
     process.exit(1);
-  } else {
-    console.log(chalk.green(`All directories have already been configured.`));
   }
 }

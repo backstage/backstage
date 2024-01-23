@@ -35,9 +35,13 @@ function registerPackageCommand(program: Command) {
 
   openApiCommand
     .command('init')
-    .description('Initialize any required files to use the OpenAPI tooling.')
+    .description(
+      'Initialize any required files to use the OpenAPI tooling for this package.',
+    )
     .action(
-      lazy(() => import('./package/schema/openapi/init').then(m => m.default)),
+      lazy(() =>
+        import('./package/schema/openapi/init').then(m => m.singleCommand),
+      ),
     );
 
   const generateCommand = openApiCommand
