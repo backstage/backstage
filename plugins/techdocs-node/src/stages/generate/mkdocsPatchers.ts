@@ -153,21 +153,30 @@ export const patchMkdocsYmlWithPlugins = async (
   defaultPlugins: string[] = ['techdocs-core'],
 ) => {
   await patchMkdocsFile(mkdocsYmlPath, logger, mkdocsYml => {
-    // Modify mkdocs.yaml to contain the required default plugins
+    // Modify mkdocs.yaml to contain the required default plugins.
+    // If no plugins are defined we can just return the defaults.
     if (!('plugins' in mkdocsYml)) {
       mkdocsYml.plugins = defaultPlugins;
       return true;
     }
 
-    if (
-      mkdocsYml.plugins &&
-      !defaultPlugins.every(plugin => mkdocsYml.plugins!.includes(plugin))
-    ) {
-      mkdocsYml.plugins = [
-        ...new Set([...mkdocsYml.plugins, ...defaultPlugins]),
-      ];
-      return true;
-    }
-    return false;
+    // Otherwise, check each default plugin and include it if necessary.
+    let changesMade = false;
+
+    defaultPlugins.forEach(dp => {
+      // if the plugin isn't there as a string, and isn't there as an object (which may itself contain extra config)
+      // then we need to add it
+      if (
+        !(
+          mkdocsYml.plugins!.includes(dp) ||
+          mkdocsYml.plugins!.some(p => p.hasOwnProperty(dp))
+        )
+      ) {
+        mkdocsYml.plugins = [...new Set([...mkdocsYml.plugins!, dp])];
+        changesMade = true;
+      }
+    });
+
+    return changesMade;
   });
 };
