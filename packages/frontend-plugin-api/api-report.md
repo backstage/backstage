@@ -573,6 +573,7 @@ export function createExternalRouteRef<
     ? (keyof TParams)[]
     : TParamKeys[];
   optional?: TOptional;
+  defaultTarget?: string;
 }): ExternalRouteRef<
   keyof TParams extends never
     ? undefined
