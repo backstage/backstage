@@ -146,4 +146,3 @@ export function getMajorNodeVersion(): number {
   const version = process.versions.node;
   return parseInt(version.split('.')[0], 10);
 }
-

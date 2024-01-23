@@ -66,7 +66,7 @@ import {
   getEntityBaseUrl,
   getMajorNodeVersion,
   getWorkingDirectory,
-  isNoNodeSnapshotOptionProvided
+  isNoNodeSnapshotOptionProvided,
 } from './helpers';
 import {
   IdentityApi,
@@ -268,7 +268,7 @@ export async function createRouter(
   if (nodeVersion >= 20 && !isNoNodeSnapshotOptionProvided()) {
     throw new Error(
       'When using node v20+ Scaffolder requires that node be started with the --no-node-snapshot option. Please restart ' +
-      'Backstage providing the node --no-node-snapshot option.',
+        'Backstage providing the node --no-node-snapshot option.',
     );
   }
 
