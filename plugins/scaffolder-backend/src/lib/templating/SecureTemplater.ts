@@ -19,6 +19,7 @@ import { resolvePackagePath } from '@backstage/backend-common';
 import {
   TemplateFilter as _TemplateFilter,
   TemplateGlobal as _TemplateGlobal,
+  NunjucksConfigs,
 } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
 import { JsonValue } from '@backstage/types';
@@ -34,6 +35,7 @@ const { render, renderCompat } = (() => {
 
   const env = module.exports.configure({
     autoescape: false,
+    ...JSON.parse(nunjucksConfigs),
     tags: {
       variableStart: '\${{',
       variableEnd: '}}',
@@ -42,6 +44,7 @@ const { render, renderCompat } = (() => {
 
   const compatEnv = module.exports.configure({
     autoescape: false,
+    ...JSON.parse(nunjucksConfigs),
     tags: {
       variableStart: '{{',
       variableEnd: '}}',
@@ -109,6 +112,7 @@ export interface SecureTemplaterOptions {
   templateFilters?: Record<string, TemplateFilter>;
   /* Extra user-provided nunjucks globals */
   templateGlobals?: Record<string, TemplateGlobal>;
+  nunjucksConfigs?: NunjucksConfigs;
 }
 
 export type SecureTemplateRenderer = (
@@ -122,6 +126,7 @@ export class SecureTemplater {
       cookiecutterCompat,
       templateFilters = {},
       templateGlobals = {},
+      nunjucksConfigs = {},
     } = options;
 
     const isolate = new Isolate({ memoryLimit: 128 });
@@ -139,6 +144,8 @@ export class SecureTemplater {
     const nunjucksScript = await isolate.compileScript(
       mkScript(nunjucksSource),
     );
+
+    await contextGlobal.set('nunjucksConfigs', JSON.stringify(nunjucksConfigs));
 
     const availableFilters = Object.keys(templateFilters);
 

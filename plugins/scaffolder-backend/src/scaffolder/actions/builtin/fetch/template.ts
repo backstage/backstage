@@ -69,6 +69,8 @@ export function createFetchTemplateAction(options: {
     copyWithoutTemplating?: string[];
     cookiecutterCompat?: boolean;
     replace?: boolean;
+    trimBlocks?: boolean;
+    lstripBlocks?: boolean;
   }>({
     id: 'fetch:template',
     description:
@@ -237,6 +239,10 @@ export function createFetchTemplateAction(options: {
           ...additionalTemplateFilters,
         },
         templateGlobals: additionalTemplateGlobals,
+        nunjucksConfigs: {
+          trimBlocks: ctx.input.trimBlocks,
+          lstripBlocks: ctx.input.lstripBlocks,
+        },
       });
 
       for (const location of allEntriesInTemplate) {

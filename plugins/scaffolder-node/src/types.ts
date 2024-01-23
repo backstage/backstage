@@ -23,3 +23,6 @@ export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 export type TemplateGlobal =
   | ((...args: JsonValue[]) => JsonValue | undefined)
   | JsonValue;
+
+/** @public */
+export type NunjucksConfigs = { trimBlocks?: boolean; lstripBlocks?: boolean };
