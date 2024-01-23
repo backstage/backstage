@@ -262,7 +262,7 @@ export function getDefaultBackstageTokenExpiryTime(config: Config) {
     key: processingIntervalKey,
   });
   const seconds = Math.max(
-    600,
+    86400,
     Math.round(durationToMilliseconds(duration) / 1000),
   );
 
