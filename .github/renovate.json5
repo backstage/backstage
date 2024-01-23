@@ -1,4 +1,6 @@
 {
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+
   labels: ['dependencies'],
   extends: ['config:base', ':disableDependencyDashboard', ':gitSignOff'],
   postUpdateOptions: ['yarnDedupeHighest'],
