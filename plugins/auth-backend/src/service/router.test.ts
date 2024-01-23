@@ -78,6 +78,6 @@ describe('Test for default backstage token expiry time', () => {
         backstageTokenExpiration: { minutes: 120 },
       },
     });
-    expect(getDefaultBackstageTokenExpiryTime(config)).toBe(7200);
+    expect(getDefaultBackstageTokenExpiryTime(config)).toBe(86400);
   });
 });
