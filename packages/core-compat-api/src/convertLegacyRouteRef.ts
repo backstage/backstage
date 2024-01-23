@@ -199,6 +199,9 @@ export function convertLegacyRouteRef(
       getDescription() {
         return legacyRefStr;
       },
+      getDefaultTarget() {
+        return newRef.getDefaultTarget();
+      },
       setId(id: string) {
         newRef.setId(id);
       },
