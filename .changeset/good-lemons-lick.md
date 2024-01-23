@@ -11,4 +11,4 @@
 '@backstage/plugin-scaffolder-backend-module-rails': patch
 ---
 
-Exporting a module for the new Backend System on `/alpha`
+Exporting a default module for the new Backend System
