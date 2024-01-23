@@ -2,7 +2,8 @@
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
 
   labels: ['dependencies'],
-  extends: ['config:base', ':disableDependencyDashboard', ':gitSignOff'],
+  extends: ['config:recommended', ':gitSignOff'],
+
   postUpdateOptions: ['yarnDedupeHighest'],
   rangeStrategy: 'update-lockfile',
   // @elastic/elasticsearch is ignored due to licensing issues. See #10992
