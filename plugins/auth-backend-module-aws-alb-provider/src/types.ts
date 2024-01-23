@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import passport from 'passport';
-
+import type { PassportProfile } from '@backstage/plugin-auth-node/';
 /**
  * JWT header extraction result, containing the raw value and the parsed JWT
  * payload.
@@ -30,10 +29,6 @@ export type AwsAlbResult = {
 /**
  * @public
  */
-export type PassportProfile = passport.Profile & {
-  avatarUrl?: string;
-};
-
 export type AwsAlbClaims = {
   sub: string;
   name: string;

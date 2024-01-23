@@ -4748,7 +4748,6 @@ __metadata:
     jose: ^4.6.0
     jwt-decode: ^3.1.0
     node-cache: ^5.1.2
-    passport: ^0.7.0
   languageName: unknown
   linkType: soft
 
