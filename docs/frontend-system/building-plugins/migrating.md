@@ -174,12 +174,15 @@ The new `createPlugin` function doesn't accept apis anymore as apis are now exte
     // bind all the extensions to the plugin
     /* highlight-next-line */
     extensions: [homePage, exampleWorkApi],
-    routes: {
+    // convert old route refs to the new system
+    /* highlight-next-line */
+    routes: convertLegacyRouteRefs({
       ...
-    },
-    externalRoutes: {
+    }),
+    /* highlight-next-line */
+    externalRoutes: convertLegacyRouteRefs({
       ...
-    },
+    }),
   });
 ```
 
