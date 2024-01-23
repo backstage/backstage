@@ -92,7 +92,7 @@ export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): Promise<webpack.Configuration> {
-  const { checksEnabled, isDev, frontendConfig } = options;
+  const { checksEnabled, isDev, frontendConfig, publicSubPath = '' } = options;
 
   const { plugins, loaders } = transforms(options);
   // Any package that is part of the monorepo but outside the monorepo root dir need
@@ -102,7 +102,11 @@ export async function createConfig(
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
-  const publicPath = validBaseUrl.pathname.replace(/\/$/, '');
+  let publicPath = validBaseUrl.pathname.replace(/\/$/, '');
+  if (publicSubPath) {
+    publicPath = `${publicPath}${publicSubPath}`.replace('//', '/');
+  }
+
   if (checksEnabled) {
     plugins.push(
       new ForkTsCheckerWebpackPlugin({
