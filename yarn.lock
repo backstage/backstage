@@ -8024,6 +8024,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-azure@workspace:plugins/scaffolder-backend-module-azure"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
@@ -8039,6 +8040,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -8057,6 +8059,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:plugins/scaffolder-backend-module-confluence-to-markdown"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -8077,6 +8080,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-cookiecutter@workspace:plugins/scaffolder-backend-module-cookiecutter"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -8098,6 +8102,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-gerrit@workspace:plugins/scaffolder-backend-module-gerrit"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -8115,6 +8120,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-github@workspace:plugins/scaffolder-backend-module-github"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -8139,6 +8145,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -8160,6 +8167,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-rails@workspace:plugins/scaffolder-backend-module-rails"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -8180,6 +8188,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-sentry@workspace:plugins/scaffolder-backend-module-sentry"
   dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -8196,6 +8205,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-yeoman@workspace:plugins/scaffolder-backend-module-yeoman"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/types": "workspace:^"
