@@ -52,7 +52,7 @@ const fooPage = createPageExtension({
 
 ## Components
 
-TODO
+The equivalent utility to replace components created with `createComponentExtension` is `createExtension` from `@backstage/frontend-plugin-api`. However, we recommend searching for an appropriate extension first, considering using `createExtension` as the last option for more complex scenarios.
 
 ## APIs
 
