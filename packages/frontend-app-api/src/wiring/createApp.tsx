@@ -31,6 +31,8 @@ import {
   FrontendFeature,
   iconsApiRef,
   RouteRef,
+  RouteResolutionApi,
+  routeResolutionApiRef,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { App } from '../extensions/App';
@@ -89,7 +91,7 @@ import {
   translationApiRef,
 } from '@backstage/core-plugin-api/alpha';
 import { CreateAppRouteBinder } from '../routing';
-import { RoutingProvider } from '../routing/RoutingProvider';
+import { RouteResolver } from '../routing/RouteResolver';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import { createAppTree } from '../tree';
@@ -110,6 +112,7 @@ import { DefaultIconsApi } from '../apis/implementations/IconsApi';
 import { stringifyError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { icons as defaultIcons } from '../../../app-defaults/src/defaults';
+import { getBasePath } from '../routing/getBasePath';
 
 const DefaultApis = defaultApis.map(factory => createApiExtension({ factory }));
 
@@ -354,11 +357,25 @@ export function createSpecializedApp(options?: {
     config,
   });
 
+  const routeInfo = extractRouteInfoFromAppNode(tree.root);
+  const routeBindings = resolveRouteBindings(
+    options?.bindRoutes,
+    config,
+    collectRouteIds(features),
+  );
+
   const appIdentityProxy = new AppIdentityProxy();
   const apiHolder = createApiHolder(
     tree,
     config,
     appIdentityProxy,
+    new RouteResolver(
+      routeInfo.routePaths,
+      routeInfo.routeParents,
+      routeInfo.routeObjects,
+      routeBindings,
+      getBasePath(config),
+    ),
     options?.icons,
   );
 
@@ -381,24 +398,16 @@ export function createSpecializedApp(options?: {
     }
   }
 
-  const routeInfo = extractRouteInfoFromAppNode(tree.root);
-  const routeBindings = resolveRouteBindings(
-    options?.bindRoutes,
-    config,
-    collectRouteIds(features),
-  );
   const rootEl = tree.root.instance!.getData(coreExtensionData.reactElement);
 
   const AppComponent = () => (
     <ApiProvider apis={apiHolder}>
       <AppThemeProvider>
-        <RoutingProvider {...routeInfo} routeBindings={routeBindings}>
-          <InternalAppContext.Provider
-            value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
-          >
-            {rootEl}
-          </InternalAppContext.Provider>
-        </RoutingProvider>
+        <InternalAppContext.Provider
+          value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
+        >
+          {rootEl}
+        </InternalAppContext.Provider>
       </AppThemeProvider>
     </ApiProvider>
   );
@@ -414,6 +423,7 @@ function createApiHolder(
   tree: AppTree,
   configApi: ConfigApi,
   appIdentityProxy: AppIdentityProxy,
+  routeResolutionApi: RouteResolutionApi,
   icons?: { [key in string]: IconComponent },
 ): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
@@ -463,6 +473,12 @@ function createApiHolder(
     factory: () => ({
       getTree: () => ({ tree }),
     }),
+  });
+
+  factoryRegistry.register('static', {
+    api: routeResolutionApiRef,
+    deps: {},
+    factory: () => routeResolutionApi,
   });
 
   const componentsExtensions =

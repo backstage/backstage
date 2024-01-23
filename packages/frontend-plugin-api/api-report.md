@@ -1079,6 +1079,26 @@ export interface RouteRef<
   readonly T: TParams;
 }
 
+// @public (undocumented)
+export interface RouteResolutionApi {
+  // (undocumented)
+  resolve<TParams extends AnyRouteRefParams>(
+    anyRouteRef:
+      | RouteRef<TParams>
+      | SubRouteRef<TParams>
+      | ExternalRouteRef<TParams, any>,
+    options?: RouteResolutionApiResolveOptions,
+  ): RouteFunc<TParams> | undefined;
+}
+
+// @public
+export const routeResolutionApiRef: ApiRef<RouteResolutionApi>;
+
+// @public (undocumented)
+export type RouteResolutionApiResolveOptions = {
+  sourcePath?: string;
+};
+
 export { SessionApi };
 
 export { SessionState };
