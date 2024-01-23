@@ -14,33 +14,40 @@
  * limitations under the License.
  */
 
-import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
+import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { GithubEventRouter } from './GithubEventRouter';
 
 describe('GithubEventRouter', () => {
-  const eventRouter = new GithubEventRouter();
+  const events = new TestEventsService();
+  const eventRouter = new GithubEventRouter({ events: events });
   const topic = 'github';
   const eventPayload = { test: 'payload' };
   const metadata = { 'x-github-event': 'test_type' };
 
-  it('no x-github-event', () => {
-    const eventBroker = new TestEventBroker();
-    eventRouter.setEventBroker(eventBroker);
+  beforeEach(() => {
+    events.reset();
+  });
 
+  it('subscribed to topic', () => {
+    eventRouter.subscribe();
+
+    expect(events.subscribed).toHaveLength(1);
+    expect(events.subscribed[0].id).toEqual('GithubEventRouter');
+    expect(events.subscribed[0].topics).toEqual([topic]);
+  });
+
+  it('no x-github-event', () => {
     eventRouter.onEvent({ topic, eventPayload });
 
-    expect(eventBroker.published).toEqual([]);
+    expect(events.published).toEqual([]);
   });
 
   it('with x-github-event', () => {
-    const eventBroker = new TestEventBroker();
-    eventRouter.setEventBroker(eventBroker);
-
     eventRouter.onEvent({ topic, eventPayload, metadata });
 
-    expect(eventBroker.published.length).toBe(1);
-    expect(eventBroker.published[0].topic).toEqual('github.test_type');
-    expect(eventBroker.published[0].eventPayload).toEqual(eventPayload);
-    expect(eventBroker.published[0].metadata).toEqual(metadata);
+    expect(events.published.length).toBe(1);
+    expect(events.published[0].topic).toEqual('github.test_type');
+    expect(events.published[0].eventPayload).toEqual(eventPayload);
+    expect(events.published[0].metadata).toEqual(metadata);
   });
 });

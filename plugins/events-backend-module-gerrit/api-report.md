@@ -4,12 +4,15 @@
 
 ```ts
 import { EventParams } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 
 // @public
 export class GerritEventRouter extends SubTopicEventRouter {
-  constructor();
+  constructor(options: { events: EventsService });
   // (undocumented)
   protected determineSubTopic(params: EventParams): string | undefined;
+  // (undocumented)
+  protected getSubscriberId(): string;
 }
 ```

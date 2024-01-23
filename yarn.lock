@@ -6404,7 +6404,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -6417,7 +6416,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -6430,7 +6428,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -6445,7 +6442,6 @@ __metadata:
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@octokit/webhooks-methods": ^3.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -6459,7 +6455,6 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 

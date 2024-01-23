@@ -39,17 +39,17 @@ export interface EventPublisher {
 }
 
 // @public
-export abstract class EventRouter implements EventPublisher, EventSubscriber {
+export abstract class EventRouter {
+  protected constructor(options: { events: EventsService; topics: string[] });
   // (undocumented)
   protected abstract determineDestinationTopic(
     params: EventParams,
   ): string | undefined;
   // (undocumented)
+  protected abstract getSubscriberId(): string;
+  // (undocumented)
   onEvent(params: EventParams): Promise<void>;
-  // (undocumented)
-  setEventBroker(eventBroker: EventBroker): Promise<void>;
-  // (undocumented)
-  abstract supportsEventTopics(): string[];
+  subscribe(): Promise<void>;
 }
 
 // @public
@@ -114,12 +114,10 @@ export type RequestValidator = (
 
 // @public
 export abstract class SubTopicEventRouter extends EventRouter {
-  protected constructor(topic: string);
+  protected constructor(options: { events: EventsService; topic: string });
   // (undocumented)
   protected determineDestinationTopic(params: EventParams): string | undefined;
   // (undocumented)
   protected abstract determineSubTopic(params: EventParams): string | undefined;
-  // (undocumented)
-  supportsEventTopics(): string[];
 }
 ```

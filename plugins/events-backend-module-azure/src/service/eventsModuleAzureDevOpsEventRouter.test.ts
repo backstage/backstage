@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
+import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
+import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { eventsModuleAzureDevOpsEventRouter } from './eventsModuleAzureDevOpsEventRouter';
-import { AzureDevOpsEventRouter } from '../router/AzureDevOpsEventRouter';
 
 describe('eventsModuleAzureDevOpsEventRouter', () => {
   it('should be correctly wired and set up', async () => {
-    let addedPublisher: AzureDevOpsEventRouter | undefined;
-    let addedSubscriber: AzureDevOpsEventRouter | undefined;
-    const extensionPoint = {
-      addPublishers: (publisher: any) => {
-        addedPublisher = publisher;
+    const events = new TestEventsService();
+    const eventsServiceFactory = createServiceFactory({
+      service: eventsServiceRef,
+      deps: {},
+      async factory({}) {
+        return events;
       },
-      addSubscribers: (subscriber: any) => {
-        addedSubscriber = subscriber;
-      },
-    };
-
-    await startTestBackend({
-      extensionPoints: [[eventsExtensionPoint, extensionPoint]],
-      features: [eventsModuleAzureDevOpsEventRouter()],
     });
 
-    expect(addedPublisher).not.toBeUndefined();
-    expect(addedPublisher).toBeInstanceOf(AzureDevOpsEventRouter);
-    expect(addedSubscriber).not.toBeUndefined();
-    expect(addedSubscriber).toBeInstanceOf(AzureDevOpsEventRouter);
+    await startTestBackend({
+      features: [eventsServiceFactory(), eventsModuleAzureDevOpsEventRouter()],
+    });
+
+    expect(events.subscribed).toHaveLength(1);
+    expect(events.subscribed[0].id).toEqual('AzureDevOpsEventRouter');
   });
 });
