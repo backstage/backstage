@@ -43,18 +43,17 @@ export class EventsBackend {
 }
 
 // @public
-export class HttpPostIngressEventPublisher implements EventPublisher {
+export class HttpPostIngressEventPublisher {
   // (undocumented)
   bind(router: express.Router): void;
   // (undocumented)
   static fromConfig(env: {
     config: Config;
+    events: EventsService;
     ingresses?: {
       [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
     };
-    logger: Logger;
+    logger: LoggerService;
   }): HttpPostIngressEventPublisher;
-  // (undocumented)
-  setEventBroker(eventBroker: EventBroker): Promise<void>;
 }
 ```
