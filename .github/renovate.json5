@@ -4,6 +4,9 @@
   labels: ['dependencies'],
   extends: ['config:recommended', ':gitSignOff'],
 
+  // the default limit are 10 PRs
+  prConcurrentLimit: 20,
+
   postUpdateOptions: ['yarnDedupeHighest'],
   rangeStrategy: 'update-lockfile',
   // @elastic/elasticsearch is ignored due to licensing issues. See #10992
