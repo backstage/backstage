@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-auth-backend': minor
+'@backstage/plugin-auth-backend': patch
 ---
 
 Ability for user to configure backstage token expiration
