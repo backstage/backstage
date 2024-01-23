@@ -220,10 +220,9 @@ export class StorageTaskBroker implements TaskBroker {
         'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
         defaultTimeout,
       );
-      const recoveredTaskIds =
-        (await this.storage.recoverTasks?.({
-          timeout,
-        })) ?? [];
+      const { ids: recoveredTaskIds } = (await this.storage.recoverTasks?.({
+        timeout,
+      })) ?? { ids: [] };
       if (recoveredTaskIds.length > 0) {
         this.signalDispatch();
       }
