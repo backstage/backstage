@@ -263,3 +263,56 @@ createApiFactory({
 ```
 
 In the same way as the `requestInterceptor` you can override any property of Swagger UI
+
+### Provide Specific Supported Methods to Swagger UI
+
+This can be done through utilising the
+[supportedSubmitMethods prop](https://github.com/swagger-api/swagger-ui/tree/master/flavors/swagger-ui-react#supportedsubmitmethods-proptypesarrayofproptypesoneofget-put-post-delete-options-head-patch-trace).
+If you wish to limit the HTTP methods available for the `Try It Out` feature of an OpenAPI API
+component, you will need to add the following to your `api.tsx`, listing the permitted methods for
+your API in the `supportedSubmitMethods` parameter:
+
+```tsx
+...
+import {
+  OpenApiDefinitionWidget,
+  apiDocsConfigRef,
+  defaultDefinitionWidgets,
+} from '@backstage/plugin-api-docs';
+import { ApiEntity } from '@backstage/catalog-model';
+
+export const apis: AnyApiFactory[] = [
+...
+  createApiFactory({
+    api: apiDocsConfigRef,
+    deps: {},
+    factory: () => {
+      const supportedSubmitMethods = ['get', 'post', 'put', 'delete'];
+      const definitionWidgets = defaultDefinitionWidgets().map(obj => {
+        if (obj.type === 'openapi') {
+          return {
+            ...obj,
+            component: definition => (
+              <OpenApiDefinitionWidget
+                definition={definition}
+                supportedSubmitMethods={supportedSubmitMethods}
+              />
+            ),
+          };
+        }
+        return obj;
+      });
+
+      return {
+        getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+          return definitionWidgets.find(d => d.type === apiEntity.spec.type);
+        }
+      };
+    }
+  })
+]
+
+```
+
+N.B. if you wish to disable the `Try It Out` feature for your API, you can provide an empty list to
+the `supportedSubmitMethods` parameter.
