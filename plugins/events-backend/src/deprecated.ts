@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-/**
- * The events-node module for `@backstage/plugin-events-backend`.
- *
- * @packageDocumentation
- */
-
-export * from './api';
-export * from './deprecated';
-export { eventsServiceRef } from './service';
+export { EventsBackend } from './service/EventsBackend';
+export { DefaultEventBroker } from './service/DefaultEventBroker';

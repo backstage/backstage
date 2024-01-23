@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,26 +15,34 @@
  */
 
 import {
-  EventBroker,
   EventParams,
-  EventSubscriber,
+  EventsService,
+  EventsServiceSubscribeOptions,
 } from '@backstage/plugin-events-node';
 
-/**
- * @public
- * @deprecated use `TestEventsService` instead
- */
-export class TestEventBroker implements EventBroker {
-  readonly published: EventParams[] = [];
-  readonly subscribed: EventSubscriber[] = [];
+/** @public */
+export class TestEventsService implements EventsService {
+  #published: EventParams[] = [];
+  #subscribed: EventsServiceSubscribeOptions[] = [];
 
   async publish(params: EventParams): Promise<void> {
-    this.published.push(params);
+    this.#published.push(params);
   }
 
-  subscribe(
-    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
-  ): void {
-    this.subscribed.push(...subscribers.flat());
+  async subscribe(options: EventsServiceSubscribeOptions): Promise<void> {
+    this.#subscribed.push(options);
+  }
+
+  get published(): EventParams[] {
+    return this.#published;
+  }
+
+  get subscribed(): EventsServiceSubscribeOptions[] {
+    return this.#subscribed;
+  }
+
+  reset(): void {
+    this.#published = [];
+    this.#subscribed = [];
   }
 }

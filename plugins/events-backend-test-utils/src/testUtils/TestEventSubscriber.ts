@@ -16,7 +16,10 @@
 
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 
-/** @public */
+/**
+ * @public
+ * @deprecated `EventSubscriber` was replaced by `EventsService.subscribe`.
+ */
 export class TestEventSubscriber implements EventSubscriber {
   readonly name: string;
   readonly topics: string[];

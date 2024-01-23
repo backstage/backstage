@@ -85,15 +85,15 @@ describe('DefaultEventBroker', () => {
       }
     })();
 
-    const errorSpy = jest.spyOn(logger, 'error');
+    const warnSpy = jest.spyOn(logger, 'warn');
     const eventBroker = new DefaultEventBroker(logger);
 
     eventBroker.subscribe(subscriber1);
     await eventBroker.publish({ topic, eventPayload: '1' });
 
-    expect(errorSpy).toHaveBeenCalledTimes(1);
-    expect(errorSpy).toHaveBeenCalledWith(
-      'Subscriber "Subscriber1" failed to process event',
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      'Subscriber "Subscriber1" failed to process event for topic "testTopic"',
       new Error('NOPE 1'),
     );
 
@@ -101,13 +101,13 @@ describe('DefaultEventBroker', () => {
     await eventBroker.publish({ topic, eventPayload: '2' });
 
     // With two subscribers we should not halt on the first error but call all subscribers
-    expect(errorSpy).toHaveBeenCalledTimes(3);
-    expect(errorSpy).toHaveBeenCalledWith(
-      'Subscriber "Subscriber1" failed to process event',
+    expect(warnSpy).toHaveBeenCalledTimes(3);
+    expect(warnSpy).toHaveBeenCalledWith(
+      'Subscriber "Subscriber1" failed to process event for topic "testTopic"',
       new Error('NOPE 2'),
     );
-    expect(errorSpy).toHaveBeenCalledWith(
-      'Subscriber "Subscriber2" failed to process event',
+    expect(warnSpy).toHaveBeenCalledWith(
+      'Subscriber "Subscriber2" failed to process event for topic "testTopic"',
       new Error('NOPE 2'),
     );
   });

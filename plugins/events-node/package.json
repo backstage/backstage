@@ -45,6 +45,7 @@
     "@backstage/backend-plugin-api": "workspace:^"
   },
   "devDependencies": {
+    "@backstage/backend-common": "workspace:^",
     "@backstage/cli": "workspace:^"
   },
   "files": [
