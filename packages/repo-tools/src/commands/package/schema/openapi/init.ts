@@ -21,20 +21,23 @@ import { paths as cliPaths } from '../../../../lib/paths';
 import { runner } from '../../../../lib/runner';
 import chalk from 'chalk';
 import { exec } from '../../../../lib/exec';
+import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
 
 const ROUTER_TEST_PATHS = [
   'src/service/router.test.ts',
   'src/service/createRouter.test.ts',
 ];
 
-async function init(directoryPath: string) {
-  const openapiPath = join(directoryPath, YAML_SCHEMA_PATH);
-  if (!(await fs.pathExists(openapiPath))) {
+async function init() {
+  try {
+    await getPathToCurrentOpenApiSpec();
+  } catch (err) {
     throw new Error(
-      `You do not have an OpenAPI YAML file at ${openapiPath}. Please create one and retry this command. If you already have existing test cases for your router, see 'backstage-repo-tools package schema openapi test --update'`,
+      `OpenAPI.yaml not found in ${YAML_SCHEMA_PATH}. Please create one and retry this command.`,
     );
   }
-  const opticConfigFilePath = join(directoryPath, 'optic.yml');
+
+  const opticConfigFilePath = await getPathTo;
   if (await fs.pathExists(opticConfigFilePath)) {
     throw new Error(`This directory already has an optic.yml file. Exiting.`);
   }
@@ -65,6 +68,12 @@ capture:
 }
 
 export default async function initCommand(paths: string[] = []) {
+  try {
+    await init();
+  } catch (err) {
+    console.log(chalk.red(`OpenAPI tooling initialization failed.`));
+    console.log(err.message);
+  }
   const resultsList = await runner(paths, dir => init(dir), {
     concurrencyLimit: 5,
   });
@@ -72,12 +81,6 @@ export default async function initCommand(paths: string[] = []) {
   let failed = false;
   for (const { relativeDir, resultText } of resultsList) {
     if (resultText) {
-      console.log();
-      console.log(
-        chalk.red(`Failed to initialize ${relativeDir} for OpenAPI commands.`),
-      );
-      console.log(resultText.trimStart());
-
       failed = true;
     }
   }
