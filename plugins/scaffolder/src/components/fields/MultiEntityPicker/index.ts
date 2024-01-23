@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage plugin that helps you create new things
- *
- * @packageDocumentation
- */
-export { ScaffolderClient } from './api';
-
 export {
-  EntityPickerFieldExtension,
-  EntityNamePickerFieldExtension,
-  EntityTagsPickerFieldExtension,
-  OwnerPickerFieldExtension,
-  OwnedEntityPickerFieldExtension,
-  MyGroupsPickerFieldExtension,
-  RepoUrlPickerFieldExtension,
-  MultiEntityPickerFieldExtension,
-  ScaffolderPage,
-  scaffolderPlugin,
-} from './plugin';
-
-export * from './components';
-export * from './deprecated';
+  MultiEntityPickerFieldSchema,
+  type MultiEntityPickerUiOptions,
+} from './schema';
