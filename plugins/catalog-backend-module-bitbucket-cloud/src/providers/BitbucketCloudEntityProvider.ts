@@ -15,6 +15,7 @@
  */
 
 import { TokenManager } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import { LocationEntity } from '@backstage/catalog-model';
@@ -35,13 +36,12 @@ import {
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import {
   BitbucketCloudEntityProviderConfig,
   readProviderConfigs,
 } from './BitbucketCloudEntityProviderConfig';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 
 const DEFAULT_BRANCH = 'master';
 const TOPIC_REPO_PUSH = 'bitbucketCloud.repo:push';
@@ -62,14 +62,13 @@ interface IngestionTarget {
  *
  * @public
  */
-export class BitbucketCloudEntityProvider
-  implements EntityProvider, EventSubscriber
-{
+export class BitbucketCloudEntityProvider implements EntityProvider {
   private readonly client: BitbucketCloudClient;
   private readonly config: BitbucketCloudEntityProviderConfig;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private readonly catalogApi?: CatalogApi;
+  private readonly events?: EventsService;
   private readonly tokenManager?: TokenManager;
   private connection?: EntityProviderConnection;
 
@@ -79,7 +78,8 @@ export class BitbucketCloudEntityProvider
     config: Config,
     options: {
       catalogApi?: CatalogApi;
-      logger: Logger;
+      events?: EventsService;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
       tokenManager?: TokenManager;
@@ -114,6 +114,7 @@ export class BitbucketCloudEntityProvider
         options.logger,
         taskRunner,
         options.catalogApi,
+        options.events,
         options.tokenManager,
       );
     });
@@ -122,9 +123,10 @@ export class BitbucketCloudEntityProvider
   private constructor(
     config: BitbucketCloudEntityProviderConfig,
     integration: BitbucketCloudIntegration,
-    logger: Logger,
+    logger: LoggerService,
     taskRunner: TaskRunner,
     catalogApi?: CatalogApi,
+    events?: EventsService,
     tokenManager?: TokenManager,
   ) {
     this.client = BitbucketCloudClient.fromConfig(integration.config);
@@ -134,6 +136,7 @@ export class BitbucketCloudEntityProvider
     });
     this.scheduleFn = this.createScheduleFn(taskRunner);
     this.catalogApi = catalogApi;
+    this.events = events;
     this.tokenManager = tokenManager;
   }
 
@@ -176,9 +179,23 @@ export class BitbucketCloudEntityProvider
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
     await this.scheduleFn();
+
+    if (this.events) {
+      await this.events.subscribe({
+        id: this.getProviderName(),
+        topics: [TOPIC_REPO_PUSH],
+        onEvent: async params => {
+          if (params.topic !== TOPIC_REPO_PUSH) {
+            return;
+          }
+
+          await this.onRepoPush(params.eventPayload as Events.RepoPushEvent);
+        },
+      });
+    }
   }
 
-  async refresh(logger: Logger) {
+  async refresh(logger: LoggerService) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -196,20 +213,6 @@ export class BitbucketCloudEntityProvider
     logger.info(
       `Committed ${entities.length} Locations for catalog files in Bitbucket Cloud repositories`,
     );
-  }
-
-  /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.supportsEventTopics} */
-  supportsEventTopics(): string[] {
-    return [TOPIC_REPO_PUSH];
-  }
-
-  /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.onEvent} */
-  async onEvent(params: EventParams): Promise<void> {
-    if (params.topic !== TOPIC_REPO_PUSH) {
-      return;
-    }
-
-    await this.onRepoPush(params.eventPayload as Events.RepoPushEvent);
   }
 
   private canHandleEvents(): boolean {
