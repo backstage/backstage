@@ -61,20 +61,20 @@ export async function buildBundle(options: BuildOptions) {
     }),
   ];
 
-  const authPaths = await resolveOptionalBundlingPaths({
-    entry: 'src/auth',
-    dist: 'dist/auth',
+  const publicPaths = await resolveOptionalBundlingPaths({
+    entry: 'src/index-public-experimental',
+    dist: 'dist/public',
   });
-  if (authPaths) {
+  if (publicPaths) {
     console.log(
       chalk.yellow(
         `⚠️  WARNING: The app /auth entry point is an experimental feature that may receive immediate breaking changes.`,
       ),
     );
     configs.push(
-      await createConfig(authPaths, {
+      await createConfig(publicPaths, {
         ...commonConfigOptions,
-        publicSubPath: '/auth',
+        publicSubPath: '/public',
       }),
     );
   }
@@ -82,8 +82,8 @@ export async function buildBundle(options: BuildOptions) {
   const isCi = yn(process.env.CI, { default: false });
 
   const previousFileSizes = await measureFileSizesBeforeBuild(paths.targetDist);
-  const previousAuthSizes = authPaths
-    ? await measureFileSizesBeforeBuild(authPaths.targetDist)
+  const previousAuthSizes = publicPaths
+    ? await measureFileSizesBeforeBuild(publicPaths.targetDist)
     : undefined;
   await fs.emptyDir(paths.targetDist);
 
@@ -124,11 +124,11 @@ export async function buildBundle(options: BuildOptions) {
     WARN_AFTER_BUNDLE_GZIP_SIZE,
     WARN_AFTER_CHUNK_GZIP_SIZE,
   );
-  if (authPaths && previousAuthSizes) {
+  if (publicPaths && previousAuthSizes) {
     printFileSizesAfterBuild(
       authStats,
       previousAuthSizes,
-      authPaths.targetDist,
+      publicPaths.targetDist,
       WARN_AFTER_BUNDLE_GZIP_SIZE,
       WARN_AFTER_CHUNK_GZIP_SIZE,
     );

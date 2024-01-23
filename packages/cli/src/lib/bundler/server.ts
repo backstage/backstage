@@ -203,23 +203,23 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       root: paths.targetPath,
     });
   } else {
-    const authPaths = await resolveOptionalBundlingPaths({
-      entry: 'src/auth',
-      dist: 'dist/auth',
+    const publicPaths = await resolveOptionalBundlingPaths({
+      entry: 'src/index-public-experimental',
+      dist: 'dist/public',
     });
-    if (authPaths) {
+    if (publicPaths) {
       console.log(
         chalk.yellow(
-          `⚠️  WARNING: The app /auth entry point is an experimental feature that may receive immediate breaking changes.`,
+          `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
         ),
       );
     }
-    const compiler = authPaths
+    const compiler = publicPaths
       ? webpack([
           config,
-          await createConfig(authPaths, {
+          await createConfig(publicPaths, {
             ...commonConfigOptions,
-            publicSubPath: '/auth',
+            publicSubPath: '/public',
           }),
         ])
       : webpack(config);
