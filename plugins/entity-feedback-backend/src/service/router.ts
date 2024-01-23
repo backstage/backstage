@@ -28,6 +28,7 @@ import {
   EntityRatingsData,
   Ratings,
 } from '@backstage/plugin-entity-feedback-common';
+import { InputError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -138,11 +139,9 @@ export async function createRouter(
 
     const rating = req.body.rating;
     if (!rating) {
-      logger.warn(
+      throw new InputError(
         `Can't save rating because there is not enough info: user=${credentials.principal.userEntityRef}, rating=${rating}`,
       );
-      res.status(400).end();
-      return;
     }
 
     await dbHandler.recordRating({
