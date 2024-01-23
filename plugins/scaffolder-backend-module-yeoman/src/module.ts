@@ -18,7 +18,7 @@ import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-no
 import { createRunYeomanAction } from './actions';
 
 /**
- * @alpha
+ * @public
  * The Yeoman Module for the Scaffolder Backend
  */
 export const yeomanModule = createBackendModule({

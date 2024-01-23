@@ -36,7 +36,7 @@ import {
 } from '@backstage/integration';
 
 /**
- * @alpha
+ * @public
  * The GitHub Module for the Scaffolder Backend
  */
 export const githubModule = createBackendModule({

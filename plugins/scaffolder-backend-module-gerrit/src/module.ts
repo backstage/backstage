@@ -25,7 +25,7 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 
 /**
- * @alpha
+ * @public
  * The Gerrit Module for the Scaffolder Backend
  */
 export const gerritModule = createBackendModule({

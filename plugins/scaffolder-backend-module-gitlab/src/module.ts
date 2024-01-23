@@ -31,7 +31,7 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 
 /**
- * @alpha
+ * @public
  * The GitLab Module for the Scaffolder Backend
  */
 export const gitlabModule = createBackendModule({

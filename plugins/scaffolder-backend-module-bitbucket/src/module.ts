@@ -27,7 +27,7 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 
 /**
- * @alpha
+ * @public
  * The Bitbucket Module for the Scaffolder Backend
  */
 export const bitbucketModule = createBackendModule({

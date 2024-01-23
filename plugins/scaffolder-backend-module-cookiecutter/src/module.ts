@@ -22,7 +22,7 @@ import { createFetchCookiecutterAction } from './actions';
 import { ScmIntegrations } from '@backstage/integration';
 
 /**
- * @alpha
+ * @public
  * The Cookiecutter Module for the Scaffolder Backend
  */
 export const cookiecutterModule = createBackendModule({

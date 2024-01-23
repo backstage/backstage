@@ -22,7 +22,7 @@ import { createFetchRailsAction } from './actions';
 import { ScmIntegrations } from '@backstage/integration';
 
 /**
- * @alpha
+ * @public
  * The Rails Module for the Scaffolder Backend
  */
 export const railsModule = createBackendModule({

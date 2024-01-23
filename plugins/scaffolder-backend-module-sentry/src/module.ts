@@ -21,7 +21,7 @@ import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-no
 import { createSentryCreateProjectAction } from './actions/createProject';
 
 /**
- * @alpha
+ * @public
  * The Sentry Module for the Scaffolder Backend
  */
 export const sentryModule = createBackendModule({

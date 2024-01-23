@@ -22,7 +22,7 @@ import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-no
 import { createPublishAzureAction } from './actions';
 
 /**
- * @alpha
+ * @public
  * The Azure Module for the Scaffolder Backend
  */
 export const azureModule = createBackendModule({

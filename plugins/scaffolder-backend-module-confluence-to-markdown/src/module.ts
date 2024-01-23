@@ -22,7 +22,7 @@ import { createConfluenceToMarkdownAction } from './actions';
 import { ScmIntegrations } from '@backstage/integration';
 
 /**
- * @alpha
+ * @public
  * The Confluence to Markdown Module for the Scaffolder Backend
  */
 export const confluenceToMarkdownModule = createBackendModule({
