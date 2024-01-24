@@ -176,11 +176,13 @@ export type ErrorPanelProps = {
 // @public (undocumented)
 export const ErrorReporting: ({
   detectedErrors,
+  clusters,
 }: ErrorReportingProps) => React_3.JSX.Element;
 
 // @public (undocumented)
 export type ErrorReportingProps = {
   detectedErrors: DetectedErrorsByCluster;
+  clusters: ClusterAttributes[];
 };
 
 // @public
