@@ -277,7 +277,7 @@ module.exports = {
                 to: 'https://developer.spotify.com/',
               },
               {
-                label: 'Github',
+                label: 'GitHub',
                 to: 'https://github.com/backstage/',
               },
             ],
