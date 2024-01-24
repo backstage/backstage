@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createPermission } from '@backstage/plugin-permission-common';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
 
-import { Entity } from '@backstage/catalog-model';
-import { AZURE_WEB_SITE_NAME_ANNOTATION } from '@backstage/plugin-azure-sites-common';
+/**
+ * @public
+ */
+export const azureSitesActionPermission = createPermission({
+  name: 'azure.sites.update',
+  attributes: { action: 'update' },
+  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+});
 
-export const useServiceEntityAnnotations = (entity: Entity) => {
-  const webSiteName =
-    entity?.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION] ?? '';
-
-  return {
-    webSiteName,
-  };
-};
+/**
+ * @public
+ */
+export const azureSitesPermissions = [azureSitesActionPermission];
