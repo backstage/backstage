@@ -266,6 +266,7 @@ export const createPublishGithubPullRequestAction: (
     teamReviewers?: string[] | undefined;
     commitMessage?: string | undefined;
     update?: boolean | undefined;
+    forceFork?: boolean | undefined;
   },
   JsonObject
 >;
