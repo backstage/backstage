@@ -21,6 +21,7 @@ export type GetSessionOptions = {
   optional?: boolean;
   instantPopup?: boolean;
   scopes?: Set<string>;
+  audience?: string;
 };
 
 /**

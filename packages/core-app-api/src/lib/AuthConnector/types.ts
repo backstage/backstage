@@ -16,6 +16,7 @@
 
 export type CreateSessionOptions = {
   scopes: Set<string>;
+  audience?: string;
   instantPopup?: boolean;
 };
 

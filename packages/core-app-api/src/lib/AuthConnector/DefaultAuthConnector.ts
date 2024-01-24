@@ -107,11 +107,11 @@ export class DefaultAuthConnector<AuthSession>
 
     this.authRequester = oauthRequestApi.createAuthRequester({
       provider,
-      onAuthRequest: async scopes => {
+      onAuthRequest: async (scopes, audience) => {
         if (!this.enableExperimentalRedirectFlow) {
-          return this.showPopup(scopes);
+          return this.showPopup(scopes, audience);
         }
-        return this.executeRedirect(scopes);
+        return this.executeRedirect(scopes, audience);
       },
     });
 
@@ -126,11 +126,11 @@ export class DefaultAuthConnector<AuthSession>
   async createSession(options: CreateSessionOptions): Promise<AuthSession> {
     if (options.instantPopup) {
       if (this.enableExperimentalRedirectFlow) {
-        return this.executeRedirect(options.scopes);
+        return this.executeRedirect(options.scopes, options.audience);
       }
-      return this.showPopup(options.scopes);
+      return this.showPopup(options.scopes, options.audience);
     }
-    return this.authRequester(options.scopes);
+    return this.authRequester(options.scopes, options.audience);
   }
 
   async refreshSession(scopes?: Set<string>): Promise<any> {
@@ -187,9 +187,13 @@ export class DefaultAuthConnector<AuthSession>
     }
   }
 
-  private async showPopup(scopes: Set<string>): Promise<AuthSession> {
+  private async showPopup(
+    scopes: Set<string>,
+    audience?: string,
+  ): Promise<AuthSession> {
     const scope = this.joinScopesFunc(scopes);
     const popupUrl = await this.buildUrl('/start', {
+      ...(audience && { audience }),
       scope,
       origin: window.location.origin,
       flow: 'popup',
@@ -214,10 +218,14 @@ export class DefaultAuthConnector<AuthSession>
     return await this.sessionTransform(payload);
   }
 
-  private async executeRedirect(scopes: Set<string>): Promise<AuthSession> {
+  private async executeRedirect(
+    scopes: Set<string>,
+    audience?: string,
+  ): Promise<AuthSession> {
     const scope = this.joinScopesFunc(scopes);
     // redirect to auth api
     window.location.href = await this.buildUrl('/start', {
+      ...(audience && { audience }),
       scope,
       origin: window.location.origin,
       redirectUrl: window.location.href,

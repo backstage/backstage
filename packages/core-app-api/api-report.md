@@ -52,6 +52,8 @@ import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
+import { PinnipedSupervisorApi } from '@backstage/core-plugin-api';
+import { pinnipedSupervisorApiRef } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
@@ -599,6 +601,23 @@ export type OneLoginAuthCreateOptions = {
   environment?: string;
   provider?: AuthProviderInfo;
 };
+
+// @public (undocumented)
+export class Pinniped implements PinnipedSupervisorApi {
+  // (undocumented)
+  static create(
+    options: OAuth2CreateOptions,
+  ): typeof pinnipedSupervisorApiRef.T;
+  // (undocumented)
+  getClusterScopedIdToken(
+    audience: string,
+    options?: AuthRequestOptions | undefined,
+  ): Promise<string>;
+  // (undocumented)
+  getSupervisorIdToken(
+    _options?: AuthRequestOptions | undefined,
+  ): Promise<string>;
+}
 
 // @public
 export type PopupOptions = {

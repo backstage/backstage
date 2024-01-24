@@ -153,6 +153,27 @@ export type OpenIdConnectApi = {
 };
 
 /**
+ * This API provides access to Pinniped credentials. It lets you request Supervisor and Cluster Scoped ID tokens,
+ * which can be passed to backend services to exchange it for mTLS x509 client certs.
+ *
+ * @public
+ */
+export type PinnipedSupervisorApi = {
+  getSupervisorIdToken(options?: AuthRequestOptions): Promise<string>;
+  /**
+   * Requests an Cluster Scoped ID Token which can be passed to backend services to exchange it for mTLS x509 client certs.
+   *
+   * If the user has not yet logged in to Pinniped inside Backstage, the user will be prompted
+   * to log in. The returned promise will not resolve until the user has successfully logged in.
+   * The returned promise can be rejected, but only if the user rejects the login request.
+   */
+  getClusterScopedIdToken(
+    audience: string,
+    options?: AuthRequestOptions,
+  ): Promise<string>;
+};
+
+/**
  * This API provides access to profile information of the user from an auth provider.
  *
  * @public
@@ -450,6 +471,17 @@ export const atlassianAuthApiRef: ApiRef<
 > = createApiRef({
   id: 'core.auth.atlassian',
 });
+
+/**
+ * Provides authentication towards Pinniped APIs.
+ *
+ * @public
+ * @remarks
+ */
+export const pinnipedSupervisorApiRef: ApiRef<PinnipedSupervisorApi> =
+  createApiRef({
+    id: 'core.auth.pinniped',
+  });
 
 /**
  * Provides authentication towards VMware Cloud APIs and identities.

@@ -34,7 +34,10 @@ export type OAuthRequesterOptions<TOAuthResponse> = {
    * Implementation of the auth flow, which will be called synchronously when
    * trigger() is called on an auth requests.
    */
-  onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
+  onAuthRequest(
+    scopes: Set<string>,
+    audience?: string,
+  ): Promise<TOAuthResponse>;
 };
 
 /**
@@ -53,6 +56,7 @@ export type OAuthRequesterOptions<TOAuthResponse> = {
  */
 export type OAuthRequester<TAuthResponse> = (
   scopes: Set<string>,
+  audience?: string,
 ) => Promise<TAuthResponse>;
 
 /**
