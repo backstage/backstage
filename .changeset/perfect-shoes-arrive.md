@@ -13,8 +13,8 @@ const requireComments = (
 
 - feedbackDialogResponses = {[
 - { id: 'incorrect', label: 'Incorrect info' },
-- { id: 'missing', label: 'Missing info', mustComment: true },
-- { id: 'other', label: 'Other (please specify below)', mustComment: true },
+- { id: 'missing', label: 'Missing info', `mustComment`: true },
+- { id: 'other', label: 'Other (please specify below)', `mustComment`: true },
 - ]}
 - />
   ...
