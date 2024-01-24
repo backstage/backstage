@@ -161,7 +161,7 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
                           podName: podAndErrors.pod.metadata?.name ?? 'unknown',
                           podNamespace:
                             podAndErrors.pod.metadata?.namespace ?? 'unknown',
-                          clusterName: podAndErrors.cluster.name,
+                          cluster: podAndErrors.cluster,
                         }}
                         containerSpec={containerSpec}
                         containerStatus={containerStatus}

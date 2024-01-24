@@ -750,7 +750,7 @@ export const PodNamesWithMetricsContext: React_2.Context<
 // @public
 export interface PodScope {
   // (undocumented)
-  clusterName: string;
+  cluster: ClusterAttributes;
   // (undocumented)
   podName: string;
   // (undocumented)
