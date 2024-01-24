@@ -38,7 +38,7 @@ export interface RouterOptions {
   logger: Logger;
   azureSitesApi: AzureSitesApi;
   catalogApi: CatalogApi;
-  permissions?: PermissionEvaluator;
+  permissions: PermissionEvaluator;
 }
 
 /** @public */
