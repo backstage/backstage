@@ -31,10 +31,10 @@ jest.mock('@octokit/graphql');
 describe('GithubOrgEntityProvider', () => {
   describe('read', () => {
     let mockClient;
-    let entityProviderConnection;
-    let entityProvider;
+    let entityProviderConnection: EntityProviderConnection;
+    let entityProvider: GithubOrgEntityProvider;
 
-    const setupMocks = response => {
+    const setupMocks = (response: ((...args: any) => any) | undefined) => {
       mockClient = jest.fn().mockImplementation(response);
       (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
     };
