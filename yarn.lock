@@ -3550,6 +3550,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/cli-builder@workspace:plugins/cli-builder":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-builder@workspace:plugins/cli-builder"
+  dependencies:
+    "@backstage/backend-app-api": "workspace:^"
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@types/express": "*"
+    "@types/supertest": ^2.0.8
+    cli-table: ^0.3.11
+    commander: ^12.0.0-1
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    supertest: ^6.2.4
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/cli-common@workspace:^, @backstage/cli-common@workspace:packages/cli-common":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-common@workspace:packages/cli-common"
@@ -23697,6 +23721,13 @@ __metadata:
   version: 10.0.1
   resolution: "commander@npm:10.0.1"
   checksum: 436901d64a818295803c1996cd856621a74f30b9f9e28a588e726b2b1670665bccd7c1a77007ebf328729f0139838a88a19265858a0fa7a8728c4656796db948
+  languageName: node
+  linkType: hard
+
+"commander@npm:^12.0.0-1":
+  version: 12.0.0-1
+  resolution: "commander@npm:12.0.0-1"
+  checksum: 403a111f09ecd3de4f18ee019e188f331a656efbdf235aa4b91d9d0f29eebfa7363d5b17647eac3ffee646acb092ebf5ca9cc4af50d93b63320e6c6b82f01b58
   languageName: node
   linkType: hard
 
