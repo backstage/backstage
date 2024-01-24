@@ -90,7 +90,7 @@ const overviewContent = (
   </Grid>
 );
 
-// Require comments for specific feedback responses
+// Link the feedback comment box to specific feedback responses
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
     ...

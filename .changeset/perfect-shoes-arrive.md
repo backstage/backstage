@@ -5,7 +5,7 @@
 
 <!-- @backstage/plugin-entity-feedback -->
 
-Add in logic to require comments for specific feedback responses
+Add in logic to link the feedback comment box to specific feedback responses
 const requireComments = (
 <Grid container spacing={3} alignItems="stretch">
 ...

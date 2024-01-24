@@ -97,7 +97,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
     .filter(r => r.mustComment)
     .map(r => r.id);
 
-  const isMandatedBoxChecked = () => {
+  const isLinkedBoxChecked = () => {
     const checkedBoxes = Object.keys(responseSelections).filter(
       id => responseSelections[id],
     );
@@ -106,7 +106,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
 
   const [{ loading: saving }, saveResponse] = useAsyncFn(async () => {
     if (requireComments.length > 0) {
-      if (comments.length === 0 && isMandatedBoxChecked()) {
+      if (comments.length === 0 && isLinkedBoxChecked()) {
         alertApi.post({
           message:
             'The selected option(s) require a comment. Please provide a comment.',
@@ -114,7 +114,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
         });
         return;
       }
-      if (comments.length > 0 && !isMandatedBoxChecked()) {
+      if (comments.length > 0 && !isLinkedBoxChecked()) {
         alertApi.post({
           message: 'Please select the option(s) that require a comment.',
           severity: 'info',
@@ -136,7 +136,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
     }
   }, [comments, consent, entity, feedbackApi, onClose, responseSelections]);
 
-  const selectMandatedBox = (res: boolean) => {
+  const selectLinkedBox = (res: boolean) => {
     const newResponseSelections = { ...responseSelections };
     requireComments.forEach(id => newResponseSelections[id] === res);
     setResponseSelections(newResponseSelections);
@@ -145,9 +145,9 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
   const verifyComments = (e: any) => {
     setComments(e.target.value);
     if (requireComments.length > 0) {
-      selectMandatedBox(true);
+      selectLinkedBox(true);
       if (e.target.value.length === 0) {
-        selectMandatedBox(false);
+        selectLinkedBox(false);
       }
     }
   };
