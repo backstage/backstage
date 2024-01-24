@@ -81,8 +81,6 @@ const extension = createExtension({
 
 Note that while the `createExtension` is public API and used in many places, it is not typically what you use when building plugins and features. Instead there are many extension creator functions exported by both the core APIs and plugins that make it easier to create extensions for more specific usages.
 
-... TODO ...
-
 ## Extension Data
 
 Communication between extensions happens in one direction, from one child extension through the attachment point to its parent. The child extension outputs data which is then passed as inputs to the parent extension. This data is called Extension Data, where the shape of each individual piece of data is described by an Extension Data Reference. These references are created separately from the extensions themselves, and can be shared across multiple different kinds of extensions. Each reference consists of an ID and a TypeScript type that the data needs to conform to, and represents one type of data that can be shared between extensions.

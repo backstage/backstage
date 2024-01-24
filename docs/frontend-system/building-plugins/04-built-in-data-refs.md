@@ -3,22 +3,95 @@ id: built-in-data-refs
 title: Built-in data refs
 sidebar_label: Built-in data refs
 # prettier-ignore
-description: Configuring or overriding built-in data refs
+description: Configuring or overriding built-in extension data references
 ---
 
-## Disable built-in data refs
+To have a better understanding of extension data references please read [extension data section the extensions architecture documentation](../architecture/03-extensions.md#extension-data) first.
 
-## Override built-in data refs
+## Built-in extension data references
 
-## Default built-in data refs
+### Frontend Plugin API
 
-### Example
+#### Core Extension Data
 
-#### Example
+| namespace |     name     |    type     |         id          |
+| :-------: | :----------: | :---------: | :-----------------: |
+|     -     | reactElement | JSX.Element | `core.reactElement` |
+|     -     |  routePath   |   string    | `core.routing.path` |
+|     -     |   routeRef   |  RouteRef   | `core.routing.ref`  |
 
-Extensions that provides a default `light` and `dark` app themes.
+####
 
-| kind  | namespace | name  |        id         |
-| :---: | :-------: | :---: | :---------------: |
-| theme |    app    | light | `theme:app/light` |
-| theme |    app    | dark  | `theme:app/dark`  |
+|     namespace      |      name      |     type      |        id        |
+| :----------------: | :------------: | :-----------: | :--------------: |
+| createApiExtension | factoryDataRef | AnyApiFactory | core.api.factory |
+
+####
+
+|           namespace           |       name       |                 type                 |        id        |
+| :---------------------------: | :--------------: | :----------------------------------: | :--------------: |
+| createAppRootWrapperExtension | componentDataRef | ComponentType<PropsWithChildren<{}>> | app.root.wrapper |
+
+####
+
+|       namespace       |       name       |                 type                 |        id        |
+| :-------------------: | :--------------: | :----------------------------------: | :--------------: |
+| createRouterExtension | componentDataRef | ComponentType<PropsWithChildren<{}>> | app.root.wrapper |
+
+####
+
+```ts
+type DataType = {
+  title: string;
+  icon: IconComponent;
+  routeRef: RouteRef<undefined>;
+};
+```
+
+|       namespace        |     name      |   type   |          id          |
+| :--------------------: | :-----------: | :------: | :------------------: |
+| createNavItemExtension | targetDataRef | DataType | core.nav-item.target |
+
+####
+
+```ts
+type DataType = {
+  logoIcon?: JSX.Element;
+  logoFull?: JSX.Element;
+};
+```
+
+|       namespace        |        name         |                 type                 |             id              |
+| :--------------------: | :-----------------: | :----------------------------------: | :-------------------------: |
+| createNavLogoExtension | logoElementsDataRef | ComponentType<PropsWithChildren<{}>> | core.nav-logo.logo-elements |
+
+####
+
+|         namespace         |       name       |              type              |             id              |
+| :-----------------------: | :--------------: | :----------------------------: | :-------------------------: |
+| createSignInPageExtension | componentDataRef | ComponentType<SignInPageProps> | core.sign-in-page.component |
+
+####
+
+|      namespace       |     name     |   type   |        id        |
+| :------------------: | :----------: | :------: | :--------------: |
+| createThemeExtension | themeDataRef | AppTheme | core.theme.theme |
+
+####
+
+```ts
+type DataType = {
+  ref: ComponentRef;
+  impl: ComponentType;
+};
+```
+
+|        namespace         |       name       |   type   |            id            |
+| :----------------------: | :--------------: | :------: | :----------------------: |
+| createComponentExtension | componentDataRef | DataType | core.component.component |
+
+####
+
+|         namespace          |        name        |                    type                    |              id              |
+| :------------------------: | :----------------: | :----------------------------------------: | :--------------------------: |
+| createTranslationExtension | translationDataRef | TranslationResource or TranslationMessages | core.translation.translation |
