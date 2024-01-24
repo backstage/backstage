@@ -85,40 +85,17 @@ Options:
 
 Commands:
   init
-  generate [command]
+  generate [options]
   help [command]
 ```
 
 ### `backstage-repo-tools package schema openapi generate`
 
 ```
-Usage: backstage-repo-tools package schema openapi generate [options] [command] [command]
+Usage: backstage-repo-tools package schema openapi generate [options]
 
 Options:
-  -h, --help
-
-Commands:
-  server
-  client [options]
-  help [command]
-```
-
-### `backstage-repo-tools package schema openapi generate client`
-
-```
-Usage: backstage-repo-tools package schema openapi generate client [options]
-
-Options:
-  --output-package <pathToPackage>
-  -h, --help
-```
-
-### `backstage-repo-tools package schema openapi generate server`
-
-```
-Usage: backstage-repo-tools package schema openapi generate server [options]
-
-Options:
+  --client-package [package]
   -h, --help
 ```
 

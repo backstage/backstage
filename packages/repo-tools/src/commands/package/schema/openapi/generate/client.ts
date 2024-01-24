@@ -87,11 +87,7 @@ async function generate(outputDirectory: string) {
   });
 }
 
-export async function command({
-  outputPackage,
-}: {
-  outputPackage: string;
-}): Promise<void> {
+export async function command(outputPackage: string): Promise<void> {
   try {
     await generate(outputPackage);
     console.log(

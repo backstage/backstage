@@ -44,35 +44,19 @@ function registerPackageCommand(program: Command) {
       ),
     );
 
-  const generateCommand = openApiCommand
-    .command('generate [command]')
-    .description(
-      'Commands for generating various things from an OpenAPI spec.',
-    );
-
-  generateCommand
-    .command('server')
-    .description(
-      'Generates an express server stub using the OpenAPI schema for typings.',
-    )
-    .action(
-      lazy(() =>
-        import('./package/schema/openapi/generate/server').then(m => m.command),
-      ),
-    );
-
-  generateCommand
-    .command('client')
-    .description(
-      'Generates a client that can interact with your backend plugin using types from your OpenAPI schema.',
-    )
-    .requiredOption(
-      '--output-package <pathToPackage>',
+  openApiCommand
+    .command('generate')
+    .option(
+      '--client-package [package]',
       'Top-level path to where the client should be generated, ie packages/catalog-client.',
     )
+    .option('--server')
+    .description(
+      'Command to generate a client and/or a server stub from an OpenAPI spec.',
+    )
     .action(
       lazy(() =>
-        import('./package/schema/openapi/generate/client').then(m => m.command),
+        import('./package/schema/openapi/generate').then(m => m.command),
       ),
     );
 }

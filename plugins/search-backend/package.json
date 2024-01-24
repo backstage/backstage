@@ -40,7 +40,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "clean": "backstage-cli package clean",
-    "generate-server": "backstage-repo-tools package schema openapi generate server"
+    "generate": "backstage-repo-tools package schema openapi generate --server"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
