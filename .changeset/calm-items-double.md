@@ -1,4 +1,5 @@
 ---
+'@backstage/plugin-scaffolder-backend-module-github': minor
 '@backstage/plugin-scaffolder-backend': minor
 ---
 
