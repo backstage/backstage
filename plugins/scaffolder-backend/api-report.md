@@ -175,6 +175,8 @@ export function createFetchTemplateAction(options: {
     copyWithoutTemplating?: string[] | undefined;
     cookiecutterCompat?: boolean | undefined;
     replace?: boolean | undefined;
+    trimBlocks?: boolean | undefined;
+    lstripBlocks?: boolean | undefined;
   },
   JsonObject
 >;

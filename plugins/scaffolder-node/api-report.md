@@ -164,6 +164,12 @@ export function initRepoAndPush(input: {
 }>;
 
 // @public (undocumented)
+export type NunjucksConfigs = {
+  trimBlocks?: boolean;
+  lstripBlocks?: boolean;
+};
+
+// @public (undocumented)
 export const parseRepoUrl: (
   repoUrl: string,
   integrations: ScmIntegrationRegistry,
