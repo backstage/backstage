@@ -62,10 +62,11 @@ This plugin requires a proxy endpoint for Dynatrace configured in `app-config.ya
 
 ```yaml
 proxy:
+  endpoints:
   '/dynatrace':
-    target: 'https://example.dynatrace.com/api/v2'
-    headers:
-      Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
+      target: 'https://example.dynatrace.com/api/v2'
+      headers:
+        Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
 ```
 
 It also requires a `baseUrl` for rendering links to problems in the table like so:
