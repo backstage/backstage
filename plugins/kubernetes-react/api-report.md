@@ -692,7 +692,7 @@ export const PodExecTerminalDialog: (
 // @public
 export interface PodExecTerminalProps {
   // (undocumented)
-  clusterName: string;
+  cluster: ClusterAttributes;
   // (undocumented)
   containerName: string;
   // (undocumented)
