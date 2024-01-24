@@ -17,10 +17,7 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
-import {
-  GithubCredentialsProvider,
-  GithubIntegrationConfig,
-} from '@backstage/integration';
+import { GithubCredentialsProvider } from '@backstage/integration';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
