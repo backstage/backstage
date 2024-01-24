@@ -1,12 +1,12 @@
 ---
-'@backstage/plugin-azure-sites-backend': minor
-'@backstage/plugin-azure-sites-common': minor
-'@backstage/plugin-azure-sites': minor
+'@backstage/plugin-azure-sites-backend': patch
+'@backstage/plugin-azure-sites-common': patch
+'@backstage/plugin-azure-sites': patch
 ---
 
-`Azure Site` Start and Stop action is now protected with `Permission framework`. Also `catalogApi` is required in `createRouter` when adding this plugin.
+Azure Sites `start` and `stop` action is now protected with the Permissions framework.
 
-The below example illustrate that the action is forbids anyone but the owner of the catalog entity to trigger actions towards a site tied to an entity.
+The below example describes an action that forbids anyone but the owner of the catalog entity to trigger actions towards a site tied to an entity.
 
 ```typescript
    // packages/backend/src/plugins/permission.ts
