@@ -22,10 +22,10 @@ import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import esbuild from 'rollup-plugin-esbuild';
 import svgr from '@svgr/rollup';
-import dts from 'rollup-plugin-dts';
+import { dts } from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
 import yaml from '@rollup/plugin-yaml';
-import { RollupOptions, OutputOptions, RollupWarning } from 'rollup';
+import { RollupOptions, OutputOptions, RollupLog } from 'rollup';
 
 import { forwardFileImports } from './plugins';
 import { BuildOptions, Output } from './types';
@@ -61,7 +61,7 @@ export async function makeRollupConfigs(
     targetPkg = (await fs.readJson(packagePath)) as BackstagePackageJson;
   }
 
-  const onwarn = ({ code, message }: RollupWarning) => {
+  const onwarn = ({ code, message }: RollupLog) => {
     if (code === 'EMPTY_BUNDLE') {
       return; // We don't care about this one
     }
