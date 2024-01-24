@@ -1,5 +1,17 @@
 # @backstage/app-defaults
 
+## 1.4.8-next.0
+
+### Patch Changes
+
+- f899eec: Change default icon for `kind:resource` to the storage icon.
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-app-api@1.11.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-permission-react@0.4.19
+
 ## 1.4.7
 
 ### Patch Changes

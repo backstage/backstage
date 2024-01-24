@@ -700,6 +700,26 @@ const backend = createBackend();
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 ```
 
+With the new Backend System version of the Scaffolder plugin, any provider specific actions will need to be installed separately.
+For example - GitHub actions are now collected under the `@backstage/plugin-scaffolder-backend-module-github` package.
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+
+/* highlight-add-next-line */
+backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
+```
+
+And of course you'll need to install those separately as well.
+
+```bash
+# from the repository root
+yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-github
+```
+
+You can find a list of the available modules under the [plugins directory](https://github.com/backstage/backstage/tree/master/plugins) in the monorepo.
+
 If you have other customizations made to `plugins/scaffolder.ts`, such as adding
 custom actions, read on. Otherwise, you should be able to just delete that file
 at this point.

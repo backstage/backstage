@@ -32,7 +32,7 @@ import { loadCliConfig } from '../config';
 import { Lockfile } from '../versioning';
 import { createConfig, resolveBaseUrl } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
-import { resolveBundlingPaths } from './paths';
+import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 import { hasReactDomClient } from './hasReactDomClient';
 
@@ -147,7 +147,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     },
   });
 
-  const config = await createConfig(paths, {
+  const commonConfigOptions = {
     ...options,
     checksEnabled: options.checksEnabled,
     isDev: true,
@@ -156,6 +156,10 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     getFrontendAppConfigs: () => {
       return latestFrontendAppConfigs;
     },
+  };
+
+  const config = await createConfig(paths, {
+    ...commonConfigOptions,
     additionalEntryPoints: detectedModulesEntryPoint,
   });
 
@@ -199,7 +203,26 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       root: paths.targetPath,
     });
   } else {
-    const compiler = webpack(config);
+    const publicPaths = await resolveOptionalBundlingPaths({
+      entry: 'src/index-public-experimental',
+      dist: 'dist/public',
+    });
+    if (publicPaths) {
+      console.log(
+        chalk.yellow(
+          `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
+        ),
+      );
+    }
+    const compiler = publicPaths
+      ? webpack([
+          config,
+          await createConfig(publicPaths, {
+            ...commonConfigOptions,
+            publicSubPath: '/public',
+          }),
+        ])
+      : webpack(config);
 
     webpackServer = new WebpackDevServer(
       {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonValue, JsonObject } from '@backstage/types';
+import { JsonValue, JsonObject, HumanDuration } from '@backstage/types';
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import {
@@ -143,6 +143,14 @@ export type TaskStoreCreateTaskOptions = {
 };
 
 /**
+ * The options passed to {@link TaskStore.recoverTasks}
+ * @public
+ */
+export type TaskStoreRecoverTaskOptions = {
+  timeout: HumanDuration;
+};
+
+/**
  * The response from {@link TaskStore.createTask}
  * @public
  */
@@ -161,6 +169,10 @@ export interface TaskStore {
   createTask(
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
+
+  recoverTasks?(
+    options: TaskStoreRecoverTaskOptions,
+  ): Promise<{ ids: string[] }>;
 
   getTask(taskId: string): Promise<SerializedTask>;
 

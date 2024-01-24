@@ -16,10 +16,10 @@
 
 import { parseEntityRef } from '@backstage/catalog-model';
 import { useApp } from '@backstage/core-plugin-api';
-import WorkIcon from '@material-ui/icons/Work';
 import React from 'react';
+import SvgIcon from '@material-ui/core/SvgIcon';
 
-const DEFAULT_ICON = WorkIcon;
+const DEFAULT_ICON = SvgIcon;
 
 function getKind(
   kind: string | undefined,

@@ -1,5 +1,21 @@
 # @backstage/plugin-explore
 
+## 0.4.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/plugin-search-react@1.7.6-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-explore-react@0.0.35
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.4.15
 
 ### Patch Changes

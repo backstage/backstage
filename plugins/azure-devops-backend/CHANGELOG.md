@@ -1,5 +1,20 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.5.2-next.0
+
+### Patch Changes
+
+- 353244d: Added a note about Service Principles
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/plugin-catalog-node@1.6.2-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-azure-devops-common@0.3.2
+  - @backstage/plugin-catalog-common@1.0.20
+
 ## 0.5.1
 
 ### Patch Changes

@@ -20,7 +20,6 @@ import { HumanDuration } from '@backstage/types';
 import ApartmentIcon from '@material-ui/icons/Apartment';
 import CategoryIcon from '@material-ui/icons/Category';
 import ExtensionIcon from '@material-ui/icons/Extension';
-import HelpIcon from '@material-ui/icons/Help';
 import FeaturedPlayListIcon from '@material-ui/icons/FeaturedPlayList';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import MemoryIcon from '@material-ui/icons/Memory';
@@ -32,8 +31,6 @@ import { DefaultEntityPresentationApiRenderer } from './DefaultEntityPresentatio
 export const DEFAULT_CACHE_TTL: HumanDuration = { seconds: 10 };
 
 export const DEFAULT_BATCH_DELAY: HumanDuration = { milliseconds: 50 };
-
-export const UNKNOWN_KIND_ICON: IconComponent = HelpIcon;
 
 export const DEFAULT_ICONS: Record<string, IconComponent> = {
   api: ExtensionIcon,

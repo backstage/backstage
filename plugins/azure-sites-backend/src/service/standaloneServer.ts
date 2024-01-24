@@ -17,11 +17,15 @@
 import {
   createServiceBuilder,
   loadBackendConfig,
+  ServerTokenManager,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { AzureSitesApi } from '../api';
 import { createRouter } from './router';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+import { CatalogClient } from '@backstage/catalog-client';
 
 export interface ServerOptions {
   port: number;
@@ -34,10 +38,21 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'azure-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
+  const discovery = SingleHostDiscovery.fromConfig(config);
+  const tokenManager = ServerTokenManager.fromConfig(config, {
+    logger,
+  });
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    tokenManager,
+  });
+  const catalogApi = new CatalogClient({ discoveryApi: discovery });
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
+    permissions,
     azureSitesApi: AzureSitesApi.fromConfig(config),
+    catalogApi,
   });
 
   let service = createServiceBuilder(module)
