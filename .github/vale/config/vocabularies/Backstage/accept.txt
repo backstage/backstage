@@ -92,6 +92,7 @@ Deutsche
 dev
 devops
 devs
+dialogs
 discoverability
 Discoverability
 dls

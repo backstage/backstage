@@ -42,7 +42,9 @@ export const PodExecTerminalDialog = (props: PodExecTerminalProps) => {
           isPodExecTerminalSupported.loading ||
           !isPodExecTerminalSupported.value
         }
-        title={`${podName} - ${containerName} terminal shell on cluster ${cluster.name}`}
+        title={`${podName} - ${containerName} terminal shell on cluster ${
+          cluster.title || cluster.name
+        }`}
       >
         <PodExecTerminal {...props} />
       </KubernetesDialog>
