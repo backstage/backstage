@@ -120,15 +120,6 @@ export default class Pinniped implements PinnipedSupervisorApi {
               (session.providerInfo.expiresAt.getTime() - Date.now()) / 1000,
             );
           }
-          if (session.backstageIdentity?.expiresAt) {
-            min = Math.min(
-              min,
-              (session.backstageIdentity.expiresAt.getTime() - Date.now()) /
-                1000,
-            );
-          }
-          return min < 60 * 5;
-        },
       });
 
       this.audiences[aud] = sessionManager;
