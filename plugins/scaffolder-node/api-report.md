@@ -195,6 +195,7 @@ export function fetchContents(options: {
   baseUrl?: string;
   fetchUrl?: string;
   outputPath: string;
+  token?: string;
 }): Promise<void>;
 
 // @public
@@ -204,6 +205,7 @@ export function fetchFile(options: {
   baseUrl?: string;
   fetchUrl?: string;
   outputPath: string;
+  token?: string;
 }): Promise<void>;
 
 // @public (undocumented)

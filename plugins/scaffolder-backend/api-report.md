@@ -145,6 +145,7 @@ export function createFetchPlainAction(options: {
   {
     url: string;
     targetPath?: string | undefined;
+    token?: string | undefined;
   },
   JsonObject
 >;
@@ -157,6 +158,7 @@ export function createFetchPlainFileAction(options: {
   {
     url: string;
     targetPath: string;
+    token?: string | undefined;
   },
   JsonObject
 >;
@@ -179,6 +181,7 @@ export function createFetchTemplateAction(options: {
     replace?: boolean | undefined;
     trimBlocks?: boolean | undefined;
     lstripBlocks?: boolean | undefined;
+    token?: string | undefined;
   },
   JsonObject
 >;
