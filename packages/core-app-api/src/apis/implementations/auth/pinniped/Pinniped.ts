@@ -163,36 +163,4 @@ export default class Pinniped implements PinnipedSupervisorApi {
 
     return session?.providerInfo.idToken ?? '';
   }
-
-  private static getAudience(aud?: string): Promise<string> {
-    if (!aud)
-      return Promise.reject(new Error('Access tokens must have an audience.'));
-
-    let audiences: string[] = [];
-
-    audiences = [...new Set(aud.split(' '))];
-
-    if (audiences.length > 1) {
-      return Promise.reject(
-        new Error('Access tokens can only have a single audience.'),
-      );
-    }
-    const audience = audiences[0];
-    return Promise.resolve(audience);
-  }
-
-  private static normalizeScopes(
-    scopeTransform: (scopes: string[]) => string[],
-    scopes?: string | string[],
-  ): Set<string> {
-    if (!scopes) {
-      return new Set();
-    }
-
-    const scopeList = Array.isArray(scopes)
-      ? scopes
-      : scopes.split(/[\s|,]/).filter(Boolean);
-
-    return new Set(scopeTransform(scopeList));
-  }
 }
