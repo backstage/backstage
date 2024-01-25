@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { readFilterByConfigs } from '../../api/config';
+import { createFilterByQueryParamFromConfig } from '../../api/config';
 import { VisitedByType } from './VisitedByType';
 import { Visit, visitsApiRef } from '../../api';
 import { ContextValueOnly, useContext } from './Context';
@@ -66,7 +66,7 @@ export const Content = ({
   const visitsApi = useApi(visitsApiRef);
   const { loading: reqLoading } = useAsync(async () => {
     if (!visits && !loading && kind === 'recent') {
-      const filterBy = readFilterByConfigs(
+      const filterBy = createFilterByQueryParamFromConfig(
         config.getOptionalConfigArray('home.recentVisits.filterBy') ?? [],
       );
       return await visitsApi
@@ -78,7 +78,7 @@ export const Content = ({
         .then(setVisits);
     }
     if (!visits && !loading && kind === 'top') {
-      const filterBy = readFilterByConfigs(
+      const filterBy = createFilterByQueryParamFromConfig(
         config.getOptionalConfigArray('home.topVisits.filterBy') ?? [],
       );
       return await visitsApi

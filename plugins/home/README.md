@@ -353,6 +353,10 @@ home:
         value:
 ```
 
+Filters that are not defined according to the docs will be ignored.
+
+In order to validate the config you can use `backstage/cli config:check`
+
 ## Contributing
 
 ### Homepage Components
