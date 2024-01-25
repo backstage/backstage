@@ -353,7 +353,7 @@ home:
         value:
 ```
 
-Filters that are not defined according to the docs will be ignored.
+`filterBy` configs that are not defined in the above format will be ignored.
 
 In order to validate the config you can use `backstage/cli config:check`
 

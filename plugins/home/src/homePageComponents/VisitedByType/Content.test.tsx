@@ -43,12 +43,21 @@ const visits = [
   },
 ];
 
-const mockVisitsApi = {
+let mockVisitsApi = {
   save: async () => visits[0],
   list: async () => visits,
 };
 
 describe('<Content kind="recent"/>', () => {
+  beforeEach(() => {
+    mockVisitsApi = {
+      save: async () => visits[0],
+      list: async () => visits,
+    };
+  });
+
+  afterEach(() => jest.resetAllMocks());
+
   it('renders', async () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
@@ -207,6 +216,11 @@ describe('<Content kind="recent"/>', () => {
               operator: '==',
               value: '/tech-radar',
             },
+            {
+              field: 'pathname',
+              operator: '==',
+              value: '/explore',
+            },
           ],
         },
       },
@@ -235,12 +249,28 @@ describe('<Content kind="recent"/>', () => {
             field: 'timestamp',
           },
         ],
+        filterBy: [
+          {
+            field: 'pathname',
+            operator: '==',
+            value: '/explore',
+          },
+        ],
       });
     });
   });
 });
 
 describe('<Content kind="top"/>', () => {
+  beforeEach(() => {
+    mockVisitsApi = {
+      save: async () => visits[0],
+      list: async () => visits,
+    };
+  });
+
+  afterEach(() => jest.resetAllMocks());
+
   it('renders', async () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
