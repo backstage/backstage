@@ -52,7 +52,6 @@ import { SearchModal } from '../search/SearchModal';
 import Score from '@material-ui/icons/Score';
 import { useApp } from '@backstage/core-plugin-api';
 import BuildIcon from '@material-ui/icons/Build';
-import { ExtensionTree } from '@backstage/frontend-app-api';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -82,9 +81,7 @@ const SidebarLogo = () => {
   );
 };
 
-export const Root = ({
-  children,
-}: PropsWithChildren<{ extensionTree?: ExtensionTree }>) => (
+export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
