@@ -89,13 +89,24 @@ export async function createRouter(
   };
 
   const getUsersForEntityRef = async (
-    entityRef: string | string[],
+    entityRef: string | string[] | null,
   ): Promise<string[]> => {
-    const refs = Array.isArray(entityRef) ? entityRef : [entityRef];
     const { token } = await tokenManager.getToken();
+
+    // Broadcast
+    if (entityRef === null) {
+      const users = await catalogClient.getEntities({
+        filter: { kind: 'User' },
+        fields: ['kind', 'metadata.name', 'metadata.namespace'],
+      });
+      return users.items.map(stringifyEntityRef);
+    }
+
+    const refs = Array.isArray(entityRef) ? entityRef : [entityRef];
     const entities = await catalogClient.getEntitiesByRefs(
       {
         entityRefs: refs,
+        fields: ['kind', 'metadata.name', 'metadata.namespace'],
       },
       { token },
     );
@@ -206,7 +217,7 @@ export async function createRouter(
   });
 
   router.post('/notifications', async (req, res) => {
-    const { entityRef, title, description, link } = req.body;
+    const { receivers, title, description, link } = req.body;
     const notifications = [];
     let users = [];
 
@@ -216,6 +227,11 @@ export async function createRouter(
       logger.error(`Failed to authenticate notification request ${e}`);
       res.status(401).send();
       return;
+    }
+
+    let entityRef = null;
+    if (receivers.entityRef && receivers.type === 'entity') {
+      entityRef = receivers.entityRef;
     }
 
     try {
@@ -254,7 +270,7 @@ export async function createRouter(
 
     if (signalService) {
       await signalService.publish({
-        recipients: users,
+        recipients: entityRef === null ? null : users,
         message: { action: 'refresh' },
         channel: 'notifications',
       });

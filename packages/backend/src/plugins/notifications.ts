@@ -23,7 +23,7 @@ export default async function createPlugin(
 ): Promise<Router> {
   setInterval(() => {
     env.notificationService.send({
-      entityRef: 'user:default/guest',
+      receivers: { type: 'broadcast' },
       title: 'Test',
       description: 'Test',
       link: '/catalog',

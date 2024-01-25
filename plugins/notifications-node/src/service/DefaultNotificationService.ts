@@ -28,8 +28,13 @@ export type NotificationServiceOptions = {
 };
 
 /** @public */
+export type NotificationReceivers =
+  | { type: 'entity'; entityRef: string | string[] }
+  | { type: 'broadcast' };
+
+/** @public */
 export type NotificationSendOptions = {
-  entityRef: string | string[];
+  receivers: NotificationReceivers;
   title: string;
   description: string;
   link: string;

@@ -18,6 +18,6 @@ import { NotificationSendOptions } from './DefaultNotificationService';
 import { Notification } from '@backstage/plugin-notifications-common';
 
 /** @public */
-export type NotificationService = {
+export interface NotificationService {
   send(options: NotificationSendOptions): Promise<Notification[]>;
-};
+}

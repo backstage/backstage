@@ -4,7 +4,7 @@ Welcome to the notifications backend plugin!
 
 ## Getting started
 
-First you have to install `@backstage/plugin-notifications-node` and `@backstage/plugin-signals-node` 
+First you have to install `@backstage/plugin-notifications-node` and `@backstage/plugin-signals-node`
 packages.
 
 Then create a new file to `packages/backend/src/plugins/notifications.ts`:
@@ -23,7 +23,7 @@ export default async function createPlugin(
     tokenManager: env.tokenManager,
     database: env.database,
     discovery: env.discovery,
-    signalService: env.signalService
+    signalService: env.signalService,
   });
 }
 ```
