@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-home': patch
+'@backstage/plugin-home': minor
 ---
 
-Fall back to metadata.name if no metadata.title has been defined
+Use EntityDisplayName JSX element entity information directly for FeaturedDocsCard.
