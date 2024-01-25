@@ -18,6 +18,7 @@ import {
   BackendFeature,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
+import { Handler, Request } from 'express';
 
 /** @alpha */
 export interface FeatureDiscoveryService {
@@ -33,3 +34,62 @@ export const featureDiscoveryServiceRef =
     id: 'core.featureDiscovery',
     scope: 'root',
   });
+
+/**
+ * @alpha
+ */
+export type BackstageCredentials = {
+  token: string;
+
+  user?: {
+    userEntityRef: string;
+    ownershipEntityRefs: string[];
+  };
+
+  plugin?: {
+    id: string;
+  };
+};
+
+/** @alpha */
+export interface AuthService {
+  authenticate(token: string): Promise<BackstageCredentials>;
+
+  issueToken(credentials: BackstageCredentials): Promise<{ token: string }>;
+}
+
+/**
+ * A service for authenticating and issuing tokens.
+ * @alpha
+ */
+export const authServiceRef = createServiceRef<AuthService>({
+  id: 'core.auth',
+});
+
+/** @alpha */
+type AuthTypes = 'user' | 'service' | 'unauthorized';
+
+/** @alpha */
+export interface HttpAuthServiceMiddlewareOptions {
+  allow: AuthTypes[];
+}
+
+/** @alpha */
+export interface HttpAuthService {
+  createHttpPluginRouterMiddleware(): Handler;
+
+  middleware(options?: HttpAuthServiceMiddlewareOptions): Handler;
+
+  credentials(
+    req: Request,
+    options?: HttpAuthServiceMiddlewareOptions,
+  ): BackstageCredentials;
+}
+
+/**
+ * A service for authenticating and authorizing HTTP requests.
+ * @alpha
+ */
+export const httpAuthServiceRef = createServiceRef<HttpAuthService>({
+  id: 'core.httpAuth',
+});

@@ -21,6 +21,7 @@ import {
 import { Handler } from 'express';
 import PromiseRouter from 'express-promise-router';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
+import { httpAuthServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * @public
@@ -39,9 +40,10 @@ export const httpRouterServiceFactory = createServiceFactory(
     deps: {
       plugin: coreServices.pluginMetadata,
       lifecycle: coreServices.lifecycle,
+      httpAuth: httpAuthServiceRef,
       rootHttpRouter: coreServices.rootHttpRouter,
     },
-    async factory({ plugin, rootHttpRouter, lifecycle }) {
+    async factory({ plugin, rootHttpRouter, lifecycle, httpAuth }) {
       const getPath = options?.getPath ?? (id => `/api/${id}`);
       const path = getPath(plugin.getId());
 
@@ -49,6 +51,7 @@ export const httpRouterServiceFactory = createServiceFactory(
       rootHttpRouter.use(path, router);
 
       router.use(createLifecycleMiddleware({ lifecycle }));
+      router.use(httpAuth.createHttpPluginRouterMiddleware());
 
       return {
         use(handler: Handler) {

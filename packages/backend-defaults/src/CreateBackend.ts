@@ -33,6 +33,10 @@ import {
   urlReaderServiceFactory,
   identityServiceFactory,
 } from '@backstage/backend-app-api';
+import {
+  authServiceFactory,
+  httpAuthServiceFactory,
+} from '@backstage/backend-app-api/alpha';
 
 export const defaultServiceFactories = [
   cacheServiceFactory(),
@@ -50,6 +54,8 @@ export const defaultServiceFactories = [
   schedulerServiceFactory(),
   tokenManagerServiceFactory(),
   urlReaderServiceFactory(),
+  authServiceFactory(),
+  httpAuthServiceFactory(),
 ];
 
 /**

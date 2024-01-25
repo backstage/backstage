@@ -15,3 +15,5 @@
  */
 
 export { featureDiscoveryServiceFactory } from './alpha/featureDiscoveryServiceFactory';
+export { httpAuthServiceFactory } from './alpha/httpAuthServiceFactory';
+export { authServiceFactory } from './alpha/authServiceFactory';
