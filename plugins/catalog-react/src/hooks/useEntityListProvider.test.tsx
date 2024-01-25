@@ -329,6 +329,7 @@ describe('<EntityListProvider pagination />', () => {
     );
 
     await waitFor(() => {
+      expect(mockCatalogApi.getEntities).not.toHaveBeenCalledTimes(1);
       expect(result.current.entities.length).toBe(1);
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
