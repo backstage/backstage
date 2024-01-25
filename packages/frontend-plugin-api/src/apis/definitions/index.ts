@@ -43,5 +43,6 @@ export * from './FetchApi';
 export * from './IconsApi';
 export * from './IdentityApi';
 export * from './OAuthRequestApi';
+export * from './RouteResolutionApi';
 export * from './StorageApi';
 export * from './AnalyticsApi';

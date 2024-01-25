@@ -26,6 +26,7 @@ import {
   TextField,
   Typography,
   makeStyles,
+  Tooltip,
 } from '@material-ui/core';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -39,6 +40,8 @@ import PersonIcon from '@material-ui/icons/Person';
 import GroupIcon from '@material-ui/icons/Group';
 import { humanizeEntity, humanizeEntityRef } from '../EntityRefLink/humanize';
 import { useFetchEntities } from './useFetchEntities';
+import { withStyles } from '@material-ui/core/styles';
+import { useEntityPresentation } from '../../apis';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -46,11 +49,29 @@ export type CatalogReactEntityOwnerPickerClassKey = 'input';
 const useStyles = makeStyles(
   {
     input: {},
+    fullWidth: { width: '100%' },
+    boxLabel: {
+      width: '100%',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+    },
   },
   {
     name: 'CatalogReactEntityOwnerPicker',
   },
 );
+
+const FixedWidthFormControlLabel = withStyles(
+  _theme => ({
+    label: {
+      width: '100%',
+    },
+    root: {
+      width: '90%',
+    },
+  }),
+  { name: 'FixedWidthFormControlLabel' },
+)(FormControlLabel);
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -61,6 +82,42 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export type EntityOwnerPickerProps = {
   mode?: 'owners-only' | 'all';
 };
+
+function RenderOptionLabel(props: { entity: Entity; isSelected: boolean }) {
+  const classes = useStyles();
+  const isGroup = props.entity.kind.toLocaleLowerCase('en-US') === 'group';
+  const { primaryTitle: title } = useEntityPresentation(props.entity);
+  return (
+    <Box className={classes.fullWidth}>
+      <FixedWidthFormControlLabel
+        className={classes.fullWidth}
+        control={
+          <Checkbox
+            icon={icon}
+            checkedIcon={checkedIcon}
+            checked={props.isSelected}
+          />
+        }
+        onClick={event => event.preventDefault()}
+        label={
+          <Tooltip title={title}>
+            <Box display="flex" alignItems="center">
+              {isGroup ? (
+                <GroupIcon fontSize="small" />
+              ) : (
+                <PersonIcon fontSize="small" />
+              )}
+              &nbsp;
+              <Box className={classes.boxLabel}>
+                <Typography noWrap>{title}</Typography>
+              </Box>
+            </Box>
+          </Tooltip>
+        }
+      />
+    </Box>
+  );
+}
 
 /** @public */
 export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
@@ -153,41 +210,13 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
                 if (typeof e !== 'string') {
                   cache.setEntity(e);
                 }
-
                 return entityRef;
               }),
             );
           }}
           filterOptions={x => x}
           renderOption={(entity, { selected }) => {
-            const isGroup = entity.kind.toLocaleLowerCase('en-US') === 'group';
-
-            return (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    icon={icon}
-                    checkedIcon={checkedIcon}
-                    checked={selected}
-                  />
-                }
-                onClick={event => event.preventDefault()}
-                label={
-                  <Box display="flex" flexWrap="wrap" alignItems="center">
-                    {isGroup ? (
-                      <GroupIcon fontSize="small" />
-                    ) : (
-                      <PersonIcon fontSize="small" />
-                    )}
-                    &nbsp;
-                    {humanizeEntity(
-                      entity,
-                      humanizeEntityRef(entity, { defaultKind: entity.kind }),
-                    )}
-                  </Box>
-                }
-              />
-            );
+            return <RenderOptionLabel entity={entity} isSelected={selected} />;
           }}
           size="small"
           popupIcon={<ExpandMoreIcon data-testid="owner-picker-expand" />}

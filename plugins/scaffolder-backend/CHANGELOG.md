@@ -1,5 +1,48 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.21.0-next.0
+
+### Minor Changes
+
+- 11b9a08: Introduced the first version of recoverable tasks.
+- e9a5228: The built-in module list has been trimmed down when using the new Backend System. Provider specific modules should now be installed with `backend.add` to provide additional actions to the scaffolder. These modules are as follows:
+
+  - `@backstage/plugin-scaffolder-backend-module-github`
+  - `@backstage/plugin-scaffolder-backend-module-gitlab`
+  - `@backstage/plugin-scaffolder-backend-module-bitbucket`
+  - `@backstage/plugin-scaffolder-backend-module-gitea`
+  - `@backstage/plugin-scaffolder-backend-module-gerrit`
+  - `@backstage/plugin-scaffolder-backend-module-confluence-to-markdown`
+  - `@backstage/plugin-scaffolder-backend-module-cookiecutter`
+  - `@backstage/plugin-scaffolder-backend-module-rails`
+  - `@backstage/plugin-scaffolder-backend-module-sentry`
+  - `@backstage/plugin-scaffolder-backend-module-yeoman`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.1.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.2-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/plugin-scaffolder-node@0.3.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.0
+  - @backstage/backend-tasks@0.5.15-next.0
+  - @backstage/plugin-auth-node@0.4.4-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.7-next.0
+  - @backstage/plugin-catalog-node@1.6.2-next.0
+  - @backstage/plugin-permission-node@0.7.21-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 1.20.0
 
 ### Minor Changes

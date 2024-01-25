@@ -182,6 +182,7 @@ export const CatalogTable: {
     ): TableColumn<CatalogTableRow>;
     createNamespaceColumn(): TableColumn<CatalogTableRow>;
   }>;
+  defaultColumnsFunc: CatalogTableColumnsFunc;
 };
 
 // @public

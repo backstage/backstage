@@ -61,7 +61,13 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
+import {
+  findTemplate,
+  getEntityBaseUrl,
+  getMajorNodeVersion,
+  getWorkingDirectory,
+  isNoNodeSnapshotOptionProvided,
+} from './helpers';
 import {
   IdentityApi,
   IdentityApiGetIdentityRequest,
@@ -78,6 +84,7 @@ import {
 } from '@backstage/plugin-permission-node';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
 import { Duration } from 'luxon';
+import { LifecycleService } from '@backstage/backend-plugin-api';
 
 /**
  *
@@ -124,6 +131,7 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   reader: UrlReader;
+  lifecycle?: LifecycleService;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
   scheduler?: PluginTaskScheduler;
@@ -258,6 +266,14 @@ export async function createRouter(
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
 
+  const nodeVersion = getMajorNodeVersion();
+  if (nodeVersion >= 20 && !isNoNodeSnapshotOptionProvided()) {
+    throw new Error(
+      'When using node v20+ Scaffolder requires that node be started with the --no-node-snapshot option. Please restart ' +
+        'Backstage providing the node --no-node-snapshot option.',
+    );
+  }
+
   const identity: IdentityApi =
     options.identity || buildDefaultIdentityClient(options);
   const workingDirectory = await getWorkingDirectory(config, logger);
@@ -266,7 +282,7 @@ export async function createRouter(
   let taskBroker: TaskBroker;
   if (!options.taskBroker) {
     const databaseTaskStore = await DatabaseTaskStore.create({ database });
-    taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
+    taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
     if (scheduler && databaseTaskStore.listStaleTasks) {
       await scheduler.scheduleTask({
@@ -301,7 +317,7 @@ export async function createRouter(
 
   const actionRegistry = new TemplateActionRegistry();
 
-  const workers = [];
+  const workers: TaskWorker[] = [];
   if (concurrentTasksLimit !== 0) {
     for (let i = 0; i < (taskWorkers || 1); i++) {
       const worker = await TaskWorker.create({
@@ -331,7 +347,19 @@ export async function createRouter(
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
-  workers.forEach(worker => worker.start());
+
+  const launchWorkers = () => workers.forEach(worker => worker.start());
+
+  const shutdownWorkers = () => {
+    workers.forEach(worker => worker.stop());
+  };
+
+  if (options.lifecycle) {
+    options.lifecycle.addStartupHook(launchWorkers);
+    options.lifecycle.addShutdownHook(shutdownWorkers);
+  } else {
+    launchWorkers();
+  }
 
   const dryRunner = createDryRunner({
     actionRegistry,
@@ -462,6 +490,7 @@ export async function createRouter(
           id: step.id ?? `step-${index + 1}`,
           name: step.name ?? step.action,
         })),
+        EXPERIMENTAL_recovery: template.spec.EXPERIMENTAL_recovery,
         output: template.spec.output ?? {},
         parameters: values,
         user: {

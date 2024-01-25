@@ -11,4 +11,4 @@ Therefore we want to create a strong community of contributors -- all working to
 
 Contributions are welcome, and they are greatly appreciated! Every little bit helps, and credit will always be given. ❤️
 
-To get you started we've put together a [Contributors Guide in the Backstage GitHub repo](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) that has all the information you need
+To get you started we've put together a [Contributors Guide in the Backstage GitHub repo](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) that has all the information you need.

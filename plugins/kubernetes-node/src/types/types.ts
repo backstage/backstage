@@ -182,7 +182,7 @@ export type KubernetesObjectTypes =
  * @public
  */
 export interface ObjectToFetch {
-  objectType: KubernetesObjectTypes; // TODO - Review
+  objectType: KubernetesObjectTypes;
   group: string;
   apiVersion: string;
   plural: string;

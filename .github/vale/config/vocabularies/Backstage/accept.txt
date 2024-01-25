@@ -330,6 +330,7 @@ Rollbar
 Rollup
 routable
 Routable
+Rspack
 rst
 rsync
 ruleset

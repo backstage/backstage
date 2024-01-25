@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- a775596: Enabled a way to include custom auth metadata info on the clusters endpoint. If you want to implement a Kubernetes auth strategy which requires surfacing custom auth metadata to the frontend, use the new presentAuthMetadata method on the AuthenticationStrategy interface.
+- f180cba: Enabling authentication to kubernetes clusters with mTLS x509 client certs
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.7.4-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+
 ## 0.1.3
 
 ### Patch Changes

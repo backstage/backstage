@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 3a9ba42: Added functions to clone a repo, create a branch, add files and push and commit to the branch. This allows for files to be added to the a PR for use in the bitbucket pull request action for issue #21762
+- 11b9a08: Introduced the first version of recoverable tasks.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+
 ## 0.2.10
 
 ### Patch Changes

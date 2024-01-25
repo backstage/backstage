@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.5-next.0
+
+### Patch Changes
+
+- 131ffdc: Fix position of the ReportIssue component when is displaying at the top of the container.
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/integration@1.8.0
+  - @backstage/integration-react@1.1.23
+  - @backstage/plugin-techdocs-react@1.1.15
+
 ## 1.1.4
 
 ### Patch Changes

@@ -11,7 +11,7 @@ description: Support and Community Details and Links
   here if you want to contribute.
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - Help shape the
   technical direction by reviewing _Request for Comments_ issues.
-- [FAQ](../FAQ.md) - Frequently Asked Questions.
+- [FAQ](../faq/index.md) - Frequently Asked Questions.
 - [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md) -
   This is how we roll.
 - [Blog](https://backstage.io/blog/) - Announcements and updates.

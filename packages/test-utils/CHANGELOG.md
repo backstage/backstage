@@ -1,5 +1,22 @@
 # @backstage/test-utils
 
+## 1.5.0-next.0
+
+### Minor Changes
+
+- bb40898: Added `components` option to `TestAppOptions`, which will be forwarded as the `components` option to `createApp`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/core-app-api@1.11.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/theme@0.5.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-react@0.4.19
+
 ## 1.4.7
 
 ### Patch Changes

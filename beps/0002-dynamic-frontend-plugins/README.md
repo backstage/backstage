@@ -19,7 +19,7 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 
 <!-- Before merging the initial BEP PR, create a feature issue and update the below link. You can wait with this step until the BEP is ready to be merged. -->
 
-[**Discussion Issue**](https://github.com/backstage/backstage/issues/NNNNN)
+[**Discussion Issue**](https://github.com/backstage/backstage/issues/22423)
 
 - [Summary](#summary)
 - [Motivation](#motivation)
@@ -143,9 +143,15 @@ Plugin discovery is a pre-requisite for Plugin registry. This should be responsi
 
 ### Module federation implementation experiments
 
-> NOTE Share outcome of testing mixing multiple tools for module federation.
-
 Test should consist of trying to run permutations of webpack/Rspack/vite based shell apps/plugins and discover if we can freely choose any tool, or if we should restrict the tooling to just a subset of the available options.
+
+The outcome of initial testing is positive and it is possible to mix and match different build tools and consume different remote modules in a single shell application.
+
+The experimental code can be found in [this repository](https://github.com/scalprum/mf-mixing-experiments).
+
+**The testing so far was done only on very simple modules**. Although core React features are working (Context API and hooks), more testings needs to be done in order to declare this approach 100% reliable.
+
+So far a lot of custom code needs to be written to bridge Webpack, Rspack, @module-federation/enhanced with Vite. The first three are compatible out of the box, but Vite requires extra bridge to be able to consume/provide modules with/to other builds.
 
 ### Plugin manifest
 

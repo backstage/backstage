@@ -26,7 +26,7 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=8192
+      NODE_OPTIONS: ${{ matrix.node-version == '20.x' && '--max-old-space-size=8192 --no-node-snapshot' || '--max-old-space-size=8192' }}
 
     name: E2E Windows ${{ matrix.node-version }}
     steps:
@@ -56,7 +56,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: setup python
-        uses: actions/setup-python@v4.8.0
+        uses: actions/setup-python@v5.0.0
         with:
           python-version: '3.10'
 

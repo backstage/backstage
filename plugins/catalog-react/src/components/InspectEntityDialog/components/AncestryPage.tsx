@@ -26,7 +26,7 @@ import {
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useApi, useApp, useRouteRef } from '@backstage/core-plugin-api';
 import { Box, DialogContentText, makeStyles } from '@material-ui/core';
 import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
@@ -107,6 +107,7 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
   const entityRoute = useRouteRef(entityRouteRef);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
+  const app = useApp();
   const idRef = useRef<SVGTextElement | null>(null);
 
   useLayoutEffect(() => {
@@ -123,9 +124,12 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
     }
   }, [width, height]);
 
+  const hasKindIcon = app.getSystemIcon(
+    `kind:${node.kind.toLocaleLowerCase('en-US')}`,
+  );
   const padding = 10;
   const iconSize = height;
-  const paddedIconWidth = iconSize + padding;
+  const paddedIconWidth = hasKindIcon ? iconSize + padding : 0;
   const paddedWidth = paddedIconWidth + width + padding * 2;
   const paddedHeight = height + padding * 2;
 
@@ -160,17 +164,19 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
         height={paddedHeight}
         rx={10}
       />
-      <EntityKindIcon
-        kind={node.kind}
-        y={padding}
-        x={padding}
-        width={iconSize}
-        height={iconSize}
-        className={classNames(
-          classes.text,
-          node.root ? 'secondary' : 'primary',
-        )}
-      />
+      {hasKindIcon && (
+        <EntityKindIcon
+          kind={node.kind}
+          y={padding}
+          x={padding}
+          width={iconSize}
+          height={iconSize}
+          className={classNames(
+            classes.text,
+            node.root ? 'secondary' : 'primary',
+          )}
+        />
+      )}
       <text
         ref={idRef}
         className={classNames(
