@@ -33,6 +33,7 @@
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/plugin-notifications-common": "workspace:^",
+    "@backstage/plugin-signals-node": "workspace:^",
     "knex": "^3.0.0",
     "uuid": "^8.0.0"
   }

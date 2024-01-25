@@ -109,6 +109,7 @@ function makeCreateEnv(config: Config) {
     logger: root.child({ type: 'plugin' }),
     discovery,
     tokenManager,
+    signalService,
   });
 
   root.info(`Created UrlReader ${reader}`);

@@ -31,6 +31,12 @@ import {
   CatalogRequestOptions,
   GetEntitiesByRefsRequest,
 } from '@backstage/catalog-client';
+import { DefaultSignalService } from '@backstage/plugin-signals-node';
+import {
+  EventBroker,
+  EventParams,
+  EventSubscriber,
+} from '@backstage/plugin-events-node';
 
 export interface ServerOptions {
   port: number;
@@ -90,6 +96,20 @@ export async function startStandaloneServer(
     },
   };
 
+  const mockSubscribers: EventSubscriber[] = [];
+  const eventBroker: EventBroker = {
+    async publish(params: EventParams): Promise<void> {
+      mockSubscribers.forEach(sub => sub.onEvent(params));
+    },
+    subscribe(...subscribers: EventSubscriber[]) {
+      subscribers.flat().forEach(subscriber => {
+        mockSubscribers.push(subscriber);
+      });
+    },
+  };
+
+  const signalService = DefaultSignalService.create({ eventBroker });
+
   const router = await createRouter({
     logger,
     identity: identityMock,
@@ -97,6 +117,7 @@ export async function startStandaloneServer(
     catalog: catalogApi,
     discovery,
     tokenManager,
+    signalService,
   });
 
   let service = createServiceBuilder(module)

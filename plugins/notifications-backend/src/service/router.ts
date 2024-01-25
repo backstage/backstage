@@ -39,8 +39,8 @@ import {
 } from '@backstage/catalog-model';
 import { NotificationProcessor } from '../types';
 import { AuthenticationError } from '@backstage/errors';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
+import { SignalService } from '@backstage/plugin-signals-node';
 
 /** @public */
 export interface RouterOptions {
@@ -48,7 +48,8 @@ export interface RouterOptions {
   identity: IdentityApi;
   database: PluginDatabaseManager;
   tokenManager: TokenManager;
-  discovery: DiscoveryApi;
+  discovery: DiscoveryService;
+  signalService?: SignalService;
   catalog?: CatalogApi;
   processors?: NotificationProcessor[];
 }
@@ -65,6 +66,7 @@ export async function createRouter(
     catalog,
     tokenManager,
     processors,
+    signalService,
   } = options;
 
   const catalogClient =
@@ -248,7 +250,14 @@ export async function createRouter(
         }
       }
       notifications.push(notification);
-      // TODO: Signal service
+    }
+
+    if (signalService) {
+      await signalService.publish({
+        recipients: users,
+        message: { action: 'refresh' },
+        channel: 'notifications',
+      });
     }
 
     res.send(notifications);

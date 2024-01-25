@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DefaultNotificationService } from './service';
 import { NotificationService } from './service/NotificationService';
+import { signalService } from '@backstage/plugin-signals-node';
 
 /** @public */
 export const notificationService = createServiceRef<NotificationService>({
@@ -32,13 +33,14 @@ export const notificationService = createServiceRef<NotificationService>({
         logger: coreServices.logger,
         discovery: coreServices.discovery,
         tokenManager: coreServices.tokenManager,
-        // TODO: Signals
+        signals: signalService,
       },
-      factory({ logger, discovery, tokenManager }) {
+      factory({ logger, discovery, tokenManager, signals }) {
         return DefaultNotificationService.create({
           logger,
           discovery,
           tokenManager,
+          signalService: signals,
         });
       },
     }),

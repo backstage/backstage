@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Content,
   ErrorPanel,
@@ -27,6 +27,7 @@ import Bookmark from '@material-ui/icons/Bookmark';
 import Check from '@material-ui/icons/Check';
 import Inbox from '@material-ui/icons/Inbox';
 import { NotificationType } from '@backstage/plugin-notifications-common';
+import { useSignal } from '@backstage/plugin-signals-react';
 
 const useStyles = makeStyles(_theme => ({
   filterButton: {
@@ -42,6 +43,13 @@ export const NotificationsPage = () => {
     api => api.getNotifications({ type }),
     [type],
   );
+
+  const { lastSignal } = useSignal('notifications');
+  useEffect(() => {
+    if (lastSignal && lastSignal.action === 'refresh') {
+      retry();
+    }
+  }, [lastSignal, retry]);
 
   const onUpdate = () => {
     retry();

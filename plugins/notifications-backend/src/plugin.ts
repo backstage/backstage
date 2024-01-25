@@ -18,6 +18,7 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
+import { signalService } from '@backstage/plugin-signals-node';
 
 /**
  * Notifications backend plugin
@@ -35,6 +36,7 @@ export const notificationsPlugin = createBackendPlugin({
         database: coreServices.database,
         tokenManager: coreServices.tokenManager,
         discovery: coreServices.discovery,
+        signals: signalService,
       },
       async init({
         httpRouter,
@@ -43,6 +45,7 @@ export const notificationsPlugin = createBackendPlugin({
         database,
         tokenManager,
         discovery,
+        signals,
       }) {
         httpRouter.use(
           await createRouter({
@@ -51,6 +54,7 @@ export const notificationsPlugin = createBackendPlugin({
             database,
             tokenManager,
             discovery,
+            signalService: signals,
           }),
         );
       },

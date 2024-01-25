@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 import { Notification } from '@backstage/plugin-notifications-common';
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 import { NotificationService } from './NotificationService';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
+import { SignalService } from '@backstage/plugin-signals-node';
 
 /** @public */
 export type NotificationServiceOptions = {
   logger: LoggerService;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   tokenManager: TokenManager;
+  signalService: SignalService;
 };
 
 /** @public */
@@ -40,7 +39,7 @@ export type NotificationSendOptions = {
 export class DefaultNotificationService implements NotificationService {
   private constructor(
     private readonly logger: LoggerService,
-    private readonly discovery: PluginEndpointDiscovery,
+    private readonly discovery: DiscoveryService,
     private readonly tokenManager: TokenManager,
   ) {}
 

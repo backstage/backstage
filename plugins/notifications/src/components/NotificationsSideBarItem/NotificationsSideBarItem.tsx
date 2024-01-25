@@ -19,17 +19,22 @@ import { SidebarItem } from '@backstage/core-components';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
+import { useSignal } from '@backstage/plugin-signals-react';
 
 /** @public */
 export const NotificationsSidebarItem = () => {
-  const {
-    loading,
-    error,
-    value,
-    retry: _retry,
-  } = useNotificationsApi(api => api.getStatus());
+  const { loading, error, value, retry } = useNotificationsApi(api =>
+    api.getStatus(),
+  );
   const [unreadCount, setUnreadCount] = React.useState(0);
   const notificationsRoute = useRouteRef(rootRouteRef);
+
+  const { lastSignal } = useSignal('notifications');
+  useEffect(() => {
+    if (lastSignal && lastSignal.action === 'refresh') {
+      retry();
+    }
+  }, [lastSignal, retry]);
 
   useEffect(() => {
     if (!loading && !error && value) {
@@ -37,7 +42,7 @@ export const NotificationsSidebarItem = () => {
     }
   }, [loading, error, value]);
 
-  // TODO: Figure out if there count can be added to hasNotifications
+  // TODO: Figure out if the count can be added to hasNotifications
   return (
     <SidebarItem
       icon={NotificationsIcon}

@@ -36,5 +36,6 @@ export default async function createPlugin(
     tokenManager: env.tokenManager,
     database: env.database,
     discovery: env.discovery,
+    signalService: env.signalService,
   });
 }

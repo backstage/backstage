@@ -26,6 +26,7 @@ import request from 'supertest';
 import { createRouter } from './router';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { ConfigReader } from '@backstage/config';
+import { SignalService } from '@backstage/plugin-signals-node';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -65,6 +66,10 @@ describe('createRouter', () => {
     getExternalBaseUrl: jest.fn(),
   };
 
+  const signalService: jest.Mocked<SignalService> = {
+    publish: jest.fn(),
+  };
+
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
@@ -72,6 +77,7 @@ describe('createRouter', () => {
       database: createDatabase(),
       tokenManager: mockedTokenManager,
       discovery,
+      signalService,
     });
     app = express().use(router);
   });
