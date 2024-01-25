@@ -180,6 +180,14 @@ export async function createRouter(
       return;
     }
     await store.markRead({ user_ref: user, ids });
+
+    if (signalService) {
+      await signalService.publish({
+        recipients: [user],
+        message: { action: 'refresh' },
+        channel: 'notifications',
+      });
+    }
     res.status(200).send({ ids });
   });
 
@@ -191,6 +199,13 @@ export async function createRouter(
       return;
     }
     await store.markUnread({ user_ref: user, ids });
+    if (signalService) {
+      await signalService.publish({
+        recipients: [user],
+        message: { action: 'refresh' },
+        channel: 'notifications',
+      });
+    }
     res.status(200).send({ ids });
   });
 
@@ -243,7 +258,6 @@ export async function createRouter(
     }
 
     const baseNotification = {
-      id: uuid(),
       title,
       description,
       link,
@@ -252,7 +266,7 @@ export async function createRouter(
     };
 
     for (const user of users) {
-      let notification = { ...baseNotification, userRef: user };
+      let notification = { ...baseNotification, id: uuid(), userRef: user };
       for (const processor of processors ?? []) {
         notification = processor.decorate
           ? await processor.decorate(notification)
@@ -271,7 +285,7 @@ export async function createRouter(
     if (signalService) {
       await signalService.publish({
         recipients: entityRef === null ? null : users,
-        message: { action: 'refresh' },
+        message: { action: 'refresh', title, description, link },
         channel: 'notifications',
       });
     }

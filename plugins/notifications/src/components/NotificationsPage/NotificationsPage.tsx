@@ -38,21 +38,29 @@ const useStyles = makeStyles(_theme => ({
 
 export const NotificationsPage = () => {
   const [type, setType] = useState<NotificationType>('unread');
+  const [refresh, setRefresh] = React.useState(false);
 
-  const { loading, error, value, retry } = useNotificationsApi(
+  const { error, value, retry } = useNotificationsApi(
     api => api.getNotifications({ type }),
     [type],
   );
 
+  useEffect(() => {
+    if (refresh) {
+      retry();
+      setRefresh(false);
+    }
+  }, [refresh, setRefresh, retry]);
+
   const { lastSignal } = useSignal('notifications');
   useEffect(() => {
     if (lastSignal && lastSignal.action === 'refresh') {
-      retry();
+      setRefresh(true);
     }
-  }, [lastSignal, retry]);
+  }, [lastSignal]);
 
   const onUpdate = () => {
-    retry();
+    setRefresh(true);
   };
 
   const styles = useStyles();
@@ -95,7 +103,6 @@ export const NotificationsPage = () => {
             <NotificationsTable
               notifications={value}
               type={type}
-              loading={loading}
               onUpdate={onUpdate}
             />
           </Grid>

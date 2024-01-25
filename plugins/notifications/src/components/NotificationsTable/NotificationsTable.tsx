@@ -38,7 +38,6 @@ import { notificationsApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import Inbox from '@material-ui/icons/Inbox';
 import CloseIcon from '@material-ui/icons/Close';
-import { Skeleton } from '@material-ui/lab';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
@@ -79,10 +78,9 @@ const useStyles = makeStyles(theme => ({
 export const NotificationsTable = (props: {
   onUpdate: () => void;
   type: NotificationType;
-  loading?: boolean;
   notifications?: Notification[];
 }) => {
-  const { notifications, type, loading } = props;
+  const { notifications, type } = props;
   const navigate = useNavigate();
   const styles = useStyles();
   const [selected, setSelected] = useState<string[]>([]);
@@ -110,10 +108,6 @@ export const NotificationsTable = (props: {
       selected.length === notifications?.length && notifications.length > 0
     );
   };
-
-  if (loading) {
-    return <Skeleton variant="rect" height={200} />;
-  }
 
   return (
     <Table size="small" className={styles.table}>

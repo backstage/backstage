@@ -27,20 +27,64 @@ export const NotificationsSidebarItem = () => {
     api.getStatus(),
   );
   const [unreadCount, setUnreadCount] = React.useState(0);
+  const [webNotificationPermission, setWebNotificationPermission] =
+    React.useState('default');
   const notificationsRoute = useRouteRef(rootRouteRef);
-
   const { lastSignal } = useSignal('notifications');
+  const [webNotifications, setWebNotifications] = React.useState<
+    Notification[]
+  >([]);
+  const [refresh, setRefresh] = React.useState(false);
+
+  useEffect(() => {
+    if ('Notification' in window && webNotificationPermission === 'default') {
+      window.Notification.requestPermission().then(permission => {
+        setWebNotificationPermission(permission);
+      });
+    }
+  }, [webNotificationPermission]);
+
+  useEffect(() => {
+    if (refresh) {
+      retry();
+      setRefresh(false);
+    }
+  }, [refresh, retry]);
+
   useEffect(() => {
     if (lastSignal && lastSignal.action === 'refresh') {
-      retry();
+      if (
+        webNotificationPermission === 'granted' &&
+        'title' in lastSignal &&
+        'description' in lastSignal &&
+        'link' in lastSignal
+      ) {
+        const notification = new Notification(lastSignal.title as string, {
+          body: lastSignal.description as string,
+        });
+        notification.onclick = function (event) {
+          event.preventDefault();
+          notification.close();
+          window.open(lastSignal.link as string, '_blank');
+        };
+        setWebNotifications(prev => [...prev, notification]);
+      }
+      setRefresh(true);
     }
-  }, [lastSignal, retry]);
+  }, [lastSignal, webNotificationPermission]);
 
   useEffect(() => {
     if (!loading && !error && value) {
       setUnreadCount(value.unread);
     }
   }, [loading, error, value]);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      webNotifications.forEach(n => n.close());
+      setWebNotifications([]);
+    }
+  });
 
   // TODO: Figure out if the count can be added to hasNotifications
   return (
