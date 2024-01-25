@@ -84,7 +84,6 @@ const SidebarLogo = () => {
 
 export const Root = ({
   children,
-  extensionTree,
 }: PropsWithChildren<{ extensionTree?: ExtensionTree }>) => (
   <SidebarPage>
     <Sidebar>
@@ -166,10 +165,6 @@ export const Root = ({
             to="cost-insights"
             text="Cost Insights"
           />
-          {
-            /* HIGHLY EXPERIMENTAL. DO NOT USE THIS IN YOUR APP */ extensionTree?.getSidebarItems() ??
-              null
-          }
           <SidebarItem icon={Score} to="score-board" text="Score board" />
         </SidebarScrollWrapper>
         <SidebarDivider />
