@@ -26,9 +26,9 @@ export const techRadarPlugin = createPlugin({
 });
 ```
 
-The created plugin does not yet do anything, it will need some plugin options to be usefull:
+The created plugin does not yet do anything, it will need some plugin options to be useful:
 
-- Extend it's functionallty, through pages, navigation items or entity cards, using `extensions`
+- Extend it's functionality, through pages, navigation items or entity cards, using `extensions`
 - You can make it reachable through `routes`
 - Link to other plugins in Backstage using `externalRoutes`
 - Pass `featureFlags` to it
@@ -39,7 +39,7 @@ You will decide on the `id` when you [create a plugin](../../). The plugin `id` 
 
 ### Plugin Extensions
 
-So let's make our plugin a bit more useful! Imagine we want to have a TechRadar plugin that displays the recommended technologies at our organisation, [just like in the Backstage demo instance](https://demo.backstage.io/tech-radar). We want the plugin to be displayed on a page & have a navigation item directing to it. This can be achieved by creating a page extension & a navigation item extenssion. When adding those to the plugin they will be imported with the plugin package & can be discovered.
+So let's make our plugin a bit more useful! Imagine we want to have a TechRadar plugin that displays the recommended technologies at our organisation, [just like in the Backstage demo instance](https://demo.backstage.io/tech-radar). We want the plugin to be displayed on a page & have a navigation item directing to it. This can be achieved by creating a page extension & a navigation item extension. When adding those to the plugin they will be imported with the plugin package & can be discovered.
 
 ```ts title="plugins/tech-radar/src/index.ts"
 export const techRadarPlugin = createPlugin({
@@ -50,7 +50,7 @@ export const techRadarPlugin = createPlugin({
 
 ### Plugin Routes
 
-Now that we have a page extension in our plugin the route of the page is detected & the page is available. Thought to make the route easy accessible through the plugin you are requried to additionally add those routes on the plugin level. If we have a `techRadarRootRef`, that is the route reference for the `techRadarPage`, we would add it to `createPlugin` like the following:
+Now that we have a page extension in our plugin the route of the page is detected & the page is available. Thought to make the route easy accessible through the plugin you are required to additionally add those routes on the plugin level. If we have a `techRadarRootRef`, that is the route reference for the `techRadarPage`, we would add it to `createPlugin` like the following:
 
 ```ts title="plugins/tech-radar/src/index.ts"
 export const techRadarPlugin = createPlugin({
@@ -141,7 +141,7 @@ For a more detailed introduction to the architecture of the app & how plugins fi
 
 ### Package Discovery
 
-As mentioned in the beginning of this documentation each plugin should be exported by default from an individual package. The default exported plugins will be discovered in the frontend system. If they are not acitvely disabled in the `app-config.yaml` & the `app.experimental.packages` rule does not exclude them, the plugins will be installed in the app by default. more on this
+As mentioned in the beginning of this documentation each plugin should be exported by default from an individual package. The default exported plugins will be discovered in the frontend system. If they are not actively disabled in the `app-config.yaml` & the `app.experimental.packages` rule does not exclude them, the plugins will be installed in the app by default. more on this
 
 ### Manual installation
 
