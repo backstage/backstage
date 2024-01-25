@@ -1,5 +1,35 @@
 # @backstage/cli-node
 
+## 0.2.2
+
+### Patch Changes
+
+- 7acbb5a: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- 7acbb5a: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.2.1
+
+### Patch Changes
+
+- 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.2.0
 
 ### Minor Changes

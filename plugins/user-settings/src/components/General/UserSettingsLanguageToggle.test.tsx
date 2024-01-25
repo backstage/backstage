@@ -74,7 +74,10 @@ describe('UserSettingsLanguageToggle', () => {
 
     await renderInTestApp(<UserSettingsLanguageToggle />);
 
-    fireEvent.click(screen.getByText('de'));
+    // open the select control
+    fireEvent.mouseDown(screen.getByText('English'));
+    // select the new language
+    fireEvent.click(screen.getByText('Deutsch'));
 
     expect(mockLanguageApi.setLanguage).toHaveBeenCalledWith('de');
   });

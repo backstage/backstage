@@ -114,7 +114,6 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
       <ErrorBoundary {...errProps}>
         {title && <BoldHeader title={title} />}
         <Tabs
-          selectionFollowsFocus
           classes={tabsClasses}
           value={value || selectedIndex}
           onChange={handleChange}

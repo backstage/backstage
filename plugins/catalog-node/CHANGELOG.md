@@ -1,5 +1,135 @@
 # @backstage/plugin-catalog-node
 
+## 1.6.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/plugin-permission-node@0.7.21-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.20
+  - @backstage/plugin-permission-common@0.7.12
+
+## 1.6.1
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/catalog-client@1.5.2
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-node@0.7.20
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.20
+
+## 1.6.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/plugin-permission-node@0.7.20-next.2
+
+## 1.6.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.7.20-next.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-permission-common@0.7.11
+
+## 1.6.1-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-permission-node@0.7.20-next.0
+
+## 1.6.0
+
+### Minor Changes
+
+- a168507: Added `EntitiesSearchFilter` and `EntityFilter` from `@backstage/plugin-catalog-backend`, for reuse
+- 7804597: Permission rules can now be added for the Catalog plugin through the `CatalogPermissionExtensionPoint` interface.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.5.0
+  - @backstage/plugin-permission-common@0.7.11
+  - @backstage/plugin-permission-node@0.7.19
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.19
+
+## 1.6.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-node@0.7.19-next.3
+
+## 1.6.0-next.2
+
+### Minor Changes
+
+- a168507: Added `EntitiesSearchFilter` and `EntityFilter` from `@backstage/plugin-catalog-backend`, for reuse
+- 7804597: Permission rules can now be added for the Catalog plugin through the `CatalogPermissionExtensionPoint` interface.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-permission-common@0.7.10
+  - @backstage/plugin-permission-node@0.7.19-next.2
+
+## 1.5.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.5.0-next.0
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+
 ## 1.5.1-next.0
 
 ### Patch Changes

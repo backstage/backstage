@@ -15,27 +15,12 @@
  */
 
 import { JSX } from 'react';
-import {
-  AnyApiFactory,
-  AppTheme,
-  IconComponent,
-} from '@backstage/core-plugin-api';
-import { createExtensionDataRef } from './createExtensionDataRef';
 import { RouteRef } from '../routing';
-
-/** @public */
-export type NavTarget = {
-  title: string;
-  icon: IconComponent;
-  routeRef: RouteRef<undefined>;
-};
+import { createExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export const coreExtensionData = {
   reactElement: createExtensionDataRef<JSX.Element>('core.reactElement'),
   routePath: createExtensionDataRef<string>('core.routing.path'),
-  apiFactory: createExtensionDataRef<AnyApiFactory>('core.api.factory'),
   routeRef: createExtensionDataRef<RouteRef>('core.routing.ref'),
-  navTarget: createExtensionDataRef<NavTarget>('core.nav.target'),
-  theme: createExtensionDataRef<AppTheme>('core.theme'),
 };

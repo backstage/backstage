@@ -18,3 +18,5 @@ export {
   createExtensionTester,
   type ExtensionTester,
 } from './createExtensionTester';
+
+export { renderInTestApp, type TestAppOptions } from './renderInTestApp';

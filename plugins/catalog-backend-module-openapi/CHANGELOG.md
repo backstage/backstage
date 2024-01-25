@@ -1,5 +1,139 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/plugin-catalog-backend@1.17.0-next.0
+  - @backstage/plugin-catalog-node@1.6.2-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.20
+
+## 0.1.26
+
+### Patch Changes
+
+- 4ebf99b: Add support for the new backend system.
+
+  A new backend module for the catalog backend
+  was added and exported as `default`.
+
+  You can use it with the new backend system like
+
+  ```ts title="packages/backend/src/index.ts"
+  backend.add(import('@backstage/plugin-catalog-backend-module-openapi'));
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-catalog-node@1.6.1
+  - @backstage/plugin-catalog-backend@1.16.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.20
+
+## 0.1.26-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-catalog-backend@1.16.1-next.2
+  - @backstage/plugin-catalog-node@1.6.1-next.2
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/integration@1.8.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-backend@1.16.1-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.19
+  - @backstage/plugin-catalog-node@1.6.1-next.1
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/plugin-catalog-node@1.6.1-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend@1.16.1-next.0
+  - @backstage/plugin-catalog-common@1.0.19
+
+## 0.1.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-catalog-node@1.6.0
+  - @backstage/plugin-catalog-backend@1.16.0
+  - @backstage/integration@1.8.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.19
+
+## 0.1.25-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend@1.16.0-next.3
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-catalog-node@1.6.0-next.3
+
+## 0.1.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.6.0-next.2
+  - @backstage/plugin-catalog-backend@1.16.0-next.2
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+
+## 0.1.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.15.1-next.1
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.18
+  - @backstage/plugin-catalog-node@1.5.1-next.1
+
 ## 0.1.25-next.0
 
 ### Patch Changes

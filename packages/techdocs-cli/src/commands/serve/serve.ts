@@ -116,6 +116,9 @@ export default async function serve(opts: OptionValues) {
     stdoutLogFunc: mkdocsLogFunc,
     stderrLogFunc: mkdocsLogFunc,
     mkdocsConfigFileName: mkdocsYmlPath,
+    mkdocsParameterClean: opts.mkdocsParameterClean,
+    mkdocsParameterDirtyReload: opts.mkdocsParameterDirtyReload,
+    mkdocsParameterStrict: opts.mkdocsParameterStrict,
   });
 
   // Wait until mkdocs server has started so that Backstage starts with docs loaded

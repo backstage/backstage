@@ -211,6 +211,34 @@ export function makeFieldSchemaFromZod<
 >;
 
 // @public
+export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
+  string[],
+  {
+    defaultKind?: string | undefined;
+    allowArbitraryValues?: boolean | undefined;
+    defaultNamespace?: string | false | undefined;
+    catalogFilter?:
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
+      | undefined;
+  }
+>;
+
+// @public
 export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
@@ -379,6 +407,7 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
           secretsKey: string;
           additionalScopes?:
             | {
+                gitea?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
@@ -405,6 +434,7 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
           secretsKey: string;
           additionalScopes?:
             | {
+                gitea?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;

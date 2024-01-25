@@ -1,5 +1,112 @@
 # @backstage/plugin-home-react
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- 6a74ffd: Updated dependency `@rjsf/utils` to `5.16.1`.
+  Updated dependency `@rjsf/core` to `5.16.1`.
+  Updated dependency `@rjsf/material-ui` to `5.16.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.16.1`.
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+
+## 0.1.7
+
+### Patch Changes
+
+- 98ac5ab: Updated dependency `@rjsf/utils` to `5.15.1`.
+  Updated dependency `@rjsf/core` to `5.15.1`.
+  Updated dependency `@rjsf/material-ui` to `5.15.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.15.1`.
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+
+## 0.1.7-next.2
+
+### Patch Changes
+
+- 98ac5ab: Updated dependency `@rjsf/utils` to `5.15.1`.
+  Updated dependency `@rjsf/core` to `5.15.1`.
+  Updated dependency `@rjsf/material-ui` to `5.15.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.15.1`.
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/core-plugin-api@1.8.1
+
+## 0.1.6
+
+### Patch Changes
+
+- 2b72591: Updated dependency `@rjsf/utils` to `5.14.3`.
+  Updated dependency `@rjsf/core` to `5.14.3`.
+  Updated dependency `@rjsf/material-ui` to `5.14.3`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.14.3`.
+- 6cd12f2: Updated dependency `@rjsf/utils` to `5.14.1`.
+  Updated dependency `@rjsf/core` to `5.14.1`.
+  Updated dependency `@rjsf/material-ui` to `5.14.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.14.1`.
+- 64301d3: Updated dependency `@rjsf/utils` to `5.15.0`.
+  Updated dependency `@rjsf/core` to `5.15.0`.
+  Updated dependency `@rjsf/material-ui` to `5.15.0`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.15.0`.
+- 63c494e: Updated dependency `@rjsf/utils` to `5.14.2`.
+  Updated dependency `@rjsf/core` to `5.14.2`.
+  Updated dependency `@rjsf/material-ui` to `5.14.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.14.2`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/core-components@0.13.9
+
+## 0.1.6-next.3
+
+### Patch Changes
+
+- 64301d3: Updated dependency `@rjsf/utils` to `5.15.0`.
+  Updated dependency `@rjsf/core` to `5.15.0`.
+  Updated dependency `@rjsf/material-ui` to `5.15.0`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.15.0`.
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+
+## 0.1.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- 2b725913c1: Updated dependency `@rjsf/utils` to `5.14.3`.
+  Updated dependency `@rjsf/core` to `5.14.3`.
+  Updated dependency `@rjsf/material-ui` to `5.14.3`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.14.3`.
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+
 ## 0.1.6-next.0
 
 ### Patch Changes

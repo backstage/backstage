@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
-  AZURE_DEVOPS_HOST_ORG_ANNOTATION,
-  AZURE_DEVOPS_PROJECT_ANNOTATION,
-  AZURE_DEVOPS_REPO_ANNOTATION,
-} from '../constants';
-
 import { Entity } from '@backstage/catalog-model';
+import {
+  AZURE_DEVOPS_PROJECT_ANNOTATION,
+  AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
+  AZURE_DEVOPS_REPO_ANNOTATION,
+  AZURE_DEVOPS_HOST_ORG_ANNOTATION,
+} from '@backstage/plugin-azure-devops-common';
 
 export function getAnnotationValuesFromEntity(entity: Entity): {
   project: string;
@@ -30,34 +29,49 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
   host?: string;
   org?: string;
 } {
-  const { host, org } = getHostOrg(entity.metadata.annotations);
-
-  const projectRepoValues = getProjectRepo(entity.metadata.annotations);
-  if (projectRepoValues.project && projectRepoValues.repo) {
-    return {
-      project: projectRepoValues.project,
-      repo: projectRepoValues.repo,
-      host,
-      org,
-    };
-  }
-
+  const hostOrg = getHostOrg(entity.metadata.annotations);
+  const projectRepo = getProjectRepo(entity.metadata.annotations);
   const project =
     entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION];
-  if (!project) {
+  const definition =
+    entity.metadata.annotations?.[AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION];
+
+  if (definition) {
+    if (project) {
+      return {
+        project,
+        definition,
+        ...hostOrg,
+      };
+    }
+    if (projectRepo.project) {
+      return {
+        project: projectRepo.project,
+        repo: projectRepo.repo,
+        definition,
+        ...hostOrg,
+      };
+    }
     throw new Error(
       `Value for annotation "${AZURE_DEVOPS_PROJECT_ANNOTATION}" was not found`,
     );
+  } else {
+    if (projectRepo.project) {
+      return {
+        project: projectRepo.project,
+        repo: projectRepo.repo,
+        ...hostOrg,
+      };
+    }
+
+    if (project) {
+      throw new Error(
+        `Value for annotation "${AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION}" was not found`,
+      );
+    }
   }
 
-  const definition =
-    entity.metadata.annotations?.[AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION];
-  if (!definition) {
-    throw new Error(
-      `Value for annotation "${AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION}" was not found`,
-    );
-  }
-  return { project, definition, host, org };
+  throw new Error('Expected "dev.azure.com" annotations were not found');
 }
 
 function getProjectRepo(annotations?: Record<string, string>): {
@@ -69,7 +83,7 @@ function getProjectRepo(annotations?: Record<string, string>): {
     return { project: undefined, repo: undefined };
   }
 
-  if (annotation.includes('/')) {
+  if (annotation.split('/').length === 2) {
     const [project, repo] = annotation.split('/');
     if (project && repo) {
       return { project, repo };
@@ -90,11 +104,15 @@ function getHostOrg(annotations?: Record<string, string>): {
     return { host: undefined, org: undefined };
   }
 
-  if (annotation.includes('/')) {
-    const [host, org] = annotation.split('/');
+  const segments = annotation.split('/');
+  if (segments.length === 2) {
+    const [host, org] = segments;
     if (host && org) {
       return { host, org };
     }
+  } else if (segments.length === 3) {
+    const [host, subpath, org] = segments;
+    return { host: `${host}/${subpath}`, org };
   }
 
   throw new Error(

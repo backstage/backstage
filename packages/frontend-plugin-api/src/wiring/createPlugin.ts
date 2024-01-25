@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { Extension } from './createExtension';
-import { ExternalRouteRef, RouteRef } from '../routing';
-
-/** @public */
-export type AnyRoutes = { [name in string]: RouteRef };
-
-/** @public */
-export type AnyExternalRoutes = { [name in string]: ExternalRouteRef };
+import { ExtensionDefinition } from './createExtension';
+import {
+  Extension,
+  resolveExtensionDefinition,
+} from './resolveExtensionDefinition';
+import {
+  AnyExternalRoutes,
+  AnyRoutes,
+  BackstagePlugin,
+  FeatureFlagConfig,
+} from './types';
 
 /** @public */
 export interface PluginOptions<
@@ -31,19 +34,18 @@ export interface PluginOptions<
   id: string;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
-  extensions?: Extension<unknown>[];
+  extensions?: ExtensionDefinition<unknown>[];
+  featureFlags?: FeatureFlagConfig[];
 }
 
 /** @public */
-export interface BackstagePlugin<
+export interface InternalBackstagePlugin<
   Routes extends AnyRoutes = AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
-> {
-  $$type: '@backstage/BackstagePlugin';
-  id: string;
-  extensions: Extension<unknown>[];
-  routes: Routes;
-  externalRoutes: ExternalRoutes;
+> extends BackstagePlugin<Routes, ExternalRoutes> {
+  readonly version: 'v1';
+  readonly extensions: Extension<unknown>[];
+  readonly featureFlags: FeatureFlagConfig[];
 }
 
 /** @public */
@@ -53,11 +55,51 @@ export function createPlugin<
 >(
   options: PluginOptions<Routes, ExternalRoutes>,
 ): BackstagePlugin<Routes, ExternalRoutes> {
+  const extensions = (options.extensions ?? []).map(def =>
+    resolveExtensionDefinition(def, { namespace: options.id }),
+  );
+
+  const extensionIds = extensions.map(e => e.id);
+  if (extensionIds.length !== new Set(extensionIds).size) {
+    const duplicates = Array.from(
+      new Set(
+        extensionIds.filter((id, index) => extensionIds.indexOf(id) !== index),
+      ),
+    );
+    // TODO(Rugvip): This could provide some more information about the kind + name of the extensions
+    throw new Error(
+      `Plugin '${options.id}' provided duplicate extensions: ${duplicates.join(
+        ', ',
+      )}`,
+    );
+  }
+
   return {
-    ...options,
+    $$type: '@backstage/BackstagePlugin',
+    version: 'v1',
+    id: options.id,
     routes: options.routes ?? ({} as Routes),
     externalRoutes: options.externalRoutes ?? ({} as ExternalRoutes),
-    extensions: options.extensions ?? [],
-    $$type: '@backstage/BackstagePlugin',
-  };
+    featureFlags: options.featureFlags ?? [],
+    extensions,
+    toString() {
+      return `Plugin{id=${options.id}}`;
+    },
+  } as InternalBackstagePlugin<Routes, ExternalRoutes>;
+}
+
+/** @internal */
+export function toInternalBackstagePlugin(
+  plugin: BackstagePlugin,
+): InternalBackstagePlugin {
+  const internal = plugin as InternalBackstagePlugin;
+  if (internal.$$type !== '@backstage/BackstagePlugin') {
+    throw new Error(`Invalid plugin instance, bad type '${internal.$$type}'`);
+  }
+  if (internal.version !== 'v1') {
+    throw new Error(
+      `Invalid plugin instance, bad version '${internal.version}'`,
+    );
+  }
+  return internal;
 }

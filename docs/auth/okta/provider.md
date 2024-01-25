@@ -27,6 +27,8 @@ To add Okta authentication, you must create an Application from Okta:
    - `Controlled access`: (select as appropriate)
    - Click Save
 
+The configuration examples provided above are suitable for local development. For a production deployment, substitute `http://localhost:7007` with the url that your Backstage instance is available at.
+
 # Configuration
 
 The provider configuration can then be added to your `app-config.yaml` under the

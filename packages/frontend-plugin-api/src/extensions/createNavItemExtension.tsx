@@ -16,7 +16,7 @@
 
 import { IconComponent } from '@backstage/core-plugin-api';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import { coreExtensionData, createExtension } from '../wiring';
+import { createExtension, createExtensionDataRef } from '../wiring';
 import { RouteRef } from '../routing';
 
 /**
@@ -24,22 +24,25 @@ import { RouteRef } from '../routing';
  * @public
  */
 export function createNavItemExtension(options: {
-  id: string;
+  namespace?: string;
+  name?: string;
   routeRef: RouteRef<undefined>;
   title: string;
   icon: IconComponent;
 }) {
-  const { id, routeRef, title, icon } = options;
+  const { routeRef, title, icon, namespace, name } = options;
   return createExtension({
-    id,
-    attachTo: { id: 'core.nav', input: 'items' },
+    namespace,
+    name,
+    kind: 'nav-item',
+    attachTo: { id: 'app/nav', input: 'items' },
     configSchema: createSchemaFromZod(z =>
       z.object({
         title: z.string().default(title),
       }),
     ),
     output: {
-      navTarget: coreExtensionData.navTarget,
+      navTarget: createNavItemExtension.targetDataRef,
     },
     factory: ({ config }) => ({
       navTarget: {
@@ -49,4 +52,14 @@ export function createNavItemExtension(options: {
       },
     }),
   });
+}
+
+/** @public */
+export namespace createNavItemExtension {
+  // TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
+  export const targetDataRef = createExtensionDataRef<{
+    title: string;
+    icon: IconComponent;
+    routeRef: RouteRef<undefined>;
+  }>('core.nav-item.target');
 }

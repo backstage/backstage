@@ -155,7 +155,7 @@ class Tracker {
 
 describePerformanceTest('stitchingPerformance', () => {
   const databases = TestDatabases.create({
-    ids: [/* 'MYSQL_8', */ 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: [/* 'MYSQL_8', */ 'POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
   });
 
   it.each(databases.eachSupportedId())(
@@ -188,8 +188,8 @@ describePerformanceTest('stitchingPerformance', () => {
             factory: () => ({ getClient: async () => knex }),
           }),
           createBackendModule({
-            moduleId: 'syntheticLoadEntities',
             pluginId: 'catalog',
+            moduleId: 'synthetic-load-entities',
             register(reg) {
               reg.registerInit({
                 deps: {
@@ -245,8 +245,8 @@ describePerformanceTest('stitchingPerformance', () => {
             factory: () => ({ getClient: async () => knex }),
           }),
           createBackendModule({
-            moduleId: 'syntheticLoadEntities',
             pluginId: 'catalog',
+            moduleId: 'synthetic-load-entities',
             register(reg) {
               reg.registerInit({
                 deps: {

@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.90-next.1",
+  "version": "0.2.92-next.0",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -35,7 +35,6 @@
     "@backstage/plugin-catalog-import": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^",
-    "@backstage/plugin-circleci": "workspace:^",
     "@backstage/plugin-cloudbuild": "workspace:^",
     "@backstage/plugin-code-coverage": "workspace:^",
     "@backstage/plugin-cost-insights": "workspace:^",
@@ -74,6 +73,7 @@
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/plugin-sentry": "workspace:^",
     "@backstage/plugin-shortcuts": "workspace:^",
+    "@backstage/plugin-signals": "workspace:^",
     "@backstage/plugin-stack-overflow": "workspace:^",
     "@backstage/plugin-stackstorm": "workspace:^",
     "@backstage/plugin-tech-insights": "workspace:^",
@@ -84,6 +84,7 @@
     "@backstage/plugin-todo": "workspace:^",
     "@backstage/plugin-user-settings": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "@circleci/backstage-plugin": "^0.1.1",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
@@ -102,7 +103,7 @@
     "react-use": "^17.2.4",
     "vite": "^4.4.9",
     "vite-plugin-html": "^3.2.0",
-    "vite-plugin-node-polyfills": "^0.16.0",
+    "vite-plugin-node-polyfills": "^0.19.0",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {

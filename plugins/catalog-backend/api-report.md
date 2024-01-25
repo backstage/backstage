@@ -28,7 +28,9 @@ import { Config } from '@backstage/config';
 import { DefaultCatalogCollatorFactory as DefaultCatalogCollatorFactory_2 } from '@backstage/plugin-search-backend-module-catalog';
 import type { DefaultCatalogCollatorFactoryOptions as DefaultCatalogCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DeferredEntity as DeferredEntity_2 } from '@backstage/plugin-catalog-node';
+import { EntitiesSearchFilter as EntitiesSearchFilter_2 } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
+import { EntityFilter as EntityFilter_2 } from '@backstage/plugin-catalog-node';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityProvider as EntityProvider_2 } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection as EntityProviderConnection_2 } from '@backstage/plugin-catalog-node';
@@ -191,7 +193,7 @@ export type CatalogEnvironment = {
 // @public
 export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
+> = PermissionRule<Entity, EntitiesSearchFilter_2, 'catalog-entity', TParams>;
 
 // @public
 export interface CatalogProcessingEngine {
@@ -313,24 +315,11 @@ export type DefaultCatalogCollatorFactoryOptions =
 // @public @deprecated (undocumented)
 export type DeferredEntity = DeferredEntity_2;
 
-// @public
-export type EntitiesSearchFilter = {
-  key: string;
-  values?: string[];
-};
+// @public @deprecated (undocumented)
+export type EntitiesSearchFilter = EntitiesSearchFilter_2;
 
-// @public
-export type EntityFilter =
-  | {
-      allOf: EntityFilter[];
-    }
-  | {
-      anyOf: EntityFilter[];
-    }
-  | {
-      not: EntityFilter;
-    }
-  | EntitiesSearchFilter;
+// @public @deprecated (undocumented)
+export type EntityFilter = EntityFilter_2;
 
 // @public @deprecated (undocumented)
 export type EntityProvider = EntityProvider_2;

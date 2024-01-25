@@ -83,4 +83,21 @@ export type GithubActionsApi = {
   }) => Promise<
     RestEndpointMethodTypes['actions']['downloadJobLogsForWorkflowRun']['response']['data']
   >;
+
+  listBranches: (options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+    page: number;
+  }) => Promise<
+    RestEndpointMethodTypes['repos']['listBranches']['response']['data']
+  >;
+
+  getDefaultBranch: (options: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+  }) => Promise<
+    RestEndpointMethodTypes['repos']['get']['response']['data']['default_branch']
+  >;
 };

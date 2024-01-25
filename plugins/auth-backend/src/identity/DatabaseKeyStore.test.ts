@@ -28,9 +28,7 @@ const keyBase = {
 jest.setTimeout(60_000);
 
 describe('DatabaseKeyStore', () => {
-  const databases = TestDatabases.create({
-    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
-  });
+  const databases = TestDatabases.create();
 
   it.each(databases.eachSupportedId())(
     'should store a key, %p',

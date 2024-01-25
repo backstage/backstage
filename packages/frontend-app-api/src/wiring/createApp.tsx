@@ -19,27 +19,33 @@ import { ConfigReader, Config } from '@backstage/config';
 import {
   AppTree,
   appTreeApiRef,
-  BackstagePlugin,
+  ComponentRef,
+  componentsApiRef,
   coreExtensionData,
+  createApiExtension,
+  createComponentExtension,
+  createNavItemExtension,
+  createThemeExtension,
+  createTranslationExtension,
   ExtensionDataRef,
-  ExtensionOverrides,
+  FrontendFeature,
+  iconsApiRef,
   RouteRef,
+  RouteResolutionApi,
+  routeResolutionApiRef,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { Core } from '../extensions/Core';
-import { CoreRoutes } from '../extensions/CoreRoutes';
-import { CoreLayout } from '../extensions/CoreLayout';
-import { CoreNav } from '../extensions/CoreNav';
+import { App } from '../extensions/App';
+import { AppRoutes } from '../extensions/AppRoutes';
+import { AppLayout } from '../extensions/AppLayout';
+import { AppNav } from '../extensions/AppNav';
 import {
   AnyApiFactory,
   ApiHolder,
-  AppComponents,
-  AppContext,
   appThemeApiRef,
   ConfigApi,
   configApiRef,
   IconComponent,
-  BackstagePlugin as LegacyBackstagePlugin,
   featureFlagsApiRef,
   attachComponentData,
   identityApiRef,
@@ -59,8 +65,6 @@ import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { LocalStorageFeatureFlags } from '../../../core-app-api/src/apis/implementations/FeatureFlagsApi/LocalStorageFeatureFlags';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultConfigLoader';
@@ -71,35 +75,62 @@ import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementati
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  apis as defaultApis,
-  components as defaultComponents,
-  icons as defaultIcons,
-} from '../../../app-defaults/src/defaults';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { apis as defaultApis } from '../../../app-defaults/src/defaults';
+import { Route } from 'react-router-dom';
 import { SidebarItem } from '@backstage/core-components';
 import { DarkTheme, LightTheme } from '../extensions/themes';
+import {
+  oauthRequestDialogAppRootElement,
+  alertDisplayAppRootElement,
+} from '../extensions/elements';
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
 import {
   appLanguageApiRef,
   translationApiRef,
 } from '@backstage/core-plugin-api/alpha';
-import { AppRouteBinder } from '../routing';
-import { RoutingProvider } from '../routing/RoutingProvider';
+import { CreateAppRouteBinder } from '../routing';
+import { RouteResolver } from '../routing/RouteResolver';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import { createAppTree } from '../tree';
+import {
+  DefaultProgressComponent,
+  DefaultErrorBoundaryComponent,
+  DefaultNotFoundErrorPageComponent,
+} from '../extensions/components';
 import { AppNode } from '@backstage/frontend-plugin-api';
-import { toLegacyPlugin } from '../routing/toLegacyPlugin';
+import { InternalAppContext } from './InternalAppContext';
+import { AppRoot } from '../extensions/AppRoot';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createPlugin';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
+import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
+import { DefaultIconsApi } from '../apis/implementations/IconsApi';
+import { stringifyError } from '@backstage/errors';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { icons as defaultIcons } from '../../../app-defaults/src/defaults';
+import { getBasePath } from '../routing/getBasePath';
 
-const builtinExtensions = [
-  Core,
-  CoreRoutes,
-  CoreNav,
-  CoreLayout,
+const DefaultApis = defaultApis.map(factory => createApiExtension({ factory }));
+
+export const builtinExtensions = [
+  App,
+  AppRoot,
+  AppRoutes,
+  AppNav,
+  AppLayout,
+  DefaultProgressComponent,
+  DefaultErrorBoundaryComponent,
+  DefaultNotFoundErrorPageComponent,
   LightTheme,
   DarkTheme,
-];
+  oauthRequestDialogAppRootElement,
+  alertDisplayAppRootElement,
+  ...DefaultApis,
+].map(def => resolveExtensionDefinition(def));
 
 /** @public */
 export interface ExtensionTreeNode {
@@ -154,7 +185,7 @@ export function createExtensionTree(options: {
       );
     },
     getRootRoutes(): JSX.Element[] {
-      return this.getExtensionAttachments('core.routes', 'routes').map(node => {
+      return this.getExtensionAttachments('app/routes', 'routes').map(node => {
         const path = node.getData(coreExtensionData.routePath);
         const element = node.getData(coreExtensionData.reactElement);
         const routeRef = node.getData(coreExtensionData.routeRef);
@@ -181,9 +212,9 @@ export function createExtensionTree(options: {
         );
       };
 
-      return this.getExtensionAttachments('core.nav', 'items')
+      return this.getExtensionAttachments('app/nav', 'items')
         .map((node, index) => {
-          const target = node.getData(coreExtensionData.navTarget);
+          const target = node.getData(createNavItemExtension.targetDataRef);
           if (!target) {
             return null;
           }
@@ -202,8 +233,8 @@ export function createExtensionTree(options: {
 }
 
 function deduplicateFeatures(
-  allFeatures: (BackstagePlugin | ExtensionOverrides)[],
-): (BackstagePlugin | ExtensionOverrides)[] {
+  allFeatures: FrontendFeature[],
+): FrontendFeature[] {
   // Start by removing duplicates by reference
   const features = Array.from(new Set(allFeatures));
 
@@ -224,34 +255,65 @@ function deduplicateFeatures(
     .reverse();
 }
 
+/**
+ * A source of dynamically loaded frontend features.
+ *
+ * @public
+ */
+export interface CreateAppFeatureLoader {
+  /**
+   * Returns name of this loader. suitable for showing to users.
+   */
+  getLoaderName(): string;
+
+  /**
+   * Loads a number of features dynamically.
+   */
+  load(options: { config: ConfigApi }): Promise<{
+    features: FrontendFeature[];
+  }>;
+}
+
 /** @public */
 export function createApp(options?: {
-  features?: (BackstagePlugin | ExtensionOverrides)[];
-  configLoader?: () => Promise<ConfigApi>;
-  bindRoutes?(context: { bind: AppRouteBinder }): void;
-  featureLoader?: (ctx: {
-    config: ConfigApi;
-  }) => Promise<(BackstagePlugin | ExtensionOverrides)[]>;
+  icons?: { [key in string]: IconComponent };
+  features?: (FrontendFeature | CreateAppFeatureLoader)[];
+  configLoader?: () => Promise<{ config: ConfigApi }>;
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
 }): {
   createRoot(): JSX.Element;
 } {
   async function appLoader() {
     const config =
-      (await options?.configLoader?.()) ??
+      (await options?.configLoader?.().then(c => c.config)) ??
       ConfigReader.fromConfigs(
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
     const discoveredFeatures = getAvailableFeatures(config);
-    const loadedFeatures = (await options?.featureLoader?.({ config })) ?? [];
+
+    const providedFeatures: FrontendFeature[] = [];
+    for (const entry of options?.features ?? []) {
+      if ('load' in entry) {
+        try {
+          const result = await entry.load({ config });
+          providedFeatures.push(...result.features);
+        } catch (e) {
+          throw new Error(
+            `Failed to read frontend features from loader '${entry.getLoaderName()}', ${stringifyError(
+              e,
+            )}`,
+          );
+        }
+      } else {
+        providedFeatures.push(entry);
+      }
+    }
 
     const app = createSpecializedApp({
+      icons: options?.icons,
       config,
-      features: [
-        ...discoveredFeatures,
-        ...loadedFeatures,
-        ...(options?.features ?? []),
-      ],
+      features: [...discoveredFeatures, ...providedFeatures],
       bindRoutes: options?.bindRoutes,
     }).createRoot();
 
@@ -273,12 +335,14 @@ export function createApp(options?: {
 /**
  * Synchronous version of {@link createApp}, expecting all features and
  * config to have been loaded already.
+ *
  * @public
  */
 export function createSpecializedApp(options?: {
-  features?: (BackstagePlugin | ExtensionOverrides)[];
+  icons?: { [key in string]: IconComponent };
+  features?: FrontendFeature[];
   config?: ConfigApi;
-  bindRoutes?(context: { bind: AppRouteBinder }): void;
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
 }): { createRoot(): JSX.Element } {
   const {
     features: duplicatedFeatures = [],
@@ -293,79 +357,100 @@ export function createSpecializedApp(options?: {
     config,
   });
 
-  const appContext = createLegacyAppContext(
-    features.filter(
-      (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
-    ),
-  );
-
-  const apiHolder = createApiHolder(tree, config);
   const routeInfo = extractRouteInfoFromAppNode(tree.root);
   const routeBindings = resolveRouteBindings(
     options?.bindRoutes,
     config,
     collectRouteIds(features),
   );
+
+  const appIdentityProxy = new AppIdentityProxy();
+  const apiHolder = createApiHolder(
+    tree,
+    config,
+    appIdentityProxy,
+    new RouteResolver(
+      routeInfo.routePaths,
+      routeInfo.routeParents,
+      routeInfo.routeObjects,
+      routeBindings,
+      getBasePath(config),
+    ),
+    options?.icons,
+  );
+
+  const featureFlagApi = apiHolder.get(featureFlagsApiRef);
+  if (featureFlagApi) {
+    for (const feature of features) {
+      if (feature.$$type === '@backstage/BackstagePlugin') {
+        toInternalBackstagePlugin(feature).featureFlags.forEach(flag =>
+          featureFlagApi.registerFlag({
+            name: flag.name,
+            pluginId: feature.id,
+          }),
+        );
+      }
+      if (feature.$$type === '@backstage/ExtensionOverrides') {
+        toInternalExtensionOverrides(feature).featureFlags.forEach(flag =>
+          featureFlagApi.registerFlag({ name: flag.name, pluginId: '' }),
+        );
+      }
+    }
+  }
+
   const rootEl = tree.root.instance!.getData(coreExtensionData.reactElement);
 
-  const App = () => (
+  const AppComponent = () => (
     <ApiProvider apis={apiHolder}>
-      <AppContextProvider appContext={appContext}>
-        <AppThemeProvider>
-          <RoutingProvider {...routeInfo} routeBindings={routeBindings}>
-            {/* TODO: set base path using the logic from AppRouter */}
-            <BrowserRouter>{rootEl}</BrowserRouter>
-          </RoutingProvider>
-        </AppThemeProvider>
-      </AppContextProvider>
+      <AppThemeProvider>
+        <InternalAppContext.Provider
+          value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
+        >
+          {rootEl}
+        </InternalAppContext.Provider>
+      </AppThemeProvider>
     </ApiProvider>
   );
 
   return {
     createRoot() {
-      return <App />;
+      return <AppComponent />;
     },
   };
 }
 
-function createLegacyAppContext(plugins: BackstagePlugin[]): AppContext {
-  return {
-    getPlugins(): LegacyBackstagePlugin[] {
-      return plugins.map(toLegacyPlugin);
-    },
-
-    getSystemIcon(key: string): IconComponent | undefined {
-      return key in defaultIcons
-        ? defaultIcons[key as keyof typeof defaultIcons]
-        : undefined;
-    },
-
-    getSystemIcons(): Record<string, IconComponent> {
-      return defaultIcons;
-    },
-
-    getComponents(): AppComponents {
-      return defaultComponents;
-    },
-  };
-}
-
-function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
+function createApiHolder(
+  tree: AppTree,
+  configApi: ConfigApi,
+  appIdentityProxy: AppIdentityProxy,
+  routeResolutionApi: RouteResolutionApi,
+  icons?: { [key in string]: IconComponent },
+): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
   const pluginApis =
     tree.root.edges.attachments
       .get('apis')
-      ?.map(e => e.instance?.getData(coreExtensionData.apiFactory))
+      ?.map(e => e.instance?.getData(createApiExtension.factoryDataRef))
       .filter((x): x is AnyApiFactory => !!x) ?? [];
 
   const themeExtensions =
     tree.root.edges.attachments
       .get('themes')
-      ?.map(e => e.instance?.getData(coreExtensionData.theme))
+      ?.map(e => e.instance?.getData(createThemeExtension.themeDataRef))
       .filter((x): x is AppTheme => !!x) ?? [];
 
-  for (const factory of [...defaultApis, ...pluginApis]) {
+  const translationResources =
+    tree.root.edges.attachments
+      .get('translations')
+      ?.map(e =>
+        e.instance?.getData(createTranslationExtension.translationDataRef),
+      )
+      .filter(
+        (x): x is typeof createTranslationExtension.translationDataRef.T => !!x,
+      ) ?? [];
+
+  for (const factory of pluginApis) {
     factoryRegistry.register('default', factory);
   }
 
@@ -379,33 +464,7 @@ function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
   factoryRegistry.register('static', {
     api: identityApiRef,
     deps: {},
-    factory: () => {
-      const appIdentityProxy = new AppIdentityProxy();
-      // TODO: Remove this when sign-in page is migrated
-      appIdentityProxy.setTarget(
-        {
-          getUserId: () => 'guest',
-          getIdToken: async () => undefined,
-          getProfile: () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getProfileInfo: async () => ({
-            email: 'guest@example.com',
-            displayName: 'Guest',
-          }),
-          getBackstageIdentity: async () => ({
-            type: 'user',
-            userEntityRef: 'user:default/guest',
-            ownershipEntityRefs: ['user:default/guest'],
-          }),
-          getCredentials: async () => ({}),
-          signOut: async () => {},
-        },
-        { signOutTargetUrl: '/' },
-      );
-      return appIdentityProxy;
-    },
+    factory: () => appIdentityProxy,
   });
 
   factoryRegistry.register('static', {
@@ -414,6 +473,36 @@ function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
     factory: () => ({
       getTree: () => ({ tree }),
     }),
+  });
+
+  factoryRegistry.register('static', {
+    api: routeResolutionApiRef,
+    deps: {},
+    factory: () => routeResolutionApi,
+  });
+
+  const componentsExtensions =
+    tree.root.edges.attachments
+      .get('components')
+      ?.map(e => e.instance?.getData(createComponentExtension.componentDataRef))
+      .filter(x => !!x) ?? [];
+
+  const componentsMap = componentsExtensions.reduce(
+    (components, component) =>
+      component ? components.set(component.ref, component?.impl) : components,
+    new Map<ComponentRef<any>, any>(),
+  );
+
+  factoryRegistry.register('static', {
+    api: componentsApiRef,
+    deps: {},
+    factory: () => new DefaultComponentsApi(componentsMap),
+  });
+
+  factoryRegistry.register('static', {
+    api: iconsApiRef,
+    deps: {},
+    factory: () => new DefaultIconsApi({ ...defaultIcons, ...icons }),
   });
 
   factoryRegistry.register('static', {
@@ -429,15 +518,6 @@ function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
     factory: () => AppLanguageSelector.createWithStorage(),
   });
 
-  factoryRegistry.register('default', {
-    api: translationApiRef,
-    deps: { languageApi: appLanguageApiRef },
-    factory: ({ languageApi }) =>
-      I18nextTranslationApi.create({
-        languageApi,
-      }),
-  });
-
   factoryRegistry.register('static', {
     api: configApiRef,
     deps: {},
@@ -450,23 +530,15 @@ function createApiHolder(tree: AppTree, configApi: ConfigApi): ApiHolder {
     factory: () => AppLanguageSelector.createWithStorage(),
   });
 
-  factoryRegistry.register('default', {
+  factoryRegistry.register('static', {
     api: translationApiRef,
     deps: { languageApi: appLanguageApiRef },
     factory: ({ languageApi }) =>
       I18nextTranslationApi.create({
         languageApi,
+        resources: translationResources,
       }),
   });
-
-  // TODO: ship these as default extensions instead
-  for (const factory of defaultApis as AnyApiFactory[]) {
-    if (!factoryRegistry.register('app', factory)) {
-      throw new Error(
-        `Duplicate or forbidden API factory for ${factory.api} in app`,
-      );
-    }
-  }
 
   ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
 

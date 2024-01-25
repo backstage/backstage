@@ -1,5 +1,86 @@
 # @backstage/create-app
 
+## 0.5.11-next.0
+
+### Patch Changes
+
+- aeec29c: Updated `packages/app` as well as the root `package.json` type resolutions to use React v18.
+
+  The `@testing-library/*` dependencies have also been updated to the ones compatible with React v18, and the test at `packages/app/src/App.test.tsx` had been updated to use more modern patterns that work better with these new versions.
+
+  For information on how to migrate existing apps to React v18, see the [migration guide](https://backstage.io/docs/tutorials/react18-migration)
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.9
+
+### Patch Changes
+
+- c9f71fb: Bumped create-app version.
+- ac277f3: Bumped create-app version.
+- 7acbb5a: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.9-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.5.9-next.1
+
+### Patch Changes
+
+- 7acbb5a: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.9-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.8
+
+### Patch Changes
+
+- 8ece804: Bumped create-app version.
+- 0351e09: Bumped create-app version.
+- 3f1192f: Bumped create-app version.
+- a96c2d4: Include the `<EntityLinksCard />` for group entities by default
+- 375b6f7: CircelCI plugin moved permanently
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.8-next.4
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.8-next.3
+
+### Patch Changes
+
+- a96c2d4: Include the `<EntityLinksCard />` for group entities by default
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.8-next.2
+
+### Patch Changes
+
+- 375b6f7d68: CircelCI plugin moved permanently
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.5.8-next.1
 
 ### Patch Changes

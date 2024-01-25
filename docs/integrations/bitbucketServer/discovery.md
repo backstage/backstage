@@ -38,12 +38,6 @@ export default async function createPlugin(
   builder.addEntityProvider(
     BitbucketServerEntityProvider.fromConfig(env.config, {
       logger: env.logger,
-      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-      schedule: env.scheduler.createScheduledTaskRunner({
-        frequency: { minutes: 30 },
-        timeout: { minutes: 3 },
-      }),
-      // optional: alternatively, use schedule
       scheduler: env.scheduler,
     }),
   );
@@ -69,7 +63,7 @@ catalog:
         filters: # optional
           projectKey: '^apis-.*$' # optional; RegExp
           repoSlug: '^service-.*$' # optional; RegExp
-        schedule: # optional; same options as in TaskScheduleDefinition
+        schedule: # same options as in TaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code
@@ -87,7 +81,7 @@ catalog:
     Regular expression used to filter results based on the project key.
   - **`repoSlug`** _(optional)_:
     Regular expression used to filter results based on the repo slug.
-- **`schedule`** _(optional)_:
+- **`schedule`**:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.
   - **`timeout`**:

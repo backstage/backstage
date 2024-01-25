@@ -32,7 +32,7 @@ import { loadCliConfig } from '../config';
 import { Lockfile } from '../versioning';
 import { createConfig, resolveBaseUrl } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
-import { resolveBundlingPaths } from './paths';
+import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 import { hasReactDomClient } from './hasReactDomClient';
 
@@ -70,6 +70,20 @@ export async function serveBundle(options: ServeOptions) {
           yarn backstage-cli versions:check --fix
       `,
         ),
+      );
+    }
+
+    if (
+      targetPkg.dependencies?.['react-router']?.includes('beta') ||
+      targetPkg.dependencies?.['react-router-dom']?.includes('beta')
+    ) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        chalk.yellow(`
+DEPRECATION WARNING: React Router Beta is deprecated and support for it will be removed in a future release.
+                     Please migrate to use React Router v6 stable.
+                     See https://backstage.io/docs/tutorials/react-router-stable-migration
+`),
       );
     }
   }
@@ -133,7 +147,7 @@ export async function serveBundle(options: ServeOptions) {
     },
   });
 
-  const config = await createConfig(paths, {
+  const commonConfigOptions = {
     ...options,
     checksEnabled: options.checksEnabled,
     isDev: true,
@@ -142,6 +156,10 @@ export async function serveBundle(options: ServeOptions) {
     getFrontendAppConfigs: () => {
       return latestFrontendAppConfigs;
     },
+  };
+
+  const config = await createConfig(paths, {
+    ...commonConfigOptions,
     additionalEntryPoints: detectedModulesEntryPoint,
   });
 
@@ -185,7 +203,26 @@ export async function serveBundle(options: ServeOptions) {
       root: paths.targetPath,
     });
   } else {
-    const compiler = webpack(config);
+    const publicPaths = await resolveOptionalBundlingPaths({
+      entry: 'src/index-public-experimental',
+      dist: 'dist/public',
+    });
+    if (publicPaths) {
+      console.log(
+        chalk.yellow(
+          `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
+        ),
+      );
+    }
+    const compiler = publicPaths
+      ? webpack([
+          config,
+          await createConfig(publicPaths, {
+            ...commonConfigOptions,
+            publicSubPath: '/public',
+          }),
+        ])
+      : webpack(config);
 
     webpackServer = new WebpackDevServer(
       {

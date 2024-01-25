@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, ReactNode, useEffect } from 'react';
+import React, {
+  PropsWithChildren,
+  ReactNode,
+  Suspense,
+  useEffect,
+} from 'react';
 import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
-import { BackstagePlugin } from '../wiring';
 import { ErrorBoundary } from './ErrorBoundary';
-import { ExtensionSuspense } from './ExtensionSuspense';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
+import { AppNode, useComponentRef } from '../apis';
+import { coreComponentRefs } from './coreComponentRefs';
 
 type RouteTrackerProps = PropsWithChildren<{
   disableTracking?: boolean;
@@ -44,29 +49,32 @@ const RouteTracker = (props: RouteTrackerProps) => {
 
 /** @public */
 export interface ExtensionBoundaryProps {
-  id: string;
-  source?: BackstagePlugin;
+  node: AppNode;
   routable?: boolean;
   children: ReactNode;
 }
 
 /** @public */
 export function ExtensionBoundary(props: ExtensionBoundaryProps) {
-  const { id, source, routable, children } = props;
+  const { node, routable, children } = props;
+
+  const plugin = node.spec.source;
+  const Progress = useComponentRef(coreComponentRefs.progress);
+  const fallback = useComponentRef(coreComponentRefs.errorBoundaryFallback);
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
-    extension: id,
-    pluginId: source?.id,
+    extensionId: node.spec.id,
+    pluginId: node.spec.source?.id,
   };
 
   return (
-    <ExtensionSuspense>
-      <ErrorBoundary plugin={source}>
+    <Suspense fallback={<Progress />}>
+      <ErrorBoundary plugin={plugin} Fallback={fallback}>
         <AnalyticsContext attributes={attributes}>
           <RouteTracker disableTracking={!routable}>{children}</RouteTracker>
         </AnalyticsContext>
       </ErrorBoundary>
-    </ExtensionSuspense>
+    </Suspense>
   );
 }

@@ -41,6 +41,43 @@ import { toInternalSubRouteRef } from '../../frontend-plugin-api/src/routing/Sub
 import { toInternalExternalRouteRef } from '../../frontend-plugin-api/src/routing/ExternalRouteRef';
 
 /**
+ * Converts a legacy route ref type to the new system.
+ *
+ * @public
+ */
+export type ToNewRouteRef<
+  T extends LegacyRouteRef | LegacySubRouteRef | LegacyExternalRouteRef,
+> = T extends LegacyRouteRef<infer IParams>
+  ? RouteRef<IParams>
+  : T extends LegacySubRouteRef<infer IParams>
+  ? SubRouteRef<IParams>
+  : T extends LegacyExternalRouteRef<infer IParams, infer IOptional>
+  ? ExternalRouteRef<IParams, IOptional>
+  : never;
+
+/**
+ * Converts a collection of legacy route refs to the new system.
+ * This is particularly useful when defining plugin `routes` and `externalRoutes`.
+ *
+ * @public
+ */
+export function convertLegacyRouteRefs<
+  TRefs extends {
+    [name in string]:
+      | LegacyRouteRef
+      | LegacySubRouteRef
+      | LegacyExternalRouteRef;
+  },
+>(refs: TRefs): { [KName in keyof TRefs]: ToNewRouteRef<TRefs[KName]> } {
+  return Object.fromEntries(
+    Object.entries(refs).map(([name, ref]) => [
+      name,
+      convertLegacyRouteRef(ref as LegacyRouteRef),
+    ]),
+  ) as { [KName in keyof TRefs]: ToNewRouteRef<TRefs[KName]> };
+}
+
+/**
  * A temporary helper to convert a legacy route ref to the new system.
  *
  * @public
@@ -91,6 +128,7 @@ export function convertLegacyRouteRef(
 
   if (type === 'absolute') {
     const legacyRef = ref as LegacyRouteRef;
+    const legacyRefStr = String(legacyRef);
     const newRef = toInternalRouteRef(
       createRouteRef<{ [key in string]: string }>({
         params: legacyRef.params as string[],
@@ -104,18 +142,19 @@ export function convertLegacyRouteRef(
         return newRef.getParams();
       },
       getDescription() {
-        return newRef.getDescription();
+        return legacyRefStr;
       },
       setId(id: string) {
         newRef.setId(id);
       },
       toString() {
-        return newRef.toString();
+        return legacyRefStr;
       },
     });
   }
   if (type === 'sub') {
     const legacyRef = ref as LegacySubRouteRef;
+    const legacyRefStr = String(legacyRef);
     const newRef = toInternalSubRouteRef(
       createSubRouteRef({
         path: legacyRef.path,
@@ -133,15 +172,16 @@ export function convertLegacyRouteRef(
         return newRef.getParent();
       },
       getDescription() {
-        return newRef.getDescription();
+        return legacyRefStr;
       },
       toString() {
-        return newRef.toString();
+        return legacyRefStr;
       },
     });
   }
   if (type === 'external') {
     const legacyRef = ref as LegacyExternalRouteRef;
+    const legacyRefStr = String(legacyRef);
     const newRef = toInternalExternalRouteRef(
       createExternalRouteRef<{ [key in string]: string }>({
         params: legacyRef.params as string[],
@@ -157,13 +197,13 @@ export function convertLegacyRouteRef(
         return newRef.getParams();
       },
       getDescription() {
-        return newRef.getDescription();
+        return legacyRefStr;
       },
       setId(id: string) {
         newRef.setId(id);
       },
       toString() {
-        return newRef.toString();
+        return legacyRefStr;
       },
     });
   }

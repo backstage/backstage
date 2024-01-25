@@ -25,8 +25,8 @@ import {
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Avatar, Link } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { AboutField } from '@backstage/plugin-catalog';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { AboutField } from './AboutField';
 import { StatusTag } from '../StatusTag';
 import { Member, BazaarProject } from '../../types';
 

@@ -23,6 +23,8 @@ export type BundlingPathsOptions = {
   entry: string;
   // Target directory, defaulting to paths.targetDir
   targetDir?: string;
+  // Relative dist directory, defaulting to 'dist'
+  dist?: string;
 };
 
 export function resolveBundlingPaths(options: BundlingPathsOptions) {
@@ -60,7 +62,7 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     targetPublic,
     targetPath: resolvePath(targetDir, '.'),
     targetRunFile: runFileExists ? targetRunFile : undefined,
-    targetDist: resolvePath(targetDir, 'dist'),
+    targetDist: resolvePath(targetDir, options.dist ?? 'dist'),
     targetAssets: resolvePath(targetDir, 'assets'),
     targetSrc: resolvePath(targetDir, 'src'),
     targetDev: resolvePath(targetDir, 'dev'),
@@ -70,6 +72,16 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     rootNodeModules: paths.resolveTargetRoot('node_modules'),
     root: paths.targetRoot,
   };
+}
+
+export async function resolveOptionalBundlingPaths(
+  options: BundlingPathsOptions,
+) {
+  const resolvedPaths = resolveBundlingPaths(options);
+  if (await fs.pathExists(resolvedPaths.targetEntry)) {
+    return resolvedPaths;
+  }
+  return undefined;
 }
 
 export type BundlingPaths = ReturnType<typeof resolveBundlingPaths>;

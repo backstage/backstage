@@ -1,5 +1,115 @@
 # @backstage/plugin-catalog-graph
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- 916da47: Change default icon for unknown entities to nothing instead of the help icon.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/types@1.1.1
+
+## 0.3.3
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/catalog-client@1.5.2
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+
+## 0.3.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/plugin-catalog-react@1.9.3-next.1
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/types@1.1.1
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/catalog-client@1.5.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/types@1.1.1
+
+## 0.3.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-react@1.9.2-next.3
+
+## 0.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.2
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/types@1.1.1
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.1
+  - @backstage/catalog-client@1.5.0-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/types@1.1.1
+
 ## 0.3.2-next.0
 
 ### Patch Changes

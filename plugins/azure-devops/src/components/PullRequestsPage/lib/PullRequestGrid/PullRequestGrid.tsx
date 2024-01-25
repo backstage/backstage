@@ -17,7 +17,7 @@
 import { PullRequestGridColumn } from '../PullRequestGridColumn';
 import { PullRequestGroup } from '../types';
 import React from 'react';
-import { styled } from '@material-ui/core';
+import { styled } from '@material-ui/core/styles';
 
 const GridDiv = styled('div')(({ theme }) => ({
   display: 'flex',

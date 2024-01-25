@@ -18,7 +18,7 @@
  * Pulled from https://github.com/varanauskas/oatx.
  */
 
-import { FromSchema, JSONSchema7 } from 'json-schema-to-ts';
+import { FromSchema, JSONSchema } from 'json-schema-to-ts';
 import {
   ImmutableContentObject,
   ImmutableOpenAPIObject,
@@ -221,7 +221,7 @@ export type TuplifyUnion<
  * @public
  */
 export type ConvertAll<T extends ReadonlyArray<unknown>> = {
-  [Index in keyof T]: T[Index] extends JSONSchema7
+  [Index in keyof T]: T[Index] extends JSONSchema
     ? FromSchema<T[Index]>
     : T[Index];
 } & { length: T['length'] };

@@ -156,7 +156,7 @@ function createExtensionPointTestModules(
     modules.push(
       createBackendModule({
         pluginId,
-        moduleId: 'testExtensionPointRegistration',
+        moduleId: 'test-extension-point-registration',
         register(reg) {
           for (const id of pluginExtensionPointIds) {
             const tuple = extensionPointMap.get(id)!;

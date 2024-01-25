@@ -7,6 +7,7 @@ on:
       - 'contrib/**'
       - 'docs/**'
       - 'microsite/**'
+      - 'beps/**'
       - 'scripts/**'
       - 'storybook/**'
       - '**/*.test.*'
@@ -33,7 +34,7 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: setup-node
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: 18.x
           registry-url: https://registry.npmjs.org/
@@ -56,11 +57,11 @@ jobs:
 
       - name: Generate UUID image name
         id: uuid
-        run: echo "UUID_TAG_APP=$(uuidgen)" >> $GITHUB_ENV
+        run: echo "UUID_TAG_APP=backstage-$(uuidgen --time)" >> $GITHUB_ENV
 
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
+        uses: docker/metadata-action@dbef88086f6cef02e264edb7dbf63250c17cef6c # v5.5.0
         with:
           images: registry.uffizzi.com/${{ env.UUID_TAG_APP }}
           tags: type=raw,value=60d

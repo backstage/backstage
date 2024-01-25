@@ -89,7 +89,7 @@ export interface MarkRecord {
   id: string;
   sequence: number;
   ingestion_id: string;
-  cursor: string;
+  cursor: unknown;
   created_at: string;
 }
 

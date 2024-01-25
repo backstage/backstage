@@ -64,6 +64,5 @@ export function parseRepoPickerUrl(
   } catch {
     /* ok */
   }
-
   return { host, owner, repoName, organization, workspace, project };
 }

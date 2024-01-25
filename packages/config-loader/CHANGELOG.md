@@ -1,5 +1,55 @@
 # @backstage/config-loader
 
+## 1.6.1
+
+### Patch Changes
+
+- 7acbb5a: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.6.1-next.0
+
+### Patch Changes
+
+- 7acbb5a: Removed `mock-fs` dev dependency.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.6.0
+
+### Minor Changes
+
+- 24f5a85: Add "path" to `TransformFunc` context
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 24f5a85: Add "path" to `TransformFunc` context
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 1.5.3
 
 ### Patch Changes

@@ -61,16 +61,20 @@ import {
 } from '@backstage/plugin-search-react';
 import { SearchResult } from '@backstage/plugin-search-common';
 import { searchApiRef } from '@backstage/plugin-search-react';
-import { searchResultItemExtensionData } from '@backstage/plugin-search-react/alpha';
+import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 
 import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
 import { SearchType } from './components/SearchType';
 import { UrlUpdater } from './components/SearchPage/SearchPage';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+  convertLegacyRouteRefs,
+} from '@backstage/core-compat-api';
 
 /** @alpha */
-export const SearchApi = createApiExtension({
+export const searchApi = createApiExtension({
   factory: {
     api: searchApiRef,
     deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
@@ -97,8 +101,7 @@ const useSearchPageStyles = makeStyles((theme: Theme) => ({
 }));
 
 /** @alpha */
-export const SearchPage = createPageExtension({
-  id: 'plugin.search.page',
+export const searchPage = createPageExtension({
   routeRef: convertLegacyRouteRef(rootRouteRef),
   configSchema: createSchemaFromZod(z =>
     z.object({
@@ -108,13 +111,15 @@ export const SearchPage = createPageExtension({
   ),
   inputs: {
     items: createExtensionInput({
-      item: searchResultItemExtensionData,
+      item: createSearchResultListItemExtension.itemDataRef,
     }),
   },
   loader: async ({ config, inputs }) => {
     const getResultItemComponent = (result: SearchResult) => {
-      const value = inputs.items.find(({ item }) => item?.predicate?.(result));
-      return value?.item.component ?? DefaultResultListItem;
+      const value = inputs.items.find(item =>
+        item?.output.item.predicate?.(result),
+      );
+      return value?.output.item.component ?? DefaultResultListItem;
     };
 
     const Component = () => {
@@ -224,18 +229,17 @@ export const SearchPage = createPageExtension({
       );
     };
 
-    return (
+    return compatWrapper(
       <SearchContextProvider>
         <UrlUpdater />
         <Component />
-      </SearchContextProvider>
+      </SearchContextProvider>,
     );
   },
 });
 
 /** @alpha */
-export const SearchNavItem = createNavItemExtension({
-  id: 'plugin.search.nav.index',
+export const searchNavItem = createNavItemExtension({
   routeRef: convertLegacyRouteRef(rootRouteRef),
   title: 'Search',
   icon: SearchIcon,
@@ -244,8 +248,8 @@ export const SearchNavItem = createNavItemExtension({
 /** @alpha */
 export default createPlugin({
   id: 'search',
-  extensions: [SearchApi, SearchPage, SearchNavItem],
-  routes: {
-    root: convertLegacyRouteRef(rootRouteRef),
-  },
+  extensions: [searchApi, searchPage, searchNavItem],
+  routes: convertLegacyRouteRefs({
+    root: rootRouteRef,
+  }),
 });

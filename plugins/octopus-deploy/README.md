@@ -8,6 +8,17 @@ Welcome to the octopus-deploy plugin!
 
 ## Getting started
 
+### Installing
+
+To get started, first install the plugin with the following command:
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-octopus-deploy
+```
+
+### Setup
+
 This plugin (currently) uses the Backstage proxy to securely communicate with the Octopus Deploy API.
 
 To use it, you will need to generate an [API Key](https://octopus.com/docs/octopus-rest-api/how-to-create-an-api-key) within Octopus Deploy.
@@ -35,7 +46,7 @@ octopusdeploy:
 ```
 // In packages/app/src/components/catalog/EntityPage.tsx
 import {
-  isOctopusDeployAvailable
+  isOctopusDeployAvailable,
   EntityOctopusDeployContent
 } from '@backstage/plugin-octopus-deploy';
 

@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v4.1.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -55,7 +55,7 @@ jobs:
         run: yarn lint:type-deps
 
       - name: test
-        run: yarn backstage-cli repo test --maxWorkers=2 --workerIdleMemoryLimit=1300M
+        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
 

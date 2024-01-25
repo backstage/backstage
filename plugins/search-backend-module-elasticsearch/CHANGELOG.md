@@ -1,5 +1,112 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.3.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/plugin-search-backend-node@1.2.14-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.3.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-search-backend-node@1.2.13
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.3.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-search-backend-node@1.2.13-next.2
+
+## 1.3.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-backend-node@1.2.13-next.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.3.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.13-next.0
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.3.11
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-search-backend-node@1.2.12
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.3.11-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.12-next.3
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.11-next.2
+
+### Patch Changes
+
+- cc4228e: Switched module ID to use kebab-case.
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.12-next.2
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.3.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-backend-node@1.2.12-next.1
+  - @backstage/plugin-search-common@1.2.8
+
 ## 1.3.11-next.0
 
 ### Patch Changes

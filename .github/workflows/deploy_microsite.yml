@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v4.1.1
 
       - name: use node.js 18.x
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: 18.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -66,7 +66,7 @@ jobs:
         run: ls microsite/build && ls microsite/build/storybook
 
       - name: Deploy both microsite and storybook to gh-pages
-        uses: JamesIves/github-pages-deploy-action@a1ea191d508feb8485aceba848389d49f80ca2dc # v4.4.3
+        uses: JamesIves/github-pages-deploy-action@65b5dfd4f5bcd3a7403bbc2959c144256167464e # v4.5.0
         with:
           branch: gh-pages
           folder: microsite/build

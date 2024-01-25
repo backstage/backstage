@@ -128,10 +128,10 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 }
 ```
 
-With this permission policy, the user `spiderman` won't be able to execute the debug:log action.
+With this permission policy, the user `spiderman` won't be able to execute the `debug:log` action.
 
 You can also restrict the input provided to the action by combining multiple rules.
-In the example below, `spiderman` won't be able to execute debug:log when passing `{ "message": "not-this!" }` as action input:
+In the example below, `spiderman` won't be able to execute `debug:log` when passing `{ "message": "not-this!" }` as action input:
 
 ```ts title="packages/backend/src/plugins/permission.ts"
 /* highlight-add-start */

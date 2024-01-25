@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - 'microsite/**'
+      - 'beps/**'
 
 permissions:
   contents: read

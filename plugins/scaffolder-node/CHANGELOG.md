@@ -1,5 +1,125 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 3a9ba42: Added functions to clone a repo, create a branch, add files and push and commit to the branch. This allows for files to be added to the a PR for use in the bitbucket pull request action for issue #21762
+- 11b9a08: Introduced the first version of recoverable tasks.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/plugin-scaffolder-common@1.4.5
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+
+## 0.2.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+
+## 0.2.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/integration@1.8.0
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.4.4
+
+## 0.2.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.4.4
+
+## 0.2.9
+
+### Patch Changes
+
+- 219d7f0: Refactor some methods to `-node` instead and use the new external modules
+- 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/integration@1.8.0
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.4.4
+
+## 0.2.9-next.3
+
+### Patch Changes
+
+- 219d7f0: Refactor some methods to `-node` instead and use the new external modules
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.4.3
+
+## 0.2.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.4.3
+
+## 0.2.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.4.3
+
 ## 0.2.9-next.0
 
 ### Patch Changes

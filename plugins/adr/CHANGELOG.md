@@ -1,5 +1,147 @@
 # @backstage/plugin-adr
 
+## 0.6.13-next.0
+
+### Patch Changes
+
+- 0b03962: Updated README
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/plugin-search-react@1.7.6-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/integration-react@1.1.23
+  - @backstage/plugin-adr-common@0.2.19
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.6.12
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/plugin-search-react@1.7.5
+  - @backstage/integration-react@1.1.23
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-adr-common@0.2.19
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.6.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+  - @backstage/plugin-search-react@1.7.5-next.2
+  - @backstage/integration-react@1.1.23-next.0
+
+## 0.6.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/frontend-plugin-api@0.4.1-next.1
+  - @backstage/integration-react@1.1.23-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.1
+  - @backstage/plugin-search-react@1.7.5-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-adr-common@0.2.18
+  - @backstage/plugin-search-common@1.2.9
+
+## 0.6.12-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/frontend-plugin-api@0.4.1-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.0
+  - @backstage/integration-react@1.1.22
+  - @backstage/plugin-search-react@1.7.5-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-adr-common@0.2.18
+  - @backstage/plugin-search-common@1.2.9
+
+## 0.6.11
+
+### Patch Changes
+
+- 5814122: Updated `/alpha` exports to fit new naming patterns.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- fb8f3bd: Updated alpha translation message keys to use nested format and camel case.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/frontend-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-search-react@1.7.4
+  - @backstage/integration-react@1.1.22
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-adr-common@0.2.18
+  - @backstage/plugin-search-common@1.2.9
+
+## 0.6.11-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/frontend-plugin-api@0.4.0-next.3
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-adr-common@0.2.18-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.3
+  - @backstage/plugin-search-common@1.2.8
+  - @backstage/plugin-search-react@1.7.4-next.3
+
+## 0.6.11-next.2
+
+### Patch Changes
+
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.2
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.2
+  - @backstage/plugin-search-react@1.7.4-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/plugin-adr-common@0.2.18-next.1
+  - @backstage/plugin-search-common@1.2.8
+
+## 0.6.11-next.1
+
+### Patch Changes
+
+- fb8f3bdbc2: Updated alpha translation message keys to use nested format and camel case.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.1
+  - @backstage/plugin-search-react@1.7.4-next.1
+  - @backstage/integration-react@1.1.22-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/plugin-adr-common@0.2.18-next.1
+  - @backstage/plugin-search-common@1.2.8
+
 ## 0.6.11-next.0
 
 ### Patch Changes

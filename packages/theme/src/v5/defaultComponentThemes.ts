@@ -239,4 +239,7 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
       underline: 'hover',
     },
   },
+  MuiPaper: {
+    styleOverrides: { root: { backgroundImage: 'unset' } },
+  },
 };

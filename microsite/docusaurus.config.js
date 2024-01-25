@@ -140,6 +140,10 @@ module.exports = {
             from: '/docs/getting-started/running-backstage-locally',
             to: '/docs/getting-started/',
           },
+          {
+            from: '/docs/features/software-templates/testing-scaffolder-alpha',
+            to: '/docs/features/software-templates/migrating-to-rjsf-v5',
+          },
         ],
       },
     ],
@@ -178,7 +182,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.20.0',
+            to: 'docs/releases/v1.22.0',
             label: 'Releases',
             position: 'left',
           },
@@ -200,7 +204,10 @@ module.exports = {
           {
             items: [
               {
-                html: '<a href="/"><h2 class="footerLogo"></h2></a>',
+                html: `
+                <a href="/" aria-label="Backstage Home">
+                  <div class="footerLogo"></div>
+                </a>`,
               },
             ],
           },
@@ -277,7 +284,7 @@ module.exports = {
           },
         ],
         copyright:
-          '<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © 2023 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>',
+          '<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © 2024 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>',
       },
       algolia: {
         apiKey: '1f0ba86672ccfc3576faa94583e5b318',
@@ -287,6 +294,9 @@ module.exports = {
       },
       prism: {
         theme: prismTheme,
+        // Supported languages: https://prismjs.com/#supported-languages
+        // Default languages: https://github.com/FormidableLabs/prism-react-renderer/blob/master/packages/generate-prism-languages/index.ts#L9-L23
+        additionalLanguages: ['docker', 'bash'],
         magicComments: [
           // Extend the default highlight class name
           {

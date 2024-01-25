@@ -479,4 +479,61 @@ describe('SearchContext', () => {
       });
     });
   });
+
+  it('captures analytics events even if number of results does not exist', async () => {
+    const analyticsApiMock = {
+      captureEvent: jest.fn(),
+    } satisfies typeof analyticsApiRef.T;
+
+    searchApiMock.query.mockResolvedValue({
+      results: [],
+    });
+
+    const { result } = renderHook(() => useSearch(), {
+      wrapper: ({ children }) => {
+        const configApiMock = new MockConfigApi({});
+        return (
+          <TestApiProvider
+            apis={[
+              [configApiRef, configApiMock],
+              [searchApiRef, searchApiMock],
+              [analyticsApiRef, analyticsApiMock],
+            ]}
+          >
+            <SearchContextProvider initialState={initialState}>
+              {children}
+            </SearchContextProvider>
+          </TestApiProvider>
+        );
+      },
+    });
+
+    await waitFor(() => {
+      expect(result.current).toEqual(expect.objectContaining(initialState));
+    });
+
+    const term = 'term';
+
+    await act(async () => {
+      result.current.setTerm(term);
+    });
+
+    await waitFor(() => {
+      expect(searchApiMock.query).toHaveBeenLastCalledWith({
+        term: 'term',
+        types: ['*'],
+        filters: {},
+      });
+      expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
+        action: 'search',
+        subject: 'term',
+        value: undefined,
+        context: {
+          extension: 'App',
+          pluginId: 'root',
+          routeRef: 'unknown',
+        },
+      });
+    });
+  });
 });

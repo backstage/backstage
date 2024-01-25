@@ -29,7 +29,7 @@ import { GithubEntityProvider } from '../providers/GithubEntityProvider';
  */
 export const catalogModuleGithubEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'githubEntityProvider',
+  moduleId: 'github-entity-provider',
   register(env) {
     env.registerInit({
       deps: {

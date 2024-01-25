@@ -130,7 +130,7 @@ export class CustomClustersSupplier implements KubernetesClustersSupplier {
 
   static create(refreshInterval: Duration) {
     const clusterSupplier = new CustomClustersSupplier();
-    // setup refresh, e.g. using a copy of https://github.com/backstage/backstage/blob/master/plugins/search-backend-node/src/runPeriodically.ts
+    // setup refresh, e.g. using a copy of https://github.com/backstage/backstage/blob/master/plugins/kubernetes-backend/src/service/runPeriodically.ts
     runPeriodically(
       () => clusterSupplier.refreshClusters(),
       refreshInterval.toMillis(),

@@ -18,6 +18,7 @@ import React, { Dispatch, useEffect, useState } from 'react';
 import {
   Box,
   Card,
+  Chip,
   IconButton,
   LinearProgress,
   Menu,
@@ -26,7 +27,10 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import { default as MuiAlert } from '@material-ui/lab/Alert';
-import { AzureSite } from '@backstage/plugin-azure-sites-common';
+import {
+  AzureSite,
+  azureSitesActionPermission,
+} from '@backstage/plugin-azure-sites-common';
 import { Table, TableColumn, Link } from '@backstage/core-components';
 import { useTheme } from '@material-ui/core/styles';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
@@ -39,6 +43,9 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { DateTime } from 'luxon';
 import { useApi } from '@backstage/core-plugin-api';
 import { azureSiteApiRef } from '../../api';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 type States = 'Waiting' | 'Running' | 'Paused' | 'Failed' | 'Stopped';
 type Kinds = 'app' | 'functionapp';
@@ -91,6 +98,18 @@ const Kind = ({ value }: { value: Kinds }) => {
   );
 };
 
+const Tags = ({ tags }: { tags: any }) => {
+  return Object.keys(tags).map((key: any) => (
+    <Chip
+      key={key}
+      label={`${key}: ${tags[key]}`}
+      size="small"
+      variant="default"
+      style={{ marginBottom: '1px' }}
+    />
+  ));
+};
+
 type TableProps = {
   data: AzureSite[];
   loading: boolean;
@@ -104,6 +123,8 @@ const ActionButtons = ({
   onMenuItemClick: Dispatch<React.SetStateAction<string | null>>;
 }) => {
   const azureApi = useApi(azureSiteApiRef);
+  const { entity } = useEntity();
+  const entityRef = stringifyEntityRef(entity);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -119,6 +140,7 @@ const ActionButtons = ({
       name: value.name,
       resourceGroup: value.resourceGroup,
       subscription: value.subscription,
+      entityRef: entityRef,
     });
     onMenuItemClick('Starting, this may take some time...');
     handleClose();
@@ -128,10 +150,14 @@ const ActionButtons = ({
       name: value.name,
       resourceGroup: value.resourceGroup,
       subscription: value.subscription,
+      entityRef: entityRef,
     });
     onMenuItemClick('Stopping, this may take some time...');
     handleClose();
   };
+
+  const { loading: loadingPermission, allowed: canDoAction } =
+    useEntityPermission(azureSitesActionPermission);
 
   return (
     <div>
@@ -160,14 +186,14 @@ const ActionButtons = ({
           },
         }}
       >
-        {value.state !== 'Running' && (
-          <MenuItem key="start" onClick={start}>
+        {value.state !== 'Running' && !loadingPermission && (
+          <MenuItem key="start" onClick={start} disabled={!canDoAction}>
             <StartIcon />
             &nbsp;Start
           </MenuItem>
         )}
-        {value.state !== 'Stopped' && (
-          <MenuItem key="stop" onClick={stop}>
+        {value.state !== 'Stopped' && !loadingPermission && (
+          <MenuItem key="stop" onClick={stop} disabled={!canDoAction}>
             <StopIcon />
             &nbsp;Stop
           </MenuItem>
@@ -222,6 +248,11 @@ export const AzureSitesOverviewTable = ({ data, loading }: TableProps) => {
       title: 'status',
       field: 'status',
       render: (func: AzureSite) => <State value={func.state as States} />,
+    },
+    {
+      title: 'Tags',
+      field: 'tags',
+      render: (func: AzureSite) => (func.tags ? <Tags tags={func.tags} /> : ''),
     },
     {
       title: 'last modified',

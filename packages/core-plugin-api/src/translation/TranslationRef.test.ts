@@ -34,6 +34,40 @@ describe('TranslationRefImpl', () => {
     expect(internalRef.getDefaultMessages()).toEqual({ key: 'value' });
   });
 
+  it('should create a TranslationRef instance with nested messages', () => {
+    const ref = createTranslationRef({
+      id: 'test',
+      messages: {
+        key: 'value',
+        'nested.conflict1': 'outer conflict1',
+        nested: {
+          key: 'nested value',
+          key2: 'nested value2',
+          conflict1: 'inner conflict1',
+          conflict2: 'inner conflict2',
+          inner: {
+            key: 'inner value',
+          },
+        },
+        'nested.conflict2': 'outer conflict2',
+      },
+    });
+
+    const internalRef = toInternalTranslationRef(ref);
+
+    expect(internalRef.$$type).toBe('@backstage/TranslationRef');
+    expect(internalRef.version).toBe('v1');
+    expect(internalRef.id).toBe('test');
+    expect(internalRef.getDefaultMessages()).toEqual({
+      key: 'value',
+      'nested.key': 'nested value',
+      'nested.key2': 'nested value2',
+      'nested.conflict1': 'inner conflict1',
+      'nested.inner.key': 'inner value',
+      'nested.conflict2': 'outer conflict2',
+    });
+  });
+
   it('should be created with lazy translations', async () => {
     const ref = createTranslationRef({
       id: 'test',

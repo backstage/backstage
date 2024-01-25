@@ -24,25 +24,20 @@ import { createRouteRef } from '../routing';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 const wrapInBoundaryExtension = (element: JSX.Element) => {
-  const id = 'plugin.extension';
   const routeRef = createRouteRef();
   return createExtension({
-    id,
-    attachTo: { id: 'core.routes', input: 'routes' },
+    name: 'test',
+    attachTo: { id: 'app/routes', input: 'routes' },
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
     },
-    factory({ source }) {
+    factory({ node }) {
       return {
         routeRef,
         path: '/',
-        element: (
-          <ExtensionBoundary id={id} source={source}>
-            {element}
-          </ExtensionBoundary>
-        ),
+        element: <ExtensionBoundary node={node}>{element}</ExtensionBoundary>,
       };
     },
   });
@@ -88,15 +83,18 @@ describe('ExtensionBoundary', () => {
       ),
     ).render();
 
-    await waitFor(() =>
-      expect(analyticsApiMock.getEvents()[0]).toMatchObject({
+    await waitFor(() => {
+      const event = analyticsApiMock
+        .getEvents()
+        .find(e => e.subject === subject);
+
+      expect(event).toMatchObject({
         action,
         subject,
         context: {
-          extension: 'plugin.extension',
-          routeRef: 'unknown',
+          extensionId: 'test',
         },
-      }),
-    );
+      });
+    });
   });
 });

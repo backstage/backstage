@@ -1,13 +1,11 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-gitlab",
-  "version": "0.2.11-next.0",
+  "version": "0.2.13-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "backstage": {
     "role": "backend-plugin-module"
@@ -21,6 +19,17 @@
   "keywords": [
     "backstage"
   ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
@@ -31,18 +40,23 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
+    "@gitbeaker/core": "^35.8.0",
     "@gitbeaker/node": "^35.8.0",
+    "@gitbeaker/rest": "^39.25.0",
     "yaml": "^2.0.0",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-app-api": "workspace:^",
+    "jest-date-mock": "^1.0.8"
   },
   "files": [
     "dist"

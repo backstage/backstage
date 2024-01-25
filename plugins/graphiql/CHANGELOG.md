@@ -1,5 +1,108 @@
 # @backstage/plugin-graphiql
 
+## 0.3.3-next.0
+
+### Patch Changes
+
+- 912ca7b: Use `convertLegacyRouteRefs` to define routes in `/alpha` export plugin.
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.2-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+
+## 0.3.2
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.1
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+
+## 0.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.1-next.2
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/core-compat-api@0.1.1-next.1
+  - @backstage/frontend-plugin-api@0.4.1-next.1
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/frontend-plugin-api@0.4.1-next.0
+  - @backstage/core-compat-api@0.1.1-next.0
+  - @backstage/core-plugin-api@1.8.1
+
+## 0.3.1
+
+### Patch Changes
+
+- 03d0b6d: The `convertLegacyRouteRef` utility used by the alpha exports is now imported from `@backstage/core-compat-api`.
+- a1227cc: Wrap `/alpha` export extension elements in backwards compatibility wrapper.
+- 5814122: Updated `/alpha` exports to fit new naming patterns.
+- 8f5d6c1: Updates to the `/alpha` exports to match the extension input wrapping change.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.0
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/frontend-plugin-api@0.4.0
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+
+## 0.3.1-next.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/core-compat-api@0.1.0-next.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/frontend-plugin-api@0.4.0-next.3
+  - @backstage/theme@0.5.0-next.1
+
+## 0.3.1-next.3
+
+### Patch Changes
+
+- a1227cc: Wrap `/alpha` export extension elements in backwards compatibility wrapper.
+- 8f5d6c1: Updates to the `/alpha` exports to match the extension input wrapping change.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.2
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/core-compat-api@0.1.0-next.2
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+
+## 0.3.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/core-compat-api@0.0.1-next.1
+  - @backstage/theme@0.5.0-next.0
+
 ## 0.3.1-next.1
 
 ### Patch Changes

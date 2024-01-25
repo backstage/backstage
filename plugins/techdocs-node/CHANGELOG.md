@@ -1,5 +1,135 @@
 # @backstage/plugin-techdocs-node
 
+## 1.11.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.11.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.11.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+
+## 1.11.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/integration@1.8.0
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/config@1.1.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.11.0
+
+### Minor Changes
+
+- d15d483: Add command `--runAsDefaultUser` for `@techdocs/cli generate` to bypass running the docker builds as host user for macOS and Linux.
+
+### Patch Changes
+
+- 99fb541: Updated dependency `@azure/identity` to `^4.0.0`.
+- 2666675: Updated dependency `@google-cloud/storage` to `^7.0.0`.
+- 4f773c1: Bumped the default TechDocs docker image version to the latest which was released several month ago
+- Updated dependencies
+  - @backstage/backend-common@0.20.0
+  - @backstage/integration@1.8.0
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.9
+
+## 1.11.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.11.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.8
+
+## 1.11.0-next.1
+
+### Patch Changes
+
+- 99fb54183b: Updated dependency `@azure/identity` to `^4.0.0`.
+- 2666675457: Updated dependency `@google-cloud/storage` to `^7.0.0`.
+- 4f773c15f6: Bumped the default TechDocs docker image version to the latest which was released several month ago
+- Updated dependencies
+  - @backstage/integration@1.8.0-next.1
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/plugin-search-common@1.2.8
+
 ## 1.11.0-next.0
 
 ### Minor Changes

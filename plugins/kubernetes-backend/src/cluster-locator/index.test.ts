@@ -53,6 +53,7 @@ describe('getCombinedClusterSupplier', () => {
     const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
       getCredential: jest.fn(),
       validateCluster: jest.fn().mockReturnValue([]),
+      presentAuthMetadata: jest.fn(),
     };
 
     const clusterSupplier = getCombinedClusterSupplier(

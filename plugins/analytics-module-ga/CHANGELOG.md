@@ -1,5 +1,74 @@
 # @backstage/plugin-analytics-module-ga
 
+## 0.1.37
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/config@1.1.1
+
+## 0.1.37-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/config@1.1.1
+
+## 0.1.37-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.1
+
+## 0.1.36
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/config@1.1.1
+
+## 0.1.36-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/theme@0.5.0-next.1
+
+## 0.1.36-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+
+## 0.1.36-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/theme@0.5.0-next.0
+
 ## 0.1.36-next.0
 
 ### Patch Changes

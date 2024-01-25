@@ -119,6 +119,117 @@ entity:
     defaultNamespace: payment
 ```
 
+## MultiEntityPicker
+
+The input props that can be specified under `ui:options` for the `MultiEntityPicker` field extension.
+
+### `allowArbitraryValues`
+
+Whether to allow arbitrary user input. Defaults to true.
+
+`allowArbitraryValues` provides input validation when selecting an entity as the values you enter will correspond to a valid entity.
+
+- Adding a valid entity with `allowArbitraryValues` as `false`
+
+```yaml
+entity:
+  title: Entities
+  type: array
+  description: Entities of the component
+  ui:field: MultiEntityPicker
+  ui:options:
+    allowArbitraryValues: false
+```
+
+- Adding an arbitrary entity with `allowArbitraryValues` as `true` (default value)
+
+```yaml
+entity:
+  title: Entities
+  type: array
+  description: Entities of the component
+  ui:field: MultiEntityPicker
+  ui:options:
+    allowArbitraryValues: true
+```
+
+### `catalogFilter`
+
+`catalogFilter` supports filtering options by any field(s) of an entity.
+
+- Get all entities of kind `Group`
+
+```yaml
+entity:
+  title: Entities
+  type: array
+  description: Entities of the component
+  ui:field: MultiEntityPicker
+  ui:options:
+    catalogFilter:
+      - kind: Group
+```
+
+- Get entities of kind `Group` and spec.type `team`
+
+```yaml
+entity:
+  title: Entities
+  type: array
+  description: Entities of the component
+  ui:field: MultiEntityPicker
+  ui:options:
+    catalogFilter:
+      - kind: Group
+        spec.type: team
+```
+
+For the full details on the spec.\* values see [here](../software-catalog/descriptor-format.md#kind-group).
+
+### `defaultKind`
+
+The default entity kind.
+
+```yaml
+system:
+  title: System
+  type: array
+  description: Systems of the component
+  ui:field: MultiEntityPicker
+  ui:options:
+    catalogFilter:
+      kind: System
+    defaultKind: System
+```
+
+### `defaultNamespace`
+
+The ID of a namespace that the entity belongs to. The default value is `default`.
+
+- Listing all entities in the `default` namespace (default value)
+
+```yaml
+entity:
+  title: Entity
+  type: array
+  description: Entities of the component
+  ui:field: MultiEntityPicker
+  ui:options:
+    defaultNamespace: default
+```
+
+- Listing all entities in the `payment` namespace
+
+```yaml
+entity:
+  title: Entity
+  type: array
+  description: Entities of the component
+  ui:field: MultiEntityPicker
+  ui:options:
+    defaultNamespace: payment
+```
+
 ## `OwnerPicker`
 
 The input props that can be specified under `ui:options` for the `OwnerPicker` field extension.

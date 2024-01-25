@@ -15,8 +15,11 @@
  */
 
 import { InputError } from '@backstage/errors';
-import { EntitiesSearchFilter, EntityFilter } from '../../catalog';
 import { parseStringsParam } from './common';
+import {
+  EntitiesSearchFilter,
+  EntityFilter,
+} from '@backstage/plugin-catalog-node';
 
 /**
  * Parses the filtering part of a query, like

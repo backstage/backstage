@@ -14,21 +14,29 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
 import {
-  Extension,
-  createApiExtension,
-  createPageExtension,
-  createPlugin,
-  BackstagePlugin,
-} from '@backstage/frontend-plugin-api';
-import { Route, Routes } from 'react-router-dom';
-import {
+  AnyRouteRefParams,
   BackstagePlugin as LegacyBackstagePlugin,
   RouteRef,
   getComponentData,
 } from '@backstage/core-plugin-api';
-import { convertLegacyRouteRef } from './convertLegacyRouteRef';
+import {
+  BackstagePlugin,
+  ExtensionDefinition,
+  coreExtensionData,
+  createApiExtension,
+  createExtension,
+  createExtensionInput,
+  createPageExtension,
+  createPlugin,
+} from '@backstage/frontend-plugin-api';
+import React, { Children, ReactNode, isValidElement } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import {
+  convertLegacyRouteRef,
+  convertLegacyRouteRefs,
+} from './convertLegacyRouteRef';
+import { compatWrapper } from './compatWrapper';
 
 /*
 
@@ -58,85 +66,203 @@ Existing tasks:
 
 */
 
-/** @public */
+// Creates a shim extension whose purpose is to build up the tree (anchored at
+// the root page) of paths/routeRefs so that the app can bind them properly.
+function makeRoutingShimExtension(options: {
+  name: string;
+  parentExtensionId: string;
+  routePath?: string;
+  routeRef?: RouteRef;
+}) {
+  const { name, parentExtensionId, routePath, routeRef } = options;
+  return createExtension({
+    kind: 'routing-shim',
+    name,
+    attachTo: { id: parentExtensionId, input: 'childRoutingShims' },
+    inputs: {
+      childRoutingShims: createExtensionInput({
+        routePath: coreExtensionData.routePath.optional(),
+        routeRef: coreExtensionData.routeRef.optional(),
+      }),
+    },
+    output: {
+      routePath: coreExtensionData.routePath.optional(),
+      routeRef: coreExtensionData.routeRef.optional(),
+    },
+    factory: () => ({
+      routePath,
+      routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
+    }),
+  });
+}
+
+function visitRouteChildren(options: {
+  children: ReactNode;
+  parentExtensionId: string;
+  context: {
+    pluginId: string;
+    extensions: ExtensionDefinition<unknown>[];
+    getUniqueName: () => string;
+    discoverPlugin: (plugin: LegacyBackstagePlugin) => void;
+  };
+}): void {
+  const { children, parentExtensionId, context } = options;
+  const { pluginId, extensions, getUniqueName, discoverPlugin } = context;
+
+  Children.forEach(children, node => {
+    if (!isValidElement(node)) {
+      return;
+    }
+
+    const plugin = getComponentData<LegacyBackstagePlugin>(node, 'core.plugin');
+    const routeRef = getComponentData<RouteRef<AnyRouteRefParams>>(
+      node,
+      'core.mountPoint',
+    );
+    const routePath: string | undefined = node.props?.path;
+
+    if (plugin) {
+      // We just mark the plugin as discovered, but don't change the context
+      discoverPlugin(plugin);
+    }
+
+    let nextParentExtensionId = parentExtensionId;
+    if (routeRef || routePath) {
+      const nextParentExtensionName = getUniqueName();
+      nextParentExtensionId = `routing-shim:${pluginId}/${nextParentExtensionName}`;
+      extensions.push(
+        makeRoutingShimExtension({
+          name: nextParentExtensionName,
+          parentExtensionId,
+          routePath,
+          routeRef,
+        }),
+      );
+    }
+
+    visitRouteChildren({
+      children: node.props.children,
+      parentExtensionId: nextParentExtensionId,
+      context,
+    });
+  });
+}
+
+/** @internal */
 export function collectLegacyRoutes(
   flatRoutesElement: JSX.Element,
 ): BackstagePlugin[] {
-  const createdPluginIds = new Map<
+  const pluginExtensions = new Map<
     LegacyBackstagePlugin,
-    Extension<unknown>[]
+    ExtensionDefinition<unknown>[]
   >();
+
+  const getUniqueName = (() => {
+    let currentIndex = 1;
+    return () => String(currentIndex++);
+  })();
+
+  const getPluginExtensions = (plugin: LegacyBackstagePlugin) => {
+    let extensions = pluginExtensions.get(plugin);
+    if (!extensions) {
+      extensions = [];
+      pluginExtensions.set(plugin, extensions);
+    }
+    return extensions;
+  };
 
   React.Children.forEach(
     flatRoutesElement.props.children,
     (route: ReactNode) => {
-      if (!React.isValidElement(route)) {
-        return;
-      }
-
       // TODO(freben): Handle feature flag and permissions framework wrapper elements
-      if (route.type !== Route) {
-        return;
+      if (!React.isValidElement(route)) {
+        throw new Error(
+          `Invalid element inside FlatRoutes, expected Route but found element of type ${typeof route}.`,
+        );
       }
-
+      if (route.type !== Route) {
+        throw new Error(
+          `Invalid element inside FlatRoutes, expected Route but found ${route.type}.`,
+        );
+      }
       const routeElement = route.props.element;
-
-      // TODO: to support deeper extension component, e.g. hidden within <RequirePermission>, use https://github.com/backstage/backstage/blob/518a34646b79ec2028cc0ed6bc67d4366c51c4d6/packages/core-app-api/src/routing/collectors.tsx#L69
+      const path: string | undefined = route.props.path;
       const plugin = getComponentData<LegacyBackstagePlugin>(
         routeElement,
         'core.plugin',
       );
-      if (!plugin) {
-        return;
-      }
-
       const routeRef = getComponentData<RouteRef>(
         routeElement,
         'core.mountPoint',
       );
+      if (!plugin) {
+        throw new Error(
+          // TODO(vinzscam): add See <link-to-app-migration-docs> for more info
+          `Route with path ${path} has en element that can not be converted as it does not belong to a plugin. Make sure that the top-level React element of the element prop is an extension from a Backstage plugin, or remove the Route completely.`,
+        );
+      }
+      if (path === undefined) {
+        throw new Error(
+          `Route element inside FlatRoutes had no path prop value given`,
+        );
+      }
 
-      const pluginId = plugin.getId();
+      const extensions = getPluginExtensions(plugin);
+      const pageExtensionName = extensions.length ? getUniqueName() : undefined;
+      const pageExtensionId = `page:${plugin.getId()}${
+        pageExtensionName ? `/${pageExtensionName}` : pageExtensionName
+      }`;
 
-      const detectedExtensions =
-        createdPluginIds.get(plugin) ?? new Array<Extension<unknown>>();
-      createdPluginIds.set(plugin, detectedExtensions);
-
-      const path: string = route.props.path;
-
-      detectedExtensions.push(
+      extensions.push(
         createPageExtension({
-          id: `plugin.${pluginId}.page${
-            detectedExtensions.length ? detectedExtensions.length + 1 : ''
-          }`,
+          name: pageExtensionName,
           defaultPath: path[0] === '/' ? path.slice(1) : path,
           routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
-
+          inputs: {
+            childRoutingShims: createExtensionInput({
+              routePath: coreExtensionData.routePath.optional(),
+              routeRef: coreExtensionData.routeRef.optional(),
+            }),
+          },
           loader: async () =>
-            route.props.children ? (
-              <Routes>
-                <Route path="*" element={routeElement}>
-                  <Route path="*" element={route.props.children} />
-                </Route>
-              </Routes>
-            ) : (
-              routeElement
+            compatWrapper(
+              route.props.children ? (
+                <Routes>
+                  <Route path="*" element={routeElement}>
+                    <Route path="*" element={route.props.children} />
+                  </Route>
+                </Routes>
+              ) : (
+                routeElement
+              ),
             ),
         }),
       );
+
+      visitRouteChildren({
+        children: route.props.children,
+        parentExtensionId: pageExtensionId,
+        context: {
+          pluginId: plugin.getId(),
+          extensions,
+          getUniqueName,
+          discoverPlugin: getPluginExtensions,
+        },
+      });
     },
   );
 
-  return Array.from(createdPluginIds).map(([plugin, extensions]) =>
+  return Array.from(pluginExtensions).map(([plugin, extensions]) =>
     createPlugin({
       id: plugin.getId(),
       extensions: [
         ...extensions,
         ...Array.from(plugin.getApis()).map(factory =>
-          createApiExtension({
-            factory,
-          }),
+          createApiExtension({ factory }),
         ),
       ],
+      routes: convertLegacyRouteRefs(plugin.routes ?? {}),
+      externalRoutes: convertLegacyRouteRefs(plugin.externalRoutes ?? {}),
     }),
   );
 }

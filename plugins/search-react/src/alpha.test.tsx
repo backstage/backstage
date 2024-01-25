@@ -26,7 +26,6 @@ import React from 'react';
 import {
   BaseSearchResultListItemProps,
   createSearchResultListItemExtension,
-  searchResultItemExtensionData as searchResultListItemExtensionData,
 } from './alpha';
 
 describe('createSearchResultListItemExtension', () => {
@@ -44,8 +43,7 @@ describe('createSearchResultListItemExtension', () => {
 
     const TechDocsSearchResultItemExtension =
       createSearchResultListItemExtension({
-        id: 'techdocs',
-        attachTo: { id: 'plugin.search.page', input: 'items' },
+        namespace: 'techdocs',
         configSchema: createSchemaFromZod(z =>
           z
             .object({
@@ -67,18 +65,17 @@ describe('createSearchResultListItemExtension', () => {
 
     const ExploreSearchResultItemExtension =
       createSearchResultListItemExtension({
-        id: 'explore',
-        attachTo: { id: 'plugin.search.page', input: 'items' },
+        namespace: 'explore',
         predicate: result => result.type === 'explore',
         component: async () => ExploreSearchResultItemComponent,
       });
 
     const SearchPageExtension = createPageExtension({
-      id: 'plugin.search.page',
+      namespace: 'search',
       defaultPath: '/',
       inputs: {
         items: createExtensionInput({
-          item: searchResultListItemExtensionData,
+          item: createSearchResultListItemExtension.itemDataRef,
         }),
       },
       loader: async ({ inputs }) => {
@@ -117,10 +114,10 @@ describe('createSearchResultListItemExtension', () => {
         );
 
         const getResultItemComponent = (result: SearchResult) => {
-          const value = inputs.items.find(({ item }) =>
-            item?.predicate?.(result),
+          const value = inputs.items.find(item =>
+            item?.output.item.predicate?.(result),
           );
-          return value?.item.component ?? DefaultResultItem;
+          return value?.output.item.component ?? DefaultResultItem;
         };
 
         const Component = () => {

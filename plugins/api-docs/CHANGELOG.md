@@ -1,5 +1,123 @@
 # @backstage/plugin-api-docs
 
+## 0.10.4-next.0
+
+### Patch Changes
+
+- 170c023: Adding `supportedSubmitMethods` prop to `api-docs` to pass to the Swagger UI. This allows users to specify which HTTP methods they wish to allow end-users to make requests through the `Try It Out` button on the Swagger UI.
+- c03f977: Updated dependency `graphiql` to `3.1.0`.
+- 49b3b5e: Updated dependency `@asyncapi/react-component` to `1.2.13`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/plugin-catalog@1.17.0-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-catalog-common@1.0.20
+  - @backstage/plugin-permission-react@0.4.19
+
+## 0.10.3
+
+### Patch Changes
+
+- 8a69cc9: Fix custom http resolvers for AsyncAPI widget.
+- 062b8f2: Add permission check to Register Existing API button
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-permission-react@0.4.19
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/plugin-catalog@1.16.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/plugin-catalog-common@1.0.20
+
+## 0.10.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.16.1-next.2
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+
+## 0.10.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/plugin-catalog@1.16.1-next.1
+  - @backstage/plugin-catalog-react@1.9.3-next.1
+  - @backstage/catalog-model@1.4.3
+
+## 0.10.3-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.0
+  - @backstage/plugin-catalog@1.16.1-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+
+## 0.10.2
+
+### Patch Changes
+
+- 816d331: Add dependency on `graphql-config` to compensate for `graphql-language-service` needing it but not shipping the dep properly
+- 615159e: Updated dependency `graphiql` to `3.0.10`.
+- e16e7ce: Updated dependency `@asyncapi/react-component` to `1.2.2`.
+- 82fb18b: Updated dependency `@asyncapi/react-component` to `1.2.6`.
+- 53e2c06: Updated dependency `@asyncapi/react-component` to `1.1.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-catalog@1.16.0
+  - @backstage/catalog-model@1.4.3
+
+## 0.10.2-next.4
+
+### Patch Changes
+
+- 82fb18b: Updated dependency `@asyncapi/react-component` to `1.2.6`.
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog@1.16.0-next.4
+  - @backstage/plugin-catalog-react@1.9.2-next.3
+
+## 0.10.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog@1.16.0-next.3
+  - @backstage/plugin-catalog-react@1.9.2-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+
+## 0.10.2-next.2
+
+### Patch Changes
+
+- e16e7ce6a5: Updated dependency `@asyncapi/react-component` to `1.2.2`.
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.1
+  - @backstage/plugin-catalog@1.16.0-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/theme@0.5.0-next.0
+
 ## 0.10.2-next.1
 
 ### Patch Changes

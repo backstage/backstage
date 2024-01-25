@@ -1,5 +1,152 @@
 # @backstage/plugin-explore
 
+## 0.4.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/plugin-search-react@1.7.6-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-explore-react@0.0.35
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.4.15
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-catalog-react@1.9.3
+  - @backstage/plugin-explore-react@0.0.35
+  - @backstage/plugin-search-react@1.7.5
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.4.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.1-next.2
+  - @backstage/plugin-catalog-react@1.9.3-next.2
+  - @backstage/plugin-search-react@1.7.5-next.2
+
+## 0.4.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/frontend-plugin-api@0.4.1-next.1
+  - @backstage/plugin-catalog-react@1.9.3-next.1
+  - @backstage/plugin-explore-react@0.0.35-next.1
+  - @backstage/plugin-search-react@1.7.5-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.9
+
+## 0.4.15-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/frontend-plugin-api@0.4.1-next.0
+  - @backstage/plugin-catalog-react@1.9.3-next.0
+  - @backstage/plugin-explore-react@0.0.35-next.0
+  - @backstage/plugin-search-react@1.7.5-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.9
+
+## 0.4.14
+
+### Patch Changes
+
+- aac659e: Added option to set `Direction` for the graph in the `GroupsDiagram`
+- 5814122: Updated `/alpha` exports to fit new naming patterns.
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/frontend-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@1.9.2
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-search-react@1.7.4
+  - @backstage/plugin-explore-react@0.0.34
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.9
+
+## 0.4.14-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/frontend-plugin-api@0.4.0-next.3
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.3
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-explore-react@0.0.34-next.1
+  - @backstage/plugin-search-common@1.2.8
+  - @backstage/plugin-search-react@1.7.4-next.3
+
+## 0.4.14-next.2
+
+### Patch Changes
+
+- 36c94b8: Refactor of the alpha exports due to API change in how extension IDs are constructed.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.2
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.2
+  - @backstage/plugin-search-react@1.7.4-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-explore-react@0.0.34-next.1
+  - @backstage/plugin-search-common@1.2.8
+
+## 0.4.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.4.0-next.1
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-catalog-react@1.9.2-next.1
+  - @backstage/plugin-search-react@1.7.4-next.1
+  - @backstage/plugin-explore-react@0.0.34-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0-next.0
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.8
+
 ## 0.4.14-next.0
 
 ### Patch Changes

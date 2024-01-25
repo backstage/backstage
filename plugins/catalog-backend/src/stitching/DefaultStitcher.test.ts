@@ -30,9 +30,7 @@ import { DefaultStitcher } from './DefaultStitcher';
 jest.setTimeout(60_000);
 
 describe('Stitcher', () => {
-  const databases = TestDatabases.create({
-    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
-  });
+  const databases = TestDatabases.create();
   const logger = getVoidLogger();
 
   it.each(databases.eachSupportedId())(

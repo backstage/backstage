@@ -1,5 +1,84 @@
 # @backstage/backend-openapi-utils
 
+## 0.1.3-next.0
+
+### Patch Changes
+
+- 2067689: Internal updates due to `json-schema-to-ts`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/errors@1.2.3
+
+## 0.1.2
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/errors@1.2.3
+
+## 0.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+
+## 0.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/errors@1.2.3
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/errors@1.2.3
+
+## 0.1.1
+
+### Patch Changes
+
+- aaa6fb3: Minor updates for TypeScript 5.2.2+ compatibility
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.1.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.1-next.0
 
 ### Patch Changes

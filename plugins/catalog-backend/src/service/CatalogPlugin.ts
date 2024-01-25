@@ -17,12 +17,14 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { CatalogBuilder } from './CatalogBuilder';
+import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
   CatalogAnalysisExtensionPoint,
   catalogAnalysisExtensionPoint,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtensionPoint,
+  CatalogPermissionExtensionPoint,
+  catalogPermissionExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
@@ -86,6 +88,24 @@ class CatalogAnalysisExtensionPointImpl
   }
 }
 
+class CatalogPermissionExtensionPointImpl
+  implements CatalogPermissionExtensionPoint
+{
+  #permissionRules = new Array<CatalogPermissionRuleInput>();
+
+  addPermissionRules(
+    ...rules: Array<
+      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
+    >
+  ): void {
+    this.#permissionRules.push(...rules.flat());
+  }
+
+  get permissionRules() {
+    return this.#permissionRules;
+  }
+}
+
 /**
  * Catalog plugin
  * @alpha
@@ -104,6 +124,12 @@ export const catalogPlugin = createBackendPlugin({
     env.registerExtensionPoint(
       catalogAnalysisExtensionPoint,
       analysisExtensions,
+    );
+
+    const permissionExtensions = new CatalogPermissionExtensionPointImpl();
+    env.registerExtensionPoint(
+      catalogPermissionExtensionPoint,
+      permissionExtensions,
     );
 
     env.registerInit({
@@ -142,6 +168,7 @@ export const catalogPlugin = createBackendPlugin({
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
         builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
+        builder.addPermissionRules(...permissionExtensions.permissionRules);
 
         const { processingEngine, router } = await builder.build();
 

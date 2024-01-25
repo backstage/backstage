@@ -15,11 +15,11 @@
  */
 
 import {
+  AZURE_DEVOPS_DEFAULT_TOP,
   BuildRun,
   BuildRunOptions,
 } from '@backstage/plugin-azure-devops-common';
 
-import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
@@ -42,8 +42,9 @@ export function useBuildRuns(
   const api = useApi(azureDevOpsApiRef);
 
   const { value, loading, error } = useAsync(() => {
-    const { project, repo, definition } = getAnnotationValuesFromEntity(entity);
-    return api.getBuildRuns(project, repo, definition, options);
+    const { project, repo, definition, host, org } =
+      getAnnotationValuesFromEntity(entity);
+    return api.getBuildRuns(project, repo, definition, host, org, options);
   }, [api]);
 
   return {

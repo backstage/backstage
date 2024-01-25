@@ -198,6 +198,45 @@ describe('createRouter readonly disabled', () => {
       });
     });
 
+    it('parses encoded params request', async () => {
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: [],
+        pageInfo: {},
+        totalItems: 0,
+      });
+      const response = await request(app).get(
+        `/entities/by-query?filter=${encodeURIComponent(
+          'a=1,a=2,b=3',
+        )}&filter=c=4&orderField=${encodeURIComponent(
+          'metadata.name,asc',
+        )}&orderField=metadata.uid,desc`,
+      );
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
+        filter: {
+          anyOf: [
+            {
+              allOf: [
+                { key: 'a', values: ['1', '2'] },
+                { key: 'b', values: ['3'] },
+              ],
+            },
+            { allOf: [{ key: 'c', values: ['4'] }] },
+          ],
+        },
+        orderFields: [
+          { field: 'metadata.name', order: 'asc' },
+          { field: 'metadata.uid', order: 'desc' },
+        ],
+        fullTextFilter: {
+          fields: undefined,
+          term: '',
+        },
+      });
+    });
+
     it('parses cursor request', async () => {
       const items: Entity[] = [
         { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },

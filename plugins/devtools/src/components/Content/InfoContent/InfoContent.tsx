@@ -15,20 +15,17 @@
  */
 
 import { Progress } from '@backstage/core-components';
-import {
-  Avatar,
-  Box,
-  createStyles,
-  Divider,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  makeStyles,
-  Paper,
-  Theme,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Avatar from '@material-ui/core/Avatar';
+import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
@@ -42,6 +39,7 @@ import { DevToolsInfo } from '@backstage/plugin-devtools-common';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     paperStyle: {
+      display: 'flex',
       marginBottom: theme.spacing(2),
     },
     flexContainer: {
@@ -127,22 +125,17 @@ export const InfoContent = () => {
               secondary={about?.backstageVersion}
             />
           </ListItem>
-          <Divider orientation="vertical" variant="middle" flexItem />
-          <ListItem
-            button
-            onClick={() => {
-              copyToClipboard({ about });
-            }}
-            className={classes.copyButton}
-          >
-            <ListItemAvatar>
-              <Avatar>
-                <FileCopyIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary="Copy Info to Clipboard" />
-          </ListItem>
         </List>
+        <Divider orientation="vertical" variant="middle" flexItem />
+        <Button
+          onClick={() => {
+            copyToClipboard({ about });
+          }}
+          className={classes.copyButton}
+          startIcon={<FileCopyIcon />}
+        >
+          Copy Info to Clipboard
+        </Button>
       </Paper>
       <InfoDependenciesTable infoDependencies={about?.dependencies} />
     </Box>

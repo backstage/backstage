@@ -1,5 +1,221 @@
 # @backstage/plugin-auth-backend
 
+## 0.20.4-next.0
+
+### Patch Changes
+
+- a3f1fa3: Use the externalized `auth-backend-module-microsoft-provider` again.
+- 5d2fcba: Migrated oidc auth provider to new `@backstage/plugin-auth-backend-module-oidc-provider` module package.
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.3-next.0
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.0-next.0
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.5-next.0
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.2-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.7-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.7-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.7-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.7-next.0
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.4-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.2-next.0
+  - @backstage/plugin-auth-node@0.4.4-next.0
+  - @backstage/plugin-catalog-node@1.6.2-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.20.3
+
+### Patch Changes
+
+- 004499c: Fixed an issue where some Okta's resolvers were missing
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1
+  - @backstage/catalog-client@1.5.2
+  - @backstage/backend-plugin-api@0.6.9
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.3
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.6
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.6
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.6
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.6
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.2
+  - @backstage/plugin-catalog-node@1.6.1
+  - @backstage/plugin-auth-node@0.4.3
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.20.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.9-next.2
+  - @backstage/backend-common@0.20.1-next.2
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.1-next.2
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.3-next.2
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.6-next.2
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.6-next.2
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.6-next.2
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.6-next.2
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.1-next.2
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.2-next.2
+  - @backstage/plugin-auth-node@0.4.3-next.2
+  - @backstage/plugin-catalog-node@1.6.1-next.2
+
+## 0.20.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-auth-node@0.4.3-next.1
+  - @backstage/backend-plugin-api@0.6.9-next.1
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.1-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.3-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.6-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.6-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.6-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.6-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.1-next.1
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.2-next.1
+  - @backstage/plugin-catalog-node@1.6.1-next.1
+
+## 0.20.3-next.0
+
+### Patch Changes
+
+- 004499c: Fixed an issue where some Okta's resolvers were missing
+- 4016f21: Remove some unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.20.1-next.0
+  - @backstage/catalog-client@1.5.2-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.1-next.0
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.1-next.0
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.3-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.2-next.0
+  - @backstage/plugin-catalog-node@1.6.1-next.0
+  - @backstage/backend-plugin-api@0.6.9-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-auth-node@0.4.3-next.0
+
+## 0.20.1
+
+### Patch Changes
+
+- 7ac2575: `oauth2-proxy` auth implementation has been moved to `@backstage/plugin-auth-backend-module-oauth2-proxy-provider`
+- 2a5891e: Migrate the atlassian auth provider to be implemented using the new `@backstage/plugin-auth-backend-module-atlassian-provider` module
+- 783797a: fix static token issuer not being able to initialize
+- e1c189b: The Okta provider implementation is moved to the new module
+- a62764b: Updated dependency `passport` to `^0.7.0`.
+- bcbbf8e: Updated dependency `@google-cloud/firestore` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.0
+  - @backstage/backend-common@0.20.0
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.0
+  - @backstage/plugin-catalog-node@1.6.0
+  - @backstage/catalog-client@1.5.0
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.5
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.5
+  - @backstage/plugin-auth-node@0.4.2
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.2
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.5
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.5
+  - @backstage/backend-plugin-api@0.6.8
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.20.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.20.0-next.3
+  - @backstage/backend-plugin-api@0.6.8-next.3
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.0-next.3
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.2-next.3
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.5-next.3
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.5-next.3
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.5-next.3
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.5-next.3
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.0-next.2
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.1-next.3
+  - @backstage/plugin-auth-node@0.4.2-next.3
+  - @backstage/plugin-catalog-node@1.6.0-next.3
+
+## 0.20.1-next.2
+
+### Patch Changes
+
+- 783797a: fix static token issuer not being able to initialize
+- a62764b: Updated dependency `passport` to `^0.7.0`.
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.0-next.1
+  - @backstage/plugin-catalog-node@1.6.0-next.2
+  - @backstage/backend-common@0.20.0-next.2
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.0-next.2
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.5-next.2
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.5-next.2
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.1-next.2
+  - @backstage/plugin-auth-node@0.4.2-next.2
+  - @backstage/catalog-client@1.5.0-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.2-next.2
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.5-next.2
+  - @backstage/backend-plugin-api@0.6.8-next.2
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.5-next.2
+
+## 0.20.1-next.1
+
+### Patch Changes
+
+- 7ac25759a5: `oauth2-proxy` auth implementation has been moved to `@backstage/plugin-auth-backend-module-oauth2-proxy-provider`
+- bcbbf8e042: Updated dependency `@google-cloud/firestore` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.0-next.0
+  - @backstage/catalog-client@1.5.0-next.0
+  - @backstage/backend-common@0.20.0-next.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.0-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.5-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.5-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.5-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.5-next.1
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.1-next.1
+  - @backstage/backend-plugin-api@0.6.8-next.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.2-next.1
+  - @backstage/plugin-auth-node@0.4.2-next.1
+  - @backstage/plugin-catalog-node@1.5.1-next.1
+
 ## 0.20.1-next.0
 
 ### Patch Changes

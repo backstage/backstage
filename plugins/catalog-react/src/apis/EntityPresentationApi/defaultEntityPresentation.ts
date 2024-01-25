@@ -20,31 +20,8 @@ import {
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { IconComponent } from '@backstage/core-plugin-api';
-import ApartmentIcon from '@material-ui/icons/Apartment';
-import BusinessIcon from '@material-ui/icons/Business';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import HelpIcon from '@material-ui/icons/Help';
-import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import MemoryIcon from '@material-ui/icons/Memory';
-import PeopleIcon from '@material-ui/icons/People';
-import PersonIcon from '@material-ui/icons/Person';
 import get from 'lodash/get';
 import { EntityRefPresentationSnapshot } from './EntityPresentationApi';
-
-const UNKNOWN_KIND_ICON: IconComponent = HelpIcon;
-
-const DEFAULT_ICONS: Record<string, IconComponent> = {
-  api: ExtensionIcon,
-  component: MemoryIcon,
-  system: BusinessIcon,
-  domain: ApartmentIcon,
-  location: LocationOnIcon,
-  user: PersonIcon,
-  group: PeopleIcon,
-  template: LibraryAddIcon,
-};
 
 /**
  * This returns the default representation of an entity.
@@ -65,10 +42,6 @@ export function defaultEntityPresentation(
   // some form of result without crashing.
   const { kind, namespace, name, title, description, displayName, type } =
     getParts(entityOrRef);
-
-  const Icon =
-    (kind && DEFAULT_ICONS[kind.toLocaleLowerCase('en-US')]) ||
-    UNKNOWN_KIND_ICON;
 
   const entityRef: string = stringifyEntityRef({
     kind: kind || 'unknown',
@@ -94,7 +67,7 @@ export function defaultEntityPresentation(
     entityRef,
     primaryTitle: primary,
     secondaryTitle: secondary || undefined,
-    Icon,
+    Icon: undefined, // leave it up to the presentation API to handle
   };
 }
 

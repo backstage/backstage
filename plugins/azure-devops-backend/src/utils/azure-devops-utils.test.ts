@@ -28,6 +28,7 @@ import {
   getPullRequestLink,
   replaceReadme,
   buildEncodedUrl,
+  parseAzureDevOpsUrl,
 } from './azure-devops-utils';
 import { GitPullRequest } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { UrlReader } from '@backstage/backend-common';
@@ -234,6 +235,15 @@ describe('extractPartsFromAsset', () => {
       ext: '.gif',
     });
   });
+
+  it('should return parts from asset with leading . without /', () => {
+    const result = extractPartsFromAsset('[Image 1](.images/sample-1.PNG)');
+    expect(result).toEqual({
+      label: 'Image 1',
+      path: '.images/sample-1',
+      ext: '.PNG',
+    });
+  });
 });
 
 describe('replaceReadme', () => {
@@ -293,5 +303,40 @@ describe('buildEncodedUrl', () => {
     expect(result).toBe(
       'https://tfs.myorg.com:8443/org/project/_git/repo?path=path',
     );
+  });
+});
+
+describe('parseAzureDevOpsUrl', () => {
+  it('parses Azure DevOps Cloud url', async () => {
+    const result = parseAzureDevOpsUrl(
+      'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+    );
+
+    expect(result.host).toEqual('dev.azure.com');
+    expect(result.org).toEqual('organization');
+    expect(result.project).toEqual('project');
+    expect(result.repo).toEqual('repository');
+  });
+
+  it('parses Azure DevOps Server url', async () => {
+    const result = parseAzureDevOpsUrl(
+      'https://server.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+    );
+
+    expect(result.host).toEqual('server.com');
+    expect(result.org).toEqual('organization');
+    expect(result.project).toEqual('project');
+    expect(result.repo).toEqual('repository');
+  });
+
+  it('parses TFS subpath Url', async () => {
+    const result = parseAzureDevOpsUrl(
+      'https://server.com/tfs/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+    );
+
+    expect(result.host).toEqual('server.com/tfs');
+    expect(result.org).toEqual('organization');
+    expect(result.project).toEqual('project');
+    expect(result.repo).toEqual('repository');
   });
 });

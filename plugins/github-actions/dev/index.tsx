@@ -63,6 +63,12 @@ const mockGithubActionsApi: GithubActionsApi = {
   async reRunWorkflow() {
     return {} as any;
   },
+  async listBranches() {
+    return {} as any;
+  },
+  async getDefaultBranch() {
+    return {} as any;
+  },
 };
 
 createDevApp()

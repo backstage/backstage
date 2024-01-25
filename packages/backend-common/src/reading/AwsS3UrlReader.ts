@@ -69,9 +69,9 @@ export function parseUrl(
   const host = parsedUrl.host;
 
   // Treat Amazon hosted separately because it has special region logic
-  if (config.host === 'amazonaws.com') {
+  if (config.host === 'amazonaws.com' || config.host === 'amazonaws.com.cn') {
     const match = host.match(
-      /^(?:([a-z0-9.-]+)\.)?s3(?:[.-]([a-z0-9-]+))?\.amazonaws\.com$/,
+      /^(?:([a-z0-9.-]+)\.)?s3(?:[.-]([a-z0-9-]+))?\.amazonaws\.com(\.cn)?$/,
     );
     if (!match) {
       throw new Error(`Invalid AWS S3 URL ${url}`);

@@ -22,4 +22,5 @@
 
 export * from './actions';
 export * from './tasks';
+export * from './files';
 export type { TemplateFilter, TemplateGlobal } from './types';

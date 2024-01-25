@@ -25,6 +25,7 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { merge, isErrorResult } from 'openapi-merge';
+import { TokenManager } from '@backstage/backend-common';
 import { getOpenApiSpecRoute } from '@backstage/backend-openapi-utils';
 import type {
   OpenAPIObject,
@@ -107,17 +108,25 @@ const loadSpecs = async ({
   discovery,
   plugins,
   logger,
+  tokenManager,
 }: {
   baseUrl: string;
   plugins: string[];
   discovery: DiscoveryService;
   logger: LoggerService;
+  tokenManager: TokenManager;
 }) => {
   const specs: OpenAPIObject[] = [];
   for (const pluginId of plugins) {
     const url = await discovery.getExternalBaseUrl(pluginId);
     const openApiUrl = getOpenApiSpecRoute(url);
-    const response = await fetch(openApiUrl);
+    const { token } = await tokenManager.getToken();
+    const response = await fetch(openApiUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (response.ok) {
       const spec = await response.json();
       addTagsToSpec(spec, pluginId);
@@ -144,6 +153,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     public readonly config: Config,
     public readonly discovery: DiscoveryService,
     public readonly logger: LoggerService,
+    public readonly tokenManager: TokenManager,
     taskRunner: TaskRunner,
   ) {
     this.scheduleFn = this.createScheduleFn(taskRunner);
@@ -155,6 +165,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       discovery: DiscoveryService;
       logger: LoggerService;
       schedule: PluginTaskScheduler;
+      tokenManager: TokenManager;
     },
   ) {
     const taskRunner = options.schedule.createScheduledTaskRunner({
@@ -169,6 +180,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       config,
       options.discovery,
       options.logger,
+      options.tokenManager,
       taskRunner,
     );
   }
@@ -231,6 +243,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
           await loadSpecs({
             baseUrl: this.config.getString('backend.baseUrl'),
             discovery: this.discovery,
+            tokenManager: this.tokenManager,
             plugins: pluginsToMerge,
             logger,
           }),

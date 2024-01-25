@@ -1,5 +1,94 @@
 # @backstage/app-defaults
 
+## 1.4.8-next.0
+
+### Patch Changes
+
+- f899eec: Change default icon for `kind:resource` to the storage icon.
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-app-api@1.11.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-permission-react@0.4.19
+
+## 1.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-permission-react@0.4.19
+  - @backstage/core-app-api@1.11.3
+  - @backstage/theme@0.5.0
+
+## 1.4.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.2-next.0
+  - @backstage/core-components@0.13.10-next.1
+  - @backstage/core-app-api@1.11.3-next.0
+  - @backstage/plugin-permission-react@0.4.19-next.1
+  - @backstage/theme@0.5.0
+
+## 1.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.10-next.0
+  - @backstage/plugin-permission-react@0.4.19-next.0
+  - @backstage/core-app-api@1.11.2
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/theme@0.5.0
+
+## 1.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.1
+  - @backstage/core-components@0.13.9
+  - @backstage/theme@0.5.0
+  - @backstage/core-app-api@1.11.2
+  - @backstage/plugin-permission-react@0.4.18
+
+## 1.4.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.3
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/plugin-permission-react@0.4.18-next.1
+
+## 1.4.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.0-next.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/core-components@0.13.9-next.2
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/plugin-permission-react@0.4.18-next.1
+
+## 1.4.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.13.9-next.1
+  - @backstage/core-plugin-api@1.8.1-next.1
+  - @backstage/core-app-api@1.11.2-next.1
+  - @backstage/plugin-permission-react@0.4.18-next.1
+  - @backstage/theme@0.5.0-next.0
+
 ## 1.4.6-next.0
 
 ### Patch Changes
