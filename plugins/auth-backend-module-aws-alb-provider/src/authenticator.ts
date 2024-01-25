@@ -15,9 +15,12 @@
  */
 
 import { AuthenticationError } from '@backstage/errors';
-import { AwsAlbClaims, AwsAlbResult, PassportProfile } from './types';
+import { AwsAlbClaims, AwsAlbResult } from './types';
 import { jwtVerify } from 'jose';
-import { createProxyAuthenticator } from '@backstage/plugin-auth-node';
+import {
+  PassportProfile,
+  createProxyAuthenticator,
+} from '@backstage/plugin-auth-node';
 import NodeCache from 'node-cache';
 import { makeProfileInfo, provisionKeyCache } from './helpers';
 
