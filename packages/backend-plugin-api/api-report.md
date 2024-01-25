@@ -316,6 +316,7 @@ export type ReadTreeOptions = {
   ): boolean;
   etag?: string;
   signal?: AbortSignal;
+  token?: string;
 };
 
 // @public
@@ -343,6 +344,7 @@ export type ReadUrlOptions = {
   etag?: string;
   lastModifiedAfter?: Date;
   signal?: AbortSignal;
+  token?: string;
 };
 
 // @public
