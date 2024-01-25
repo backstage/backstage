@@ -96,7 +96,7 @@ export default class Pinniped implements PinnipedSupervisorApi {
     audience: string,
     options?: AuthRequestOptions | undefined,
   ): Promise<string> {
-    const aud = await Pinniped.getAudience(audience);
+    const aud = audience;
     if (!(aud in this.audiences)) {
       const connector = new DefaultAuthConnector({
         configApi: this.configApi,
