@@ -116,7 +116,7 @@ export const Content = (props: FeaturedDocsCardProps): JSX.Element => {
               }/`
             }
           >
-            {d.metadata.title}
+            {d.metadata.title ?? d.metadata.name}
           </Link>
           {d.metadata.description && (
             <Typography className={styles.docDescription}>
