@@ -691,7 +691,7 @@ export class SystemXReaderProcessor implements CatalogProcessor {
 
 ### Supporting different metadata file formats
 
-Sometimes you might already have files in GitHub or some provider that Backstage already supports but the metadata format that you use is not the same as `catalog-info.yaml` files. In this case you can implement a custom parser that can read the files and convert them to the `Entity` format that Backstage expects, and it will integrate seamlessly into Catalog so that you can use things like the `GithubEntityProvider` to read these files.
+Sometimes you might already have files in GitHub or some provider that Backstage already supports but the metadata format that you use is not the same as `catalog-info.yaml` files. In this case you can implement a custom parser that can read the files and convert them on-the-fly to the `Entity` format that Backstage expects, and it will integrate seamlessly into Catalog so that you can use things like the `GithubEntityProvider` to read these files.
 
 What you will need to do is to provide a custom `CatalogProcessorParser` and provide that to `builder.setEntityDataParser`.
 
@@ -722,7 +722,7 @@ import {
 import _ from 'lodash';
 import parseGitUrl from 'git-url-parse';
 
-// This implementation will be your own to map whatever you format is into valid Entity formats.
+// This implementation will map whatever your own format is into valid Entity objects.
 const makeEntityFromCustomFormatJson = (
   component: { id: string; type: string; author: string },
   location: LocationSpec,
@@ -755,7 +755,6 @@ export const customEntityDataParser: CatalogProcessorParser = async function* ({
     // let's treat the incoming file always as yaml, you can of course change this if your format is not yaml.
     documents = yaml.parseAllDocuments(data.toString('utf8')).filter(d => d);
   } catch (e) {
-
     // if we failed to parse as yaml throw some errors.
     const loc = stringifyLocationRef(location);
     const message = `Failed to parse YAML at ${loc}, ${e}`;
@@ -795,10 +794,9 @@ export const customEntityDataParser: CatalogProcessorParser = async function* ({
     }
   }
 }
-
 ```
 
-This is a lot of code right now, as this is a pretty niche use-case, so we don't currently provide many helpers for you to be able to provide custom implementations easier and compose together different parsers.
+This is a lot of code right now, as this is a pretty niche use-case, so we don't currently provide many helpers for you to be able to provide custom implementations easier or to compose together different parsers.
 
 You then should be able to provide this `customEntityDataParser` to the `CatalogBuilder`:
 
