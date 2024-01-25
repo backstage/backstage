@@ -24,11 +24,13 @@ import { Config } from '@backstage/config';
  *
  * @public
  */
-export function readFilterConfig(config: Config): {
-  field: keyof Visit;
-  operator: '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
-  value: string | number;
-} {
+export function readFilterConfig(config: Config):
+  | {
+      field: keyof Visit;
+      operator: '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
+      value: string | number;
+    }
+  | undefined {
   try {
     const field = config.getString('field') as keyof Visit;
     const operator = config.getString('operator') as
@@ -42,7 +44,8 @@ export function readFilterConfig(config: Config): {
     const value = config.getString('value');
     return { field, operator, value };
   } catch (error) {
-    throw new Error(`Invalid config, ${error}`);
+    // invalid filter config - ignore filter
+    return undefined;
   }
 }
 
@@ -57,7 +60,9 @@ export function createFilterByQueryParamFromConfig(
   configs: Config[],
 ): VisitsApiQueryParams['filterBy'] | undefined {
   try {
-    return configs.map(readFilterConfig);
+    return configs
+      .map(readFilterConfig)
+      .filter(Boolean) as VisitsApiQueryParams['filterBy'];
   } catch {
     return undefined;
   }
