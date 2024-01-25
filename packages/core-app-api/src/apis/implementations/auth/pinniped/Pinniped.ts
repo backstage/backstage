@@ -104,28 +104,6 @@ export default class Pinniped implements PinnipedSupervisorApi {
         environment: this.environment,
         provider: this.provider,
         oauthRequestApi: this.oauthRequestApi,
-        sessionTransform({
-          backstageIdentity,
-          ...res
-        }: OAuth2Response): OAuth2Session {
-          const session: OAuth2Session = {
-            ...res,
-            providerInfo: {
-              idToken: res.providerInfo.idToken,
-              accessToken: res.providerInfo.accessToken,
-              scopes: Pinniped.normalizeScopes(
-                scopes => scopes,
-                res.providerInfo.scope,
-              ),
-              expiresAt: res.providerInfo.expiresInSeconds
-                ? new Date(
-                    Date.now() + res.providerInfo.expiresInSeconds * 1000,
-                  )
-                : undefined,
-            },
-          };
-          return session;
-        },
         popupOptions: this.popupOptions,
       });
 
