@@ -4961,7 +4961,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-azure-sites-backend@workspace:^, @backstage/plugin-azure-sites-backend@workspace:plugins/azure-sites-backend":
+"@backstage/plugin-azure-sites-backend@workspace:plugins/azure-sites-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-sites-backend@workspace:plugins/azure-sites-backend"
   dependencies:
@@ -26746,7 +26746,6 @@ __metadata:
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-azure-devops-backend": "workspace:^"
-    "@backstage/plugin-azure-sites-backend": "workspace:^"
     "@backstage/plugin-azure-sites-common": "workspace:^"
     "@backstage/plugin-badges-backend": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"

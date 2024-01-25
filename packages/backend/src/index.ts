@@ -41,7 +41,6 @@ import healthcheck from './plugins/healthcheck';
 import { metricsHandler, metricsInit } from './metrics';
 import auth from './plugins/auth';
 import azureDevOps from './plugins/azure-devops';
-import azureSites from './plugins/azure-sites';
 import catalog from './plugins/catalog';
 import codeCoverage from './plugins/codecoverage';
 import entityFeedback from './plugins/entityFeedback';
@@ -146,7 +145,6 @@ async function main() {
 
   const createEnv = makeCreateEnv(config);
 
-  const azureSitesEnv = useHotMemoize(module, () => createEnv('azure-sites'));
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const codeCoverageEnv = useHotMemoize(module, () =>
@@ -191,7 +189,6 @@ async function main() {
   apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
   apiRouter.use('/auth', await auth(authEnv));
   apiRouter.use('/azure-devops', await azureDevOps(azureDevOpsEnv));
-  apiRouter.use('/azure-sites', await azureSites(azureSitesEnv));
   apiRouter.use('/search', await search(searchEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/todo', await todo(todoEnv));
