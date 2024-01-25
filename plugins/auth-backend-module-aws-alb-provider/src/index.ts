@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-export { awsAlb } from './provider';
-export type { AwsAlbResult } from './types';
+/**
+ * The auth-backend-module-aws-alb-provider backend module for the auth-backend plugin.
+ *
+ * @packageDocumentation
+ */
+
+export { awsAlbAuthenticator } from './authenticator';
+export { authModuleAwsAlbProvider } from './module';
+export { awsAlbSignInResolvers } from './resolvers';
+export { type AwsAlbResult } from './types';

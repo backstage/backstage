@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-auth-backend-module-aws-alb-provider
+  title: '@backstage/plugin-auth-backend-module-aws-alb-provider'
+  description: The aws-alb provider module for the Backstage auth backend.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

@@ -8,6 +8,7 @@ import { AuthProviderFactory as AuthProviderFactory_2 } from '@backstage/plugin-
 import { AuthProviderRouteHandlers as AuthProviderRouteHandlers_2 } from '@backstage/plugin-auth-node';
 import { AuthResolverCatalogUserQuery as AuthResolverCatalogUserQuery_2 } from '@backstage/plugin-auth-node';
 import { AuthResolverContext as AuthResolverContext_2 } from '@backstage/plugin-auth-node';
+import { AwsAlbResult as AwsAlbResult_2 } from '@backstage/plugin-auth-backend-module-aws-alb-provider';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
 import { CacheService } from '@backstage/backend-plugin-api';
@@ -71,12 +72,8 @@ export type AuthResolverContext = AuthResolverContext_2;
 // @public @deprecated (undocumented)
 export type AuthResponse<TProviderInfo> = ClientAuthResponse<TProviderInfo>;
 
-// @public (undocumented)
-export type AwsAlbResult = {
-  fullProfile: Profile;
-  expiresInSeconds?: number;
-  accessToken: string;
-};
+// @public @deprecated
+export type AwsAlbResult = AwsAlbResult_2;
 
 // @public (undocumented)
 export type BitbucketOAuthResult = {
@@ -396,9 +393,9 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<AwsAlbResult> | undefined;
+            authHandler?: AuthHandler<AwsAlbResult_2> | undefined;
             signIn: {
-              resolver: SignInResolver<AwsAlbResult>;
+              resolver: SignInResolver<AwsAlbResult_2>;
             };
           }
         | undefined,

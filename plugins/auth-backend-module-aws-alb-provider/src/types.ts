@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,28 @@
  * limitations under the License.
  */
 
-export { awsAlb } from './provider';
-export type { AwsAlbResult } from './types';
+import type { PassportProfile } from '@backstage/plugin-auth-node/';
+/**
+ * JWT header extraction result, containing the raw value and the parsed JWT
+ * payload.
+ *
+ * @public
+ */
+export type AwsAlbResult = {
+  fullProfile: PassportProfile;
+  expiresInSeconds?: number;
+  accessToken: string;
+};
+/**
+ * @public
+ */
+export type AwsAlbClaims = {
+  sub: string;
+  name: string;
+  family_name: string;
+  given_name: string;
+  picture: string;
+  email: string;
+  exp: number;
+  iss: string;
+};
