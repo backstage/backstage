@@ -29,7 +29,8 @@
 }
 // for community page
 #__docusaurus {
-  .communityPage_src-pages-demos-demos-module {
+  div[class^='communityPage'],
+  div[class*='communityPage'] {
     a:not([class]) {
       text-decoration: underline;
     }
