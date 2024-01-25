@@ -23,4 +23,4 @@
 export * from './actions';
 export * from './tasks';
 export * from './files';
-export type { TemplateFilter, TemplateGlobal, NunjucksConfigs } from './types';
+export type { TemplateFilter, TemplateGlobal } from './types';

@@ -19,7 +19,6 @@ import { resolvePackagePath } from '@backstage/backend-common';
 import {
   TemplateFilter as _TemplateFilter,
   TemplateGlobal as _TemplateGlobal,
-  NunjucksConfigs,
 } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
 import { JsonValue } from '@backstage/types';
@@ -105,14 +104,14 @@ export type TemplateFilter = _TemplateFilter;
  */
 export type TemplateGlobal = _TemplateGlobal;
 
-export interface SecureTemplaterOptions {
+interface SecureTemplaterOptions {
   /* Enables jinja compatibility and the "jsonify" filter */
   cookiecutterCompat?: boolean;
   /* Extra user-provided nunjucks filters */
   templateFilters?: Record<string, TemplateFilter>;
   /* Extra user-provided nunjucks globals */
   templateGlobals?: Record<string, TemplateGlobal>;
-  nunjucksConfigs?: NunjucksConfigs;
+  nunjucksConfigs?: { trimBlocks?: boolean; lstripBlocks?: boolean };
 }
 
 export type SecureTemplateRenderer = (
