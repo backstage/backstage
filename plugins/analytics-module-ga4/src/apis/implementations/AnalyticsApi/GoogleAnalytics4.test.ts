@@ -492,4 +492,42 @@ describe('GoogleAnalytics4', () => {
       });
     });
   });
+
+  describe('Backward compatibility', () => {
+    it('fallback category for legacy context extension property', () => {
+      const api = GoogleAnalytics4.fromConfig(basicValidConfig);
+
+      expect(api.captureEvent).toBeDefined();
+
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context,
+      });
+
+      expect(fnEvent).toHaveBeenCalledWith('page_view', {
+        action: 'page_view',
+        label: '/',
+        category: 'App',
+      });
+    });
+
+    it('prioritize new context extension id over old extension property', () => {
+      const api = GoogleAnalytics4.fromConfig(basicValidConfig);
+
+      expect(api.captureEvent).toBeDefined();
+
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context: { ...context, extensionId: 'App', extension: '' },
+      });
+
+      expect(fnEvent).toHaveBeenCalledWith('page_view', {
+        action: 'page_view',
+        label: '/',
+        category: 'App',
+      });
+    });
+  });
 });
