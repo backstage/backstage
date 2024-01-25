@@ -85,4 +85,23 @@ describe('fetch:plain', () => {
       }),
     );
   });
+
+  it('should fetch plain with token', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        url: 'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
+        targetPath: 'lol',
+        token: 'mockToken',
+      },
+    });
+
+    expect(fetchContents).toHaveBeenCalledWith(
+      expect.objectContaining({
+        outputPath: resolvePath(mockContext.workspacePath, 'lol'),
+        fetchUrl:
+          'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
+      }),
+    );
+  });
 });
