@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 1.16.2
+
+### Patch Changes
+
+- 4a3a427: Rollback the change for wildcard discovery, this fixes a bug with the `AzureUrlReader` not working with wildcard paths
+
 ## 1.16.1
 
 ### Patch Changes
