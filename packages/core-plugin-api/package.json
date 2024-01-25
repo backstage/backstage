@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@types/react": "^16.13.1 || ^17.0.0",

@@ -38,7 +38,7 @@ export const useAnalyticsContext = (): AnalyticsContextValue => {
   if (theContext === undefined) {
     return {
       pluginId: 'app',
-      extensionId: 'App',
+      extensionId: 'app',
     };
   }
 
