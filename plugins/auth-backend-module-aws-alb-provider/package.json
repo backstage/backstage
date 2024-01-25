@@ -37,7 +37,6 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
-    "@types/passport": "^1.0.3",
     "jose": "^4.6.0",
     "jwt-decode": "^3.1.0",
     "node-cache": "^5.1.2"
