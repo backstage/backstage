@@ -24,7 +24,7 @@ import { Config } from '@backstage/config';
  *
  * @public
  */
-export function readFilterByConfig(config: Config): {
+export function readFilterConfig(config: Config): {
   field: keyof Visit;
   operator: '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
   value: string | number;
@@ -53,13 +53,12 @@ export function readFilterByConfig(config: Config): {
  *
  * @public
  */
-export function readFilterByConfigs(
+export function createFilterByQueryParamFromConfig(
   configs: Config[],
 ): VisitsApiQueryParams['filterBy'] | undefined {
   try {
-    return configs.map(readFilterByConfig);
-  }
-  catch {
+    return configs.map(readFilterConfig);
+  } catch {
     return undefined;
   }
 }

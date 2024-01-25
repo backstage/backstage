@@ -14,71 +14,75 @@
  * limitations under the License.
  */
 
-import { readFilterByConfig, readFilterByConfigs } from './config';
+import { readFilterConfig, createFilterByQueryParamFromConfig } from './config';
 import { MockConfigApi } from '@backstage/test-utils';
 
 describe('config', () => {
-  describe('readFilterByConfig', () => {
+  describe('readFilterConfig', () => {
     it('returns filter data', async () => {
-      const mockConfig = new MockConfigApi(
-        {
-          field: 'pathname',
-          operator: '==',
-          value: '3'
-        });
-      const res = readFilterByConfig(mockConfig)
+      const mockConfig = new MockConfigApi({
+        field: 'pathname',
+        operator: '==',
+        value: '3',
+      });
+      const res = readFilterConfig(mockConfig);
       expect(res).toEqual({
         field: 'pathname',
         operator: '==',
-        value: '3'
-      })
+        value: '3',
+      });
     });
 
     it('throws an error for invalid filter', async () => {
-      const mockConfig = new MockConfigApi(
-        {
-          myField: 'pathname',
-          operator: '==',
-          value: '3'
-        });
-      expect(() => readFilterByConfig(mockConfig)).toThrow('Invalid config, Error: Missing required config value at \'field\'')
+      const mockConfig = new MockConfigApi({
+        myField: 'pathname',
+        operator: '==',
+        value: '3',
+      });
+      expect(() => readFilterConfig(mockConfig)).toThrow(
+        "Invalid config, Error: Missing required config value at 'field'",
+      );
     });
   });
 
-  describe('readFilterByConfigs', () => {
+  describe('createFilterByQueryParamFromConfig', () => {
     it('returns filter data', async () => {
-      const mockConfig1 = new MockConfigApi(
-        {
-            field: 'id',
-            operator: '==',
-            value: '3'
-          });
-      const mockConfig2 = new MockConfigApi(
-        {
-            field: 'pathname',
-            operator: '==',
-            value: 'path'
-          });
-      const res = readFilterByConfigs([mockConfig1, mockConfig2])
-      expect(res).toEqual([{"field": "id", "operator": "==", "value": "3"}, {"field": "pathname", "operator": "==", "value": "path"}])
+      const mockConfig1 = new MockConfigApi({
+        field: 'id',
+        operator: '==',
+        value: '3',
+      });
+      const mockConfig2 = new MockConfigApi({
+        field: 'pathname',
+        operator: '==',
+        value: 'path',
+      });
+      const res = createFilterByQueryParamFromConfig([
+        mockConfig1,
+        mockConfig2,
+      ]);
+      expect(res).toEqual([
+        { field: 'id', operator: '==', value: '3' },
+        { field: 'pathname', operator: '==', value: 'path' },
+      ]);
     });
 
     it('return undefined for invalid filter', async () => {
-      const mockConfig1 = new MockConfigApi(
-        {
-          field: 'id',
-          operator: '==',
-          value: '3'
-        });
-      const mockConfig2 = new MockConfigApi(
-        {
-          myField: 'pathname',
-          operator: '==',
-          value: 'path'
-        });
-      const res = readFilterByConfigs([mockConfig1, mockConfig2])
-      expect(res).toEqual(undefined)
+      const mockConfig1 = new MockConfigApi({
+        field: 'id',
+        operator: '==',
+        value: '3',
+      });
+      const mockConfig2 = new MockConfigApi({
+        myField: 'pathname',
+        operator: '==',
+        value: 'path',
+      });
+      const res = createFilterByQueryParamFromConfig([
+        mockConfig1,
+        mockConfig2,
+      ]);
+      expect(res).toEqual(undefined);
     });
   });
 });
-
