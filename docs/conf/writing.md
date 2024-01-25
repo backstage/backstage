@@ -220,6 +220,8 @@ clientSecret: someGithubAppClientSecret
 webhookSecret: someWebhookSecret
 privateKey: |
   -----BEGIN RSA PRIVATE KEY-----
-  SomeRsaPrivateKey
+  SomeRsaPrivateKeyForExampleOnly
   -----END RSA PRIVATE KEY-----
 ```
+
+**Warning: RSA private keys should not be hard coded**. Keep them in a secure storage solution like Vault, to ensure they are neither exposed nor misused.
