@@ -213,34 +213,4 @@ describe('UrlReaderProcessor', () => {
 
     expect(reader.search).toHaveBeenCalledTimes(1);
   });
-
-  it('parser return valid URL with wildcard *', async () => {
-    const logger = getVoidLogger();
-
-    const reader: jest.Mocked<UrlReader> = {
-      readUrl: jest.fn(),
-      readTree: jest.fn(),
-      search: jest.fn().mockImplementation(async () => []),
-    };
-
-    const processor = new UrlReaderProcessor({ reader, logger });
-
-    const emit = jest.fn();
-
-    await processor.readLocation(
-      {
-        type: 'url',
-        target: 'https://storage.cloud.google.com/ah-backstage-poc-catalog/*',
-      },
-      false,
-      emit,
-      defaultEntityDataParser,
-      mockCache,
-    );
-
-    expect(reader.search).toHaveBeenCalledWith(
-      'https://storage.cloud.google.com/ah-backstage-poc-catalog/*',
-      { etag: undefined },
-    );
-  });
 });

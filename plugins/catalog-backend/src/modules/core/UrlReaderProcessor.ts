@@ -20,6 +20,7 @@ import { assertError } from '@backstage/errors';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
+import parseGitUrl from 'git-url-parse';
 import {
   CatalogProcessor,
   CatalogProcessorCache,
@@ -124,7 +125,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
     // Does it contain globs? I.e. does it contain asterisks or question marks
     // (no curly braces for now)
 
-    const { pathname: filepath } = new URL(location);
+    const { filepath } = parseGitUrl(location);
     if (filepath?.match(/[*?]/)) {
       const limiter = limiterFactory(5);
       const response = await this.options.reader.search(location, { etag });
