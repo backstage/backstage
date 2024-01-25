@@ -15,7 +15,11 @@
  */
 
 import { basicIntegrations, defaultScmResolveUrl } from '../helpers';
-import { ScmIntegration, ScmIntegrationsFactory } from '../types';
+import {
+  RateLimitInfo,
+  ScmIntegration,
+  ScmIntegrationsFactory,
+} from '../types';
 import {
   GithubIntegrationConfig,
   readGithubIntegrationConfigs,
@@ -67,12 +71,13 @@ export class GithubIntegration implements ScmIntegration {
     return replaceGithubUrlType(url, 'edit');
   }
 
-  isRateLimited(response: ConsumedResponse): boolean {
-    return (
-      response.status === 429 ||
-      (response.status === 403 &&
-        response.headers.get('x-ratelimit-remaining') === '0')
-    );
+  parseRateLimitInfo(response: ConsumedResponse): RateLimitInfo {
+    return {
+      isRateLimited:
+        response.status === 429 ||
+        (response.status === 403 &&
+          response.headers.get('x-ratelimit-remaining') === '0'),
+    };
   }
 }
 

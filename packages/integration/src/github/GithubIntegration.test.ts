@@ -95,11 +95,13 @@ describe('GithubIntegration', () => {
         const headers = new Headers({
           'x-ratelimit-remaining': ratelimitRemaining,
         });
-        const result = integration.isRateLimited({
+        const result = integration.parseRateLimitInfo({
           status,
           headers,
         } as Response);
-        expect(expected).toBe(result);
+        expect(result).toMatchObject({
+          isRateLimited: expected,
+        });
       },
     );
   });
