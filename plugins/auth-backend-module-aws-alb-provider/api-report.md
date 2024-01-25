@@ -8,7 +8,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { JWTHeaderParameters } from 'jose';
 import { KeyObject } from 'crypto';
-import passport from 'passport';
+import type { PassportProfile } from '@backstage/plugin-auth-node/';
 import { ProxyAuthenticator } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
@@ -39,9 +39,4 @@ export namespace awsAlbSignInResolvers {
       unknown
     >;
 }
-
-// @public (undocumented)
-export type PassportProfile = passport.Profile & {
-  avatarUrl?: string;
-};
 ```
