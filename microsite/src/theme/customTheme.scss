@@ -38,7 +38,8 @@
 }
 // for plugin page
 #__docusaurus {
-  .pluginsPage_src-pages-plugins-plugins-module {
+  div[class^='pluginsPage'],
+  div[class*='pluginsPage'] {
     a:not([class]) {
       text-decoration: underline;
     }
