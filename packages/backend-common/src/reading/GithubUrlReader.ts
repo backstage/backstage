@@ -92,13 +92,31 @@ export class GithubUrlReader implements UrlReader {
     return response.buffer();
   }
 
+  private getCredentials = async (
+    url: string,
+    options?: { token?: string },
+  ): Promise<GithubCredentials> => {
+    if (options?.token) {
+      return {
+        headers: {
+          Authorization: `Bearer ${options.token}`,
+        },
+        type: 'token',
+        token: options.token,
+      };
+    }
+
+    return await this.deps.credentialsProvider.getCredentials({
+      url,
+    });
+  };
+
   async readUrl(
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
-    const credentials = await this.deps.credentialsProvider.getCredentials({
-      url,
-    });
+    const credentials = await this.getCredentials(url, options);
+
     const ghUrl = getGithubFileFetchUrl(
       url,
       this.integration.config,
@@ -141,9 +159,7 @@ export class GithubUrlReader implements UrlReader {
     }
 
     const { filepath } = parseGitUrl(url);
-    const { headers } = await this.deps.credentialsProvider.getCredentials({
-      url,
-    });
+    const { headers } = await this.getCredentials(url, options);
 
     return this.doReadTree(
       repoDetails.repo.archive_url,

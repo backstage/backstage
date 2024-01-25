@@ -271,6 +271,33 @@ describe('GithubUrlReader', () => {
       expect(response.etag).toBe('foo');
       expect(response.lastModifiedAt).toEqual(new Date('2021-01-01T00:00:00Z'));
     });
+
+    it('should override the token if its provided', async () => {
+      expect.assertions(1);
+
+      (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
+        headers: {
+          Authorization: 'bearer blah',
+        },
+      });
+
+      worker.use(
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe(
+              'Bearer overridentoken',
+            );
+            return res(ctx.status(200));
+          },
+        ),
+      );
+
+      await gheProcessor.readUrl(
+        'https://github.com/backstage/mock/tree/blob/main',
+        { token: 'overridentoken' },
+      );
+    });
   });
 
   /*
@@ -460,6 +487,44 @@ describe('GithubUrlReader', () => {
 
       await gheProcessor.readTree(
         'https://ghe.github.com/backstage/mock/tree/main',
+      );
+    });
+
+    it('should override the token when provided', async () => {
+      expect.assertions(1);
+
+      const mockHeaders = {
+        Authorization: 'bearer blah',
+      };
+
+      (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
+        headers: mockHeaders,
+      });
+
+      worker.use(
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/tarball/etag123abc',
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe(
+              'Bearer overridentoken',
+            );
+
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/x-gzip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock-etag123.tar.gz',
+              ),
+              ctx.body(repoBuffer),
+            );
+          },
+        ),
+      );
+
+      await gheProcessor.readTree(
+        'https://ghe.github.com/backstage/mock/tree/main',
+        { token: 'overridentoken' },
       );
     });
 
