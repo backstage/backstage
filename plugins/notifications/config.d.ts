@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './useNotificationsApi';
-export * from './useWebNotifications';
-export * from './useTitleCounter';
+
+export interface Config {
+  /** @visibility frontend */
+  notifications?: {
+    /**
+     * Enable or disable the Web Notification API for notifications, defaults to false
+     * @visibility frontend
+     */
+    enableWebNotifications?: boolean;
+    /**
+     * Enable or disable the title override to show notification count, defaults to true
+     * @visibility frontend
+     */
+    enableTitleCounter?: boolean;
+  };
+}

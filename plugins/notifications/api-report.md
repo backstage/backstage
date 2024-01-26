@@ -121,5 +121,18 @@ export function useNotificationsApi<T>(
       value: T;
     };
 
+// @public (undocumented)
+export function useTitleCounter(): {
+  setNotificationCount: (newCount: number) => void;
+};
+
+// @public (undocumented)
+export function useWebNotifications(): {
+  sendWebNotification: (options: {
+    title: string;
+    description: string;
+  }) => Notification | null;
+};
+
 // (No @packageDocumentation comment for this package)
 ```

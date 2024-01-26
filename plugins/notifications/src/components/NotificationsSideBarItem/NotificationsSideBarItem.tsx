@@ -13,36 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useNotificationsApi } from '../../hooks';
 import { SidebarItem } from '@backstage/core-components';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
+import { useWebNotifications } from '../../hooks/useWebNotifications';
+import { useTitleCounter } from '../../hooks/useTitleCounter';
 
 /** @public */
 export const NotificationsSidebarItem = () => {
   const { loading, error, value, retry } = useNotificationsApi(api =>
     api.getStatus(),
   );
+  const config = useApi(configApiRef);
   const [unreadCount, setUnreadCount] = React.useState(0);
-  const [webNotificationPermission, setWebNotificationPermission] =
-    React.useState('default');
   const notificationsRoute = useRouteRef(rootRouteRef);
   const { lastSignal } = useSignal('notifications');
-  const [webNotifications, setWebNotifications] = React.useState<
-    Notification[]
-  >([]);
+  const { sendWebNotification } = useWebNotifications();
   const [refresh, setRefresh] = React.useState(false);
-
-  useEffect(() => {
-    if ('Notification' in window && webNotificationPermission === 'default') {
-      window.Notification.requestPermission().then(permission => {
-        setWebNotificationPermission(permission);
-      });
-    }
-  }, [webNotificationPermission]);
+  const webNotificationsEnabled = useMemo(
+    () =>
+      config.getOptionalBoolean('notifications.enableWebNotifications') ??
+      false,
+    [config],
+  );
+  const titleCounterEnabled = useMemo(
+    () => config.getOptionalString('notifications.enableTitleCounter') ?? true,
+    [config],
+  );
+  const { setNotificationCount } = useTitleCounter();
 
   useEffect(() => {
     if (refresh) {
@@ -54,37 +56,35 @@ export const NotificationsSidebarItem = () => {
   useEffect(() => {
     if (lastSignal && lastSignal.action === 'refresh') {
       if (
-        webNotificationPermission === 'granted' &&
+        webNotificationsEnabled &&
         'title' in lastSignal &&
         'description' in lastSignal &&
         'link' in lastSignal
       ) {
-        const notification = new Notification(lastSignal.title as string, {
-          body: lastSignal.description as string,
+        const notification = sendWebNotification({
+          title: lastSignal.title as string,
+          description: lastSignal.description as string,
         });
-        notification.onclick = function (event) {
-          event.preventDefault();
-          notification.close();
-          window.open(lastSignal.link as string, '_blank');
-        };
-        setWebNotifications(prev => [...prev, notification]);
+        if (notification) {
+          notification.onclick = event => {
+            event.preventDefault();
+            notification.close();
+            window.open(lastSignal.link as string, '_blank');
+          };
+        }
       }
       setRefresh(true);
     }
-  }, [lastSignal, webNotificationPermission]);
+  }, [lastSignal, sendWebNotification, webNotificationsEnabled]);
 
   useEffect(() => {
     if (!loading && !error && value) {
       setUnreadCount(value.unread);
+      if (titleCounterEnabled) {
+        setNotificationCount(value.unread);
+      }
     }
-  }, [loading, error, value]);
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      webNotifications.forEach(n => n.close());
-      setWebNotifications([]);
-    }
-  });
+  }, [loading, error, value, titleCounterEnabled, setNotificationCount]);
 
   // TODO: Figure out if the count can be added to hasNotifications
   return (
