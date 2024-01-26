@@ -108,6 +108,8 @@ export type EntityListContextProps<
     next?: () => void;
     prev?: () => void;
   };
+
+  count?: number;
 };
 
 /**
@@ -124,6 +126,7 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   entities: Entity[];
   backendEntities: Entity[];
   pageInfo?: QueryEntitiesResponse['pageInfo'];
+  count?: number;
 };
 
 /**
@@ -223,6 +226,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               backendEntities: response.items,
               entities: response.items.filter(entityFilter),
               pageInfo: response.pageInfo,
+              count: response.totalItems,
             });
           }
         } else {
@@ -243,6 +247,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               backendEntities: response.items,
               entities: response.items.filter(entityFilter),
               pageInfo: response.pageInfo,
+              count: response.totalItems,
             });
           }
         }
@@ -262,16 +267,20 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           const response = await catalogApi.getEntities({
             filter: backendFilter,
           });
+          const entities = response.items.filter(entityFilter);
           setOutputState({
             appliedFilters: requestedFilters,
             backendEntities: response.items,
-            entities: response.items.filter(entityFilter),
+            entities,
+            count: entities.length,
           });
         } else {
+          const entities = outputState.backendEntities.filter(entityFilter);
           setOutputState({
             appliedFilters: requestedFilters,
             backendEntities: outputState.backendEntities,
-            entities: outputState.backendEntities.filter(entityFilter),
+            entities,
+            count: entities.length,
           });
         }
       }
@@ -352,6 +361,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       loading,
       error,
       pageInfo,
+      count: outputState.count,
     }),
     [outputState, updateFilters, queryParameters, loading, error, pageInfo],
   );
