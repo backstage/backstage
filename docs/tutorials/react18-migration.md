@@ -21,9 +21,9 @@ To switch a project to React 18, there are generally three changes that need to 
     // highlight-remove-next-line
     "@types/react": "^17",
     // highlight-remove-next-line
-    "@types/react": "^17",
+    "@types/react-dom": "^17",
     // highlight-add-next-line
-    "@types/react-dom": "^18",
+    "@types/react": "^18",
     // highlight-add-next-line
     "@types/react-dom": "^18",
   },
