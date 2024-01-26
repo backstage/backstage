@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Visit, VisitsApiQueryParams } from './VisitsApi';
+import {
+  Visit,
+  VisitsApiQueryParams,
+  Operators,
+  isOperator,
+} from './VisitsApi';
 import { Config } from '@backstage/config';
 
 /**
@@ -24,25 +29,23 @@ import { Config } from '@backstage/config';
  *
  * @public
  */
+
 export function readFilterConfig(config: Config):
   | {
       field: keyof Visit;
-      operator: '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
+      operator: Operators;
       value: string | number;
     }
   | undefined {
   try {
     const field = config.getString('field') as keyof Visit;
-    const operator = config.getString('operator') as
-      | '<'
-      | '<='
-      | '=='
-      | '!='
-      | '>'
-      | '>='
-      | 'contains';
-    const value = config.getString('value');
-    return { field, operator, value };
+    const operator = config.getString('operator');
+    const value =
+      config.getOptionalNumber('value') ?? config.getString('value');
+    if (isOperator(operator)) {
+      return { field, operator, value };
+    }
+    return undefined;
   } catch (error) {
     // invalid filter config - ignore filter
     return undefined;
