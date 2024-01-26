@@ -22,9 +22,9 @@ export type SignalPayload = {
 };
 
 // @public (undocumented)
-export interface SignalService {
+export type SignalService = {
   publish(signal: SignalPayload): Promise<void>;
-}
+};
 
 // @public (undocumented)
 export const signalService: ServiceRef<SignalService, 'plugin'>;

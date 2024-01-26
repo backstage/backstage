@@ -22,14 +22,9 @@ export const signalApiRef = createApiRef<SignalApi>({
 });
 
 /** @public */
-export interface SignalSubscriber {
-  unsubscribe(): void;
-}
-
-/** @public */
-export interface SignalApi {
+export type SignalApi = {
   subscribe(
     channel: string,
     onMessage: (message: JsonObject) => void,
-  ): SignalSubscriber;
-}
+  ): { unsubscribe: () => void };
+};
