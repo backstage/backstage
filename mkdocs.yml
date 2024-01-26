@@ -20,11 +20,16 @@ nav:
       - Support and community: 'overview/support.md'
       - Logo assets: 'overview/logos.md'
   - Getting Started:
-      - Getting Started: 'getting-started/index.md'
-      - Create an App: 'getting-started/create-an-app.md'
-      - App configuration:
+      - Installing a standalone server (Developer or Admin): 'getting-started/standalone-install.md'
+      - Configuring Backstage (Admin):
+          - Database: 'getting-started/config/database.md'
+          - Authentication: 'getting-started/config/authentication.md'
           - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
           - Customize the look-and-feel of your App: 'getting-started/app-custom-theme.md'
+          - Customizing your Homepage: 'getting-started/homepage.md'
+      - Logging in: 'getting-started/logging-in.md'
+      - Register a component: 'getting-started/register-a-component.md'
+      - Create a component: 'getting-started/create-a-component.md'
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
       - Key Concepts: 'getting-started/concepts.md'
       - Project Structure: 'getting-started/project-structure.md'
@@ -210,8 +215,8 @@ nav:
       - ADR009 - Entity References: 'architecture-decisions/adr009-entity-references.md'
       - ADR010 - Luxon Date Library: 'architecture-decisions/adr010-luxon-date-library.md'
       - ADR011 - Plugin Package Structure: 'architecture-decisions/adr011-plugin-package-structure.md'
-      - ADR012 - Plugin Package Structure: 'architecture-decisions/adr012-use-luxon-locale-and-date-presets.md'
-      - ADR013 - Plugin Package Structure: 'architecture-decisions/adr013-use-node-fetch.md'
+      - ADR012 - Use Luxon Locale: 'architecture-decisions/adr012-use-luxon-locale-and-date-presets.md'
+      - ADR013 - Use node-fetch: 'architecture-decisions/adr013-use-node-fetch.md'
   - FAQ:
       - Overview: 'faq/index.md'
       - Product FAQ: 'faq/product.md'

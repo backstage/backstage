@@ -155,8 +155,8 @@ Choose the correct next steps for your user role, if you're likely to be deployi
 ### Developer
 
 - [Logging into Backstage](./logging-in.md)
-- Register a component
-- Create a new component
+- [Register a component](./register-a-component.md)
+- [Create a new component](./create-a-component.md)
 
 Share your experiences, comments, or suggestions with us:
 [on discord](https://discord.gg/backstage-687207715902193673), file issues for any
