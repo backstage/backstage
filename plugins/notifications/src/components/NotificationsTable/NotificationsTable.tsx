@@ -20,6 +20,7 @@ import {
   IconButton,
   makeStyles,
   Table,
+  TableBody,
   TableCell,
   TableHead,
   TableRow,
@@ -49,9 +50,13 @@ const useStyles = makeStyles(theme => ({
   header: {
     borderBottom: `1px solid ${theme.palette.divider}`,
   },
+
   notificationRow: {
     cursor: 'pointer',
-    '&.hideOnHover': {
+    '&.unread': {
+      border: '1px solid rgba(255, 255, 255, .3)',
+    },
+    '& .hideOnHover': {
       display: 'initial',
     },
     '& .showOnHover': {
@@ -138,12 +143,12 @@ export const NotificationsTable = (props: {
               type !== 'saved' &&
               'Select all'}
             {selected.length > 0 && `${selected.length} selected`}
-            {type === 'read' && selected.length > 0 && (
+            {type === 'done' && selected.length > 0 && (
               <Button
                 startIcon={<Inbox fontSize="small" />}
                 onClick={() => {
                   notificationsApi
-                    .markUnread(selected)
+                    .markUndone(selected)
                     .then(() => props.onUpdate());
                   setSelected([]);
                 }}
@@ -152,12 +157,12 @@ export const NotificationsTable = (props: {
               </Button>
             )}
 
-            {type === 'unread' && selected.length > 0 && (
+            {type === 'undone' && selected.length > 0 && (
               <Button
                 startIcon={<Check fontSize="small" />}
                 onClick={() => {
                   notificationsApi
-                    .markRead(selected)
+                    .markDone(selected)
                     .then(() => props.onUpdate());
                   setSelected([]);
                 }}
@@ -168,107 +173,121 @@ export const NotificationsTable = (props: {
           </TableCell>
         </TableRow>
       </TableHead>
-      {props.notifications?.map(notification => {
-        return (
-          <TableRow
-            key={notification.id}
-            className={styles.notificationRow}
-            hover
-          >
-            <TableCell
-              width="60px"
-              style={{ verticalAlign: 'center', paddingRight: '0px' }}
+      <TableBody>
+        {props.notifications?.map(notification => {
+          return (
+            <TableRow
+              key={notification.id}
+              className={`${styles.notificationRow} ${
+                !notification.read ? 'unread' : ''
+              }`}
+              hover
             >
-              <Checkbox
-                className={styles.checkBox}
-                size="small"
-                checked={isChecked(notification.id)}
-                onClick={() => onCheckBoxClick(notification.id)}
-              />
-            </TableCell>
-            <TableCell
-              onClick={() => navigate(notification.link)}
-              style={{ paddingLeft: 0 }}
-            >
-              <Typography variant="subtitle2">{notification.title}</Typography>
-              <Typography variant="body2">
-                {notification.description}
-              </Typography>
-            </TableCell>
-            <TableCell style={{ textAlign: 'right' }}>
-              <Box className="hideOnHover">
-                <RelativeTime value={notification.created} />
-              </Box>
-              <Box className="showOnHover">
-                <Tooltip title={notification.link}>
-                  <IconButton
-                    className={styles.actionButton}
-                    onClick={() => navigate(notification.link)}
-                  >
-                    <ArrowForwardIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip
-                  title={notification.read ? 'Move to inbox' : 'Mark as done'}
-                >
-                  <IconButton
-                    className={styles.actionButton}
-                    onClick={() => {
-                      if (notification.read) {
-                        notificationsApi
-                          .markUnread([notification.id])
-                          .then(() => {
-                            props.onUpdate();
-                          });
-                      } else {
+              <TableCell
+                width="60px"
+                style={{ verticalAlign: 'center', paddingRight: '0px' }}
+              >
+                <Checkbox
+                  className={styles.checkBox}
+                  size="small"
+                  checked={isChecked(notification.id)}
+                  onClick={() => onCheckBoxClick(notification.id)}
+                />
+              </TableCell>
+              <TableCell
+                onClick={() =>
+                  notificationsApi
+                    .markRead([notification.id])
+                    .then(() => navigate(notification.link))
+                }
+                style={{ paddingLeft: 0 }}
+              >
+                <Typography variant="subtitle2">
+                  {notification.title}
+                </Typography>
+                <Typography variant="body2">
+                  {notification.description}
+                </Typography>
+              </TableCell>
+              <TableCell style={{ textAlign: 'right' }}>
+                <Box className="hideOnHover">
+                  <RelativeTime value={notification.created} />
+                </Box>
+                <Box className="showOnHover">
+                  <Tooltip title={notification.link}>
+                    <IconButton
+                      className={styles.actionButton}
+                      onClick={() =>
                         notificationsApi
                           .markRead([notification.id])
-                          .then(() => {
-                            props.onUpdate();
-                          });
+                          .then(() => navigate(notification.link))
                       }
-                    }}
+                    >
+                      <ArrowForwardIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip
+                    title={notification.read ? 'Move to inbox' : 'Mark as done'}
                   >
-                    {notification.read ? (
-                      <Inbox fontSize="small" />
-                    ) : (
-                      <Check fontSize="small" />
-                    )}
-                  </IconButton>
-                </Tooltip>
-                <Tooltip
-                  title={notification.saved ? 'Remove from saved' : 'Save'}
-                >
-                  <IconButton
-                    className={styles.actionButton}
-                    onClick={() => {
-                      if (notification.saved) {
-                        notificationsApi
-                          .markUnsaved([notification.id])
-                          .then(() => {
-                            props.onUpdate();
-                          });
-                      } else {
-                        notificationsApi
-                          .markSaved([notification.id])
-                          .then(() => {
-                            props.onUpdate();
-                          });
-                      }
-                    }}
+                    <IconButton
+                      className={styles.actionButton}
+                      onClick={() => {
+                        if (notification.read) {
+                          notificationsApi
+                            .markUndone([notification.id])
+                            .then(() => {
+                              props.onUpdate();
+                            });
+                        } else {
+                          notificationsApi
+                            .markDone([notification.id])
+                            .then(() => {
+                              props.onUpdate();
+                            });
+                        }
+                      }}
+                    >
+                      {notification.read ? (
+                        <Inbox fontSize="small" />
+                      ) : (
+                        <Check fontSize="small" />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip
+                    title={notification.saved ? 'Remove from saved' : 'Save'}
                   >
-                    {notification.saved ? (
-                      <CloseIcon fontSize="small" />
-                    ) : (
-                      <Bookmark fontSize="small" />
-                    )}
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </TableCell>
-          </TableRow>
-        );
-      })}
+                    <IconButton
+                      className={styles.actionButton}
+                      onClick={() => {
+                        if (notification.saved) {
+                          notificationsApi
+                            .markUnsaved([notification.id])
+                            .then(() => {
+                              props.onUpdate();
+                            });
+                        } else {
+                          notificationsApi
+                            .markSaved([notification.id])
+                            .then(() => {
+                              props.onUpdate();
+                            });
+                        }
+                      }}
+                    >
+                      {notification.saved ? (
+                        <CloseIcon fontSize="small" />
+                      ) : (
+                        <Bookmark fontSize="small" />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
     </Table>
   );
 };

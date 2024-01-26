@@ -28,5 +28,5 @@ export type NotificationStatus = {
 };
 
 // @public (undocumented)
-export type NotificationType = 'read' | 'unread' | 'saved';
+export type NotificationType = 'undone' | 'done' | 'saved';
 ```

@@ -15,7 +15,7 @@
  */
 
 /** @public */
-export type NotificationType = 'read' | 'unread' | 'saved';
+export type NotificationType = 'undone' | 'done' | 'saved';
 
 /** @public */
 export type Notification = {

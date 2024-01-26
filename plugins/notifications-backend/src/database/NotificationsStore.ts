@@ -43,6 +43,10 @@ export interface NotificationsStore {
 
   markUnread(options: NotificationModifyOptions): Promise<void>;
 
+  markDone(options: NotificationModifyOptions): Promise<void>;
+
+  markUndone(options: NotificationModifyOptions): Promise<void>;
+
   markSaved(options: NotificationModifyOptions): Promise<void>;
 
   markUnsaved(options: NotificationModifyOptions): Promise<void>;

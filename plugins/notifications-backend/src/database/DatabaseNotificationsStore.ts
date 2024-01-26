@@ -60,12 +60,14 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     options: NotificationGetOptions | NotificationModifyOptions,
   ) => {
     const { user_ref, type } = options;
-    const query = this.db('notifications').where('userRef', user_ref);
+    const query = this.db('notifications')
+      .where('userRef', user_ref)
+      .orderBy('created', 'desc');
 
-    if (type === 'unread') {
-      query.whereNull('read');
-    } else if (type === 'read') {
-      query.whereNotNull('read');
+    if (type === 'undone') {
+      query.whereNull('done');
+    } else if (type === 'done') {
+      query.whereNotNull('done');
     } else if (type === 'saved') {
       query.where('saved', true);
     }
@@ -114,6 +116,16 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   async markUnread(options: NotificationModifyOptions): Promise<void> {
     const notificationQuery = this.getNotificationsBaseQuery(options);
     await notificationQuery.update({ read: null });
+  }
+
+  async markDone(options: NotificationModifyOptions): Promise<void> {
+    const notificationQuery = this.getNotificationsBaseQuery(options);
+    await notificationQuery.update({ done: new Date(), read: new Date() });
+  }
+
+  async markUndone(options: NotificationModifyOptions): Promise<void> {
+    const notificationQuery = this.getNotificationsBaseQuery(options);
+    await notificationQuery.update({ done: null, read: null });
   }
 
   async markSaved(options: NotificationModifyOptions): Promise<void> {

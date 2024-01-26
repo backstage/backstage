@@ -25,6 +25,7 @@ exports.up = async function up(knex) {
     table.text('image').nullable();
     table.datetime('created').notNullable();
     table.datetime('read').nullable();
+    table.datetime('done').nullable();
     table.boolean('saved').defaultTo(false).notNullable();
   });
 };

@@ -31,9 +31,13 @@ export interface NotificationsApi {
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
+  markDone(ids: string[]): Promise<NotificationIds>;
+  // (undocumented)
   markRead(ids: string[]): Promise<NotificationIds>;
   // (undocumented)
   markSaved(ids: string[]): Promise<NotificationIds>;
+  // (undocumented)
+  markUndone(ids: string[]): Promise<NotificationIds>;
   // (undocumented)
   markUnread(ids: string[]): Promise<NotificationIds>;
   // (undocumented)
@@ -53,9 +57,13 @@ export class NotificationsClient implements NotificationsApi {
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
+  markDone(ids: string[]): Promise<NotificationIds>;
+  // (undocumented)
   markRead(ids: string[]): Promise<NotificationIds>;
   // (undocumented)
   markSaved(ids: string[]): Promise<NotificationIds>;
+  // (undocumented)
+  markUndone(ids: string[]): Promise<NotificationIds>;
   // (undocumented)
   markUnread(ids: string[]): Promise<NotificationIds>;
   // (undocumented)
@@ -80,7 +88,6 @@ export const NotificationsSidebarItem: () => React_2.JSX.Element;
 export const NotificationsTable: (props: {
   onUpdate: () => void;
   type: NotificationType;
-  loading?: boolean;
   notifications?: Notification_2[];
 }) => React_2.JSX.Element;
 

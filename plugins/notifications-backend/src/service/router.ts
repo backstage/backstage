@@ -168,8 +168,45 @@ export async function createRouter(
 
   router.get('/status', async (req, res) => {
     const user = await getUser(req);
-    const status = await store.getStatus({ user_ref: user });
+    const status = await store.getStatus({ user_ref: user, type: 'undone' });
     res.send(status);
+  });
+
+  router.post('/done', async (req, res) => {
+    const user = await getUser(req);
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids)) {
+      res.status(400).send();
+      return;
+    }
+    await store.markDone({ user_ref: user, ids });
+
+    if (signalService) {
+      await signalService.publish({
+        recipients: [user],
+        message: { action: 'refresh' },
+        channel: 'notifications',
+      });
+    }
+    res.status(200).send({ ids });
+  });
+
+  router.post('/undo', async (req, res) => {
+    const user = await getUser(req);
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids)) {
+      res.status(400).send();
+      return;
+    }
+    await store.markUndone({ user_ref: user, ids });
+    if (signalService) {
+      await signalService.publish({
+        recipients: [user],
+        message: { action: 'refresh' },
+        channel: 'notifications',
+      });
+    }
+    res.status(200).send({ ids });
   });
 
   router.post('/read', async (req, res) => {

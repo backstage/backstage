@@ -52,6 +52,22 @@ export class NotificationsClient implements NotificationsApi {
     return await this.request<NotificationStatus>('status');
   }
 
+  async markDone(ids: string[]): Promise<NotificationIds> {
+    return await this.request<NotificationIds>('done', {
+      method: 'POST',
+      body: JSON.stringify({ ids: ids }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  async markUndone(ids: string[]): Promise<NotificationIds> {
+    return await this.request<NotificationIds>('undone', {
+      method: 'POST',
+      body: JSON.stringify({ ids: ids }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   async markRead(ids: string[]): Promise<NotificationIds> {
     return await this.request<NotificationIds>('read', {
       method: 'POST',

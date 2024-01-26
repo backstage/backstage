@@ -37,6 +37,10 @@ export interface NotificationsApi {
 
   getStatus(): Promise<NotificationStatus>;
 
+  markDone(ids: string[]): Promise<NotificationIds>;
+
+  markUndone(ids: string[]): Promise<NotificationIds>;
+
   markRead(ids: string[]): Promise<NotificationIds>;
 
   markUnread(ids: string[]): Promise<NotificationIds>;

@@ -37,7 +37,7 @@ const useStyles = makeStyles(_theme => ({
 }));
 
 export const NotificationsPage = () => {
-  const [type, setType] = useState<NotificationType>('unread');
+  const [type, setType] = useState<NotificationType>('undone');
   const [refresh, setRefresh] = React.useState(false);
 
   const { error, value, retry } = useNotificationsApi(
@@ -77,16 +77,16 @@ export const NotificationsPage = () => {
             <Button
               className={styles.filterButton}
               startIcon={<Inbox />}
-              variant={type === 'unread' ? 'contained' : 'text'}
-              onClick={() => setType('unread')}
+              variant={type === 'undone' ? 'contained' : 'text'}
+              onClick={() => setType('undone')}
             >
               Inbox
             </Button>
             <Button
               className={styles.filterButton}
               startIcon={<Check />}
-              variant={type === 'read' ? 'contained' : 'text'}
-              onClick={() => setType('read')}
+              variant={type === 'done' ? 'contained' : 'text'}
+              onClick={() => setType('done')}
             >
               Done
             </Button>
