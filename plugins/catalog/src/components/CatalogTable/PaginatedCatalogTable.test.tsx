@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 import React, { ReactNode } from 'react';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { PaginatedCatalogTable } from './PaginatedCatalogTable';
 import { screen } from '@testing-library/react';
 import { CatalogTableRow } from './types';
+import { renderInTestApp } from '@backstage/test-utils';
 import {
+  EntityKindFilter,
+  MockEntityListContextProvider,
   DefaultEntityFilters,
   EntityListContextProps,
-  MockEntityListContextProvider,
 } from '@backstage/plugin-catalog-react';
 
 describe('PaginatedCatalogTable', () => {
@@ -133,5 +135,33 @@ describe('PaginatedCatalogTable', () => {
 
     fireEvent.click(prevButton);
     expect(fn).toHaveBeenCalled();
+  });
+
+  it('should display entity names when loading has finished and no error occurred', async () => {
+    await renderInTestApp(
+      <MockEntityListContextProvider
+        value={{
+          entities: data.map(e => e.entity),
+          count: data.length,
+          filters: {
+            kind: new EntityKindFilter('component'),
+          },
+        }}
+      >
+        <PaginatedCatalogTable
+          data={data}
+          columns={columns}
+          next={undefined}
+          title="My title"
+        />
+      </MockEntityListContextProvider>,
+    );
+
+    expect(screen.getByText(/component-0/)).toBeInTheDocument();
+    expect(screen.getByText(/component-50/)).toBeInTheDocument();
+    expect(screen.getByText(/component-99/)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/My title/)).toBeInTheDocument();
+    });
   });
 });
