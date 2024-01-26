@@ -7,17 +7,22 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 
 // @public (undocumented)
-export type SignalApi = {
+export interface SignalApi {
+  // (undocumented)
   subscribe(
     channel: string,
     onMessage: (message: JsonObject) => void,
-  ): {
-    unsubscribe: () => void;
-  };
-};
+  ): SignalSubscriber;
+}
 
 // @public (undocumented)
 export const signalApiRef: ApiRef<SignalApi>;
+
+// @public (undocumented)
+export interface SignalSubscriber {
+  // (undocumented)
+  unsubscribe(): void;
+}
 
 // @public (undocumented)
 export const useSignal: (channel: string) => {

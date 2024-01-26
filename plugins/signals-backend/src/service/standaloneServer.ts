@@ -68,6 +68,7 @@ export async function startStandaloneServer(
     logger,
     identity,
     eventBroker,
+    discovery,
   });
 
   let service = createServiceBuilder(module)
@@ -83,7 +84,7 @@ export async function startStandaloneServer(
 
     setInterval(() => {
       signals.publish({
-        recipients: null,
+        receivers: null,
         channel: 'test',
         message: { hello: 'world' },
       });
