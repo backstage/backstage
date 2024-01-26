@@ -8,7 +8,7 @@ TechDocs functions as a plugin to Backstage, so you will need to use Backstage
 to use TechDocs.
 
 If you haven't setup Backstage already, start
-[here](../../getting-started/index.md).
+[here](../../getting-started/standalone-install.md).
 
 > If you used `npx @backstage/create-app`, TechDocs may already be present.
 >

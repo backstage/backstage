@@ -8,7 +8,7 @@ The Kubernetes feature is a plugin to Backstage, and it is exposed as a tab when
 viewing entities in the software catalog.
 
 If you haven't setup Backstage already, read the
-[Getting Started](../../getting-started/index.md) guide.
+[Getting Started](../../getting-started/standalone-install.md) guide.
 
 ## Adding the Kubernetes frontend plugin
 

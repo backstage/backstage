@@ -16,7 +16,7 @@ are stateless, so for a production deployment you will want to set up and
 connect to an external PostgreSQL instance where the backend plugins can store
 their state, rather than using SQLite.
 
-This section assumes that an [app](https://backstage.io/docs/getting-started/create-an-app)
+This section assumes that an [app](https://backstage.io/docs/getting-started/standalone-install)
 has already been created with `@backstage/create-app`, in which the frontend is
 bundled and served from the backend. This is done using the
 `@backstage/plugin-app-backend` plugin, which also injects the frontend

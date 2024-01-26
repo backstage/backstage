@@ -69,8 +69,8 @@ module.exports = {
     ],
   ],
   markdown: {
-    preprocessor({ fileContent }) {
-      // Replace all HTML comments with emtpy strings as these are not supported by MDXv2.
+    preprocessor({ filePath, fileContent }) {
+      // Replace all HTML comments with empty strings as these are not supported by MDXv2.
       return fileContent.replace(/<!--.*?-->/gs, '');
     },
     format: 'md',
@@ -151,6 +151,18 @@ module.exports = {
           {
             from: '/docs/overview/glossary',
             to: '/docs/references/glossary',
+          },
+          {
+            from: '/docs/getting-started/create-an-app',
+            to: '/docs/getting-started/standalone-install'
+          },
+          {
+            from: '/docs/getting-started/configuration',
+            to: '/docs/getting-started/standalone-install#next-steps'
+          },
+          {
+            from: '/docs/getting-started',
+            to: '/docs/getting-started/standalone-install'
           },
         ],
       },

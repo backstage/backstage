@@ -95,7 +95,7 @@ You can check the official docs to [configure your webhook](https://docs.github.
 ## Configuration
 
 To use the discovery provider, you'll need a GitHub integration
-[set up](locations.md) with either a [Personal Access Token](../../getting-started/configuration.md#setting-up-a-github-integration) or [GitHub Apps](./github-apps.md).
+[set up](locations.md) with either a [Personal Access Token](../../getting-started/config/authentication.md) or [GitHub Apps](./github-apps.md).
 
 Then you can add a `github` config to the catalog providers configuration:
 
@@ -294,7 +294,7 @@ export default async function createPlugin(
 ## Configuration
 
 To use the discovery processor, you'll need a GitHub integration
-[set up](locations.md) with either a [Personal Access Token](../../getting-started/configuration.md#setting-up-a-github-integration) or [GitHub Apps](./github-apps.md).
+[set up](locations.md) with either a [Personal Access Token](../../getting-started/config/authentication.md) or [GitHub Apps](./github-apps.md).
 
 Then you can add a location target to the catalog configuration:
 

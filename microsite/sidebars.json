@@ -40,18 +40,21 @@
       "overview/logos"
     ],
     "Getting Started": [
-      "getting-started/index",
-      "getting-started/configuration",
-      "getting-started/create-an-app",
+      "getting-started/standalone-install",
       {
         "type": "category",
-        "label": "App configuration",
+        "label": "Configuring Backstage (Admin)",
         "items": [
+          "getting-started/config/database",
+          "getting-started/config/authentication",
           "getting-started/configure-app-with-plugins",
           "getting-started/app-custom-theme",
           "getting-started/homepage"
         ]
       },
+      "getting-started/logging-in",
+      "getting-started/register-a-component",
+      "getting-started/create-a-component",
       "getting-started/keeping-backstage-updated",
       "getting-started/concepts",
       "getting-started/contributors",
