@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import _unescape from 'lodash/unescape';
 import { Link } from '@backstage/core-components';
 import {
   Divider,
@@ -26,8 +25,9 @@ import {
   Chip,
 } from '@material-ui/core';
 import { useAnalytics } from '@backstage/core-plugin-api';
-import { ResultHighlight } from '@backstage/plugin-search-common';
+import type { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
+import { decode } from 'he';
 
 /**
  * Props for {@link StackOverflowSearchResultListItem}
@@ -48,6 +48,10 @@ export const StackOverflowSearchResultListItem = (
   const analytics = useAnalytics();
 
   const handleClick = () => {
+    if (!result) {
+      return;
+    }
+
     analytics.captureEvent('discover', result.title, {
       attributes: { to: result.location },
       value: props.rank,
@@ -69,12 +73,12 @@ export const StackOverflowSearchResultListItem = (
               <Link to={result.location} noTrack onClick={handleClick}>
                 {highlight?.fields?.title ? (
                   <HighlightedSearchResultText
-                    text={highlight.fields.title}
+                    text={decode(highlight.fields.title)}
                     preTag={highlight.preTag}
                     postTag={highlight.postTag}
                   />
                 ) : (
-                  _unescape(result.title)
+                  decode(result.title)
                 )}
               </Link>
             }
@@ -83,13 +87,13 @@ export const StackOverflowSearchResultListItem = (
                 <>
                   Author:{' '}
                   <HighlightedSearchResultText
-                    text={highlight.fields.text}
+                    text={decode(highlight.fields.text)}
                     preTag={highlight.preTag}
                     postTag={highlight.postTag}
                   />
                 </>
               ) : (
-                `Author: ${result.text}`
+                `Author: ${decode(result.text)}`
               )
             }
           />
