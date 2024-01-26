@@ -111,85 +111,6 @@ can be replaced with a more suitable resolver for the app in question.
 
 See [Sign-in Identities and Resolvers](../identity-resolver.md) for details.
 
-## Create a Utility API
-
-At the moment, this auth provider is not included in the default API factories,
-but you can create one with a change to your frontend like:
-
-```ts title="packages/app/src/apis.ts"
-import {
-  ScmIntegrationsApi,
-  scmIntegrationsApiRef,
-  ScmAuth,
-} from '@backstage/integration-react';
-import {
-  costInsightsApiRef,
-  ExampleCostInsightsClient,
-} from '@backstage/plugin-cost-insights';
-import {
-  graphQlBrowseApiRef,
-  GraphQLEndpoints,
-} from '@backstage/plugin-graphiql';
-/* highlight-add-start */
-import { OAuth2 } from '@backstage/core-app-api';
-/* highlight-add-end */
-import {
-  AnyApiFactory,
-  /* highlight-add-start */
-  ApiRef,
-  OpenIdConnectApi,
-  ProfileInfoApi,
-  BackstageIdentityApi,
-  SessionApi,
-  /* highlight-add-end */
-  configApiRef,
-  /* highlight-add-start */
-  createApiRef,
-  /* highlight-add-end */
-  createApiFactory,
-  discoveryApiRef,
-  errorApiRef,
-  fetchApiRef,
-  githubAuthApiRef,
-  /* highlight-add-start */
-  oauthRequestApiRef,
-  /* highlight-add-end */
-} from '@backstage/core-plugin-api';
-import { AuthProxyDiscoveryApi } from './AuthProxyDiscoveryApi';
-
-/* highlight-add-start */
-export const vmwareCloudAuthApiRef: ApiRef<
-  OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
-> = createApiRef({
-  id: 'auth.vmware-cloud-auth-provider',
-});
-/* highlight-add-end */
-
-export const apis: AnyApiFactory[] = [
-  /* highlight-add-start */
-  createApiFactory({
-    api: vmwareCloudAuthApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      oauthRequestApi: oauthRequestApiRef,
-      configApi: configApiRef,
-    },
-    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
-      OAuth2.create({
-        discoveryApi,
-        oauthRequestApi,
-        provider: {
-          id: 'vmwareCloudServices',
-          title: 'VMware Cloud',
-          icon: () => null,
-        },
-        environment: configApi.getOptionalString('auth.environment'),
-        defaultScopes: ['openid'],
-      }),
-  }),
-  /* highlight-add-end */
-```
-
 ## Add to Sign-in Page
 
 See the [Sign-In Configuration](../index.md#sign-in-configuration) docs for
@@ -197,7 +118,7 @@ general guidance, but as an example:
 
 ```tsx title="packages/app/src/App.tsx"
 /* highlight-add-start */
-import { vmwareCloudAuthApiRef } from './apis';
+import { vmwareCloudAuthApiRef } from '@backstage/core-plugin-api';
 import { SignInPage } from '@backstage/core-components';
 /* highlight-add-end */
 
