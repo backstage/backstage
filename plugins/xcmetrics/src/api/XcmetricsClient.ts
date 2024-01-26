@@ -70,6 +70,7 @@ export class XcmetricsClient implements XcmetricsApi {
       projectName: filters.project,
       page,
       per: perPage,
+      excludeCI: false,
     });
 
     return (await response.json()) as PaginationResult<Build>;
