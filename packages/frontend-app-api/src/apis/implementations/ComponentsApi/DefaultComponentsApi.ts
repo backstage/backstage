@@ -15,7 +15,12 @@
  */
 
 import { ComponentType } from 'react';
-import { ComponentRef, ComponentsApi } from '@backstage/frontend-plugin-api';
+import {
+  AppTree,
+  ComponentRef,
+  ComponentsApi,
+  createComponentExtension,
+} from '@backstage/frontend-plugin-api';
 
 /**
  * Implementation for the {@linkComponentApi}
@@ -23,14 +28,29 @@ import { ComponentRef, ComponentsApi } from '@backstage/frontend-plugin-api';
  * @internal
  */
 export class DefaultComponentsApi implements ComponentsApi {
-  #components: Map<ComponentRef<any>, ComponentType<any>>;
+  #components: Map<string, ComponentType<any>>;
 
-  constructor(components: Map<ComponentRef<any>, any>) {
+  static fromTree(tree: AppTree) {
+    const componentEntries = tree.root.edges.attachments
+      .get('components')
+      ?.reduce((map, e) => {
+        const data = e.instance?.getData(
+          createComponentExtension.componentDataRef,
+        );
+        if (data) {
+          map.set(data.ref.id, data.impl);
+        }
+        return map;
+      }, new Map<string, ComponentType>());
+    return new DefaultComponentsApi(componentEntries ?? new Map());
+  }
+
+  constructor(components: Map<string, any>) {
     this.#components = components;
   }
 
   getComponent<T extends {}>(ref: ComponentRef<T>): ComponentType<T> {
-    const impl = this.#components.get(ref);
+    const impl = this.#components.get(ref.id);
     if (!impl) {
       throw new Error(`No implementation found for component ref ${ref}`);
     }
