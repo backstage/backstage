@@ -135,6 +135,7 @@ export const createPublishGithubPullRequestAction = (
     teamReviewers?: string[];
     commitMessage?: string;
     update?: boolean;
+    forceFork?: boolean;
   }>({
     id: 'publish:github:pull-request',
     examples,
@@ -217,6 +218,11 @@ export const createPublishGithubPullRequestAction = (
             title: 'Update',
             description: 'Update pull request if already exists',
           },
+          forceFork: {
+            type: 'boolean',
+            title: 'Force Fork',
+            description: 'Create pull request from a fork',
+          },
         },
       },
       output: {
@@ -255,6 +261,7 @@ export const createPublishGithubPullRequestAction = (
         teamReviewers,
         commitMessage,
         update,
+        forceFork,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -327,6 +334,7 @@ export const createPublishGithubPullRequestAction = (
           head: branchName,
           draft,
           update,
+          forceFork,
         };
         if (targetBranchName) {
           createOptions.base = targetBranchName;
