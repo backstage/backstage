@@ -144,6 +144,14 @@ module.exports = {
             from: '/docs/features/software-templates/testing-scaffolder-alpha',
             to: '/docs/features/software-templates/migrating-to-rjsf-v5',
           },
+          {
+            from: '/docs/auth/glossary',
+            to: '/docs/references/glossary'
+          },
+          {
+            from: '/docs/overview/glossary',
+            to: '/docs/references/glossary'
+          }
         ],
       },
     ],
