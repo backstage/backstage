@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
+import {
+  getVoidLogger,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 
@@ -30,6 +33,11 @@ const identityApiMock: jest.Mocked<IdentityApi> = {
   getIdentity: jest.fn(),
 };
 
+const discovery: jest.Mocked<PluginEndpointDiscovery> = {
+  getBaseUrl: jest.fn().mockResolvedValue('/api/signals'),
+  getExternalBaseUrl: jest.fn(),
+};
+
 describe('createRouter', () => {
   let app: express.Express;
 
@@ -38,6 +46,7 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
       identity: identityApiMock,
       eventBroker: eventBrokerMock,
+      discovery,
     });
     app = express().use(router);
   });
