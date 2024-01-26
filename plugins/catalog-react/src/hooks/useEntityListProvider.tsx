@@ -124,7 +124,6 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   entities: Entity[];
   backendEntities: Entity[];
   pageInfo?: QueryEntitiesResponse['pageInfo'];
-  textSearch?: string;
 };
 
 /**
@@ -244,7 +243,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               backendEntities: response.items,
               entities: response.items.filter(entityFilter),
               pageInfo: response.pageInfo,
-              textSearch: requestedFilters.text?.value,
             });
           }
         }
