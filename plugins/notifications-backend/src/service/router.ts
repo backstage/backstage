@@ -41,6 +41,7 @@ import { NotificationProcessor } from '../types';
 import { AuthenticationError } from '@backstage/errors';
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { SignalService } from '@backstage/plugin-signals-node';
+import { Notification } from '@backstage/plugin-notifications-common';
 
 /** @public */
 export interface RouterOptions {
@@ -143,6 +144,22 @@ export async function createRouter(
       users.push(...u);
     }
     return users;
+  };
+
+  const decorateNotification = async (notification: Notification) => {
+    let ret: Notification = notification;
+    for (const processor of processors ?? []) {
+      ret = processor.decorate ? await processor.decorate(ret) : ret;
+    }
+    return ret;
+  };
+
+  const processorSendNotification = async (notification: Notification) => {
+    for (const processor of processors ?? []) {
+      if (processor.send) {
+        processor.send(notification);
+      }
+    }
   };
 
   const router = Router();
@@ -269,7 +286,7 @@ export async function createRouter(
   });
 
   router.post('/notifications', async (req, res) => {
-    const { receivers, title, description, link } = req.body;
+    const { receivers, title, description, link, topic } = req.body;
     const notifications = [];
     let users = [];
 
@@ -298,25 +315,40 @@ export async function createRouter(
       title,
       description,
       link,
+      topic,
       created: new Date(),
       saved: false,
     };
 
     for (const user of users) {
-      let notification = { ...baseNotification, id: uuid(), userRef: user };
-      for (const processor of processors ?? []) {
-        notification = processor.decorate
-          ? await processor.decorate(notification)
-          : notification;
+      const userNotification = {
+        ...baseNotification,
+        id: uuid(),
+        userRef: user,
+      };
+      const notification = await decorateNotification(userNotification);
+
+      let existingNotification;
+      if (topic) {
+        existingNotification = await store.getExistingTopicNotification({
+          user_ref: user,
+          topic,
+        });
       }
 
-      await store.saveNotification(notification);
-      for (const processor of processors ?? []) {
-        if (processor.send) {
-          processor.send(notification);
-        }
+      let ret = notification;
+      if (existingNotification) {
+        const restored = await store.restoreExistingNotification({
+          id: existingNotification.id,
+          notification,
+        });
+        ret = restored ?? notification;
+      } else {
+        await store.saveNotification(notification);
       }
-      notifications.push(notification);
+
+      processorSendNotification(ret);
+      notifications.push(ret);
     }
 
     if (signalService) {

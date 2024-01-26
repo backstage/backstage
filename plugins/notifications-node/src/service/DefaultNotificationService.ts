@@ -38,6 +38,7 @@ export type NotificationSendOptions = {
   title: string;
   description: string;
   link: string;
+  topic?: string;
 };
 
 /** @public */

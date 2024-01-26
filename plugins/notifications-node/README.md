@@ -53,3 +53,6 @@ save the notification and optionally signal the frontend to show the latest stat
 When sending notifications, you can specify the entity reference of the notification. If the entity reference is
 a user, the notification will be sent to only that user. If it's a group, the notification will be sent to all
 members of the group. If it's some other entity, the notification will be sent to the owner of that entity.
+
+If the notification has `topic` set and user already has notification with that topic, the existing notification
+will be updated with the new notification values and moved to inbox as unread. 

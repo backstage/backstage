@@ -108,6 +108,58 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     };
   }
 
+  async getExistingTopicNotification(options: {
+    user_ref: string;
+    topic: string;
+  }) {
+    const query = this.db('notifications')
+      .where('userRef', options.user_ref)
+      .where('topic', options.topic)
+      .select('*')
+      .limit(1);
+
+    const rows = await query;
+    if (!rows || rows.length === 0) {
+      return null;
+    }
+    return rows[0] as Notification;
+  }
+
+  async restoreExistingNotification(options: {
+    id: string;
+    notification: Notification;
+  }) {
+    const query = this.db('notifications')
+      .where('id', options.id)
+      .where('userRef', options.notification.userRef);
+    const rows = await query.update({
+      title: options.notification.title,
+      description: options.notification.description,
+      link: options.notification.link,
+      topic: options.notification.topic,
+      updated: options.notification.created,
+      read: null,
+      done: null,
+    });
+
+    if (!rows) {
+      return null;
+    }
+
+    return await this.getNotification(options);
+  }
+
+  async getNotification(options: { id: string }) {
+    const rows = await this.db('notifications')
+      .where('id', options.id)
+      .select('*')
+      .limit(1);
+    if (!rows || rows.length === 0) {
+      return null;
+    }
+    return rows[0] as Notification;
+  }
+
   async markRead(options: NotificationModifyOptions): Promise<void> {
     const notificationQuery = this.getNotificationsBaseQuery(options);
     await notificationQuery.update({ read: new Date() });

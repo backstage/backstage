@@ -10,8 +10,11 @@ type Notification_2 = {
   title: string;
   description: string;
   link: string;
+  topic?: string;
   created: Date;
+  updated?: Date;
   read?: Date;
+  done?: Date;
   saved: boolean;
 };
 export { Notification_2 as Notification };

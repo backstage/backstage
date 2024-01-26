@@ -37,6 +37,18 @@ export interface NotificationsStore {
 
   saveNotification(notification: Notification): Promise<void>;
 
+  getExistingTopicNotification(options: {
+    user_ref: string;
+    topic: string;
+  }): Promise<Notification | null>;
+
+  restoreExistingNotification(options: {
+    id: string;
+    notification: Notification;
+  }): Promise<Notification | null>;
+
+  getNotification(options: { id: string }): Promise<Notification | null>;
+
   getStatus(options: NotificationGetOptions): Promise<NotificationStatus>;
 
   markRead(options: NotificationModifyOptions): Promise<void>;
