@@ -135,5 +135,5 @@ We recommend you read [Setting up authentication](./authentication.md) next.
 
 If you want to read more about the database configuration, here are some helpful links:
 
-- [Configuring Plugin Databases](../tutorials/configuring-plugin-databases.md#privileges)
+- [Configuring Plugin Databases](../../tutorials/configuring-plugin-databases.md#privileges)
 - [Read more about Knex](http://knexjs.org/), the database wrapper that we use.
