@@ -233,17 +233,9 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             compact(Object.values(outputState.appliedFilters)),
           );
 
-          if (
-            !isEqual(previousBackendFilter, backendFilter) ||
-            requestedFilters.text?.value !== outputState.textSearch
-          ) {
+          if (!isEqual(previousBackendFilter, backendFilter)) {
             const response = await catalogApi.queryEntities({
-              filter: backendFilter,
-              fullTextFilter: requestedFilters.text
-                ? {
-                    term: requestedFilters.text.value,
-                  }
-                : undefined,
+              ...backendFilter,
               limit,
               orderFields: [{ field: 'metadata.name', order: 'asc' }],
             });

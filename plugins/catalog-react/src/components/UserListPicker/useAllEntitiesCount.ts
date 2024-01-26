@@ -30,13 +30,13 @@ export function useAllEntitiesCount() {
   const request = useMemo(() => {
     const { user, ...allFilters } = filters;
     const compacted = compact(Object.values(allFilters));
-    const filter = reduceCatalogFilters(compacted);
+    const catalogFilters = reduceCatalogFilters(compacted);
     const newRequest: QueryEntitiesInitialRequest = {
-      filter,
+      ...catalogFilters,
       limit: 0,
     };
 
-    if (Object.keys(filter).length === 0) {
+    if (Object.keys(catalogFilters).length === 0) {
       prevRequest.current = undefined;
       return prevRequest.current;
     }

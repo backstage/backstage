@@ -338,6 +338,7 @@ describe('<EntityListProvider pagination />', () => {
         orderFields,
         fullTextFilter: {
           term: '2',
+          fields: ['metadata.name', 'metadata.title'],
         },
       });
     });

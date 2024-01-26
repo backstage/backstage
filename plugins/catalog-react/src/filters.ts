@@ -108,6 +108,16 @@ export class EntityTextFilter implements EntityFilter {
     return true;
   }
 
+  getBackendRequestParameter() {
+    return {
+      fullTextFilter: {
+        term: this.value,
+        // Update this to be more dynamic based on table columns.
+        fields: ['metadata.name', 'metadata.title'],
+      },
+    };
+  }
+
   private toUpperArray(
     value: Array<string | string[] | undefined>,
   ): Array<string> {
