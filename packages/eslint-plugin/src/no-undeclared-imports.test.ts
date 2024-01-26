@@ -53,6 +53,11 @@ const ERR_SWITCH_BACK = () => ({
   message: 'Switch back to import declaration',
 });
 
+// cwd must be restored
+const origDir = process.cwd();
+afterAll(() => {
+  process.chdir(origDir);
+});
 process.chdir(FIXTURE);
 
 const ruleTester = new RuleTester({
