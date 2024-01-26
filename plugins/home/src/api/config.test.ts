@@ -23,13 +23,13 @@ describe('config', () => {
       const mockConfig = new MockConfigApi({
         field: 'pathname',
         operator: '==',
-        value: '3',
+        value: '/home',
       });
       const res = readFilterConfig(mockConfig);
       expect(res).toEqual({
         field: 'pathname',
         operator: '==',
-        value: '3',
+        value: '/home',
       });
     });
 
@@ -66,11 +66,11 @@ describe('config', () => {
       ]);
     });
 
-    it('returns only invalid filters', async () => {
+    it('returns only valid filters', async () => {
       const mockValidConfig = new MockConfigApi({
         field: 'id',
         operator: '==',
-        value: '3',
+        value: 3,
       });
       const mockInvalidConfig = new MockConfigApi({
         myField: 'pathname',
@@ -81,7 +81,7 @@ describe('config', () => {
         mockValidConfig,
         mockInvalidConfig,
       ]);
-      expect(res).toEqual([{ field: 'id', operator: '==', value: '3' }]);
+      expect(res).toEqual([{ field: 'id', operator: '==', value: 3 }]);
     });
   });
 });
