@@ -19,11 +19,9 @@ import { ConfigReader } from '@backstage/config';
 import {
   AppTree,
   appTreeApiRef,
-  ComponentRef,
   componentsApiRef,
   coreExtensionData,
   createApiExtension,
-  createComponentExtension,
   createThemeExtension,
   createTranslationExtension,
   FrontendFeature,
@@ -373,22 +371,10 @@ function createApiHolder(
     factory: () => routeResolutionApi,
   });
 
-  const componentsExtensions =
-    tree.root.edges.attachments
-      .get('components')
-      ?.map(e => e.instance?.getData(createComponentExtension.componentDataRef))
-      .filter(x => !!x) ?? [];
-
-  const componentsMap = componentsExtensions.reduce(
-    (components, component) =>
-      component ? components.set(component.ref, component?.impl) : components,
-    new Map<ComponentRef<any>, any>(),
-  );
-
   factoryRegistry.register('static', {
     api: componentsApiRef,
     deps: {},
-    factory: () => new DefaultComponentsApi(componentsMap),
+    factory: () => DefaultComponentsApi.fromTree(tree),
   });
 
   factoryRegistry.register('static', {
