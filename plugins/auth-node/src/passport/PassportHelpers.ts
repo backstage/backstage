@@ -15,6 +15,7 @@
  */
 
 import { Request } from 'express';
+import { decodeJwt } from 'jose';
 import { Strategy } from 'passport';
 import { PassportProfile } from './types';
 import { ProfileInfo } from '../types';
@@ -25,30 +26,6 @@ interface InternalOAuthError extends Error {
   oauthError?: {
     data?: string;
   };
-}
-
-/** @internal */
-function decodeJwtPayload(token: string): Record<string, string> {
-  const payloadStr = token.split('.')[1];
-  if (!payloadStr) {
-    throw new Error('Invalid JWT token');
-  }
-
-  let payload: unknown;
-  try {
-    payload = JSON.parse(
-      Buffer.from(
-        payloadStr.replace(/-/g, '+').replace(/_/g, '/'),
-        'base64',
-      ).toString('utf8'),
-    );
-  } catch (e) {
-    throw new Error('Invalid JWT token');
-  }
-  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
-    throw new Error('Invalid JWT token');
-  }
-  return payload as Record<string, string>;
 }
 
 /** @public */
@@ -78,7 +55,11 @@ export class PassportHelpers {
 
     if ((!email || !picture || !displayName) && idToken) {
       try {
-        const decoded: Record<string, string> = decodeJwtPayload(idToken);
+        const decoded = decodeJwt(idToken) as {
+          email?: string;
+          name?: string;
+          picture?: string;
+        };
         if (!email && decoded.email) {
           email = decoded.email;
         }
