@@ -4932,7 +4932,6 @@ __metadata:
     fs-extra: 10.1.0
     google-auth-library: ^8.0.0
     jose: ^4.6.0
-    jwt-decode: ^3.1.0
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
