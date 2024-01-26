@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-simple typo fix
+Simple typo fix in the the fetch:template action example on the word skeleton
