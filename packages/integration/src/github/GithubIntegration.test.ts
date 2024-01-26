@@ -78,6 +78,33 @@ describe('GithubIntegration', () => {
       ),
     ).toBe('https://github.com/backstage/backstage/edit/master/README.md');
   });
+
+  describe('isRateLimited', () => {
+    const integration = new GithubIntegration({ host: 'h.com' });
+
+    it.each`
+      status | ratelimitRemaining | expected
+      ${404} | ${100}             | ${false}
+      ${429} | ${undefined}       | ${true}
+      ${429} | ${100}             | ${true}
+      ${403} | ${100}             | ${false}
+      ${403} | ${0}               | ${true}
+    `(
+      '(statusCode: $status, header: $ratelimitRemaining) === $expected',
+      ({ status, ratelimitRemaining, expected }) => {
+        const headers = new Headers({
+          'x-ratelimit-remaining': ratelimitRemaining,
+        });
+        const result = integration.parseRateLimitInfo({
+          status,
+          headers,
+        } as Response);
+        expect(result).toMatchObject({
+          isRateLimited: expected,
+        });
+      },
+    );
+  });
 });
 
 describe('replaceGithubUrlType', () => {

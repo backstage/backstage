@@ -4147,6 +4147,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@octokit/auth-app": ^4.0.0
     "@octokit/rest": ^19.0.3
     "@types/luxon": ^3.0.0
