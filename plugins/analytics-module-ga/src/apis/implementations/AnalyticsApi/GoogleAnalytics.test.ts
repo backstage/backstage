@@ -521,11 +521,29 @@ describe('GoogleAnalytics', () => {
         context,
       });
 
-      const [command, data] = ReactGA.testModeAPI.calls[1];
+      let [command, data] = ReactGA.testModeAPI.calls[1];
       expect(command).toBe('send');
       expect(data).toMatchObject({
         hitType: 'pageview',
         page: '/',
+      });
+
+      api.captureEvent({
+        action: 'click',
+        subject: 'on something',
+        value: 42,
+        context,
+      });
+
+      [command, data] = ReactGA.testModeAPI.calls[2];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'event',
+        // expect to use the legacy default category
+        eventCategory: 'App',
+        eventAction: 'click',
+        eventLabel: 'on something',
+        eventValue: 42,
       });
     });
 
@@ -537,14 +555,40 @@ describe('GoogleAnalytics', () => {
       api.captureEvent({
         action: 'navigate',
         subject: '/',
-        context: { ...context, extensionId: '', extension: '' },
+        context: {
+          ...context,
+          extensionId: '',
+          extension: '',
+        },
       });
 
-      const [command, data] = ReactGA.testModeAPI.calls[1];
+      let [command, data] = ReactGA.testModeAPI.calls[1];
       expect(command).toBe('send');
       expect(data).toMatchObject({
         hitType: 'pageview',
         page: '/',
+      });
+
+      api.captureEvent({
+        action: 'click',
+        subject: 'on something',
+        value: 42,
+        context: {
+          ...context,
+          extensionId: '',
+          extension: '',
+        },
+      });
+
+      [command, data] = ReactGA.testModeAPI.calls[2];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'event',
+        // expect to use the new default category
+        eventCategory: 'app',
+        eventAction: 'click',
+        eventLabel: 'on something',
+        eventValue: 42,
       });
     });
 
@@ -556,14 +600,40 @@ describe('GoogleAnalytics', () => {
       api.captureEvent({
         action: 'navigate',
         subject: '/',
-        context: { ...context, extensionId: 'app', extension: '' },
+        context: {
+          ...context,
+          extensionId: 'app',
+          extension: '',
+        },
       });
 
-      const [command, data] = ReactGA.testModeAPI.calls[1];
+      let [command, data] = ReactGA.testModeAPI.calls[1];
       expect(command).toBe('send');
       expect(data).toMatchObject({
         hitType: 'pageview',
         page: '/',
+      });
+
+      api.captureEvent({
+        action: 'click',
+        subject: 'on something',
+        value: 42,
+        context: {
+          ...context,
+          extensionId: 'page:index',
+          extension: '',
+        },
+      });
+
+      [command, data] = ReactGA.testModeAPI.calls[2];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'event',
+        // expect use the new context extension id
+        eventCategory: 'page:index',
+        eventAction: 'click',
+        eventLabel: 'on something',
+        eventValue: 42,
       });
     });
   });
