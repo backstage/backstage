@@ -100,12 +100,6 @@ export function ScaffolderPageContextMenu(
               <ListItemText primary="Create" />
             </MenuItem>
           )}
-          {/* <MenuItem onClick={onCreateClicked}>
-            <ListItemIcon>
-              <CreateComponentIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Create" />
-          </MenuItem> */}
           {onEditorClicked && (
             <MenuItem onClick={onEditorClicked}>
               <ListItemIcon>
