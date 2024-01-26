@@ -40,9 +40,8 @@ export function readFilterConfig(config: Config):
   try {
     const field = config.getString('field') as keyof Visit;
     const operator = config.getString('operator');
-    const value =
-      config.getOptionalNumber('value') ?? config.getString('value');
-    if (isOperator(operator)) {
+    const value = getValue(config);
+    if (isOperator(operator) && value !== undefined) {
       return { field, operator, value };
     }
     return undefined;
@@ -50,6 +49,20 @@ export function readFilterConfig(config: Config):
     // invalid filter config - ignore filter
     return undefined;
   }
+}
+
+function getValue(config: Config) {
+  let value = undefined;
+  try {
+    value = config.getString('value');
+  } catch (error) {
+    try {
+      value = config.getNumber('value');
+    } catch {
+      // value is not string or number - ignore filter
+    }
+  }
+  return value;
 }
 
 /**
