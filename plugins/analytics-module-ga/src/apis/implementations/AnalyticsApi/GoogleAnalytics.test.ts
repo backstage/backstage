@@ -508,4 +508,63 @@ describe('GoogleAnalytics', () => {
       expect(lastData.queueTime).toBeUndefined();
     });
   });
+
+  describe('api backward compatibility', () => {
+    it('continue working with legacy App category', () => {
+      const api = GoogleAnalytics.fromConfig(basicValidConfig);
+
+      expect(api.captureEvent).toBeDefined();
+
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context,
+      });
+
+      const [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'pageview',
+        page: '/',
+      });
+    });
+
+    it('use lowercase app as the new default category', () => {
+      const api = GoogleAnalytics.fromConfig(basicValidConfig);
+
+      expect(api.captureEvent).toBeDefined();
+
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context: { ...context, extensionId: '', extension: '' },
+      });
+
+      const [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'pageview',
+        page: '/',
+      });
+    });
+
+    it('prioritize new context extension id over old extension property', () => {
+      const api = GoogleAnalytics.fromConfig(basicValidConfig);
+
+      expect(api.captureEvent).toBeDefined();
+
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context: { ...context, extensionId: 'app', extension: '' },
+      });
+
+      const [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'pageview',
+        page: '/',
+      });
+    });
+  });
 });
