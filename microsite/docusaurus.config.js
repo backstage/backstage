@@ -138,7 +138,7 @@ module.exports = {
           },
           {
             from: '/docs/getting-started/running-backstage-locally',
-            to: '/docs/getting-started/',
+            to: '/docs/getting-started/standalone-install',
           },
           {
             from: '/docs/features/software-templates/testing-scaffolder-alpha',
