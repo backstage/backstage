@@ -146,12 +146,12 @@ module.exports = {
           },
           {
             from: '/docs/auth/glossary',
-            to: '/docs/references/glossary'
+            to: '/docs/references/glossary',
           },
           {
             from: '/docs/overview/glossary',
-            to: '/docs/references/glossary'
-          }
+            to: '/docs/references/glossary',
+          },
         ],
       },
     ],
