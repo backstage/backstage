@@ -19308,12 +19308,12 @@ __metadata:
   linkType: hard
 
 "@types/tar@npm:^6.1.1":
-  version: 6.1.10
-  resolution: "@types/tar@npm:6.1.10"
+  version: 6.1.11
+  resolution: "@types/tar@npm:6.1.11"
   dependencies:
     "@types/node": "*"
     minipass: ^4.0.0
-  checksum: 82d46f1246e830b98833ed94fbdfbcb3ffb8a5d7173609622d56c9326124523a3cc541607876c63a6ab9117eb59fb37ef8a6284b194164ab1d1d8c03a8ba59c6
+  checksum: 9b79f61f9179db65ecd3f5e9c0d2152839ad13381d39c38c3a9408aa1f3a2b061ba195e7d758be1863294a0ce69df6659f0e3e09f440c9f5309bded58bc87c89
   languageName: node
   linkType: hard
 
