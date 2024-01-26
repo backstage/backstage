@@ -154,11 +154,11 @@ module.exports = {
           },
           {
             from: '/docs/getting-started/create-an-app',
-            to: '/docs/getting-started/standalone-install'
+            to: '/docs/getting-started/standalone-install',
           },
           {
             from: '/docs/getting-started/configuration',
-            to: '/docs/getting-started/standalone-install#next-steps'
+            to: '/docs/getting-started/standalone-install#next-steps',
           },
           {
             from: '/docs/getting-started',
