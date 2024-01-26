@@ -235,7 +235,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(result.current.entities.length).toBe(1);
     });
-    expect(result.current.count).toBe(1);
+    expect(result.current.totalItems).toBe(1);
 
     await expect(() =>
       waitFor(() => {
@@ -252,7 +252,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(result.current.backendEntities.length).toBeGreaterThan(0);
     });
-    expect(result.current.count).toBe(2);
+    expect(result.current.totalItems).toBe(2);
     expect(result.current.backendEntities.length).toBe(2);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
 
@@ -278,7 +278,7 @@ describe('<EntityListProvider />', () => {
     });
     expect(result.current.backendEntities.length).toBe(2);
 
-    expect(result.current.count).toBe(2);
+    expect(result.current.totalItems).toBe(2);
 
     mockCatalogApi.getEntities!.mockRejectedValueOnce('error');
     act(() => {
@@ -460,7 +460,7 @@ describe('<EntityListProvider pagination />', () => {
       });
     });
 
-    expect(result.current.count).toBe(10);
+    expect(result.current.totalItems).toBe(10);
   });
 
   it('returns an error on catalogApi failure', async () => {

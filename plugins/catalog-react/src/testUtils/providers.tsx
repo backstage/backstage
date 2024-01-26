@@ -71,7 +71,8 @@ export function MockEntityListContextProvider<
       loading: value?.loading ?? false,
       queryParameters: value?.queryParameters ?? defaultValues.queryParameters,
       error: value?.error,
-      count: (value?.entities ?? defaultValues.entities).length,
+      totalItems:
+        value?.totalItems ?? (value?.entities ?? defaultValues.entities).length,
     }),
     [value, defaultValues, filters, updateFilters],
   );

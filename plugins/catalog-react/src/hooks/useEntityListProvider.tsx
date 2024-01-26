@@ -109,7 +109,7 @@ export type EntityListContextProps<
     prev?: () => void;
   };
 
-  count?: number;
+  totalItems?: number;
 };
 
 /**
@@ -126,7 +126,7 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   entities: Entity[];
   backendEntities: Entity[];
   pageInfo?: QueryEntitiesResponse['pageInfo'];
-  count?: number;
+  totalItems?: number;
 };
 
 /**
@@ -226,7 +226,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               backendEntities: response.items,
               entities: response.items.filter(entityFilter),
               pageInfo: response.pageInfo,
-              count: response.totalItems,
+              totalItems: response.totalItems,
             });
           }
         } else {
@@ -247,7 +247,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               backendEntities: response.items,
               entities: response.items.filter(entityFilter),
               pageInfo: response.pageInfo,
-              count: response.totalItems,
+              totalItems: response.totalItems,
             });
           }
         }
@@ -272,7 +272,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             appliedFilters: requestedFilters,
             backendEntities: response.items,
             entities,
-            count: entities.length,
+            totalItems: entities.length,
           });
         } else {
           const entities = outputState.backendEntities.filter(entityFilter);
@@ -280,7 +280,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             appliedFilters: requestedFilters,
             backendEntities: outputState.backendEntities,
             entities,
-            count: entities.length,
+            totalItems: entities.length,
           });
         }
       }
@@ -361,7 +361,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       loading,
       error,
       pageInfo,
-      count: outputState.count,
+      totalItems: outputState.totalItems,
     }),
     [outputState, updateFilters, queryParameters, loading, error, pageInfo],
   );

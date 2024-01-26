@@ -142,7 +142,7 @@ describe('PaginatedCatalogTable', () => {
       <MockEntityListContextProvider
         value={{
           entities: data.map(e => e.entity),
-          count: data.length,
+          totalItems: data.length,
           filters: {
             kind: new EntityKindFilter('component'),
           },
