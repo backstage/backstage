@@ -4679,7 +4679,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-guest-provider@^0.0.0, @backstage/plugin-auth-backend-module-guest-provider@workspace:plugins/auth-backend-module-guest-provider":
+"@backstage/plugin-auth-backend-module-guest-provider@workspace:plugins/auth-backend-module-guest-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-guest-provider@workspace:plugins/auth-backend-module-guest-provider"
   dependencies:
@@ -4851,7 +4851,6 @@ __metadata:
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-gitlab-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-google-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-guest-provider": ^0.0.0
     "@backstage/plugin-auth-backend-module-microsoft-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-oauth2-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-oauth2-proxy-provider": "workspace:^"
@@ -27460,7 +27459,6 @@ __metadata:
     "@backstage/plugin-adr-backend": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
-    "@backstage/plugin-auth-backend-module-guest-provider": ^0.0.0
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-azure-devops-backend": "workspace:^"
     "@backstage/plugin-azure-sites-common": "workspace:^"
