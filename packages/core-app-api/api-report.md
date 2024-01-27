@@ -465,6 +465,26 @@ export class GoogleAuth {
 }
 
 // @public
+export class GuestAuth
+  implements ProfileInfoApi, BackstageIdentityApi, SessionApi
+{
+  // (undocumented)
+  static create(options: AuthApiCreateOptions): GuestAuth;
+  // (undocumented)
+  getBackstageIdentity(
+    options?: AuthRequestOptions,
+  ): Promise<BackstageIdentityResponse | undefined>;
+  // (undocumented)
+  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
+  // (undocumented)
+  sessionState$(): Observable<SessionState>;
+  // (undocumented)
+  signIn(): Promise<void>;
+  // (undocumented)
+  signOut(): Promise<void>;
+}
+
+// @public
 export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   // (undocumented)
   getRegisteredFlags(): FeatureFlag[];

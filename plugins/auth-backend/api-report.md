@@ -644,6 +644,21 @@ export const providers: Readonly<{
     ) => AuthProviderFactory_2;
     resolvers: never;
   }>;
+  guest: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<{}> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<{}>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory_2;
+    resolvers: never;
+  }>;
 }>;
 
 // @public @deprecated (undocumented)
