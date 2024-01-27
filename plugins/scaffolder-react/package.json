@@ -66,6 +66,7 @@
     "@types/json-schema": "^7.0.9",
     "@types/react": "^16.13.1 || ^17.0.0",
     "classnames": "^2.2.6",
+    "flatted": "3.2.9",
     "humanize-duration": "^3.25.1",
     "immer": "^9.0.1",
     "json-schema": "^0.4.0",
