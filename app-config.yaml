@@ -400,7 +400,7 @@ auth:
     myproxy:
       development: {}
     guest:
-      development:
+      development: {}
 
 costInsights:
   engineerCost: 200000
