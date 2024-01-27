@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './oauth2';
-export * from './okta';
-export * from './saml';
-export * from './microsoft';
-export * from './onelogin';
-export * from './bitbucket';
-export * from './bitbucketServer';
-export * from './atlassian';
-export * from './vmwareCloud';
-export * from './guest';
-export type { OAuthApiCreateOptions, AuthApiCreateOptions } from './types';
+import { ProfileTransform } from '@backstage/plugin-auth-node';
+
+export type GuestInfo = {
+  name: string;
+};
+
+export interface GuestAuthenticator {
+  defaultProfileTransform: ProfileTransform<GuestInfo>;
+}

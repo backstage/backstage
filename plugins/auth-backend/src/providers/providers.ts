@@ -30,6 +30,7 @@ import { oidc } from './oidc';
 import { okta } from './okta';
 import { onelogin } from './onelogin';
 import { saml } from './saml';
+import { guest } from './guest';
 import { bitbucketServer } from './bitbucketServer';
 import { easyAuth } from './azure-easyauth';
 import { AuthProviderFactory } from '@backstage/plugin-auth-node';
@@ -58,6 +59,7 @@ export const providers = Object.freeze({
   onelogin,
   saml,
   easyAuth,
+  guest,
 });
 
 /**
@@ -83,4 +85,5 @@ export const defaultAuthProviderFactories: {
   bitbucket: bitbucket.create(),
   bitbucketServer: bitbucketServer.create(),
   atlassian: atlassian.create(),
+  guest: guest.create(),
 };

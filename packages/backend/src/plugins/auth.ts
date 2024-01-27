@@ -141,6 +141,8 @@ export default async function createPlugin(
           },
         },
       }),
+
+      guest: providers.guest.create(),
     },
   });
 }

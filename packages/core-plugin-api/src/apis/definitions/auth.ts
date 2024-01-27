@@ -469,3 +469,15 @@ export const vmwareCloudAuthApiRef: ApiRef<
 > = createApiRef({
   id: 'core.auth.vmware-cloud',
 });
+
+/**
+ * Provides guest authentication support.
+ *
+ * @public
+ * @remarks
+ */
+export const guestAuthApiRef: ApiRef<
+  ProfileInfoApi & BackstageIdentityApi & SessionApi
+> = createApiRef({
+  id: 'core.auth.guest',
+});
