@@ -21,5 +21,4 @@
  */
 
 export { createGuestAuthProviderFactory } from './createGuestAuthFactory';
-export type { GuestInfo } from './types';
 export { authModuleGuestProvider as default } from './module';

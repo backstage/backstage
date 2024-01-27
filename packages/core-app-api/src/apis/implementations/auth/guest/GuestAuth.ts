@@ -41,7 +41,7 @@ const DEFAULT_PROVIDER = {
 };
 
 /**
- * Implements a guest auth flow.
+ * Implements a guest auth flow. Heavily based on SAML flow with added support for refreshing the token.
  *
  * @public
  */

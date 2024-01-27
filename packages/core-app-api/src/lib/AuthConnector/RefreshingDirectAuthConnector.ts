@@ -16,9 +16,15 @@
 
 import { DirectAuthConnector } from './DirectAuthConnector';
 
+/**
+ * Add support for refreshing direct tokens. Used for guest authentication.
+ */
 export class RefreshingDirectAuthConnector<
   DirectAuthResponse,
 > extends DirectAuthConnector<DirectAuthResponse> {
+  /**
+   * Pulled from DefaultAuthConnector and adapted for use with DirectAuthConnector.
+   */
   async refreshSession(): Promise<any> {
     const res = await fetch(
       `${await this.buildUrl('/refresh')}&optional=true`,

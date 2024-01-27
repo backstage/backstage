@@ -17,6 +17,12 @@
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { createSignInResolverFactory } from '@backstage/plugin-auth-node';
 
+/**
+ * Provide a default implementation of the user to resolve to. By default, this
+ *  is `user:default/guest`. We will attempt to get that user if they're in the
+ *  catalog. If that user doesn't exist in the catalog, we will still create a
+ *  token for them so they can keep viewing.
+ */
 export const guestResolver = createSignInResolverFactory({
   create() {
     return async (_, ctx) => {

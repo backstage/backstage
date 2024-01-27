@@ -28,6 +28,12 @@ import {
 
 export const providers = [
   {
+    id: 'guest-auth-provider',
+    title: 'Guest',
+    message: 'Sign in as a guest',
+    apiRef: guestAuthApiRef,
+  },
+  {
     id: 'google-auth-provider',
     title: 'Google',
     message: 'Sign In using Google',
@@ -74,11 +80,5 @@ export const providers = [
     title: 'Bitbucket Server',
     message: 'Sign In using Bitbucket Server',
     apiRef: bitbucketServerAuthApiRef,
-  },
-  {
-    id: 'guest-auth-provider',
-    title: 'Guest',
-    message: 'Sign in as a guest',
-    apiRef: guestAuthApiRef,
   },
 ];

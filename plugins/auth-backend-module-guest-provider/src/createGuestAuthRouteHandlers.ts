@@ -25,7 +25,6 @@ import {
   prepareBackstageIdentityResponse,
   sendWebMessageResponse,
 } from '@backstage/plugin-auth-node';
-import { GuestInfo } from './types';
 
 /** @public */
 export interface GuestAuthRouteHandlersOptions {
@@ -33,77 +32,61 @@ export interface GuestAuthRouteHandlersOptions {
   baseUrl: string;
   appUrl: string;
   resolverContext: AuthResolverContext;
-  signInResolver: SignInResolver<GuestInfo>;
-  profileTransform?: ProfileTransform<GuestInfo>;
+  signInResolver: SignInResolver<{}>;
+  profileTransform: ProfileTransform<{}>;
 }
-
-const DEFAULT_RESULT: GuestInfo = { name: 'Guest' };
 
 /** @public */
 export function createGuestAuthRouteHandlers(
   options: GuestAuthRouteHandlersOptions,
 ): AuthProviderRouteHandlers {
-  const { resolverContext, signInResolver, appUrl } = options;
+  const { resolverContext, signInResolver, appUrl, profileTransform } = options;
 
-  const defaultTransform: ProfileTransform<GuestInfo> = async result => {
+  const createGuestSession = async (): Promise<ClientAuthResponse<{}>> => {
+    const { profile } = await profileTransform({}, resolverContext);
+
+    const identity = await signInResolver(
+      { profile, result: {} },
+      resolverContext,
+    );
+
     return {
-      profile: {
-        displayName: result.name,
-      },
+      profile,
+      providerInfo: {},
+      backstageIdentity: prepareBackstageIdentityResponse(identity),
     };
   };
 
-  const profileTransform = options.profileTransform ?? defaultTransform;
   return {
     async start(_, res): Promise<void> {
       // We are the auth provider for guests, skip this step.
       res.redirect('handler/frame');
     },
 
+    /**
+     * This is where we create the token for the guest user. You can override the
+     *  entityRef for the guest user with `signInResolver`.
+     */
     async frameHandler(_, res): Promise<void> {
-      const { profile } = await profileTransform(
-        DEFAULT_RESULT,
-        resolverContext,
-      );
-      const response: ClientAuthResponse<GuestInfo> = {
-        profile,
-        providerInfo: DEFAULT_RESULT,
-      };
-      if (signInResolver) {
-        const identity = await signInResolver(
-          { profile, result: DEFAULT_RESULT },
-          resolverContext,
-        );
-        response.backstageIdentity = prepareBackstageIdentityResponse(identity);
-      }
+      const session = await createGuestSession();
       // post message back to popup if successful
       sendWebMessageResponse(res, appUrl, {
         type: 'authorization_response',
-        response,
+        response: session,
       });
     },
 
+    /**
+     * Support refreshing the guest user's token. This should just improve the experience of
+     *  browsing while in guest mode.
+     */
     async refresh(this: never, _: Request, res: Response): Promise<void> {
-      const { profile } = await profileTransform(
-        DEFAULT_RESULT,
-        resolverContext,
-      );
-
-      const identity = await signInResolver(
-        { profile, result: DEFAULT_RESULT },
-        resolverContext,
-      );
-
-      const response: ClientAuthResponse<{}> = {
-        profile,
-        providerInfo: DEFAULT_RESULT,
-        backstageIdentity: prepareBackstageIdentityResponse(identity),
-      };
-
-      res.status(200).json(response);
+      const session = await createGuestSession();
+      res.status(200).json(session);
     },
 
     async logout(_, res) {
+      // If we don't send a response or it gets cached into a 204, the page will hang.
       res.end();
     },
   };

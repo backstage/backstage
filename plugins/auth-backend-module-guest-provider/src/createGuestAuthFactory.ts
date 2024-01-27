@@ -21,17 +21,21 @@ import type {
   SignInResolver,
 } from '@backstage/plugin-auth-node';
 import { createGuestAuthRouteHandlers } from './createGuestAuthRouteHandlers';
-import { GuestInfo } from './types';
 import { guestResolver } from './resolvers';
+
+const defaultTransform: ProfileTransform<{}> = async () => {
+  return {
+    profile: {
+      displayName: 'Guest',
+    },
+  };
+};
 
 /** @public */
 export function createGuestAuthProviderFactory(options?: {
-  profileTransform?: ProfileTransform<GuestInfo>;
-  signInResolver?: SignInResolver<GuestInfo>;
-  signInResolverFactories?: Record<
-    string,
-    SignInResolverFactory<GuestInfo, unknown>
-  >;
+  profileTransform?: ProfileTransform<{}>;
+  signInResolver?: SignInResolver<{}>;
+  signInResolverFactories?: Record<string, SignInResolverFactory<{}, unknown>>;
 }): AuthProviderFactory {
   return ctx => {
     const signInResolver = options?.signInResolver ?? guestResolver();
@@ -41,6 +45,7 @@ export function createGuestAuthProviderFactory(options?: {
         `No sign-in resolver configured for guest auth provider '${ctx.providerId}'`,
       );
     }
+    const profileTransform = options?.profileTransform ?? defaultTransform;
 
     return createGuestAuthRouteHandlers({
       signInResolver,
@@ -48,7 +53,7 @@ export function createGuestAuthProviderFactory(options?: {
       appUrl: ctx.appUrl,
       config: ctx.config,
       resolverContext: ctx.resolverContext,
-      profileTransform: options?.profileTransform,
+      profileTransform,
     });
   };
 }

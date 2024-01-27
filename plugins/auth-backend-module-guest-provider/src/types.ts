@@ -16,10 +16,6 @@
 
 import { ProfileTransform } from '@backstage/plugin-auth-node';
 
-export type GuestInfo = {
-  name: string;
-};
-
 export interface GuestAuthenticator {
-  defaultProfileTransform: ProfileTransform<GuestInfo>;
+  defaultProfileTransform: ProfileTransform<{}>;
 }
