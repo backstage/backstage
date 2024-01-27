@@ -56,6 +56,7 @@ export function createGuestAuthRouteHandlers(
   const profileTransform = options.profileTransform ?? defaultTransform;
   return {
     async start(_, res): Promise<void> {
+      // We are the auth provider for guests, skip this step.
       res.redirect('handler/frame');
     },
 
@@ -66,9 +67,7 @@ export function createGuestAuthRouteHandlers(
       );
       const response: ClientAuthResponse<GuestInfo> = {
         profile,
-        providerInfo: {
-          name: 'Guest',
-        },
+        providerInfo: DEFAULT_RESULT,
       };
       if (signInResolver) {
         const identity = await signInResolver(
@@ -97,7 +96,7 @@ export function createGuestAuthRouteHandlers(
 
       const response: ClientAuthResponse<{}> = {
         profile,
-        providerInfo: {},
+        providerInfo: DEFAULT_RESULT,
         backstageIdentity: prepareBackstageIdentityResponse(identity),
       };
 

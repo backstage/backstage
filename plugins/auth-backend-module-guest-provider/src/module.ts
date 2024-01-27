@@ -17,11 +17,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import {
-  createOAuthProviderFactory,
-  commonSignInResolvers,
-  authProvidersExtensionPoint,
-} from '@backstage/plugin-auth-node';
+import { authProvidersExtensionPoint } from '@backstage/plugin-auth-node';
 import { createGuestAuthProviderFactory } from './createGuestAuthFactory';
 
 export const authModuleGuestProvider = createBackendModule({

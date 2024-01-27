@@ -70,7 +70,7 @@ export class DirectAuthConnector<DirectAuthResponse> {
     }
   }
 
-  private async buildUrl(path: string): Promise<string> {
+  protected async buildUrl(path: string): Promise<string> {
     const baseUrl = await this.discoveryApi.getBaseUrl('auth');
     return `${baseUrl}/${this.provider.id}${path}?env=${this.environment}`;
   }

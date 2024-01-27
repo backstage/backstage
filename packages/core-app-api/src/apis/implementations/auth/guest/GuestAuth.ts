@@ -24,10 +24,10 @@ import {
   BackstageIdentityResponse,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import { DirectAuthConnector } from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { AuthApiCreateOptions } from '../types';
+import { RefreshingDirectAuthConnector } from '../../../../lib/AuthConnector/RefreshingDirectAuthConnector';
 
 type GuestSession = {
   profile: ProfileInfo;
@@ -55,7 +55,7 @@ export default class GuestAuth
       provider = DEFAULT_PROVIDER,
     } = options;
 
-    const connector = new DirectAuthConnector<GuestSession>({
+    const connector = new RefreshingDirectAuthConnector<GuestSession>({
       discoveryApi,
       environment,
       provider,
