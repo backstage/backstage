@@ -2,7 +2,7 @@
 
 This module provides a guest auth provider implementation for `@backstage/plugin-auth-backend`. This is meant to supersede the existing `'guest'` option for authentication that does not emit tokens and is completely stored as frontend state.
 
-**NOTE**:
+**NOTE**: This provider should only ever be enabled for `development` or `test`. Enabling this for production is strongly discouraged as it would give everyone a way to bypass your other authentication methods.
 
 ## Installation
 

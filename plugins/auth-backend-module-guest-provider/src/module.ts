@@ -30,6 +30,11 @@ export const authModuleGuestProvider = createBackendModule({
         providers: authProvidersExtensionPoint,
       },
       async init({ providers }) {
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error(
+            'Guest provider does not support authenticating production workloads.',
+          );
+        }
         providers.registerProvider({
           providerId: 'guest',
           factory: createGuestAuthProviderFactory(),
