@@ -292,6 +292,7 @@ describe('createApp', () => {
           <api:core.auth.bitbucket-server out=[core.api.factory] />
           <api:core.auth.atlassian out=[core.api.factory] />
           <api:core.auth.vmware-cloud out=[core.api.factory] />
+          <api:core.auth.guest out=[core.api.factory] />
           <api:plugin.permission.api out=[core.api.factory] />
         ]
       </app>"
