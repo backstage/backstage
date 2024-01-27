@@ -55,7 +55,7 @@ export const azureDevOpsPullRequestPage = createPageExtension({
 });
 
 /** @alpha */
-export const entityAzurePipelinesContent = createEntityContentExtension({
+export const azureDevOpsPipelinesEntityContent = createEntityContentExtension({
   name: 'pipelines',
   defaultPath: '/pipelines',
   defaultTitle: 'Pipelines',
@@ -66,7 +66,7 @@ export const entityAzurePipelinesContent = createEntityContentExtension({
 });
 
 /** @alpha */
-export const entityAzureGitTagsContent = createEntityContentExtension({
+export const azureDevOpsGitTagsEntityContent = createEntityContentExtension({
   name: 'git-tags',
   defaultPath: '/git-tags',
   defaultTitle: 'Git Tags',
@@ -77,18 +77,19 @@ export const entityAzureGitTagsContent = createEntityContentExtension({
 });
 
 /** @alpha */
-export const entityAzurePullRequestsContent = createEntityContentExtension({
-  name: 'pull-requests',
-  defaultPath: '/pull-requests',
-  defaultTitle: 'Pull Requests',
-  loader: () =>
-    import('../components/EntityPageAzurePullRequests').then(m =>
-      compatWrapper(<m.EntityPageAzurePullRequests />),
-    ),
-});
+export const azureDevOpsPullRequestsEntityContent =
+  createEntityContentExtension({
+    name: 'pull-requests',
+    defaultPath: '/pull-requests',
+    defaultTitle: 'Pull Requests',
+    loader: () =>
+      import('../components/EntityPageAzurePullRequests').then(m =>
+        compatWrapper(<m.EntityPageAzurePullRequests />),
+      ),
+  });
 
 /** @alpha */
-export const entityAzureReadmeCard = createEntityCardExtension({
+export const azureDevOpsReadmeEntityCard = createEntityCardExtension({
   name: 'readme',
   loader: async () =>
     import('../components/ReadmeCard').then(m =>
@@ -101,10 +102,10 @@ export default createPlugin({
   id: 'azure-devops',
   extensions: [
     azureDevOpsApi,
-    entityAzureReadmeCard,
-    entityAzurePipelinesContent,
-    entityAzureGitTagsContent,
-    entityAzurePullRequestsContent,
+    azureDevOpsReadmeEntityCard,
+    azureDevOpsPipelinesEntityContent,
+    azureDevOpsGitTagsEntityContent,
+    azureDevOpsPullRequestsEntityContent,
     azureDevOpsPullRequestPage,
   ],
 });
