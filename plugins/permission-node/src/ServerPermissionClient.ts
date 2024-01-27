@@ -29,6 +29,7 @@ import {
   PolicyDecision,
   QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
+import { decodeJwt } from 'jose';
 
 /**
  * A thin wrapper around
@@ -103,10 +104,12 @@ export class ServerPermissionClient implements PermissionEvaluator {
     if (!token) {
       return false;
     }
-    return this.tokenManager
-      .authenticate(token)
-      .then(() => true)
-      .catch(() => false);
+    const { sub } = decodeJwt(token);
+    if (sub !== 'backstage-server') {
+      return false;
+    }
+    await this.tokenManager.authenticate(token);
+    return true;
   }
 
   private async isEnabled(token?: string) {

@@ -24,6 +24,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
+import { UnsecuredJWT } from 'jose';
 import {
   getVoidLogger,
   PluginEndpointDiscovery,
@@ -59,6 +60,11 @@ const config = new ConfigReader({
   backend: { auth: { keys: [{ secret: 'a-secret-key' }] } },
 });
 const logger = getVoidLogger();
+
+const userToken = new UnsecuredJWT().encode();
+const invalidServerToken = new UnsecuredJWT()
+  .setSubject('backstage-server')
+  .encode();
 
 describe('ServerPermissionClient', () => {
   setupRequestMockHandlers(server);
@@ -129,10 +135,26 @@ describe('ServerPermissionClient', () => {
       });
 
       await client.authorize([{ permission: testBasicPermission }], {
-        token: 'a-user-token',
+        token: userToken,
       });
 
       expect(mockAuthorizeHandler).toHaveBeenCalled();
+    });
+
+    it('should throw errors earlier if server token is invalid', async () => {
+      const tokenManager = ServerTokenManager.fromConfig(config, { logger });
+      const client = ServerPermissionClient.fromConfig(config, {
+        discovery,
+        tokenManager,
+      });
+
+      await expect(
+        client.authorize([{ permission: testBasicPermission }], {
+          token: invalidServerToken,
+        }),
+      ).rejects.toThrow(/Invalid server token/);
+
+      expect(mockAuthorizeHandler).not.toHaveBeenCalled();
     });
   });
 
@@ -194,11 +216,27 @@ describe('ServerPermissionClient', () => {
       await client.authorizeConditional(
         [{ permission: testResourcePermission }],
         {
-          token: 'a-user-token',
+          token: userToken,
         },
       );
 
       expect(mockAuthorizeHandler).toHaveBeenCalled();
+    });
+
+    it('should throw errors earlier if server token is invalid', async () => {
+      const tokenManager = ServerTokenManager.fromConfig(config, { logger });
+      const client = ServerPermissionClient.fromConfig(config, {
+        discovery,
+        tokenManager,
+      });
+
+      await expect(
+        client.authorizeConditional([{ permission: testResourcePermission }], {
+          token: invalidServerToken,
+        }),
+      ).rejects.toThrow(/Invalid server token/);
+
+      expect(mockAuthorizeHandler).not.toHaveBeenCalled();
     });
   });
 });
