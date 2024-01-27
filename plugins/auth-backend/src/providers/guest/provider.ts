@@ -16,7 +16,6 @@
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { AuthHandler, SignInResolver } from '../types';
 import { createGuestAuthProviderFactory } from '@backstage/plugin-auth-backend-module-guest-provider';
-import { GuestInfo } from '@backstage/plugin-auth-backend-module-guest-provider';
 
 /**
  * Auth provider integration for Google auth
@@ -29,7 +28,7 @@ export const guest = createAuthProviderIntegration({
      * The profile transformation function used to verify and convert the auth response
      * into the profile that will be presented to the user.
      */
-    authHandler?: AuthHandler<GuestInfo>;
+    authHandler?: AuthHandler<{}>;
 
     /**
      * Configure sign-in for this provider, without it the provider can not be used to sign users in.
@@ -38,7 +37,7 @@ export const guest = createAuthProviderIntegration({
       /**
        * Maps an auth result to a Backstage identity for the user.
        */
-      resolver: SignInResolver<GuestInfo>;
+      resolver: SignInResolver<{}>;
     };
   }) {
     return createGuestAuthProviderFactory({
