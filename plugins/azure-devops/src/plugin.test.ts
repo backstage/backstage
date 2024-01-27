@@ -13,10 +13,102 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { azureDevOpsPlugin } from './plugin';
+import { Entity } from '@backstage/catalog-model';
+import { azureDevOpsPlugin, isAzurePipelinesAvailable } from './plugin';
 
 describe('azure-devops', () => {
   it('should export plugin', () => {
     expect(azureDevOpsPlugin).toBeDefined();
+  });
+
+  describe('isAzurePipelinesAvailable', () => {
+    it('should be true when project-repo annotation is present', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'sample',
+          annotations: {
+            'dev.azure.com/project-repo': 'projectName/repoName',
+          },
+        },
+      };
+      expect(isAzurePipelinesAvailable(entity)).toBe(true);
+    });
+
+    it('should be true when project and build-definition annotation is present', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'sample',
+          annotations: {
+            'dev.azure.com/project': 'projectName',
+            'dev.azure.com/build-definition': 'buildDefinitionName',
+          },
+        },
+      };
+      expect(isAzurePipelinesAvailable(entity)).toBe(true);
+    });
+
+    it('should be true when project-repo and build-definition annotation is present', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'sample',
+          annotations: {
+            'dev.azure.com/project-repo': 'projectName/repoName',
+            'dev.azure.com/build-definition': 'buildDefinitionName',
+          },
+        },
+      };
+      expect(isAzurePipelinesAvailable(entity)).toBe(true);
+    });
+
+    it('should be false when no annotations are present', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'sample',
+        },
+      };
+      expect(isAzurePipelinesAvailable(entity)).toBe(false);
+    });
+
+    it('should be false when only project annotation is present', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'sample',
+          annotations: {
+            'dev.azure.com/project': 'projectName',
+          },
+        },
+      };
+      expect(isAzurePipelinesAvailable(entity)).toBe(false);
+    });
+
+    it('should be false when only build-definition annotation is present', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'sample',
+          annotations: {
+            'dev.azure.com/build-definition': 'buildDefinitionName',
+          },
+        },
+      };
+      expect(isAzurePipelinesAvailable(entity)).toBe(false);
+    });
   });
 });

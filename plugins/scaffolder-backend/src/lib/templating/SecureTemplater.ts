@@ -34,6 +34,7 @@ const { render, renderCompat } = (() => {
 
   const env = module.exports.configure({
     autoescape: false,
+    ...JSON.parse(nunjucksConfigs),
     tags: {
       variableStart: '\${{',
       variableEnd: '}}',
@@ -42,6 +43,7 @@ const { render, renderCompat } = (() => {
 
   const compatEnv = module.exports.configure({
     autoescape: false,
+    ...JSON.parse(nunjucksConfigs),
     tags: {
       variableStart: '{{',
       variableEnd: '}}',
@@ -102,13 +104,14 @@ export type TemplateFilter = _TemplateFilter;
  */
 export type TemplateGlobal = _TemplateGlobal;
 
-export interface SecureTemplaterOptions {
+interface SecureTemplaterOptions {
   /* Enables jinja compatibility and the "jsonify" filter */
   cookiecutterCompat?: boolean;
   /* Extra user-provided nunjucks filters */
   templateFilters?: Record<string, TemplateFilter>;
   /* Extra user-provided nunjucks globals */
   templateGlobals?: Record<string, TemplateGlobal>;
+  nunjucksConfigs?: { trimBlocks?: boolean; lstripBlocks?: boolean };
 }
 
 export type SecureTemplateRenderer = (
@@ -122,6 +125,7 @@ export class SecureTemplater {
       cookiecutterCompat,
       templateFilters = {},
       templateGlobals = {},
+      nunjucksConfigs = {},
     } = options;
 
     const isolate = new Isolate({ memoryLimit: 128 });
@@ -139,6 +143,8 @@ export class SecureTemplater {
     const nunjucksScript = await isolate.compileScript(
       mkScript(nunjucksSource),
     );
+
+    await contextGlobal.set('nunjucksConfigs', JSON.stringify(nunjucksConfigs));
 
     const availableFilters = Object.keys(templateFilters);
 

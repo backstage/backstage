@@ -976,6 +976,17 @@ export type IconComponent = ComponentType<
     }
 >;
 
+// @public
+export interface IconsApi {
+  // (undocumented)
+  getIcon(key: string): IconComponent | undefined;
+  // (undocumented)
+  listIconKeys(): string[];
+}
+
+// @public
+export const iconsApiRef: ApiRef<IconsApi>;
+
 export { IdentityApi };
 
 export { identityApiRef };
@@ -1067,6 +1078,26 @@ export interface RouteRef<
   // (undocumented)
   readonly T: TParams;
 }
+
+// @public (undocumented)
+export interface RouteResolutionApi {
+  // (undocumented)
+  resolve<TParams extends AnyRouteRefParams>(
+    anyRouteRef:
+      | RouteRef<TParams>
+      | SubRouteRef<TParams>
+      | ExternalRouteRef<TParams, any>,
+    options?: RouteResolutionApiResolveOptions,
+  ): RouteFunc<TParams> | undefined;
+}
+
+// @public
+export const routeResolutionApiRef: ApiRef<RouteResolutionApi>;
+
+// @public (undocumented)
+export type RouteResolutionApiResolveOptions = {
+  sourcePath?: string;
+};
 
 export { SessionApi };
 

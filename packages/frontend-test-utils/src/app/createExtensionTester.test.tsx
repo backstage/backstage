@@ -63,8 +63,8 @@ describe('createExtensionTester', () => {
       factory: () => ({ path: '/foo' }),
     });
     const tester = createExtensionTester(extension);
-    expect(() => tester.render()).toThrow(
-      "Failed to instantiate extension 'app/routes', input 'routes' did not receive required extension data 'core.reactElement' from extension 'test'",
+    expect(() => tester.render()).toThrowErrorMatchingInlineSnapshot(
+      `"Failed to instantiate extension 'app/routes', extension 'test' could not be attached because its output data ('core.routing.path') does not match what the input 'routes' requires ('core.routing.path', 'core.reactElement')"`,
     );
   });
 

@@ -307,7 +307,7 @@ describe('TestBackend', () => {
         ],
       }),
     ).rejects.toThrow(
-      "Extension point registered for plugin 'testA' may not be used by module for plugin 'testB'",
+      "Illegal dependency: Module 'test' for plugin 'testB' attempted to depend on extension point 'a' for plugin 'testA'. Extension points can only be used within their plugin's scope.",
     );
   });
 

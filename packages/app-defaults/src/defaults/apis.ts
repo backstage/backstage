@@ -224,7 +224,7 @@ export const apis = [
         configApi,
         discoveryApi,
         oauthRequestApi,
-        defaultScopes: ['team'],
+        defaultScopes: ['account'],
         environment: configApi.getOptionalString('auth.environment'),
       }),
   }),

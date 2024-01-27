@@ -29,6 +29,7 @@ export const OUTPUT_PATH = 'src/generated';
 export const OPENAPI_IGNORE_FILES = [
   // Get rid of the default files.
   '*.md',
+  '*.mustache',
   // The rest of these have to be explicit, otherwise they get added if this was a *.*
   'apis/baseapi.ts',
   'apis/exception.ts',

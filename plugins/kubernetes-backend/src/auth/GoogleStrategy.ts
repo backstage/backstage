@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { AuthenticationStrategy, KubernetesCredential } from './types';
-import { ClusterDetails } from '../types/types';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
+import {
+  AuthMetadata,
+  AuthenticationStrategy,
+  ClusterDetails,
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 
 /**
  *
@@ -35,7 +39,12 @@ export class GoogleStrategy implements AuthenticationStrategy {
     }
     return { type: 'bearer token', token: token as string };
   }
+
   public validateCluster(): Error[] {
     return [];
+  }
+
+  public presentAuthMetadata(_authMetadata: AuthMetadata): AuthMetadata {
+    return {};
   }
 }

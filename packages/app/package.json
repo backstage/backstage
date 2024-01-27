@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.91",
+  "version": "0.2.92-next.0",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -73,6 +73,7 @@
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/plugin-sentry": "workspace:^",
     "@backstage/plugin-shortcuts": "workspace:^",
+    "@backstage/plugin-signals": "workspace:^",
     "@backstage/plugin-stack-overflow": "workspace:^",
     "@backstage/plugin-stackstorm": "workspace:^",
     "@backstage/plugin-tech-insights": "workspace:^",
@@ -88,7 +89,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
-    "@oriflame/backstage-plugin-score-card": "^0.7.0",
+    "@oriflame/backstage-plugin-score-card": "^0.8.0",
     "@roadiehq/backstage-plugin-buildkite": "^2.0.8",
     "@roadiehq/backstage-plugin-github-insights": "^2.0.5",
     "@roadiehq/backstage-plugin-github-pull-requests": "^2.2.7",
@@ -102,7 +103,7 @@
     "react-use": "^17.2.4",
     "vite": "^4.4.9",
     "vite-plugin-html": "^3.2.0",
-    "vite-plugin-node-polyfills": "^0.17.0",
+    "vite-plugin-node-polyfills": "^0.19.0",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {

@@ -81,7 +81,7 @@ export interface Options {
 export interface Substitutions {
   COMMIT_SHA: string;
   SHORT_SHA: string;
-  BRANCH_NAME: string;
+  REF_NAME: string;
   REPO_NAME: string;
   REVISION_ID: string;
 }

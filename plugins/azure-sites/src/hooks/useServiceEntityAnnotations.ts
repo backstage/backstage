@@ -15,8 +15,8 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { AZURE_WEB_SITE_NAME_ANNOTATION } from '@backstage/plugin-azure-sites-common';
 
-export const AZURE_WEB_SITE_NAME_ANNOTATION = 'azure.com/microsoft-web-sites';
 export const useServiceEntityAnnotations = (entity: Entity) => {
   const webSiteName =
     entity?.metadata.annotations?.[AZURE_WEB_SITE_NAME_ANNOTATION] ?? '';

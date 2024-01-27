@@ -65,7 +65,7 @@ export type SerializedTask = {
  *
  * @public
  */
-export type TaskEventType = 'completion' | 'log' | 'cancelled';
+export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 
 /**
  * SerializedTaskEvent
@@ -130,6 +130,8 @@ export interface TaskBroker {
   cancel?(taskId: string): Promise<void>;
 
   claim(): Promise<TaskContext>;
+
+  recoverTasks?(): Promise<void>;
 
   dispatch(
     options: TaskBrokerDispatchOptions,

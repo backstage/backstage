@@ -1,5 +1,19 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.25-next.0
+
+### Patch Changes
+
+- c1bc331: Fixes a bug that made the API return questions not related to the tags provided
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/plugin-home-react@0.1.8-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/plugin-search-react@1.7.6-next.0
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.1.24
 
 ### Patch Changes

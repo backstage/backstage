@@ -139,6 +139,7 @@ export interface KubernetesClustersSupplier {
  */
 export type KubernetesCredential =
   | { type: 'bearer token'; token: string }
+  | { type: 'x509 client certificate'; cert: string; key: string }
   | { type: 'anonymous' };
 
 /**
@@ -151,6 +152,7 @@ export interface AuthenticationStrategy {
     authConfig: KubernetesRequestAuth,
   ): Promise<KubernetesCredential>;
   validateCluster(authMetadata: AuthMetadata): Error[];
+  presentAuthMetadata(authMetadata: AuthMetadata): AuthMetadata;
 }
 
 /**
@@ -180,7 +182,7 @@ export type KubernetesObjectTypes =
  * @public
  */
 export interface ObjectToFetch {
-  objectType: KubernetesObjectTypes; // TODO - Review
+  objectType: KubernetesObjectTypes;
   group: string;
   apiVersion: string;
   plural: string;

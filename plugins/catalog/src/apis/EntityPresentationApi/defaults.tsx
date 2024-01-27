@@ -18,33 +18,30 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { defaultEntityPresentation } from '@backstage/plugin-catalog-react';
 import { HumanDuration } from '@backstage/types';
 import ApartmentIcon from '@material-ui/icons/Apartment';
-import BusinessIcon from '@material-ui/icons/Business';
+import CategoryIcon from '@material-ui/icons/Category';
 import ExtensionIcon from '@material-ui/icons/Extension';
-import HelpIcon from '@material-ui/icons/Help';
-import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
+import FeaturedPlayListIcon from '@material-ui/icons/FeaturedPlayList';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import MemoryIcon from '@material-ui/icons/Memory';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
-import WorkIcon from '@material-ui/icons/Work';
+import StorageIcon from '@material-ui/icons/Storage';
 import { DefaultEntityPresentationApiRenderer } from './DefaultEntityPresentationApi';
 
 export const DEFAULT_CACHE_TTL: HumanDuration = { seconds: 10 };
 
 export const DEFAULT_BATCH_DELAY: HumanDuration = { milliseconds: 50 };
 
-export const UNKNOWN_KIND_ICON: IconComponent = HelpIcon;
-
 export const DEFAULT_ICONS: Record<string, IconComponent> = {
   api: ExtensionIcon,
   component: MemoryIcon,
-  system: BusinessIcon,
-  resource: WorkIcon,
+  system: CategoryIcon,
+  resource: StorageIcon,
   domain: ApartmentIcon,
   location: LocationOnIcon,
   user: PersonIcon,
   group: PeopleIcon,
-  template: LibraryAddIcon,
+  template: FeaturedPlayListIcon,
 };
 
 export function createDefaultRenderer(options: {

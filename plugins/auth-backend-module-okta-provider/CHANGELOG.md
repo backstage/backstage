@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-okta-provider
 
+## 0.0.3-next.0
+
+### Patch Changes
+
+- cd5114c: Added missing `additionalScopes` option to configuration schema.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.4-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+
 ## 0.0.2
 
 ### Patch Changes

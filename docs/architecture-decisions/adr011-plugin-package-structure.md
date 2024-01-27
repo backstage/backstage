@@ -7,8 +7,7 @@ description: Architecture Decision Record (ADR) for Plugin Package Structure
 
 ## Context
 
-A core feature of Backstage is the extensibility via plugins. The Backstage
-repository is open for contributions of plugins. Even most of the core features
+A core feature of Backstage is the extensibility via plugins. Even most of the core features
 are implemented as plugins. A plugin consists of one or multiple packages in the
 `plugins/` directory. Up till now, we have a simple conventions for naming
 plugin packages: Plugins are named `x`, with the option of having a related

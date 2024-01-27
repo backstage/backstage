@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { AuthenticationStrategy, KubernetesCredential } from './types';
-import { AuthMetadata, ClusterDetails } from '../types';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
+import {
+  AuthMetadata,
+  AuthenticationStrategy,
+  ClusterDetails,
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 
 /**
  *
@@ -66,5 +70,9 @@ export class DispatchStrategy implements AuthenticationStrategy {
       ];
     }
     return strategy.validateCluster(authMetadata);
+  }
+
+  public presentAuthMetadata(_authMetadata: AuthMetadata): AuthMetadata {
+    return {};
   }
 }

@@ -1,5 +1,19 @@
 # @backstage/plugin-azure-devops
 
+## 0.3.12-next.0
+
+### Patch Changes
+
+- 995d280: Updated imports from named to default imports to help with the Material UI v4 to v5 migration
+- cb0afaa: Prefer `dev.azure.com/build-definition` annotation when it is provided, as it is more specific than `dev.azure.com/project-repo`. This can also be used as a filter for mono-repos.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-azure-devops-common@0.3.2
+
 ## 0.3.11
 
 ### Patch Changes

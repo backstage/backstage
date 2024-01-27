@@ -333,10 +333,7 @@ export class GithubUrlReader implements UrlReader {
       // GitHub returns a 403 response with a couple of headers indicating rate
       // limit status. See more in the GitHub docs:
       // https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
-      if (
-        response.status === 403 &&
-        response.headers.get('X-RateLimit-Remaining') === '0'
-      ) {
+      if (this.integration.parseRateLimitInfo(response).isRateLimited) {
         message += ' (rate limit exceeded)';
       }
 

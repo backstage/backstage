@@ -21,3 +21,4 @@
  */
 
 export * from './actions';
+export { bitbucketModule as default } from './module';

@@ -9,6 +9,36 @@ for these tools.
 
 ### Adding the plugin to your `packages/backend`
 
+Install dependencies
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-explore-backend
+```
+
+Add feature
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-explore-backend'));
+```
+
+Config:
+
+```yaml
+explore:
+  tools:
+    - title: New Relic
+      description: new relic plugin
+      url: /newrelic
+      image: https://i.imgur.com/L37ikrX.jpg
+      tags:
+        - newrelic
+        - proxy
+        - nerdGraph
+```
+
+### Adding the plugin to your `packages/backend` (old)
+
 #### Tools as Config
 
 Install dependencies

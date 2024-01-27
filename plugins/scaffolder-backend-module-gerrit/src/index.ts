@@ -21,3 +21,4 @@
  */
 
 export * from './actions';
+export { gerritModule as default } from './module';

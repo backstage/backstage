@@ -28,9 +28,8 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 ```
 
-Now your plugin should be visible as a tab at the top of the entity pages,
-specifically for components that are of the type `website`.
-However, it warns of a missing `bitrise.io/app` annotation.
+Your plugin should now appear as a tab at the top of entity pages, particularly for `website` component types.
+However, it alerts you to a missing `bitrise.io/app` annotation.
 
 Add the annotation to your component [catalog-info.yaml](https://github.com/backstage/backstage/blob/master/catalog-info.yaml) as shown in the highlighted example below:
 
@@ -51,4 +50,4 @@ proxy:
       Authorization: ${BITRISE_AUTH_TOKEN}
 ```
 
-Learn on https://devcenter.bitrise.io/api/authentication how to create a new Bitrise token.
+Learn how to generate a new Bitrise token at https://devcenter.bitrise.io/api/authentication.

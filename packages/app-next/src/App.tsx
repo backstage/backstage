@@ -51,8 +51,6 @@ import {
 import { createSignInPageExtension } from '@backstage/frontend-plugin-api';
 import { SignInPage } from '@backstage/core-components';
 
-import linguistPlugin from '@backstage/plugin-linguist/alpha';
-
 /*
 
 # Notes
@@ -127,7 +125,6 @@ const app = createApp({
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
-    linguistPlugin,
     ...collectedLegacyPlugins,
     createExtensionOverrides({
       extensions: [

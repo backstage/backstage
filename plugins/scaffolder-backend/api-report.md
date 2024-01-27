@@ -20,6 +20,7 @@ import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
+import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
@@ -40,6 +41,7 @@ import { TaskBrokerDispatchResult as TaskBrokerDispatchResult_2 } from '@backsta
 import { TaskCompletionState as TaskCompletionState_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskContext as TaskContext_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskEventType as TaskEventType_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -175,6 +177,8 @@ export function createFetchTemplateAction(options: {
     copyWithoutTemplating?: string[] | undefined;
     cookiecutterCompat?: boolean | undefined;
     replace?: boolean | undefined;
+    trimBlocks?: boolean | undefined;
+    lstripBlocks?: boolean | undefined;
   },
   JsonObject
 >;
@@ -266,6 +270,7 @@ export const createPublishGithubPullRequestAction: (
     teamReviewers?: string[] | undefined;
     commitMessage?: string | undefined;
     update?: boolean | undefined;
+    forceFork?: boolean | undefined;
   },
   JsonObject
 >;
@@ -400,7 +405,12 @@ export class DatabaseTaskStore implements TaskStore {
   listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: {
       taskId: string;
+      recovery?: TaskRecovery;
     }[];
+  }>;
+  // (undocumented)
+  recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<{
+    ids: string[];
   }>;
   // (undocumented)
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
@@ -434,6 +444,8 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   // (undocumented)
   identity?: IdentityApi;
+  // (undocumented)
+  lifecycle?: LifecycleService;
   // (undocumented)
   logger: Logger;
   // (undocumented)
@@ -552,6 +564,10 @@ export interface TaskStore {
     }[];
   }>;
   // (undocumented)
+  recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<{
+    ids: string[];
+  }>;
+  // (undocumented)
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
@@ -580,6 +596,11 @@ export type TaskStoreListEventsOptions = {
 };
 
 // @public
+export type TaskStoreRecoverTaskOptions = {
+  timeout: HumanDuration;
+};
+
+// @public
 export type TaskStoreShutDownTaskOptions = {
   taskId: string;
 };
@@ -591,9 +612,13 @@ export class TaskWorker {
   // (undocumented)
   protected onReadyToClaimTask(): Promise<void>;
   // (undocumented)
+  recoverTasks(): Promise<void>;
+  // (undocumented)
   runOneTask(task: TaskContext): Promise<void>;
   // (undocumented)
   start(): void;
+  // (undocumented)
+  stop(): void;
 }
 
 // @public @deprecated (undocumented)

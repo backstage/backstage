@@ -26,7 +26,6 @@ import {
   DialogContentText,
   List,
   ListItem,
-  ListItemIcon,
   makeStyles,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -35,7 +34,6 @@ import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../../api';
 import { EntityRefLink } from '../../EntityRefLink';
 import { KeyValueListItem, ListItemText } from './common';
-import { EntityKindIcon } from './EntityKindIcon';
 
 const useStyles = makeStyles({
   root: {
@@ -90,9 +88,6 @@ function EntityList(props: { entities: Entity[]; header?: [string, string] }) {
       {props.header && <KeyValueListItem key="header" entry={props.header} />}
       {props.entities.map(entity => (
         <ListItem key={stringifyEntityRef(entity)}>
-          <ListItemIcon>
-            <EntityKindIcon kind={entity.kind} />
-          </ListItemIcon>
           <ListItemText primary={<EntityRefLink entityRef={entity} />} />
         </ListItem>
       ))}

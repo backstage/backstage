@@ -134,3 +134,123 @@ export async function commitAndPushRepo(input: {
 
   return { commitHash };
 }
+
+/**
+ * @public
+ */
+export async function cloneRepo(options: {
+  url: string;
+  dir: string;
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
+  logger?: Logger | undefined;
+  ref?: string | undefined;
+  depth?: number | undefined;
+  noCheckout?: boolean | undefined;
+}): Promise<void> {
+  const { url, dir, auth, logger, ref, depth, noCheckout } = options;
+
+  const git = Git.fromAuth({
+    ...auth,
+    logger,
+  });
+
+  await git.clone({ url, dir, ref, depth, noCheckout });
+}
+
+/**
+ * @public
+ */
+export async function createBranch(options: {
+  dir: string;
+  ref: string;
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
+  logger?: Logger | undefined;
+}): Promise<void> {
+  const { dir, ref, auth, logger } = options;
+  const git = Git.fromAuth({
+    ...auth,
+    logger,
+  });
+
+  await git.checkout({ dir, ref });
+}
+
+/**
+ * @public
+ */
+export async function addFiles(options: {
+  dir: string;
+  filepath: string;
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
+  logger?: Logger | undefined;
+}): Promise<void> {
+  const { dir, filepath, auth, logger } = options;
+  const git = Git.fromAuth({
+    ...auth,
+    logger,
+  });
+
+  await git.add({ dir, filepath });
+}
+
+/**
+ * @public
+ */
+export async function commitAndPushBranch(options: {
+  dir: string;
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
+  logger?: Logger | undefined;
+  commitMessage: string;
+  gitAuthorInfo?: { name?: string; email?: string };
+  branch?: string;
+  remoteRef?: string;
+  remote?: string;
+}): Promise<{ commitHash: string }> {
+  const {
+    dir,
+    auth,
+    logger,
+    commitMessage,
+    gitAuthorInfo,
+    branch = 'master',
+    remoteRef,
+    remote = 'origin',
+  } = options;
+  const git = Git.fromAuth({
+    ...auth,
+    logger,
+  });
+
+  // use provided info if possible, otherwise use fallbacks
+  const authorInfo = {
+    name: gitAuthorInfo?.name ?? 'Scaffolder',
+    email: gitAuthorInfo?.email ?? 'scaffolder@backstage.io',
+  };
+
+  const commitHash = await git.commit({
+    dir,
+    message: commitMessage,
+    author: authorInfo,
+    committer: authorInfo,
+  });
+
+  await git.push({
+    dir,
+    remote,
+    remoteRef: remoteRef ?? `refs/heads/${branch}`,
+  });
+
+  return { commitHash };
+}

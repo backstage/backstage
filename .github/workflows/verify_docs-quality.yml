@@ -30,6 +30,6 @@ jobs:
         with:
           # This also contains --config=.github/vale/config.ini ... :/
           files: '${{ steps.generate.outputs.args }}'
-          version: 2.30.0 # TODO: migrate to v3
+          version: latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
