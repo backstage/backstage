@@ -20,6 +20,7 @@ import {
 import { authProvidersExtensionPoint } from '@backstage/plugin-auth-node';
 import { createGuestAuthProviderFactory } from './createGuestAuthFactory';
 
+/** @public */
 export const authModuleGuestProvider = createBackendModule({
   pluginId: 'auth',
   moduleId: 'guest-provider',

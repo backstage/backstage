@@ -26,7 +26,6 @@ import {
   sendWebMessageResponse,
 } from '@backstage/plugin-auth-node';
 
-/** @public */
 export interface GuestAuthRouteHandlersOptions {
   config: Config;
   baseUrl: string;
@@ -36,7 +35,6 @@ export interface GuestAuthRouteHandlersOptions {
   profileTransform: ProfileTransform<{}>;
 }
 
-/** @public */
 export function createGuestAuthRouteHandlers(
   options: GuestAuthRouteHandlersOptions,
 ): AuthProviderRouteHandlers {
