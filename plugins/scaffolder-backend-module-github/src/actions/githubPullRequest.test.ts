@@ -687,4 +687,57 @@ describe('createPublishGithubPullRequestAction', () => {
       });
     });
   });
+
+  describe('with force fork', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        forceFork: true,
+      };
+
+      mockDir.setContent({
+        [workspacePath]: { 'file.txt': 'Hello there!' },
+      });
+
+      ctx = {
+        createTemporaryDirectory: jest.fn(),
+        output: jest.fn(),
+        logger: getRootLogger(),
+        logStream: new Writable(),
+        input,
+        workspacePath,
+      };
+    });
+
+    it('creates a pull request', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+          },
+        ],
+        forceFork: true,
+      });
+    });
+  });
 });

@@ -248,53 +248,49 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
-      try {
-        const { headers, type: tokenType } =
-          await this.options.githubCredentialsProvider.getCredentials({
-            url: `${this.options.githubUrl}/${org}`,
-          });
-        const client = graphql.defaults({
-          baseUrl: this.options.gitHubConfig.apiBaseUrl,
-          headers,
+      const { headers, type: tokenType } =
+        await this.options.githubCredentialsProvider.getCredentials({
+          url: `${this.options.githubUrl}/${org}`,
         });
+      const client = graphql.defaults({
+        baseUrl: this.options.gitHubConfig.apiBaseUrl,
+        headers,
+      });
 
-        logger.info(`Reading GitHub users and teams for org: ${org}`);
+      logger.info(`Reading GitHub users and teams for org: ${org}`);
 
-        const { users } = await getOrganizationUsers(
-          client,
-          org,
-          tokenType,
-          this.options.userTransformer,
-        );
+      const { users } = await getOrganizationUsers(
+        client,
+        org,
+        tokenType,
+        this.options.userTransformer,
+      );
 
-        const { teams } = await getOrganizationTeams(
-          client,
-          org,
-          this.defaultMultiOrgTeamTransformer.bind(this),
-        );
+      const { teams } = await getOrganizationTeams(
+        client,
+        org,
+        this.defaultMultiOrgTeamTransformer.bind(this),
+      );
 
-        // Grab current users from `allUsersMap` if they already exist in our
-        // pending users so we can append to their group membership relations
-        const pendingUsers = users.map(u => {
-          const userRef = stringifyEntityRef(u);
-          if (!allUsersMap.has(userRef)) {
-            allUsersMap.set(userRef, u);
-          }
-
-          return allUsersMap.get(userRef);
-        });
-
-        if (areGroupEntities(teams)) {
-          buildOrgHierarchy(teams);
-          if (areUserEntities(pendingUsers)) {
-            assignGroupsToUsers(pendingUsers, teams);
-          }
+      // Grab current users from `allUsersMap` if they already exist in our
+      // pending users so we can append to their group membership relations
+      const pendingUsers = users.map(u => {
+        const userRef = stringifyEntityRef(u);
+        if (!allUsersMap.has(userRef)) {
+          allUsersMap.set(userRef, u);
         }
 
-        allTeams.push(...teams);
-      } catch (e) {
-        logger.error(`Failed to read GitHub org data for ${org}: ${e}`);
+        return allUsersMap.get(userRef);
+      });
+
+      if (areGroupEntities(teams)) {
+        buildOrgHierarchy(teams);
+        if (areUserEntities(pendingUsers)) {
+          assignGroupsToUsers(pendingUsers, teams);
+        }
       }
+
+      allTeams.push(...teams);
     }
 
     const allUsers = Array.from(allUsersMap.values());

@@ -31,17 +31,22 @@ import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/res
 
 /** @internal */
 export function resolveAppNodeSpecs(options: {
-  features: FrontendFeature[];
-  builtinExtensions: Extension<unknown>[];
-  parameters: Array<ExtensionParameters>;
+  features?: FrontendFeature[];
+  builtinExtensions?: Extension<unknown>[];
+  parameters?: Array<ExtensionParameters>;
   forbidden?: Set<string>;
 }): AppNodeSpec[] {
-  const { builtinExtensions, parameters, forbidden = new Set() } = options;
+  const {
+    builtinExtensions = [],
+    parameters = [],
+    forbidden = new Set(),
+    features = [],
+  } = options;
 
-  const plugins = options.features.filter(
+  const plugins = features.filter(
     (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
   );
-  const overrides = options.features.filter(
+  const overrides = features.filter(
     (f): f is ExtensionOverrides =>
       f.$$type === '@backstage/ExtensionOverrides',
   );

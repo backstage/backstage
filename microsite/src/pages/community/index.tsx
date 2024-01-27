@@ -36,11 +36,6 @@ const Community = () => {
       label: 'Community newsletter',
       link: 'https://info.backstage.spotify.com/newsletter_subscribe',
     },
-    {
-      content: 'Join the',
-      label: 'Twitter community',
-      link: 'https://twitter.com/i/communities/1494019781716062215',
-    },
   ];
 
   const officialInitiatives: ICollectionItem[] = [
@@ -58,45 +53,11 @@ const Community = () => {
       link: 'https://info.backstage.spotify.com/newsletter_subscribe',
       label: 'Subscribe',
     },
-    {
-      title: 'Contributor Spotlight',
-      content:
-        "A recognition for valuable community work. Nominate contributing members for their efforts! We'll put them in the spotlight ❤️",
-      link: '/nominate',
-      label: 'Nominate now',
-    },
-  ];
-
-  const communityInitiatives: ICollectionItem[] = [
-    {
-      title: 'Open Mic Meetup',
-      content: (
-        <>
-          A casual get together of Backstage users sharing their experiences and
-          helping each other. Hosted by{' '}
-          <Link to="https://roadie.io/">Roadie.io</Link> and{' '}
-          <Link to="https://frontside.com/">Frontside Software</Link>.
-        </>
-      ),
-      link: 'https://backstage-openmic.com/',
-      label: 'Learn more',
-    },
-    {
-      title: 'Backstage Weekly Newsletter',
-      content: (
-        <>
-          A weekly newsletter with news, updates and things community from your
-          friends at <Link to="https://roadie.io/">Roadie.io</Link>.
-        </>
-      ),
-      link: 'https://roadie.io/backstage-weekly/',
-      label: 'Learn more',
-    },
   ];
 
   const trainingNCertifications: ICollectionItem[] = [
     {
-      title: 'Open Mic Meetup',
+      title: 'Introduction to Backstage: Developer Portals Made Easy (LFS142x)',
       content:
         'This is a course produced and curated by the Linux Foundation. This course introduces you to Backstage and how to get started with the project.',
       link: 'https://training.linuxfoundation.org/training/introduction-to-backstage-developer-portals-made-easy-lfs142x/',
@@ -198,30 +159,6 @@ const Community = () => {
                   ]}
                 >
                   {content}
-                </ContentBlock>
-              ),
-            )}
-          </BannerSectionGrid>
-        </BannerSection>
-
-        <BannerSection diagonalBorder greyBackground>
-          <BannerSectionGrid
-            header={<h2 className="text--primary">Community initiatives</h2>}
-          >
-            {communityInitiatives.map(
-              ({ title, content, link, label }, index) => (
-                <ContentBlock
-                  key={index}
-                  title={title}
-                  hasBulletLine
-                  actionButtons={[
-                    {
-                      link,
-                      label,
-                    },
-                  ]}
-                >
-                  <p>{content}</p>
                 </ContentBlock>
               ),
             )}
