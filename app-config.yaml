@@ -401,8 +401,7 @@ auth:
       development: {}
     guest:
       development:
-        clientId: t123
-        clientSecret: test123
+
 costInsights:
   engineerCost: 200000
   engineerThreshold: 0.5
