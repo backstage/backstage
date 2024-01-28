@@ -21,6 +21,9 @@ import {
 import { Handler } from 'express';
 import PromiseRouter from 'express-promise-router';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
+import { authenticationMiddlewareFactory } from './middleware';
+import { cookieMiddlewareFactory } from './middleware/cookieMiddlewareFactory';
+import cookieParser from 'cookie-parser';
 
 /**
  * @public
@@ -40,10 +43,28 @@ export const httpRouterServiceFactory = createServiceFactory(
       plugin: coreServices.pluginMetadata,
       lifecycle: coreServices.lifecycle,
       rootHttpRouter: coreServices.rootHttpRouter,
+      identity: coreServices.identity,
+      tokenManager: coreServices.tokenManager,
+      config: coreServices.rootConfig,
     },
-    async factory({ plugin, rootHttpRouter, lifecycle }) {
+    async factory({
+      plugin,
+      rootHttpRouter,
+      lifecycle,
+      identity,
+      tokenManager,
+      config,
+    }) {
       const getPath = options?.getPath ?? (id => `/api/${id}`);
       const path = getPath(plugin.getId());
+      const authenticate = authenticationMiddlewareFactory(
+        identity,
+        tokenManager,
+      );
+
+      const cookieInserter = cookieMiddlewareFactory(
+        config.getString('backend.baseUrl'),
+      );
 
       const router = PromiseRouter();
       rootHttpRouter.use(path, router);
@@ -52,7 +73,13 @@ export const httpRouterServiceFactory = createServiceFactory(
 
       return {
         use(handler: Handler) {
+          router.use(authenticate, handler);
+        },
+        useWithoutAuthentication(handler: Handler) {
           router.use(handler);
+        },
+        useWithCookieAuthentication(handler: Handler) {
+          router.use(cookieParser(), cookieInserter, authenticate, handler);
         },
       };
     },

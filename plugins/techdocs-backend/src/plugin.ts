@@ -90,7 +90,7 @@ export const techdocsPlugin = createBackendPlugin({
         await publisher.getReadiness();
 
         const cacheManager = cacheToPluginCacheManager(cache);
-        http.use(
+        http.useWithCookieAuthentication(
           await createRouter({
             logger: winstonLogger,
             cache: cacheManager,

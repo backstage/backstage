@@ -66,20 +66,17 @@ export type TechDocsReaderPageContentProps = {
   onReady?: () => void;
 };
 
-/**
- * Renders the reader page content
- * @public
- */
-export const TechDocsReaderPageContent = withTechDocsReaderProvider(
+export const TechDocsReaderPageStaticContent = withTechDocsReaderProvider(
   (props: TechDocsReaderPageContentProps) => {
     const { withSearch = true, onReady } = props;
     const classes = useStyles();
 
     const {
-      entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
+      entityMetadata: { value: entityMetadata },
       entityRef,
       setShadowRoot,
     } = useTechDocsReaderPage();
+
     const dom = useTechDocsReaderDom(entityRef);
     const path = window.location.pathname;
     const hash = window.location.hash;
@@ -107,10 +104,6 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
       },
       [setShadowRoot, onReady],
     );
-
-    // No entity metadata = 404. Don't render content at all.
-    if (entityMetadataLoading === false && !entityMetadata)
-      return <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />;
 
     // Do not return content until dom is ready; instead, render a state
     // indicator, which handles progress and content errors on our behalf.
@@ -149,6 +142,28 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
         </Grid>
       </Content>
     );
+  },
+);
+
+/**
+ * Renders the reader page content
+ * @public
+ */
+export const TechDocsReaderPageContent = withTechDocsReaderProvider(
+  (props: TechDocsReaderPageContentProps) => {
+    const {
+      entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
+    } = useTechDocsReaderPage();
+
+    if (entityMetadataLoading) {
+      return <TechDocsStateIndicator />;
+    }
+
+    // No entity metadata = 404. Don't render content at all.
+    if (entityMetadataLoading === false && !entityMetadata)
+      return <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />;
+
+    return <TechDocsReaderPageStaticContent {...props} />;
   },
 );
 

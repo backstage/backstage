@@ -75,7 +75,7 @@ export const authPlugin = createBackendPlugin({
           providerFactories: Object.fromEntries(providers),
           disableDefaultProviderFactories: true,
         });
-        httpRouter.use(router);
+        httpRouter.useWithoutAuthentication(router);
       },
     });
   },
