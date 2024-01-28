@@ -64,16 +64,7 @@ describe('httpRouterFactory', () => {
         getPath: id => `/some/${id}/path`,
       }),
       {
-        dependencies: [
-          rootHttpRouter.factory,
-          mockServices.rootConfig.factory({
-            data: {
-              backend: {
-                baseUrl: 'http://localhost:3000',
-              },
-            },
-          }),
-        ],
+        dependencies: [rootHttpRouter.factory],
       },
     );
 

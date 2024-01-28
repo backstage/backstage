@@ -62,9 +62,7 @@ export const httpRouterServiceFactory = createServiceFactory(
         tokenManager,
       );
 
-      const cookieInserter = cookieMiddlewareFactory(
-        config.getString('backend.baseUrl'),
-      );
+      const cookieInserter = cookieMiddlewareFactory(config);
 
       const router = PromiseRouter();
       rootHttpRouter.use(path, router);

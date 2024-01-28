@@ -18,6 +18,7 @@ import { NextFunction, Request, Response } from 'express';
 import { decodeJwt } from 'jose';
 import { URL } from 'url';
 import lzstring from 'lz-string';
+import { Config } from '@backstage/config';
 
 function setTokenCookie(
   res: Response,
@@ -39,10 +40,11 @@ function setTokenCookie(
   }
 }
 
-export const cookieMiddlewareFactory = (baseUrl: string) => {
-  const secure = baseUrl.startsWith('https://');
-  const cookieDomain = new URL(baseUrl).hostname;
+export const cookieMiddlewareFactory = (config: Config) => {
   return (req: Request, res: Response, next: NextFunction) => {
+    const baseUrl = config.getString('backend.baseUrl');
+    const secure = baseUrl.startsWith('https://');
+    const cookieDomain = new URL(baseUrl).hostname;
     // Token cookies are compressed to reduce size
     const cookieToken = lzstring.decompressFromEncodedURIComponent(
       req.cookies.token ?? '',
