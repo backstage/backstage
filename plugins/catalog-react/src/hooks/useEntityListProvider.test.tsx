@@ -338,7 +338,11 @@ describe('<EntityListProvider pagination />', () => {
         orderFields,
         fullTextFilter: {
           term: '2',
-          fields: ['metadata.name', 'metadata.title'],
+          fields: [
+            'metadata.name',
+            'metadata.title',
+            'spec.profile.displayName',
+          ],
         },
       });
     });
