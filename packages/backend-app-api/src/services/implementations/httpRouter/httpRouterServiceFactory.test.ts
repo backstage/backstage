@@ -19,14 +19,28 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 import { httpRouterServiceFactory } from './httpRouterServiceFactory';
+import { HttpRouterService } from '@backstage/backend-plugin-api';
 
 describe('httpRouterFactory', () => {
-  it('should register plugin paths', async () => {
-    const rootHttpRouter = mockServices.rootHttpRouter.mock();
-    const tester = ServiceFactoryTester.from(httpRouterServiceFactory, {
-      dependencies: [rootHttpRouter.factory],
-    });
+  let tester: ServiceFactoryTester<HttpRouterService, 'plugin'>;
+  let rootHttpRouter: ReturnType<typeof mockServices.rootHttpRouter.mock>;
 
+  beforeEach(() => {
+    rootHttpRouter = mockServices.rootHttpRouter.mock();
+    tester = ServiceFactoryTester.from(httpRouterServiceFactory, {
+      dependencies: [
+        rootHttpRouter.factory,
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost:3000',
+            },
+          },
+        }),
+      ],
+    });
+  });
+  it('should register plugin paths', async () => {
     const router1 = await tester.get('test1');
     router1.use(() => {});
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
@@ -45,12 +59,22 @@ describe('httpRouterFactory', () => {
   });
 
   it('should use custom path generator', async () => {
-    const rootHttpRouter = mockServices.rootHttpRouter.mock();
-    const tester = ServiceFactoryTester.from(
+    tester = ServiceFactoryTester.from(
       httpRouterServiceFactory({
         getPath: id => `/some/${id}/path`,
       }),
-      { dependencies: [rootHttpRouter.factory] },
+      {
+        dependencies: [
+          rootHttpRouter.factory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                baseUrl: 'http://localhost:3000',
+              },
+            },
+          }),
+        ],
+      },
     );
 
     const router1 = await tester.get('test1');
