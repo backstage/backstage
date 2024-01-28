@@ -226,6 +226,10 @@ export interface ExtensionPointConfig {
 export interface HttpRouterService {
   // (undocumented)
   use(handler: Handler): void;
+  // (undocumented)
+  useWithCookieAuthentication(handler: Handler): void;
+  // (undocumented)
+  useWithoutAuthentication(handler: Handler): void;
 }
 
 // @public (undocumented)

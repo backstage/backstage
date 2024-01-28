@@ -13,7 +13,7 @@ export default catalogModuleUnprocessedEntities;
 
 // @public
 export class UnprocessedEntitiesModule {
-  constructor(database: Knex, router: HttpRouterService);
+  constructor(database: Knex, router: Pick<HttpRouterService, 'use'>);
   // (undocumented)
   registerRoutes(): void;
 }
