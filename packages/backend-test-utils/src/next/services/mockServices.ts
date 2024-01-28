@@ -182,6 +182,8 @@ export namespace mockServices {
     export const factory = httpRouterServiceFactory;
     export const mock = simpleMock(coreServices.httpRouter, () => ({
       use: jest.fn(),
+      useWithCookieAuthentication: jest.fn(),
+      useWithoutAuthentication: jest.fn(),
     }));
   }
   export namespace rootHttpRouter {

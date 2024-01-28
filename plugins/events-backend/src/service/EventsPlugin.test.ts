@@ -16,6 +16,7 @@
 
 import { errorHandler } from '@backstage/backend-common';
 import {
+  HttpRouterService,
   coreServices,
   createBackendModule,
   createServiceFactory,
@@ -78,7 +79,7 @@ describe('eventPlugin', () => {
         createServiceFactory({
           service: coreServices.httpRouter,
           deps: {},
-          factory: async () => httpRouter,
+          factory: async () => httpRouter as any as HttpRouterService,
         }),
       ],
     });

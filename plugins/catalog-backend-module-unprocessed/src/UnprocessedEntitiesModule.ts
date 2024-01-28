@@ -35,7 +35,7 @@ export class UnprocessedEntitiesModule {
 
   constructor(
     private readonly database: Knex,
-    private readonly router: HttpRouterService,
+    private readonly router: Pick<HttpRouterService, 'use'>,
   ) {
     this.moduleRouter = Router();
     this.router.use(this.moduleRouter);
