@@ -15,7 +15,7 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
-  name: sennyeya
+  name: breanna.davison
 spec:
   profile:
     # Intentional no displayName for testing
