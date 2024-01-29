@@ -28,6 +28,20 @@ import Router from 'express-promise-router';
 import { errorHandler, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import express from 'express';
+import { InputError, NotAllowedError } from '@backstage/errors';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import {
+  PermissionEvaluator,
+  AuthorizeResult,
+} from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import {
+  azureDevOpsPullRequestReadPermission,
+  azureDevOpsPermissions,
+  azureDevOpsPullRequestDashboardReadPermission,
+  azureDevOpsGitTagReadPermission,
+  azureDevOpsPipelineReadPermission,
+} from '@backstage/plugin-azure-devops-common';
 
 const DEFAULT_TOP = 10;
 
@@ -37,13 +51,18 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   reader: UrlReader;
+  permissions: PermissionEvaluator;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, reader, config } = options;
+  const { logger, reader, config, permissions } = options;
+
+  const permissionIntegrationRouter = createPermissionIntegrationRouter({
+    permissions: azureDevOpsPermissions,
+  });
 
   const azureDevOpsApi =
     options.azureDevOpsApi ||
@@ -54,6 +73,8 @@ export async function createRouter(
 
   const router = Router();
   router.use(express.json());
+
+  router.use(permissionIntegrationRouter);
 
   router.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok' });
@@ -109,6 +130,33 @@ export async function createRouter(
     const { projectName, repoName } = req.params;
     const host = req.query.host?.toString();
     const org = req.query.org?.toString();
+
+    const entityRef = req.query.entityRef?.toString();
+    if (typeof entityRef !== 'string') {
+      throw new InputError('Invalid entityRef, not a string');
+    }
+
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.header('authorization'),
+    );
+    const decision = (
+      await permissions.authorize(
+        [
+          {
+            permission: azureDevOpsGitTagReadPermission,
+            resourceRef: entityRef,
+          },
+        ],
+        {
+          token,
+        },
+      )
+    )[0];
+
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
+
     const gitTags = await azureDevOpsApi.getGitTags(
       projectName,
       repoName,
@@ -132,6 +180,32 @@ export async function createRouter(
       top: top,
       status: status,
     };
+
+    const entityRef = req.query.entityRef?.toString();
+    if (typeof entityRef !== 'string') {
+      throw new InputError('Invalid entityRef, not a string');
+    }
+
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.header('authorization'),
+    );
+    const decision = (
+      await permissions.authorize(
+        [
+          {
+            permission: azureDevOpsPullRequestReadPermission,
+            resourceRef: entityRef,
+          },
+        ],
+        {
+          token,
+        },
+      )
+    )[0];
+
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
 
     const gitPullRequest = await azureDevOpsApi.getPullRequests(
       projectName,
@@ -157,6 +231,26 @@ export async function createRouter(
       top: top,
       status: status,
     };
+
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.header('authorization'),
+    );
+    const decision = (
+      await permissions.authorize(
+        [
+          {
+            permission: azureDevOpsPullRequestDashboardReadPermission,
+          },
+        ],
+        {
+          token,
+        },
+      )
+    )[0];
+
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
 
     const pullRequests: DashboardPullRequest[] =
       await pullRequestsDashboardProvider.getDashboardPullRequests(
@@ -195,6 +289,33 @@ export async function createRouter(
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
     const host = req.query.host?.toString();
     const org = req.query.org?.toString();
+
+    const entityRef = req.query.entityRef?.toString();
+    if (typeof entityRef !== 'string') {
+      throw new InputError('Invalid entityRef, not a string');
+    }
+
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.header('authorization'),
+    );
+    const decision = (
+      await permissions.authorize(
+        [
+          {
+            permission: azureDevOpsPipelineReadPermission,
+            resourceRef: entityRef,
+          },
+        ],
+        {
+          token,
+        },
+      )
+    )[0];
+
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
+
     const builds = await azureDevOpsApi.getBuildRuns(
       projectName,
       top,
@@ -233,6 +354,33 @@ export async function createRouter(
     }
 
     const { projectName, repoName } = req.params;
+
+    const entityRef = req.query.entityRef?.toString();
+    if (typeof entityRef !== 'string') {
+      throw new InputError('Invalid entityRef, not a string');
+    }
+
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.header('authorization'),
+    );
+    const decision = (
+      await permissions.authorize(
+        [
+          {
+            permission: azureDevOpsPullRequestReadPermission,
+            resourceRef: entityRef,
+          },
+        ],
+        {
+          token,
+        },
+      )
+    )[0];
+
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
+
     const readme = await azureDevOpsApi.getReadme(
       host,
       org,
