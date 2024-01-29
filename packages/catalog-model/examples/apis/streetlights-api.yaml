@@ -6,7 +6,7 @@ metadata:
   tags:
     - mqtt
   links:
-    - url: https://github.com/asyncapi/spec/master/examples/streetlights-mqtt-asyncapi.ymlhttps://github.com/asyncapi/spec/blob/master/examples/streetlights-mqtt-asyncapi.yml
+    - url: https://github.com/asyncapi/spec/blob/master/examples/streetlights-mqtt-asyncapi.yml
       title: Source Code
       icon: code
 spec:
