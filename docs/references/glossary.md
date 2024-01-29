@@ -183,7 +183,7 @@ Refers to: OAuth 2.0, a standard protocol for authorization. See [oauth.net/2/](
 
 ## OpenID Connect
 
-A layer on top of [OAuth](#oauth) which standardises authentication. See [en.wikipedia.org/wiki/OpenID_Connect](https://en.wikipedia.org/wiki/OpenID_Connect).
+A layer on top of [OAuth](#oauth) which standardises authentication. See [the Wikipedia article](https://en.wikipedia.org/wiki/OpenID_Connect) for more details.
 
 ## OSS
 
@@ -195,7 +195,7 @@ A package in the Node.js ecosystem, often published to a [package registry](#pac
 
 ## Package Registry
 
-A service that hosts packages. The most prominent example is [NPM](https://www.npmjs.com/).
+A service that hosts [packages](#package). The most prominent example is [NPM](https://www.npmjs.com/).
 
 ## Package Role
 
@@ -247,7 +247,7 @@ An abstraction layer between a search engine and the [Backstage Search](#search)
 
 ## Refresh Token
 
-A string that an [OAuth](#oauth) client can use to get a new access token.
+A special token that an [OAuth](#oauth) client can use to get a new [access token](#access-token) when the latter expires.
 
 https://oauth.net/2/refresh-tokens/
 
@@ -263,7 +263,7 @@ See [User Role](#User-Role).
 
 ## Scope
 
-A string that describes a certain type of access that can be granted to a user using OAuth.
+A string that describes a certain type of access that can be granted to a user using OAuth, usually in conjunction with [access tokens](#access-token).
 
 ## Search
 
@@ -307,4 +307,4 @@ A purpose for which a [user role](#User-Role) interacts with Backstage. Related 
 
 ## User Role
 
-A class of Backspace user for purposes of analyzing [use cases](#use-case). One of: evaluator; administrator; developer; integrator; and contributor.
+A class of Backstage user for purposes of analyzing [use cases](#use-case). One of: evaluator; administrator; developer; integrator; and contributor.
