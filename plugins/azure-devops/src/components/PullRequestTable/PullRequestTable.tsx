@@ -21,6 +21,7 @@ import {
   ResponseErrorPanel,
   Table,
   TableColumn,
+  EmptyState,
 } from '@backstage/core-components';
 import {
   PullRequest,
@@ -33,6 +34,7 @@ import { DateTime } from 'luxon';
 import { PullRequestStatusButtonGroup } from '../PullRequestStatusButtonGroup';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { usePullRequests } from '../../hooks/usePullRequests';
+import { isAuthorizationError } from '../../utils';
 
 const columns: TableColumn[] = [
   {
@@ -104,6 +106,15 @@ export const PullRequestTable = ({ defaultLimit }: PullRequestTableProps) => {
   );
 
   if (error) {
+    if (isAuthorizationError(error)) {
+      return (
+        <EmptyState
+          missing="data"
+          title="No Pull Requests to show"
+          description="You are not authorized!"
+        />
+      );
+    }
     return <ResponseErrorPanel error={error} />;
   }
 

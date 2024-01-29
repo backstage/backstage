@@ -28,6 +28,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 
 import { useReadme } from '../../hooks';
+import { isAuthorizationError } from '../../utils';
 
 const useStyles = makeStyles(theme => ({
   readMe: {
@@ -63,7 +64,15 @@ function isNotFoundError(error: any): boolean {
 }
 
 const ReadmeCardError = ({ error }: ErrorProps) => {
-  if (isNotFoundError(error))
+  if (isAuthorizationError(error)) {
+    return (
+      <EmptyState
+        title="No README available for this entity"
+        missing="field"
+        description="You are not authorized!"
+      />
+    );
+  } else if (isNotFoundError(error)) {
     return (
       <EmptyState
         title="No README available for this entity"
@@ -80,6 +89,7 @@ const ReadmeCardError = ({ error }: ErrorProps) => {
         }
       />
     );
+  }
   return <ErrorPanel title={error.message} error={error} />;
 };
 

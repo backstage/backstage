@@ -20,6 +20,7 @@ import {
   ResponseErrorPanel,
   Table,
   TableColumn,
+  EmptyState,
 } from '@backstage/core-components';
 import { GitTag } from '@backstage/plugin-azure-devops-common';
 import React from 'react';
@@ -27,6 +28,7 @@ import React from 'react';
 import { AzureGitTagsIcon } from '../AzureGitTagsIcon';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useGitTags } from '../../hooks/useGitTags';
+import { isAuthorizationError } from '../../utils';
 
 const columns: TableColumn[] = [
   {
@@ -64,6 +66,15 @@ export const GitTagTable = () => {
   const { items, loading, error } = useGitTags(entity);
 
   if (error) {
+    if (isAuthorizationError(error)) {
+      return (
+        <EmptyState
+          missing="data"
+          title="No Tags to show"
+          description="You are not authorized!"
+        />
+      );
+    }
     return <ResponseErrorPanel error={error} />;
   }
 
