@@ -28,6 +28,7 @@ import {
   useEntityList,
 } from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
+import { reduceBackendCatalogFilters } from '../../utils';
 
 /** @public */
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
@@ -96,13 +97,9 @@ export function EntityAutocompletePicker<
     const facet = path;
     const { facets } = await catalogApi.getEntityFacets({
       facets: [facet],
-      filter: availableValuesFilters
-        .map(f =>
-          f && typeof f.getCatalogFilters === 'function'
-            ? f.getCatalogFilters()
-            : {},
-        )
-        .reduce((a, b) => ({ ...a, ...b }), {}),
+      filter: reduceBackendCatalogFilters(
+        availableValuesFilters.filter(Boolean) as EntityFilter[],
+      ),
     });
 
     return Object.fromEntries(
