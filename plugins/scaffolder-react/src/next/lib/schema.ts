@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject } from '@backstage/types';
+import { stringify, parse } from 'flatted';
 import { FieldValidation, UiSchema } from '@rjsf/utils';
 
 function isObject(value: unknown): value is JsonObject {
@@ -123,7 +124,7 @@ export const extractSchemaFromStep = (
   inputStep: JsonObject,
 ): { uiSchema: UiSchema; schema: JsonObject } => {
   const uiSchema: UiSchema = {};
-  const returnSchema: JsonObject = JSON.parse(JSON.stringify(inputStep));
+  const returnSchema: JsonObject = parse(stringify(inputStep));
   extractUiSchema(returnSchema, uiSchema);
   return { uiSchema, schema: returnSchema };
 };

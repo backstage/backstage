@@ -8422,6 +8422,7 @@ __metadata:
     "@types/luxon": ^3.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     classnames: ^2.2.6
+    flatted: 3.2.9
     humanize-duration: ^3.25.1
     immer: ^9.0.1
     json-schema: ^0.4.0
@@ -27532,10 +27533,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flatted@npm:^3.1.0":
-  version: 3.1.1
-  resolution: "flatted@npm:3.1.1"
-  checksum: 508935e3366d95444131f0aaa801a4301f24ea5bcb900d12764e7335b46b910730cc1b5bcfcfb8eccb7c8db261ba0671c6a7ca30d10870ff7a7756dc7e731a7a
+"flatted@npm:3.2.9, flatted@npm:^3.1.0":
+  version: 3.2.9
+  resolution: "flatted@npm:3.2.9"
+  checksum: f14167fbe26a9d20f6fca8d998e8f1f41df72c8e81f9f2c9d61ed2bea058248f5e1cbd05e7f88c0e5087a6a0b822a1e5e2b446e879f3cfbe0b07ba2d7f80b026
   languageName: node
   linkType: hard
 
