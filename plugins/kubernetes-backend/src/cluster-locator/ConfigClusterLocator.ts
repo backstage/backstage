@@ -35,12 +35,17 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
     config: Config,
     authStrategy: AuthenticationStrategy,
   ): ConfigClusterLocator {
+    const clusterNames = new Set();
     return new ConfigClusterLocator(
       config.getConfigArray('clusters').map(c => {
         const authMetadataBlock = c.getOptional<{
           [ANNOTATION_KUBERNETES_AUTH_PROVIDER]?: string;
         }>('authMetadata');
         const name = c.getString('name');
+        if (clusterNames.has(name)) {
+          throw new Error(`Duplicate cluster name '${name}'`);
+        }
+        clusterNames.add(name);
         const authProvider =
           authMetadataBlock?.[ANNOTATION_KUBERNETES_AUTH_PROVIDER] ??
           c.getOptionalString('authProvider');
