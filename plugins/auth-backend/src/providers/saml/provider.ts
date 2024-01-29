@@ -15,12 +15,12 @@
  */
 
 import express from 'express';
-import { SamlConfig } from 'passport-saml/lib/passport-saml/types';
+import { SamlConfig } from '@node-saml/passport-saml';
 import {
   Strategy as SamlStrategy,
   Profile as SamlProfile,
   VerifyWithoutRequest,
-} from 'passport-saml';
+} from '@node-saml/passport-saml';
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
@@ -62,17 +62,22 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
     this.resolverContext = options.resolverContext;
-    this.strategy = new SamlStrategy({ ...options }, ((
-      fullProfile: SamlProfile,
-      done: PassportDoneCallback<SamlAuthResult>,
-    ) => {
-      // TODO: There's plenty more validation and profile handling to do here,
-      //       this provider is currently only intended to validate the provider pattern
-      //       for non-oauth auth flows.
-      // TODO: This flow doesn't issue an identity token that can be used to validate
-      //       the identity of the user in other backends, which we need in some form.
-      done(undefined, { fullProfile });
-    }) as VerifyWithoutRequest);
+    this.strategy = new SamlStrategy(
+      { ...options },
+      ((
+        fullProfile: SamlProfile,
+        done: PassportDoneCallback<SamlAuthResult>,
+      ) => {
+        // TODO: There's plenty more validation and profile handling to do here,
+        //       this provider is currently only intended to validate the provider pattern
+        //       for non-oauth auth flows.
+        // TODO: This flow doesn't issue an identity token that can be used to validate
+        //       the identity of the user in other backends, which we need in some form.
+        done(undefined, { fullProfile });
+      }) as VerifyWithoutRequest,
+      // TODO: Validate logout
+      () => {},
+    );
   }
 
   async start(req: express.Request, res: express.Response): Promise<void> {
