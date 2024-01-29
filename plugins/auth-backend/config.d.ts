@@ -18,6 +18,12 @@ export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
     /**
+     * Whether to enable authentication by default.
+     *
+     * @default false
+     */
+    enforceAuthentication?: boolean;
+    /**
      * The 'environment' attribute
      * @visibility frontend
      */

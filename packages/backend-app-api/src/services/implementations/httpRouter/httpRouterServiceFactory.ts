@@ -57,10 +57,14 @@ export const httpRouterServiceFactory = createServiceFactory(
     }) {
       const getPath = options?.getPath ?? (id => `/api/${id}`);
       const path = getPath(plugin.getId());
-      const authenticate = authenticationMiddlewareFactory(
-        identity,
-        tokenManager,
-      );
+      const authenticate: Handler = config.getOptionalBoolean(
+        'auth.enforceAuthentication',
+      )
+        ? authenticationMiddlewareFactory(identity, tokenManager)
+        : (_, __, next) => {
+            // Skip authentication when the enforceAuthentication flag is false.
+            next();
+          };
 
       const cookieInserter = cookieMiddlewareFactory(config);
 
