@@ -58,9 +58,13 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
       if (!isObject(schemaNode)) {
         continue;
       }
-      const innerUiSchema = {};
-      uiSchema[propName] = innerUiSchema;
-      extractUiSchema(schemaNode, innerUiSchema);
+
+      if (!isObject(uiSchema[propName])) {
+        const innerUiSchema = {};
+        uiSchema[propName] = innerUiSchema;
+      }
+
+      extractUiSchema(schemaNode, uiSchema[propName] as JsonObject);
     }
   }
 
