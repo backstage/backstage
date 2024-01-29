@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs': minor
 ---
 
-code tag css style changed to avoid word break
+Updated the styling for <code> tags to avoid word break.
