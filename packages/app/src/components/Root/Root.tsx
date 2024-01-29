@@ -27,6 +27,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MoneyIcon from '@material-ui/icons/MonetizationOn';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
+import Timelapse from '@material-ui/icons/Timelapse';
 import {
   Settings as SidebarSettings,
   UserSettingsSignInAvatar,
@@ -157,6 +158,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarScrollWrapper>
           <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
           <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
+          <SidebarItem icon={Timelapse} to="time-saver" text="timeSaver" />
           <SidebarItem
             icon={MoneyIcon}
             to="cost-insights"

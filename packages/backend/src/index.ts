@@ -66,6 +66,7 @@ import linguist from './plugins/linguist';
 import devTools from './plugins/devtools';
 import nomad from './plugins/nomad';
 import signals from './plugins/signals';
+import timeSaver from './plugins/timeSaver';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -179,6 +180,7 @@ async function main() {
   const devToolsEnv = useHotMemoize(module, () => createEnv('devtools'));
   const nomadEnv = useHotMemoize(module, () => createEnv('nomad'));
   const signalsEnv = useHotMemoize(module, () => createEnv('signals'));
+  const timeSaverEnv = useHotMemoize(module, () => createEnv('timesaver'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -206,6 +208,7 @@ async function main() {
   apiRouter.use('/devtools', await devTools(devToolsEnv));
   apiRouter.use('/nomad', await nomad(nomadEnv));
   apiRouter.use('/signals', await signals(signalsEnv));
+  apiRouter.use('/time-saver', await timeSaver(timeSaverEnv));
   apiRouter.use(notFoundHandler());
 
   await lighthouse(lighthouseEnv);

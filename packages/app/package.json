@@ -84,6 +84,7 @@
     "@backstage/plugin-todo": "workspace:^",
     "@backstage/plugin-user-settings": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "backstage-plugin-time-saver": "workspace:^",
     "@circleci/backstage-plugin": "^0.1.1",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",

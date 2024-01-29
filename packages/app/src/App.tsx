@@ -107,6 +107,7 @@ import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
+import { TimeSaverPage } from 'backstage-plugin-time-saver';
 
 const app = createApp({
   apis,
@@ -272,6 +273,7 @@ const routes = (
     <Route path="/devtools" element={<DevToolsPage />}>
       {customDevToolsPage}
     </Route>
+    <Route path="/time-saver" element={<TimeSaverPage />} />
   </FlatRoutes>
 );
 
