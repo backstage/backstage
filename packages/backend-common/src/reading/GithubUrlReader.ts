@@ -185,9 +185,7 @@ export class GithubUrlReader implements UrlReader {
     }
 
     const { filepath } = parseGitUrl(url);
-    const { headers } = await this.deps.credentialsProvider.getCredentials({
-      url,
-    });
+    const { headers } = await this.getCredentials(url, options);
 
     const files = await this.doSearch(
       url,
