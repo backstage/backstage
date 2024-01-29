@@ -2,6 +2,11 @@
 
 This plugin provides an implementation of charts and statistics related to your time savings that are coming from usage of your templates. Plugins is built from frontend and backend part. Backend plugin is responisble for scheduled stats parsing process and data storage.
 
+## Dependencies
+
+- [time-saver](./time-saver)
+- [time-saver-common](./time-saver-common)
+
 ## Installation
 
 1. Install the plugin package in your Backstage app:
@@ -11,9 +16,9 @@ This plugin provides an implementation of charts and statistics related to your 
 yarn add --cwd packages/backend @backstage/backstage-plugin-time-saver-backend
 ```
 
-2. Wire up the API implementation to your App:
+2. Wire up the API implementation to your App in timeSaver.ts file in `packages/backend/src/plugins/`:
 
-```tsx
+```ts
 import { createRouter } from 'backstage-plugin-time-saver-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -28,6 +33,22 @@ export default async function createPlugin(
     scheduler: env.scheduler,
   });
 }
+```
+
+in `packages/backend/src/index.ts`
+
+```ts
+
+import timeSaver from './plugins/timeSaver';
+
+...
+
+const timeSaverEnv = useHotMemoize(module, () => createEnv('timesaver'));
+
+...
+
+apiRouter.use('/time-saver', await signals(timeSaverEnv));
+
 ```
 
 ## Generate Statistics

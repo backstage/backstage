@@ -1,6 +1,11 @@
-# Time Saver
+\*\*\*\*# Time Saver
 
 This plugin provides an implementation of charts and statistics related to your time savings that are coming from usage of your templates. Plugins is built from frontend and backend part. This part of plugin `frontend` is resposnsible of providing views with charts describing data collected from `backend` part of plugin.
+
+## Dependencies
+
+- [time-saver-backend](./time-saver-backend)
+- [time-saver-common](./time-saver-common)
 
 ## Screens
 
@@ -22,13 +27,13 @@ yarn add --cwd packages/app @backstage/backstage-plugin-time-saver
 3. Then after all the import statements add the following line:
 
    ```ts
-   import { timeSaverPage } from 'backstage-plugin-time-saver';
+   import { TimeSaverPage } from 'backstage-plugin-time-saver';
    ```
 
 4. In this same file just before the closing `</ FlatRoutes>`, this will be near the bottom of the file, add this line:
 
    ```ts
-   <Route path="/time-saver" element={<timeSaverPage />} />
+   <Route path="/time-saver" element={<TimeSaverPage />} />
    ```
 
 5. Next open the `packages/app/src/components/Root/Root.tsx` file
@@ -41,7 +46,7 @@ yarn add --cwd packages/app @backstage/backstage-plugin-time-saver
 7. Then add this line just after the `<SidebarSettings />` line:
 
    ```ts
-   <SidebarItem icon={BuildIcon} to="time-saver" text="timeSaver" />
+   <SidebarItem icon={Timelapse} to="time-saver" text="timeSaver" />
    ```
 
 8. Now run `yarn dev` from the root of your project and you should see the DevTools option show up just below Settings in your sidebar and clicking on it will get you to the [Info tab](#info)
