@@ -71,8 +71,8 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
 
   public async getGitTags(
     projectName: string,
-    entityRef: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
   ): Promise<{ items: GitTag[] }> {

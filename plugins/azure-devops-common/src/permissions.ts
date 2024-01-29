@@ -15,7 +15,7 @@
  */
 import { createPermission } from '@backstage/plugin-permission-common';
 
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
 
 export const azureDevOpsPullRequestReadPermission = createPermission({
   name: 'azure.devops.pullrequest.read',
