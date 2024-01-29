@@ -114,7 +114,7 @@ const extension = createExtension({
 
 ### Extension Data Uniqueness
 
-Note that the key used in the output map, in this case `element`, is only used internally within the definition of the extension itself. That actual identifier for the data when consumed by other extensions is the ID of the reference, in this case `core.reactElement`. This means that you can not output multiple different values for the same extension data reference, as they would conflict with each other. That in turn makes overly generic extension data references a bad idea, for example a generic "string" type. Instead create separate references for each type of data that you want to share.
+Note that the key used in the output map, in this case `element`, is only used internally within the definition of the extension itself. That actual identifier for the data when consumed by other extensions is the ID of the reference, in this case [`core.reactElement`](https://github.com/backstage/backstage/blob/916da47e8abdb880877daa18881eb8fdbb33e70a/packages/frontend-plugin-api/src/wiring/coreExtensionData.ts#L23). This means that you can not output multiple different values for the same extension data reference, as they would conflict with each other. That in turn makes overly generic extension data references a bad idea, for example a generic "string" type. Instead create separate references for each type of data that you want to share.
 
 ```tsx
 const extension = createExtension({
@@ -160,7 +160,7 @@ const extension = createExtension({
 
 ## Extension Inputs
 
-The Extension Data can be passed up to other extensions through their extension inputs. Similar to the outputs seen before, let's create an example an extension with a extension input:
+The Extension Data can be passed up to other extensions through their extension inputs. Similar to the outputs seen before, let's create an example of an extension with a extension input:
 
 ```tsx
 const navigationExtension = createExtension({
@@ -254,7 +254,7 @@ With the `inputs` not only the `output` of an extensions item is passed to the e
 
 ## Extension Configuration
 
-With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independent of the plugin & initiated several times. Therefor we created a possibility to configure each extension individually through config. The extension config schema is created using the [`zod`](https://zod.dev/) library, which in addition to TypeScript type checking also provides runtime validation and coercion. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
+With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independent of the plugin & initiated several times. Therefore we created a possibility to configure each extension individually through config. The extension config schema is created using the [`zod`](https://zod.dev/) library, which in addition to TypeScript type checking also provides runtime validation and coercion. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
 
 ```tsx
 const navigationExtension = createExtension({
@@ -297,7 +297,7 @@ app:
 
 With creating an extension by using `createExtension(...)` you have the advantage that the extension can be anything in your Backstage application. We realised that this comes with the trade-off of having to repeat boilerplate code for similar building blocks. Here extension creators come into play for covering common building blocks in Backstage like pages using `createPageExtension`, themes using the `createThemeExtension` or items for the navigation using `createNavItemExtension`.
 
-If we follow the example from above all items of the navigation have similarities, like they all want to be attached to the same extension with the same input as well as rendering the same navigation item component. Therefor `createExtension` can be abstracted for this use case to `createNavItemExtension` and if we add the extension to the app it will end up in the right place & looks like we expect a navigation item to look.
+If we follow the example from above all items of the navigation have similarities, like they all want to be attached to the same extension with the same input as well as rendering the same navigation item component. Therefore `createExtension` can be abstracted for this use case to `createNavItemExtension` and if we add the extension to the app it will end up in the right place & looks like we expect a navigation item to look.
 
 ```tsx
 export const HomeNavIcon = createNavItemExtension({
