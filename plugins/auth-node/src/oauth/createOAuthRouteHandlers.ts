@@ -295,12 +295,13 @@ export function createOAuthRouteHandlers<TProfile>(
         }
 
         let scope = req.query.scope?.toString() ?? '';
+        const audience = req.query.audience?.toString();
         if (authenticator.shouldPersistScopes) {
           scope = cookieManager.getGrantedScopes(req);
         }
 
         const result = await authenticator.refresh(
-          { req, scope, refreshToken },
+          { req, scope, audience, refreshToken },
           authenticatorCtx,
         );
 

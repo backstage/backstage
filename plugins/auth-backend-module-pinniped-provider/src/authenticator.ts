@@ -240,21 +240,29 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
     const { client } = await ctx.getStrategy();
     const tokenset = await client.refresh(input.refreshToken);
 
-    return new Promise((resolve, reject) => {
-      if (!tokenset.access_token) {
-        reject(new Error('Refresh Failed'));
-      }
+    if (!tokenset.access_token) {
+      Promise.reject(new Error('Refresh Failed'));
+    }
 
-      resolve({
-        fullProfile: { provider: '', id: '', displayName: '' },
-        session: {
-          accessToken: tokenset.access_token!,
-          tokenType: tokenset.token_type ?? 'bearer',
-          scope: tokenset.scope!,
-          idToken: tokenset.id_token,
-          refreshToken: tokenset.refresh_token,
-        },
+    let id_token = tokenset.id_token;
+
+    if (input.audience) {
+      id_token = await rfc8693TokenExchange({
+        subject_token: tokenset.access_token!,
+        target_audience: input.audience!,
+        ctx: ctx.getStrategy(),
       });
+    }
+
+    return Promise.resolve({
+      fullProfile: { provider: '', id: '', displayName: '' },
+      session: {
+        accessToken: tokenset.access_token!,
+        tokenType: tokenset.token_type ?? 'bearer',
+        scope: tokenset.scope!,
+        idToken: id_token,
+        refreshToken: tokenset.refresh_token,
+      },
     });
   },
 });

@@ -44,6 +44,7 @@ export interface OAuthAuthenticatorAuthenticateInput {
 /** @public */
 export interface OAuthAuthenticatorRefreshInput {
   scope: string;
+  audience?: string;
   refreshToken: string;
   req: Request;
 }
