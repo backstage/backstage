@@ -23,10 +23,10 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.19.8",
-    "@backstage/backend-tasks": "^0.5.11",
-    "@backstage/config": "^1.1.1",
-    "@backstage/plugin-permission-common": "^0.7.11",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-tasks": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
     "@mui/system": "^5.2.3",
     "@types/express": "*",
     "express": "^4.17.1",
