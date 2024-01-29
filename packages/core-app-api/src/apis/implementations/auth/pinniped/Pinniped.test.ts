@@ -23,11 +23,11 @@ import { OAuth2Session } from '../oauth2';
 const createSession = jest.fn();
 const refreshSession = jest.fn();
 
-jest.mock('../../../../lib/AuthConnector/DefaultAuthConnector', () => ({
+jest.mock('../../../../lib/AuthConnector/PinnipedAuthConnector', () => ({
   ...(jest.requireActual(
-    '../../../../lib/AuthConnector/DefaultAuthConnector',
+    '../../../../lib/AuthConnector/PinnipedAuthConnector',
   ) as any),
-  DefaultAuthConnector: class {
+  PinnipedAuthConnector: class {
     createSession = createSession;
     refreshSession = refreshSession;
   },
@@ -71,9 +71,6 @@ describe('Pinniped', () => {
     const idToken = await pinnipedAuth.getClusterScopedIdToken('myAudience');
 
     expect(idToken).toBe('It is a cluster scope IdToken');
-    expect(createSession).toHaveBeenCalledWith(
-      expect.objectContaining({ audience: 'myAudience' }),
-    );
   });
 
   it('The session is renewed when there is less than 5 minutes until expiration', async () => {
@@ -111,9 +108,6 @@ describe('Pinniped', () => {
     const idToken = await pinnipedAuth.getClusterScopedIdToken('myAudience');
 
     expect(idToken).toBe('It is a cluster scope IdToken');
-    expect(createSession).toHaveBeenCalledWith(
-      expect.objectContaining({ audience: 'myAudience' }),
-    );
     expect(createSession).toHaveBeenCalledTimes(1);
     expect(refreshSession).toHaveBeenCalledTimes(1);
 
@@ -175,9 +169,6 @@ describe('Pinniped', () => {
     const idToken = await pinnipedAuth.getClusterScopedIdToken('myAudience');
 
     expect(idToken).toBe('It is a cluster scope IdToken');
-    expect(createSession).toHaveBeenCalledWith(
-      expect.objectContaining({ audience: 'myAudience' }),
-    );
     expect(createSession).toHaveBeenCalledTimes(1);
     expect(refreshSession).toHaveBeenCalledTimes(1);
 

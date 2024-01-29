@@ -3,4 +3,4 @@
 '@backstage/core-app-api': patch
 ---
 
-Introduced UtilityAPI for Pinniped, which presents the getClusterScopedIdToken fuction to get a Cluster Scoped ID Token which can be passed to backend services to exchange it for mTLS x509 client certs
+Introduced UtilityAPI for Pinniped, which presents the getClusterScopedIdToken function to get a Cluster Scoped ID Token which can be passed to backend services to exchange it for mTLS x509 client certs

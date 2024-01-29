@@ -21,13 +21,12 @@ import {
   PinnipedSupervisorApi,
   pinnipedSupervisorApiRef,
   DiscoveryApi,
-  OAuthRequestApi,
 } from '@backstage/core-plugin-api';
 import { OAuth2CreateOptions, OAuth2Session, PopupOptions } from '../oauth2';
 
 import { OAuth2Response } from '../oauth2/OAuth2';
 import {
-  DefaultAuthConnector,
+  PinnipedAuthConnector,
   RefreshingAuthSessionManager,
   SessionManager,
 } from '../../../../lib';
@@ -48,7 +47,6 @@ export default class Pinniped implements PinnipedSupervisorApi {
   private configApi: ConfigApi | undefined;
   private environment: string;
   private provider: AuthProviderInfo;
-  private oauthRequestApi: OAuthRequestApi;
   private discoveryApi: DiscoveryApi;
   private defaultScopes: string[];
   private popupOptions: PopupOptions | undefined;
@@ -64,7 +62,6 @@ export default class Pinniped implements PinnipedSupervisorApi {
       configApi,
       environment = 'development',
       provider = DEFAULT_PROVIDER,
-      oauthRequestApi,
       discoveryApi,
       defaultScopes = [
         'openid',
@@ -78,7 +75,6 @@ export default class Pinniped implements PinnipedSupervisorApi {
     this.configApi = configApi;
     this.environment = environment;
     this.provider = provider;
-    this.oauthRequestApi = oauthRequestApi;
     this.discoveryApi = discoveryApi;
     this.defaultScopes = defaultScopes;
     this.popupOptions = popupOptions;
@@ -92,12 +88,11 @@ export default class Pinniped implements PinnipedSupervisorApi {
   ): Promise<string> {
     const aud = audience;
     if (!(aud in this.audiences)) {
-      const connector = new DefaultAuthConnector({
+      const connector = new PinnipedAuthConnector({
         configApi: this.configApi,
         discoveryApi: this.discoveryApi,
         environment: this.environment,
         provider: this.provider,
-        oauthRequestApi: this.oauthRequestApi,
         sessionTransform({
           backstageIdentity,
           ...res
@@ -118,6 +113,7 @@ export default class Pinniped implements PinnipedSupervisorApi {
           return session;
         },
         popupOptions: this.popupOptions,
+        audience: aud,
       });
 
       const sessionManager = new RefreshingAuthSessionManager({
@@ -141,7 +137,6 @@ export default class Pinniped implements PinnipedSupervisorApi {
 
     const session = await this.audiences[aud].getSession({
       ...options,
-      audience: aud,
     });
 
     return session?.providerInfo.idToken ?? '';

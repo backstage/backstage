@@ -59,8 +59,8 @@ export class OAuthRequestManager implements OAuthRequestApi {
       },
     });
 
-    return (scopes, audience) => {
-      return handler.request(scopes, audience);
+    return scopes => {
+      return handler.request(scopes);
     };
   }
 
@@ -69,7 +69,7 @@ export class OAuthRequestManager implements OAuthRequestApi {
     request: PendingRequest<any>,
     options: OAuthRequesterOptions<any>,
   ): PendingOAuthRequest | undefined {
-    const { scopes, audience } = request;
+    const { scopes } = request;
     if (!scopes) {
       return undefined;
     }
@@ -77,7 +77,7 @@ export class OAuthRequestManager implements OAuthRequestApi {
     return {
       provider: options.provider,
       trigger: async () => {
-        const result = await options.onAuthRequest(scopes, audience);
+        const result = await options.onAuthRequest(scopes);
         request.resolve(result);
       },
       reject: () => {

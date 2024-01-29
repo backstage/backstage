@@ -17,8 +17,6 @@ import {
   AuthProviderInfo,
   ConfigApi,
   DiscoveryApi,
-  OAuthRequestApi,
-  OAuthRequester,
 } from '@backstage/core-plugin-api';
 import { showLoginPopup } from '../loginPopup';
 import { AuthConnector, CreateSessionOptions, PopupOptions } from './types';
@@ -40,14 +38,6 @@ type Options<AuthSession> = {
    */
   provider: AuthProviderInfo;
   /**
-   * API used to instantiate an auth requester.
-   */
-  oauthRequestApi: OAuthRequestApi;
-  /**
-   * Function used to join together a set of scopes, defaults to joining with a space character.
-   */
-  joinScopes?: (scopes: Set<string>) => string;
-  /**
    * Function used to transform an auth response into the session type.
    */
   sessionTransform?(response: any): AuthSession | Promise<AuthSession>;
@@ -59,25 +49,21 @@ type Options<AuthSession> = {
    * Options used to configure auth popup
    */
   popupOptions?: PopupOptions;
+  audience: string;
 };
 
-function defaultJoinScopes(scopes: Set<string>) {
-  return [...scopes].join(' ');
-}
-
 /**
- * DefaultAuthConnector is the default auth connector in Backstage. It talks to the
+ * PinnipedAuthConnector is the auth connector to consume Pinniped. It talks to the
  * backend auth plugin through the standardized API, and requests user permission
  * via the OAuthRequestApi.
  */
-export class DefaultAuthConnector<AuthSession>
+export class PinnipedAuthConnector<AuthSession>
   implements AuthConnector<AuthSession>
 {
   private readonly discoveryApi: DiscoveryApi;
   private readonly environment: string;
+  private readonly audience: string;
   private readonly provider: AuthProviderInfo;
-  private readonly joinScopesFunc: (scopes: Set<string>) => string;
-  private readonly authRequester: OAuthRequester<AuthSession>;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
   private readonly enableExperimentalRedirectFlow: boolean;
   private readonly popupOptions: PopupOptions | undefined;
@@ -87,8 +73,7 @@ export class DefaultAuthConnector<AuthSession>
       discoveryApi,
       environment,
       provider,
-      joinScopes = defaultJoinScopes,
-      oauthRequestApi,
+      audience,
       sessionTransform = id => id,
       popupOptions,
     } = options;
@@ -105,39 +90,28 @@ export class DefaultAuthConnector<AuthSession>
       ? configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ?? false
       : false;
 
-    this.authRequester = oauthRequestApi.createAuthRequester({
-      provider,
-      onAuthRequest: async scopes => {
-        if (!this.enableExperimentalRedirectFlow) {
-          return this.showPopup(scopes);
-        }
-        return this.executeRedirect(scopes);
-      },
-    });
-
     this.discoveryApi = discoveryApi;
     this.environment = environment;
     this.provider = provider;
-    this.joinScopesFunc = joinScopes;
     this.sessionTransform = sessionTransform;
     this.popupOptions = popupOptions;
+    this.audience = audience;
   }
 
   async createSession(options: CreateSessionOptions): Promise<AuthSession> {
     if (options.instantPopup) {
       if (this.enableExperimentalRedirectFlow) {
-        return this.executeRedirect(options.scopes);
+        return this.executeRedirect();
       }
-      return this.showPopup(options.scopes);
+      return this.showPopup();
     }
-    return this.authRequester(options.scopes);
+    return this.showPopup();
   }
 
-  async refreshSession(scopes?: Set<string>): Promise<any> {
+  async refreshSession(): Promise<any> {
     const res = await fetch(
       await this.buildUrl('/refresh', {
         optional: true,
-        ...(scopes && { scope: this.joinScopesFunc(scopes) }),
       }),
       {
         headers: {
@@ -187,10 +161,9 @@ export class DefaultAuthConnector<AuthSession>
     }
   }
 
-  private async showPopup(scopes: Set<string>): Promise<AuthSession> {
-    const scope = this.joinScopesFunc(scopes);
+  private async showPopup(): Promise<AuthSession> {
     const popupUrl = await this.buildUrl('/start', {
-      scope,
+      audience: this.audience,
       origin: window.location.origin,
       flow: 'popup',
     });
@@ -214,11 +187,10 @@ export class DefaultAuthConnector<AuthSession>
     return await this.sessionTransform(payload);
   }
 
-  private async executeRedirect(scopes: Set<string>): Promise<AuthSession> {
-    const scope = this.joinScopesFunc(scopes);
+  private async executeRedirect(): Promise<AuthSession> {
     // redirect to auth api
     window.location.href = await this.buildUrl('/start', {
-      scope,
+      audience: this.audience,
       origin: window.location.origin,
       redirectUrl: window.location.href,
       flow: 'redirect',

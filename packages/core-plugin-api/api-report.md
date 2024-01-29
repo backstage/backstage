@@ -575,16 +575,12 @@ export const oauthRequestApiRef: ApiRef<OAuthRequestApi>;
 // @public
 export type OAuthRequester<TAuthResponse> = (
   scopes: Set<string>,
-  audience?: string,
 ) => Promise<TAuthResponse>;
 
 // @public
 export type OAuthRequesterOptions<TOAuthResponse> = {
   provider: AuthProviderInfo;
-  onAuthRequest(
-    scopes: Set<string>,
-    audience?: string,
-  ): Promise<TOAuthResponse>;
+  onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
 };
 
 // @public
@@ -650,7 +646,6 @@ export type PendingOAuthRequest = {
 
 // @public
 export type PinnipedSupervisorApi = {
-  getSupervisorIdToken(options?: AuthRequestOptions): Promise<string>;
   getClusterScopedIdToken(
     audience: string,
     options?: AuthRequestOptions,

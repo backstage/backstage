@@ -613,10 +613,6 @@ export class Pinniped implements PinnipedSupervisorApi {
     audience: string,
     options?: AuthRequestOptions | undefined,
   ): Promise<string>;
-  // (undocumented)
-  getSupervisorIdToken(
-    _options?: AuthRequestOptions | undefined,
-  ): Promise<string>;
 }
 
 // @public

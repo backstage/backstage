@@ -19,14 +19,12 @@ import { BehaviorSubject } from '../../../lib/subjects';
 
 type RequestQueueEntry<ResultType> = {
   scopes: Set<string>;
-  audience?: string;
   resolve: (value: ResultType | PromiseLike<ResultType>) => void;
   reject: (reason: Error) => void;
 };
 
 export type PendingRequest<ResultType> = {
   scopes: Set<string> | undefined;
-  audience?: string;
   resolve: (value: ResultType) => void;
   reject: (reason: Error) => void;
 };
@@ -69,9 +67,9 @@ export class OAuthPendingRequests<ResultType> {
     this.getCurrentPending(),
   );
 
-  request(scopes: Set<string>, audience?: string): Promise<ResultType> {
+  request(scopes: Set<string>): Promise<ResultType> {
     return new Promise((resolve, reject) => {
-      this.requests.push({ scopes, audience, resolve, reject });
+      this.requests.push({ scopes, resolve, reject });
 
       this.subject.next(this.getCurrentPending());
     });
@@ -111,12 +109,8 @@ export class OAuthPendingRequests<ResultType> {
               this.requests[0].scopes,
             );
 
-    const audience =
-      this.requests.length === 0 ? undefined : this.requests[0].audience;
-
     return {
       scopes: currentScopes,
-      ...(audience && { audience }),
       resolve: (value: ResultType) => {
         if (currentScopes) {
           this.resolve(currentScopes, value);
