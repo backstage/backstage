@@ -311,7 +311,7 @@ The frontend production bundling creates your typical web content
 [bundle](../references/glossary.md#bundle), all contained within a single
 folder, ready for static serving. It is used when building packages with the
 `'frontend'` role, and unlike the development bundling there is no way to
-build a production [bundle](../references/glossary.md#bundle) of an individual plugin.
+build a production bundle of an individual plugin.
 The output of the bundling process is written to the `dist` folder in the package.
 
 Just like the development bundling, the production bundling is based on

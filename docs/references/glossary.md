@@ -15,7 +15,7 @@ https://oauth.net/2/access-tokens/
 
 Someone responsible for installing and maintaining a Backstage [app](#app) for an organization. A [user role](#user-role).
 
-## API
+## API (catalog plugin)
 
 In the Backstage [Catalog](#catalog), an API is an [entity](#entity) representing a boundary between two [components](#component).
 
@@ -37,6 +37,12 @@ A platform for creating and deploying [developer portals](#developer-portal), or
 
 Backstage is an incubation-stage open source project of the [Cloud Native Computing Foundation](#cloud-native-computing-foundation).
 
+Can also refer to: [Backstage framework](#backstage-framework).
+
+## Backstage framework
+
+The actual framework that Backstage [plugins](#plugin) sit on. This spans both the frontend and the backend, and includes core functionality such as declarative integration, config reading, database management, and many more.
+
 ## Bundle
 
 A collection of [deployment artifacts](#deployment-artifacts).
@@ -46,6 +52,8 @@ Can also be: The output of the bundling process, which brings a collection of [p
 ## Catalog
 
 An organization's portfolio of software products managed in Backstage.
+
+Can also be: The core Backstage plugin that handle ingestion and display of your organizations software products.
 
 ## Cloud Native Computing
 
@@ -65,17 +73,17 @@ Cloud Native Computing Foundation.
 
 [OAuth](#oauth) flow where the client receives an [authorization code](#code) that is passed to the backend to be exchanged for an [access token](#access-token) and possibly a [refresh token](#refresh-token).
 
-## Collators
+## Collators (search plugin)
 
 Collators transform streams of [documents](#documents) into searchable texts. They're usually responsible for the data transformation and definition and collection process for specific [documents](#documents). Part of [Backstage Search](#search).
 
-## Component
+## Component (catalog plugin)
 
 A software product that is managed in the Backstage [Software Catalog](#software-catalog). A component can be a service, website, library, data pipeline, or any other piece of software managed as a single project.
 
 https://backstage.io/docs/features/software-catalog/system-model
 
-## Condition
+## Condition (permission plugin)
 
 Conditions are used to return a conditional decision from a policy. They contain information about a given entity and restrictions on what types of users can view that entity.
 
@@ -87,7 +95,13 @@ Conditions are used to return a conditional decision from a policy. They contain
 
 A volunteer who helps to improve an OSS product such as Backstage. This volunteer effort includes coding, testing, technical writing, user support, and other work. A [user role](#user-role).
 
-## Decorators
+## Declarative integration
+
+A new paradigm for Backstage frontend plugins, allowing definition in config files instead of hosting complete React pages.
+
+https://backstage.io/docs/frontend-system
+
+## Decorators (search plugin)
 
 A transform stream. Decorators allow you to add additional information to documents outside of the [collator](#collators). They sit between the [collators](#collators) and the [indexers](#indexer) and can add extra fields to documents as they're being collated and indexed.
 
@@ -107,7 +121,7 @@ A [user role](#user-role) defined as someone who uses a Backstage [app](#app). M
 
 A centralized system comprising a user interface and database used to facilitate and document all the software projects within an organization. Backstage is both a developer portal and (by virtue of being based on plugins) a platform for creating developer portals.
 
-## Documents
+## Documents (search plugin)
 
 An abstract concept representing something that can be found by searching for it. A document can represent a software entity, a TechDocs page, etc. Documents are made up of metadata fields, at a minimum -- a title, text, and location (as in a URL). Part of [Backstage Search](#search).
 
@@ -129,11 +143,11 @@ Someone who assesses whether Backstage is a suitable solution for their organiza
 
 A [JWT](#jwt) used to prove a user's identity, containing for example the user's email. Part of [OpenID Connect](#openid-connect).
 
-## Index
+## Index (search plugin)
 
 An index is a collection of [documents](#documents) of a given type. Part of [Backstage Search](#search).
 
-## Indexer
+## Indexer (search plugin)
 
 A write stream of [documents](#documents). Part of [Backstage Search](#search).
 
@@ -209,21 +223,13 @@ Any action that a user performs within Backstage may be represented as a permiss
 
 https://backstage.io/docs/permissions/overview
 
-## Permission Resource
-
-Not to be confused with [Software Catalog resources](#resource). Permission resources represent the objects that users interact with and that can be permissioned.
-
-## Permission Rule
-
-Rules are predicate-based controls that tap into a [resource](#permission-resource)'s data.
-
 ## Persona
 
 Alternative term for a [User Role](#user-role).
 
 ## Plugin
 
-A module in Backstage that adds a feature. All functionality in Backstage, even the core features, are implemented as plugins.
+A module in Backstage that adds a feature. All functionality outside of [the Backstage framework](#backstage-framework), even the core features, are implemented as plugins.
 
 ## Policy
 
@@ -231,7 +237,7 @@ User [permissions](#permission) are authorized by a central, user-defined [permi
 
 ## Policy decision
 
-Two important responsibilities of any authorization system are to decide if a user can do something, and to enforce that decision. In the Backstage permission framework, policies are responsible for decisions and plugins (typically backends) are responsible for enforcing them.
+Two important responsibilities of any authorization system are to decide if a user can do something, and to enforce that decision. In the Backstage permission framework, [policies](#policy) are responsible for decisions and [plugins](#plugin) (typically backends) are responsible for enforcing them.
 
 ## Popup
 
@@ -251,15 +257,27 @@ A special token that an [OAuth](#oauth) client can use to get a new [access toke
 
 https://oauth.net/2/refresh-tokens/
 
-## Resource
+## Resource (catalog plugin)
 
 In the Backstage Catalog, an [entity](#entity) that represents a piece of physical or virtual infrastructure, for example a database, required by a component.
 
 https://backstage.io/docs/features/software-catalog/system-model
 
+## Resource (permission plugin)
+
+Not to be confused with [Software Catalog resources](#resource-catalog-plugin). Permission resources represent the objects that users interact with and that can be permissioned.
+
+## Rule
+
+Rules are predicate-based controls that tap into a [resource](#resource-permission-plugin)'s data.
+
 ## Role
 
 See [User Role](#User-Role).
+
+## Scaffolder
+
+Known as [Software Templates](#software-templates).
 
 ## Scope
 
@@ -269,7 +287,7 @@ A string that describes a certain type of access that can be granted to a user u
 
 A Backstage plugin that provides a framework for searching a Backstage [app](#app), including the [Software Catalog](#Software-Catalog) and [TechDocs](#TechDocs). A core feature of Backstage.
 
-## Search Engines
+## Search Engine
 
 Existing search technology that [Backstage Search](#search) can take advantage of through its modular design. Lunr is the default search in [Backstage Search](#search). Part of [Backstage Search](#search).
 
@@ -279,7 +297,7 @@ A Backstage plugin that provides a framework to keep track of ownership and meta
 
 ## Software Templates
 
-A Backstage plugin with which to create [components](#component) in Backstage. A core feature of Backstage.
+A Backstage plugin with which to create [components](#component) in Backstage. A core feature of Backstage. Also known as the scaffolder.
 
 Can also refer to: A "skeleton" software project created and managed in the Backstage Software Templates tool.
 
@@ -289,7 +307,7 @@ In the Backspace Catalog, a system is a collection of [entities](#entity) that c
 
 https://backstage.io/docs/features/software-catalog/system-model
 
-## Task
+## Task (use cases)
 
 A low-level step-by-step [Procedure](#Procedure).
 
