@@ -218,10 +218,7 @@ webhookUrl: https://smee.io/foo
 clientId: someGithubAppClientId
 clientSecret: someGithubAppClientSecret
 webhookSecret: someWebhookSecret
-privateKey: |
-  -----BEGIN RSA PRIVATE KEY-----
-  SomeRsaPrivateKeyForExampleOnly
-  -----END RSA PRIVATE KEY-----
+privateKey: someSecretRsaPrivateKey
 ```
 
-**Warning: RSA private keys should not be hard coded**. Keep them in a secure storage solution like Vault, to ensure they are neither exposed nor misused.
+**Warning: RSA private keys should not be hard coded**. We recommend that this entire file should be a secret and stored as such in a secure storage solution like Vault, to ensure they are neither exposed nor misused.
