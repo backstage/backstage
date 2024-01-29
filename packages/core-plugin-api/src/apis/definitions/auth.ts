@@ -159,7 +159,6 @@ export type OpenIdConnectApi = {
  * @public
  */
 export type PinnipedSupervisorApi = {
-  getSupervisorIdToken(options?: AuthRequestOptions): Promise<string>;
   /**
    * Requests an Cluster Scoped ID Token which can be passed to backend services to exchange it for mTLS x509 client certs.
    *

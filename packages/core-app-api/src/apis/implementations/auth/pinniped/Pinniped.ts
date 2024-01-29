@@ -86,12 +86,6 @@ export default class Pinniped implements PinnipedSupervisorApi {
     this.audiences = {};
   }
 
-  async getSupervisorIdToken(
-    _options?: AuthRequestOptions | undefined,
-  ): Promise<string> {
-    throw new Error('Method not implemented.');
-  }
-
   async getClusterScopedIdToken(
     audience: string,
     options?: AuthRequestOptions | undefined,
@@ -104,6 +98,25 @@ export default class Pinniped implements PinnipedSupervisorApi {
         environment: this.environment,
         provider: this.provider,
         oauthRequestApi: this.oauthRequestApi,
+        sessionTransform({
+          backstageIdentity,
+          ...res
+        }: OAuth2Response): OAuth2Session {
+          const session: OAuth2Session = {
+            ...res,
+            providerInfo: {
+              idToken: res.providerInfo.idToken,
+              accessToken: res.providerInfo.accessToken,
+              scopes: new Set(),
+              expiresAt: res.providerInfo.expiresInSeconds
+                ? new Date(
+                    Date.now() + res.providerInfo.expiresInSeconds * 1000,
+                  )
+                : undefined,
+            },
+          };
+          return session;
+        },
         popupOptions: this.popupOptions,
       });
 
@@ -112,7 +125,6 @@ export default class Pinniped implements PinnipedSupervisorApi {
         defaultScopes: new Set(this.defaultScopes),
         sessionScopes: (session: OAuth2Session) => session.providerInfo.scopes,
         sessionShouldRefresh: (session: OAuth2Session) => {
-          // TODO(Rugvip): Optimize to use separate checks for provider vs backstage session expiration
           let min = Infinity;
           if (session.providerInfo?.expiresAt) {
             min = Math.min(
@@ -120,6 +132,8 @@ export default class Pinniped implements PinnipedSupervisorApi {
               (session.providerInfo.expiresAt.getTime() - Date.now()) / 1000,
             );
           }
+          return min < 60 * 5;
+        },
       });
 
       this.audiences[aud] = sessionManager;
