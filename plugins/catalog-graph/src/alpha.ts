@@ -13,3 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createPlugin } from '@backstage/frontend-plugin-api';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
+
+export default createPlugin({
+  id: 'catalog-graph',
+  routes: {
+    catalogGraph: convertLegacyRouteRef(catalogGraphRouteRef),
+  },
+  externalRoutes: {
+    catalogEntity: convertLegacyRouteRef(catalogEntityRouteRef),
+  },
+  extensions: [],
+});
