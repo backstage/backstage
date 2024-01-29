@@ -46,7 +46,7 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
 
 const mockCredentialsProvider = {
   getCredentials: jest.fn().mockResolvedValue({ headers: {} }),
-} as unknown as GithubCredentialsProvider;
+} satisfies GithubCredentialsProvider;
 
 const githubProcessor = new GithubUrlReader(
   new GithubIntegration(
@@ -105,7 +105,7 @@ describe('GithubUrlReader', () => {
         otherheader: 'something',
       };
 
-      (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
+      mockCredentialsProvider.getCredentials.mockResolvedValue({
         headers: mockHeaders,
       });
 
@@ -146,7 +146,7 @@ describe('GithubUrlReader', () => {
         otherheader: 'something',
       };
 
-      (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
+      mockCredentialsProvider.getCredentials.mockResolvedValue({
         headers: mockHeaders,
       });
 
@@ -182,7 +182,7 @@ describe('GithubUrlReader', () => {
         otherheader: 'something',
       };
 
-      (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
+      mockCredentialsProvider.getCredentials.mockResolvedValue({
         headers: mockHeaders,
       });
 
@@ -241,7 +241,7 @@ describe('GithubUrlReader', () => {
     });
 
     it('should return etag and last-modified from the response', async () => {
-      (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
+      mockCredentialsProvider.getCredentials.mockResolvedValue({
         headers: {
           Authorization: 'bearer blah',
         },
@@ -275,7 +275,7 @@ describe('GithubUrlReader', () => {
     it('should override the token if its provided', async () => {
       expect.assertions(1);
 
-      (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
+      mockCredentialsProvider.getCredentials.mockResolvedValue({
         headers: {
           Authorization: 'bearer blah',
         },
@@ -458,7 +458,7 @@ describe('GithubUrlReader', () => {
         otherheader: 'something',
       };
 
-      (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
+      mockCredentialsProvider.getCredentials.mockResolvedValue({
         headers: mockHeaders,
       });
 
@@ -497,7 +497,7 @@ describe('GithubUrlReader', () => {
         Authorization: 'bearer blah',
       };
 
-      (mockCredentialsProvider.getCredentials as jest.Mock).mockResolvedValue({
+      mockCredentialsProvider.getCredentials.mockResolvedValue({
         headers: mockHeaders,
       });
 
@@ -968,6 +968,34 @@ describe('GithubUrlReader', () => {
         ),
       );
       await runTests(gheProcessor, 'https://ghe.github.com');
+    });
+
+    it('passes through a token for the search request', async () => {
+      expect.assertions(1);
+
+      worker.use(
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees/etag123abc',
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe(
+              'Bearer overridentoken',
+            );
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json({
+                truncated: true,
+                tree: [],
+              } as Partial<GhTreeResponse>),
+            );
+          },
+        ),
+      );
+
+      await gheProcessor.search(
+        `https://ghe.github.com/backstage/mock/tree/main/**/*`,
+        { token: 'overridentoken' },
+      );
     });
 
     // eslint-disable-next-line jest/expect-expect
