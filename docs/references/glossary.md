@@ -223,7 +223,7 @@ Any action that a user performs within Backstage may be represented as a permiss
 
 https://backstage.io/docs/permissions/overview
 
-## Persona
+## Persona (use cases)
 
 Alternative term for a [User Role](#user-role).
 
@@ -231,11 +231,11 @@ Alternative term for a [User Role](#user-role).
 
 A module in Backstage that adds a feature. All functionality outside of [the Backstage framework](#backstage-framework), even the core features, are implemented as plugins.
 
-## Policy
+## Policy (permission plugin)
 
 User [permissions](#permission) are authorized by a central, user-defined [permission](#permission) policy. At a high level, a policy is a function that receives a Backstage user and [permission](#permission), and returns a decision to allow or deny. Policies are expressed as code, which decouples the framework from any particular [authorization](#authorization) model, like role-based access control (RBAC) or attribute-based access control (ABAC).
 
-## Policy decision
+## Policy decision (permission plugin)
 
 Two important responsibilities of any authorization system are to decide if a user can do something, and to enforce that decision. In the Backstage permission framework, [policies](#policy) are responsible for decisions and [plugins](#plugin) (typically backends) are responsible for enforcing them.
 
@@ -243,11 +243,11 @@ Two important responsibilities of any authorization system are to decide if a us
 
 A separate browser window opened on top of the previous one.
 
-## Procedure
+## Procedure (use cases)
 
 A set of actions that accomplish a goal, usually as part of a [use case](#Use-Case). A procedure can be high-level, containing other procedures, or can be as simple as a single [task](#Task).
 
-## Query Translators
+## Query Translators (search plugin)
 
 An abstraction layer between a search engine and the [Backstage Search](#search) backend. Allows for translation into queries against your search engine. Part of [Backstage Search](#search).
 
@@ -267,7 +267,7 @@ https://backstage.io/docs/features/software-catalog/system-model
 
 Not to be confused with [Software Catalog resources](#resource-catalog-plugin). Permission resources represent the objects that users interact with and that can be permissioned.
 
-## Rule
+## Rule (permission plugin)
 
 Rules are predicate-based controls that tap into a [resource](#resource-permission-plugin)'s data.
 
