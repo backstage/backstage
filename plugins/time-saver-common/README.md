@@ -1,6 +1,6 @@
 # Time Saver - common
 
-This plugin provides an implementation of charts and statistics related to your time savings that are coming from usage of your templates. Plugins is built from frontend and backend part. Backend plugin is responisble for scheduled stats parsing process and data storage.
+This plugin provides an implementation of charts and statistics related to your time savings that are coming from usage of your templates. Plugins is built from frontend and backend part. Backend plugin is responsible for scheduled stats parsing process and data storage.
 
 ## Dependencies
 

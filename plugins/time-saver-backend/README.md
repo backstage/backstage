@@ -1,6 +1,6 @@
 # Time Saver - backend
 
-This plugin provides an implementation of charts and statistics related to your time savings that are coming from usage of your templates. Plugins is built from frontend and backend part. Backend plugin is responisble for scheduled stats parsing process and data storage.
+This plugin provides an implementation of charts and statistics related to your time savings that are coming from usage of your templates. Plugins is built from frontend and backend part. Backend plugin is responsible for scheduled stats parsing process and data storage.
 
 ## Dependencies
 
@@ -54,7 +54,7 @@ apiRouter.use('/time-saver', await signals(timeSaverEnv));
 ## Generate Statistics
 
 Configure your template definition like described below:
-Provide an object under `metadata`. Provide quantiies of saved time by each group executing one template in **_hours_** preferably
+Provide an object under `metadata`. Provide quantities of saved time by each group executing one template in **_hours_** preferably
 
 ```yaml
  apiVersion: scaffolder.backstage.io/v1beta3
@@ -77,9 +77,9 @@ Scheduler is running with its default setup every **5 minutes** to generate data
 
 ## Migration
 
-This plugins supports backward compability with migration. You can specify your Time Saver metadata for each template name. Then the migration will be performed once executing the API request to `/migrate` endpoint og the plugin.
+This plugins supports backward compatibility with migration. You can specify your Time Saver metadata for each template name. Then the migration will be performed once executing the API request to `/migrate` endpoint of the plugin.
 
-Configure your backwarfd timesaving here:
+Configure your backward time savings here:
 
 Open the `app-config.yaml` file
 
