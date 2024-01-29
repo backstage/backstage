@@ -165,8 +165,17 @@ async function fixCatalogInfoYaml(options: FixOptions) {
     relativePath('.', yamlPath),
   );
   const safeName = packageJson.name
-    .replace(/[^a-z0-9_\-\.]+/g, '-')
-    .replace(/^[^a-z0-9]|[^a-z0-9]$/g, '');
+    .replace(/^[^\w\s]|[^a-z0-9]$/g, '')
+    .replace(/[^A-Za-z0-9_\-.]+/g, '-')
+    .replace(/([A-Z])/g, (_, letter, index, original) => {
+      if (index !== 0) {
+        const previousChar = original[index - 1];
+        if (previousChar !== '-') {
+          return `-${letter.toLowerCase()}`;
+        }
+      }
+      return letter.toLowerCase();
+    });
   let yamlJson: BackstagePackageEntity;
 
   try {
@@ -241,8 +250,17 @@ function createOrMergeEntity(
   existingEntity: BackstagePackageEntity | Record<string, any> = {},
 ): BackstagePackageEntity {
   const safeEntityName = packageJson.name
-    .replace(/[^a-z0-9_\-\.]+/g, '-')
-    .replace(/^[^a-z0-9]|[^a-z0-9]$/g, '');
+    .replace(/^[^\w\s]|[^a-z0-9]$/g, '')
+    .replace(/[^A-Za-z0-9_\-.]+/g, '-')
+    .replace(/([A-Z])/g, (_, letter, index, original) => {
+      if (index !== 0) {
+        const previousChar = original[index - 1];
+        if (previousChar !== '-') {
+          return `-${letter.toLowerCase()}`;
+        }
+      }
+      return letter.toLowerCase();
+    });
 
   return {
     ...existingEntity,
