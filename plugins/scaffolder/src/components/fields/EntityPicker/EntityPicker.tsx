@@ -61,7 +61,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   } = props;
   const catalogFilter = buildCatalogFilter(uiSchema);
   const defaultKind = uiSchema['ui:options']?.defaultKind;
-  const fieldsToIgnore = uiSchema['ui:options']?.fieldsToIgnore;
+  const fieldsToIgnore = uiSchema['ui:options']?.fields;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
 
