@@ -69,6 +69,21 @@ describe('fetch:plain:file', () => {
     );
   });
 
+  it('passed through the token to fetchFile', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        url: 'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets/Backstage%20Community%20Sessions.png',
+        token: 'mockToken',
+        targetPath: 'lol',
+      },
+    });
+
+    expect(fetchFile).toHaveBeenCalledWith(
+      expect.objectContaining({ token: 'mockToken' }),
+    );
+  });
+
   it('should fetch plain', async () => {
     await action.handler({
       ...mockContext,
