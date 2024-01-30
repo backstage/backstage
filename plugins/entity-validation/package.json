@@ -43,7 +43,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^23.0.0",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "@uiw/react-codemirror": "^4.9.3",
     "lodash": "^4.17.21",
     "react-use": "^17.2.4",
