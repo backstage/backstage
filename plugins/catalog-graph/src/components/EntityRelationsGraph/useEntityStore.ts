@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import limiterFactory from 'p-limit';
 import { Dispatch, useCallback, useRef, useState } from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 
 // TODO: This is a good use case for a graphql API, once it is available in the
 // future.
-
-const limiter = limiterFactory(10);
 
 /**
  * Ensures that a set of requested entities is loaded.
@@ -58,38 +55,24 @@ export function useEntityStore(): {
   }, [state, setEntities]);
 
   const [asyncState, fetch] = useAsyncFn(async () => {
-    const { requestedEntities, outstandingEntities, cachedEntities } =
-      state.current;
-
-    await Promise.all(
-      Array.from(requestedEntities).map(entityRef =>
-        limiter(async () => {
-          if (cachedEntities.has(entityRef)) {
-            return;
-          }
-
-          if (outstandingEntities.has(entityRef)) {
-            await outstandingEntities.get(entityRef);
-            return;
-          }
-
-          const promise = catalogClient.getEntityByRef(entityRef);
-
-          outstandingEntities.set(entityRef, promise);
-
-          try {
-            const entity = await promise;
-
-            if (entity) {
-              cachedEntities.set(entityRef, entity);
-              updateEntities();
-            }
-          } finally {
-            outstandingEntities.delete(entityRef);
-          }
-        }),
-      ),
+    const { requestedEntities, cachedEntities } = state.current;
+    const entityRefs: string[] = Array.from(requestedEntities).filter(
+      entityRef => !cachedEntities.has(entityRef),
     );
+    if (entityRefs.length === 0) {
+      updateEntities();
+      return;
+    }
+
+    const { items } = await catalogClient.getEntitiesByRefs({ entityRefs });
+    items.forEach(ent => {
+      if (ent) {
+        const entityRef = stringifyEntityRef(ent);
+        cachedEntities.set(entityRef, ent);
+      }
+    });
+
+    updateEntities();
   }, [state, updateEntities]);
   const { loading, error } = asyncState;
 

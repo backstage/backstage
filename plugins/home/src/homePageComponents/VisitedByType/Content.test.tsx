@@ -16,10 +16,15 @@
 
 import React from 'react';
 import { Content } from './Content';
-import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
+import {
+  TestApiProvider,
+  renderInTestApp,
+  MockConfigApi,
+} from '@backstage/test-utils';
 import { visitsApiRef } from '../../api';
 import { ContextProvider } from './Context';
 import { waitFor } from '@testing-library/react';
+import { configApiRef } from '@backstage/core-plugin-api';
 
 const visits = [
   {
@@ -29,14 +34,30 @@ const visits = [
     hits: 35,
     timestamp: Date.now() - 86400_000,
   },
+  {
+    id: 'tech-radar',
+    name: 'Tech Radar',
+    pathname: '/tech-radar',
+    hits: 40,
+    timestamp: Date.now() - 360_000,
+  },
 ];
 
-const mockVisitsApi = {
+let mockVisitsApi = {
   save: async () => visits[0],
   list: async () => visits,
 };
 
 describe('<Content kind="recent"/>', () => {
+  beforeEach(() => {
+    mockVisitsApi = {
+      save: async () => visits[0],
+      list: async () => visits,
+    };
+  });
+
+  afterEach(() => jest.resetAllMocks());
+
   it('renders', async () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
@@ -117,9 +138,139 @@ describe('<Content kind="recent"/>', () => {
     expect(container.querySelectorAll('li')[0]).toBeVisible();
     expect(container.querySelectorAll('li')[1]).not.toBeVisible();
   });
+
+  it('allows recent items to be filtered using config', async () => {
+    const configApiMock = new MockConfigApi({
+      home: {
+        recentVisits: {
+          filterBy: [
+            {
+              field: 'pathname',
+              operator: '==',
+              value: '/tech-radar',
+            },
+          ],
+        },
+      },
+    });
+
+    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [visitsApiRef, mockVisitsApi],
+        ]}
+      >
+        <ContextProvider>
+          <Content kind="recent" />
+        </ContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() => {
+      expect(listSpy).toHaveBeenCalledWith({
+        limit: 8,
+        orderBy: [
+          {
+            direction: 'desc',
+            field: 'timestamp',
+          },
+        ],
+        filterBy: [{ field: 'pathname', operator: '==', value: '/tech-radar' }],
+      });
+    });
+  });
+
+  it('shows all recent items when there is no filtering in the config', async () => {
+    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <ContextProvider>
+          <Content kind="recent" />
+        </ContextProvider>
+      </TestApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(listSpy).toHaveBeenCalledWith({
+        limit: 8,
+        orderBy: [
+          {
+            direction: 'desc',
+            field: 'timestamp',
+          },
+        ],
+        filterBy: [],
+      });
+    });
+  });
+
+  it('allows recent items to have no filter if the filter config is not valid', async () => {
+    const configApiMock = new MockConfigApi({
+      home: {
+        recentVisits: {
+          filterBy: [
+            {
+              operator: '==',
+              value: '/tech-radar',
+            },
+            {
+              field: 'pathname',
+              operator: '==',
+              value: '/explore',
+            },
+          ],
+        },
+      },
+    });
+
+    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [visitsApiRef, mockVisitsApi],
+        ]}
+      >
+        <ContextProvider>
+          <Content kind="recent" />
+        </ContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() => {
+      expect(listSpy).toHaveBeenCalledWith({
+        limit: 8,
+        orderBy: [
+          {
+            direction: 'desc',
+            field: 'timestamp',
+          },
+        ],
+        filterBy: [
+          {
+            field: 'pathname',
+            operator: '==',
+            value: '/explore',
+          },
+        ],
+      });
+    });
+  });
 });
 
 describe('<Content kind="top"/>', () => {
+  beforeEach(() => {
+    mockVisitsApi = {
+      save: async () => visits[0],
+      list: async () => visits,
+    };
+  });
+
+  afterEach(() => jest.resetAllMocks());
+
   it('renders', async () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
@@ -132,5 +283,74 @@ describe('<Content kind="top"/>', () => {
     await waitFor(() =>
       expect(getByText('Explore Backstage')).toBeInTheDocument(),
     );
+  });
+
+  it('allows top items to be filtered using config', async () => {
+    const configApiMock = new MockConfigApi({
+      home: {
+        topVisits: {
+          filterBy: [
+            {
+              field: 'pathname',
+              operator: '==',
+              value: '/explore',
+            },
+          ],
+        },
+      },
+    });
+
+    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [visitsApiRef, mockVisitsApi],
+        ]}
+      >
+        <ContextProvider>
+          <Content kind="top" />
+        </ContextProvider>
+      </TestApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(listSpy).toHaveBeenCalledWith({
+        limit: 8,
+        orderBy: [
+          {
+            direction: 'desc',
+            field: 'hits',
+          },
+        ],
+        filterBy: [{ field: 'pathname', operator: '==', value: '/explore' }],
+      });
+    });
+  });
+
+  it('shows all top items when there is no filtering in the config', async () => {
+    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
+        <ContextProvider>
+          <Content kind="top" />
+        </ContextProvider>
+      </TestApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(listSpy).toHaveBeenCalledWith({
+        limit: 8,
+        orderBy: [
+          {
+            direction: 'desc',
+            field: 'hits',
+          },
+        ],
+        filterBy: [],
+      });
+    });
   });
 });

@@ -36,6 +36,7 @@
       ]
     }
   },
+  "configSchema": "config.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
@@ -49,6 +50,7 @@
   "dependencies": {
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
@@ -88,6 +90,7 @@
     "@types/react-grid-layout": "^1.3.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ]
 }

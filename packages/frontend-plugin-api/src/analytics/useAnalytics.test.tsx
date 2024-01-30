@@ -53,8 +53,8 @@ describe('useAnalytics', () => {
         some: 'value',
       },
       context: {
-        extensionId: 'App',
-        pluginId: 'root',
+        extensionId: 'app',
+        pluginId: 'app',
       },
     });
   });

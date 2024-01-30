@@ -117,7 +117,7 @@ export default async function serve(opts: OptionValues) {
     stderrLogFunc: mkdocsLogFunc,
     mkdocsConfigFileName: mkdocsYmlPath,
     mkdocsParameterClean: opts.mkdocsParameterClean,
-    mkdocsParameterDirtyReload: opts.mkdocsParameterDirtyReload,
+    mkdocsParameterDirtyReload: opts.mkdocsParameterDirtyreload,
     mkdocsParameterStrict: opts.mkdocsParameterStrict,
   });
 

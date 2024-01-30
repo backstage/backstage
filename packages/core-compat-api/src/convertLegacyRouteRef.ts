@@ -199,6 +199,10 @@ export function convertLegacyRouteRef(
       getDescription() {
         return legacyRefStr;
       },
+      getDefaultTarget() {
+        // TODO(freben): These are not yet supported in the old system; just returning undefined for now
+        return undefined;
+      },
       setId(id: string) {
         newRef.setId(id);
       },

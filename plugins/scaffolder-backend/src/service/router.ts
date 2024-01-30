@@ -61,13 +61,7 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import {
-  findTemplate,
-  getEntityBaseUrl,
-  getMajorNodeVersion,
-  getWorkingDirectory,
-  isNoNodeSnapshotOptionProvided,
-} from './helpers';
+import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   IdentityApi,
   IdentityApiGetIdentityRequest,
@@ -265,14 +259,6 @@ export async function createRouter(
     options.config.getOptionalNumber('scaffolder.concurrentTasksLimit');
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
-
-  const nodeVersion = getMajorNodeVersion();
-  if (nodeVersion >= 20 && !isNoNodeSnapshotOptionProvided()) {
-    throw new Error(
-      'When using node v20+ Scaffolder requires that node be started with the --no-node-snapshot option. Please restart ' +
-        'Backstage providing the node --no-node-snapshot option.',
-    );
-  }
 
   const identity: IdentityApi =
     options.identity || buildDefaultIdentityClient(options);
