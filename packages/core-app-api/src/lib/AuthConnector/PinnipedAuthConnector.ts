@@ -49,6 +49,9 @@ type Options<AuthSession> = {
    * Options used to configure auth popup
    */
   popupOptions?: PopupOptions;
+  /**
+   * Audience parameter associated to sessions
+   */
   audience: string;
 };
 
