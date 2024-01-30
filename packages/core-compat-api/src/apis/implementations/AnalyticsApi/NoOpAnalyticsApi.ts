@@ -18,7 +18,7 @@ import { AnalyticsApi, AnalyticsEvent } from '@backstage/core-plugin-api';
 import {
   AnalyticsApi as NewAnalyicsApi,
   AnalyticsEvent as NewAnalyicsEvent,
-} from '../../definitions';
+} from '@backstage/frontend-plugin-api';
 
 /**
  * Base implementation for the AnalyticsApi that does nothing.
