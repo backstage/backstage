@@ -2,4 +2,5 @@
 '@backstage/plugin-scaffolder': minor
 ---
 
-Scaffolding - EntityPicker component - now it does not load full entity data, only a specified set - defaults to `['metadata.name', 'metadata.namespace', 'metadata.title', 'kind']`. It can significantly reduce loaded time bigger data set. It's possible to set fields to ignore configure via `fields` in UI options of the EntityPicker component.
+Updating the `EntityPicker` to only select by default `kind` `metadata.name` `metadata.namespace` and `metadata.title` by default to improve performance on larger datasets.
+
