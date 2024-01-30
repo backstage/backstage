@@ -70,8 +70,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
     const fields = ['metadata.name', 'metadata.namespace', 'kind'];
     const { items } = await catalogApi.getEntities(
       catalogFilter
-        ? { filter: catalogFilter, fields: fields }
-        : { filter: undefined, fields: fields },
+        ? { filter: catalogFilter, fields }
+        : { filter: undefined, fields },
     );
     return items;
   });
