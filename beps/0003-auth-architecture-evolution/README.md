@@ -52,6 +52,7 @@ The following goals are the primary focus of this BEP:
   - Cookie-based authentication of requests for static assets that protects against CSRF attacks and does not unnecessarily expose user tokens.
 - Basic improvements to the service-to-service auth service interfaces such that we are confident that we do not need to break them in the near future.
   - If possible we will keep using the existing symmetrical keys that are used today, but it is likely that we will need to break compatibility of existing tokens.
+  - Encapsulation of user credentials in upstream service requests, avoiding the pattern where backend plugins re-use the user token directly for their outgoing requests.
 
 ### Non-Goals
 
