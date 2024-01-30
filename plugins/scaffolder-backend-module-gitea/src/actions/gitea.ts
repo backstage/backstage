@@ -150,25 +150,8 @@ const generateCommitMessage = (
   return msg;
 };
 
-/**
- * Checks if the provided function can be executed within a specific period of time limit.
- * @param fn
- * @param timeLimit
- */
-function checkDurationLimit(fn: () => void, timeLimit: number): boolean {
-  const startTime = process.hrtime();
-
-  // Call the function
-  fn();
-
-  const endTime = process.hrtime(startTime);
-  const durationInMs = endTime[0] * 1000 + endTime[1] / 1e6;
-
-  // Check if the duration exceeds the time limit
-  return durationInMs <= timeLimit;
-}
-
 async function checkAvailabilityGiteaRepository(
+  maxDuration: number,
   integrationConfig: GiteaIntegrationConfig,
   options: {
     owner?: string;
@@ -177,24 +160,25 @@ async function checkAvailabilityGiteaRepository(
     ctx: ActionContext<any>;
   },
 ) {
+  const startTimestamp = Date.now();
+
   const { owner, repo, defaultBranch, ctx } = options;
   const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
   let response: Response;
 
-  response = await checkGiteaContentUrl(integrationConfig, {
-    owner,
-    repo,
-    defaultBranch,
-  });
-
-  while (response.status !== 200) {
+  while (Date.now() - startTimestamp < maxDuration) {
     if (ctx.signal?.aborted) return;
-    await sleep(1000);
+
     response = await checkGiteaContentUrl(integrationConfig, {
       owner,
       repo,
       defaultBranch,
     });
+
+    if (response.status !== 200) {
+      // Repository is not yet available/accessible ...
+      await sleep(1000);
+    }
   }
 }
 
@@ -341,21 +325,17 @@ export function createPublishGiteaAction(options: {
       });
 
       // Check if the gitea repo URL is available before to exit
-      const operationTimeLimit = 20000; // 20 seconds
-      const checkDuration = checkDurationLimit(
-        () =>
-          checkAvailabilityGiteaRepository(integrationConfig.config, {
-            owner,
-            repo,
-            defaultBranch,
-            ctx,
-          }),
-        operationTimeLimit,
+      const maxDuration = 20000; // 20 seconds
+      await checkAvailabilityGiteaRepository(
+        maxDuration,
+        integrationConfig.config,
+        {
+          owner,
+          repo,
+          defaultBranch,
+          ctx,
+        },
       );
-
-      if (!checkDuration) {
-        console.log('Operation exceeded the time limit.');
-      }
 
       const repoContentsUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}/src/branch/${defaultBranch}/`;
       ctx.output('remoteUrl', remoteUrl);
