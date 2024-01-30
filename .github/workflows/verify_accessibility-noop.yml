@@ -7,7 +7,7 @@ on:
     branches: [master]
     paths-ignore:
       - 'lighthouserc.js'
-      - '.github/workflows/verify_accessibility_core.yml'
+      - '.github/workflows/verify_accessibility.yml'
       - 'plugins/catalog/src/**'
       - 'plugins/catalog-react/src/**'
       - 'plugins/techdocs/src/**'
