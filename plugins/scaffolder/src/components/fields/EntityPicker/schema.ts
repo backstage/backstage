@@ -41,7 +41,7 @@ export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
       .describe(
         'DEPRECATED: Use `catalogFilter` instead. List of kinds of entities to derive options from',
       ),
-    fieldsToIgnore: z
+    fields: z
       .array(z.string())
       .optional()
       .describe(
