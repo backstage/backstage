@@ -214,7 +214,7 @@ router.get(
   (req, res) => {
     const { cookieUser } = httpAuth.credentials(req);
     console.log(
-      `User ref=${user.userEntityRef} ownership=${user.ownershipEntityRefs}`,
+      `User ref=${cookieUser.userEntityRef} ownership=${cookieUser.ownershipEntityRefs}`,
     );
     // ...
   },
