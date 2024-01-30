@@ -3,4 +3,4 @@
 '@backstage/backend-common': patch
 ---
 
-Support `token` in `readTree` and `readUrl`
+Support `token` in `readTree`, `readUrl` and `search`
