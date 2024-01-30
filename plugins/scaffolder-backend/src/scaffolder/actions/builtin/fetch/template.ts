@@ -71,6 +71,7 @@ export function createFetchTemplateAction(options: {
     replace?: boolean;
     trimBlocks?: boolean;
     lstripBlocks?: boolean;
+    token?: string;
   }>({
     id: 'fetch:template',
     description:
@@ -133,6 +134,12 @@ export function createFetchTemplateAction(options: {
             description:
               'If set, replace files in targetPath instead of skipping existing ones.',
             type: 'boolean',
+          },
+          token: {
+            title: 'Token',
+            description:
+              'An optional token to use for authentication when reading the resources.',
+            type: 'string',
           },
         },
       },
@@ -197,6 +204,7 @@ export function createFetchTemplateAction(options: {
         baseUrl: ctx.templateInfo?.baseUrl,
         fetchUrl: ctx.input.url,
         outputPath: templateDir,
+        token: ctx.input.token,
       });
 
       ctx.logger.info('Listing files and directories in template');

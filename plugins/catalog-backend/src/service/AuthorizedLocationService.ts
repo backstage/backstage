@@ -15,7 +15,7 @@
  */
 
 import { Location } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import {
   catalogLocationCreatePermission,
@@ -110,5 +110,22 @@ export class AuthorizedLocationService implements LocationService {
     }
 
     return this.locationService.deleteLocation(id);
+  }
+
+  async getLocationByEntity(
+    entityRef: CompoundEntityRef | string,
+    options?: { authorizationToken?: string | undefined } | undefined,
+  ): Promise<Location> {
+    const authorizationResponse = (
+      await this.permissionApi.authorize(
+        [{ permission: catalogLocationReadPermission }],
+        { token: options?.authorizationToken },
+      )
+    )[0];
+
+    if (authorizationResponse.result === AuthorizeResult.DENY) {
+      throw new NotFoundError();
+    }
+    return this.locationService.getLocationByEntity(entityRef);
   }
 }

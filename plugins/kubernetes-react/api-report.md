@@ -685,7 +685,7 @@ export const PodExecTerminal: (
 // @public
 export const PodExecTerminalDialog: (
   props: PodExecTerminalProps,
-) => React_2.JSX.Element;
+) => false | React_2.JSX.Element | undefined;
 
 // @public
 export interface PodExecTerminalProps {

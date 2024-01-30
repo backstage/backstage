@@ -316,6 +316,7 @@ export type ReadTreeOptions = {
   ): boolean;
   etag?: string;
   signal?: AbortSignal;
+  token?: string;
 };
 
 // @public
@@ -343,6 +344,7 @@ export type ReadUrlOptions = {
   etag?: string;
   lastModifiedAfter?: Date;
   signal?: AbortSignal;
+  token?: string;
 };
 
 // @public
@@ -390,6 +392,7 @@ export interface SchedulerService extends PluginTaskScheduler {}
 export type SearchOptions = {
   etag?: string;
   signal?: AbortSignal;
+  token?: string;
 };
 
 // @public

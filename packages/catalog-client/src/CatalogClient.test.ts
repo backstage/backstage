@@ -617,6 +617,71 @@ describe('CatalogClient', () => {
     });
   });
 
+  describe('getLocationByEntity', () => {
+    const defaultResponse = {
+      data: {
+        kind: 'c',
+        namespace: 'ns',
+        name: 'n',
+      },
+    };
+
+    beforeEach(() => {
+      server.use(
+        rest.get(`${mockBaseUrl}/locations/by-entity/c/ns/n`, (_, res, ctx) => {
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+    });
+
+    it('should locations from correct endpoint', async () => {
+      const response = await client.getLocationByEntity(
+        { kind: 'c', namespace: 'ns', name: 'n' },
+        { token },
+      );
+      expect(response).toEqual(defaultResponse);
+    });
+
+    it('forwards authorization token', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/locations/by-entity/c/ns/n`,
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
+            return res(ctx.json(defaultResponse));
+          },
+        ),
+      );
+
+      await client.getLocationByEntity(
+        { kind: 'c', namespace: 'ns', name: 'n' },
+        { token },
+      );
+    });
+
+    it('skips authorization header if token is omitted', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/locations/by-entity/c/ns/n`,
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBeNull();
+            return res(ctx.json(defaultResponse));
+          },
+        ),
+      );
+
+      await client.getLocationByEntity({
+        kind: 'c',
+        namespace: 'ns',
+        name: 'n',
+      });
+    });
+  });
+
   describe('validateEntity', () => {
     it('returns valid false when validation fails', async () => {
       server.use(

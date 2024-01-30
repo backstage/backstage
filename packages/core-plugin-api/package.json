@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-plugin-api",
   "description": "Core API used by Backstage plugins",
-  "version": "1.8.2",
+  "version": "1.8.3-next.0",
   "publishConfig": {
     "access": "public"
   },
@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@types/react": "^16.13.1 || ^17.0.0",

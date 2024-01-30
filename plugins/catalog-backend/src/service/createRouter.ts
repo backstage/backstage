@@ -290,6 +290,18 @@ export async function createRouter(
           ),
         });
         res.status(204).end();
+      })
+      .get('/locations/by-entity/:kind/:namespace/:name', async (req, res) => {
+        const { kind, namespace, name } = req.params;
+        const output = await locationService.getLocationByEntity(
+          { kind, namespace, name },
+          {
+            authorizationToken: getBearerTokenFromAuthorizationHeader(
+              req.header('authorization'),
+            ),
+          },
+        );
+        res.status(200).json(output);
       });
   }
 
