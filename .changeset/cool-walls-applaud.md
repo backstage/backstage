@@ -1,6 +1,6 @@
 ---
-'@backstage/catalog-model': minor
-'@backstage/plugin-api-docs': minor
+'@backstage/catalog-model': patch
+'@backstage/plugin-api-docs': patch
 ---
 
 Add documentation & example that AsyncApi 3 is supported
