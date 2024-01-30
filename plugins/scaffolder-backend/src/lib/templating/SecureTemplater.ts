@@ -132,7 +132,7 @@ export class SecureTemplater {
     const nodeVersion = getMajorNodeVersion();
     if (nodeVersion >= 20 && !isNoNodeSnapshotOptionProvided()) {
       throw new Error(
-        `When using node v20+ Scaffolder requires that node be started with the --no-node-snapshot option. 
+        `When using Node.js version 20 or newer, the scaffolder backend plugin requires that it be started with the --no-node-snapshot option. 
         Please make sure that you have NODE_OPTIONS=--no-node-snapshot in your environment.`,
       );
     }
