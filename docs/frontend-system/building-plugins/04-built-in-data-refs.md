@@ -8,7 +8,7 @@ description: Configuring or overriding built-in extension data references
 
 > **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
-To have a better understanding of extension data references please read [extension data section the extensions architecture documentation](../architecture/03-extensions.md#extension-data) first.
+To have a better understanding of extension data references please read [the corresponding architecture section](../architecture/03-extensions.md#extension-data) first.
 
 ## Built-in extension data references
 
