@@ -485,6 +485,37 @@ Please add '${mockDir.resolve(
         },
       },
       {
+        name: "alpha manifest preferred but skipped because the `alpha` sub-directory doesn't exist",
+        preferAlpha: true,
+        fileSystem: {
+          backstageRoot: {
+            'dist-dynamic': {
+              'test-backend-plugin': {
+                'package.json': JSON.stringify({
+                  name: 'test-backend-plugin-dynamic',
+                  version: '0.0.0',
+                  main: 'dist/index.cjs.js',
+                  backstage: { role: 'backend-plugin' },
+                }),
+              },
+            },
+          },
+        },
+        expectedPluginPackages: [
+          {
+            location: url.pathToFileURL(
+              mockDir.resolve('backstageRoot/dist-dynamic/test-backend-plugin'),
+            ),
+            manifest: {
+              name: 'test-backend-plugin-dynamic',
+              version: '0.0.0',
+              main: 'dist/index.cjs.js',
+              backstage: { role: 'backend-plugin' },
+            },
+          },
+        ],
+      },
+      {
         name: 'invalid alpha package.json',
         preferAlpha: true,
         fileSystem: {
