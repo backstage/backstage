@@ -117,4 +117,48 @@ describe('resolveRouteBindings', () => {
       "Invalid config at app.routes.bindings['mySource'], 'myTarget' is not a valid route",
     );
   });
+
+  it('can have default targets, but at the lowest priority', () => {
+    const source = createExternalRouteRef({ defaultTarget: 'target1' });
+    const target1 = createRouteRef();
+    const target2 = createRouteRef();
+    const routesById = {
+      routes: new Map([
+        ['target1', target1],
+        ['target2', target2],
+      ]),
+      externalRoutes: new Map([['source', source]]),
+    };
+
+    // defaultTarget wins only if no bind or config matches
+    let result = resolveRouteBindings(
+      () => {},
+      new ConfigReader({}),
+      routesById,
+    );
+
+    expect(result.get(source)).toBe(target1);
+
+    // config wins over defaultTarget
+    result = resolveRouteBindings(
+      () => {},
+      new ConfigReader({
+        app: { routes: { bindings: { source: 'target2' } } },
+      }),
+      routesById,
+    );
+
+    expect(result.get(source)).toBe(target2);
+
+    // bind wins over defaultTarget
+    result = resolveRouteBindings(
+      ({ bind }) => {
+        bind({ a: source }, { a: target2 });
+      },
+      new ConfigReader({}),
+      routesById,
+    );
+
+    expect(result.get(source)).toBe(target2);
+  });
 });
