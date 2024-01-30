@@ -50,6 +50,7 @@ The following goals are the primary focus of this BEP:
   - Protection of the frontend app bundle from being accessed by unauthenticated users.
   - Basic rate limiting of non-authenticated requests.
   - Cookie-based authentication of requests for static assets that protects against CSRF attacks and does not unnecessarily expose user tokens.
+  - A solution where plugin builders need to opt-out of endpoint protection, for example allowing cookie or unauthenticated access.
 - Basic improvements to the service-to-service auth service interfaces such that we are confident that we do not need to break them in the near future.
   - If possible we will keep using the existing symmetrical keys that are used today, but it is likely that we will need to break compatibility of existing tokens.
   - Encapsulation of user credentials in upstream service requests, avoiding the pattern where backend plugins re-use the user token directly for their outgoing requests.
@@ -128,6 +129,10 @@ export interface HttpAuthService {
   issueUserCookie(res: Response): Promise<void>;
 }
 ```
+
+#### Opt-out behavior
+
+The `HttpAuthService` must be implemented in such a way that any requests that are handled by the plugin must always touch at least one `httpAuth.middleware(...)`, or it is rejected. This is implemented by overriding the necessary response methods on the `res` object to make it an error to call any of them, but to then restore the original methods in the `httpAuth.middleware(...)`.
 
 #### Usage Patterns
 
@@ -225,7 +230,7 @@ router.get(
 
 The existing `IdentityService` and `TokenManagerService` will be deprecated and instead implemented in terms of the new `AuthService`.
 
-The release plan for the `HttpAuthService` is TBD, but is likely to be shipped as a no-op for plugins using the old backend system.
+The release plan for the `HttpAuthService` is TBD, but is likely to be shipped as a no-op for plugins using the old backend system. The goal is for all plugins using the new backend system to have endpoint security be opt-out, which will be a breaking change.
 
 ## Dependencies
 
