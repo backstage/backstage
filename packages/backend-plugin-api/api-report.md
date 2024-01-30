@@ -392,6 +392,7 @@ export interface SchedulerService extends PluginTaskScheduler {}
 export type SearchOptions = {
   etag?: string;
   signal?: AbortSignal;
+  token?: string;
 };
 
 // @public
