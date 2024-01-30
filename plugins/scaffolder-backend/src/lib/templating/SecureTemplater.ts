@@ -22,6 +22,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
 import { JsonValue } from '@backstage/types';
+import { getMajorNodeVersion, isNoNodeSnapshotOptionProvided } from './helpers';
 
 // language=JavaScript
 const mkScript = (nunjucksSource: string) => `
@@ -127,6 +128,14 @@ export class SecureTemplater {
       templateGlobals = {},
       nunjucksConfigs = {},
     } = options;
+
+    const nodeVersion = getMajorNodeVersion();
+    if (nodeVersion >= 20 && !isNoNodeSnapshotOptionProvided()) {
+      throw new Error(
+        `When using node v20+ Scaffolder requires that node be started with the --no-node-snapshot option. 
+        Please make sure that you have NODE_OPTIONS=--no-node-snapshot in your environment.`,
+      );
+    }
 
     const isolate = new Isolate({ memoryLimit: 128 });
     const context = await isolate.createContext();
