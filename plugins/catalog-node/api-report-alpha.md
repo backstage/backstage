@@ -7,6 +7,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
+import { EntityPolicy } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { PermissionRule } from '@backstage/plugin-permission-node';
@@ -23,6 +24,19 @@ export interface CatalogAnalysisExtensionPoint {
 
 // @alpha (undocumented)
 export const catalogAnalysisExtensionPoint: ExtensionPoint<CatalogAnalysisExtensionPoint>;
+
+// @alpha (undocumented)
+export interface CatalogModelExtensionPoint {
+  // (undocumented)
+  addEntityPolicies(
+    ...policies: Array<EntityPolicy | Array<EntityPolicy>>
+  ): void;
+  // (undocumented)
+  replaceEntityPolicies(...policies: Array<EntityPolicy>): void;
+}
+
+// @alpha (undocumented)
+export const catalogModelExtensionPoint: ExtensionPoint<CatalogModelExtensionPoint>;
 
 // @alpha (undocumented)
 export interface CatalogPermissionExtensionPoint {

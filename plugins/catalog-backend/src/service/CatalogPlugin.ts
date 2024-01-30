@@ -17,7 +17,7 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityPolicy } from '@backstage/catalog-model';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
   CatalogAnalysisExtensionPoint,
@@ -26,6 +26,8 @@ import {
   catalogProcessingExtensionPoint,
   CatalogPermissionExtensionPoint,
   catalogPermissionExtensionPoint,
+  CatalogModelExtensionPoint,
+  catalogModelExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
@@ -124,6 +126,33 @@ class CatalogPermissionExtensionPointImpl
   }
 }
 
+class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
+  #entityPolicies = new Array<EntityPolicy>();
+  #replaced = false;
+
+  addEntityPolicies(...policies: Array<EntityPolicy | Array<EntityPolicy>>) {
+    this.#entityPolicies.push(...policies.flat());
+  }
+
+  replaceEntityPolicies(...policies: Array<EntityPolicy>) {
+    if (this.#replaced) {
+      throw new Error(
+        `You've already replaced the entity policies. If you want to add more entity policies, see 'addEntityPolicies'.`,
+      );
+    }
+    this.#entityPolicies = [...policies];
+    this.#replaced = true;
+  }
+
+  get entityPolicies() {
+    return this.#entityPolicies;
+  }
+
+  get replaced() {
+    return this.#replaced;
+  }
+}
+
 /**
  * Catalog plugin
  * @alpha
@@ -149,6 +178,9 @@ export const catalogPlugin = createBackendPlugin({
       catalogPermissionExtensionPoint,
       permissionExtensions,
     );
+
+    const modelExtensions = new CatalogModelExtensionPointImpl();
+    env.registerExtensionPoint(catalogModelExtensionPoint, modelExtensions);
 
     env.registerInit({
       deps: {
@@ -192,6 +224,12 @@ export const catalogPlugin = createBackendPlugin({
         );
         builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
+
+        if (modelExtensions.replaced) {
+          builder.replaceEntityPolicies(modelExtensions.entityPolicies);
+        } else {
+          builder.addEntityPolicy(...modelExtensions.entityPolicies);
+        }
 
         const { processingEngine, router } = await builder.build();
 

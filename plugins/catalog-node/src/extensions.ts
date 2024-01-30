@@ -15,7 +15,7 @@
  */
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityPolicy } from '@backstage/catalog-model';
 import {
   CatalogProcessor,
   EntitiesSearchFilter,
@@ -45,6 +45,15 @@ export interface CatalogProcessingExtensionPoint {
   ): void;
 }
 
+/** @alpha */
+export interface CatalogModelExtensionPoint {
+  addEntityPolicies(
+    ...policies: Array<EntityPolicy | Array<EntityPolicy>>
+  ): void;
+
+  replaceEntityPolicies(...policies: Array<EntityPolicy>): void;
+}
+
 /**
  * @alpha
  */
@@ -66,6 +75,12 @@ export interface CatalogAnalysisExtensionPoint {
 export const catalogAnalysisExtensionPoint =
   createExtensionPoint<CatalogAnalysisExtensionPoint>({
     id: 'catalog.analysis',
+  });
+
+/** @alpha */
+export const catalogModelExtensionPoint =
+  createExtensionPoint<CatalogModelExtensionPoint>({
+    id: 'catalog.model',
   });
 
 /**
