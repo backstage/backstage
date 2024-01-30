@@ -585,7 +585,7 @@ describe('GoogleAnalytics', () => {
       expect(data).toMatchObject({
         hitType: 'event',
         // expect to use the new default category
-        eventCategory: 'app',
+        eventCategory: 'App',
         eventAction: 'click',
         eventLabel: 'on something',
         eventValue: 42,

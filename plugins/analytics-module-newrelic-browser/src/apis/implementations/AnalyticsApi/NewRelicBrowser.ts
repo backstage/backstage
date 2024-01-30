@@ -129,10 +129,13 @@ export class NewRelicBrowser implements AnalyticsApi, NewAnalyicsApi {
     const { context, action, subject, value, attributes } = event;
 
     const extensionId = context.extensionId || context.extension;
-    const category = extensionId ? String(extensionId) : 'app';
+    const category = extensionId ? String(extensionId) : 'App';
 
     // The legacy default extension was 'App' and the new one is 'app'
-    if (action === 'navigate' && category.toLocaleLowerCase() === 'app') {
+    if (
+      action === 'navigate' &&
+      category.toLocaleLowerCase('en-US').startsWith('app')
+    ) {
       const interaction = this.agent.interaction();
       interaction.setName(subject);
       if (value) {

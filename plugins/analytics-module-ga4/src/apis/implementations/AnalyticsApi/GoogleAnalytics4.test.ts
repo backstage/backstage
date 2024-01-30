@@ -526,7 +526,7 @@ describe('GoogleAnalytics4', () => {
       expect(fnEvent).toHaveBeenCalledWith('page_view', {
         action: 'page_view',
         label: '/',
-        category: 'app',
+        category: 'App',
       });
     });
 

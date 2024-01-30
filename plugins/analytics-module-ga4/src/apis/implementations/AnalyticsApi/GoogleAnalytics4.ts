@@ -171,10 +171,13 @@ export class GoogleAnalytics4 implements AnalyticsApi, NewAnalyticsApi {
     }
 
     const extensionId = context.extensionId || context.extension;
-    const category = extensionId ? String(extensionId) : 'app';
+    const category = extensionId ? String(extensionId) : 'App';
 
     // The legacy default extension was 'App' and the new one is 'app'
-    if (action === 'navigate' && category.toLocaleLowerCase() === 'app') {
+    if (
+      action === 'navigate' &&
+      category.toLocaleLowerCase('en-US').startsWith('app')
+    ) {
       this.capture.event(
         {
           category,
