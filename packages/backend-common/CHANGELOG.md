@@ -1,5 +1,23 @@
 # @backstage/backend-common
 
+## 0.21.0-next.1
+
+### Patch Changes
+
+- 1f020fe: Support `token` in `readTree`, `readUrl` and `search`
+- e27b7f3: Fix rate limit detection by looking for HTTP status code 429 and updating the header `x-ratelimit-remaining` to look for in case of a 403 code is returned
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/backend-app-api@0.5.11-next.1
+  - @backstage/backend-dev-utils@0.1.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+
 ## 0.21.0-next.0
 
 ### Minor Changes
