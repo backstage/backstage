@@ -158,7 +158,27 @@ export async function createRouter(
     );
   }
 
+  router.post(
+    '/',
+    express.urlencoded({ extended: true }),
+    async (req, res, next) => {
+      if (req.body.type === 'sign-in') {
+        const token = req.body.token;
+        console.log(`DEBUG: token=`, token);
+        // await httpAuth.setCookie(res)
+        // res.cookie('user', await auth.issueToken({...httpAuth.credentials(req), readOnly: true}));
+
+        // Resume as if it was a GET request, serving index.html
+        req.method = 'GET';
+        next();
+      } else {
+        throw new Error('Invalid POST request to /');
+      }
+    },
+  );
+
   router.use(
+    // httpAuth.middleware({ allow: 'user-cookie' }),
     await createEntryPointRouter({
       logger: logger.child({ entry: 'main' }),
       rootDir: appDistDir,

@@ -21,14 +21,27 @@ import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import { DatabaseUserSettingsStore } from '../database/DatabaseUserSettingsStore';
 import { UserSettingsStore } from '../database/UserSettingsStore';
+import { HttpAuthService } from '@backstage/backend-plugin-api/alpha';
+import { IdentityService } from '@backstage/backend-plugin-api';
+
+function createHttpAuthShim(_options: {
+  identity: IdentityService;
+}): HttpAuthService {
+  throw new Error('Not implemented');
+}
 
 /**
  * @public
  */
-export interface RouterOptions {
-  database: PluginDatabaseManager;
-  identity: IdentityApi;
-}
+export type RouterOptions =
+  | {
+      database: PluginDatabaseManager;
+      identity: IdentityApi;
+    }
+  | {
+      database: PluginDatabaseManager;
+      httpAuth: HttpAuthService;
+    };
 
 /**
  * Create the user settings backend routes.
@@ -44,33 +57,26 @@ export async function createRouter(
 
   return await createRouterInternal({
     userSettingsStore,
-    identity: options.identity,
+    httpAuth:
+      'httpAuth' in options
+        ? options.httpAuth
+        : createHttpAuthShim({ identity: options.identity }),
   });
 }
 
 export async function createRouterInternal(options: {
-  identity: IdentityApi;
+  httpAuth: HttpAuthService;
   userSettingsStore: UserSettingsStore;
 }): Promise<express.Router> {
+  const { httpAuth, userSettingsStore } = options;
   const router = Router();
+
+  router.use(httpAuth.middleware({ allow: ['user', 'service'] }));
   router.use(express.json());
-
-  /**
-   * Helper method to extract the userEntityRef from the request.
-   */
-  const getUserEntityRef = async (req: Request): Promise<string> => {
-    // throws an AuthenticationError in case the token exists but is invalid
-    const identity = await options.identity.getIdentity({ request: req });
-    if (!identity) {
-      throw new AuthenticationError(`Missing token in 'authorization' header`);
-    }
-
-    return identity.identity.userEntityRef;
-  };
 
   // get a single value
   router.get('/buckets/:bucket/keys/:key', async (req, res) => {
-    const userEntityRef = await getUserEntityRef(req);
+    const { userEntityRef } = httpAuth.credentials(req).user!;
     const { bucket, key } = req.params;
 
     const setting = await options.userSettingsStore.get({
@@ -84,7 +90,7 @@ export async function createRouterInternal(options: {
 
   // set a single value
   router.put('/buckets/:bucket/keys/:key', async (req, res) => {
-    const userEntityRef = await getUserEntityRef(req);
+    const { userEntityRef } = httpAuth.credentials(req).user!;
     const { bucket, key } = req.params;
     const { value } = req.body;
 
@@ -92,13 +98,13 @@ export async function createRouterInternal(options: {
       throw new InputError('Missing required field "value"');
     }
 
-    await options.userSettingsStore.set({
+    await userSettingsStore.set({
       userEntityRef,
       bucket,
       key,
       value,
     });
-    const setting = await options.userSettingsStore.get({
+    const setting = await userSettingsStore.get({
       userEntityRef,
       bucket,
       key,
@@ -109,10 +115,10 @@ export async function createRouterInternal(options: {
 
   // get a single value
   router.delete('/buckets/:bucket/keys/:key', async (req, res) => {
-    const userEntityRef = await getUserEntityRef(req);
+    const { userEntityRef } = httpAuth.credentials(req).user!;
     const { bucket, key } = req.params;
 
-    await options.userSettingsStore.delete({ userEntityRef, bucket, key });
+    await userSettingsStore.delete({ userEntityRef, bucket, key });
 
     res.status(204).end();
   });

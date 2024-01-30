@@ -42,6 +42,7 @@ import {
 } from '../types';
 import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
 import { Config } from '@backstage/config';
+import { IdentityCookieManager } from '../identity/IdentityCookieManager';
 
 /** @public */
 export interface OAuthRouteHandlersOptions<TProfile> {
@@ -109,6 +110,10 @@ export function createOAuthRouteHandlers<TProfile>(
     defaultAppOrigin,
     providerId,
     cookieConfigurer,
+  });
+  const identityCookieManager = new IdentityCookieManager({
+    backendBaseUrl: baseUrl,
+    defaultAppOrigin,
   });
 
   return {
@@ -206,8 +211,12 @@ export function createOAuthRouteHandlers<TProfile>(
             { profile, result },
             resolverContext,
           );
-          response.backstageIdentity =
-            prepareBackstageIdentityResponse(identity);
+          const backstageIdentity = prepareBackstageIdentityResponse(identity);
+          response.backstageIdentity = backstageIdentity;
+          identityCookieManager.setIdentityCookie(res, {
+            backstageIdentity,
+            appOrigin,
+          });
         }
 
         // Store the scope that we have been granted for this session. This is useful if
@@ -272,6 +281,12 @@ export function createOAuthRouteHandlers<TProfile>(
 
       // remove refresh token cookie if it is set
       cookieManager.removeRefreshToken(res, req.get('origin'));
+      if (signInResolver) {
+        // TODO(Rugvip): There's an edge case here were signing out of a provide when using multiple sign-in providers will sign users out unexpectedly
+        identityCookieManager.removeIdentityCookie(res, {
+          appOrigin: req.get('origin'),
+        });
+      }
 
       res.status(200).end();
     },
@@ -332,8 +347,12 @@ export function createOAuthRouteHandlers<TProfile>(
             { profile, result },
             resolverContext,
           );
-          response.backstageIdentity =
-            prepareBackstageIdentityResponse(identity);
+          const backstageIdentity = prepareBackstageIdentityResponse(identity);
+          response.backstageIdentity = backstageIdentity;
+          identityCookieManager.setIdentityCookie(res, {
+            backstageIdentity,
+            appOrigin: req.get('origin'),
+          });
         }
 
         res.status(200).json(response);

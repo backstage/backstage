@@ -117,7 +117,7 @@ export class DefaultIdentityClient implements IdentityApi {
     }
     const decoded = await jwtVerify(token, this.keyStore, {
       algorithms: this.algorithms,
-      audience: 'backstage',
+      audience: 'backstage-plugin:techdocs',
       issuer: this.issuer,
     });
     // Verified, return the matching user as BackstageIdentity

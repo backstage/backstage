@@ -52,6 +52,7 @@ export function createProxyAuthProviderFactory<TResult>(options: {
 
     return createProxyAuthRouteHandlers<TResult>({
       signInResolver,
+      appUrl: ctx.appUrl,
       config: ctx.config,
       authenticator: options.authenticator,
       resolverContext: ctx.resolverContext,

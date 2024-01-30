@@ -9652,7 +9652,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend":
+"@backstage/plugin-user-settings-backend@workspace:^, @backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend"
   dependencies:
@@ -27107,6 +27107,7 @@ __metadata:
     "@backstage/plugin-sonarqube-backend": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
     "@backstage/plugin-todo-backend": "workspace:^"
+    "@backstage/plugin-user-settings-backend": "workspace:^"
   languageName: unknown
   linkType: soft
 

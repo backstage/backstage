@@ -123,9 +123,13 @@ export async function createRouter(
   router.use(express.json());
   router.use(permissionIntegrationRouter);
 
+  const userPolicy = httpAuth.createPolicy({ allow: ['user'] });
+
+  router.use(userPolicy.middleware());
+
   router.get('/', async (req, res) => {
     const { decision, user } = await evaluateRequestPermission(
-      req,
+      userPolicy.user(req),
       { permission: permissions.playlistListRead },
       true,
     );

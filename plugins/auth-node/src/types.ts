@@ -375,3 +375,11 @@ export type CookieConfigurer = (ctx: {
   secure: boolean;
   sameSite?: 'none' | 'lax' | 'strict';
 };
+
+/**
+ * The name of the cookie that gets set during sign-in and refreshes, containing
+ * user credentials that are used for e.g. fetching static assets from techdocs
+ * and similar.
+ * @internal
+ */
+export const BACKSTAGE_AUTH_COOKIE_NAME = 'backstage_auth';

@@ -33,6 +33,7 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import { HttpAuthService } from '@backstage/backend-plugin-api/alpha';
 
 /** @public */
 export interface RouterOptions {
@@ -40,13 +41,14 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   permissions: PermissionEvaluator;
+  httpAuth: HttpAuthService;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config, permissions } = options;
+  const { logger, config, permissions, httpAuth } = options;
 
   const devToolsBackendApi =
     options.devToolsBackendApi || new DevToolsBackendApi(logger, config);
@@ -55,6 +57,7 @@ export async function createRouter(
   router.use(express.json());
   router.use(
     createPermissionIntegrationRouter({
+      httpAuth,
       permissions: devToolsPermissions,
     }),
   );
@@ -63,28 +66,36 @@ export async function createRouter(
     res.status(200).json({ status: 'ok' });
   });
 
-  router.get('/info', async (req, response) => {
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
+  const userPolicy = httpAuth.policy({ allow: ['user', 'service'] });
 
-    const decision = (
-      await permissions.authorize(
-        [{ permission: devToolsInfoReadPermission }],
-        {
-          token,
-        },
-      )
-    )[0];
+  router.get(userPolicy.middleware());
 
-    if (decision.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError('Unauthorized');
-    }
+  router.get(
+    '/info',
+    userPolicy.middleware({ permission: devToolsInfoReadPermission }),
+    async (req, response) => {
+      // const token = getBearerTokenFromAuthorizationHeader(
+      // req.header('authorization'),
+      // );
 
-    const info = await devToolsBackendApi.listInfo();
+      const decision = (
+        await permissions.authorize(
+          [{ permission: devToolsInfoReadPermission }],
+          {
+            token: await auth.issueToken(userPolicy.credentials(req)),
+          },
+        )
+      )[0];
 
-    response.status(200).json(info);
-  });
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError('Unauthorized');
+      }
+
+      const info = await devToolsBackendApi.listInfo();
+
+      response.status(200).json(info);
+    },
+  );
 
   router.get('/config', async (req, response) => {
     const token = getBearerTokenFromAuthorizationHeader(

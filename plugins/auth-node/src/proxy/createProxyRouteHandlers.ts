@@ -19,6 +19,7 @@ import { Config } from '@backstage/config';
 import {
   AuthProviderRouteHandlers,
   AuthResolverContext,
+  BACKSTAGE_AUTH_COOKIE_NAME,
   ClientAuthResponse,
   ProfileTransform,
   SignInResolver,
@@ -31,6 +32,7 @@ import { NotImplementedError } from '@backstage/errors';
 export interface ProxyAuthRouteHandlersOptions<TResult> {
   authenticator: ProxyAuthenticator<any, TResult>;
   config: Config;
+  appUrl: string;
   resolverContext: AuthResolverContext;
   signInResolver: SignInResolver<TResult>;
   profileTransform?: ProfileTransform<TResult>;
@@ -40,7 +42,8 @@ export interface ProxyAuthRouteHandlersOptions<TResult> {
 export function createProxyAuthRouteHandlers<TResult>(
   options: ProxyAuthRouteHandlersOptions<TResult>,
 ): AuthProviderRouteHandlers {
-  const { authenticator, config, resolverContext, signInResolver } = options;
+  const { authenticator, appUrl, config, resolverContext, signInResolver } =
+    options;
 
   const profileTransform =
     options.profileTransform ?? authenticator.defaultProfileTransform;
@@ -68,13 +71,29 @@ export function createProxyAuthRouteHandlers<TResult>(
         resolverContext,
       );
 
+      const backstageIdentity = prepareBackstageIdentityResponse(identity);
+
       const response: ClientAuthResponse<{}> = {
         profile,
         providerInfo: {},
-        backstageIdentity: prepareBackstageIdentityResponse(identity),
+        backstageIdentity,
       };
 
-      res.status(200).json(response);
+      res
+        .status(200)
+        .cookie(BACKSTAGE_AUTH_COOKIE_NAME, backstageIdentity.token, {
+          httpOnly: true,
+          secure: new URL(backendUrl).protocol === 'https:',
+          sameSite: 'lax',
+          maxAge: backstageIdentity.expiresInSeconds
+            ? backstageIdentity.expiresInSeconds * 1000
+            : 24 * 60 * 60 * 1000, // 24h max,
+        })
+        .json(response);
+    },
+
+    async logout(_req, res) {
+      res.clearCookie(BACKSTAGE_AUTH_COOKIE_NAME).sendStatus(200);
     },
   };
 }

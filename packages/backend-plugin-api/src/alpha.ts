@@ -41,12 +41,14 @@ export const featureDiscoveryServiceRef =
 export type BackstageCredentials = {
   token: string;
 
+  scope?: 'static-assets'[];
+
   user?: {
     userEntityRef: string;
     ownershipEntityRefs: string[];
   };
 
-  plugin?: {
+  service?: {
     id: string;
   };
 };
@@ -67,7 +69,7 @@ export const authServiceRef = createServiceRef<AuthService>({
 });
 
 /** @alpha */
-type AuthTypes = 'user' | 'service' | 'unauthorized';
+type AuthTypes = 'user' | 'user-cookie' | 'service' | 'unauthorized';
 
 /** @alpha */
 export interface HttpAuthServiceMiddlewareOptions {
@@ -84,6 +86,10 @@ export interface HttpAuthService {
     req: Request,
     options?: HttpAuthServiceMiddlewareOptions,
   ): BackstageCredentials;
+
+  requestHeaders(credentials: BackstageCredentials): Record<string, string>;
+
+  issueUserCookie(res: Response): Promise<void>;
 }
 
 /**

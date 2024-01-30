@@ -151,7 +151,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
             limit: batchSize,
             offset: entitiesRetrieved,
           },
-          { token },
+          { token: await auth.issueToken() },
         )
       ).items;
 

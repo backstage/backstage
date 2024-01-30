@@ -3,6 +3,7 @@ title: Auth Architecture Evolution
 status: provisional
 authors:
   - '@Rugvip'
+  - '@freben'
 owners:
   - '@backstage/maintainers'
 project-areas:
@@ -80,7 +81,7 @@ The new `AuthService` interface is defined as follows:
 
 ```ts
 export type BackstageCredentials = {
-  token: string;
+  $$type: '@backstage/BackstageCredentials';
 
   user?: {
     userEntityRef: string;
@@ -222,15 +223,9 @@ All of these usages patterns are from the perspective of a plugin backend.
 // All routes only allow authenticated users and services by default.
 router.get('/read-data', (req, res) => {
   // TODO: user can currently be undefined, figure out best pattern to avoid that
-  const { user } = httpAuth.credentials(req);
-  if (!user) {
-    throw new NotAllowedError(
-      'Service requests are not allowed on this endpoint',
-    );
-  }
-  console.log(
-    `User ref=${user.userEntityRef} ownership=${user.ownershipEntityRefs}`,
-  );
+  const user = httpAuth.credentials(req, { allow: ['user'] }); // throws if not: user, user-cookie, user-obo
+  const ownershipEntityRefs = await user.getOwnershipEntityRefs();
+  console.log(`User ref=${user} ownership=${ownershipEntityRefs}`);
   // ...
 });
 ```
@@ -242,7 +237,15 @@ router.get('/read-data', (req, res) => {
   // The catalogClient will have a reference to the (plugin scoped) HttpAuthService,
   // which it uses to create the credential headers for the upstream request.
   const entity = await catalogClient.getEntityByRef(req.params.entityRef, {
-    credentials: httpAuth.credentials(req),
+    credentials: httpAuth.forwardCredentials(req, {
+      dangerouslyAllowUnauthenticated: true,
+    }),
+  });
+
+  const entity = await catalogClient.getEntityByRef(req.params.entityRef, {
+    token: await auth.issueToken({
+      forward: httpAuth.credentials(req),
+    }),
   });
   // ...
 });
@@ -252,15 +255,23 @@ router.get('/read-data', (req, res) => {
 
 ```ts
 router.get('/read-data', (req, res) => {
-  const credentials = httpAuth.credentials(req);
-  if (credentials.user) {
+  const credentials = httpAuth.credentials(req, {
+    allow: ['user', 'plugin', 'external'], // could be 'unauthenticated' too
+  });
+  if (credentials.type === 'user') {
+    res.json(todoStore.listOwnedTodos({ owner: credentials.userEntityRef }));
+  } else if (credentials.type === 'plugin') {
     res.json(
-      // Silly example just to highlight separate code paths for user and
-      // service requests
-      todoStore.listOwnedTodos({ owner: credentials.user.userEntityRef }),
+      todoStore.listTodos({
+        pluginId: credentials.pluginId,
+      }),
     );
   } else {
-    res.json(todoStore.listTodos());
+    res.json(
+      todoStore.listTodos({
+        origin: credentials.externalServiceId,
+      }),
+    );
   }
 });
 ```
@@ -316,3 +327,48 @@ No significant dependencies have been identified for this work, although any fut
 ## Alternatives
 
 An alternative to built-in protection from external access would be to keep relying on external mechanisms to protect access to Backstage. We feel that this is a suboptimal solution since it adds complexity to the adoption of Backstage, and increases the risk of misconfiguration and security breaches. Regardless of whether we add built-in protection or not the ability to protect API endpoints needs to be addressed in some way, since it is a requirement for the permission system to work. This means that the extra steps to ensure protection out of the box are fairly minimal when looking at just the delta for protecting API access.
+
+### Access Control Patterns
+
+#### Separate methods / configuration for `use`
+
+Cons:
+
+- Forces separation of the router, splitting it into separate handlers for different levels of access
+- Can be extremely confusing because the top-level middleware for more lax access will also apply to the more strict access levels.
+
+```ts
+http.useWithCookieAuthentication(cookieRouter);
+```
+
+```ts
+const cookieRouter = Router();
+cookieRouter.use(bodyParser.json());
+http.useWithCookieAuthentication(cookieRouter);
+
+const mainRouter = Router();
+// bodyParser.json() will apply here too
+http.use(mainRouter);
+```
+
+```ts
+// Tricky because of how middleware are applied
+http.use(cookieRouter, { allow: ['user-cookie'] });
+```
+
+```ts
+// This isn't too bad, but it's extremely similar to the configure() method since
+// we're just matching on the path. The benefit of configure is that it allows you
+// to keep everything in a singe router if desired.
+http.use('/static', cookieRouter, { allow: ['user-cookie'] });
+```
+
+#### Outside configuration of the router
+
+```ts
+http.dangerouslyDisableAuthentication();
+```
+
+#### Leave access control to the plugin router
+
+We want relaxed access to be opt-in, and preferably be able to introspect the access level of router.

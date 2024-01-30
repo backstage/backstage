@@ -59,7 +59,8 @@
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-sonarqube-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
-    "@backstage/plugin-todo-backend": "workspace:^"
+    "@backstage/plugin-todo-backend": "workspace:^",
+    "@backstage/plugin-user-settings-backend": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

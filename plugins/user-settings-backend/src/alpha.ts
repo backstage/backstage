@@ -19,6 +19,7 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
+import { httpAuthServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * The user settings backend plugin.
@@ -31,11 +32,11 @@ export default createBackendPlugin({
     env.registerInit({
       deps: {
         database: coreServices.database,
-        identity: coreServices.identity,
         httpRouter: coreServices.httpRouter,
+        httpAuth: httpAuthServiceRef,
       },
-      async init({ database, identity, httpRouter }) {
-        httpRouter.use(await createRouter({ database, identity }));
+      async init({ database, httpAuth, httpRouter }) {
+        httpRouter.use(await createRouter({ database, httpAuth }));
       },
     });
   },

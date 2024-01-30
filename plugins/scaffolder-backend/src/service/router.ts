@@ -641,6 +641,8 @@ export async function createRouter(
           request: req,
         })
       )?.token;
+      const credentials = httpAuth.credentials(req, { allow: ['user'] });
+      const token = await auth.issueToken({ forward: credentials });
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);

@@ -37,6 +37,8 @@ import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -266,6 +268,17 @@ export async function createRouter(
         const entityName = { kind, namespace, name };
         const token = getBearerToken(req.headers.authorization);
 
+        const permissionEvaluator: PermissionEvaluator;
+
+        permissionEvaluator.authorize(
+          [
+            {
+              permission: catalogEntityReadPermission,
+              resourceRef: stringifyEntityRef(entityName),
+            },
+          ],
+          { token: await tokenManager.getToken(), userIdentity: {} },
+        );
         const entity = await entityLoader.load(entityName, token);
 
         if (!entity) {
