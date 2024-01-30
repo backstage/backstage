@@ -2,5 +2,4 @@
 '@backstage/plugin-scaffolder': minor
 ---
 
-Updating the `EntityPicker` to only select by default `kind` `metadata.name` `metadata.namespace` and `metadata.title` by default to improve performance on larger datasets.
-
+Updating the `EntityPicker` to only select `kind` `metadata.name` and `metadata.namespace` by default to improve performance on larger datasets.

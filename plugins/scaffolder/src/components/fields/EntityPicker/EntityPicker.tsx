@@ -61,20 +61,13 @@ export const EntityPicker = (props: EntityPickerProps) => {
   } = props;
   const catalogFilter = buildCatalogFilter(uiSchema);
   const defaultKind = uiSchema['ui:options']?.defaultKind;
-  const customFields = uiSchema['ui:options']?.fields;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
 
   const catalogApi = useApi(catalogApiRef);
 
   const { value: entities, loading } = useAsync(async () => {
-    const defaultFields = [
-      'metadata.name',
-      'metadata.namespace',
-      'metadata.title',
-      'kind',
-    ];
-    const fields = customFields || defaultFields;
+    const fields = ['metadata.name', 'metadata.namespace', 'kind'];
     const { items } = await catalogApi.getEntities(
       catalogFilter
         ? { filter: catalogFilter, fields: fields }

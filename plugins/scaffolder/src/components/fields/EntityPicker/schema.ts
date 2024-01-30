@@ -41,13 +41,6 @@ export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
       .describe(
         'DEPRECATED: Use `catalogFilter` instead. List of kinds of entities to derive options from',
       ),
-    fields: z
-      .array(z.string())
-      .optional()
-      .describe(
-        'Download only the parts of each entity that match the field declarations.' +
-          " Defaults to: fields: ['metadata.name', 'metadata.namespace', 'metadata.title', 'kind']",
-      ),
     defaultKind: z
       .string()
       .optional()
