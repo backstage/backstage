@@ -12,7 +12,7 @@ To have a better understanding of extension data references please read [extensi
 
 ## Built-in extension data references
 
-Data references help to define the input & output of an extension. A data ref is uniquely identified through there `id`. Through the data ref strong typing is enforced for the input/output of the extension.
+Data references help to define the inputs and outputs of an extension. A data ref is uniquely identified through its `id`. Through the data ref, strong typing is enforced for the input/output of the extension.
 
 ### Core Extension Data
 
