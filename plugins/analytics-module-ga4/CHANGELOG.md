@@ -1,5 +1,19 @@
 # @backstage/plugin-analytics-module-ga4
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- e586f79: Add support to the new analytics api.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/config@1.1.1
+
 ## 0.1.8
 
 ### Patch Changes
