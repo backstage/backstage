@@ -34,6 +34,7 @@ import {
   AtlassianAuth,
   createFetchApi,
   FetchMiddlewares,
+  Pinniped,
   VMwareCloudAuth,
 } from '@backstage/core-app-api';
 
@@ -57,6 +58,7 @@ import {
   bitbucketAuthApiRef,
   bitbucketServerAuthApiRef,
   atlassianAuthApiRef,
+  pinnipedSupervisorApiRef,
   vmwareCloudAuthApiRef,
 } from '@backstage/core-plugin-api';
 import {
@@ -244,6 +246,22 @@ export const apis = [
         oauthRequestApi,
         defaultScopes: ['REPO_READ'],
       }),
+  }),
+  createApiFactory({
+    api: pinnipedSupervisorApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
+      return Pinniped.create({
+        configApi,
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      });
+    },
   }),
   createApiFactory({
     api: atlassianAuthApiRef,

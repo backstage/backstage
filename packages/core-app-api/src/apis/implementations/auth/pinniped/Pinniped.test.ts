@@ -179,10 +179,10 @@ describe('Pinniped', () => {
     expect(refreshSession).toHaveBeenCalledTimes(1);
   });
 
-  it.skip('uses refresh token when present', async () => {
+  it('uses refresh token when present', async () => {
     const refreshedSession: OAuth2Session = {
       providerInfo: {
-        idToken: 'Not a cluster scope IdToken',
+        idToken: 'It is a refresh IdToken',
         accessToken: '',
         scopes: new Set(),
         expiresAt: undefined,
@@ -222,6 +222,6 @@ describe('Pinniped', () => {
 
     const idToken = await pinnipedAuth.getClusterScopedIdToken('myAudience');
 
-    expect(idToken).toBe('It is a cluster scope IdToken');
+    expect(idToken).toBe('It is a refresh IdToken');
   });
 });

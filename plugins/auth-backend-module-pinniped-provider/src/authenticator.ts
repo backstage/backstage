@@ -246,10 +246,11 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
 
     let id_token = tokenset.id_token;
 
-    if (input.audience) {
+    const audience = input.req.query.audience?.toString();
+    if (audience) {
       id_token = await rfc8693TokenExchange({
         subject_token: tokenset.access_token!,
-        target_audience: input.audience!,
+        target_audience: audience,
         ctx: ctx.getStrategy(),
       });
     }

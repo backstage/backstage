@@ -403,6 +403,7 @@ describe('pinnipedAuthenticator', () => {
               state: encodeOAuthState(oauthState),
             },
           },
+          query: {},
         } as unknown as express.Request,
       };
     });
@@ -689,6 +690,7 @@ describe('pinnipedAuthenticator', () => {
                 state: encodeOAuthState(oauthState),
               },
             },
+            query: {},
           } as unknown as express.Request,
         },
         authCtx,
@@ -705,7 +707,11 @@ describe('pinnipedAuthenticator', () => {
       refreshRequest = {
         scope: '',
         refreshToken: 'otherRefreshToken',
-        req: {} as express.Request,
+        req: {
+          query: {
+            audience: 'test_cluster',
+          },
+        } as unknown as express.Request,
       };
     });
 
@@ -733,7 +739,7 @@ describe('pinnipedAuthenticator', () => {
         authCtx,
       );
 
-      expect(refreshResponse.session.idToken).toBe(idToken);
+      expect(refreshResponse.session.idToken).toBe('dummy-token');
     });
 
     it('refreshes oidc metadata after a failed fetch', async () => {
@@ -823,7 +829,7 @@ describe('pinnipedAuthenticator', () => {
 
       await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
 
-      expect(supervisorCalls).toEqual(2);
+      expect(supervisorCalls).toEqual(3);
     });
   });
 });

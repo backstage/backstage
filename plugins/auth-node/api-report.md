@@ -304,8 +304,6 @@ export interface OAuthAuthenticatorLogoutInput {
 // @public (undocumented)
 export interface OAuthAuthenticatorRefreshInput {
   // (undocumented)
-  audience?: string;
-  // (undocumented)
   refreshToken: string;
   // (undocumented)
   req: Request_2;

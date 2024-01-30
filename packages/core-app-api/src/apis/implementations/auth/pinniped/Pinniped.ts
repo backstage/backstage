@@ -21,6 +21,7 @@ import {
   PinnipedSupervisorApi,
   pinnipedSupervisorApiRef,
   DiscoveryApi,
+  OAuthRequestApi,
 } from '@backstage/core-plugin-api';
 import { OAuth2CreateOptions, OAuth2Session, PopupOptions } from '../oauth2';
 
@@ -31,7 +32,7 @@ import {
   SessionManager,
 } from '../../../../lib';
 
-const DEFAULT_PROVIDER = {
+const PROVIDER_NAME = {
   id: 'pinniped',
   title: 'Pinniped',
   icon: () => null,
@@ -48,7 +49,7 @@ export default class Pinniped implements PinnipedSupervisorApi {
   private environment: string;
   private provider: AuthProviderInfo;
   private discoveryApi: DiscoveryApi;
-  private defaultScopes: string[];
+  private oauthRequestApi: OAuthRequestApi;
   private popupOptions: PopupOptions | undefined;
 
   static create(
@@ -61,14 +62,9 @@ export default class Pinniped implements PinnipedSupervisorApi {
     const {
       configApi,
       environment = 'development',
-      provider = DEFAULT_PROVIDER,
+      provider = PROVIDER_NAME,
       discoveryApi,
-      defaultScopes = [
-        'openid',
-        'offline_access',
-        'pinniped:request-audience',
-        'username',
-      ],
+      oauthRequestApi,
       popupOptions,
     } = options;
 
@@ -76,8 +72,8 @@ export default class Pinniped implements PinnipedSupervisorApi {
     this.environment = environment;
     this.provider = provider;
     this.discoveryApi = discoveryApi;
-    this.defaultScopes = defaultScopes;
     this.popupOptions = popupOptions;
+    this.oauthRequestApi = oauthRequestApi;
 
     this.audiences = {};
   }
@@ -92,6 +88,7 @@ export default class Pinniped implements PinnipedSupervisorApi {
         configApi: this.configApi,
         discoveryApi: this.discoveryApi,
         environment: this.environment,
+        oauthRequestApi: this.oauthRequestApi,
         provider: this.provider,
         sessionTransform({
           backstageIdentity,
@@ -118,7 +115,6 @@ export default class Pinniped implements PinnipedSupervisorApi {
 
       const sessionManager = new RefreshingAuthSessionManager({
         connector,
-        defaultScopes: new Set(this.defaultScopes),
         sessionScopes: (session: OAuth2Session) => session.providerInfo.scopes,
         sessionShouldRefresh: (session: OAuth2Session) => {
           let min = Infinity;

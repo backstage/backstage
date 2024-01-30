@@ -17,6 +17,8 @@ import {
   AuthProviderInfo,
   ConfigApi,
   DiscoveryApi,
+  OAuthRequestApi,
+  OAuthRequester,
 } from '@backstage/core-plugin-api';
 import { showLoginPopup } from '../loginPopup';
 import { AuthConnector, CreateSessionOptions, PopupOptions } from './types';
@@ -32,6 +34,10 @@ type Options<AuthSession> = {
    * Environment hint passed on to auth backend, for example 'production' or 'development'
    */
   environment: string;
+  /**
+   * API used to instantiate an auth requester.
+   */
+  oauthRequestApi: OAuthRequestApi;
   /**
    * Information about the auth provider to be shown to the user.
    * The ID Must match the backend auth plugin configuration, for example 'google'.
@@ -68,6 +74,7 @@ export class PinnipedAuthConnector<AuthSession>
   private readonly audience: string;
   private readonly provider: AuthProviderInfo;
   private readonly sessionTransform: (response: any) => Promise<AuthSession>;
+  private readonly authRequester: OAuthRequester<AuthSession>;
   private readonly enableExperimentalRedirectFlow: boolean;
   private readonly popupOptions: PopupOptions | undefined;
   constructor(options: Options<AuthSession>) {
@@ -77,6 +84,7 @@ export class PinnipedAuthConnector<AuthSession>
       environment,
       provider,
       audience,
+      oauthRequestApi,
       sessionTransform = id => id,
       popupOptions,
     } = options;
@@ -93,6 +101,16 @@ export class PinnipedAuthConnector<AuthSession>
       ? configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ?? false
       : false;
 
+    this.authRequester = oauthRequestApi.createAuthRequester({
+      provider,
+      onAuthRequest: async () => {
+        if (!this.enableExperimentalRedirectFlow) {
+          return this.showPopup();
+        }
+        return this.executeRedirect();
+      },
+    });
+
     this.discoveryApi = discoveryApi;
     this.environment = environment;
     this.provider = provider;
@@ -108,13 +126,14 @@ export class PinnipedAuthConnector<AuthSession>
       }
       return this.showPopup();
     }
-    return this.showPopup();
+    return this.authRequester(options.scopes);
   }
 
   async refreshSession(): Promise<any> {
     const res = await fetch(
       await this.buildUrl('/refresh', {
         optional: true,
+        audience: this.audience,
       }),
       {
         headers: {

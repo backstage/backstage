@@ -1,4 +1,5 @@
 ---
+'@backstage/app-defaults': patch
 '@backstage/core-plugin-api': patch
 '@backstage/core-app-api': patch
 '@backstage/plugin-auth-backend-module-pinniped-provider': patch
