@@ -33,7 +33,7 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@material-ui/core": "^4.12.2",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "use-deep-compare-effect": "^1.8.1"
   },
   "peerDependencies": {
