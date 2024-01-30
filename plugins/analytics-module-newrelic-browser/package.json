@@ -26,6 +26,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@newrelic/browser-agent": "^1.236.0"
   },
   "peerDependencies": {

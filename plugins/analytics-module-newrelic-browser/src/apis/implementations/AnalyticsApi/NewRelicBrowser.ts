@@ -19,6 +19,10 @@ import {
   IdentityApi,
   AnalyticsEvent,
 } from '@backstage/core-plugin-api';
+import {
+  AnalyticsApi as NewAnalyicsApi,
+  AnalyticsEvent as NewAnalyticsEvent,
+} from '@backstage/frontend-plugin-api';
 import { BrowserAgent } from '@newrelic/browser-agent/loaders/browser-agent';
 import type { setAPI } from '@newrelic/browser-agent/loaders/api/api';
 
@@ -37,7 +41,7 @@ type NewRelicBrowserOptions = {
  * New Relic Browser API provider for the Backstage Analytics API.
  * @public
  */
-export class NewRelicBrowser implements AnalyticsApi {
+export class NewRelicBrowser implements AnalyticsApi, NewAnalyicsApi {
   private readonly agent: NewRelicAPI;
 
   private constructor(
@@ -121,9 +125,17 @@ export class NewRelicBrowser implements AnalyticsApi {
     );
   }
 
-  captureEvent(event: AnalyticsEvent) {
+  captureEvent(event: AnalyticsEvent | NewAnalyticsEvent) {
     const { context, action, subject, value, attributes } = event;
-    if (action === 'navigate' && context.extension === 'App') {
+
+    const extensionId = context.extensionId || context.extension;
+    const category = extensionId ? String(extensionId) : 'App';
+
+    // The legacy default extension was 'App' and the new one is 'app'
+    if (
+      action === 'navigate' &&
+      category.toLocaleLowerCase('en-US').startsWith('app')
+    ) {
       const interaction = this.agent.interaction();
       interaction.setName(subject);
       if (value) {

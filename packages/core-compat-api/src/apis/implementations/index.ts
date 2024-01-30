@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Common analytics context attributes.
- *
- * @public
- */
-export type CommonAnalyticsContext = {
-  /**
-   * The nearest known parent plugin where the event was captured.
-   */
-  pluginId: string;
-
-  /**
-   * The nearest known parent extension where the event was captured.
-   */
-  extensionId: string;
-};
-
-/**
- * Analytics context envelope.
- *
- * @public
- */
-export type AnalyticsContextValue = CommonAnalyticsContext & {
-  [param in string]: string | boolean | number | undefined;
-};
+export * from './AnalyticsApi';

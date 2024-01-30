@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import ReactGA from 'react-ga4';
 import {
   AnalyticsApi,
@@ -21,6 +22,11 @@ import {
   AnalyticsEvent,
   IdentityApi,
 } from '@backstage/core-plugin-api';
+import {
+  AnalyticsApi as NewAnalyticsApi,
+  AnalyticsEvent as NewAnalyticsEvent,
+  AnalyticsContextValue as NewAnalyticsContextValue,
+} from '@backstage/frontend-plugin-api';
 import { Config } from '@backstage/config';
 import { DeferredCapture } from '../../../util/DeferredCapture';
 
@@ -28,7 +34,7 @@ import { DeferredCapture } from '../../../util/DeferredCapture';
  * Google Analytics API provider for the Backstage Analytics API.
  * @public
  */
-export class GoogleAnalytics4 implements AnalyticsApi {
+export class GoogleAnalytics4 implements AnalyticsApi, NewAnalyticsApi {
   private readonly customUserIdTransform?: (
     userEntityRef: string,
   ) => Promise<string>;
@@ -157,17 +163,24 @@ export class GoogleAnalytics4 implements AnalyticsApi {
    * applied as they should be (set on pageview, merged object on events).
    * @param event - AnalyticsEvent type captured
    */
-  captureEvent(event: AnalyticsEvent) {
+  captureEvent(event: AnalyticsEvent | NewAnalyticsEvent) {
     const { context, action, subject, value, attributes } = event;
     const customEventData = this.setEventParameters(context, attributes);
     if (this.contentGroupBy) {
       customEventData.content_group = context[this.contentGroupBy]!;
     }
 
-    if (action === 'navigate' && context.extension === 'App') {
+    const extensionId = context.extensionId || context.extension;
+    const category = extensionId ? String(extensionId) : 'App';
+
+    // The legacy default extension was 'App' and the new one is 'app'
+    if (
+      action === 'navigate' &&
+      category.toLocaleLowerCase('en-US').startsWith('app')
+    ) {
       this.capture.event(
         {
-          category: context.extension || 'App',
+          category,
           action: 'page_view',
           label: subject,
           value,
@@ -183,7 +196,7 @@ export class GoogleAnalytics4 implements AnalyticsApi {
 
     this.capture.event(
       {
-        category: context.extension || 'App',
+        category,
         action,
         label: subject,
         value,
@@ -199,7 +212,7 @@ export class GoogleAnalytics4 implements AnalyticsApi {
    * @param attributes additional analytics event attributes
    */
   private setEventParameters(
-    context: AnalyticsContextValue,
+    context: AnalyticsContextValue | NewAnalyticsContextValue,
     attributes: AnalyticsEventAttributes = {},
   ) {
     const customEventParameters: {
