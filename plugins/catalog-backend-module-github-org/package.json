@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-github-org",
   "description": "The github-org backend module for the catalog plugin.",
-  "version": "0.1.4-next.0",
+  "version": "0.1.4-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",

@@ -1,5 +1,20 @@
 # @backstage/plugin-adr-backend
 
+## 0.4.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-adr-common@0.2.20-next.0
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.4.7-next.0
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.14.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/plugin-kubernetes-node@0.1.4-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.4-next.1
+  - @backstage/plugin-catalog-node@1.6.2-next.1
+  - @backstage/plugin-kubernetes-common@0.7.4-next.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-node@0.7.21-next.1
+
 ## 0.14.2-next.0
 
 ### Patch Changes

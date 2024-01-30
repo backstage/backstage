@@ -1,5 +1,17 @@
 # @backstage/integration
 
+## 1.9.0-next.0
+
+### Minor Changes
+
+- e27b7f3: Fix rate limit detection by looking for HTTP status code 429 and updating the header `x-ratelimit-remaining` to look for in case of a 403 code is returned
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 1.8.0
 
 ### Minor Changes
