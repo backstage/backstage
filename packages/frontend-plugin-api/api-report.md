@@ -8,6 +8,8 @@
 import { AlertApi } from '@backstage/core-plugin-api';
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
+import { AnalyticsApi as AnalyticsApi_2 } from '@backstage/core-plugin-api';
+import { AnalyticsEvent as AnalyticsEvent_2 } from '@backstage/core-plugin-api';
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiFactory } from '@backstage/core-plugin-api';
@@ -992,6 +994,20 @@ export { IdentityApi };
 export { identityApiRef };
 
 export { microsoftAuthApiRef };
+
+// @public
+export class MultipleAnalyticsApi implements AnalyticsApi_2, AnalyticsApi {
+  captureEvent(event: AnalyticsEvent_2 | AnalyticsEvent): void;
+  static fromApis(
+    actualApis: (AnalyticsApi_2 | AnalyticsApi)[],
+  ): MultipleAnalyticsApi;
+}
+
+// @public
+export class NoOpAnalyticsApi implements AnalyticsApi_2, AnalyticsApi {
+  // (undocumented)
+  captureEvent(_event: AnalyticsEvent_2 | AnalyticsEvent): void;
+}
 
 export { OAuthApi };
 

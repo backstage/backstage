@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-export * from './definitions';
-export * from './implementations';
-export * from './system';
+// This folder contains implementations for all core APIs.
+// Plugins should rely on these APIs for functionality as much as possible.
+
+export * from './AnalyticsApi';
