@@ -34,7 +34,7 @@ module.exports = {
       settings: {
         onlyCategories: ['accessibility'],
         output: ['html', 'json'],
-        // outputP ath: './.lighthouseci/reports',
+        // outputPath: './.lighthouseci/reports',
         preset: 'desktop',
       },
       // refers to root package scripts
