@@ -89,7 +89,10 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith(undefined);
+      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+        fields: ['metadata.name', 'metadata.namespace', 'kind'],
+        filter: undefined,
+      });
     });
 
     it('updates even if there is not an exact match', async () => {
@@ -130,11 +133,13 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: {
-          kind: ['User'],
-        },
-      });
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: {
+            kind: ['User'],
+          },
+        }),
+      );
     });
   });
 
@@ -173,18 +178,20 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: [
-          {
-            kind: ['Group'],
-            'metadata.name': 'test-entity',
-          },
-          {
-            kind: ['User'],
-            'metadata.name': 'test-entity',
-          },
-        ],
-      });
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        }),
+      );
     });
     it('allow single top level filter', async () => {
       uiSchema = {
@@ -204,12 +211,14 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: {
-          kind: ['Group'],
-          'metadata.name': 'test-entity',
-        },
-      });
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: {
+            kind: ['Group'],
+            'metadata.name': 'test-entity',
+          },
+        }),
+      );
     });
 
     it('search for entitities containing an specific key', async () => {
@@ -230,14 +239,16 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: [
-          {
-            kind: ['User'],
-            'metadata.annotation.some/anotation': CATALOG_FILTER_EXISTS,
-          },
-        ],
-      });
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['User'],
+              'metadata.annotation.some/anotation': CATALOG_FILTER_EXISTS,
+            },
+          ],
+        }),
+      );
     });
   });
 
@@ -273,14 +284,16 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: [
-          {
-            kind: ['Group'],
-            'metadata.name': 'test-group',
-          },
-        ],
-      });
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-group',
+            },
+          ],
+        }),
+      );
     });
   });
 
