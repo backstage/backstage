@@ -71,7 +71,7 @@ For service-to-service communication we will move away from reusing user tokens 
 
 ## Design Details
 
-### AuthService (WIP)
+### `AuthService` (WIP)
 
 The new `AuthService` interface is defined as follows:
 
@@ -96,9 +96,11 @@ export interface AuthService {
 }
 ```
 
-TODO: add usage patterns for this service
+#### Usage Patterns
 
-### HttpAuthService (WIP)
+TODO
+
+### `HttpAuthService` (WIP)
 
 The new `HttpAuthService` interface is defined as follows:
 
@@ -119,13 +121,105 @@ export interface HttpAuthService {
     options?: HttpAuthServiceMiddlewareOptions,
   ): BackstageCredentials;
 
-  requestHeaders(credentials: BackstageCredentials): Record<string, string>;
+  requestHeaders(
+    credentials: BackstageCredentials,
+  ): Promise<Record<string, string>>;
 
   issueUserCookie(res: Response): Promise<void>;
 }
 ```
 
-TODO: add usage patterns for this service
+#### Usage Patterns
+
+All of these usages patterns are from the perspective of a plugin backend.
+
+**Authenticate incoming request that requires user authentication**
+
+```ts
+// Adding the middleware separately like this makes it apply to ALL
+// routes added below it. You can also add it between the path and the
+// handler below, to make it apply only for that particular path.
+router.use(httpAuth.middleware({ allow: ['user'] }));
+
+router.get('/read-data', (req, res) => {
+  // TODO: user can currently be undefined, figure out best pattern to avoid that
+  const { user } = httpAuth.credentials(req);
+  console.log(
+    `User ref=${user.userEntityRef} ownership=${user.ownershipEntityRefs}`,
+  );
+  // ...
+});
+```
+
+**Forward the user credentials from an incoming requests to upstream plugin backend**
+
+```ts
+router.get(
+  '/read-data',
+  // Here, the middleware applies to the current path only
+  httpAuth.middleware({ allow: ['user'] }),
+  (req, res) => {
+    const entity = await catalogClient.getEntityByRef(req.params.entityRef, {
+      credentials: httpAuth.credentials(req),
+    });
+    // ...
+  },
+);
+```
+
+**Allow both user and service request**
+
+```ts
+router.get(
+  '/read-data',
+  httpAuth.middleware({ allow: ['user', 'service'] }),
+  (req, res) => {
+    const credentials = httpAuth.credentials(req);
+    if (credentials.user) {
+      res.json(
+        // Silly example just to highlight separate code paths for user and
+        // service requests
+        todoStore.listOwnedTodos({ owner: credentials.user.userEntityRef }),
+      );
+    } else {
+      res.json(todoStore.listTodos());
+    }
+  },
+);
+```
+
+**Issuing a cookie and allowing user cookie auth on a separate endpoint**
+
+```ts
+router.get('/cookie', httpAuth.middleware({ allow: ['user'] }), (req, res) => {
+  await httpAuth.issueUserCookie(res);
+  res.json({ ok: true });
+});
+
+// Separate endpoint that serves static content, allowing user cookie auth as
+// well as regular user auth
+router.use(
+  '/static',
+  httpAuth.middleware({ allow: ['user', 'user-cookie'] }),
+  express.static(staticContentDir),
+);
+```
+
+**Passing along user identity from a cookie in an upstream request**
+
+```ts
+router.get(
+  '/read-data',
+  httpAuth.middleware({ allow: ['user-cookie'] }),
+  (req, res) => {
+    const { cookieUser } = httpAuth.credentials(req);
+    console.log(
+      `User ref=${user.userEntityRef} ownership=${user.ownershipEntityRefs}`,
+    );
+    // ...
+  },
+);
+```
 
 ## Release Plan
 
