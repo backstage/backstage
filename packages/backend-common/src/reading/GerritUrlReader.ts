@@ -17,7 +17,9 @@
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GerritIntegration,
+  GerritIntegrationConfig,
   ScmIntegrations,
+  addAuthenticationToGitilesUrl,
   buildGerritGitilesArchiveUrl,
   getGerritBranchApiUrl,
   getGerritCloneRepoUrl,
@@ -55,6 +57,12 @@ DISABLE_GERRIT_GITILES_REQUIREMENT=1 but this will be removed in a future releas
 are not able to use the gitiles gerrit plugin, please open an issue towards \
 https://github.com/backstage/backstage`;
 
+/**
+ * Check the integration config and determine if Gitiles is available.
+ */
+const fetchFromGitiles = (config: GerritIntegrationConfig): boolean =>
+  config.gitilesBaseUrl !== config.baseUrl;
+
 const createTemporaryDirectory = async (workDir: string): Promise<string> =>
   await fs.mkdtemp(joinPath(workDir, '/gerrit-clone-'));
 
@@ -66,8 +74,9 @@ const createTemporaryDirectory = async (workDir: string): Promise<string> =>
  * way we are depending on that there is a Gitiles installation somewhere
  * that we can link to. It is perfectly possible to integrate Gerrit with
  * Backstage without Gitiles since all API calls goes directly to Gerrit.
- * However if Gitiles is configured, readTree will use it to fetch
- * an archive instead of cloning the repository.
+ * However if Gitiles is configured, readUrl and readTree will use it to fetch
+ * a file or an archive instead of cloning the repository or using the Gerrit
+ * api.
  *
  * The "host" variable in the config is the Gerrit host. The address where
  * Gitiles is installed may be on the same host but it could be on a
@@ -123,7 +132,15 @@ export class GerritUrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
-    const apiUrl = getGerritFileContentsApiUrl(this.integration.config, url);
+    let apiUrl: string;
+    if (fetchFromGitiles(this.integration.config)) {
+      apiUrl = `${addAuthenticationToGitilesUrl(
+        this.integration.config,
+        url,
+      )}?format=TEXT`;
+    } else {
+      apiUrl = getGerritFileContentsApiUrl(this.integration.config, url);
+    }
     let response: Response;
     try {
       response = await fetch(apiUrl, {
@@ -195,9 +212,7 @@ export class GerritUrlReader implements UrlReader {
       throw new NotModifiedError();
     }
 
-    if (
-      this.integration.config.gitilesBaseUrl !== this.integration.config.baseUrl
-    ) {
+    if (fetchFromGitiles(this.integration.config)) {
       return this.readTreeFromGitiles(url, branchInfo.revision, options);
     }
     return this.readTreeFromGitClone(url, branchInfo.revision, options);

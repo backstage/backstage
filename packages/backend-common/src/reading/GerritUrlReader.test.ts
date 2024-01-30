@@ -69,13 +69,29 @@ const gerritProcessor = new GerritUrlReader(
 );
 
 // Gerrit processor with a gitilesBaseUrl configured.
-// Use to test readTree with Gitiles archive download.
+// Use to test readUrl and readTree with Gitiles download.
 const gerritProcessorWithGitiles = new GerritUrlReader(
   new GerritIntegration(
     readGerritIntegrationConfig(
       new ConfigReader({
         host: 'gerrit.com',
         gitilesBaseUrl: 'https://gerrit.com/gitiles',
+      }),
+    ),
+  ),
+  { treeResponseFactory },
+  '/tmp',
+);
+
+// Gerrit processor with authentication and gitilesBaseUrl set.
+const authenticatedGerritProcessorWithGitiles = new GerritUrlReader(
+  new GerritIntegration(
+    readGerritIntegrationConfig(
+      new ConfigReader({
+        host: 'gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com/gitiles',
+        username: 'u',
+        password: 'p',
       }),
     ),
   ),
@@ -225,6 +241,48 @@ describe.skip('GerritUrlReader', () => {
       );
       const fromStream = await getRawBody(result.stream!());
       expect(fromStream.toString()).toBe(responseBuffer.toString());
+    });
+
+    it('should be able to read file contents from gitiles', async () => {
+      worker.use(
+        rest.get(
+          'https://gerrit.com/gitiles/web/project/*/refs/heads/master/LICENSE',
+          (req, res, ctx) => {
+            expect(req.url.searchParams.get('format')).toBe('TEXT');
+            return res(
+              ctx.status(200),
+              ctx.body(responseBuffer.toString('base64')),
+            );
+          },
+        ),
+      );
+
+      const result = await gerritProcessorWithGitiles.readUrl(
+        'https://gerrit.com/gitiles/web/project/+/refs/heads/master/LICENSE',
+      );
+      const buffer = await result.buffer();
+      expect(buffer.toString()).toBe(responseBuffer.toString());
+    });
+
+    it('should be able to read file contents from gitiles with auth.', async () => {
+      worker.use(
+        rest.get(
+          'https://gerrit.com/a/gitiles/web/project/*/refs/heads/master/LICENSE',
+          (req, res, ctx) => {
+            expect(req.url.searchParams.get('format')).toBe('TEXT');
+            return res(
+              ctx.status(200),
+              ctx.body(responseBuffer.toString('base64')),
+            );
+          },
+        ),
+      );
+
+      const result = await authenticatedGerritProcessorWithGitiles.readUrl(
+        'https://gerrit.com/gitiles/web/project/+/refs/heads/master/LICENSE',
+      );
+      const buffer = await result.buffer();
+      expect(buffer.toString()).toBe(responseBuffer.toString());
     });
 
     it('should raise NotFoundError on 404.', async () => {

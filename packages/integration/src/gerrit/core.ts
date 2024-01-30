@@ -81,6 +81,26 @@ export function parseGerritGitilesUrl(
   };
 }
 
+/** *
+ * Adds the authentication prefix to any Gitiles url.
+ *
+ * @param config - A Gerrit provider config.
+ * @param url - A Gitiles url.
+ * @public
+ */
+export function addAuthenticationToGitilesUrl(
+  config: GerritIntegrationConfig,
+  url: string,
+) {
+  if (!config.gitilesBaseUrl) {
+    return url;
+  }
+  return url.replace(
+    config.gitilesBaseUrl,
+    getGitilesAuthenticationUrl(config),
+  );
+}
+
 /**
  * Build a Gerrit Gitiles url that targets a specific path.
  *

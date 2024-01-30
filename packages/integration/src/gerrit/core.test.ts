@@ -20,6 +20,7 @@ import fetch from 'cross-fetch';
 import { setupRequestMockHandlers } from '../helpers';
 import { GerritIntegrationConfig } from './config';
 import {
+  addAuthenticationToGitilesUrl,
   buildGerritGitilesArchiveUrl,
   buildGerritGitilesUrl,
   getGerritBranchApiUrl,
@@ -33,6 +34,29 @@ import {
 describe('gerrit core', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
+
+  describe('addAuthenticationToGitilesUrl', () => {
+    const config: GerritIntegrationConfig = {
+      host: 'gerrit.com',
+      baseUrl: 'https://gerrit.com',
+      gitilesBaseUrl: 'https://gerrit.com/gitiles',
+    };
+    it('can create add the authentication prefix to an url', () => {
+      expect(
+        addAuthenticationToGitilesUrl(
+          { ...config, username: 'user', password: 'secret' },
+          'https://gerrit.com/gitiles/repo/+/refs/heads/dev/catalog-info.yaml',
+        ),
+      ).toEqual(
+        'https://gerrit.com/a/gitiles/repo/+/refs/heads/dev/catalog-info.yaml',
+      );
+    });
+    it('should not add any prefix if auth not configured', () => {
+      const url =
+        'https://gerrit.com/gitiles/repo/+/refs/heads/dev/catalog-info.yaml';
+      expect(addAuthenticationToGitilesUrl(config, url)).toEqual(url);
+    });
+  });
 
   describe('buildGerritGitilesArchiveUrl', () => {
     const config: GerritIntegrationConfig = {

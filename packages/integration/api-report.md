@@ -8,6 +8,12 @@ import { ConsumedResponse } from '@backstage/errors';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 
 // @public
+export function addAuthenticationToGitilesUrl(
+  config: GerritIntegrationConfig,
+  url: string,
+): string;
+
+// @public
 export class AwsS3Integration implements ScmIntegration {
   constructor(integrationConfig: AwsS3IntegrationConfig);
   // (undocumented)
