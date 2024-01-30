@@ -33,7 +33,7 @@ function setTokenCookie(
       sameSite: 'lax',
       domain: options.cookieDomain,
       path: '/',
-      httpOnly: false,
+      httpOnly: true,
     });
   } catch (_err) {
     // Ignore
