@@ -45,7 +45,7 @@ export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
       .array(z.string())
       .optional()
       .describe(
-        'Fields to ignore from loading - download only the parts of each entity that match the field declarations.' +
+        'Download only the parts of each entity that match the field declarations.' +
           " Defaults to: fields: ['metadata.name', 'metadata.namespace', 'metadata.title', 'kind']",
       ),
     defaultKind: z
