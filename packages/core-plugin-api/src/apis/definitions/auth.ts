@@ -153,8 +153,8 @@ export type OpenIdConnectApi = {
 };
 
 /**
- * This API provides access to Pinniped credentials. It lets you request Supervisor and Cluster Scoped ID tokens,
- * which can be passed to backend services to exchange it for mTLS x509 client certs.
+ * This API provides access to Pinniped credentials. It lets you request Cluster Scoped ID tokens,
+ * which can be passed to a suitably-configured Pinniped Concierge in exchange for x509 client cert bundles.
  *
  * @public
  */
