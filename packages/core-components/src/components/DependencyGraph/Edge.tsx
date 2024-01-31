@@ -67,6 +67,7 @@ export type EdgeComponentProps<T = unknown> = {
     edge: Types.DependencyEdge<T>,
   ) => dagre.graphlib.Graph<{}>;
   curve: 'curveStepBefore' | 'curveMonotoneX';
+  showArrowHeads?: boolean;
 };
 
 const renderDefault = (props: Types.RenderLabelProps<unknown>) => (
@@ -79,6 +80,7 @@ export function Edge<EdgeData>({
   id,
   edge,
   curve,
+  showArrowHeads,
 }: EdgeComponentProps<EdgeData>) {
   const { x = 0, y = 0, width, height, points } = edge;
   const labelProps: Types.DependencyEdge<EdgeData> = edge;
@@ -129,7 +131,7 @@ export function Edge<EdgeData>({
         <path
           data-testid={EDGE_TEST_ID}
           className={classes.path}
-          markerEnd={`url(#${ARROW_MARKER_ID})`}
+          markerEnd={showArrowHeads ? `url(#${ARROW_MARKER_ID})` : undefined}
           d={path}
         />
       )}
