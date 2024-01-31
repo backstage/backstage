@@ -498,8 +498,8 @@ describe('GkeClusterLocator', () => {
         refreshIntervals,
       );
 
-      expect(getHeaders.client._opts).toHaveProperty('libName');
-      expect(getHeaders.client._opts).toHaveProperty('libVersion');
+      expect(getHeaders).toHaveProperty('client._opts.libName');
+      expect(getHeaders).toHaveProperty('client._opts.libVersion');
     });
   });
 });
