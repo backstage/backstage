@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       force_release:
-        description: 'Unconditionally trigger the release job to run'
+        description: Unconditionally trigger the release job
         required: false
         type: boolean
   push:
@@ -81,7 +81,7 @@ jobs:
         run: git fetch origin '${{ github.event.before }}'
 
       - name: Check if release
-        if: inputs.force_release != 'true'
+        if: inputs.force_release != true
         id: release_check
         run: node scripts/check-if-release.js
         env:
@@ -130,7 +130,7 @@ jobs:
   release:
     needs: build
 
-    if: needs.build.outputs.needs_release == 'true' || inputs.force_release == 'true'
+    if: needs.build.outputs.needs_release == 'true' || inputs.force_release == true
 
     runs-on: ubuntu-latest
 
