@@ -49,7 +49,7 @@ export async function injectConfig(
     if (content.includes('__APP_INJECTED_RUNTIME_CONFIG__')) {
       logger.info(`Injecting env config into ${jsFile}`);
 
-      const newContent = content.replace(
+      const newContent = content.replaceAll(
         '"__APP_INJECTED_RUNTIME_CONFIG__"',
         injected,
       );
@@ -58,8 +58,8 @@ export async function injectConfig(
     } else if (content.includes('__APP_INJECTED_CONFIG_MARKER__')) {
       logger.info(`Replacing injected env config in ${jsFile}`);
 
-      const newContent = content.replace(
-        /\/\*__APP_INJECTED_CONFIG_MARKER__\*\/.*\/\*__INJECTED_END__\*\//,
+      const newContent = content.replaceAll(
+        /\/\*__APP_INJECTED_CONFIG_MARKER__\*\/.*?\/\*__INJECTED_END__\*\//g,
         injected,
       );
       await fs.writeFile(path, newContent, 'utf8');
