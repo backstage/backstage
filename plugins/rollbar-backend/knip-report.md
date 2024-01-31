@@ -1,10 +1,9 @@
 # Knip report
 
-## Unused dependencies (5)
+## Unused dependencies (4)
 
 | Name        | Location     |
 |:------------|:-------------|
-| yn          | package.json |
 | cors        | package.json |
 | morgan      | package.json |
 | fs-extra    | package.json |

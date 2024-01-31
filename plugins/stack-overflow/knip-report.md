@@ -1,19 +1,12 @@
 # Knip report
 
-## Unused dependencies (1)
-
-| Name                      | Location     |
-|:--------------------------|:-------------|
-| @testing-library/jest-dom | package.json |
-
-## Unused devDependencies (6)
+## Unused devDependencies (5)
 
 | Name                        | Location     |
 |:----------------------------|:-------------|
 | msw                         | package.json |
 | @backstage/cli              | package.json |
 | @testing-library/dom        | package.json |
-| @backstage/test-utils       | package.json |
 | @testing-library/react      | package.json |
 | @testing-library/user-event | package.json |
 

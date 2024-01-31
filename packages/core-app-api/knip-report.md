@@ -6,7 +6,7 @@
 |:--------|:-------------|
 | history | package.json |
 
-## Unused devDependencies (12)
+## Unused devDependencies (11)
 
 | Name                         | Location     |
 |:-----------------------------|:-------------|
@@ -19,7 +19,6 @@
 | @backstage/test-utils        | package.json |
 | @testing-library/react       | package.json |
 | react-router-dom-stable      | package.json |
-| @testing-library/jest-dom    | package.json |
 | @testing-library/user-event  | package.json |
 | @testing-library/react-hooks | package.json |
 

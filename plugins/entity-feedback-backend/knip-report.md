@@ -1,12 +1,10 @@
 # Knip report
 
-## Unused dependencies (3)
+## Unused dependencies (1)
 
-| Name              | Location     |
-|:------------------|:-------------|
-| yn                | package.json |
-| node-fetch        | package.json |
-| @backstage/config | package.json |
+| Name       | Location     |
+|:-----------|:-------------|
+| node-fetch | package.json |
 
 ## Unused devDependencies (4)
 

@@ -1,14 +1,10 @@
 # Knip report
 
-## Unused dependencies (7)
+## Unused dependencies (3)
 
 | Name               | Location     |
 |:-------------------|:-------------|
-| yn                 | package.json |
-| cors               | package.json |
 | morgan             | package.json |
-| helmet             | package.json |
-| compression        | package.json |
 | stream-buffers     | package.json |
 | @jest-mock/express | package.json |
 

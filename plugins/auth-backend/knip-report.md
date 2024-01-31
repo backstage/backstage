@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (10)
+## Unused dependencies (12)
 
 | Name                    | Location     |
 |:------------------------|:-------------|
@@ -9,13 +9,15 @@
 | morgan                  | package.json |
 | winston                 | package.json |
 | fs-extra                | package.json |
+| node-cache              | package.json |
 | compression             | package.json |
-| passport-gitlab2        | package.json |
+| openid-client           | package.json |
 | passport-github2        | package.json |
+| passport-microsoft      | package.json |
 | google-auth-library     | package.json |
 | passport-google-oauth20 | package.json |
 
-## Unused devDependencies (10)
+## Unused devDependencies (9)
 
 | Name                           | Location     |
 |:-------------------------------|:-------------|
@@ -26,7 +28,6 @@
 | @types/body-parser             | package.json |
 | @types/passport-github2        | package.json |
 | @types/passport-strategy       | package.json |
-| @backstage/backend-defaults    | package.json |
-| @backstage/backend-test-utils  | package.json |
+| @types/passport-microsoft      | package.json |
 | @types/passport-google-oauth20 | package.json |
 

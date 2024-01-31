@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (63)
+## Unused dependencies (64)
 
 | Name                                             | Location     |
 |:-------------------------------------------------|:-------------|
@@ -30,6 +30,7 @@
 | @backstage/plugin-puppetdb                       | package.json |
 | @backstage/plugin-playlist                       | package.json |
 | @backstage/plugin-newrelic                       | package.json |
+| @backstage/plugin-linguist                       | package.json |
 | @backstage/plugin-devtools                       | package.json |
 | @backstage/plugin-api-docs                       | package.json |
 | @backstage/plugin-airbrake                       | package.json |
@@ -68,7 +69,7 @@
 | @roadiehq/backstage-plugin-github-pull-requests  | package.json |
 | @backstage/plugin-techdocs-module-addons-contrib | package.json |
 
-## Unused devDependencies (8)
+## Unused devDependencies (7)
 
 | Name                        | Location     |
 |:----------------------------|:-------------|
@@ -78,6 +79,5 @@
 | @types/zen-observable       | package.json |
 | @backstage/test-utils       | package.json |
 | @testing-library/react      | package.json |
-| @testing-library/jest-dom   | package.json |
 | @testing-library/user-event | package.json |
 

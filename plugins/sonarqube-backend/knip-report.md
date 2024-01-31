@@ -1,11 +1,5 @@
 # Knip report
 
-## Unused dependencies (1)
-
-| Name | Location     |
-|:---|:-------------|
-| yn | package.json |
-
 ## Unused devDependencies (5)
 
 | Name                          | Location     |

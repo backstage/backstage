@@ -1,9 +1,8 @@
 # Knip report
 
-## Unused devDependencies (2)
+## Unused devDependencies (1)
 
-| Name                 | Location     |
-|:---------------------|:-------------|
-| @backstage/cli       | package.json |
-| @backstage/dev-utils | package.json |
+| Name           | Location     |
+|:---------------|:-------------|
+| @backstage/cli | package.json |
 

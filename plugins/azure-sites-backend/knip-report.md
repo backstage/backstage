@@ -2,10 +2,10 @@
 
 ## Unused dependencies (2)
 
-| Name       | Location     |
-|:-----------|:-------------|
-| yn         | package.json |
-| node-fetch | package.json |
+| Name                     | Location     |
+|:-------------------------|:-------------|
+| node-fetch               | package.json |
+| @backstage/catalog-model | package.json |
 
 ## Unused devDependencies (2)
 

@@ -1,10 +1,9 @@
 # Knip report
 
-## Unlisted dependencies (3)
+## Unlisted dependencies (2)
 
-| Name                      | Location                       |
-|:--------------------------|:-------------------------------|
-| @typescript-eslint/parser | .eslintrc.js                   |
-| estree                    | lib/visitImports.js            |
-| estree                    | rules/no-undeclared-imports.js |
+| Name   | Location                       |
+|:-------|:-------------------------------|
+| estree | lib/visitImports.js            |
+| estree | rules/no-undeclared-imports.js |
 

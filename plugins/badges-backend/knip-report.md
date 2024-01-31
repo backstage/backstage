@@ -1,10 +1,9 @@
 # Knip report
 
-## Unused dependencies (3)
+## Unused dependencies (2)
 
 | Name      | Location     |
 |:----------|:-------------|
-| yn        | package.json |
 | cors      | package.json |
 | supertest | package.json |
 

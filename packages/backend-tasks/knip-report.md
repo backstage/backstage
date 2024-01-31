@@ -1,10 +1,9 @@
 # Knip report
 
-## Unused devDependencies (3)
+## Unused devDependencies (2)
 
-| Name                          | Location     |
-|:------------------------------|:-------------|
-| @backstage/cli                | package.json |
-| wait-for-expect               | package.json |
-| @backstage/backend-test-utils | package.json |
+| Name            | Location     |
+|:----------------|:-------------|
+| @backstage/cli  | package.json |
+| wait-for-expect | package.json |
 

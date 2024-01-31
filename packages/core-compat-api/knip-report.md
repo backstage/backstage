@@ -6,13 +6,12 @@
 |:------------------------|:-------------|
 | @backstage/core-app-api | package.json |
 
-## Unused devDependencies (9)
+## Unused devDependencies (8)
 
 | Name                                  | Location     |
 |:--------------------------------------|:-------------|
 | @backstage/cli                        | package.json |
 | @testing-library/react                | package.json |
-| @testing-library/jest-dom             | package.json |
 | @backstage/plugin-catalog             | package.json |
 | @backstage/plugin-puppetdb            | package.json |
 | @backstage/frontend-app-api           | package.json |

@@ -15,12 +15,12 @@
 | @vitejs/plugin-react              | package.json |
 | vite-plugin-node-polyfills        | package.json |
 | @backstage/plugin-airbrake        | package.json |
+| @backstage/frontend-app-api       | package.json |
 | @backstage/plugin-azure-sites     | package.json |
 | @backstage/plugin-search-common   | package.json |
-| @backstage/plugin-stack-overflow  | package.json |
 | @backstage/plugin-linguist-common | package.json |
 
-## Unused devDependencies (7)
+## Unused devDependencies (5)
 
 | Name                        | Location     |
 |:----------------------------|:-------------|
@@ -28,8 +28,6 @@
 | @types/jquery               | package.json |
 | @testing-library/dom        | package.json |
 | @types/zen-observable       | package.json |
-| @testing-library/react      | package.json |
-| @testing-library/jest-dom   | package.json |
 | @testing-library/user-event | package.json |
 
 ## Unlisted dependencies (1)

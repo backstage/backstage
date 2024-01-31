@@ -14,7 +14,7 @@
 | pg-connection-string                              | package.json |
 | azure-devops-node-api                             | package.json |
 | @backstage/plugin-tech-insights-node              | package.json |
-| @backstage/plugin-azure-sites-backend             | package.json |
+| @backstage/plugin-azure-sites-common              | package.json |
 | @backstage/plugin-scaffolder-backend-module-rails | package.json |
 
 ## Unused devDependencies (3)

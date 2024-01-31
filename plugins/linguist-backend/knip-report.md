@@ -1,10 +1,9 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (1)
 
 | Name                        | Location     |
 |:----------------------------|:-------------|
-| yn                          | package.json |
 | @backstage/plugin-auth-node | package.json |
 
 ## Unused devDependencies (5)

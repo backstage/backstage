@@ -1,13 +1,5 @@
 # Knip report
 
-## Unused dependencies (3)
-
-| Name              | Location     |
-|:------------------|:-------------|
-| yn                | package.json |
-| winston           | package.json |
-| @backstage/config | package.json |
-
 ## Unused devDependencies (4)
 
 | Name                          | Location     |

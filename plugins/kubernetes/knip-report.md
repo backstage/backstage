@@ -16,14 +16,11 @@
 | @kubernetes-models/base         | package.json |
 | @kubernetes-models/apimachinery | package.json |
 
-## Unused devDependencies (6)
+## Unused devDependencies (3)
 
-| Name                      | Location     |
-|:--------------------------|:-------------|
-| @backstage/cli            | package.json |
-| @testing-library/dom      | package.json |
-| @backstage/dev-utils      | package.json |
-| @backstage/test-utils     | package.json |
-| @testing-library/react    | package.json |
-| @testing-library/jest-dom | package.json |
+| Name                   | Location     |
+|:-----------------------|:-------------|
+| @backstage/cli         | package.json |
+| @testing-library/dom   | package.json |
+| @testing-library/react | package.json |
 

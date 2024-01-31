@@ -33,10 +33,11 @@
 | @spotify/eslint-config-react     | package.json |
 | @typescript-eslint/eslint-plugin | package.json |
 
-## Unused devDependencies (13)
+## Unused devDependencies (18)
 
 | Name                                    | Location     |
 |:----------------------------------------|:-------------|
+| msw                                     | package.json |
 | del                                     | package.json |
 | ts-node                                 | package.json |
 | nodemon                                 | package.json |
@@ -45,9 +46,13 @@
 | @backstage/theme                        | package.json |
 | @types/http-proxy                       | package.json |
 | @backstage/dev-utils                    | package.json |
+| @backstage/test-utils                   | package.json |
 | @backstage/core-app-api                 | package.json |
+| @backstage/backend-common               | package.json |
+| @backstage/core-plugin-api              | package.json |
 | @backstage/core-components              | package.json |
 | @types/terser-webpack-plugin            | package.json |
+| @backstage/backend-test-utils           | package.json |
 | @backstage/backend-plugin-api           | package.json |
 | @types/rollup-plugin-peer-deps-external | package.json |
 
@@ -60,26 +65,11 @@
 | @vitejs/plugin-react       | package.json |
 | vite-plugin-node-polyfills | package.json |
 
-## Unlisted dependencies (18)
+## Unlisted dependencies (3)
 
-| Name                              | Location                                                                                         |
-|:----------------------------------|:-------------------------------------------------------------------------------------------------|
-| rollup-plugin-polyfill-node       | dist/cjs/build-5e63d42c.cjs.js                                                                   |
-| rollup-plugin-polyfill-node       | dist/cjs/buildWorkspace-47e09dac.cjs.js                                                          |
-| rollup-plugin-polyfill-node       | dist/cjs/createDistWorkspace-09d75851.cjs.js                                                     |
-| rollup-plugin-polyfill-node       | dist/cjs/index-4cb89d61.cjs.js                                                                   |
-| react/package.json                | dist/cjs/index-7e560cd7.cjs.js                                                                   |
-| react-dom/client                  | dist/cjs/packageDetection-6cb79707.cjs.js                                                        |
-| prettier                          | dist/cjs/packageLintConfigs-eceb588c.cjs.js                                                      |
-| prettier                          | src/commands/migrate/packageLintConfigs.ts                                                       |
-| react-dom/client                  | src/lib/bundler/hasReactDomClient.ts                                                             |
-| react/package.json                | src/lib/bundler/server.ts                                                                        |
-| supertest                         | templates/default-backend-plugin/src/service/router.test.ts                                      |
-| winston                           | templates/default-backend-plugin/src/service/router.ts                                           |
-| express-promise-router            | templates/default-backend-plugin/src/service/router.ts                                           |
-| react                             | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.test.tsx |
-| @testing-library/react            | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.test.tsx |
-| react                             | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.tsx      |
-| @material-ui/core                 | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.tsx      |
-| @backstage/plugin-scaffolder-node | templates/scaffolder-module/src/actions/example/example.ts                                       |
+| Name               | Location                                   |
+|:-------------------|:-------------------------------------------|
+| prettier           | src/commands/migrate/packageLintConfigs.ts |
+| react-dom/client   | src/lib/bundler/hasReactDomClient.ts       |
+| react/package.json | src/lib/bundler/server.ts                  |
 

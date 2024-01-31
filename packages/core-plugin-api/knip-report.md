@@ -6,7 +6,7 @@
 |:--------|:-------------|
 | history | package.json |
 
-## Unused devDependencies (7)
+## Unused devDependencies (6)
 
 | Name                        | Location     |
 |:----------------------------|:-------------|
@@ -15,6 +15,5 @@
 | @backstage/test-utils       | package.json |
 | @testing-library/react      | package.json |
 | @backstage/core-app-api     | package.json |
-| @testing-library/jest-dom   | package.json |
 | @testing-library/user-event | package.json |
 

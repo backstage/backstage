@@ -9,7 +9,7 @@
 | zen-observable    | package.json |
 | @backstage/config | package.json |
 
-## Unused devDependencies (11)
+## Unused devDependencies (9)
 
 | Name                        | Location     |
 |:----------------------------|:-------------|
@@ -18,11 +18,9 @@
 | @backstage/cli              | package.json |
 | @testing-library/dom        | package.json |
 | @types/zen-observable       | package.json |
-| @backstage/test-utils       | package.json |
 | @types/google-protobuf      | package.json |
 | @testing-library/react      | package.json |
-| @backstage/core-app-api     | package.json |
-| @testing-library/jest-dom   | package.json |
+| @backstage/app-defaults     | package.json |
 | @testing-library/user-event | package.json |
 
 ## Unlisted dependencies (1)

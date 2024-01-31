@@ -1,12 +1,5 @@
 # Knip report
 
-## Unused dependencies (2)
-
-| Name                              | Location     |
-|:----------------------------------|:-------------|
-| yn                                | package.json |
-| @backstage/plugin-permission-node | package.json |
-
 ## Unused devDependencies (4)
 
 | Name                          | Location     |
