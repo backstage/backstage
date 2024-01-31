@@ -136,7 +136,8 @@ export const TemplateCard = (props: TemplateCardProps) => {
               </Grid>
             </>
           )}
-          {(props.additionalLinks || template.metadata.links?.length) && (
+          {(!!props.additionalLinks?.length ||
+            !!template.metadata.links?.length) && (
             <>
               <Grid item xs={12}>
                 <Divider />
