@@ -91,9 +91,7 @@ A new paradigm for Backstage frontend plugins, allowing definition in config fil
 
 ## Decorator (search plugin)
 
-A transform stream. Decorators allow you to add additional information to documents outside of the [collator](#collator-search-plugin). They sit between the collators and the [indexers](#indexer-search-plugin) and can add extra fields to documents as they're being collated and indexed.
-
-Possible use cases for a decorator could be to bias search results or otherwise improve the search experience in your Backstage instance. Decorators can also be used to remove [metadata](#metadata), filter out, or even add extra documents at index-time.
+A transform stream that allows you to add additional information to [documents](#document-search-plugin).
 
 ## Deployment Artifacts
 
@@ -205,11 +203,13 @@ A service that hosts [packages](#package). The most prominent example is [NPM](h
 
 The declared role of a package, see [package roles](../local-dev/cli-build-system.md#package-roles).
 
-## Permission
+## Permission (core Backstage plugin)
 
 A core Backstage plugin and framework that allows restriction of actions to specific users. See [their docs](https://backstage.io/docs/permissions/overview) for more information.
 
-Any action that a user performs within Backstage may be represented as a permission. More complex actions, like executing a [software template](#software-templates), may require [authorization](#authorization) for multiple permissions throughout the flow. Permissions are identified by a unique name and optionally include a set of attributes that describe the corresponding action. [Plugins](#plugin) are responsible for defining and exposing the permissions they enforce as well as enforcing restrictions from the permission framework.
+## Permission (permission plugin)
+
+A restriction on any action that a user can perform against a specific [resource](#resource-permission-plugin) or set of resources. See [the permission framework docs](../permissions/concepts.md#permission) for more details.
 
 ## Persona (use cases)
 
@@ -221,7 +221,7 @@ A module in Backstage that adds a feature. All functionality outside of [the Bac
 
 ## Policy (permission plugin)
 
-User [permissions](#permission) are authorized by a central, user-defined [permission](#permission) policy. At a high level, a policy is a function that receives a Backstage user and [permission](#permission), and returns a decision to allow or deny. Policies are expressed as code, which decouples the framework from any particular [authorization](#authorization) model, like role-based access control (RBAC) or attribute-based access control (ABAC).
+A construct that takes in a Backstage user and a [permission](#permission-permission-plugin) and returns a [policy decision](#policy-decision-permission-plugin).
 
 ## Policy Decision (permission plugin)
 
