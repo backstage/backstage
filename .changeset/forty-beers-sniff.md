@@ -9,24 +9,8 @@ In order to show arrow heads in the catalog graph page, add `showArrowHeads` att
 (typically in `packages/app/src/App.tsx`):
 
 ```diff
-  <CatalogGraphPage
-    initialState={{
-      selectedKinds: ['component', 'domain', 'system', 'api', 'group'],
-      selectedRelations: [
-        RELATION_OWNER_OF,
-        RELATION_OWNED_BY,
-        RELATION_CONSUMES_API,
-        RELATION_API_CONSUMED_BY,
-        RELATION_PROVIDES_API,
-        RELATION_API_PROVIDED_BY,
-        RELATION_HAS_PART,
-        RELATION_PART_OF,
-        RELATION_DEPENDS_ON,
-        RELATION_DEPENDENCY_OF,
-      ],
-    }}
-+   showArrowHeads
-  />
+- <CatalogGraphPage />
++ <CatalogGraphPage showArrowHeads />
 ```
 
 In order to show arrow heads in entity graphs, add `showArrowHeads` attribute to `EntityCatalogGraphCard` components
