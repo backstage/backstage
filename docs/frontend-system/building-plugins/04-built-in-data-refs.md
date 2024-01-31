@@ -14,90 +14,48 @@ To have a better understanding of extension data references please read [the cor
 
 Data references help to define the inputs and outputs of an extension. A data ref is uniquely identified through its `id`. Through the data ref, strong typing is enforced for the input/output of the extension.
 
-### Core Extension Data
+### reactElement
 
-Commonly used `ExtensionDataRef`s for extensions.
+|         id          |     type      |
+| :-----------------: | :-----------: |
+| `core.reactElement` | `JSX.Element` |
 
-| namespace |     name     |     type      |         id          |
-| :-------: | :----------: | :-----------: | :-----------------: |
-|     -     | reactElement | `JSX.Element` | `core.reactElement` |
-|     -     |  routePath   |   `string`    | `core.routing.path` |
-|     -     |   routeRef   |  `RouteRef`   | `core.routing.ref`  |
+The `reactElement` data reference can be used for defining the extension input/output of React elements. Example usage could be something linke this:
 
-### Core API Data
+```tsx
+import {
+  coreExtensionData,
+  createExtensionInput,
+  createPageExtension,
+} from '@backstage/frontend-plugin-api';
 
-|     namespace      |      name      |      type       |         id         |
-| :----------------: | :------------: | :-------------: | :----------------: |
-| createApiExtension | factoryDataRef | `AnyApiFactory` | `core.api.factory` |
-
-### Core Navigation
-
-#### Item Data
-
-```ts
-type DataType = {
-  title: string;
-  icon: IconComponent;
-  routeRef: RouteRef<undefined>;
-};
+const homePage = createPageExtension({
+  defaultPath: '/home',
+  routeRef: rootRouteRef,
+  inputs: {
+    props: createExtensionInput({
+      children: coreExtensionData.reactElement.optional(),
+    }),
+  },
+});
 ```
 
-|       namespace        |     name      |    type    |           id           |
-| :--------------------: | :-----------: | :--------: | :--------------------: |
-| createNavItemExtension | targetDataRef | `DataType` | `core.nav-item.target` |
+### routePath
 
-#### Logo Data
+|         id          |   type   |
+| :-----------------: | :------: |
+| `core.routing.path` | `string` |
 
-```ts
-type DataType = {
-  logoIcon?: JSX.Element;
-  logoFull?: JSX.Element;
-};
-```
+The `routePath` data reference can be used for defining the extension input/output of string paths.
 
-|       namespace        |        name         |                  type                  |              id               |
-| :--------------------: | :-----------------: | :------------------------------------: | :---------------------------: |
-| createNavLogoExtension | logoElementsDataRef | `ComponentType<PropsWithChildren<{}>>` | `core.nav-logo.logo-elements` |
+### routeRef
 
-### Core App Components Data
+|         id         |    type    |
+| :----------------: | :--------: |
+| `core.routing.ref` | `RouteRef` |
 
-|         namespace         |       name       |               type               |              id               |
-| :-----------------------: | :--------------: | :------------------------------: | :---------------------------: |
-| createSignInPageExtension | componentDataRef | `ComponentType<SignInPageProps>` | `core.sign-in-page.component` |
+The `routeRef` data reference can be used for defining the extension input/output of route references.
 
-### Core Theme Data
+### Other data references
 
-|      namespace       |     name     |    type    |         id         |
-| :------------------: | :----------: | :--------: | :----------------: |
-| createThemeExtension | themeDataRef | `AppTheme` | `core.theme.theme` |
-
-### Core Components
-
-```ts
-type DataType = {
-  ref: ComponentRef;
-  impl: ComponentType;
-};
-```
-
-|        namespace         |       name       |    type    |             id             |
-| :----------------------: | :--------------: | :--------: | :------------------------: |
-| createComponentExtension | componentDataRef | `DataType` | `core.component.component` |
-
-### Core Translation
-
-|         namespace          |        name        |                      type                      |               id               |
-| :------------------------: | :----------------: | :--------------------------------------------: | :----------------------------: |
-| createTranslationExtension | translationDataRef | `TranslationResource` or `TranslationMessages` | `core.translation.translation` |
-
-### App Root
-
-|           namespace           |       name       |                  type                  |         id         |
-| :---------------------------: | :--------------: | :------------------------------------: | :----------------: |
-| createAppRootWrapperExtension | componentDataRef | `ComponentType<PropsWithChildren<{}>>` | `app.root.wrapper` |
-
-### App Router
-
-|       namespace       |       name       |                  type                  |          id          |
-| :-------------------: | :--------------: | :------------------------------------: | :------------------: |
-| createRouterExtension | componentDataRef | `ComponentType<PropsWithChildren<{}>>` | `app.router.wrapper` |
+There are other data refs in the frontend system you might stumble upon while building your plugin. Most of them were created for use cases inside the core of the system, but they can be used also in your plugin.
