@@ -14,11 +14,31 @@
  * limitations under the License.
  */
 
+import { azureDevOpsPullRequestReadPermission } from '@backstage/plugin-azure-devops-common';
 import { PullRequestTable } from '../PullRequestTable/PullRequestTable';
 import React from 'react';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { EmptyState } from '@backstage/core-components';
 
 export const EntityPageAzurePullRequests = (props: {
   defaultLimit?: number;
 }) => {
-  return <PullRequestTable defaultLimit={props.defaultLimit} />;
+  const { entity } = useEntity();
+  return (
+    <RequirePermission
+      permission={azureDevOpsPullRequestReadPermission}
+      resourceRef={stringifyEntityRef(entity)}
+      errorPage={
+        <EmptyState
+          missing="data"
+          title="No Pull Requests to show"
+          description="You are not authorized!"
+        />
+      }
+    >
+      <PullRequestTable defaultLimit={props.defaultLimit} />
+    </RequirePermission>
+  );
 };

@@ -25,36 +25,24 @@ export const AZURE_DEVOPS_README_ANNOTATION = 'dev.azure.com/readme-path';
 // @public (undocumented)
 export const AZURE_DEVOPS_REPO_ANNOTATION = 'dev.azure.com/project-repo';
 
-// Warning: (ae-missing-release-tag) "azureDevOpsGitTagReadPermission" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const azureDevOpsGitTagReadPermission: ResourcePermission<'catalog-entity'>;
 
-// Warning: (ae-missing-release-tag) "azureDevOpsPermissions" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const azureDevOpsPermissions: (
   | BasicPermission
   | ResourcePermission<'catalog-entity'>
 )[];
 
-// Warning: (ae-missing-release-tag) "azureDevOpsPipelineReadPermission" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const azureDevOpsPipelineReadPermission: ResourcePermission<'catalog-entity'>;
 
-// Warning: (ae-missing-release-tag) "azureDevOpsPullRequestDashboardReadPermission" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const azureDevOpsPullRequestDashboardReadPermission: BasicPermission;
 
-// Warning: (ae-missing-release-tag) "azureDevOpsPullRequestReadPermission" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const azureDevOpsPullRequestReadPermission: ResourcePermission<'catalog-entity'>;
 
-// Warning: (ae-missing-release-tag) "azureDevOpsReadmeReadPermission" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const azureDevOpsReadmeReadPermission: ResourcePermission<'catalog-entity'>;
 

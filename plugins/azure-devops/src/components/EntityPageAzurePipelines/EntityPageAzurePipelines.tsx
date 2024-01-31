@@ -18,11 +18,29 @@ import { BuildTable } from '../BuildTable/BuildTable';
 import React from 'react';
 import { useBuildRuns } from '../../hooks';
 import { useEntity } from '@backstage/plugin-catalog-react';
+import { azureDevOpsPipelineReadPermission } from '@backstage/plugin-azure-devops-common';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { EmptyState } from '@backstage/core-components';
 
 export const EntityPageAzurePipelines = (props: { defaultLimit?: number }) => {
   const { entity } = useEntity();
 
   const { items, loading, error } = useBuildRuns(entity, props.defaultLimit);
 
-  return <BuildTable items={items} loading={loading} error={error} />;
+  return (
+    <RequirePermission
+      permission={azureDevOpsPipelineReadPermission}
+      resourceRef={stringifyEntityRef(entity)}
+      errorPage={
+        <EmptyState
+          missing="data"
+          title="No Buils to show"
+          description="You are not authorized!"
+        />
+      }
+    >
+      <BuildTable items={items} loading={loading} error={error} />
+    </RequirePermission>
+  );
 };

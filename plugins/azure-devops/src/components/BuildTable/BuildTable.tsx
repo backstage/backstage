@@ -32,14 +32,12 @@ import {
   StatusWarning,
   Table,
   TableColumn,
-  EmptyState,
 } from '@backstage/core-components';
 
 import { AzurePipelinesIcon } from '../AzurePipelinesIcon';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { getDurationFromDates } from '../../utils/getDurationFromDates';
-import { isAuthorizationError } from '../../utils';
 
 export const getBuildResultComponent = (result: number | undefined) => {
   switch (result) {
@@ -181,15 +179,6 @@ type BuildTableProps = {
 
 export const BuildTable = ({ items, loading, error }: BuildTableProps) => {
   if (error) {
-    if (isAuthorizationError(error)) {
-      return (
-        <EmptyState
-          missing="data"
-          title="No Buils to show"
-          description="You are not authorized!"
-        />
-      );
-    }
     return (
       <div>
         <ResponseErrorPanel error={error} />

@@ -28,7 +28,9 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 
 import { useReadme } from '../../hooks';
-import { isAuthorizationError } from '../../utils';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { azureDevOpsReadmeReadPermission } from '@backstage/plugin-azure-devops-common';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const useStyles = makeStyles(theme => ({
   readMe: {
@@ -64,15 +66,7 @@ function isNotFoundError(error: any): boolean {
 }
 
 const ReadmeCardError = ({ error }: ErrorProps) => {
-  if (isAuthorizationError(error)) {
-    return (
-      <EmptyState
-        title="No README available for this entity"
-        missing="field"
-        description="You are not authorized!"
-      />
-    );
-  } else if (isNotFoundError(error)) {
+  if (isNotFoundError(error)) {
     return (
       <EmptyState
         title="No README available for this entity"
@@ -106,16 +100,28 @@ export const ReadmeCard = (props: Props) => {
   }
 
   return (
-    <InfoCard
-      title="Readme"
-      deepLink={{
-        link: value!.url,
-        title: 'Readme',
-      }}
+    <RequirePermission
+      permission={azureDevOpsReadmeReadPermission}
+      resourceRef={stringifyEntityRef(entity)}
+      errorPage={
+        <EmptyState
+          title="No README available for this entity"
+          missing="field"
+          description="You are not authorized!"
+        />
+      }
     >
-      <Box className={classes.readMe} sx={{ maxHeight: props.maxHeight }}>
-        <MarkdownContent content={value?.content ?? ''} />
-      </Box>
-    </InfoCard>
+      <InfoCard
+        title="Readme"
+        deepLink={{
+          link: value!.url,
+          title: 'Readme',
+        }}
+      >
+        <Box className={classes.readMe} sx={{ maxHeight: props.maxHeight }}>
+          <MarkdownContent content={value?.content ?? ''} />
+        </Box>
+      </InfoCard>
+    </RequirePermission>
   );
 };

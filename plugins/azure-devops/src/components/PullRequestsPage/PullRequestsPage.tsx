@@ -16,7 +16,6 @@
 
 import {
   Content,
-  EmptyState,
   Header,
   Page,
   Progress,
@@ -29,7 +28,6 @@ import { FilterType } from './lib/filters';
 import { PullRequestGrid } from './lib/PullRequestGrid';
 import { useDashboardPullRequests } from '../../hooks';
 import { useFilterProcessor } from './lib/hooks';
-import { isAuthorizationError } from '../../utils';
 
 type PullRequestsPageContentProps = {
   pullRequestGroups: PullRequestGroup[] | undefined;
@@ -47,15 +45,6 @@ const PullRequestsPageContent = ({
   }
 
   if (error) {
-    if (isAuthorizationError(error)) {
-      return (
-        <EmptyState
-          missing="data"
-          title="No Pull Requests to show"
-          description="You are not authorized!"
-        />
-      );
-    }
     return <ResponseErrorPanel error={error} />;
   }
 

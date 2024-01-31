@@ -4,10 +4,4 @@
 '@backstage/plugin-azure-devops-common': patch
 ---
 
-Azure DevOps plugin is now integrated with permission framework for the below features
-
-1. PullRequest
-2. Dashboard Pull Request
-3. Pipeline
-4. GitTag
-5. Readme
+Azure DevOps plugin is now integrated with permission framework for its core features, see the https://github.com/backstage/backstage/blob/master/plugins/azure-devops/README.md for more details.
