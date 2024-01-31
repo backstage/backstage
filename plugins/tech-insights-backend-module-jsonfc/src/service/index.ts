@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-export { JSON_RULE_ENGINE_CHECK_TYPE } from './constants';
-export { techInsightsModuleJsonRulesEngineFactCheckerFactory as default } from './module';
-export * from './service';
+export {
+  JsonRulesEngineFactCheckerFactory,
+  JsonRulesEngineFactChecker,
+} from './JsonRulesEngineFactChecker';
+
 export type {
-  JsonRuleCheckResponse,
-  JsonRuleBooleanCheckResult,
-  TechInsightJsonRuleCheck,
-  ResponseTopLevelCondition,
-  Rule,
-  CheckCondition,
-} from './types';
+  JsonRulesEngineFactCheckerFactoryOptions,
+  JsonRulesEngineFactCheckerOptions,
+} from './JsonRulesEngineFactChecker';

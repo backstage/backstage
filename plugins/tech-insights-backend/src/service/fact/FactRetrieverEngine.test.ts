@@ -17,11 +17,11 @@
 import {
   FactRetriever,
   FactRetrieverRegistration,
+  FactRetrieverRegistry,
   FactSchemaDefinition,
   TechInsightFact,
   TechInsightsStore,
 } from '@backstage/plugin-tech-insights-node';
-import { FactRetrieverRegistry } from './FactRetrieverRegistry';
 import {
   DefaultFactRetrieverEngine,
   FactRetrieverEngine,
