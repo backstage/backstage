@@ -69,13 +69,49 @@ describe('Test for default backstage token expiry time', () => {
     );
   });
 
-  it('Will return user defined backstage session expiration', () => {
+  it('Will return user defined 120 minutes as backstage session expiration', () => {
     const config = new ConfigReader({
       app: {
         baseUrl: 'http://example.com/extra-path',
       },
       auth: {
         backstageTokenExpiration: { minutes: 120 },
+      },
+    });
+    expect(getDefaultBackstageTokenExpiryTime(config)).toBe(7200);
+  });
+
+  it('Will return minimum duration of 10 minutes as backstage session expiration', () => {
+    const config = new ConfigReader({
+      app: {
+        baseUrl: 'http://example.com/extra-path',
+      },
+      auth: {
+        backstageTokenExpiration: { minutes: 2 },
+      },
+    });
+    expect(getDefaultBackstageTokenExpiryTime(config)).toBe(600);
+  });
+
+  it('Will return user configured value as backstage session expiration', () => {
+    const config = new ConfigReader({
+      app: {
+        baseUrl: 'http://example.com/extra-path',
+      },
+      auth: {
+        backstageTokenExpiration: { minutes: 20 },
+      },
+    });
+    expect(getDefaultBackstageTokenExpiryTime(config)).toBe(1200);
+  });
+
+  it('Will return maximum of 24 hour as backstage session expiration if user configured value is more than a day', () => {
+    const config = new ConfigReader({
+      app: {
+        baseUrl: 'http://example.com/extra-path',
+      },
+      auth: {
+        backstageTokenExpiration: { minutes: 1500 },
       },
     });
     expect(getDefaultBackstageTokenExpiryTime(config)).toBe(86400);
