@@ -99,7 +99,7 @@ export const LinkProjectDialog = ({
 
       <DialogActions>
         <Button onClick={handleSubmit} color="primary" type="submit">
-          OK
+          LINK
         </Button>
       </DialogActions>
     </Dialog>
