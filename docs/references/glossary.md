@@ -99,9 +99,9 @@ An executable or package file with all of the necessary information required to 
 
 ## Developer
 
-Someone who writes code and develops software.
+1. Someone who writes code and develops software.
 
-A [user role](#user-role) defined as someone who uses a Backstage [app](#app). Might or might not actually be a software developer.
+2. A [user role](#user-role) defined as someone who uses a Backstage [app](#app). Might or might not actually be a software developer.
 
 ## Developer Portal
 
@@ -251,11 +251,11 @@ An [entity](#entity) that represents a piece of physical or virtual infrastructu
 
 ## Resource (permission plugin)
 
-Not to be confused with [Software Catalog resources](#resource-catalog-plugin). Permission resources represent the objects that users interact with and that can be permissioned.
+A representation of an object that a user interacts with and that can be permissioned. Not to be confused with [Software Catalog resources](#resource-catalog-plugin). 
 
 ## Rule (permission plugin)
 
-Rules are predicate-based controls that tap into a [resource](#resource-permission-plugin)'s data.
+A predicate-based control that taps into a [resource](#resource-permission-plugin)'s data.
 
 ## Role
 
