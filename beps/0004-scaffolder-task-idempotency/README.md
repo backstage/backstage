@@ -1,5 +1,5 @@
 ---
-title: Scaffolder Task Idempotency
+title: Scaffolder Retryable Tasks
 status: provisional
 authors:
   - 'benjaminl@spotify.com'
@@ -36,7 +36,7 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 
 ## Summary
 
-Scaffolder task idempotency provides the means to make each action of the task idempotent. By default, an action is not considered to be idempotent.
+Scaffolder retriable task idempotency provides the means to make each action of the task idempotent. By default, an action is not considered to be idempotent.
 It has to be crafted to a solution when action can be re-run multiple times and giving the same effect as it had been run only once.
 
 ## Motivation
@@ -52,10 +52,12 @@ List the specific goals of the BEP. What is it trying to achieve? How will we
 know that this has succeeded?
 -->
 
-- provide a checkpoint functionality which can be used in task actions
-- make built-in actions idempotent
-- enhance task UI with a possibility to retry the failed task from the last failed step
-- preserve a workspace till task succeeded or archived
+- we will provide extended task API in scaffolder with a necessary tools to let tasks implement retries
+- make built-in actions retryable
+- enable the user to retry the failed task
+- should be possible to retry the task on a different scaffolder instance
+- we would like to retry from any state and not tearing down or overwriting what was created before.
+- we would like to be resilient to upstream failures, i.e. a request to create a remote repository failed and repository was created, it should be handled gracefully.
 
 ### Non-Goals
 
@@ -63,6 +65,8 @@ know that this has succeeded?
 What is out of scope for this BEP? Listing non-goals helps to focus discussion
 and make progress.
 -->
+
+We will not aim to magically provide idempotency for actions, it has to be explicitly implemented.
 
 ## Proposal
 
@@ -73,6 +77,14 @@ you're proposing, but should not include things like API designs or
 implementation.
 -->
 
+We believe that idempotency is the best way to do it. Idempotency allows to rerun the actions multiple times to gracefully deal with semi-complete actions.
+
+### Idempotency
+
+### Serialization of workspace
+
+### Secrets
+
 ## Design Details
 
 <!--
@@ -80,6 +92,104 @@ This section should contain enough information that the specifics of your
 change are understandable. This may include API specs or even code snippets.
 If there's any ambiguity about HOW your proposal will be implemented, this is the place to discuss them.
 -->
+
+### Idempotency
+
+This is a simplified idempotent version of GitHub repository creation action:
+
+```typescript
+  export function createGithubRepoCreateAction(options: {
+  integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}) {
+  const {integrations, githubCredentialsProvider} = options;
+
+  return createTemplateAction<{
+    repoUrl: string;
+    secrets?: { [key: string]: string };
+    token?: string;
+  }>({
+    id: 'github:repo:create',
+    description: 'Creates a GitHub repository.',
+    examples,
+    schema: {
+      input: {
+        type: 'object',
+        required: ['repoUrl'],
+        properties: {
+          repoUrl: inputProps.repoUrl,
+          token: inputProps.token,
+          secrets: inputProps.secrets,
+        },
+      },
+    },
+    async handler(ctx) {
+      const {
+        repoUrl,
+        secrets,
+        token: providedToken,
+      } = ctx.input;
+
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+        repoUrl: repoUrl,
+      });
+      const client = new Octokit(octokitOptions);
+
+      const {owner, repo} = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
+      }
+
+      const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
+        client,
+        repo,
+        owner,
+        secrets,
+        ctx.logger,
+      );
+
+      ctx.output('remoteUrl', newRepo.clone_url);
+    },
+  });
+```
+
+#### Task context store
+
+Implement the similar API to CatalogProcessorCache allowing to store markers or keys to enable users to write idempotent actions.
+This context persists across retries.
+
+```typescript
+const repoMarker = await cache.get<RepoMarker>('repo.marker.key');
+```
+
+#### Checkpoints
+
+Checkpoints will allow action authors to create actions where code paths are ignored if already run. This will be provided on a context object and action of author provide a key and a callback.
+
+```typescript
+await ctx.checkpoint('repo.creation', async () => {
+  const { repoUrl } = await client.rest.Repository.create({});
+  return { repoUrl };
+});
+```
+
+This checkpoint will be backed with task stored context namespaced with a checkpoint versioned prefix.
+It's going look like:
+
+```json
+{
+  "v1.task.checkpoint.repo.creation": {
+    "status": "success",
+    "result": {
+      "repoUrl": "https://github.com/backstage/backstage.git"
+    }
+  }
+}
+```
 
 ## Release Plan
 
