@@ -58,7 +58,7 @@ function getEntityGraphRelationsConfigSchema(z: Zod) {
 }
 
 const CatalogGraphEntityCard = createEntityCardExtension({
-  name: 'catalog-graph',
+  name: 'entity-relations',
   configSchema: createSchemaFromZod(z =>
     z
       .object({
