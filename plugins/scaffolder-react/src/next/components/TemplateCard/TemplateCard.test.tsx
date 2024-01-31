@@ -149,6 +149,88 @@ describe('TemplateCard', () => {
     }
   });
 
+  it('should not render links section when empty links are defined', async () => {
+    const mockTemplate: TemplateEntityV1beta3 = {
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
+      kind: 'Template',
+      metadata: { name: 'bob', tags: [], links: [] },
+      spec: {
+        steps: [],
+        type: 'service',
+      },
+      relations: [
+        {
+          targetRef: 'group:default/my-test-user',
+          type: RELATION_OWNED_BY,
+        },
+      ],
+    };
+
+    const { queryByRole, queryByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+        ]}
+      >
+        <TemplateCard template={mockTemplate} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:kind/:namespace/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(queryByRole('separator')).not.toBeInTheDocument();
+    expect(queryByText('0')).not.toBeInTheDocument();
+  });
+
+  it('should not render links section when empty additional links are defined', async () => {
+    const mockTemplate: TemplateEntityV1beta3 = {
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
+      kind: 'Template',
+      metadata: { name: 'bob', tags: [], links: [] },
+      spec: {
+        steps: [],
+        type: 'service',
+      },
+      relations: [
+        {
+          targetRef: 'group:default/my-test-user',
+          type: RELATION_OWNED_BY,
+        },
+      ],
+    };
+
+    const { queryByRole, queryByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+        ]}
+      >
+        <TemplateCard template={mockTemplate} additionalLinks={[]} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:kind/:namespace/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(queryByRole('separator')).not.toBeInTheDocument();
+    expect(queryByText('0')).not.toBeInTheDocument();
+  });
+
   it('should render a link to the owner', async () => {
     const mockTemplate: TemplateEntityV1beta3 = {
       apiVersion: 'scaffolder.backstage.io/v1beta3',
