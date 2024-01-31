@@ -163,7 +163,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   /**
    * Controls if the arrow heads should be rendered or not.
    *
-   * Default: true
+   * Default: false
    */
   showArrowHeads?: boolean;
   /**
@@ -207,7 +207,7 @@ export function DependencyGraph<NodeData, EdgeData>(
     defs,
     zoom = 'enabled',
     curve = 'curveMonotoneX',
-    showArrowHeads = true,
+    showArrowHeads = false,
     fit = 'grow',
     ...svgProps
   } = props;
