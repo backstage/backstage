@@ -12,31 +12,31 @@ The assets below are all in `.svg` format. Other formats are available in the
 
 ## Backstage logo
 
-<a href="https://backstage.io/logo_assets/svg/Logo_White.svg">
-  <img src="https://backstage.io/logo_assets/svg/Logo_White.svg" width="600" />
+<a href="https://backstage.io/logo_assets/svg/Logo_White.svg" aria-label='Link to Backstage White logo svg'>
+  <img src="https://backstage.io/logo_assets/svg/Logo_White.svg" alt='Backstage White logo' width="600" />
 </a>
 
-<a href="https://backstage.io/logo_assets/svg/Logo_Teal.svg">
-  <img src="https://backstage.io/logo_assets/svg/Logo_Teal.svg" width="600" />
+<a href="https://backstage.io/logo_assets/svg/Logo_Teal.svg" aria-label='Link to Backstage Teal logo svg'>
+  <img src="https://backstage.io/logo_assets/svg/Logo_Teal.svg" alt='Backstage Teal logo' width="600" />
 </a>
 
-<a href="https://backstage.io/logo_assets/svg/Logo_Black.svg">
-  <img src="https://backstage.io/logo_assets/svg/Logo_Black.svg" width="600" className="logoWhite" class="logoWhite" />
+<a href="https://backstage.io/logo_assets/svg/Logo_Black.svg" aria-label='Link to Backstage Black logo svg'>
+  <img src="https://backstage.io/logo_assets/svg/Logo_Black.svg" alt='Backstage Black logo' width="600" className="logoWhite" class="logoWhite" />
 </a>
 
 ## Backstage icon
 
 <div>
-  <a href="https://backstage.io/logo_assets/svg/Icon_White.svg">
-    <img src="https://backstage.io/logo_assets/svg/Icon_White.svg" width="180" height="180" />
+  <a href="https://backstage.io/logo_assets/svg/Icon_White.svg" aria-label='Link to Backstage White icon'>
+    <img src="https://backstage.io/logo_assets/svg/Icon_White.svg" alt='Backstage White Icon' width="180" height="180" />
   </a>
-  <a href="https://backstage.io/logo_assets/svg/Icon_Teal.svg">
-    <img src="https://backstage.io/logo_assets/svg/Icon_Teal.svg" width="180" height="180" />
+  <a href="https://backstage.io/logo_assets/svg/Icon_Teal.svg" aria-label='Link to Backstage Teal icon'>
+    <img src="https://backstage.io/logo_assets/svg/Icon_Teal.svg" alt='Backstage Teal Icon' width="180" height="180" />
   </a>
-  <a href="https://backstage.io/logo_assets/svg/Icon_Gradient.svg">
-    <img src="https://backstage.io/logo_assets/svg/Icon_Gradient.svg" width="180" height="180" />
+  <a href="https://backstage.io/logo_assets/svg/Icon_Gradient.svg" aria-label='Link to Backstage Gradient icon'>
+    <img src="https://backstage.io/logo_assets/svg/Icon_Gradient.svg" alt='Backstage Gradient Icon' width="180" height="180" />
   </a>
-  <a href="https://backstage.io/logo_assets/svg/Icon_Black.svg">
-    <img src="https://backstage.io/logo_assets/svg/Icon_Black.svg" width="180" height="180" className="logoWhite" class="logoWhite" />
+  <a href="https://backstage.io/logo_assets/svg/Icon_Black.svg" aria-label='Link to Backstage Black icon'>
+    <img src="https://backstage.io/logo_assets/svg/Icon_Black.svg" alt='Backstage Black Icon' width="180" height="180" className="logoWhite" class="logoWhite" />
   </a>
 </div>
