@@ -497,11 +497,9 @@ describe('GkeClusterLocator', () => {
         configs,
         refreshIntervals,
       );
-      const getClientMethod = getHeaders.client._opts;
-      const getKeyName = getClientMethod.hasOwnProperty('libName');
-      const getKeyVersion = getClientMethod.hasOwnProperty('libVersion');
-      expect(getKeyName).toBe(true);
-      expect(getKeyVersion).toBe(true);
+
+      expect(getHeaders.client._opts).toHaveProperty('libName');
+      expect(getHeaders.client._opts).toHaveProperty('libVersion');
     });
   });
 });
