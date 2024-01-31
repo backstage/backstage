@@ -24,6 +24,7 @@ import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import homePlugin, {
   titleExtensionDataRef,
 } from '@backstage/plugin-home/alpha';
+import orgPlugin from '@backstage/plugin-org/alpha';
 
 import {
   coreExtensionData,
@@ -125,6 +126,7 @@ const app = createApp({
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
+    orgPlugin,
     ...collectedLegacyPlugins,
     createExtensionOverrides({
       extensions: [

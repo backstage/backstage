@@ -33,19 +33,41 @@ export const EntityGroupProfileCard = createEntityCardExtension({
 });
 
 /** @alpha */
-/* export const EntityMembersListCard = createEntityCardExtension({
-    name: 'members-list',
-    loader: async () =>
-      import('./components/').then(m =>
-        compatWrapper(<m.GroupProfileCard />),
-      ),
-  });
- */
+export const EntityMembersListCard = createEntityCardExtension({
+  name: 'members-list',
+  loader: async () =>
+    import('./components/Cards/Group/MembersList/MembersListCard').then(m =>
+      compatWrapper(<m.MembersListCard />),
+    ),
+});
+
+/** @alpha */
+export const EntityOwnershipCard = createEntityCardExtension({
+  name: 'ownership',
+  loader: async () =>
+    import('./components/Cards/OwnershipCard/OwnershipCard').then(m =>
+      compatWrapper(<m.OwnershipCard />),
+    ),
+});
+
+/** @alpha */
+export const EntityUserProfileCard = createEntityCardExtension({
+  name: 'user-profile',
+  loader: async () =>
+    import('./components/Cards/User/UserProfileCard/UserProfileCard').then(m =>
+      compatWrapper(<m.UserProfileCard />),
+    ),
+});
 
 /** @alpha */
 export default createPlugin({
   id: 'org',
-  extensions: [EntityGroupProfileCard],
+  extensions: [
+    EntityGroupProfileCard,
+    EntityMembersListCard,
+    EntityOwnershipCard,
+    EntityUserProfileCard,
+  ],
   externalRoutes: convertLegacyRouteRefs({
     catalogIndex: catalogIndexRouteRef,
   }),
