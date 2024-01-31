@@ -1,6 +1,11 @@
 name: Deploy Packages
 on:
   workflow_dispatch:
+    inputs:
+      force_release:
+        description: Unconditionally trigger the release job
+        required: false
+        type: boolean
   push:
     branches: [master, patch/*]
 
@@ -53,7 +58,7 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: ${{ matrix.node-version == '20.x' && '--max-old-space-size=4096 --no-node-snapshot' || '--max-old-space-size=4096' }}
       INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
       INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
       INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
@@ -76,6 +81,7 @@ jobs:
         run: git fetch origin '${{ github.event.before }}'
 
       - name: Check if release
+        if: inputs.force_release != true
         id: release_check
         run: node scripts/check-if-release.js
         env:
@@ -124,7 +130,7 @@ jobs:
   release:
     needs: build
 
-    if: needs.build.outputs.needs_release == 'true'
+    if: needs.build.outputs.needs_release == 'true' || inputs.force_release == true
 
     runs-on: ubuntu-latest
 

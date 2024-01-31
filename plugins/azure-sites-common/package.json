@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-azure-sites-common",
   "description": "Common functionalities for the azure plugin",
-  "version": "0.1.1",
+  "version": "0.1.2-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -31,6 +31,11 @@
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

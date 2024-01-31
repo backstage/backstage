@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-graphiql",
   "description": "Backstage plugin for browsing GraphQL APIs",
-  "version": "0.3.3-next.0",
+  "version": "0.3.3-next.1",
   "publishConfig": {
     "access": "public"
   },

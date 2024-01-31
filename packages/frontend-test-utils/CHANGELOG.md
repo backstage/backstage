@@ -1,5 +1,16 @@
 # @backstage/frontend-test-utils
 
+## 0.1.2-next.1
+
+### Patch Changes
+
+- bc621aa: Updates to use the new `RouteResolutionsApi`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/frontend-app-api@0.6.0-next.1
+  - @backstage/test-utils@1.5.0-next.1
+  - @backstage/types@1.1.1
+
 ## 0.1.2-next.0
 
 ### Patch Changes

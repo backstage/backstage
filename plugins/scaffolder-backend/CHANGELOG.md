@@ -1,5 +1,41 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.21.0-next.1
+
+### Minor Changes
+
+- 78c100b: Support providing an overriding token for `fetch:template`, `fetch:plain` and `fetch:file` when interacting with upstream integrations
+
+### Patch Changes
+
+- 09f8b31: Simple typo fix in the fetch:template action example on the word 'skeleton'.
+- f6792c6: Move the `NODE_OPTIONS` messaging for `--no-node-snapshot` to the `SecureTemplater` in order to get better messaging at runtime
+- e1c479d: When using node 20+ the `scaffolder-backend` will now throw an error at startup if the `--no-node-snapshot` option was
+  not provided to node.
+- e0e5afe: Add option to configure nunjucks with the `trimBlocks` and `lstripBlocks` options in the fetch:template action
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/plugin-scaffolder-node@0.3.0-next.1
+  - @backstage/backend-tasks@0.5.15-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.4-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.7-next.1
+  - @backstage/plugin-catalog-node@1.6.2-next.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-node@0.7.21-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.1.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.13-next.1
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+
 ## 1.21.0-next.0
 
 ### Minor Changes

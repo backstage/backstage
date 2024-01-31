@@ -50,6 +50,10 @@ export interface CatalogApi {
     request: GetEntityFacetsRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntityFacetsResponse>;
+  getLocationByEntity(
+    entityRef: string | CompoundEntityRef,
+    options?: CatalogRequestOptions,
+  ): Promise<Location_2 | undefined>;
   getLocationById(
     id: string,
     options?: CatalogRequestOptions,
@@ -120,6 +124,10 @@ export class CatalogClient implements CatalogApi {
     request: GetEntityFacetsRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntityFacetsResponse>;
+  getLocationByEntity(
+    entityRef: CompoundEntityRef | string,
+    options?: CatalogRequestOptions,
+  ): Promise<Location_2 | undefined>;
   getLocationById(
     id: string,
     options?: CatalogRequestOptions,

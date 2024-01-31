@@ -114,7 +114,7 @@ export const RELATION_CHILD_OF = 'childOf';
 export const RELATION_MEMBER_OF = 'memberOf';
 
 /**
- * A relation from a group to its member, typcally a user in a group. Reversed direction of
+ * A relation from a group to its member, typically a user in a group. Reversed direction of
  * {@link RELATION_MEMBER_OF}.
  *
  * @public

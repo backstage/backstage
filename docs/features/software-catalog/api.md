@@ -474,6 +474,34 @@ Response type is JSON, on the form
 ]
 ```
 
+### `GET /locations/{id}`
+
+Gets a location by it's location ID.
+
+Response type is JSON, on the form
+
+```json
+{
+  "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
+  "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
+  "type": "url"
+}
+```
+
+### `GET /locations/by-entity/{kind}/{namespace}/{name}`
+
+Gets a location referring to a given entity.
+
+Response type is JSON, on the form
+
+```json
+{
+  "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
+  "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
+  "type": "url"
+}
+```
+
 ### `POST /locations`
 
 Adds a location to be ingested by the catalog.

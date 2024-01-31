@@ -3,7 +3,6 @@ app:
     packages: 'all' # ✨
   routes:
     bindings:
-      pages.pageX: pages.pageX
       catalog.viewTechDoc: techdocs.docRoot
       catalog.createComponent: catalog-import.importPage
 

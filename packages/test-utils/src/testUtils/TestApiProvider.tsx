@@ -93,8 +93,8 @@ export class TestApiRegistry implements ApiHolder {
  *
  * @remarks
  * todo: remove this remark tag and ship in the api-reference. There's some odd formatting going on when this is made into a markdown doc, that there's no line break between
- * the emmited <p> for To the following </p> so what happens is that when parsing in docusaurus, it thinks that the code block is mdx rather than a code
- * snippet. Just ommiting this from the report for now until we can work out how to fix laterr.
+ * the emitted <p> for To the following </p> so what happens is that when parsing in docusaurus, it thinks that the code block is mdx rather than a code
+ * snippet. Just omitting this from the report for now until we can work out how to fix later.
  * A migration from `ApiRegistry` and `ApiProvider` might look like this, from:
  *
  * ```tsx

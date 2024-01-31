@@ -149,9 +149,56 @@ The outcome of initial testing is positive and it is possible to mix and match d
 
 The experimental code can be found in [this repository](https://github.com/scalprum/mf-mixing-experiments).
 
-**The testing so far was done only on very simple modules**. Although core React features are working (Context API and hooks), more testings needs to be done in order to declare this approach 100% reliable.
-
 So far a lot of custom code needs to be written to bridge Webpack, Rspack, @module-federation/enhanced with Vite. The first three are compatible out of the box, but Vite requires extra bridge to be able to consume/provide modules with/to other builds.
+
+#### React context and singleton sharing
+
+We can share React context and its values. Meaning a shell application (or a plugin parent) can have a context provider and a plugin will consume the context value.
+
+An example is this [package](https://github.com/scalprum/mf-mixing-experiments/tree/master/shared-package) in the experiment repo.
+
+The shell apps supply the provider and remote modules consume it. There are no issues with any combination of tooling.
+
+#### Optimized module sharing
+
+Module sharing optimizations are also working nicely. ([Optimization description](https://medium.com/@marvusm.mmi/webpack-module-federation-think-twice-before-sharing-a-dependency-18b3b0e352cb))
+
+Mixing shared scope is working between various modules using various build tools.
+
+Sample configuration:
+https://github.com/scalprum/mf-mixing-experiments/blob/master/mixed-remote-modules-collection/webpack.config.js#L27-L41
+
+```js
+const plugin = new ModuleFederationPlugin({
+  ...
+  shared: {
+    '@mui/material/Button': {
+      requiredVersion: '>=5.0.0',
+      version: '5.15.6',
+    },
+    '@mui/material/TextField': {
+      requiredVersion: '>=5.0.0',
+      version: '5.15.6',
+    },
+    '@mui/material/Typography': {
+      requiredVersion: '>=5.0.0',
+      version: '5.15.6',
+    },
+    '@mui/material/Divider': {
+      requiredVersion: '>=5.0.0',
+      version: '5.15.6',
+    },
+    ...
+  },
+});
+
+```
+
+This config ensures that only those modules (from @mui/material) that are used in the code will be shared. If a relative imports and the entire dependency name is used, the entire dependency will be shared, regardless of which modules are consumed. Tree shaking does not work when an entire dependency is shared! Explanation of why is described [here](https://medium.com/@marvusm.mmi/webpack-module-federation-think-twice-before-sharing-a-dependency-18b3b0e352cb).
+
+This can be checked by debugging network traffic and shared scopes:
+
+![notifications system architecture diagram](./scope-sharing.png)
 
 ### Plugin manifest
 

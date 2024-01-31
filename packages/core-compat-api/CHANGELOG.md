@@ -1,5 +1,22 @@
 # @backstage/core-compat-api
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- e586f79: Add support to the new analytics api.
+
+### Patch Changes
+
+- edfd3a5: Updated dependency `@oriflame/backstage-plugin-score-card` to `^0.8.0`.
+- bc621aa: Updates to use the new `RouteResolutionsApi`.
+- 46b63de: Allow external route refs in the new system to have a `defaultTarget` pointing to a route that it'll resolve to by default if no explicit bindings were made by the adopter.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/core-app-api@1.11.4-next.0
+  - @backstage/version-bridge@1.0.7
+
 ## 0.1.2-next.0
 
 ### Patch Changes

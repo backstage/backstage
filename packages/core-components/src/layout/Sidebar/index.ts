@@ -44,8 +44,6 @@ export type {
   SidebarSpacerClassKey,
   SidebarDividerClassKey,
 } from './Items';
-export { IntroCard, SidebarIntro } from './Intro';
-export type { SidebarIntroClassKey } from './Intro';
 export { SIDEBAR_INTRO_LOCAL_STORAGE, sidebarConfig } from './config';
 export type { SidebarOptions, SubmenuOptions } from './config';
 export {
