@@ -5,11 +5,9 @@ title: Glossary
 description: List of terms, abbreviations, and phrases used in Backstage, together with their explanations.
 ---
 
-## Access token
+## Access Token
 
-A [token](#token) that gives access to perform actions on behalf of a user. It will commonly have a short expiry time, and be limited to a set of [scopes](#scope). Part of the [OAuth](#oauth) protocol.
-
-https://oauth.net/2/access-tokens/
+A [token](#token) that gives access to perform actions on behalf of a user. It will commonly have a short expiry time, and be limited to a set of [scopes](#scope). Part of the [OAuth](#oauth) protocol, see [their docs](https://oauth.net/2/access-tokens/) for more information.
 
 ## Administrator
 
@@ -17,9 +15,7 @@ Someone responsible for installing and maintaining a Backstage [app](#app) for a
 
 ## API (catalog plugin)
 
-In the Backstage [Catalog](#catalog), an API is an [entity](#entity) representing a boundary between two [components](#component).
-
-https://backstage.io/docs/features/software-catalog/system-model
+An [entity](#entity) representing a schema that two [components](#component) use to communicate. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
 
 ## App
 
@@ -27,33 +23,29 @@ An installed instance of Backstage. An app can be local, intended for a single d
 
 ## Authorization Code
 
-A type of [OAuth flow](#oauth) used by confidential and public clients to get an [access token](#access-token).
-
-https://oauth.net/2/grant-types/authorization-code/
+A type of [OAuth flow](#oauth) used by confidential and public clients to get an [access token](#access-token). See [the OAuth docs](https://oauth.net/2/grant-types/authorization-code/) for more details.
 
 ## Backstage
 
-A platform for creating and deploying [developer portals](#developer-portal), originally created at Spotify.
+1. A platform for creating and deploying [developer portals](#developer-portal), originally created at Spotify. Backstage is an incubation-stage open source project of the [Cloud Native Computing Foundation](#cloud-native-computing-foundation).
 
-Backstage is an incubation-stage open source project of the [Cloud Native Computing Foundation](#cloud-native-computing-foundation).
+2. [The Backstage Framework](#backstage-framework).
 
-Can also refer to: [Backstage framework](#backstage-framework).
-
-## Backstage framework
+## Backstage Framework
 
 The actual framework that Backstage [plugins](#plugin) sit on. This spans both the frontend and the backend, and includes core functionality such as declarative integration, config reading, database management, and many more.
 
 ## Bundle
 
-A collection of [deployment artifacts](#deployment-artifacts).
+1. A collection of [deployment artifacts](#deployment-artifacts).
 
-Can also be: The output of the bundling process, which brings a collection of [packages](#package) into a single collection of [deployment artifacts](#deployment-artifacts).
+2. The output of the bundling process, which brings a collection of [packages](#package) into a single collection of [deployment artifacts](#deployment-artifacts).
 
 ## Catalog
 
-An organization's portfolio of software products managed in Backstage.
+1. The core Backstage plugin that handle ingestion and display of your organizations software products.
 
-Can also be: The core Backstage plugin that handle ingestion and display of your organizations software products.
+2. An organization's portfolio of software products managed in Backstage.
 
 ## Cloud Native Computing
 
@@ -73,39 +65,37 @@ Cloud Native Computing Foundation.
 
 [OAuth](#oauth) flow where the client receives an [authorization code](#code) that is passed to the backend to be exchanged for an [access token](#access-token) and possibly a [refresh token](#refresh-token).
 
-## Collators (search plugin)
+## Collator (search plugin)
 
-Collators transform streams of [documents](#documents) into searchable texts. They're usually responsible for the data transformation and definition and collection process for specific [documents](#documents). Part of [Backstage Search](#search).
+A transformer that takes streams of [documents](#documents) and outputs searchable texts. They're usually responsible for the data transformation and definition and collection process for specific [documents](#documents).
 
 ## Component (catalog plugin)
 
-A software product that is managed in the Backstage [Software Catalog](#software-catalog). A component can be a service, website, library, data pipeline, or any other piece of software managed as a single project.
-
-https://backstage.io/docs/features/software-catalog/system-model
+A software product that is managed in the Backstage [Software Catalog](#software-catalog). A component can be a service, website, library, data pipeline, or any other piece of software managed as a single project. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
 
 ## Condition (permission plugin)
 
 Conditions are used to return a conditional decision from a policy. They contain information about a given entity and restrictions on what types of users can view that entity.
 
-## Conditional decisions
+A mapping from a given entity to criteria a user must fulfill to perform an action on that entity. Examples include `isOwner`, `hasRole`, etc.
 
-[Rules](#permission-rules) need additional data before they can be used in a decision. Once a [rule](#permission-rule) is bound to relevant information it forms a [condition](#condition). Conditional decisions tell the [permission framework](#permission) to delegate evaluation to the [plugin](#plugin) that owns the corresponding [resource](#permission-resource). Permission requests that result in a conditional decision are allowed if all of the provided conditions evaluate to be true.
+## Conditional Decision (permission plugin)
+
+A type of [decision](#policy-decision-permission-plugin) that allows for per-user evaluation of [conditions](#condition-permission-plugin) against a [resource](#resource-permission-plugin). See [Conditional Decisions](../permissions/concepts.md#conditional-decisions)
 
 ## Contributor
 
 A volunteer who helps to improve an OSS product such as Backstage. This volunteer effort includes coding, testing, technical writing, user support, and other work. A [user role](#user-role).
 
-## Declarative integration
+## Declarative Integration
 
-A new paradigm for Backstage frontend plugins, allowing definition in config files instead of hosting complete React pages.
+A new paradigm for Backstage frontend plugins, allowing definition in config files instead of hosting complete React pages. See [the Frontend System](https://backstage.io/docs/frontend-system).
 
-https://backstage.io/docs/frontend-system
+## Decorator (search plugin)
 
-## Decorators (search plugin)
+A transform stream. Decorators allow you to add additional information to documents outside of the [collator](#collator-search-plugin). They sit between the collators and the [indexers](#indexer-search-plugin) and can add extra fields to documents as they're being collated and indexed.
 
-A transform stream. Decorators allow you to add additional information to documents outside of the [collator](#collators). They sit between the [collators](#collators) and the [indexers](#indexer) and can add extra fields to documents as they're being collated and indexed.
-
-Possible use cases for a decorator could be to bias search results or otherwise improve the search experience in your Backstage instance. Decorators can also be used to remove [metadata](#metadata), filter out, or even add extra documents at index-time. Part of [Backstage Search](#search).
+Possible use cases for a decorator could be to bias search results or otherwise improve the search experience in your Backstage instance. Decorators can also be used to remove [metadata](#metadata), filter out, or even add extra documents at index-time.
 
 ## Deployment Artifacts
 
@@ -121,19 +111,17 @@ A [user role](#user-role) defined as someone who uses a Backstage [app](#app). M
 
 A centralized system comprising a user interface and database used to facilitate and document all the software projects within an organization. Backstage is both a developer portal and (by virtue of being based on plugins) a platform for creating developer portals.
 
-## Documents (search plugin)
+## Document (search plugin)
 
-An abstract concept representing something that can be found by searching for it. A document can represent a software entity, a TechDocs page, etc. Documents are made up of metadata fields, at a minimum -- a title, text, and location (as in a URL). Part of [Backstage Search](#search).
+An abstract concept representing something that can be found by searching for it. A document can represent a software entity, a TechDocs page, etc. Documents are made up of metadata fields, at a minimum -- a title, text, and location (as in a URL).
 
 ## Domain
 
-In the Backstage Catalog, a domain is an area that relates systems or entities to a business unit.
-
-https://backstage.io/docs/features/software-catalog/system-model
+An area that relates systems or entities to a business unit. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
 
 ## Entity
 
-What is cataloged in the Backstage Software Catalog. An entity is identified by a unique combination of [kind](#Kind), [namespace](#Namespace), and name.
+What is cataloged in the Backstage Software Catalog. An entity is identified by a unique combination of [kind](#Kind), [namespace](#Namespace), and name. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
 
 ## Evaluator
 
@@ -145,11 +133,11 @@ A [JWT](#jwt) used to prove a user's identity, containing for example the user's
 
 ## Index (search plugin)
 
-An index is a collection of [documents](#documents) of a given type. Part of [Backstage Search](#search).
+An index is a collection of [documents](#documents) of a given type.
 
 ## Indexer (search plugin)
 
-A write stream of [documents](#documents). Part of [Backstage Search](#search).
+A write stream of [documents](#documents).
 
 ## Integrator
 
@@ -159,15 +147,19 @@ Someone who develops one or more plugins that enable Backstage to interoperate w
 
 JSON Web Token.
 
-A popular JSON based token format that is commonly encrypted and/or signed, see [en.wikipedia.org/wiki/JSON_Web_Token](https://en.wikipedia.org/wiki/JSON_Web_Token)
+A popular JSON based token format that is commonly encrypted and/or signed, see [the Wikipedia article](https://en.wikipedia.org/wiki/JSON_Web_Token) for more details.
 
 ## Kind
 
 Classification of an [entity](#Entity) in the Backstage Software Catalog, for example _service_, _database_, and _team_.
 
-## Kubernetes Plugin
+## Kubernetes (CNCF Project)
 
-A plugin enabling configuration of Backstage on a Kubernetes cluster. Kubernetes plugin has been promoted to a Backstage core feature.
+An open-source system for automating deployment, scaling, and management of containerized applications.
+
+## Kubernetes (Backstage plugin)
+
+A core Backstage plugin enabling a service owner-focused view of Kubernetes resources.
 
 ## Local Package
 
@@ -175,13 +167,13 @@ One of the [packages](#package) within a [monorepo](#monorepo). These package ma
 
 ## Monorepo
 
-A single repository for a collection of related software projects, such as all projects belonging to an organization.
+1. A single repository for a collection of related software projects, such as all projects belonging to an organization.
 
-Can also mean: A project layout that consists of multiple [packages](#package) within a single project, where packages are able to have local dependencies on each other. Often enabled through tooling such as [lerna](https://lerna.js.org/) and [yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/)
+2. A project layout that consists of multiple [packages](#package) within a single project, where packages are able to have local dependencies on each other. Often enabled through tooling such as [lerna](https://lerna.js.org/) and [yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/)
 
-## Namespace
+## Namespace (catalog plugin)
 
-In the Backstage Software Catalog, an optional attribute that can be used to organize [entities](#entity).
+An optional attribute that can be used to organize [entities](#entity).
 
 ## Objective
 
@@ -217,11 +209,9 @@ The declared role of a package, see [package roles](../local-dev/cli-build-syste
 
 ## Permission
 
-A core Backstage plugin and framework that allows restriction of actions to specific users.
+A core Backstage plugin and framework that allows restriction of actions to specific users. See [their docs](https://backstage.io/docs/permissions/overview) for more information.
 
 Any action that a user performs within Backstage may be represented as a permission. More complex actions, like executing a [software template](#software-templates), may require [authorization](#authorization) for multiple permissions throughout the flow. Permissions are identified by a unique name and optionally include a set of attributes that describe the corresponding action. [Plugins](#plugin) are responsible for defining and exposing the permissions they enforce as well as enforcing restrictions from the permission framework.
-
-https://backstage.io/docs/permissions/overview
 
 ## Persona (use cases)
 
@@ -235,9 +225,9 @@ A module in Backstage that adds a feature. All functionality outside of [the Bac
 
 User [permissions](#permission) are authorized by a central, user-defined [permission](#permission) policy. At a high level, a policy is a function that receives a Backstage user and [permission](#permission), and returns a decision to allow or deny. Policies are expressed as code, which decouples the framework from any particular [authorization](#authorization) model, like role-based access control (RBAC) or attribute-based access control (ABAC).
 
-## Policy decision (permission plugin)
+## Policy Decision (permission plugin)
 
-Two important responsibilities of any authorization system are to decide if a user can do something, and to enforce that decision. In the Backstage permission framework, [policies](#policy) are responsible for decisions and [plugins](#plugin) (typically backends) are responsible for enforcing them.
+A specific response to a user's request to perform an action on a list of [resources](#resource-permission-plugin). Can be either `Approve`, `Deny` or [`Conditional`](#conditional-decision-permission-plugin).
 
 ## Popup
 
@@ -249,9 +239,9 @@ A set of actions that accomplish a goal, usually as part of a [use case](#Use-Ca
 
 ## Query Translators (search plugin)
 
-An abstraction layer between a search engine and the [Backstage Search](#search) backend. Allows for translation into queries against your search engine. Part of [Backstage Search](#search).
+An abstraction layer between a search engine and the [Backstage Search](#search) backend. Allows for translation into queries against your search engine.
 
-## Refresh Token
+## Refresh token
 
 A special token that an [OAuth](#oauth) client can use to get a new [access token](#access-token) when the latter expires.
 
@@ -259,9 +249,7 @@ https://oauth.net/2/refresh-tokens/
 
 ## Resource (catalog plugin)
 
-In the Backstage Catalog, an [entity](#entity) that represents a piece of physical or virtual infrastructure, for example a database, required by a component.
-
-https://backstage.io/docs/features/software-catalog/system-model
+An [entity](#entity) that represents a piece of physical or virtual infrastructure, for example a database, required by a component. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
 
 ## Resource (permission plugin)
 
@@ -287,9 +275,9 @@ A string that describes a certain type of access that can be granted to a user u
 
 A Backstage plugin that provides a framework for searching a Backstage [app](#app), including the [Software Catalog](#Software-Catalog) and [TechDocs](#TechDocs). A core feature of Backstage.
 
-## Search Engine
+## Search Engine (Backstage search)
 
-Existing search technology that [Backstage Search](#search) can take advantage of through its modular design. Lunr is the default search in [Backstage Search](#search). Part of [Backstage Search](#search).
+Existing search technology that [Backstage Search](#search) can take advantage of through its modular design. Lunr is the default search in Backstage Search.
 
 ## Software Catalog
 
@@ -297,15 +285,13 @@ A Backstage plugin that provides a framework to keep track of ownership and meta
 
 ## Software Templates
 
-A Backstage plugin with which to create [components](#component) in Backstage. A core feature of Backstage. Also known as the scaffolder.
+1. A Backstage plugin with which to create [components](#component) in Backstage. A core feature of Backstage. Also known as the scaffolder.
 
-Can also refer to: A "skeleton" software project created and managed in the Backstage Software Templates tool.
+2. A "skeleton" software project created and managed in the Backstage Software Templates tool.
 
-## System
+## System (catalog plugin)
 
-In the Backspace Catalog, a system is a collection of [entities](#entity) that cooperate to perform a function. A system generally provides one or a few public APIs and consists of a handful of components, resources and private APIs.
-
-https://backstage.io/docs/features/software-catalog/system-model
+A system is a collection of [entities](#entity) that cooperate to perform a function. A system generally provides one or a few public APIs and consists of a handful of components, resources and private APIs. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
 
 ## Task (use cases)
 
