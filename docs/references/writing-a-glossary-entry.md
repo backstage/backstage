@@ -62,7 +62,13 @@ You may not be able to fully define what you want in a single sentence. Use more
 
 If the term you're defining has a better or more in depth source for that information, link to it. This can include plugin specific concept documents, external documentation, or core framework documentation.
 
-You should format these links as `See [link1 title](link1.url) for more details`. Additional links beyond the first one should be appended with `and` or `or` as necessary.
+You should format these links as
+
+```md
+See [the glossary](./glossary.md) for more details.
+```
+
+. Additional links beyond the first one should be appended with `and` or `or` as necessary.
 
 ## Putting it all together
 
