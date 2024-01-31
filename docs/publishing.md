@@ -140,4 +140,4 @@ process is used to release an emergency fix as version `6.5.1` in the patch rele
 
 ### When the release workflow is not triggered for some reason, such as a GitHub incident
 
-Ask one of the maintainers to force push master back to a previous commit and then push the release merge commit again.
+Ask one of the maintainers to trigger [the Deploy packages](https://github.com/backstage/backstage/actions/workflows/deploy_packages.yml) workflow with the "Unconditionally trigger the release job to run" checkbox set, on the `master` branch. Please validate first that nothing substantial has been pushed to master since the original failed release attempt! For this reason, it is wise to have the master branch locked until each release has gone through.
