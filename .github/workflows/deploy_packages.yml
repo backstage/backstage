@@ -1,6 +1,12 @@
 name: Deploy Packages
 on:
   workflow_dispatch:
+    inputs:
+      force_release:
+        description: 'Unconditionally trigger the release job to run'
+        required: true
+        default: false
+        type: boolean
   push:
     branches: [master, patch/*]
 
@@ -124,7 +130,7 @@ jobs:
   release:
     needs: build
 
-    if: needs.build.outputs.needs_release == 'true'
+    if: needs.build.outputs.needs_release == 'true' || inputs.force_release == 'true'
 
     runs-on: ubuntu-latest
 
