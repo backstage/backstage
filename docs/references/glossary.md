@@ -251,7 +251,7 @@ An [entity](#entity) that represents a piece of physical or virtual infrastructu
 
 ## Resource (permission plugin)
 
-A representation of an object that a user interacts with and that can be permissioned. Not to be confused with [Software Catalog resources](#resource-catalog-plugin). 
+A representation of an object that a user interacts with and that can be permissioned. Not to be confused with [Software Catalog resources](#resource-catalog-plugin).
 
 ## Rule (permission plugin)
 
@@ -283,9 +283,11 @@ A Backstage plugin that provides a framework to keep track of ownership and meta
 
 ## Software Templates
 
-1. A Backstage plugin with which to create [components](#component) in Backstage. A core feature of Backstage. Also known as the scaffolder.
+A Backstage plugin with which to create [components](#component) in Backstage. A core feature of Backstage. Also known as the scaffolder.
 
-2. A "skeleton" software project created and managed in the Backstage Software Templates tool.
+## Software Template
+
+A "skeleton" software project created and managed in the Backstage Software Templates tool.
 
 ## System (catalog plugin)
 
