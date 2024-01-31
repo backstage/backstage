@@ -24,7 +24,7 @@ import { useSupportConfig } from '../../hooks';
 import { MicDrop } from './MicDrop';
 
 interface IErrorPageProps {
-  status: string;
+  status?: string;
   statusMessage: string;
   additionalInfo?: React.ReactNode;
   supportUrl?: string;
