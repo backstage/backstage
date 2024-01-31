@@ -4,8 +4,7 @@ on:
     inputs:
       force_release:
         description: 'Unconditionally trigger the release job to run'
-        required: true
-        default: false
+        required: false
         type: boolean
   push:
     branches: [master, patch/*]
