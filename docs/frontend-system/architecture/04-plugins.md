@@ -12,7 +12,7 @@ description: Frontend plugins
 
 In addition to the existing [`plugins`](../../plugins/index.md) documentation let's take a look at what changes for plugins in the new frontend system. If you already created a plugin yourself you will recognise a lot of similarity in the new architecture with the existing one.
 
-Backstage is a single-page application composed of a set of plugins. Each of this plugins should solve exactly one responsibility & follow our suggested [plugin package structure & naming](../../architecture-decisions/adr011-plugin-package-structure.md).
+Backstage is a single-page application composed of a set of plugins. Each of these plugins have have solutions for their own set of responsibilities, and should follow our suggested [plugin package structure & naming](../../architecture-decisions/adr011-plugin-package-structure.md).
 
 For frontend plugins each plugin should only export a single plugin instance. The new frontend system can detect plugins, if they are exported as `default`, from the plugin package. This is also possible during runtime allowing you to add plugins to your Backstage instance without requiring a restart.
 
