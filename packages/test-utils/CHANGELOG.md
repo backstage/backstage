@@ -1,20 +1,5 @@
 # @backstage/test-utils
 
-## 1.5.0-next.1
-
-### Patch Changes
-
-- 07e7d12: Fix wording in API reference
-- 7da67ce: Change `defaultScopes` for Bitbucket auth from invalid `team` to `account`.
-- Updated dependencies
-  - @backstage/core-plugin-api@1.8.3-next.0
-  - @backstage/core-app-api@1.11.4-next.0
-  - @backstage/config@1.1.1
-  - @backstage/theme@0.5.0
-  - @backstage/types@1.1.1
-  - @backstage/plugin-permission-common@0.7.12
-  - @backstage/plugin-permission-react@0.4.20-next.0
-
 ## 1.5.0-next.0
 
 ### Minor Changes

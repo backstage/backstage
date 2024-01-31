@@ -1,16 +1,5 @@
 # @backstage/core-app-api
 
-## 1.11.4-next.0
-
-### Patch Changes
-
-- 7da67ce: Change `defaultScopes` for Bitbucket auth from invalid `team` to `account`.
-- Updated dependencies
-  - @backstage/core-plugin-api@1.8.3-next.0
-  - @backstage/config@1.1.1
-  - @backstage/types@1.1.1
-  - @backstage/version-bridge@1.0.7
-
 ## 1.11.3
 
 ### Patch Changes

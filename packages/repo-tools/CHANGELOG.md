@@ -1,17 +1,5 @@
 # @backstage/repo-tools
 
-## 0.6.0-next.1
-
-### Patch Changes
-
-- c04c42b: Fixes an issue where comments would be duplicated in the template. Also, removes a header with the title and version of the OpenAPI spec from generated code.
-- Updated dependencies
-  - @backstage/catalog-model@1.4.4-next.0
-  - @backstage/backend-common@0.21.0-next.1
-  - @backstage/cli-common@0.1.13
-  - @backstage/cli-node@0.2.2
-  - @backstage/errors@1.2.3
-
 ## 0.6.0-next.0
 
 ### Minor Changes

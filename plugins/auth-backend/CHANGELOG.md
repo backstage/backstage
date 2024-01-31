@@ -1,31 +1,5 @@
 # @backstage/plugin-auth-backend
 
-## 0.20.4-next.1
-
-### Patch Changes
-
-- 23a98f8: Migrated the AWS ALB auth provider to new `@backstage/plugin-auth-backend-module-aws-alb-provider` module package.
-- Updated dependencies
-  - @backstage/catalog-model@1.4.4-next.0
-  - @backstage/catalog-client@1.6.0-next.1
-  - @backstage/backend-plugin-api@0.6.10-next.1
-  - @backstage/backend-common@0.21.0-next.1
-  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.0-next.0
-  - @backstage/config@1.1.1
-  - @backstage/errors@1.2.3
-  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.2-next.1
-  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.4-next.1
-  - @backstage/plugin-auth-backend-module-github-provider@0.1.7-next.1
-  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.7-next.1
-  - @backstage/plugin-auth-backend-module-google-provider@0.1.7-next.1
-  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.5-next.1
-  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.7-next.1
-  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.2-next.1
-  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.0-next.1
-  - @backstage/plugin-auth-backend-module-okta-provider@0.0.3-next.1
-  - @backstage/plugin-auth-node@0.4.4-next.1
-  - @backstage/plugin-catalog-node@1.6.2-next.1
-
 ## 0.20.4-next.0
 
 ### Patch Changes

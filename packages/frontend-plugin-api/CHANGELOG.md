@@ -1,22 +1,5 @@
 # @backstage/frontend-plugin-api
 
-## 0.6.0-next.1
-
-### Minor Changes
-
-- e586f79: **BREAKING**: Replace default plugin extension and plugin ids to be `app` instead of `root`.
-
-### Patch Changes
-
-- bc621aa: Added `RouteResolutionsApi` as a replacement for the routing context.
-- 1e61ad3: App component extensions are no longer wrapped in an `ExtensionBoundary`, allowing them to inherit the outer context instead.
-- 46b63de: Allow external route refs in the new system to have a `defaultTarget` pointing to a route that it'll resolve to by default if no explicit bindings were made by the adopter.
-- Updated dependencies
-  - @backstage/core-components@0.14.0-next.0
-  - @backstage/core-plugin-api@1.8.3-next.0
-  - @backstage/types@1.1.1
-  - @backstage/version-bridge@1.0.7
-
 ## 0.5.1-next.0
 
 ### Patch Changes

@@ -1,27 +1,5 @@
 # @backstage/plugin-catalog
 
-## 1.17.0-next.1
-
-### Patch Changes
-
-- 987f565: Add line clamping to `CatalogSearchResultListItem`
-- Updated dependencies
-  - @backstage/frontend-plugin-api@0.6.0-next.1
-  - @backstage/core-compat-api@0.2.0-next.1
-  - @backstage/core-components@0.14.0-next.0
-  - @backstage/catalog-model@1.4.4-next.0
-  - @backstage/catalog-client@1.6.0-next.1
-  - @backstage/core-plugin-api@1.8.3-next.0
-  - @backstage/plugin-catalog-react@1.9.4-next.1
-  - @backstage/plugin-search-react@1.7.6-next.1
-  - @backstage/integration-react@1.1.24-next.0
-  - @backstage/errors@1.2.3
-  - @backstage/types@1.1.1
-  - @backstage/plugin-catalog-common@1.0.21-next.0
-  - @backstage/plugin-permission-react@0.4.20-next.0
-  - @backstage/plugin-scaffolder-common@1.5.0-next.1
-  - @backstage/plugin-search-common@1.2.10
-
 ## 1.17.0-next.0
 
 ### Minor Changes

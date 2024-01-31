@@ -1,18 +1,5 @@
 # @backstage/plugin-kubernetes-react
 
-## 0.3.0-next.1
-
-### Patch Changes
-
-- 3c184af: Extracted common dialog component.
-- Updated dependencies
-  - @backstage/core-components@0.14.0-next.0
-  - @backstage/catalog-model@1.4.4-next.0
-  - @backstage/core-plugin-api@1.8.3-next.0
-  - @backstage/errors@1.2.3
-  - @backstage/types@1.1.1
-  - @backstage/plugin-kubernetes-common@0.7.4-next.1
-
 ## 0.3.0-next.0
 
 ### Minor Changes

@@ -1,31 +1,5 @@
 # @backstage/plugin-scaffolder
 
-## 1.18.0-next.1
-
-### Minor Changes
-
-- 9b9c05c: Updating the `EntityPicker` to only select `kind` `metadata.name` and `metadata.namespace` by default to improve performance on larger datasets.
-
-### Patch Changes
-
-- 31f0a0a: Added `ScaffolderPageContextMenu` to `ActionsPage`, `ListTaskPage`, and `TemplateEditorPage` so that you can more easily navigate between these pages
-- Updated dependencies
-  - @backstage/frontend-plugin-api@0.6.0-next.1
-  - @backstage/plugin-scaffolder-react@1.8.0-next.1
-  - @backstage/core-compat-api@0.2.0-next.1
-  - @backstage/core-components@0.14.0-next.0
-  - @backstage/catalog-model@1.4.4-next.0
-  - @backstage/catalog-client@1.6.0-next.1
-  - @backstage/core-plugin-api@1.8.3-next.0
-  - @backstage/integration@1.9.0-next.0
-  - @backstage/plugin-catalog-react@1.9.4-next.1
-  - @backstage/integration-react@1.1.24-next.0
-  - @backstage/errors@1.2.3
-  - @backstage/types@1.1.1
-  - @backstage/plugin-catalog-common@1.0.21-next.0
-  - @backstage/plugin-permission-react@0.4.20-next.0
-  - @backstage/plugin-scaffolder-common@1.5.0-next.1
-
 ## 1.18.0-next.0
 
 ### Minor Changes

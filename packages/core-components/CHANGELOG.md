@@ -1,20 +1,5 @@
 # @backstage/core-components
 
-## 0.14.0-next.0
-
-### Minor Changes
-
-- 281e8c6: **BREAKING**: Removed the `SidebarIntro` component as it was providing instructions for features that do not exist, along with `IntroCard`. If you were relying on this component and want to keep using it you can refer to the original implementations of [`SidebarIntro`](https://github.com/backstage/backstage/blob/80f2413334ed9b221ec3c2b7c22fa737ad8d8885/packages/core-components/src/layout/Sidebar/Intro.tsx#L149) and [`IntroCard`](https://github.com/backstage/backstage/blob/80f2413334ed9b221ec3c2b7c22fa737ad8d8885/packages/core-components/src/layout/Sidebar/Intro.tsx#L100).
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/core-plugin-api@1.8.3-next.0
-  - @backstage/config@1.1.1
-  - @backstage/errors@1.2.3
-  - @backstage/theme@0.5.0
-  - @backstage/version-bridge@1.0.7
-
 ## 0.13.10
 
 ### Patch Changes

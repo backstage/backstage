@@ -1,18 +1,5 @@
 # @backstage/catalog-client
 
-## 1.6.0-next.1
-
-### Minor Changes
-
-- 43dad25: Add API to get location by entity
-
-### Patch Changes
-
-- c04c42b: Internal updates to auto-generated files.
-- Updated dependencies
-  - @backstage/catalog-model@1.4.4-next.0
-  - @backstage/errors@1.2.3
-
 ## 1.6.0-next.0
 
 ### Minor Changes
