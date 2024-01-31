@@ -305,6 +305,7 @@ Pulumi
 pygments
 pymdownx
 rankdir
+reactElement
 readme
 Readme
 readonly
@@ -330,6 +331,8 @@ Rollbar
 Rollup
 routable
 Routable
+routePath
+routeRef
 Rspack
 rst
 rsync

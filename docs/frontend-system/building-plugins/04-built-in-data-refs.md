@@ -20,7 +20,7 @@ Data references help to define the inputs and outputs of an extension. A data re
 | :-----------------: | :-----------: |
 | `core.reactElement` | `JSX.Element` |
 
-The `reactElement` data reference can be used for defining the extension input/output of React elements. Example usage could be something linke this:
+The `reactElement` data reference can be used for defining the extension input/output of React elements. Example usage could be something like this:
 
 ```tsx
 import {
