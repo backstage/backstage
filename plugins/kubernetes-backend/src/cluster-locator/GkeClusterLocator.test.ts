@@ -18,6 +18,7 @@ import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernete
 import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { GkeClusterLocator } from './GkeClusterLocator';
+import { Duration } from 'luxon';
 
 const mockedListClusters = jest.fn();
 
@@ -484,6 +485,24 @@ describe('GkeClusterLocator', () => {
           skipMetricsLookup: false,
         },
       ]);
+    });
+    it('Check if new container.v1.ClusterManagerClient has key and values as parameter', async () => {
+      const configs: Config = new ConfigReader({
+        type: 'gke',
+        projectId: 'some-project',
+      });
+
+      const refreshIntervals: Duration | undefined = undefined;
+      const getHeaders: GkeClusterLocator = GkeClusterLocator.fromConfig(
+        configs,
+        refreshIntervals,
+      );
+      const getKeyName = getHeaders.client._opts.hasOwnProperty(['libName']);
+      const getKeyVersion = getHeaders.client._opts.hasOwnProperty([
+        'libVersion',
+      ]);
+      expect(getKeyName).toBe(true);
+      expect(getKeyVersion).toBe(true);
     });
   });
 });
