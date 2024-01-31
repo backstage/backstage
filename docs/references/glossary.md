@@ -75,8 +75,6 @@ A software product that is managed in the Backstage [Software Catalog](#software
 
 ## Condition (permission plugin)
 
-Conditions are used to return a conditional decision from a policy. They contain information about a given entity and restrictions on what types of users can view that entity.
-
 A mapping from a given entity to criteria a user must fulfill to perform an action on that entity. Examples include `isOwner`, `hasRole`, etc.
 
 ## Conditional Decision (permission plugin)
