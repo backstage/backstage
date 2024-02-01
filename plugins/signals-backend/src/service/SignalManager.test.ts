@@ -89,7 +89,7 @@ describe('SignalManager', () => {
     await onEvent({
       topic: 'signals',
       eventPayload: {
-        receivers: null,
+        recipients: null,
         channel: 'test',
         message: { msg: 'test' },
       },
@@ -109,7 +109,7 @@ describe('SignalManager', () => {
     await onEvent({
       topic: 'signals',
       eventPayload: {
-        receivers: null,
+        recipients: null,
         channel: 'test',
         message: { msg: 'test' },
       },
@@ -162,7 +162,7 @@ describe('SignalManager', () => {
     await onEvent({
       topic: 'signals',
       eventPayload: {
-        receivers: 'user:default/john.doe',
+        recipients: 'user:default/john.doe',
         channel: 'test',
         message: { msg: 'test' },
       },

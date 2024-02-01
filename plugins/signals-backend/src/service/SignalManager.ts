@@ -132,11 +132,11 @@ export class SignalManager {
       return;
     }
 
-    const { channel, receivers, message } = eventPayload;
+    const { channel, recipients, message } = eventPayload;
     const jsonMessage = JSON.stringify({ channel, message });
     let users: string[] = [];
-    if (receivers !== null) {
-      users = Array.isArray(receivers) ? receivers : [receivers];
+    if (recipients !== null) {
+      users = Array.isArray(recipients) ? recipients : [recipients];
     }
 
     // Actual websocket message sending
@@ -146,7 +146,7 @@ export class SignalManager {
       }
       // Sending to all users can be done with null
       if (
-        receivers !== null &&
+        recipients !== null &&
         !conn.ownershipEntityRefs.some((ref: string) => users.includes(ref))
       ) {
         return;
