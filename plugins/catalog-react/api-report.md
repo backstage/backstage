@@ -15,8 +15,6 @@ import { Entity } from '@backstage/catalog-model';
 import { IconButton } from '@material-ui/core';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
-import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
@@ -219,7 +217,6 @@ export type EntityFilter = {
     string,
     string | symbol | (string | symbol)[]
   >;
-  getBackendRequestParameter?: () => Record<string, JsonObject | JsonValue>;
   filterEntity?: (entity: Entity) => boolean;
   toQueryValue?: () => string | string[];
 };
@@ -544,11 +541,9 @@ export class EntityTextFilter implements EntityFilter {
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
-  getBackendRequestParameter(): {
-    fullTextFilter: {
-      term: string;
-      fields: string[];
-    };
+  getFullTextFilters(): {
+    term: string;
+    fields: string[];
   };
   // (undocumented)
   readonly value: string;
