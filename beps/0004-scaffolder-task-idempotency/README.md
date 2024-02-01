@@ -2,10 +2,8 @@
 title: Scaffolder Retryable Tasks
 status: provisional
 authors:
-  - 'benjaminl@spotify.com'
-  - 'patriko@spotify.com'
-  - 'freben@gmail.com'
   - 'bnechyporenko@bol.com'
+  - 'benjaminl@spotify.com'
 owners:
 project-areas:
   - scaffolder
