@@ -37,14 +37,9 @@ export class DefaultSignalService implements SignalService {
    * @param message - message to publish
    */
   async publish(signal: SignalPayload) {
-    const { receivers, channel, message } = signal;
     await this.eventBroker?.publish({
       topic: 'signals',
-      eventPayload: {
-        receivers,
-        message,
-        channel,
-      },
+      eventPayload: signal,
     });
   }
 }

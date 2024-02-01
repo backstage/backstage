@@ -27,6 +27,7 @@ export interface SignalSubscriber {
 // @public (undocumented)
 export const useSignal: (channel: string) => {
   lastSignal: JsonObject | null;
+  isSignalsAvailable: boolean;
 };
 
 // (No @packageDocumentation comment for this package)
