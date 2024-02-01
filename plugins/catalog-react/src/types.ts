@@ -15,7 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { JsonObject, JsonValue } from '@backstage/types';
 
 /** @public */
 export type EntityFilter = {
@@ -29,13 +28,6 @@ export type EntityFilter = {
     string,
     string | symbol | (string | symbol)[]
   >;
-
-  /**
-   * A superset of `getCatalogFilters` that supports filtering based on parameters outside of the
-   *  catalog filter system. Examples include `fullTextFilter` or `orderFields`.
-   * @returns
-   */
-  getBackendRequestParameter?: () => Record<string, JsonObject | JsonValue>;
 
   /**
    * Filter entities on the frontend after a catalog-backend request. This function will be called
