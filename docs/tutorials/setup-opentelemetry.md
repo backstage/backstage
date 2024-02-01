@@ -24,16 +24,18 @@ yarn --cwd packages/backend add @opentelemetry/sdk-node \
 
 ## Configure
 
-In your `packages/backend/src` folder, create an `instrumentation.ts` file.
+In your `packages/backend` folder, create an `instrumentation.ts` file.
 
 ```typescript
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { ConsoleSpanExporter } from '@opentelemetry/sdk-trace-node';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import {
+const { NodeSDK } = require('@opentelemetry/sdk-node');
+const { ConsoleSpanExporter } = require('@opentelemetry/sdk-trace-node');
+const {
+  getNodeAutoInstrumentations,
+} = require('@opentelemetry/auto-instrumentations-node');
+const {
   PeriodicExportingMetricReader,
   ConsoleMetricExporter,
-} from '@opentelemetry/sdk-metrics';
+} = require('@opentelemetry/sdk-metrics');
 
 const sdk = new NodeSDK({
   traceExporter: new ConsoleSpanExporter(),
@@ -46,15 +48,46 @@ const sdk = new NodeSDK({
 sdk.start();
 ```
 
-In the `index.ts`, import this file **at the beginning**:
-
-```typescript
-import './instrumentation'; // Setup the OpenTelemetry instrumentation
-
-// other imports and backend init...
-```
+Your probably won't need all the instrumentations inside `getNodeAutoInstrumentations()` so make sure to
+check the [documentation](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node) and tweak it properly.
 
 It's important to setup the NodeSDK and the automatic instrumentation **before** importing any library.
+
+This is why we will use the nodejs [`--require`](https://nodejs.org/api/cli.html#-r---require-module)
+flag when we start up the application.
+
+In your `Dockerfile` add the `--require` flag which points to the `instrumentation.ts` file
+
+```Dockerfile
+FROM node:18-bookworm-slim
+...
+WORKDIR /app
+RUN chown node:node /app
+USER node
+
+ENV NODE_ENV production
+
+COPY --chown=node:node .yarn ./.yarn
+COPY --chown=node:node .yarnrc.yml ./
+
+# We need the instrumentation file inside the Docker image so we can use it with --require
+// highlight-add-next-line
+COPY --chown=node:node packages/backend/instrumentation.ts ./
+
+COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
+
+RUN --mount=type=cache,target=/home/node/.yarn/berry/cache,sharing=locked,uid=1000,gid=1000 \
+    yarn workspaces focus --all --production
+
+COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
+RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+
+// highlight-remove-next-line
+CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+// highlight-add-next-line
+CMD ["node", "packages/backend", "--require", "./instrumentation.ts" "--config", "app-config.yaml"]
+```
 
 ## Run Backstage
 
@@ -62,7 +95,9 @@ You can now start your Backstage instance as usual, using `yarn dev`.
 
 When the backend is started, you should see in your console traces and metrics emitted by OpenTelemetry.
 
-Of course in production you probably won't use the console exporters but instead send traces and metrics to an OpenTelemetry Collector using [OTLP exporters](https://opentelemetry.io/docs/instrumentation/js/exporters/).
+Of course in production you probably won't use the console exporters but instead send traces and metrics to an OpenTelemetry Collector or other exporter using [OTLP exporters](https://opentelemetry.io/docs/instrumentation/js/exporters/).
+
+If you need to disable/configure some Opentelemetry feature there are lots of [environment variables](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/) which you can tweak.
 
 ## References
 
