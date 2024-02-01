@@ -28,9 +28,13 @@ export type NotificationServiceOptions = {
 };
 
 /** @public */
-export type NotificationReceivers =
-  | { type: 'entity'; entityRef: string | string[] }
-  | { type: 'broadcast' };
+export type NotificationReceivers = {
+  type: 'entity';
+  entityRef: string | string[];
+};
+
+// TODO: Support for broadcast messages
+//  | { type: 'broadcast' };
 
 /** @public */
 export type NotificationSendOptions = {

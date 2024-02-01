@@ -22,6 +22,7 @@ import { rootRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useWebNotifications } from '../../hooks/useWebNotifications';
 import { useTitleCounter } from '../../hooks/useTitleCounter';
+import { JsonObject } from '@backstage/types';
 
 /** @public */
 export const NotificationsSidebarItem = () => {
@@ -31,6 +32,8 @@ export const NotificationsSidebarItem = () => {
   const config = useApi(configApiRef);
   const [unreadCount, setUnreadCount] = React.useState(0);
   const notificationsRoute = useRouteRef(rootRouteRef);
+  // TODO: Add signal type support to `useSignal` to make it a bit easier to use
+  // TODO: Do we want to add long polling in case signals are not available
   const { lastSignal } = useSignal('notifications');
   const { sendWebNotification } = useWebNotifications();
   const [refresh, setRefresh] = React.useState(false);
@@ -54,25 +57,36 @@ export const NotificationsSidebarItem = () => {
   }, [refresh, retry]);
 
   useEffect(() => {
-    if (lastSignal && lastSignal.action === 'refresh') {
-      if (
-        webNotificationsEnabled &&
-        'title' in lastSignal &&
-        'description' in lastSignal &&
-        'link' in lastSignal
-      ) {
-        const notification = sendWebNotification({
-          title: lastSignal.title as string,
-          description: lastSignal.description as string,
-        });
-        if (notification) {
-          notification.onclick = event => {
-            event.preventDefault();
-            notification.close();
-            window.open(lastSignal.link as string, '_blank');
-          };
-        }
+    const handleWebNotification = (signal: JsonObject) => {
+      if (!webNotificationsEnabled || !('notification' in signal)) {
+        return;
       }
+
+      const notificationData = signal.notification as JsonObject;
+
+      if (
+        !notificationData ||
+        !('title' in notificationData) ||
+        !('description' in notificationData) ||
+        !('title' in notificationData)
+      ) {
+        return;
+      }
+      const notification = sendWebNotification({
+        title: notificationData.title as string,
+        description: notificationData.description as string,
+      });
+      if (notification) {
+        notification.onclick = event => {
+          event.preventDefault();
+          notification.close();
+          window.open(notificationData.link as string, '_blank');
+        };
+      }
+    };
+
+    if (lastSignal && lastSignal.action) {
+      handleWebNotification(lastSignal);
       setRefresh(true);
     }
   }, [lastSignal, sendWebNotification, webNotificationsEnabled]);

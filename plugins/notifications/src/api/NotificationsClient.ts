@@ -42,6 +42,15 @@ export class NotificationsClient implements NotificationsApi {
     if (options?.type) {
       queryString.append('type', options.type);
     }
+    if (options?.limit) {
+      queryString.append('limit', options.limit.toString(10));
+    }
+    if (options?.offset) {
+      queryString.append('offset', options.offset.toString(10));
+    }
+    if (options?.search) {
+      queryString.append('search', options.search);
+    }
 
     const urlSegment = `notifications?${queryString}`;
 

@@ -24,6 +24,9 @@ import {
 export type NotificationGetOptions = {
   user_ref: string;
   type?: NotificationType;
+  offset?: number;
+  limit?: number;
+  search?: string;
 };
 
 /** @public */

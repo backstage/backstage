@@ -54,7 +54,7 @@ export const NotificationsPage = () => {
 
   const { lastSignal } = useSignal('notifications');
   useEffect(() => {
-    if (lastSignal && lastSignal.action === 'refresh') {
+    if (lastSignal && lastSignal.action) {
       setRefresh(true);
     }
   }, [lastSignal]);
@@ -68,7 +68,6 @@ export const NotificationsPage = () => {
     return <ErrorPanel error={new Error('Failed to load notifications')} />;
   }
 
-  // TODO: Add signals listener and refresh data on message
   return (
     <PageWithHeader title="Notifications" themeId="tool">
       <Content>

@@ -29,6 +29,9 @@ export const notificationsApiRef = createApiRef<NotificationsApi>({
 /** @public */
 export type GetNotificationsOptions = {
   type?: NotificationType;
+  offset?: number;
+  limit?: number;
+  search?: string;
 };
 
 /** @public */

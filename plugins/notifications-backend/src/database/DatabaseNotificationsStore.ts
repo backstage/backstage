@@ -72,6 +72,29 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       query.where('saved', true);
     }
 
+    if (options.limit) {
+      query.limit(options.limit);
+    }
+
+    if (options.offset) {
+      query.offset(options.offset);
+    }
+
+    if (options.search) {
+      if (this.db.client.config.client === 'pg') {
+        query.whereRaw(
+          `(to_tsvector('english', notifications.title || ' ' || notifications.description) @@ websearch_to_tsquery('english', quote_literal(?))
+          or to_tsvector('english', notifications.title || ' ' || notifications.description) @@ to_tsquery('english',quote_literal(?)))`,
+          [`${options.search}`, `${options.search.replaceAll(/\s/g, '+')}:*`],
+        );
+      } else {
+        query.whereRaw(
+          `LOWER(notifications.title || ' ' || notifications.description) LIKE LOWER(?)`,
+          [`%${options.search}%`],
+        );
+      }
+    }
+
     if ('ids' in options && options.ids) {
       query.whereIn('id', options.ids);
     }

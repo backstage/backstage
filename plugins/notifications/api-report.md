@@ -20,6 +20,9 @@ import { RouteRef } from '@backstage/core-plugin-api';
 // @public (undocumented)
 export type GetNotificationsOptions = {
   type?: NotificationType;
+  offset?: number;
+  limit?: number;
+  search?: string;
 };
 
 // @public (undocumented)

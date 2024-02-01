@@ -41,7 +41,10 @@ import { NotificationProcessor } from '../types';
 import { AuthenticationError } from '@backstage/errors';
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { SignalService } from '@backstage/plugin-signals-node';
-import { Notification } from '@backstage/plugin-notifications-common';
+import {
+  Notification,
+  NotificationType,
+} from '@backstage/plugin-notifications-common';
 
 /** @public */
 export interface RouterOptions {
@@ -94,13 +97,9 @@ export async function createRouter(
   ): Promise<string[]> => {
     const { token } = await tokenManager.getToken();
 
-    // Broadcast
+    // TODO: Support for broadcast
     if (entityRef === null) {
-      const users = await catalogClient.getEntities({
-        filter: { kind: 'User' },
-        fields: ['kind', 'metadata.name', 'metadata.namespace'],
-      });
-      return users.items.map(stringifyEntityRef);
+      return [];
     }
 
     const refs = Array.isArray(entityRef) ? entityRef : [entityRef];
@@ -119,12 +118,23 @@ export async function createRouter(
       if (isUserEntity(entity)) {
         return [stringifyEntityRef(entity)];
       } else if (isGroupEntity(entity) && entity.relations) {
-        return entity.relations
+        const users = entity.relations
           .filter(
             relation =>
               relation.type === RELATION_HAS_MEMBER && relation.targetRef,
           )
           .map(r => r.targetRef);
+        const childGroups = await catalogClient.getEntitiesByRefs(
+          {
+            entityRefs: entity.spec.children,
+            fields: ['kind', 'metadata.name', 'metadata.namespace'],
+          },
+          { token },
+        );
+        const childGroupUsers = await Promise.all(
+          childGroups.items.map(mapEntity),
+        );
+        return [...users, ...childGroupUsers.flat(2)];
       } else if (!isGroupEntity(entity) && entity.spec?.owner) {
         const owner = await catalogClient.getEntityByRef(
           entity.spec.owner as string,
@@ -162,6 +172,7 @@ export async function createRouter(
     }
   };
 
+  // TODO: Move to use OpenAPI router instead
   const router = Router();
   router.use(express.json());
 
@@ -176,7 +187,16 @@ export async function createRouter(
       user_ref: user,
     };
     if (req.query.type) {
-      opts.type = req.query.type as any;
+      opts.type = req.query.type.toString() as NotificationType;
+    }
+    if (req.query.offset) {
+      opts.offset = Number.parseInt(req.query.offset.toString(), 10);
+    }
+    if (req.query.limit) {
+      opts.limit = Number.parseInt(req.query.limit.toString(), 10);
+    }
+    if (req.query.search) {
+      opts.search = req.query.search.toString();
     }
 
     const notifications = await store.getNotifications(opts);
@@ -201,7 +221,7 @@ export async function createRouter(
     if (signalService) {
       await signalService.publish({
         recipients: [user],
-        message: { action: 'refresh' },
+        message: { action: 'done', notification_ids: ids },
         channel: 'notifications',
       });
     }
@@ -219,7 +239,7 @@ export async function createRouter(
     if (signalService) {
       await signalService.publish({
         recipients: [user],
-        message: { action: 'refresh' },
+        message: { action: 'undone', notification_ids: ids },
         channel: 'notifications',
       });
     }
@@ -238,7 +258,7 @@ export async function createRouter(
     if (signalService) {
       await signalService.publish({
         recipients: [user],
-        message: { action: 'refresh' },
+        message: { action: 'mark_read', notification_ids: ids },
         channel: 'notifications',
       });
     }
@@ -256,7 +276,7 @@ export async function createRouter(
     if (signalService) {
       await signalService.publish({
         recipients: [user],
-        message: { action: 'refresh' },
+        message: { action: 'mark_unread', notification_ids: ids },
         channel: 'notifications',
       });
     }
@@ -354,7 +374,10 @@ export async function createRouter(
     if (signalService) {
       await signalService.publish({
         recipients: entityRef === null ? null : users,
-        message: { action: 'refresh', title, description, link },
+        message: {
+          action: 'new_notification',
+          notification: { title, description, link },
+        },
         channel: 'notifications',
       });
     }

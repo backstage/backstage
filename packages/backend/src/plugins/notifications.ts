@@ -21,17 +21,6 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  // TODO: Remove this test code
-  setInterval(() => {
-    env.notificationService.send({
-      receivers: { type: 'broadcast' },
-      title: 'Test',
-      description: 'Test',
-      link: '/catalog',
-      topic: 'topic',
-    });
-  }, 60000);
-
   return await createRouter({
     logger: env.logger,
     identity: env.identity,

@@ -23,14 +23,10 @@ export class DefaultNotificationService implements NotificationService {
 }
 
 // @public (undocumented)
-export type NotificationReceivers =
-  | {
-      type: 'entity';
-      entityRef: string | string[];
-    }
-  | {
-      type: 'broadcast';
-    };
+export type NotificationReceivers = {
+  type: 'entity';
+  entityRef: string | string[];
+};
 
 // @public (undocumented)
 export type NotificationSendOptions = {
