@@ -210,9 +210,9 @@ This is expected to be the pattern for the vast majority of plugins.
 
 #### Opting out of the default authentication
 
-##### New `createRouters` Pattern
+##### New `routerFactory` Pattern
 
-In an effort to more explicitly describe what we're authenticating and how, we propose a new `createRouters` function to replace the old `createRouter` pattern. This new pattern is intended to allow for multiple routers that have different intended levels of authentication.
+In an effort to more explicitly describe what we're authenticating and how, we propose a new `routerFactory` function to replace the old `createRouter` pattern. This new pattern is intended to allow for multiple routers that have different intended levels of authentication.
 
 ```ts
 export type RouterFactoryResponse =
@@ -223,7 +223,7 @@ export type RouterFactoryResponse =
       unauthenticatedRouter?: Handler;
     };
 
-export function createRouters(): RouterFactoryResponse {
+export function routerFactory(): RouterFactoryResponse {
   return {
     router: express.Router(),
     cookieAuthRouter: express.Router(),
@@ -245,12 +245,12 @@ export default createBackendPlugin({
         http: coreServices.httpRouter,
       },
       async init({ http }) {
-        const { router, cookieAuthRouter } = await createRouters(/* ... */);
+        const { router, cookieAuthRouter } = await routerFactory(/* ... */);
         http.use(router);
         http.useWithCookieAuthentication(cookieAuthRouter);
 
         // alternatively, we could adjust `http.use` to input this new object
-        http.use(await createRouters(/* ... */));
+        http.use(await routerFactory(/* ... */));
       },
     });
   },
@@ -269,13 +269,13 @@ export default createBackendPlugin({
       },
       async init({ http }) {
         const { router, unauthenticatedRouter, cookieAuthRouter } =
-          await createRouters(/* ... */);
+          await routerFactory(/* ... */);
         http.use(router);
         http.useWithoutAuthentication(unauthenticationRouter);
         http.useWithCookieAuthentication(cookieAuthRouter);
 
         // alternatively, we could adjust `http.use` to input this new object
-        http.use(await createRouters(/* ... */));
+        http.use(await routerFactory(/* ... */));
       },
     });
   },
@@ -369,7 +369,7 @@ cookieAuthRouter.use('/static', express.static(staticContentDir));
 return { router, cookieAuthRouter };
 
 // in your plugin.ts, you would then
-const { router, cookieAuthRouter } = await createRouters();
+const { router, cookieAuthRouter } = await routerFactory();
 httpRouter.use(router);
 httpRouter.useWithCookieAuthentication(cookieAuthRouter);
 ```
