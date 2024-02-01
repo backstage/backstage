@@ -19,37 +19,38 @@ import React, { useEffect, useState } from 'react';
 import SwaggerUI, { SwaggerUIProps } from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    '& .swagger-ui': {
-      fontFamily: theme.typography.fontFamily,
-      color: theme.palette.text.primary,
-
-      ['& .btn-clear']: {
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      '& .swagger-ui': {
+        fontFamily: theme.typography.fontFamily,
         color: theme.palette.text.primary,
-      },
-      [`& .scheme-container`]: {
-        backgroundColor: theme.palette.background.default,
-      },
-      [`& .opblock-tag,
+
+        ['& .btn-clear']: {
+          color: theme.palette.text.primary,
+        },
+        [`& .scheme-container`]: {
+          backgroundColor: theme.palette.background.default,
+        },
+        [`& .opblock-tag,
           .opblock-tag small,
           table thead tr td,
           table thead tr th`]: {
-        fontFamily: theme.typography.fontFamily,
-        color: theme.palette.text.primary,
-        borderColor: theme.palette.divider,
-      },
-      [`& section.models,
+          fontFamily: theme.typography.fontFamily,
+          color: theme.palette.text.primary,
+          borderColor: theme.palette.divider,
+        },
+        [`& section.models,
           section.models.is-open h4`]: {
-        borderColor: theme.palette.divider,
-      },
-      [`& .model-title,
+          borderColor: theme.palette.divider,
+        },
+        [`& .model-title,
           .model .renderedMarkdown,
           .model .description`]: {
-        fontFamily: theme.typography.fontFamily,
-        fontWeight: theme.typography.fontWeightRegular,
-      },
-      [`& h1, h2, h3, h4, h5, h6,
+          fontFamily: theme.typography.fontFamily,
+          fontWeight: theme.typography.fontWeightRegular,
+        },
+        [`& h1, h2, h3, h4, h5, h6,
           .errors h4, .error h4, .opblock h4, section.models h4,
           .response-control-media-type__accept-message,
           .opblock-summary-description,
@@ -67,19 +68,19 @@ const useStyles = makeStyles(theme => ({
           .error .btn,
           .info .title,
           .info .base-url`]: {
-        fontFamily: theme.typography.fontFamily,
-        color: theme.palette.text.primary,
-      },
-      [`& .opblock .opblock-section-header,
+          fontFamily: theme.typography.fontFamily,
+          color: theme.palette.text.primary,
+        },
+        [`& .opblock .opblock-section-header,
           .model-box,
           section.models .model-container`]: {
-        background: theme.palette.background.default,
-      },
-      [`& .prop-format,
+          background: theme.palette.background.default,
+        },
+        [`& .prop-format,
           .parameter__in`]: {
-        color: theme.palette.text.disabled,
-      },
-      [`& table.model,
+          color: theme.palette.text.disabled,
+        },
+        [`& table.model,
           .parameter__type,
           .model.model-title,
           .model-title,
@@ -90,49 +91,51 @@ const useStyles = makeStyles(theme => ({
           .model .renderedMarkdown,
           .model .description,
           .errors small`]: {
-        color: theme.palette.text.secondary,
-      },
-      [`& .parameter__name.required:after`]: {
-        color: theme.palette.warning.dark,
-      },
-      [`& table.model,
+          color: theme.palette.text.secondary,
+        },
+        [`& .parameter__name.required:after`]: {
+          color: theme.palette.warning.dark,
+        },
+        [`& table.model,
           table.model .model,
           .opblock-external-docs-wrapper`]: {
-        fontSize: theme.typography.fontSize,
-      },
-      [`& table.headers td`]: {
-        color: theme.palette.text.primary,
-        fontWeight: theme.typography.fontWeightRegular,
-      },
-      [`& .model-hint`]: {
-        color: theme.palette.text.secondary,
-        backgroundColor: theme.palette.background.paper,
-      },
-      [`& .opblock-summary-method,
+          fontSize: theme.typography.fontSize,
+        },
+        [`& table.headers td`]: {
+          color: theme.palette.text.primary,
+          fontWeight: theme.typography.fontWeightRegular,
+        },
+        [`& .model-hint`]: {
+          color: theme.palette.text.secondary,
+          backgroundColor: theme.palette.background.paper,
+        },
+        [`& .opblock-summary-method,
           .info a`]: {
-        fontFamily: theme.typography.fontFamily,
-      },
-      [`& .info, .opblock, .tab`]: {
-        [`& li, p`]: {
           fontFamily: theme.typography.fontFamily,
+        },
+        [`& .info, .opblock, .tab`]: {
+          [`& li, p`]: {
+            fontFamily: theme.typography.fontFamily,
+            color: theme.palette.text.primary,
+          },
+        },
+        [`& a`]: {
+          color: theme.palette.primary.main,
+        },
+        [`& .renderedMarkdown code`]: {
+          color: theme.palette.secondary.light,
+        },
+        [`& .property-row td:first-child`]: {
           color: theme.palette.text.primary,
         },
-      },
-      [`& a`]: {
-        color: theme.palette.primary.main,
-      },
-      [`& .renderedMarkdown code`]: {
-        color: theme.palette.secondary.light,
-      },
-      [`& .property-row td:first-child`]: {
-        color: theme.palette.text.primary,
-      },
-      [`& span.prop-type`]: {
-        color: theme.palette.success.light,
+        [`& span.prop-type`]: {
+          color: theme.palette.success.light,
+        },
       },
     },
-  },
-}));
+  }),
+  { name: 'PluginApiDocsOpenApiDefinition' },
+);
 
 export type OpenApiDefinitionProps = {
   definition: string;
