@@ -268,7 +268,7 @@ router.get('/read-data', (req, res) => {
 #### Issuing a cookie and allowing user cookie auth on a separate endpoint
 
 ```ts
-router.get('/cookie', (req, res) => {
+router.get('/cookie', async (req, res) => {
   await httpAuth.issueUserCookie(res); // If this is a service call it'll throw
   res.json({ ok: true });
 });
@@ -293,7 +293,7 @@ router.get(
   httpAuth.middleware({ allow: ['user-cookie'] }),
   (req, res) => {
     // These credentials don't actually contain an underlying user token for cookie-authed requests
-    // You you try to pass them to the AuthService, it'll throw.
+    // If you try to pass them to the AuthService, it'll throw.
     const { user } = httpAuth.credentials(req);
     console.log(
       `User ref=${user.userEntityRef} ownership=${user.ownershipEntityRefs}`,
