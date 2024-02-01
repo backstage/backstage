@@ -13,12 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SignalPayload } from './types';
+import { DefaultSignalService } from './DefaultSignalService';
 
-/** @public */
-export interface SignalService {
-  /**
-   * Publishes a message to user refs to specific topic
-   */
-  publish(signal: SignalPayload): Promise<void>;
-}
+describe('DefaultSignalService', () => {
+  const mockEventBroker = {
+    publish: jest.fn(),
+    subscribe: jest.fn(),
+  };
+
+  const service = DefaultSignalService.create({ eventBroker: mockEventBroker });
+
+  it('should publish signal', () => {
+    const signal = {
+      channel: 'test-channel',
+      recipients: null,
+      message: { msg: 'hello world' },
+    };
+    service.publish(signal);
+    expect(mockEventBroker.publish).toHaveBeenCalledWith({
+      topic: 'signals',
+      eventPayload: signal,
+    });
+  });
+});
