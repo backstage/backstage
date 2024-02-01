@@ -103,23 +103,85 @@ export interface AuthService {
 
 TODO
 
+### `HttpMiddlewareService` Interface
+
+A new `HttpMiddlewareService` will be created to support middleware injection. It is expected to use `httpAuthService` for authentication, but should create the middleware directly. The goal here is to encourage application wide defaults if this service were to be overridden. Individual middleware _could_ use information about the request to delegate authentication, but that is a poor pattern and should be avoided.
+
+```ts
+type AuthTypes = 'user' | 'user-cookie' | 'service' | 'unauthorized';
+
+export interface HttpMiddlewareService {
+  // Handles authentication.
+  authentication({ allow: AuthTypes }): Handler;
+
+  // Allow setting a default rate limiter.
+  rateLimit?: () => Handler;
+
+  // Handles cookie writing, allows customization.
+  cookie(): Handler;
+}
+```
+
 ### `HttpRouterService` Interface
 
-> Open question: Should this instead be added to the `HttpAuthService`? It may fit a bit better there, but on the other hand it might make sense to add additional policies unrelated to authentication too, such as rate limiting.
-
-The `HttpRouterService` interface will be extended with the ability to opt-out of the default protection of endpoints, enabling either cookie auth or unauthenticated access.
+The `HttpRouterService` interface will be updated to enforce authentication on the default `use` method. Plugin writers will now have the ability to opt-out of the default protection of endpoints, enabling either cookie auth or unauthenticated access through `useWithoutAuthentication` and `useWithCookieAuthentication`.
 
 ```ts
 export interface HttpRouterService {
   // All routes only allow authenticated users and services by default.
   use(handler: Handler): void;
 
-  // Exact option structure is TBD, just highlighting the general idea for now
-  configure(options: {
-    allowCookieAuthOnPaths?: string[];
-    allowUnauthenticatedAccessPaths?: string[];
-  }): void;
+  useWithoutAuthentication(handler: Handler): void;
+
+  useWithCookieAuthentication(handler: Handler): void;
 }
+```
+
+### `HttpRouterServiceFactory` Updates
+
+```diff
+export const httpRouterServiceFactory = createServiceFactory(
+  (options?: HttpRouterFactoryOptions) => ({
+    service: coreServices.httpRouter,
+    deps: {
+      plugin: coreServices.pluginMetadata,
+      lifecycle: coreServices.lifecycle,
+      rootHttpRouter: coreServices.rootHttpRouter,
++      middleware: coreServices.httpMiddleware,
+    },
+-    async factory({ plugin, rootHttpRouter, lifecycle }) {
++    async factory({ plugin, rootHttpRouter, lifecycle, middleware }) {
+      const getPath = options?.getPath ?? (id => `/api/${id}`);
+      const path = getPath(plugin.getId());
+
+      const router = PromiseRouter();
+      rootHttpRouter.use(path, router);
+
+      router.use(createLifecycleMiddleware({ lifecycle }));
+
+      return {
+        use(handler: Handler) {
+          router.use(
++            middleware.authentication({ allow: ['user', 'service'] }),
+            handler,
+          );
+        },
+
++        useWithoutAuthentication(handler: Handler) {
++          router.use(handler);
++        },
+
++        useWithCookieAuthentication(handler: Handler) {
++          router.use(
++            middleware.cookie(),
++            middleware.authentication({ allow: ['cookie-user', 'user'] }),
++            handler,
++          );
+        },
+      };
+    },
+  }),
+);
 ```
 
 ### `HttpRouterService` Usage Patterns
@@ -146,7 +208,25 @@ export default createBackendPlugin({
 
 This is expected to be the pattern for the vast majority of plugins.
 
-#### A plugin with an endpoint that only allows cookie auth
+#### Opting out of the default authentication
+
+##### New `createRouters` Pattern
+
+In an effort to more explicitly describe what we're authenticating and how, we propose a new `createRouters` function to replace the old `createRouter` pattern. This new pattern is intended to allow for multiple routers that have different intended levels of authentication.
+
+```ts
+export type RouterFactoryResponse =
+  | Handler
+  | {
+      router: Handler;
+      cookieAuthRouter?: Handler;
+      unauthenticatedRouter?: Handler;
+    };
+```
+
+> Open question: Should `HttpRouterService` be updated to allow this directly as input to `use`? That would allow more under the hood work to happen at the expense of less compatibility with `express`'s `.use` interface.
+
+##### A plugin with an endpoint that only allows cookie auth
 
 ```ts
 export default createBackendPlugin({
@@ -157,18 +237,19 @@ export default createBackendPlugin({
         http: coreServices.httpRouter,
       },
       async init({ http }) {
-        // The order of these two calls does not matter
-        http.use(await createRouter(/* ... */));
-        http.configure({
-          allowCookieAuthOnPaths: ['/static'],
-        });
+        const { router, cookieAuthRouter } = await createRouters(/* ... */);
+        http.use(router);
+        http.useWithCookieAuthentication(cookieAuthRouter);
+
+        // alternatively, we could adjust `http.use` to input this new object
+        http.use(await createRouters(/* ... */));
       },
     });
   },
 });
 ```
 
-#### A plugin that allows both public access and cookie auth
+##### A plugin that allows both public access and cookie auth
 
 ```ts
 export default createBackendPlugin({
@@ -179,12 +260,14 @@ export default createBackendPlugin({
         http: coreServices.httpRouter,
       },
       async init({ http }) {
-        http.use(await createRouter(/* ... */));
-        http.configure({
-          allowCookieAuthOnPaths: ['/'],
-          // Unauthenticated access takes precedence, the /public endpoint does not require cookie auth
-          allowUnauthenticatedAccessPaths: ['/public'],
-        });
+        const { router, unauthenticatedRouter, cookieAuthRouter } =
+          await createRouters(/* ... */);
+        http.use(router);
+        http.useWithoutAuthentication(unauthenticationRouter);
+        http.useWithCookieAuthentication(cookieAuthRouter);
+
+        // alternatively, we could adjust `http.use` to input this new object
+        http.use(await createRouters(/* ... */));
       },
     });
   },
@@ -197,8 +280,6 @@ The new `HttpAuthService` interface is defined as follows:
 
 ```ts
 export interface HttpAuthService {
-  createHttpPluginRouterMiddleware(options: OptionsTBD): Handler;
-
   credentials(
     req: Request,
     options?: HttpAuthServiceMiddlewareOptions,
@@ -273,16 +354,16 @@ router.get('/cookie', (req, res) => {
   res.json({ ok: true });
 });
 
-// Allowing cookie auth is a separate step where you call the configure method
-// of the httpRouter API in your plugin setup code.
-httpRouter.configure({
-  // In practice we can make this configuration a lot more capable, this is just a minimal example
-  allowCookieAuthOnPaths: ['/static'], // router.use('/static', cookieAuthMiddleware()) under the hood
-});
-
 // Separate endpoint that serves static content, allowing user cookie auth as
 // well as the default user and service auth methods
-router.use('/static', express.static(staticContentDir));
+cookieAuthRouter.use('/static', express.static(staticContentDir));
+
+return { router, cookieAuthRouter };
+
+// in your plugin.ts, you would then
+const { router, cookieAuthRouter } = await createRouters();
+httpRouter.use(router);
+httpRouter.useWithCookieAuthentication(cookieAuthRouter);
 ```
 
 #### Passing along user identity from a cookie in an upstream request
