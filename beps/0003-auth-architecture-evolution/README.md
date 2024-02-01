@@ -222,6 +222,14 @@ export type RouterFactoryResponse =
       cookieAuthRouter?: Handler;
       unauthenticatedRouter?: Handler;
     };
+
+export function createRouters(): RouterFactoryResponse {
+  return {
+    router: express.Router(),
+    cookieAuthRouter: express.Router(),
+    unauthenticatedRouter: express.Router(),
+  };
+}
 ```
 
 > Open question: Should `HttpRouterService` be updated to allow this directly as input to `use`? That would allow more under the hood work to happen at the expense of less compatibility with `express`'s `.use` interface.
