@@ -331,3 +331,26 @@ export type Project = {
   name?: string;
   description?: string;
 };
+
+/** @public */
+export type GitBranch = {
+  /**
+   * Number of commits ahead.
+   */
+  aheadCount?: number;
+
+  /**
+   * Number of commits behind.
+   */
+  behindCount?: number;
+
+  /**
+   * True if this is the result for the base version.
+   */
+  isBaseVersion?: boolean;
+
+  /**
+   * Name of the ref.
+   */
+  name?: string;
+};

@@ -226,6 +226,18 @@ export async function createRouter(
     res.status(200).json(readme);
   });
 
+  router.get(
+    '/repository/:projectName/:repoName/branches',
+    async (req, res) => {
+      const { projectName, repoName } = req.params;
+      const branches = await azureDevOpsApi.getGitBranches(
+        repoName,
+        projectName,
+      );
+      res.status(200).json(branches);
+    },
+  );
+
   router.use(errorHandler());
   return router;
 }

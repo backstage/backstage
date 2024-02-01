@@ -21,6 +21,7 @@ import {
 import {
   BuildRun,
   DashboardPullRequest,
+  GitBranch,
   GitTag,
   Policy,
   PullRequest,
@@ -31,6 +32,7 @@ import {
   Project,
 } from '@backstage/plugin-azure-devops-common';
 import {
+  GitBranchStats,
   GitPullRequest,
   GitPullRequestSearchCriteria,
   GitRef,
@@ -543,5 +545,33 @@ export class AzureDevOpsApi {
       buffer.toString(),
     );
     return { url, content };
+  }
+
+  public async getGitBranches(
+    repo: string,
+    project: string,
+    host?: string,
+    org?: string,
+  ): Promise<GitBranch[]> {
+    this.logger?.debug(
+      `Calling Azure DevOps REST API, getting branches for Repository Id ${repo} for Project ${project}`,
+    );
+
+    const webApi = await this.getWebApi(host, org);
+    const client = await webApi.getGitApi();
+
+    const branchList: GitBranchStats[] = await client.getBranches(
+      repo,
+      project,
+    );
+
+    const branches: GitBranch[] = branchList.map(branch => ({
+      aheadCount: branch.aheadCount,
+      behindCount: branch.behindCount,
+      isBaseVersion: branch.isBaseVersion,
+      name: branch.name,
+    }));
+
+    return branches;
   }
 }

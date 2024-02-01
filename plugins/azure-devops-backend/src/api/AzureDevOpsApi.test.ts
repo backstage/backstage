@@ -31,6 +31,7 @@ import {
   BuildStatus,
 } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import {
+  GitBranchStats,
   GitPullRequest,
   GitRef,
   PullRequestStatus,
@@ -758,6 +759,55 @@ describe('AzureDevOpsApi', () => {
         finishTime: '2020-09-12T06:20:23.932Z',
         source: 'main (abcd)',
         uniqueName: 'N/A',
+      },
+    ]);
+  });
+
+  it('should get branches', async () => {
+    const mockGitBranchStats: GitBranchStats[] = [
+      {
+        aheadCount: 0,
+        behindCount: 0,
+        isBaseVersion: true,
+        name: 'main',
+      },
+      {
+        aheadCount: 1,
+        behindCount: 0,
+        isBaseVersion: false,
+        name: 'feature/add-something-new',
+      },
+    ];
+
+    const mockGitClient = {
+      getBranches: jest.fn().mockResolvedValue(mockGitBranchStats),
+    };
+
+    const mockGitApi = {
+      getGitApi: jest.fn().mockReturnValue(mockGitClient),
+    };
+
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockGitApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
+    });
+
+    const result = await api.getGitBranches('a-repo', 'a-project');
+
+    expect(result).toEqual([
+      {
+        aheadCount: 0,
+        behindCount: 0,
+        isBaseVersion: true,
+        name: 'main',
+      },
+      {
+        aheadCount: 1,
+        behindCount: 0,
+        isBaseVersion: false,
+        name: 'feature/add-something-new',
       },
     ]);
   });

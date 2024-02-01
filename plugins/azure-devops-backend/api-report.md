@@ -12,6 +12,7 @@ import { Config } from '@backstage/config';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
+import { GitBranch } from '@backstage/plugin-azure-devops-common';
 import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { GitTag } from '@backstage/plugin-azure-devops-common';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -94,6 +95,13 @@ export class AzureDevOpsApi {
     projectName: string,
     options: PullRequestOptions,
   ): Promise<DashboardPullRequest[]>;
+  // (undocumented)
+  getGitBranches(
+    repo: string,
+    project: string,
+    host?: string,
+    org?: string,
+  ): Promise<GitBranch[]>;
   // (undocumented)
   getGitRepository(
     projectName: string,

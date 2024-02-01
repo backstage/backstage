@@ -22,6 +22,7 @@ import {
   BuildResult,
   BuildRun,
   BuildStatus,
+  GitBranch,
   GitTag,
   PullRequest,
   PullRequestStatus,
@@ -47,6 +48,7 @@ describe('createRouter', () => {
       getBuildDefinitions: jest.fn(),
       getRepoBuilds: jest.fn(),
       getDefinitionBuilds: jest.fn(),
+      getGitBranches: jest.fn(),
       getGitTags: jest.fn(),
       getPullRequests: jest.fn(),
       getBuilds: jest.fn(),
@@ -505,6 +507,32 @@ describe('createRouter', () => {
         content,
         url,
       });
+    });
+  });
+
+  describe('GET /repository/:projectName/:repoName/branches', () => {
+    it('fetches all the branches in a repository', async () => {
+      const branches: GitBranch[] = [
+        {
+          aheadCount: 0,
+          behindCount: 0,
+          isBaseVersion: true,
+          name: 'main',
+        },
+      ];
+
+      azureDevOpsApi.getGitBranches.mockResolvedValueOnce(branches);
+
+      const response = await request(app).get(
+        '/repository/myProject/myRepo/branches',
+      );
+
+      expect(azureDevOpsApi.getGitBranches).toHaveBeenCalledWith(
+        'myRepo',
+        'myProject',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(branches);
     });
   });
 });

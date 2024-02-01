@@ -103,6 +103,14 @@ export interface DashboardPullRequest {
 }
 
 // @public (undocumented)
+export type GitBranch = {
+  aheadCount?: number;
+  behindCount?: number;
+  isBaseVersion?: boolean;
+  name?: string;
+};
+
+// @public (undocumented)
 export type GitTag = {
   objectId?: string;
   peeledObjectId?: string;
