@@ -26,29 +26,31 @@ import {
   EntityUserFilter,
   UserListFilter,
 } from '../filters';
-import { merge } from 'lodash';
 
 export interface CatalogFilters {
-  [x: string]:
-    | string
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
   filter: Record<string, string | symbol | (string | symbol)[]>;
   fullTextFilter?: {
     term: string;
   };
 }
 
+function isEntityTextFilter(t: EntityFilter): t is EntityTextFilter {
+  return !!(t as EntityTextFilter).getFullTextFilters;
+}
+
 export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
-  return filters.reduce((compoundFilter, filter) => {
-    const addedFilters = {};
-    if (filter.getBackendRequestParameter) {
-      Object.assign(addedFilters, filter.getBackendRequestParameter());
-    } else if (filter.getCatalogFilters) {
-      Object.assign(addedFilters, { filter: filter.getCatalogFilters() });
-    }
-    return merge(compoundFilter, addedFilters);
-  }, {} as CatalogFilters);
+  const condensedFilters = filters.reduce<CatalogFilters['filter']>(
+    (compoundFilter, filter) => {
+      return {
+        ...compoundFilter,
+        ...(filter.getCatalogFilters ? filter.getCatalogFilters() : {}),
+      };
+    },
+    {},
+  );
+
+  const fullTextFilter = filters.find(isEntityTextFilter)?.getFullTextFilters();
+  return { filter: condensedFilters, fullTextFilter };
 }
 
 /**

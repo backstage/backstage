@@ -108,7 +108,7 @@ export class EntityTextFilter implements EntityFilter {
     return true;
   }
 
-  getFullTextFilter() {
+  getFullTextFilters() {
     return {
       term: this.value,
       // Update this to be more dynamic based on table columns.
