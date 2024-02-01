@@ -36,7 +36,7 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 
 ## Summary
 
-Scaffolder retriable task idempotency provides the means to make each action of the task idempotent. By default, an action is not considered to be idempotent.
+Scaffolder retryable task idempotency provides the means to make each action of the task idempotent. By default, an action is not considered to be idempotent.
 It has to be crafted to a solution when action can be re-run multiple times and giving the same effect as it had been run only once.
 
 ## Motivation
