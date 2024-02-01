@@ -35,6 +35,7 @@ import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 import { hasReactDomClient } from './hasReactDomClient';
+import { pickBy } from 'lodash';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
@@ -94,6 +95,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   let webpackServer: WebpackDevServer | undefined = undefined;
   let viteServer: import('vite').ViteDevServer | undefined = undefined;
+  let rspackServer: import('@rspack/dev-se').DevServer | undefined = undefined;
 
   let latestFrontendAppConfigs: AppConfig[] = [];
 
@@ -163,7 +165,150 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     additionalEntryPoints: detectedModulesEntryPoint,
   });
 
-  if (process.env.EXPERIMENTAL_VITE) {
+  if (process.env.EXPERIMENTAL_RSPACK) {
+    const { rspack } = await import('@rspack/core');
+    const { default: NodePolyfill } = await import(
+      '@rspack/plugin-node-polyfill'
+    );
+    const { RspackDevServer } = await import('@rspack/dev-server');
+    const { default: RefreshPlugin } = await import(
+      '@rspack/plugin-react-refresh'
+    );
+
+    const baseUrl = frontendConfig.getString('app.baseUrl');
+    const validBaseUrl = new URL(baseUrl);
+    const publicPath = validBaseUrl.pathname.replace(/\/$/, '');
+
+    const compiler = rspack({
+      mode: 'development',
+      profile: true,
+      context: paths.targetPath,
+      entry: [paths.targetEntry],
+      resolve: {
+        extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
+        mainFields: ['browser', 'module', 'main'],
+        fallback: {
+          ...pickBy(require('node-libs-browser')),
+          module: false,
+          dgram: false,
+          dns: false,
+          fs: false,
+          http2: false,
+          net: false,
+          tls: false,
+          process: false,
+          buffer: false,
+          child_process: false,
+
+          /* new ignores */
+          path: false,
+          https: false,
+          http: false,
+          util: require.resolve('util/'),
+        },
+      },
+      module: {
+        rules: [
+          {
+            test: /\.svg$/,
+            type: 'asset',
+          },
+          {
+            test: /\.(jsx?|tsx?)$/,
+            use: [
+              {
+                loader: 'builtin:swc-loader',
+                options: {
+                  sourceMap: true,
+                  jsc: {
+                    parser: {
+                      syntax: 'typescript',
+                      tsx: true,
+                    },
+                    transform: {
+                      react: {
+                        runtime: 'automatic',
+                        development: true,
+                        refresh: true,
+                      },
+                    },
+                  },
+                  env: {
+                    targets: [
+                      'chrome >= 87',
+                      'edge >= 88',
+                      'firefox >= 78',
+                      'safari >= 14',
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+      plugins: [
+        new NodePolyfill(),
+        new rspack.DefinePlugin({
+          'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+          'process.env.APP_CONFIG': JSON.stringify(
+            cliConfig.frontendAppConfigs,
+          ),
+        }),
+        new rspack.ProgressPlugin({}),
+        new rspack.HtmlRspackPlugin({
+          template: paths.targetHtml,
+          templateParameters: {
+            publicPath,
+            config: '',
+          },
+        }),
+        new RefreshPlugin(),
+      ].filter(Boolean),
+    });
+
+    rspackServer = new RspackDevServer(
+      {
+        hot: !process.env.CI,
+        devMiddleware: {
+          publicPath: config.output?.publicPath as string,
+          stats: 'errors-warnings',
+        },
+        static: paths.targetPublic
+          ? {
+              publicPath: config.output?.publicPath as string,
+              directory: paths.targetPublic,
+            }
+          : undefined,
+        historyApiFallback: {
+          // Paths with dots should still use the history fallback.
+          // See https://github.com/facebookincubator/create-react-app/issues/387.
+          disableDotRule: true,
+
+          // The index needs to be rewritten relative to the new public path, including subroutes.
+          index: `${config.output?.publicPath}index.html`,
+        },
+        https:
+          url.protocol === 'https:'
+            ? {
+                cert: fullConfig.getString('app.https.certificate.cert'),
+                key: fullConfig.getString('app.https.certificate.key'),
+              }
+            : false,
+        host,
+        port,
+        proxy: targetPkg.proxy,
+        // When the dev server is behind a proxy, the host and public hostname differ
+        allowedHosts: [url.hostname],
+        client: {
+          webSocketURL: 'auto://0.0.0.0:0/ws',
+        },
+      },
+      compiler,
+    );
+
+    await rspackServer.start();
+  } else if (process.env.EXPERIMENTAL_VITE) {
     const { default: vite } = await import('vite');
     const { default: viteReact } = await import('@vitejs/plugin-react');
     const { nodePolyfills: viteNodePolyfills } = await import(

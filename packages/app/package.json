@@ -109,6 +109,10 @@
   "devDependencies": {
     "@backstage/test-utils": "workspace:^",
     "@playwright/test": "^1.32.3",
+    "@rspack/cli": "0.5.3",
+    "@rspack/core": "0.5.3",
+    "@rspack/plugin-node-polyfill": "^0.5.3",
+    "@rspack/plugin-react-refresh": "0.5.3",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
@@ -117,7 +121,8 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "cross-env": "^7.0.0"
+    "cross-env": "^7.0.0",
+    "react-refresh": "^0.14.0"
   },
   "scripts": {
     "start": "backstage-cli package start",
