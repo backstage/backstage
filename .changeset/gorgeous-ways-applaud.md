@@ -5,4 +5,4 @@
 '@backstage/plugin-signals': patch
 ---
 
-Fix to disconnect loop on server start
+Fix disconnect loop on server start
