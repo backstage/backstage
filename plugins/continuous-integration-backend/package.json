@@ -1,5 +1,6 @@
 {
-  "name": "@backstage/cli-builder",
+  "name": "backstage-plugin-continuous-integration-backend-module-test",
+  "description": "The test backend module for the continuous-integration plugin.",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -11,7 +12,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "node-library"
+    "role": "backend-plugin-module"
   },
   "scripts": {
     "start": "backstage-cli package start",
@@ -23,30 +24,14 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/config": "workspace:^",
-    "@backstage/errors": "workspace:^",
-    "@types/express": "*",
-    "cli-table": "^0.3.11",
-    "commander": "^12.0.0-1",
-    "ink": "^4.4.1",
-    "node-fetch": "^2.6.7",
-    "react": "^18.2.0",
-    "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "express-promise-router": "^4.1.1"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "@types/supertest": "^2.0.8",
-    "msw": "^1.0.0",
-    "supertest": "^6.2.4"
-  },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^"
   },
   "files": [
     "dist"

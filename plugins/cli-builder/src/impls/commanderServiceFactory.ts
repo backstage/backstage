@@ -40,12 +40,7 @@ export const rootCommanderServiceFactory = createServiceFactory({
   async factory({ rootLifecycle }) {
     const command = new Command().version('0.0.0').exitOverride(() => {});
     rootLifecycle.addStartupHook(async () => {
-      await command.parseAsync([
-        ...process.argv,
-        'catalog',
-        'get',
-        'user:default/jonathon.page',
-      ]);
+      await command.parseAsync([...process.argv, 'catalog', 'list']);
 
       process.kill(process.pid, 'SIGINT');
     });
