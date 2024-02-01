@@ -78,7 +78,7 @@ export function useOwnedEntitiesCount() {
 
   useDeepCompareEffect(() => {
     // context contains no filter, wait
-    if (Object.keys(catalogFilters).length === 0) {
+    if (Object.keys(catalogFilters.filter).length === 0) {
       return;
     }
     // ownershipEntityRefs is loading, wait
