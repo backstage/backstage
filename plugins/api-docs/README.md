@@ -222,6 +222,37 @@ security:
     - [read_pets, write_pets]
 ```
 
+### Override Component Styles
+
+It is possible to override the component styles from theme. To override components of this `api-docs` plugin use the corresponding class key while creating custom theme overrides.
+
+| Component to Override | Class key to use in theme overrides |
+| --------------------- | ----------------------------------- |
+| OpenApiDefinition     | PluginApiDocsOpenApiDefinition      |
+| AysncApiDefinition    | PluginApiDocsAsyncApiDefinition     |
+
+Below is an example of overriding `OpenApiDefinition` component from theme:
+
+```tsx
+export const createCustomThemeOverrides = (
+  theme: BackstageTheme,
+): BackstageOverrides => {
+  return {
+    PluginApiDocsOpenApiDefinition: {
+      root: {
+        '& .scheme-container': {
+          backgroundColor: 'blue',
+        },
+      },
+    },
+  };
+};
+```
+
+More information on overriding component styles can be found [here](https://backstage.io/docs/getting-started/app-custom-theme#overriding-backstage-and-material-ui-components-styles) from backstage documentation.
+
+**NOTE**: Currently overriding of styles is only available for OpenApiDefinition and AysncApiDefinition Components.
+
 ## Links
 
 - [The Backstage homepage](https://backstage.io)
