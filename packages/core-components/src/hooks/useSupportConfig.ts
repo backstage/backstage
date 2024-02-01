@@ -40,12 +40,12 @@ const useDefaultSupportConfig = () => {
     url: 'https://github.com/backstage/backstage/issues',
     items: [
       {
-        title: t('supportConfig.title'),
+        title: t('supportConfig.default.title'),
         icon: 'warning',
         links: [
           {
             // TODO: Update to dedicated support page on backstage.io/docs
-            title: t('supportConfig.links.title'),
+            title: t('supportConfig.default.linkTitle'),
             url: 'https://github.com/backstage/backstage/blob/master/app-config.yaml',
           },
         ],

@@ -125,7 +125,6 @@ export function AlertDisplay(props: AlertDisplayProps) {
           {messages.length > 1 && (
             <em>
               {t('alertDisplay.message', {
-                num: String(messages.length - 1),
                 count: messages.length - 1,
               })}
             </em>

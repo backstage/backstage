@@ -46,6 +46,9 @@ const useFormStyles = makeStyles(
       alignSelf: 'center',
       marginTop: theme.spacing(2),
     },
+    subTitle: {
+      whiteSpace: 'pre-line',
+    },
   }),
   { name: 'BackstageCustomProvider' },
 );
@@ -88,10 +91,8 @@ const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => {
   return (
     <GridItem>
       <InfoCard title={t('signIn.customProvider.title')} variant="fullHeight">
-        <Typography variant="body1">
+        <Typography variant="body1" className={classes.subTitle}>
           {t('signIn.customProvider.subtitle')}
-          <br />
-          {t('signIn.customProvider.subtitle2')}
         </Typography>
 
         <form className={classes.form} onSubmit={handleSubmit(handleResult)}>

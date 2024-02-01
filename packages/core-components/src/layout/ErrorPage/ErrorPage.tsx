@@ -66,7 +66,13 @@ const useStyles = makeStyles(
  *
  */
 export function ErrorPage(props: IErrorPageProps) {
-  const { status, statusMessage, additionalInfo, supportUrl, stack } = props;
+  const {
+    status = '',
+    statusMessage,
+    additionalInfo,
+    supportUrl,
+    stack,
+  } = props;
   const classes = useStyles();
   const navigate = useNavigate();
   const support = useSupportConfig();
@@ -80,7 +86,7 @@ export function ErrorPage(props: IErrorPageProps) {
           variant="body1"
           className={classes.subtitle}
         >
-          {t('errorPage.subtitle', { status: status || '', statusMessage })}
+          {t('errorPage.subtitle', { status, statusMessage })}
         </Typography>
         <Typography variant="body1" className={classes.subtitle}>
           {additionalInfo}
@@ -92,11 +98,9 @@ export function ErrorPage(props: IErrorPageProps) {
           <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
             {t('errorPage.goBack')}
           </Link>
-          {t('errorPage.orPlease')}
-          <Link to={supportUrl || support.url}>
-            {t('errorPage.contactSupport')}
-          </Link>
-          {t('errorPage.isBug')}
+          ... or please{' '}
+          <Link to={supportUrl || support.url}>contact support</Link> if you
+          think this is a bug.
         </Typography>
         {stack && <StackDetails stack={stack} />}
       </Grid>

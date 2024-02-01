@@ -25,8 +25,8 @@ export const coreComponentsTranslationRef = createTranslationRef({
       loginFailed: 'Login failed',
       customProvider: {
         title: 'Custom User',
-        subtitle: 'Enter your own User ID and credentials.',
-        subtitle2: 'This selection will not be stored.',
+        subtitle:
+          'Enter your own User ID and credentials.\n This selection will not be stored.',
         userId: 'User ID',
         tokenInvalid: 'Token is not a valid OpenID Connect JWT Token',
         continue: 'Continue',
@@ -34,20 +34,12 @@ export const coreComponentsTranslationRef = createTranslationRef({
       },
       guestProvider: {
         title: 'Guest',
-        subtitle: 'Enter as a Guest User.',
-        description:
-          'You will not have a verified identity, meaning some features might be unavailable.',
+        subtitle:
+          'Enter as a Guest User.\n You will not have a verified identity, meaning some features might be unavailable.',
         enter: 'Enter',
       },
     },
-    sidebar: {
-      shipToContent: 'Skip to content',
-      starredIntroText:
-        'Fun fact! As you explore all the awesome plugins in Backstage, you can actually pin them to this side nav.Keep an eye out for the little star icon (⭐) next to the plugin name and give it a click!',
-      recentlyViewedIntroText:
-        'And your recently viewed plugins will pop up here!',
-      dismiss: 'Dismiss',
-    },
+    shipToContent: 'Skip to content',
     copyTextButton: {
       tooltipText: 'Text copied to clipboard',
     },
@@ -62,9 +54,6 @@ export const coreComponentsTranslationRef = createTranslationRef({
       subtitle: 'ERROR {{status}}: {{statusMessage}}',
       title: 'Looks like someone dropped the mic!',
       goBack: 'Go back',
-      orPlease: '... or please ',
-      contactSupport: 'contact support',
-      isBug: 'if you think this is a bug.',
     },
     emptyState: {
       missingAnnotation: {
@@ -81,9 +70,9 @@ export const coreComponentsTranslationRef = createTranslationRef({
       },
     },
     supportConfig: {
-      title: 'Support Not Configured',
-      links: {
-        title: 'Add `app.support` config key',
+      default: {
+        title: 'Support Not Configured',
+        linkTitle: 'Add `app.support` config key',
       },
     },
     errorBoundary: {
@@ -109,8 +98,8 @@ export const coreComponentsTranslationRef = createTranslationRef({
       },
     },
     alertDisplay: {
-      message_one: '({{ num }} older message)',
-      message_other: '({{ num }} older messages)',
+      message_one: '({{ count }} older message)',
+      message_other: '({{ count }} older messages)',
     },
     autoLogout: {
       stillTherePrompt: {
