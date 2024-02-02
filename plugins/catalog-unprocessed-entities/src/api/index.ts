@@ -54,6 +54,10 @@ export interface CatalogUnprocessedEntitiesApi {
    * Returns a list of entities with state 'failed'
    */
   failed(): Promise<CatalogUnprocessedEntitiesApiResponse>;
+  /**
+   * Deletes an entity from the refresh_state table
+   */
+  delete(entity_id: string): Promise<void>;
 }
 
 /**
@@ -82,5 +86,11 @@ export class CatalogUnprocessedEntitiesClient
 
   async failed(): Promise<CatalogUnprocessedEntitiesApiResponse> {
     return await this.fetch('entities/unprocessed/failed');
+  }
+
+  async delete(entity_id: string): Promise<void> {
+    await this.fetch(`entities/unprocessed/delete/${entity_id}`, {
+      method: 'DELETE',
+    });
   }
 }

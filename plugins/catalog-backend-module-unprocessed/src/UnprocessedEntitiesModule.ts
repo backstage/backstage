@@ -120,6 +120,16 @@ export class UnprocessedEntitiesModule {
             owner: req.query.owner as string,
           }),
         );
-      });
+      })
+      .delete(
+        '/entities/unprocessed/delete/:entity_id',
+        async (request, response) => {
+          await this.database('refresh_state')
+            .where({ entity_id: request.params.entity_id })
+            .delete();
+
+          response.status(204).send();
+        },
+      );
   }
 }
