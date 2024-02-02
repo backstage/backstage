@@ -185,6 +185,9 @@ import {
   isLinguistAvailable,
   EntityLinguistCard,
 } from '@backstage/plugin-linguist';
+import { WorkstationsCard } from '@backstage/plugin-gcp-cloudworkstations';
+import { isGCPCloudWorkstationsAvailable } from '@backstage/plugin-gcp-cloudworkstations';
+import { GcpCloudworkstationsPage } from '@backstage/plugin-gcp-cloudworkstations';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -380,6 +383,15 @@ const pullRequestsContent = (
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
     {entityWarningContent}
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isGCPCloudWorkstationsAvailable}>
+        <Grid item md={6} xs={12}>
+          <WorkstationsCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
     <Grid item md={6} xs={12}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
@@ -536,6 +548,13 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      path="/gcp-cloudworkstations"
+      title="GCP CloudWorkstations"
+    >
+      <GcpCloudworkstationsPage />
     </EntityLayout.Route>
 
     <EntityLayout.Route

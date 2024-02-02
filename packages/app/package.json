@@ -43,6 +43,7 @@
     "@backstage/plugin-entity-feedback": "workspace:^",
     "@backstage/plugin-explore": "workspace:^",
     "@backstage/plugin-gcalendar": "workspace:^",
+    "@backstage/plugin-gcp-cloudworkstations": "workspace:^",
     "@backstage/plugin-gcp-projects": "workspace:^",
     "@backstage/plugin-github-actions": "workspace:^",
     "@backstage/plugin-gocd": "workspace:^",
