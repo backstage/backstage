@@ -422,6 +422,11 @@ export type PlaceholderResolverRead = PlaceholderResolverRead_2;
 export type PlaceholderResolverResolveUrl = PlaceholderResolverResolveUrl_2;
 
 // @public
+export function policyToProcessorTransformer(
+  policy: EntityPolicy,
+): CatalogProcessor_2;
+
+// @public
 export type ProcessingIntervalFunction = () => number;
 
 // @public @deprecated (undocumented)

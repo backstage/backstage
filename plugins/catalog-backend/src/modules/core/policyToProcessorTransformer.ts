@@ -19,8 +19,9 @@ import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 
 /**
  * Transform a given entity policy to an entity processor.
- * @param policy The policy to transform
+ * @param policy - The policy to transform
  * @returns A new entity processor that uses the entity policy.
+ * @public
  */
 export function policyToProcessorTransformer(
   policy: EntityPolicy,
