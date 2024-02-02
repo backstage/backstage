@@ -25,6 +25,7 @@ import {
   resolve as resolvePath,
   relative as relativePath,
 } from 'path';
+import fetch from 'node-fetch';
 import { exec as execCb } from 'child_process';
 import { packageVersions } from './versions';
 import { promisify } from 'util';
@@ -317,13 +318,15 @@ export async function fetchYarnLockSeedTask(dir: string) {
   try {
     await Task.forItem('fetching', 'yarn.lock seed', async () => {
       const controller = new AbortController();
-      setTimeout(() => controller.abort(), 5000);
+      const timeout = setTimeout(() => controller.abort(), 3000);
       const res = await fetch(
         'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
         {
           signal: controller.signal,
         },
       );
+      clearTimeout(timeout);
+
       if (!res.ok) {
         throw new Error(
           `Request failed with status ${res.status} ${res.statusText}`,

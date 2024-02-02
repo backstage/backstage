@@ -471,5 +471,20 @@ describe('tasks', () => {
 
       expect(mockDir.content()).toEqual({});
     });
+
+    it('should time out if it takes too long to fetch', async () => {
+      worker.use(
+        rest.get(
+          'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
+          (_, res, ctx) => res(ctx.delay(5000)),
+        ),
+      );
+
+      mockDir.clear();
+
+      await expect(fetchYarnLockSeedTask(mockDir.path)).resolves.toBe(false);
+
+      expect(mockDir.content()).toEqual({});
+    });
   });
 });
