@@ -27,8 +27,14 @@ import {
   templatingTask,
   tryInitGitRepository,
   readGitConfig,
+  fetchYarnLockSeedTask,
 } from './tasks';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 
 jest.spyOn(Task, 'log').mockReturnValue(undefined);
 jest.spyOn(Task, 'error').mockReturnValue(undefined);
@@ -408,6 +414,77 @@ describe('tasks', () => {
         { cwd: destinationDir },
         expect.any(Function),
       );
+    });
+  });
+
+  describe('fetchYarnLockSeedTask', () => {
+    const worker = setupServer();
+    setupRequestMockHandlers(worker);
+
+    it('should fetch the yarn.lock seed file', async () => {
+      worker.use(
+        rest.get(
+          'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.text(`# the-lockfile-header
+
+// some comments
+// in the file
+// that should
+// be removed
+
+// a comment about the entry
+"@backstage/cli@1.0.0":
+  some info
+`),
+            ),
+        ),
+      );
+
+      mockDir.clear();
+
+      await expect(fetchYarnLockSeedTask(mockDir.path)).resolves.toBe(true);
+
+      expect(mockDir.content({ shouldReadAsText: true })).toEqual({
+        'yarn.lock': `# the-lockfile-header
+
+
+"@backstage/cli@1.0.0":
+  some info
+`,
+      });
+    });
+
+    it('should fail gracefully', async () => {
+      worker.use(
+        rest.get(
+          'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
+          (_, res, ctx) => res(ctx.status(404)),
+        ),
+      );
+
+      mockDir.clear();
+
+      await expect(fetchYarnLockSeedTask(mockDir.path)).resolves.toBe(false);
+
+      expect(mockDir.content()).toEqual({});
+    });
+
+    it('should time out if it takes too long to fetch', async () => {
+      worker.use(
+        rest.get(
+          'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
+          (_, res, ctx) => res(ctx.delay(5000)),
+        ),
+      );
+
+      mockDir.clear();
+
+      await expect(fetchYarnLockSeedTask(mockDir.path)).resolves.toBe(false);
+
+      expect(mockDir.content()).toEqual({});
     });
   });
 });
