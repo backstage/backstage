@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs-module-addons-contrib': patch
 ---
 
-textsize-fix value label text color
+Fixed the value label text color in dark mode for the TextSize addon.
