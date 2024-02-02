@@ -20,11 +20,11 @@ The [createScaffolderLayout](https://backstage.io/docs/reference/plugin-scaffold
 
 ```ts
 import React from 'react';
-import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import {
   createScaffolderLayout,
   LayoutTemplate,
-} from '@backstage/plugin-scaffolder-react';
+  scaffolderPlugin,
+} from '@backstage/plugin-scaffolder';
 import { Grid } from '@material-ui/core';
 
 const TwoColumn: LayoutTemplate = ({ properties, description, title }) => {
