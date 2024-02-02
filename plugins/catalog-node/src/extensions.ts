@@ -15,7 +15,7 @@
  */
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { Entity, EntityPolicy } from '@backstage/catalog-model';
+import { Entity, EntityPolicy, Validators } from '@backstage/catalog-model';
 import {
   CatalogProcessor,
   EntitiesSearchFilter,
@@ -47,11 +47,22 @@ export interface CatalogProcessingExtensionPoint {
 
 /** @alpha */
 export interface CatalogModelExtensionPoint {
+  /**
+   * @deprecated Use `policyToProcessorTransformer` from `@backstage/plugin-catalog-backend`
+   *  and `CatalogProcessingExtensionPoint.addProcessor` instead.
+   */
   addEntityPolicies(
     ...policies: Array<EntityPolicy | Array<EntityPolicy>>
   ): void;
 
-  replaceEntityPolicies(...policies: Array<EntityPolicy>): void;
+  /**
+   * Sets the validator function to use for one or more special fields of an
+   * entity. This is useful if the default rules for formatting of fields are
+   * not sufficient.
+   *
+   * @param validators - The (subset of) validators to set
+   */
+  setFieldValidators(validators: Partial<Validators>): void;
 }
 
 /**

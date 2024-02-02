@@ -17,7 +17,7 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { Entity, EntityPolicy } from '@backstage/catalog-model';
+import { Entity, EntityPolicy, Validators } from '@backstage/catalog-model';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
   CatalogAnalysisExtensionPoint,
@@ -36,6 +36,7 @@ import {
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { merge } from 'lodash';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -128,28 +129,22 @@ class CatalogPermissionExtensionPointImpl
 
 class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
   #entityPolicies = new Array<EntityPolicy>();
-  #replaced = false;
+  #fieldValidators: Partial<Validators> = {};
 
   addEntityPolicies(...policies: Array<EntityPolicy | Array<EntityPolicy>>) {
     this.#entityPolicies.push(...policies.flat());
   }
 
-  replaceEntityPolicies(...policies: Array<EntityPolicy>) {
-    if (this.#replaced) {
-      throw new Error(
-        `You've already replaced the entity policies. If you want to add more entity policies, see 'addEntityPolicies'.`,
-      );
-    }
-    this.#entityPolicies = [...policies];
-    this.#replaced = true;
+  setFieldValidators(validators: Partial<Validators>): void {
+    merge(this.#fieldValidators, validators);
   }
 
   get entityPolicies() {
     return this.#entityPolicies;
   }
 
-  get replaced() {
-    return this.#replaced;
+  get fieldValidators() {
+    return this.#fieldValidators;
   }
 }
 
@@ -224,12 +219,8 @@ export const catalogPlugin = createBackendPlugin({
         );
         builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
-
-        if (modelExtensions.replaced) {
-          builder.replaceEntityPolicies(modelExtensions.entityPolicies);
-        } else {
-          builder.addEntityPolicy(...modelExtensions.entityPolicies);
-        }
+        builder.addEntityPolicy(...modelExtensions.entityPolicies);
+        builder.setFieldFormatValidators(modelExtensions.fieldValidators);
 
         const { processingEngine, router } = await builder.build();
 
