@@ -11,19 +11,23 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 export class DefaultSignalService implements SignalService {
   // (undocumented)
   static create(options: SignalServiceOptions): DefaultSignalService;
-  publish(signal: SignalPayload): Promise<void>;
+  publish<SignalType extends JsonObject = JsonObject>(
+    signal: SignalPayload<SignalType>,
+  ): Promise<void>;
 }
 
 // @public (undocumented)
-export type SignalPayload = {
+export type SignalPayload<SignalType extends JsonObject = JsonObject> = {
   recipients: string[] | string | null;
   channel: string;
-  message: JsonObject;
+  message: SignalType;
 };
 
 // @public (undocumented)
 export interface SignalService {
-  publish(signal: SignalPayload): Promise<void>;
+  publish<SignalType extends JsonObject = JsonObject>(
+    signal: SignalPayload<SignalType>,
+  ): Promise<void>;
 }
 
 // @public (undocumented)
