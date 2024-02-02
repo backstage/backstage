@@ -73,11 +73,12 @@ export class CatalogUnprocessedEntitiesClient
   private async fetch<T>(path: string, init?: RequestInit): Promise<T> {
     const url = await this.discovery.getBaseUrl('catalog');
     const resp = await this.fetchApi.fetch(`${url}/${path}`, init);
+
     if (!resp.ok) {
       throw await ResponseError.fromResponse(resp);
     }
 
-    return await resp.json();
+    return resp.status === 204 ? (resp as T) : await resp.json();
   }
 
   async pending(): Promise<CatalogUnprocessedEntitiesApiResponse> {
