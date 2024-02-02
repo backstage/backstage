@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-system-entity-model
+  title: '@backstage/plugin-catalog-backend-module-system-entity-model'
+  description: The system-entity-model backend module for the catalog plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

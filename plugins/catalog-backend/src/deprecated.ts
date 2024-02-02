@@ -56,6 +56,7 @@ import {
   type CatalogCollatorEntityTransformer as _CatalogCollatorEntityTransformer,
   type DefaultCatalogCollatorFactoryOptions as _DefaultCatalogCollatorFactoryOptions,
 } from '@backstage/plugin-search-backend-module-catalog';
+import { SystemEntityModelProcessor } from '@backstage/plugin-catalog-backend-module-system-entity-model';
 
 /**
  * @public
@@ -274,3 +275,9 @@ export type DefaultCatalogCollatorFactoryOptions =
  */
 export type CatalogCollatorEntityTransformer =
   _CatalogCollatorEntityTransformer;
+
+/**
+ * @public
+ * @deprecated Use `SystemEntityModelProcessor` from `@backstage/plugin-catalog-backend-module-system-entity-model` instead
+ */
+export const BuiltinKindsEntityProcessor = SystemEntityModelProcessor;
