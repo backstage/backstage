@@ -241,7 +241,7 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
     const tokenset = await client.refresh(input.refreshToken);
 
     if (!tokenset.access_token) {
-      Promise.reject(new Error('Refresh Failed'));
+      return Promise.reject(new Error('Refresh Failed'));
     }
 
     let id_token = tokenset.id_token;
