@@ -14,7 +14,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
 export interface CatalogUnprocessedEntitiesApi {
-  delete(entity_id: string): Promise<void>;
+  delete(entityId: string): Promise<void>;
   failed(): Promise<CatalogUnprocessedEntitiesApiResponse>;
   pending(): Promise<CatalogUnprocessedEntitiesApiResponse>;
 }

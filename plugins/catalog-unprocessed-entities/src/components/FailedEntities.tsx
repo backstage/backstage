@@ -108,14 +108,14 @@ export const FailedEntities = () => {
   }
 
   const handleDelete = async ({
-    id,
+    entityId,
     entityRef,
   }: {
-    id: string;
+    entityId: string;
     entityRef: string;
   }) => {
     try {
-      await unprocessedEntityApi.delete(id);
+      await unprocessedEntityApi.delete(entityId);
       alertApi.post({
         message: `Entity ${entityRef} has been deleted`,
         severity: 'success',
@@ -165,13 +165,15 @@ export const FailedEntities = () => {
     {
       title: <Typography>Actions</Typography>,
       render: (rowData: UnprocessedEntity | {}) => {
+        const { entity_id, entity_ref } = rowData as UnprocessedEntity;
+
         return (
           <IconButton
             aria-label="delete"
             onClick={async () =>
               await handleDelete({
-                id: (rowData as UnprocessedEntity).entity_id,
-                entityRef: (rowData as UnprocessedEntity).entity_ref,
+                entityId: entity_id,
+                entityRef: entity_ref,
               })
             }
           >
