@@ -30,18 +30,20 @@ export const notificationService = createServiceRef<NotificationService>({
     createServiceFactory({
       service,
       deps: {
-        logger: coreServices.logger,
+        logger: coreServices.rootLogger,
         discovery: coreServices.discovery,
         tokenManager: coreServices.tokenManager,
+        pluginMetadata: coreServices.pluginMetadata,
         signals: signalService,
       },
-      factory({ logger, discovery, tokenManager, signals }) {
+      factory({ logger, discovery, tokenManager, signals, pluginMetadata }) {
+        // TODO: Convert to use createRootContext
         return DefaultNotificationService.create({
           logger,
           discovery,
           tokenManager,
           signalService: signals,
-        });
+        }).forPlugin(pluginMetadata.getId());
       },
     }),
 });

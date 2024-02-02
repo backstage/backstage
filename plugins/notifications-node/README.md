@@ -15,15 +15,18 @@ import { NotificationService } from '@backstage/plugin-notifications-node';
 
 function makeCreateEnv(config: Config) {
   // ...
-  const notificationService = DefaultNotificationService.create({
+  const defaultNotificationService = DefaultNotificationService.create({
     logger: root.child({ type: 'plugin' }),
     discovery,
     tokenManager,
+    signalService,
   });
 
   // ...
   return (plugin: string): PluginEnvironment => {
     // ...
+    const notificationService = defaultNotificationService.forPlugin(plugin);
+
     return {
       // ...
       notificationService,
@@ -55,4 +58,4 @@ a user, the notification will be sent to only that user. If it's a group, the no
 members of the group. If it's some other entity, the notification will be sent to the owner of that entity.
 
 If the notification has `topic` set and user already has notification with that topic, the existing notification
-will be updated with the new notification values and moved to inbox as unread. 
+will be updated with the new notification values and moved to inbox as unread.

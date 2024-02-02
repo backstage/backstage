@@ -11,7 +11,6 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
-import { NotificationIds } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
 import { NotificationType } from '@backstage/plugin-notifications-common';
 import { default as React_2 } from 'react';
@@ -34,17 +33,9 @@ export interface NotificationsApi {
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
-  markDone(ids: string[]): Promise<NotificationIds>;
-  // (undocumented)
-  markRead(ids: string[]): Promise<NotificationIds>;
-  // (undocumented)
-  markSaved(ids: string[]): Promise<NotificationIds>;
-  // (undocumented)
-  markUndone(ids: string[]): Promise<NotificationIds>;
-  // (undocumented)
-  markUnread(ids: string[]): Promise<NotificationIds>;
-  // (undocumented)
-  markUnsaved(ids: string[]): Promise<NotificationIds>;
+  updateNotifications(
+    options: UpdateNotificationsOptions,
+  ): Promise<Notification_2[]>;
 }
 
 // @public (undocumented)
@@ -60,17 +51,9 @@ export class NotificationsClient implements NotificationsApi {
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
-  markDone(ids: string[]): Promise<NotificationIds>;
-  // (undocumented)
-  markRead(ids: string[]): Promise<NotificationIds>;
-  // (undocumented)
-  markSaved(ids: string[]): Promise<NotificationIds>;
-  // (undocumented)
-  markUndone(ids: string[]): Promise<NotificationIds>;
-  // (undocumented)
-  markUnread(ids: string[]): Promise<NotificationIds>;
-  // (undocumented)
-  markUnsaved(ids: string[]): Promise<NotificationIds>;
+  updateNotifications(
+    options: UpdateNotificationsOptions,
+  ): Promise<Notification_2[]>;
 }
 
 // @public (undocumented)
@@ -93,6 +76,14 @@ export const NotificationsTable: (props: {
   type: NotificationType;
   notifications?: Notification_2[];
 }) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type UpdateNotificationsOptions = {
+  ids: string[];
+  done?: boolean;
+  read?: boolean;
+  saved?: boolean;
+};
 
 // @public (undocumented)
 export function useNotificationsApi<T>(

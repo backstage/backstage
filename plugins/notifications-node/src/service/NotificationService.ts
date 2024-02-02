@@ -15,9 +15,10 @@
  */
 
 import { NotificationSendOptions } from './DefaultNotificationService';
-import { Notification } from '@backstage/plugin-notifications-common';
 
 /** @public */
 export interface NotificationService {
-  send(options: NotificationSendOptions): Promise<Notification[]>;
+  forPlugin(pluginId: string): NotificationService;
+
+  send(options: NotificationSendOptions): Promise<void>;
 }

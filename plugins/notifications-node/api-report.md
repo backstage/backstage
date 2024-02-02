@@ -5,7 +5,7 @@
 ```ts
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
+import { NotificationPayload } from '@backstage/plugin-notifications-common';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { SignalService } from '@backstage/plugin-signals-node';
 import { TokenManager } from '@backstage/backend-common';
@@ -19,28 +19,29 @@ export class DefaultNotificationService implements NotificationService {
     discovery,
   }: NotificationServiceOptions): DefaultNotificationService;
   // (undocumented)
-  send(options: NotificationSendOptions): Promise<Notification_2[]>;
+  forPlugin(pluginId: string): NotificationService;
+  // (undocumented)
+  send(notification: NotificationSendOptions): Promise<void>;
 }
 
 // @public (undocumented)
-export type NotificationReceivers = {
+export type NotificationRecipients = {
   type: 'entity';
   entityRef: string | string[];
 };
 
 // @public (undocumented)
 export type NotificationSendOptions = {
-  receivers: NotificationReceivers;
-  title: string;
-  description: string;
-  link: string;
-  topic?: string;
+  recipients: NotificationRecipients;
+  payload: NotificationPayload;
 };
 
 // @public (undocumented)
 export interface NotificationService {
   // (undocumented)
-  send(options: NotificationSendOptions): Promise<Notification_2[]>;
+  forPlugin(pluginId: string): NotificationService;
+  // (undocumented)
+  send(options: NotificationSendOptions): Promise<void>;
 }
 
 // @public (undocumented)

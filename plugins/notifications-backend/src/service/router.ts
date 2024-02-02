@@ -209,104 +209,67 @@ export async function createRouter(
     res.send(status);
   });
 
-  router.post('/done', async (req, res) => {
+  router.post('/update', async (req, res) => {
     const user = await getUser(req);
-    const { ids } = req.body;
+    const { ids, done, read, saved } = req.body;
     if (!ids || !Array.isArray(ids)) {
       res.status(400).send();
       return;
     }
-    await store.markDone({ user_ref: user, ids });
+    if (done === true) {
+      await store.markDone({ user_ref: user, ids });
+      if (signalService) {
+        await signalService.publish({
+          recipients: [user],
+          message: { action: 'done', notification_ids: ids },
+          channel: 'notifications',
+        });
+      }
+    } else if (done === false) {
+      await store.markUndone({ user_ref: user, ids });
+      if (signalService) {
+        await signalService.publish({
+          recipients: [user],
+          message: { action: 'undone', notification_ids: ids },
+          channel: 'notifications',
+        });
+      }
+    }
 
-    if (signalService) {
-      await signalService.publish({
-        recipients: [user],
-        message: { action: 'done', notification_ids: ids },
-        channel: 'notifications',
-      });
-    }
-    res.status(200).send({ ids });
-  });
+    if (read === true) {
+      await store.markRead({ user_ref: user, ids });
 
-  router.post('/undo', async (req, res) => {
-    const user = await getUser(req);
-    const { ids } = req.body;
-    if (!ids || !Array.isArray(ids)) {
-      res.status(400).send();
-      return;
-    }
-    await store.markUndone({ user_ref: user, ids });
-    if (signalService) {
-      await signalService.publish({
-        recipients: [user],
-        message: { action: 'undone', notification_ids: ids },
-        channel: 'notifications',
-      });
-    }
-    res.status(200).send({ ids });
-  });
+      if (signalService) {
+        await signalService.publish({
+          recipients: [user],
+          message: { action: 'mark_read', notification_ids: ids },
+          channel: 'notifications',
+        });
+      }
+    } else if (read === false) {
+      await store.markUnread({ user_ref: user, ids });
 
-  router.post('/read', async (req, res) => {
-    const user = await getUser(req);
-    const { ids } = req.body;
-    if (!ids || !Array.isArray(ids)) {
-      res.status(400).send();
-      return;
+      if (signalService) {
+        await signalService.publish({
+          recipients: [user],
+          message: { action: 'mark_unread', notification_ids: ids },
+          channel: 'notifications',
+        });
+      }
     }
-    await store.markRead({ user_ref: user, ids });
 
-    if (signalService) {
-      await signalService.publish({
-        recipients: [user],
-        message: { action: 'mark_read', notification_ids: ids },
-        channel: 'notifications',
-      });
+    if (saved === true) {
+      await store.markSaved({ user_ref: user, ids });
+    } else if (saved === false) {
+      await store.markUnsaved({ user_ref: user, ids });
     }
-    res.status(200).send({ ids });
-  });
 
-  router.post('/unread', async (req, res) => {
-    const user = await getUser(req);
-    const { ids } = req.body;
-    if (!ids || !Array.isArray(ids)) {
-      res.status(400).send();
-      return;
-    }
-    await store.markUnread({ user_ref: user, ids });
-    if (signalService) {
-      await signalService.publish({
-        recipients: [user],
-        message: { action: 'mark_unread', notification_ids: ids },
-        channel: 'notifications',
-      });
-    }
-    res.status(200).send({ ids });
-  });
-
-  router.post('/save', async (req, res) => {
-    const user = await getUser(req);
-    const { ids } = req.body;
-    if (!ids || !Array.isArray(ids)) {
-      res.status(400).send();
-      return;
-    }
-    await store.markSaved({ user_ref: user, ids });
-    res.status(200).send({ ids });
-  });
-
-  router.post('/unsave', async (req, res) => {
-    const user = await getUser(req);
-    const { ids } = req.body;
-    if (!ids || !Array.isArray(ids)) {
-      res.status(400).send();
-      return;
-    }
-    await store.markUnsaved({ user_ref: user, ids });
-    res.status(200).send({ ids });
+    const notifications = await store.getNotifications({ ids, user_ref: user });
+    res.status(200).send(notifications);
   });
 
   router.post('/notifications', async (req, res) => {
-    const { receivers, title, description, link, topic } = req.body;
+    const { recipients, origin, payload } = req.body;
     const notifications = [];
     let users = [];
 
@@ -318,9 +281,17 @@ export async function createRouter(
       return;
     }
 
+    const { title, link, description, scope } = payload;
+
+    if (!recipients || !title || !origin || !link) {
+      logger.error(`Invalid notification request received`);
+      res.status(400).send();
+      return;
+    }
+
     let entityRef = null;
-    if (receivers.entityRef && receivers.type === 'entity') {
-      entityRef = receivers.entityRef;
+    if (recipients.entityRef && recipients.type === 'entity') {
+      entityRef = recipients.entityRef;
     }
 
     try {
@@ -331,13 +302,13 @@ export async function createRouter(
       return;
     }
 
-    const baseNotification = {
-      title,
-      description,
-      link,
-      topic,
+    const baseNotification: Omit<Notification, 'id' | 'userRef'> = {
+      payload: {
+        ...payload,
+        severity: payload.severity ?? 'normal',
+      },
+      origin,
       created: new Date(),
-      saved: false,
     };
 
     for (const user of users) {
@@ -349,10 +320,11 @@ export async function createRouter(
       const notification = await decorateNotification(userNotification);
 
       let existingNotification;
-      if (topic) {
-        existingNotification = await store.getExistingTopicNotification({
+      if (scope) {
+        existingNotification = await store.getExistingScopeNotification({
           user_ref: user,
-          topic,
+          scope,
+          origin,
         });
       }
 

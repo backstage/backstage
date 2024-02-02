@@ -105,7 +105,7 @@ function makeCreateEnv(config: Config) {
   const signalService = DefaultSignalService.create({
     eventBroker,
   });
-  const notificationService = DefaultNotificationService.create({
+  const defaultNotificationService = DefaultNotificationService.create({
     logger: root.child({ type: 'plugin' }),
     discovery,
     tokenManager,
@@ -119,6 +119,7 @@ function makeCreateEnv(config: Config) {
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
     const scheduler = taskScheduler.forPlugin(plugin);
+    const notificationService = defaultNotificationService.forPlugin(plugin);
 
     return {
       logger,

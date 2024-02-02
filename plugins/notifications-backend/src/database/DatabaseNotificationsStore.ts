@@ -95,7 +95,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       }
     }
 
-    if ('ids' in options && options.ids) {
+    if (options.ids) {
       query.whereIn('id', options.ids);
     }
 
@@ -131,13 +131,15 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     };
   }
 
-  async getExistingTopicNotification(options: {
+  async getExistingScopeNotification(options: {
     user_ref: string;
-    topic: string;
+    scope: string;
+    origin: string;
   }) {
     const query = this.db('notifications')
       .where('userRef', options.user_ref)
-      .where('topic', options.topic)
+      .where('scope', options.scope)
+      .where('origin', options.origin)
       .select('*')
       .limit(1);
 
@@ -156,11 +158,12 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       .where('id', options.id)
       .where('userRef', options.notification.userRef);
     const rows = await query.update({
-      title: options.notification.title,
-      description: options.notification.description,
-      link: options.notification.link,
-      topic: options.notification.topic,
+      title: options.notification.payload.title,
+      description: options.notification.payload.description,
+      link: options.notification.payload.link,
+      topic: options.notification.payload.topic,
       updated: options.notification.created,
+      severity: options.notification.payload.severity,
       read: null,
       done: null,
     });
@@ -205,11 +208,11 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
   async markSaved(options: NotificationModifyOptions): Promise<void> {
     const notificationQuery = this.getNotificationsBaseQuery(options);
-    await notificationQuery.update({ saved: true });
+    await notificationQuery.update({ saved: new Date() });
   }
 
   async markUnsaved(options: NotificationModifyOptions): Promise<void> {
     const notificationQuery = this.getNotificationsBaseQuery(options);
-    await notificationQuery.update({ saved: false });
+    await notificationQuery.update({ saved: null });
   }
 }

@@ -148,7 +148,7 @@ export const NotificationsTable = (props: {
                 startIcon={<Inbox fontSize="small" />}
                 onClick={() => {
                   notificationsApi
-                    .markUndone(selected)
+                    .updateNotifications({ ids: selected, done: false })
                     .then(() => props.onUpdate());
                   setSelected([]);
                 }}
@@ -162,7 +162,7 @@ export const NotificationsTable = (props: {
                 startIcon={<Check fontSize="small" />}
                 onClick={() => {
                   notificationsApi
-                    .markDone(selected)
+                    .updateNotifications({ ids: selected, done: true })
                     .then(() => props.onUpdate());
                   setSelected([]);
                 }}
@@ -197,16 +197,16 @@ export const NotificationsTable = (props: {
               <TableCell
                 onClick={() =>
                   notificationsApi
-                    .markRead([notification.id])
-                    .then(() => navigate(notification.link))
+                    .updateNotifications({ ids: [notification.id], read: true })
+                    .then(() => navigate(notification.payload.link))
                 }
                 style={{ paddingLeft: 0 }}
               >
                 <Typography variant="subtitle2">
-                  {notification.title}
+                  {notification.payload.title}
                 </Typography>
                 <Typography variant="body2">
-                  {notification.description}
+                  {notification.payload.description}
                 </Typography>
               </TableCell>
               <TableCell style={{ textAlign: 'right' }}>
@@ -214,13 +214,16 @@ export const NotificationsTable = (props: {
                   <RelativeTime value={notification.created} />
                 </Box>
                 <Box className="showOnHover">
-                  <Tooltip title={notification.link}>
+                  <Tooltip title={notification.payload.link}>
                     <IconButton
                       className={styles.actionButton}
                       onClick={() =>
                         notificationsApi
-                          .markRead([notification.id])
-                          .then(() => navigate(notification.link))
+                          .updateNotifications({
+                            ids: [notification.id],
+                            read: true,
+                          })
+                          .then(() => navigate(notification.payload.link))
                       }
                     >
                       <ArrowForwardIcon />
@@ -234,13 +237,19 @@ export const NotificationsTable = (props: {
                       onClick={() => {
                         if (notification.read) {
                           notificationsApi
-                            .markUndone([notification.id])
+                            .updateNotifications({
+                              ids: [notification.id],
+                              done: false,
+                            })
                             .then(() => {
                               props.onUpdate();
                             });
                         } else {
                           notificationsApi
-                            .markDone([notification.id])
+                            .updateNotifications({
+                              ids: [notification.id],
+                              done: true,
+                            })
                             .then(() => {
                               props.onUpdate();
                             });
@@ -262,13 +271,19 @@ export const NotificationsTable = (props: {
                       onClick={() => {
                         if (notification.saved) {
                           notificationsApi
-                            .markUnsaved([notification.id])
+                            .updateNotifications({
+                              ids: [notification.id],
+                              saved: false,
+                            })
                             .then(() => {
                               props.onUpdate();
                             });
                         } else {
                           notificationsApi
-                            .markSaved([notification.id])
+                            .updateNotifications({
+                              ids: [notification.id],
+                              saved: true,
+                            })
                             .then(() => {
                               props.onUpdate();
                             });

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Notification } from '@backstage/plugin-notifications-common';
 import { TokenManager } from '@backstage/backend-common';
 import { NotificationService } from './NotificationService';
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { SignalService } from '@backstage/plugin-signals-node';
+import { NotificationPayload } from '@backstage/plugin-notifications-common';
 
 /** @public */
 export type NotificationServiceOptions = {
@@ -28,7 +28,7 @@ export type NotificationServiceOptions = {
 };
 
 /** @public */
-export type NotificationReceivers = {
+export type NotificationRecipients = {
   type: 'entity';
   entityRef: string | string[];
 };
@@ -38,11 +38,8 @@ export type NotificationReceivers = {
 
 /** @public */
 export type NotificationSendOptions = {
-  receivers: NotificationReceivers;
-  title: string;
-  description: string;
-  link: string;
-  topic?: string;
+  recipients: NotificationRecipients;
+  payload: NotificationPayload;
 };
 
 /** @public */
@@ -51,6 +48,7 @@ export class DefaultNotificationService implements NotificationService {
     private readonly logger: LoggerService,
     private readonly discovery: DiscoveryService,
     private readonly tokenManager: TokenManager,
+    private readonly pluginId?: string,
   ) {}
 
   static create({
@@ -61,22 +59,36 @@ export class DefaultNotificationService implements NotificationService {
     return new DefaultNotificationService(logger, discovery, tokenManager);
   }
 
-  async send(options: NotificationSendOptions): Promise<Notification[]> {
+  forPlugin(pluginId: string): NotificationService {
+    return new DefaultNotificationService(
+      this.logger,
+      this.discovery,
+      this.tokenManager,
+      pluginId,
+    );
+  }
+
+  async send(notification: NotificationSendOptions): Promise<void> {
+    if (!this.pluginId) {
+      throw new Error('Invalid initialization of the NotificationService');
+    }
+
     try {
       const baseUrl = await this.discovery.getBaseUrl('notifications');
       const { token } = await this.tokenManager.getToken();
-      const response = await fetch(`${baseUrl}/notifications`, {
+      await fetch(`${baseUrl}/notifications`, {
         method: 'POST',
-        body: JSON.stringify(options),
+        body: JSON.stringify({
+          ...notification,
+          origin: `plugin-${this.pluginId}`,
+        }),
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       });
-      return await response.json();
     } catch (error) {
       this.logger.error(`Failed to send notifications: ${error}`);
-      return [];
     }
   }
 }

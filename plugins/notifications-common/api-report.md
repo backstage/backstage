@@ -7,22 +7,28 @@
 type Notification_2 = {
   id: string;
   userRef: string;
-  title: string;
-  description: string;
-  link: string;
-  topic?: string;
   created: Date;
-  updated?: Date;
+  saved?: Date;
   read?: Date;
-  done?: Date;
-  saved: boolean;
+  updated?: Date;
+  origin: string;
+  payload: NotificationPayload;
 };
 export { Notification_2 as Notification };
 
 // @public (undocumented)
-export type NotificationIds = {
-  ids: string[];
+export type NotificationPayload = {
+  title: string;
+  description?: string;
+  link: string;
+  severity: NotificationSeverity;
+  topic?: string;
+  scope?: string;
+  icon?: string;
 };
+
+// @public (undocumented)
+export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
 // @public (undocumented)
 export type NotificationStatus = {

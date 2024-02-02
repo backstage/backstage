@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GetNotificationsOptions, NotificationsApi } from './NotificationsApi';
+import {
+  GetNotificationsOptions,
+  NotificationsApi,
+  UpdateNotificationsOptions,
+} from './NotificationsApi';
 import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import {
   Notification,
-  NotificationIds,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
 
@@ -61,50 +64,12 @@ export class NotificationsClient implements NotificationsApi {
     return await this.request<NotificationStatus>('status');
   }
 
-  async markDone(ids: string[]): Promise<NotificationIds> {
-    return await this.request<NotificationIds>('done', {
+  async updateNotifications(
+    options: UpdateNotificationsOptions,
+  ): Promise<Notification[]> {
+    return await this.request<Notification[]>('update', {
       method: 'POST',
-      body: JSON.stringify({ ids: ids }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  async markUndone(ids: string[]): Promise<NotificationIds> {
-    return await this.request<NotificationIds>('undone', {
-      method: 'POST',
-      body: JSON.stringify({ ids: ids }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  async markRead(ids: string[]): Promise<NotificationIds> {
-    return await this.request<NotificationIds>('read', {
-      method: 'POST',
-      body: JSON.stringify({ ids: ids }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  async markUnread(ids: string[]): Promise<NotificationIds> {
-    return await this.request<NotificationIds>('unread', {
-      method: 'POST',
-      body: JSON.stringify({ ids: ids }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  async markSaved(ids: string[]): Promise<NotificationIds> {
-    return await this.request<NotificationIds>('save', {
-      method: 'POST',
-      body: JSON.stringify({ ids: ids }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  async markUnsaved(ids: string[]): Promise<NotificationIds> {
-    return await this.request<NotificationIds>('unsave', {
-      method: 'POST',
-      body: JSON.stringify({ ids: ids }),
+      body: JSON.stringify(options),
       headers: { 'Content-Type': 'application/json' },
     });
   }

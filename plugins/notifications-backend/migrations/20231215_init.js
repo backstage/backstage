@@ -19,14 +19,17 @@ exports.up = async function up(knex) {
     table.uuid('id').primary();
     table.string('userRef').notNullable();
     table.string('title').notNullable();
-    table.text('description').notNullable();
+    table.text('description').nullable();
+    table.text('severity').notNullable();
     table.text('link').notNullable();
+    table.text('origin').notNullable();
+    table.text('scope').nullable();
     table.text('topic').nullable();
     table.datetime('created').defaultTo(knex.fn.now()).notNullable();
     table.datetime('updated').nullable();
     table.datetime('read').nullable();
     table.datetime('done').nullable();
-    table.boolean('saved').defaultTo(false).notNullable();
+    table.datetime('saved').nullable();
   });
 };
 

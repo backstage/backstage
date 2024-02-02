@@ -23,6 +23,8 @@ import {
 /** @public */
 export type NotificationGetOptions = {
   user_ref: string;
+
+  ids?: string[];
   type?: NotificationType;
   offset?: number;
   limit?: number;
@@ -40,9 +42,10 @@ export interface NotificationsStore {
 
   saveNotification(notification: Notification): Promise<void>;
 
-  getExistingTopicNotification(options: {
+  getExistingScopeNotification(options: {
     user_ref: string;
-    topic: string;
+    scope: string;
+    origin: string;
   }): Promise<Notification | null>;
 
   restoreExistingNotification(options: {

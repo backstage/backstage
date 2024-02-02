@@ -18,27 +18,35 @@
 export type NotificationType = 'undone' | 'done' | 'saved';
 
 /** @public */
+export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
+
+/** @public */
+export type NotificationPayload = {
+  title: string;
+  description?: string;
+  link: string;
+  // TODO: Add support for additional links
+  // additionalLinks?: string[];
+  severity: NotificationSeverity;
+  topic?: string;
+  scope?: string;
+  icon?: string;
+};
+
+/** @public */
 export type Notification = {
   id: string;
   userRef: string;
-  title: string;
-  description: string;
-  link: string;
-  topic?: string;
   created: Date;
-  updated?: Date;
+  saved?: Date;
   read?: Date;
-  done?: Date;
-  saved: boolean;
+  updated?: Date;
+  origin: string;
+  payload: NotificationPayload;
 };
 
 /** @public */
 export type NotificationStatus = {
   unread: number;
   read: number;
-};
-
-/** @public */
-export type NotificationIds = {
-  ids: string[];
 };
