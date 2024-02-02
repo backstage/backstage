@@ -4011,6 +4011,7 @@ __metadata:
     handlebars: ^4.7.3
     inquirer: ^8.2.0
     msw: ^1.0.0
+    node-fetch: ^2.6.7
     nodemon: ^3.0.1
     ora: ^5.3.0
     recursive-readdir: ^2.2.2
