@@ -75,13 +75,18 @@ you're proposing, but should not include things like API designs or
 implementation.
 -->
 
-We believe that idempotency is the best way to do it. Idempotency allows to rerun the actions multiple times to gracefully deal with semi-complete actions.
-
 ### Idempotency
+
+We believe that idempotency is the best way to do it. Idempotency allows to rerun the actions multiple times to gracefully deal with semi-complete actions.
 
 ### Serialization of workspace
 
+We believe that a serialization of workspace is a way to achieve re-running the task on a non-sticky way.
+That means that the task can be restored and retried on a different scaffolder node.
+
 ### Secrets
+
+Secrets will be stored for a longer period of time in the database and wiped out once the task going into a complete state (successfully finished or archived).
 
 ## Design Details
 
@@ -96,11 +101,11 @@ If there's any ambiguity about HOW your proposal will be implemented, this is th
 This is a simplified idempotent version of GitHub repository creation action:
 
 ```typescript
-  export function createGithubRepoCreateAction(options: {
+export function createGithubRepoCreateAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
-  const {integrations, githubCredentialsProvider} = options;
+  const { integrations, githubCredentialsProvider } = options;
 
   return createTemplateAction<{
     repoUrl: string;
@@ -118,6 +123,7 @@ This is a simplified idempotent version of GitHub repository creation action:
           repoUrl: inputProps.repoUrl,
           token: inputProps.token,
           secrets: inputProps.secrets,
+          repoVariables: inputProps.repoVariables,
         },
       },
     },
@@ -125,6 +131,7 @@ This is a simplified idempotent version of GitHub repository creation action:
       const {
         repoUrl,
         secrets,
+        repoVariables,
         token: providedToken,
       } = ctx.input;
 
@@ -136,23 +143,50 @@ This is a simplified idempotent version of GitHub repository creation action:
       });
       const client = new Octokit(octokitOptions);
 
-      const {owner, repo} = parseRepoUrl(repoUrl, integrations);
+      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
-        client,
-        repo,
-        owner,
-        secrets,
-        ctx.logger,
-      );
+      const user = await client.rest.users.getByUsername({
+        username: owner,
+      });
+
+      await ctx.checkpoint('v1.task.checkpoint.repo.creation', async () => {
+        const repoCreationPromise =
+          user.data.type === 'Organization'
+            ? client.rest.repos.createInOrg({
+                name: repo,
+                org: owner,
+              })
+            : client.rest.repos.createForAuthenticatedUser({
+                name: repo,
+              });
+        const { repoUrl } = await repoCreationPromise;
+        return { repoUrl };
+      });
+
+      if (secrets) {
+        await ctx.checkpoint(
+          'v1.task.checkpoint.repo.create.variables',
+          async () => {
+            for (const [key, value] of Object.entries(repoVariables ?? {})) {
+              await client.rest.actions.createRepoVariable({
+                owner,
+                repo,
+                name: key,
+                value: value,
+              });
+            }
+          },
+        );
+      }
 
       ctx.output('remoteUrl', newRepo.clone_url);
     },
   });
+}
 ```
 
 #### Task context store
@@ -166,10 +200,11 @@ const repoMarker = await cache.get<RepoMarker>('repo.marker.key');
 
 #### Checkpoints
 
-Checkpoints will allow action authors to create actions where code paths are ignored if already run. This will be provided on a context object and action of author provide a key and a callback.
+Checkpoints will allow action authors to create actions where code paths are ignored if already run.
+This will be provided on a context object and action of author provide a key and a callback.
 
 ```typescript
-await ctx.checkpoint('repo.creation', async () => {
+await ctx.checkpoint('v1.task.checkpoint.repo.creation', async () => {
   const { repoUrl } = await client.rest.Repository.create({});
   return { repoUrl };
 });
