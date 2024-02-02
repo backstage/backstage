@@ -107,16 +107,22 @@ export const FailedEntities = () => {
     return <ErrorPanel error={error} />;
   }
 
-  const handleDelete = async ({ id }: { id: string }) => {
+  const handleDelete = async ({
+    id,
+    entityRef,
+  }: {
+    id: string;
+    entityRef: string;
+  }) => {
     try {
       await unprocessedEntityApi.delete(id);
       alertApi.post({
-        message: `Entity has been deleted`,
+        message: `Entity ${entityRef} has been deleted`,
         severity: 'success',
       });
     } catch (e) {
       alertApi.post({
-        message: `Ran into an issue when deleting. Please try again later.`,
+        message: `Ran into an issue when deleting ${entityRef}. Please try again later.`,
         severity: 'error',
       });
     }
@@ -165,6 +171,7 @@ export const FailedEntities = () => {
             onClick={async () =>
               await handleDelete({
                 id: (rowData as UnprocessedEntity).entity_id,
+                entityRef: (rowData as UnprocessedEntity).entity_ref,
               })
             }
           >
