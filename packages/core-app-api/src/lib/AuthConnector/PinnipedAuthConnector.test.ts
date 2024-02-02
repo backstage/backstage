@@ -52,7 +52,7 @@ const defaultOptions = {
   audience: '555-444-333-2-1',
 };
 
-describe('DefaultAuthConnector', () => {
+describe('PinnipedAuthConnector', () => {
   const server = setupServer();
   setupRequestMockHandlers(server);
 
