@@ -263,6 +263,9 @@ async function createApp(
 
     const appDir = resolvePath(rootDir, appName);
 
+    print('Overriding yarn.lock with seed file from the create-app package');
+    overrideYarnLockSeed(appDir);
+
     print('Rewriting module resolutions of app to use workspace packages');
     await overrideModuleResolutions(appDir, workspaceDir);
 
@@ -303,6 +306,22 @@ async function createApp(
   } finally {
     child.kill();
   }
+}
+
+/**
+ * Overrides the downloaded yarn.lock file with the seed file packages/create-app/seed-yarn.lock
+ * This ensures that the E2E tests use the same seed file as users would receive when creating a new app
+ */
+async function overrideYarnLockSeed(appDir: string) {
+  const content = await fs.readFile(
+    paths.resolveOwnRoot('packages/create-app/seed-yarn.lock'),
+    'utf8',
+  );
+  const trimmedContent = content
+    .split('\n')
+    .filter(l => !l.startsWith('//'))
+    .join('\n');
+  await fs.writeFile(resolvePath(appDir, 'yarn.lock'), trimmedContent, 'utf8');
 }
 
 /**
