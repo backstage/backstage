@@ -23,6 +23,15 @@ import {
 import { Knex } from 'knex';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import {
+  AuthorizeResult,
+  BasicPermission,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import { unprocessedEntitiesDeletePermission } from '@backstage/plugin-catalog-unprocessed-entities-common';
+import { NotAllowedError } from '@backstage/errors';
 
 /**
  * Module providing Unprocessed Entities API endpoints
@@ -103,7 +112,31 @@ export class UnprocessedEntitiesModule {
     return res;
   }
 
-  registerRoutes() {
+  registerRoutes({ permissions }: { permissions: PermissionEvaluator }) {
+    const permissionIntegrationRouter = createPermissionIntegrationRouter({
+      permissions: [unprocessedEntitiesDeletePermission],
+    });
+
+    const isRequestAuthorized = async (
+      req: Request,
+      permission: BasicPermission,
+    ): Promise<boolean> => {
+      const token = getBearerTokenFromAuthorizationHeader(
+        // @ts-ignore
+        req.header('authorization'),
+      );
+
+      const decision = (
+        await permissions.authorize([{ permission }], {
+          token,
+        })
+      )[0];
+
+      return decision.result !== AuthorizeResult.DENY;
+    };
+
+    this.router.use(permissionIntegrationRouter);
+
     this.moduleRouter
       .get('/entities/unprocessed/failed', async (req, res) => {
         return res.json(
@@ -124,6 +157,15 @@ export class UnprocessedEntitiesModule {
       .delete(
         '/entities/unprocessed/delete/:entity_id',
         async (request, response) => {
+          const authorized = await isRequestAuthorized(
+            request as any as Request,
+            unprocessedEntitiesDeletePermission,
+          );
+
+          if (!authorized) {
+            throw new NotAllowedError('Unauthorized');
+          }
+
           await this.database('refresh_state')
             .where({ entity_id: request.params.entity_id })
             .delete();
