@@ -2,7 +2,7 @@
 id: adrs-adr013
 title: 'ADR013: Proper use of HTTP fetching libraries'
 # prettier-ignore
-description: Architecture Decision Record (ADR) for the proper use of fetchApiRef, node-fetch, and cross-fetch for data fetching.
+description: Architecture Decision Record (ADR) for the proper use of fetch libraries for data fetching.
 ---
 
 ## Context
@@ -12,13 +12,13 @@ support burden of keeping said package up to date.
 
 ## Decision
 
-Backend (node) packages should use the `node-fetch` package for HTTP data
-fetching. Example:
+Newly written backend (Node.js) packages should use the native `fetch` call for HTTP data
+fetching. Additionally, in legacy code, using the `node-fetch` library continues to be allowed. Other third party fetching libraries (for example `axios`, `got` etc) are not allowed. Example:
 
 ```ts
-import fetch from 'node-fetch';
 import { ResponseError } from '@backstage/errors';
 
+// note that this is the global fetch, not imported from anywhere
 const response = await fetch('https://example.com/api/v1/users.json');
 if (!response.ok) {
   throw await ResponseError.fromResponse(response);
@@ -26,19 +26,19 @@ if (!response.ok) {
 const users = await response.json();
 ```
 
-Frontend plugins and packages should prefer to use the
-[`fetchApiRef`](https://backstage.io/docs/reference/core-plugin-api.fetchapiref).
-It uses `cross-fetch` internally. Example:
+Frontend plugins and packages should use the [`fetchApiRef`](https://backstage.io/docs/reference/core-plugin-api.fetchapiref). Example:
 
 ```ts
-import { useApi } from '@backstage/core-plugin-api';
-const { fetch } = useApi(fetchApiRef);
+import { useApi, fetchApiRef } from '@backstage/core-plugin-api';
 
-const response = await fetch('https://example.com/api/v1/users.json');
-if (!response.ok) {
-  throw await ResponseError.fromResponse(response);
-}
-const users = await response.json();
+const MyComponent = () => {
+  const { fetch } = useApi(fetchApiRef);
+  const response = await fetch('https://example.com/api/v1/users.json');
+  if (!response.ok) {
+    throw await ResponseError.fromResponse(response);
+  }
+  const users = await response.json();
+  // ...
 ```
 
 Isomorphic packages should have a dependency on the `cross-fetch` package for
@@ -67,5 +67,5 @@ export class MyClient {
 ## Consequences
 
 We will gradually transition away from third party packages such as `axios`,
-`got` and others. Once we have transitioned to `node-fetch` we will add lint
+`got` and others. Once we have transitioned to native `fetch` and `node-fetch` we will add lint
 rules to enforce this decision.
