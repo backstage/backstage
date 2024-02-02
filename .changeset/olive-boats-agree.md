@@ -90,4 +90,4 @@
 '@backstage/theme': patch
 ---
 
-Widen @types/react range to include 18.
+Widen `@types/react` dependency range to include version 18.
