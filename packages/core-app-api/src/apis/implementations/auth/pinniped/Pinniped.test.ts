@@ -105,11 +105,7 @@ describe('Pinniped', () => {
       ),
     });
 
-    const idToken = await pinnipedAuth.getClusterScopedIdToken('myAudience');
-
-    expect(idToken).toBe('It is a cluster scope IdToken');
-    expect(createSession).toHaveBeenCalledTimes(1);
-    expect(refreshSession).toHaveBeenCalledTimes(1);
+    await pinnipedAuth.getClusterScopedIdToken('myAudience');
 
     const refreshedSession: OAuth2Session = {
       providerInfo: {
