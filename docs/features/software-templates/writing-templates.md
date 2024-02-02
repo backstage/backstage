@@ -274,35 +274,6 @@ spec:
         password: ${{ secrets.password }}
 ```
 
-### Hide or mask sensitive data on Review step
-
-> Note: this approach is soon to be deprecated, please mark things as secret by using the `Secret` field extension instead as mentioned above.
-
-Sometimes, specially in custom fields, you collect some data on Create form that
-must not be shown to the user on Review step. To hide or mask this data, you can
-use `ui:widget: password` or set some properties of `ui:backstage`:
-
-```yaml
-- title: Hide or mask values
-  properties:
-    password:
-      title: Password
-      type: string
-      ui:widget: password # will print '******' as value for property 'password' on Review Step
-    masked:
-      title: Masked
-      type: string
-      ui:backstage:
-        review:
-          mask: '<some-value-to-show>' # will print '<some-value-to-show>' as value for property 'Masked' on Review Step
-    hidden:
-      title: Hidden
-      type: string
-      ui:backstage:
-        review:
-          show: false # won't print any info about 'hidden' property on Review Step
-```
-
 ### Custom step layouts
 
 If you find that the default layout of the form used in a particular step does not meet your needs then you can supply your own [custom step layout](./writing-custom-step-layouts.md).
