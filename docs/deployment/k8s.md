@@ -397,6 +397,19 @@ backend:
       password: ${POSTGRES_PASSWORD}
 ```
 
+Please also change the host and port environment variables in the `app-config.production.yaml` to the following:
+
+```yaml
+backend:
+  database:
+    client: pg
+    connection:
+      host: ${POSTGRES_SERVICE_HOST}
+      port: ${POSTGRES_SERVICE_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+```
+
 Make sure to rebuild the Docker image after applying `app-config.yaml` changes.
 
 Apply this Deployment to the Kubernetes cluster:
