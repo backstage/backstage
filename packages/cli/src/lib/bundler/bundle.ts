@@ -68,7 +68,7 @@ export async function buildBundle(options: BuildOptions) {
   if (publicPaths) {
     console.log(
       chalk.yellow(
-        `⚠️  WARNING: The app /auth entry point is an experimental feature that may receive immediate breaking changes.`,
+        `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
       ),
     );
     configs.push(
