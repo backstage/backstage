@@ -62,11 +62,11 @@ type Options<AuthSession> = {
 };
 
 /**
- * PinnipedAuthConnector is the auth connector to consume Pinniped. It talks to the
+ * AudienceScopedAuthConnector is the auth connector to consume Pinniped. It talks to the
  * backend auth plugin through the standardized API, and requests user permission
  * via the OAuthRequestApi.
  */
-export class PinnipedAuthConnector<AuthSession>
+export class AudienceScopedAuthConnector<AuthSession>
   implements AuthConnector<AuthSession>
 {
   private readonly discoveryApi: DiscoveryApi;

@@ -16,5 +16,5 @@
 
 export { DefaultAuthConnector } from './DefaultAuthConnector';
 export { DirectAuthConnector } from './DirectAuthConnector';
-export { PinnipedAuthConnector } from './PinnipedAuthConnector';
+export { AudienceScopedAuthConnector } from './AudienceScopedAuthConnector';
 export * from './types';

@@ -27,7 +27,7 @@ import { OAuth2CreateOptions, OAuth2Session, PopupOptions } from '../oauth2';
 
 import { OAuth2Response } from '../oauth2/OAuth2';
 import {
-  PinnipedAuthConnector,
+  AudienceScopedAuthConnector,
   RefreshingAuthSessionManager,
   SessionManager,
 } from '../../../../lib';
@@ -84,7 +84,7 @@ export default class Pinniped implements PinnipedSupervisorApi {
   ): Promise<string> {
     const aud = audience;
     if (!(aud in this.audiences)) {
-      const connector = new PinnipedAuthConnector({
+      const connector = new AudienceScopedAuthConnector({
         configApi: this.configApi,
         discoveryApi: this.discoveryApi,
         environment: this.environment,

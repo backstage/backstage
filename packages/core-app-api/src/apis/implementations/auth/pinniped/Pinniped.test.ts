@@ -23,11 +23,11 @@ import { OAuth2Session } from '../oauth2';
 const createSession = jest.fn();
 const refreshSession = jest.fn();
 
-jest.mock('../../../../lib/AuthConnector/PinnipedAuthConnector', () => ({
+jest.mock('../../../../lib/AuthConnector/AudienceScopedAuthConnector', () => ({
   ...(jest.requireActual(
-    '../../../../lib/AuthConnector/PinnipedAuthConnector',
+    '../../../../lib/AuthConnector/AudienceScopedAuthConnector',
   ) as any),
-  PinnipedAuthConnector: class {
+  AudienceScopedAuthConnector: class {
     createSession = createSession;
     refreshSession = refreshSession;
   },

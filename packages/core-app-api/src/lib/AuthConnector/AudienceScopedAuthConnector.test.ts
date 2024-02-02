@@ -22,7 +22,7 @@ import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
-import { PinnipedAuthConnector } from './PinnipedAuthConnector';
+import { AudienceScopedAuthConnector } from './AudienceScopedAuthConnector';
 
 jest.mock('../loginPopup', () => {
   return {
@@ -52,7 +52,7 @@ const defaultOptions = {
   audience: '555-444-333-2-1',
 };
 
-describe('PinnipedAuthConnector', () => {
+describe('AudienceScopedAuthConnector', () => {
   const server = setupServer();
   setupRequestMockHandlers(server);
 
@@ -74,7 +74,7 @@ describe('PinnipedAuthConnector', () => {
       ),
     );
 
-    const connector = new PinnipedAuthConnector<any>(defaultOptions);
+    const connector = new AudienceScopedAuthConnector<any>(defaultOptions);
     const session = await connector.refreshSession();
     expect(session.idToken).toBe('mock-id-token');
     expect(session.accessToken).toBe('mock-access-token');
@@ -90,7 +90,7 @@ describe('PinnipedAuthConnector', () => {
       ),
     );
 
-    const connector = new PinnipedAuthConnector(defaultOptions);
+    const connector = new AudienceScopedAuthConnector(defaultOptions);
     await expect(connector.refreshSession()).rejects.toThrow(
       'Auth refresh request failed, Error: Network NOPE',
     );
@@ -99,7 +99,7 @@ describe('PinnipedAuthConnector', () => {
   it('should handle failure response when refreshing session', async () => {
     server.use(rest.get('*', (_req, res, ctx) => res(ctx.status(401, 'NOPE'))));
 
-    const connector = new PinnipedAuthConnector(defaultOptions);
+    const connector = new AudienceScopedAuthConnector(defaultOptions);
     await expect(connector.refreshSession()).rejects.toThrow(
       'Auth refresh request failed, NOPE',
     );
@@ -107,7 +107,7 @@ describe('PinnipedAuthConnector', () => {
 
   it('should fail if popup was rejected', async () => {
     const mockOauth = new MockOAuthApi();
-    const connector = new PinnipedAuthConnector({
+    const connector = new AudienceScopedAuthConnector({
       ...defaultOptions,
       oauthRequestApi: mockOauth,
     });
@@ -126,7 +126,7 @@ describe('PinnipedAuthConnector', () => {
         scopes: 'a b',
         expiresInSeconds: 3600,
       });
-    const connector = new PinnipedAuthConnector({
+    const connector = new AudienceScopedAuthConnector({
       ...defaultOptions,
       oauthRequestApi: mockOauth,
     });
@@ -154,7 +154,7 @@ describe('PinnipedAuthConnector', () => {
     const popupSpy = jest
       .spyOn(loginPopup, 'showLoginPopup')
       .mockResolvedValue('my-session');
-    const connector = new PinnipedAuthConnector({
+    const connector = new AudienceScopedAuthConnector({
       ...defaultOptions,
       oauthRequestApi: new MockOAuthApi(),
       sessionTransform: str => str,
@@ -185,7 +185,7 @@ describe('PinnipedAuthConnector', () => {
     jest.spyOn(window.screen, 'width', 'get').mockReturnValue(1000);
     jest.spyOn(window.screen, 'height', 'get').mockReturnValue(1000);
 
-    const connector = new PinnipedAuthConnector({
+    const connector = new AudienceScopedAuthConnector({
       ...defaultOptions,
       oauthRequestApi: new MockOAuthApi(),
       sessionTransform: str => str,
@@ -216,7 +216,7 @@ describe('PinnipedAuthConnector', () => {
     const popupSpy = jest
       .spyOn(loginPopup, 'showLoginPopup')
       .mockResolvedValue('my-session');
-    const connector = new PinnipedAuthConnector({
+    const connector = new AudienceScopedAuthConnector({
       ...defaultOptions,
       oauthRequestApi: new MockOAuthApi(),
       sessionTransform: str => str,
