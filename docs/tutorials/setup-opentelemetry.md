@@ -48,7 +48,7 @@ const sdk = new NodeSDK({
 sdk.start();
 ```
 
-Your probably won't need all the instrumentations inside `getNodeAutoInstrumentations()` so make sure to
+Your probably won't need all the instrumentation inside `getNodeAutoInstrumentations()` so make sure to
 check the [documentation](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node) and tweak it properly.
 
 It's important to setup the NodeSDK and the automatic instrumentation **before** importing any library.
@@ -60,6 +60,8 @@ In your `Dockerfile` add the `--require` flag which points to the `instrumentati
 
 ```Dockerfile
 FROM node:18-bookworm-slim
+...
+# More functionality goes here
 ...
 WORKDIR /app
 RUN chown node:node /app
@@ -86,10 +88,20 @@ RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 // highlight-remove-next-line
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
 // highlight-add-next-line
-CMD ["node", "packages/backend", "--require", "./instrumentation.ts" "--config", "app-config.yaml"]
+CMD ["node", "--require", "./instrumentation.ts", "packages/backend", "--config", "app-config.yaml"]
 ```
 
 ## Run Backstage
+
+The above configuration will only work in production once your start a Docker container from the image.
+
+To be able to test locally you can import the `./instrumentation.ts` file at the top (before all imports) of your backend `index.ts` file
+
+```ts
+import '../instrumentation.ts'
+// Other imports
+...
+```
 
 You can now start your Backstage instance as usual, using `yarn dev`.
 
@@ -97,7 +109,7 @@ When the backend is started, you should see in your console traces and metrics e
 
 Of course in production you probably won't use the console exporters but instead send traces and metrics to an OpenTelemetry Collector or other exporter using [OTLP exporters](https://opentelemetry.io/docs/instrumentation/js/exporters/).
 
-If you need to disable/configure some Opentelemetry feature there are lots of [environment variables](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/) which you can tweak.
+If you need to disable/configure some OpenTelemetry feature there are lots of [environment variables](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/) which you can tweak.
 
 ## References
 
