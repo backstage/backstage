@@ -103,13 +103,7 @@ export const ReadmeCard = (props: Props) => {
     <RequirePermission
       permission={azureDevOpsReadmeReadPermission}
       resourceRef={stringifyEntityRef(entity)}
-      errorPage={
-        <EmptyState
-          title="No README available for this entity"
-          missing="field"
-          description="You are not authorized!"
-        />
-      }
+      errorPage={null}
     >
       <InfoCard
         title="Readme"

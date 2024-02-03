@@ -131,7 +131,7 @@ export async function createRouter(
     const host = req.query.host?.toString();
     const org = req.query.org?.toString();
 
-    const entityRef = req.query.entityRef?.toString();
+    const entityRef = req.query.entityRef;
     if (typeof entityRef !== 'string') {
       throw new InputError('Invalid entityRef, not a string');
     }
@@ -181,7 +181,7 @@ export async function createRouter(
       status: status,
     };
 
-    const entityRef = req.query.entityRef?.toString();
+    const entityRef = req.query.entityRef;
     if (typeof entityRef !== 'string') {
       throw new InputError('Invalid entityRef, not a string');
     }
@@ -290,7 +290,7 @@ export async function createRouter(
     const host = req.query.host?.toString();
     const org = req.query.org?.toString();
 
-    const entityRef = req.query.entityRef?.toString();
+    const entityRef = req.query.entityRef;
     if (typeof entityRef !== 'string') {
       throw new InputError('Invalid entityRef, not a string');
     }
@@ -355,7 +355,7 @@ export async function createRouter(
 
     const { projectName, repoName } = req.params;
 
-    const entityRef = req.query.entityRef?.toString();
+    const entityRef = req.query.entityRef;
     if (typeof entityRef !== 'string') {
       throw new InputError('Invalid entityRef, not a string');
     }

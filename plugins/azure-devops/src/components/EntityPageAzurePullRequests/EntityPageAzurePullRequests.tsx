@@ -20,7 +20,6 @@ import React from 'react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { EmptyState } from '@backstage/core-components';
 
 export const EntityPageAzurePullRequests = (props: {
   defaultLimit?: number;
@@ -30,13 +29,7 @@ export const EntityPageAzurePullRequests = (props: {
     <RequirePermission
       permission={azureDevOpsPullRequestReadPermission}
       resourceRef={stringifyEntityRef(entity)}
-      errorPage={
-        <EmptyState
-          missing="data"
-          title="No Pull Requests to show"
-          description="You are not authorized!"
-        />
-      }
+      errorPage={null}
     >
       <PullRequestTable defaultLimit={props.defaultLimit} />
     </RequirePermission>
