@@ -4677,8 +4677,9 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     express: ^4.18.2
     jose: ^4.6.0
-    jwt-decode: ^3.1.0
+    msw: ^2.0.8
     node-cache: ^5.1.2
+    node-fetch: ^2.6.7
   languageName: unknown
   linkType: soft
 
@@ -4914,7 +4915,6 @@ __metadata:
     "@types/cookie-parser": ^1.4.2
     "@types/express": ^4.17.6
     "@types/express-session": ^1.17.2
-    "@types/jwt-decode": ^3.1.0
     "@types/passport": ^1.0.3
     "@types/passport-auth0": ^1.0.5
     "@types/passport-github2": ^1.2.4
@@ -4933,7 +4933,6 @@ __metadata:
     fs-extra: 10.1.0
     google-auth-library: ^8.0.0
     jose: ^4.6.0
-    jwt-decode: ^3.1.0
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -18481,15 +18480,6 @@ __metadata:
     csstype: ^2.0.0
     indefinite-observable: ^1.0.1
   checksum: 6e51707529a15f2f5ff94555ecb555d29427fd10c4f3d2d29474934292e365c2dfaa4ad30b2ab46946201cbca7f6e8df56513a22fc6ceca10a979db8338935c5
-  languageName: node
-  linkType: hard
-
-"@types/jwt-decode@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@types/jwt-decode@npm:3.1.0"
-  dependencies:
-    jwt-decode: "*"
-  checksum: 82ff0b3826e5d9da48be1f11e16fec96e56dd946995edaa100682202b9b7beb30fb04a353cbabd378d3b13a24241b48a0b662a4f181bae7f758147d92368d930
   languageName: node
   linkType: hard
 
@@ -32362,13 +32352,6 @@ __metadata:
     jwa: ^2.0.0
     safe-buffer: ^5.0.1
   checksum: d68d07aa6d1b8cb35c363a9bd2b48f15064d342a5d9dc18a250dbbce8dc06bd7e4792516c50baa16b8d14f61167c19e851fd7f66b59ecc68b7f6a013759765f7
-  languageName: node
-  linkType: hard
-
-"jwt-decode@npm:*, jwt-decode@npm:^3.1.0":
-  version: 3.1.2
-  resolution: "jwt-decode@npm:3.1.2"
-  checksum: 20a4b072d44ce3479f42d0d2c8d3dabeb353081ba4982e40b83a779f2459a70be26441be6c160bfc8c3c6eadf9f6380a036fbb06ac5406b5674e35d8c4205eeb
   languageName: node
   linkType: hard
 

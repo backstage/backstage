@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { PassportProfile } from '@backstage/plugin-auth-node/';
-import { ProfileInfo } from '@backstage/plugin-auth-node';
 import { KeyObject } from 'crypto';
-import jwtDecoder from 'jwt-decode';
-import NodeCache from 'node-cache';
 import * as crypto from 'crypto';
-import { JWTHeaderParameters } from 'jose';
+import { JWTHeaderParameters, decodeJwt } from 'jose';
+import NodeCache from 'node-cache';
+import fetch from 'node-fetch';
+import { PassportProfile, ProfileInfo } from '@backstage/plugin-auth-node';
 import { AuthenticationError } from '@backstage/errors';
 
 export const makeProfileInfo = (
@@ -45,7 +44,11 @@ export const makeProfileInfo = (
 
   if ((!email || !picture || !displayName) && idToken) {
     try {
-      const decoded: Record<string, string> = jwtDecoder(idToken);
+      const decoded: Record<string, string> = decodeJwt(idToken) as {
+        email?: string;
+        picture?: string;
+        name?: string;
+      };
       if (!email && decoded.email) {
         email = decoded.email;
       }
