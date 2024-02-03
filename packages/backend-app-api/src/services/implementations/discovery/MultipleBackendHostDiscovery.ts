@@ -32,11 +32,18 @@ export type PluginRegistrations = Record<string, DiscoveryUrl>;
 
 export class MultipleBackendHostDiscovery implements DiscoveryService {
   #gatewayUrl: string;
-  #plugins: PluginRegistrations = {};
+  #instanceUrl: string;
+
   #isGateway: boolean;
+  #isInitialized = false;
+
   #discovery: DiscoveryService;
   #rootFeatureRegistry: RootFeatureRegistryService;
-  #isInitialized = false;
+
+  // A map of plugin to URLs.
+  #plugins: PluginRegistrations = {};
+  // A map of instance URL to plugin.
+  #instancePlugins: Record<string, Set<string>> = {};
 
   static fromConfig(
     config: Config,
@@ -47,7 +54,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
   ) {
     return new MultipleBackendHostDiscovery({
       instanceUrl: config.getString('backend.baseUrl'),
-      gatewayUrl: config.getOptionalString('discovery.gatewayUrl.internal'),
+      gatewayUrl: config.getOptionalString('discovery.gatewayUrl'),
       rootFeatureRegistry: options.rootFeatureRegistry,
       discovery: HostDiscovery.fromConfig(config),
     });
@@ -60,6 +67,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     discovery: DiscoveryService;
   }) {
     this.#gatewayUrl = options.gatewayUrl || options.instanceUrl;
+    this.#instanceUrl = options.instanceUrl;
     this.#isGateway = !options.gatewayUrl;
     this.#discovery = options.discovery;
     this.#rootFeatureRegistry = options.rootFeatureRegistry;
@@ -80,17 +88,25 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
         external: await this.#discovery.getExternalBaseUrl(pluginId),
       };
     }
-    this.addPlugins(plugins);
+    this.addPlugins(this.#instanceUrl, plugins);
   }
 
-  addPlugins(plugins: PluginRegistrations) {
+  addPlugins(instanceUrl: string, plugins: PluginRegistrations) {
     for (const [pluginId, urls] of Object.entries(plugins)) {
       this.#plugins[pluginId] = urls;
+      if (!this.#instancePlugins[instanceUrl]) {
+        this.#instancePlugins[instanceUrl] = new Set();
+      }
+      this.#instancePlugins[instanceUrl].add(pluginId);
     }
   }
 
   get plugins() {
     return this.#plugins;
+  }
+
+  get instancePlugins() {
+    return this.#instancePlugins;
   }
 
   get isGateway() {

@@ -27,24 +27,28 @@ export const rootFeatureRegistryServiceFactory = createServiceFactory({
   service: coreServices.rootFeatureRegistry,
   deps: {
     rootConfig: coreServices.rootConfig,
+    lifecycle: coreServices.rootLifecycle,
   },
-  async factory({ rootConfig }) {
-    const gatewayUrl = rootConfig.getOptionalString(
-      'backend.gatewayUrl.internal',
-    );
+  async factory({ rootConfig, lifecycle }) {
+    const baseUrl = rootConfig.getString('backend.baseUrl');
+    const gatewayUrl = rootConfig.getOptionalString('discovery.gatewayUrl');
     const isGateway = !gatewayUrl;
     const registry = new DefaultRootFeatureRegistryService();
     const discovery = HostDiscovery.fromConfig(rootConfig);
 
-    if (!isGateway) {
-      const registration = new InstanceRegistration({
-        discovery,
-        rootFeatureRegistry: registry,
-        gatewayUrl,
-      });
+    lifecycle.addStartupHook(() => {
+      if (!isGateway) {
+        const registration = new InstanceRegistration({
+          discovery,
+          rootFeatureRegistry: registry,
+          gatewayUrl,
+          instanceUrl: baseUrl,
+        });
 
-      registration.startHeartbeat();
-    }
+        registration.startHeartbeat();
+      }
+    });
+
     return registry;
   },
 });

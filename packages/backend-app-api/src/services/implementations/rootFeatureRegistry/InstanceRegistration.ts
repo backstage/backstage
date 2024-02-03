@@ -25,16 +25,20 @@ export class InstanceRegistration {
   #rootFeatureRegistry: RootFeatureRegistryService;
   #discovery: DiscoveryService;
   #gatewayUrl: string;
+  #instanceUrl: string;
   #registrationIntervalId: NodeJS.Timeout | undefined;
+  #plugins: Record<string, { internal: string; external: string }> = {};
 
   constructor(options: {
     rootFeatureRegistry: RootFeatureRegistryService;
     discovery: DiscoveryService;
     gatewayUrl: string;
+    instanceUrl: string;
   }) {
     this.#discovery = options.discovery;
     this.#rootFeatureRegistry = options.rootFeatureRegistry;
     this.#gatewayUrl = options.gatewayUrl;
+    this.#instanceUrl = options.instanceUrl;
   }
 
   private async submitRegistration(plugins: PluginRegistrations) {
@@ -43,7 +47,7 @@ export class InstanceRegistration {
         `${this.#gatewayUrl}/api/discovery/install`,
         {
           method: 'POST',
-          body: JSON.stringify(plugins),
+          body: JSON.stringify({ instanceUrl: this.#instanceUrl, plugins }),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -59,30 +63,32 @@ export class InstanceRegistration {
   }
 
   async register() {
-    const features = await this.#rootFeatureRegistry.getFeatures();
-    const pluginIds = new Set(features.map(e => e.pluginId));
-    const pluginUrls: Record<string, { internal: string; external: string }> =
-      {};
-    for (const pluginId of pluginIds) {
-      pluginUrls[pluginId] = {
-        external: await this.#discovery.getExternalBaseUrl(pluginId),
-        internal: await this.#discovery.getBaseUrl(pluginId),
-      };
-    }
-    this.#registrationIntervalId = setInterval(async () => {
-      const registered = await this.submitRegistration(pluginUrls);
-      console.log('registered', registered, pluginUrls);
-      if (registered) {
-        clearInterval(this.#registrationIntervalId);
-        this.#registrationIntervalId = undefined;
-      }
-      // The interval numbers will _definitely_ need tweaking.
-    }, 60 * 1000);
+    this.#registrationIntervalId = this.intervalWithImmediateExecution(
+      async () => {
+        const registered = await this.submitRegistration(this.#plugins);
+        console.log('registered', registered, this.#plugins);
+        if (registered) {
+          clearInterval(this.#registrationIntervalId);
+          this.#registrationIntervalId = undefined;
+        }
+        // The interval numbers will _definitely_ need tweaking.
+      },
+      10000,
+    );
   }
 
   private async heartbeat() {
     try {
-      const response = await fetch(`${this.#gatewayUrl}/api/discovery/health`);
+      const response = await fetch(`${this.#gatewayUrl}/api/discovery/check`, {
+        method: 'POST',
+        body: JSON.stringify({
+          instanceUrl: this.#instanceUrl,
+          plugins: Object.keys(this.#plugins),
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       if (response.ok) {
         return true;
       }
@@ -92,20 +98,31 @@ export class InstanceRegistration {
     return false;
   }
 
+  intervalWithImmediateExecution(cb: () => void, ms = 10000) {
+    cb();
+    return setInterval(cb, ms);
+  }
+
   /**
    * Primary entry point for setting up instances. This will create a heartbeat. The heartbeat then handles
    *    registration both initially and whenever the primary server loses the heartbeat.
    */
   async startHeartbeat() {
-    let lastHeartbeat = false;
-    setInterval(async () => {
+    const features = await this.#rootFeatureRegistry.getFeatures();
+    const pluginIds = new Set(features.map(e => e.pluginId));
+    for (const pluginId of pluginIds) {
+      this.#plugins[pluginId] = {
+        external: await this.#discovery.getExternalBaseUrl(pluginId),
+        internal: await this.#discovery.getBaseUrl(pluginId),
+      };
+    }
+    this.intervalWithImmediateExecution(async () => {
       const heartbeat = await this.heartbeat();
-      //   console.log('heartbeat', heartbeat, lastHeartbeat);
-      if (lastHeartbeat !== heartbeat && !this.#registrationIntervalId) {
-        lastHeartbeat = heartbeat;
+      console.log('heartbeat', heartbeat);
+      if (!heartbeat && !this.#registrationIntervalId) {
         this.register();
       }
       // The interval numbers will _definitely_ need tweaking.
-    }, 30 * 1000);
+    }, 5000);
   }
 }
