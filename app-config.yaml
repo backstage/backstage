@@ -315,6 +315,13 @@ auth:
   #    projectId: my-project
   #    path: my-sessions
 
+  autologout:
+    enabled: ${AUTO_LOGOUT_ENABLED}
+    idleTimeoutMinutes: ${AUTO_LOGOUT_IDLE_TIMEOUT_MINUTES}
+    promptBeforeIdleSeconds: ${AUTO_LOGOUT_PROMPT_BEFORE_IDLE_SECONDS}
+    useWorkerTimers: ${AUTO_LOGOUT_USE_WORKER_TIMERS}
+    logoutIfDisconnected: ${AUTO_LOGOUT_LOGOUT_IF_DISCONNECTED}
+
   environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
   # session:

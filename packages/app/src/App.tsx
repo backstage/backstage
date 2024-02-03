@@ -30,6 +30,7 @@ import { createApp } from '@backstage/app-defaults';
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
+  AutoLogout,
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core-components';
@@ -279,6 +280,7 @@ export default app.createRoot(
   <>
     <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />
+    <AutoLogout />
     <AppRouter>
       <VisitListener />
       <Root>{routes}</Root>
