@@ -4552,7 +4552,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/swagger-ui-react": ^4.18.0
-    graphiql: 3.1.0
+    graphiql: 3.1.1
     graphql: ^16.0.0
     graphql-config: ^5.0.2
     graphql-ws: ^5.4.1
@@ -11400,7 +11400,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphiql/react@npm:^0.20.0, @graphiql/react@npm:^0.20.2, @graphiql/react@npm:^0.20.3":
+"@graphiql/react@npm:^0.20.0, @graphiql/react@npm:^0.20.3":
   version: 0.20.3
   resolution: "@graphiql/react@npm:0.20.3"
   dependencies:
@@ -28702,23 +28702,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphiql@npm:3.1.0":
-  version: 3.1.0
-  resolution: "graphiql@npm:3.1.0"
-  dependencies:
-    "@graphiql/react": ^0.20.2
-    "@graphiql/toolkit": ^0.9.1
-    graphql-language-service: ^5.2.0
-    markdown-it: ^12.2.0
-  peerDependencies:
-    graphql: ^15.5.0 || ^16.0.0
-    react: ^16.8.0 || ^17 || ^18
-    react-dom: ^16.8.0 || ^17 || ^18
-  checksum: a8969ea299561fe627ba566fb72dd90eda31b195e9983af87c4079bf807f5b356d116ece133e46d5098d6809a88b8f3b64b04a9e95dfe34cd84eb8fd109e2b8a
-  languageName: node
-  linkType: hard
-
-"graphiql@npm:^3.0.6":
+"graphiql@npm:3.1.1, graphiql@npm:^3.0.6":
   version: 3.1.1
   resolution: "graphiql@npm:3.1.1"
   dependencies:
