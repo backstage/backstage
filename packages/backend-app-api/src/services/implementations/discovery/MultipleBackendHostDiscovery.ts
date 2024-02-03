@@ -21,15 +21,18 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import fetch from 'node-fetch';
-import Cache from 'node-cache';
-import { readHttpServerOptions } from '@backstage/backend-app-api';
 import { NotFoundError } from '@backstage/errors';
 
-export class SplitBackendHostDiscovery implements DiscoveryService {
-  #urls: { internal: string; external: string };
+interface DiscoveryUrl {
+  internal: string;
+  external: string;
+}
+
+export type PluginRegistrations = Record<string, DiscoveryUrl>;
+
+export class MultipleBackendHostDiscovery implements DiscoveryService {
   #gatewayUrl: string;
-  #cache: Cache;
-  #plugins: Record<string, { internal: string; external: string }> = {};
+  #plugins: PluginRegistrations = {};
   #isGateway: boolean;
   #discovery: DiscoveryService;
   #rootFeatureRegistry: RootFeatureRegistryService;
@@ -42,37 +45,10 @@ export class SplitBackendHostDiscovery implements DiscoveryService {
       basePath?: string;
     },
   ) {
-    const externalBaseUrl = config
-      .getString('backend.baseUrl')
-      .replace(/\/+$/, '');
-
-    const {
-      listen: { host: listenHost = '::', port: listenPort },
-    } = readHttpServerOptions(config.getConfig('backend'));
-    const protocol = config.has('backend.https') ? 'https' : 'http';
-
-    // Translate bind-all to localhost, and support IPv6
-    let host = listenHost;
-    if (host === '::' || host === '') {
-      // We use localhost instead of ::1, since IPv6-compatible systems should default
-      // to using IPv6 when they see localhost, but if the system doesn't support IPv6
-      // things will still work.
-      host = 'localhost';
-    } else if (host === '0.0.0.0') {
-      host = '127.0.0.1';
-    }
-    if (host.includes(':')) {
-      host = `[${host}]`;
-    }
-
-    const internalBaseUrl = `${protocol}://${host}:${listenPort}`;
-
-    return new SplitBackendHostDiscovery({
+    return new MultipleBackendHostDiscovery({
       instanceUrl: config.getString('backend.baseUrl'),
-      gatewayUrl: config.getOptionalString('backend.gatewayUrl'),
+      gatewayUrl: config.getOptionalString('discovery.gatewayUrl.internal'),
       rootFeatureRegistry: options.rootFeatureRegistry,
-      internalBaseUrl,
-      externalBaseUrl,
       discovery: HostDiscovery.fromConfig(config),
     });
   }
@@ -82,24 +58,22 @@ export class SplitBackendHostDiscovery implements DiscoveryService {
     gatewayUrl?: string;
     rootFeatureRegistry: RootFeatureRegistryService;
     discovery: DiscoveryService;
-    internalBaseUrl: string;
-    externalBaseUrl: string;
   }) {
-    this.#gatewayUrl = options.gatewayUrl || options.externalBaseUrl;
-    this.#isGateway = this.#gatewayUrl === options.externalBaseUrl;
-    this.#cache = new Cache({ stdTTL: 60 * 5 });
-    this.#urls = {
-      internal: options.internalBaseUrl,
-      external: options.externalBaseUrl,
-    };
+    this.#gatewayUrl = options.gatewayUrl || options.instanceUrl;
+    this.#isGateway = !options.gatewayUrl;
     this.#discovery = options.discovery;
     this.#rootFeatureRegistry = options.rootFeatureRegistry;
   }
 
   async initialize() {
+    if (this.#isInitialized) {
+      throw new Error('Can not initialize twice.');
+    }
     const features = await this.#rootFeatureRegistry.getFeatures();
-    const pluginIds = new Set(features.map(e => e.pluginId));
-    const plugins: Record<string, { internal: string; external: string }> = {};
+    const pluginIds = features
+      .filter(e => e.type === 'plugin')
+      .map(e => e.pluginId);
+    const plugins: PluginRegistrations = {};
     for (const pluginId of pluginIds) {
       plugins[pluginId] = {
         internal: await this.#discovery.getBaseUrl(pluginId),
@@ -109,7 +83,7 @@ export class SplitBackendHostDiscovery implements DiscoveryService {
     this.addPlugins(plugins);
   }
 
-  addPlugins(plugins: Record<string, { internal: string; external: string }>) {
+  addPlugins(plugins: PluginRegistrations) {
     for (const [pluginId, urls] of Object.entries(plugins)) {
       this.#plugins[pluginId] = urls;
     }
@@ -124,39 +98,46 @@ export class SplitBackendHostDiscovery implements DiscoveryService {
   }
 
   async getUrl(pluginId: string, key: 'external' | 'internal') {
+    // Because of how the services are initialized, lazy load the features when we first need them.
     if (!this.#isInitialized) {
       await this.initialize();
       this.#isInitialized = true;
     }
-    if (this.#plugins[pluginId]?.[key] === this.#urls[key]) {
-      return this.#discovery.getBaseUrl(pluginId);
-    } else if (this.#plugins[pluginId]) {
+    // If this instance knows about this plugin, return the value.
+    // The Gateway should have all plugins registered, individual instances will have just their
+    //  installed plugins.
+    if (this.#plugins[pluginId]) {
       return this.#plugins[pluginId][key];
     }
+    console.log(this.#isGateway, this.#plugins);
     if (this.#isGateway) {
-      const cacheValue = this.#cache.get<{
-        internal: string;
-        external: string;
-      }>(pluginId);
-      if (cacheValue) {
-        return cacheValue[key];
-      }
+      /**
+       * If we get here, either
+       *  a) we're requesting a route to a pluginId that hasn't been registered yet.
+       *  b) we're requesting a plugin that doesn't exist.
+       *
+       * Given the current design with a decentralized gateway definition, we don't know how many
+       *    nodes need to be registered. We could add a wait check here to allow for registration,
+       *    but this feels more like user error than anything, ie didn't configure backend A and
+       *    backend B correctly.
+       */
     } else {
+      // As an instance plugin, fetch the installed plugins on the gateway URL.
       const response = await fetch(
         `${this.#gatewayUrl}/api/discovery/installed`,
       );
 
       if (response.ok) {
-        const plugins = (await response.json()) as Record<
-          string,
-          { external: string; internal: string }
-        >;
+        const plugins = (await response.json()) as PluginRegistrations;
+        // Check the list of installed plugins, if it doesn't exist there, there's a good chance it
+        //  doesn't exist at all.
+        console.log(plugins);
         if (plugins[pluginId]) {
           return plugins[pluginId][key];
         }
       }
     }
-    throw new NotFoundError('Not found.');
+    throw new NotFoundError(`Plugin ${pluginId} not installed.`);
   }
 
   async getBaseUrl(pluginId: string): Promise<string> {

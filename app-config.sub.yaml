@@ -6,6 +6,10 @@ backend:
   #   keys:
   #     - secret: ${BACKEND_SECRET}
   baseUrl: http://localhost:8007
-  gatewayUrl: http://localhost:7007
   listen:
     port: 8007
+
+discovery:
+  gatewayUrl:
+    internal: http://localhost:7007
+    externa: http://localhost:7007

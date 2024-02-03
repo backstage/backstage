@@ -36,13 +36,13 @@ import {
   fetchApiRef,
   githubAuthApiRef,
 } from '@backstage/core-plugin-api';
-import { AuthProxyDiscoveryApi } from './AuthProxyDiscoveryApi';
+import { GatewayDiscovery } from '@backstage/core-app-api';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
     api: discoveryApiRef,
     deps: { configApi: configApiRef },
-    factory: ({ configApi }) => AuthProxyDiscoveryApi.fromConfig(configApi),
+    factory: ({ configApi }) => GatewayDiscovery.fromConfig(configApi),
   }),
   createApiFactory({
     api: scmIntegrationsApiRef,

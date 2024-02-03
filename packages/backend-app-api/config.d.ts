@@ -33,5 +33,19 @@ export interface Config {
       /** Array of plugins which use the target baseUrl. */
       plugins: string[];
     }[];
+
+    /**
+     * Useful if you're planning on using the dynamic registration implementation.
+     */
+    gatewayUrl?: {
+      // Backend internal representation, can use IP addresses or custom service discovery.
+      internal: string;
+
+      /**
+       * Public facing value.
+       * @visibility frontend
+       */
+      external: string;
+    };
   };
 }

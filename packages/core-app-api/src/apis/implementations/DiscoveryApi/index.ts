@@ -16,3 +16,4 @@
 
 export { UrlPatternDiscovery } from './UrlPatternDiscovery';
 export { FrontendHostDiscovery } from './FrontendHostDiscovery';
+export { GatewayDiscovery } from './GatewayDiscovery';

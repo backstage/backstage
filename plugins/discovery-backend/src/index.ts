@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-export { discoveryServiceFactory } from './discoveryServiceFactory';
-export { HostDiscovery } from './HostDiscovery';
-export { MultipleBackendHostDiscovery } from './MultipleBackendHostDiscovery';
+/**
+ * The test backend module for the discovery plugin.
+ *
+ * @packageDocumentation
+ */
+
+export { discoveryPlugin as default } from './plugin';
