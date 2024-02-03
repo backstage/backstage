@@ -11402,8 +11402,8 @@ __metadata:
   linkType: hard
 
 "@graphiql/react@npm:^0.20.0, @graphiql/react@npm:^0.20.2":
-  version: 0.20.2
-  resolution: "@graphiql/react@npm:0.20.2"
+  version: 0.20.3
+  resolution: "@graphiql/react@npm:0.20.3"
   dependencies:
     "@graphiql/toolkit": ^0.9.1
     "@headlessui/react": ^1.7.15
@@ -11424,7 +11424,7 @@ __metadata:
     graphql: ^15.5.0 || ^16.0.0
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
-  checksum: 76bd00fd144b1e3044e3239d80fbda49795e5eb41d222da373af11819d06f657a430eff6853e93724134538f3c5e619e0ecf9111b0818fe14569edb290106c84
+  checksum: e8b362bd67ff5499c8db64097f9a4050782be53420e27b4c84ad1eba99c9615984257b7a19d0fd9c6f72ce92366321014b04762b400403ee52f53248dd7a8785
   languageName: node
   linkType: hard
 
