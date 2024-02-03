@@ -217,7 +217,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace tokenManager {
     const // (undocumented)
-      factory: () => ServiceFactory<TokenManagerService, 'plugin'>;
+      factory: () => ServiceFactory<TokenManagerService, 'root'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<TokenManagerService> | undefined,

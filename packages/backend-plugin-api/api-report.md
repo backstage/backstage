@@ -126,7 +126,7 @@ export namespace coreServices {
   const cache: ServiceRef<CacheService, 'plugin'>;
   const rootConfig: ServiceRef<RootConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
-  const discovery: ServiceRef<DiscoveryService, 'root'>;
+  const discovery: ServiceRef<DiscoveryService, 'plugin'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin'>;
   const logger: ServiceRef<LoggerService, 'plugin'>;
@@ -136,7 +136,7 @@ export namespace coreServices {
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin'>;
-  const tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
+  const tokenManager: ServiceRef<TokenManagerService, 'root'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
   const identity: ServiceRef<IdentityService, 'plugin'>;
   const rootFeatureRegistry: ServiceRef<RootFeatureRegistryService, 'root'>;
@@ -231,6 +231,8 @@ export interface DatabaseService {
 export interface DiscoveryService {
   getBaseUrl(pluginId: string): Promise<string>;
   getExternalBaseUrl(pluginId: string): Promise<string>;
+  // (undocumented)
+  listPlugins?(): Promise<string[]>;
 }
 
 // @public

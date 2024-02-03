@@ -37,7 +37,7 @@ import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
-import { TokenManagerService } from '@backstage/backend-plugin-api';
+import { TokenManager } from '@backstage/backend-common';
 import { transport } from 'winston';
 import { UrlReader } from '@backstage/backend-common';
 
@@ -116,7 +116,7 @@ export interface DefaultRootHttpRouterOptions {
 // @public (undocumented)
 export const discoveryServiceFactory: () => ServiceFactory<
   DiscoveryService,
-  'root'
+  'plugin'
 >;
 
 // @public (undocumented)
@@ -256,6 +256,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     gatewayUrl?: string;
     rootFeatureRegistry: RootFeatureRegistryService;
     discovery: DiscoveryService;
+    tokenManager: TokenManager;
   });
   // (undocumented)
   addPlugins(instanceUrl: string, plugins: PluginRegistrations): void;
@@ -264,6 +265,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     config: Config,
     options: {
       rootFeatureRegistry: RootFeatureRegistryService;
+      tokenManager: TokenManager;
       basePath?: string;
     },
   ): MultipleBackendHostDiscovery;
@@ -279,6 +281,10 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
   get instancePlugins(): Record<string, Set<string>>;
   // (undocumented)
   get isGateway(): boolean;
+  // (undocumented)
+  get isInitialized(): boolean;
+  // (undocumented)
+  listPlugins(): Promise<string[]>;
   // (undocumented)
   get plugins(): PluginRegistrations;
 }
@@ -365,8 +371,8 @@ export const schedulerServiceFactory: () => ServiceFactory<
 
 // @public (undocumented)
 export const tokenManagerServiceFactory: () => ServiceFactory<
-  TokenManagerService,
-  'plugin'
+  TokenManager,
+  'root'
 >;
 
 // @public (undocumented)
