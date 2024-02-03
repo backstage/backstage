@@ -51,13 +51,20 @@ export function createRouter(options: {
       if (discovery.instancePlugins[instanceUrl]) {
         const installedPlugins = discovery.instancePlugins[instanceUrl];
         if (!plugins.every(plugin => installedPlugins.has(plugin))) {
-          res.status(400).send();
+          res.status(400).send({
+            error: 'InvalidRegistration',
+            message:
+              'Registration check and existing registration do not match, reregister.',
+          });
           return;
         }
         res.status(200).send();
         return;
       }
-      res.status(404).send();
+      res.status(400).json({
+        error: 'NotRegistered',
+        message: 'Instance URL not registered yet.',
+      });
     });
     router.get('/by-plugin/:pluginId', async (req, res) => {
       const { pluginId } = req.params;
