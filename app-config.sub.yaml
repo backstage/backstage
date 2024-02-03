@@ -1,0 +1,11 @@
+backend:
+  # Used for enabling authentication, secret is shared by all backend plugins
+  # See https://backstage.io/docs/auth/service-to-service-auth for
+  # information on the format
+  # auth:
+  #   keys:
+  #     - secret: ${BACKEND_SECRET}
+  baseUrl: http://localhost:8007
+  gatewayUrl: http://localhost:7007
+  listen:
+    port: 8007

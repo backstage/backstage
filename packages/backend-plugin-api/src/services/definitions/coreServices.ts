@@ -56,7 +56,7 @@ export namespace coreServices {
    */
   export const discovery = createServiceRef<
     import('./DiscoveryService').DiscoveryService
-  >({ id: 'core.discovery' });
+  >({ id: 'core.discovery', scope: 'root' });
 
   /**
    * The service reference for the plugin scoped {@link HttpRouterService}.

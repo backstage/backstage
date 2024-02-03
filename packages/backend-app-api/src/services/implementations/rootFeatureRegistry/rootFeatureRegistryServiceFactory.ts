@@ -19,12 +19,60 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { DefaultRootFeatureRegistryService } from './DefaultRootFeatureRegistry';
+import fetch from 'node-fetch';
+import { HostDiscovery } from '../discovery';
 
 /** @public */
 export const rootFeatureRegistryServiceFactory = createServiceFactory({
   service: coreServices.rootFeatureRegistry,
-  deps: {},
-  async factory() {
-    return new DefaultRootFeatureRegistryService();
+  deps: {
+    rootConfig: coreServices.rootConfig,
+  },
+  async factory({ rootConfig }) {
+    const baseUrl = rootConfig.getString('backend.baseUrl');
+    const gatewayUrl = rootConfig.getOptionalString('backend.gatewayUrl');
+    const registry = new DefaultRootFeatureRegistryService();
+    const discovery = HostDiscovery.fromConfig(rootConfig);
+
+    if (gatewayUrl && baseUrl !== gatewayUrl) {
+      const intervalId = setInterval(
+        async () =>
+          await new Promise(async (res, rej) => {
+            const features = await registry.getFeatures();
+            const pluginIds = new Set(features.map(e => e.pluginId));
+            const pluginUrls: Record<
+              string,
+              { internal: string; external: string }
+            > = {};
+            for (const pluginId of pluginIds) {
+              pluginUrls[pluginId] = {
+                external: await discovery.getExternalBaseUrl(pluginId),
+                internal: await discovery.getBaseUrl(pluginId),
+              };
+            }
+            try {
+              const response = await fetch(
+                `${gatewayUrl}/api/discovery/install`,
+                {
+                  method: 'POST',
+                  body: JSON.stringify(pluginUrls),
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                },
+              );
+              if (response.ok) {
+                console.log('removing interval', response.statusText);
+                clearInterval(intervalId);
+              }
+            } catch (err) {
+              // skip network errors.
+            }
+            res();
+          }),
+        5000,
+      );
+    }
+    return registry;
   },
 });

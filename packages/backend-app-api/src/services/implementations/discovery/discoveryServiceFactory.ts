@@ -18,15 +18,46 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { HostDiscovery } from './HostDiscovery';
+import Router from 'express-promise-router';
+import { SplitBackendHostDiscovery } from './SplitBackendHostDiscovery';
+import { json } from 'express';
 
 /** @public */
 export const discoveryServiceFactory = createServiceFactory({
   service: coreServices.discovery,
   deps: {
     config: coreServices.rootConfig,
+    rootFeatureRegistry: coreServices.rootFeatureRegistry,
+    rootHttpRouter: coreServices.rootHttpRouter,
   },
-  async factory({ config }) {
-    return HostDiscovery.fromConfig(config);
+  async factory({ config, rootFeatureRegistry, rootHttpRouter }) {
+    const router = Router();
+    const discovery = SplitBackendHostDiscovery.fromConfig(config, {
+      rootFeatureRegistry,
+    });
+
+    if (discovery.isGateway) {
+      router.post('/install', json(), (req, res) => {
+        console.log(req.body);
+        const plugins = req.body as Record<
+          string,
+          { external: string; internal: string }
+        >;
+        discovery.addPlugins(plugins);
+        res.send().status(200);
+      });
+      router.get('/installed', (_, res) => {
+        res.json(discovery.plugins);
+      });
+      router.get('/:pluginId', async (req, res) => {
+        const { pluginId } = req.params;
+        res.json({
+          baseUrl: await discovery.getBaseUrl(pluginId),
+          externalBaseUrl: await discovery.getExternalBaseUrl(pluginId),
+        });
+      });
+      rootHttpRouter.use('/api/discovery', router);
+    }
+    return discovery;
   },
 });

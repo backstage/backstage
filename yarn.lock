@@ -3222,7 +3222,7 @@ __metadata:
     compression: ^1.7.4
     cors: ^2.8.5
     express: ^4.17.1
-    express-promise-router: ^4.1.0
+    express-promise-router: ^4.1.1
     fs-extra: 10.1.0
     helmet: ^6.0.0
     http-errors: ^2.0.0
@@ -3231,6 +3231,8 @@ __metadata:
     minimatch: ^5.0.0
     minimist: ^1.2.5
     morgan: ^1.10.0
+    node-cache: ^5.1.2
+    node-fetch: ^3.3.2
     node-forge: ^1.3.1
     selfsigned: ^2.0.0
     stoppable: ^1.1.0
@@ -24384,6 +24386,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"data-uri-to-buffer@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "data-uri-to-buffer@npm:4.0.1"
+  checksum: 0d0790b67ffec5302f204c2ccca4494f70b4e2d940fea3d36b09f0bb2b8539c2e86690429eb1f1dc4bcc9e4df0644193073e63d9ee48ac9fce79ec1506e4aa4c
+  languageName: node
+  linkType: hard
+
 "data-uri-to-buffer@npm:^6.0.0":
   version: 6.0.1
   resolution: "data-uri-to-buffer@npm:6.0.1"
@@ -26844,6 +26853,49 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"example-backend-split@workspace:packages/backend-next-split":
+  version: 0.0.0-use.local
+  resolution: "example-backend-split@workspace:packages/backend-next-split"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-adr-backend": "workspace:^"
+    "@backstage/plugin-app-backend": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-azure-devops-backend": "workspace:^"
+    "@backstage/plugin-badges-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
+    "@backstage/plugin-devtools-backend": "workspace:^"
+    "@backstage/plugin-entity-feedback-backend": "workspace:^"
+    "@backstage/plugin-jenkins-backend": "workspace:^"
+    "@backstage/plugin-kubernetes-backend": "workspace:^"
+    "@backstage/plugin-lighthouse-backend": "workspace:^"
+    "@backstage/plugin-linguist-backend": "workspace:^"
+    "@backstage/plugin-nomad-backend": "workspace:^"
+    "@backstage/plugin-permission-backend": "workspace:^"
+    "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
+    "@backstage/plugin-playlist-backend": "workspace:^"
+    "@backstage/plugin-proxy-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-search-backend": "workspace:^"
+    "@backstage/plugin-search-backend-module-catalog": "workspace:^"
+    "@backstage/plugin-search-backend-module-explore": "workspace:^"
+    "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-sonarqube-backend": "workspace:^"
+    "@backstage/plugin-techdocs-backend": "workspace:^"
+    "@backstage/plugin-todo-backend": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "example-backend@workspace:packages/backend":
   version: 0.0.0-use.local
   resolution: "example-backend@workspace:packages/backend"
@@ -27464,6 +27516,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fetch-blob@npm:^3.1.2, fetch-blob@npm:^3.1.4":
+  version: 3.2.0
+  resolution: "fetch-blob@npm:3.2.0"
+  dependencies:
+    node-domexception: ^1.0.0
+    web-streams-polyfill: ^3.0.3
+  checksum: f19bc28a2a0b9626e69fd7cf3a05798706db7f6c7548da657cbf5026a570945f5eeaedff52007ea35c8bcd3d237c58a20bf1543bc568ab2422411d762dd3d5bf
+  languageName: node
+  linkType: hard
+
 "fflate@npm:^0.4.4":
   version: 0.4.8
   resolution: "fflate@npm:0.4.8"
@@ -27882,6 +27944,15 @@ __metadata:
   version: 0.2.2
   resolution: "format@npm:0.2.2"
   checksum: 646a60e1336250d802509cf24fb801e43bd4a70a07510c816fa133aa42cdbc9c21e66e9cc0801bb183c5b031c9d68be62e7fbb6877756e52357850f92aa28799
+  languageName: node
+  linkType: hard
+
+"formdata-polyfill@npm:^4.0.10":
+  version: 4.0.10
+  resolution: "formdata-polyfill@npm:4.0.10"
+  dependencies:
+    fetch-blob: ^3.1.2
+  checksum: 82a34df292afadd82b43d4a740ce387bc08541e0a534358425193017bf9fb3567875dc5f69564984b1da979979b70703aa73dee715a17b6c229752ae736dd9db
   languageName: node
   linkType: hard
 
@@ -35177,6 +35248,17 @@ __metadata:
     encoding:
       optional: true
   checksum: d76d2f5edb451a3f05b15115ec89fc6be39de37c6089f1b6368df03b91e1633fd379a7e01b7ab05089a25034b2023d959b47e59759cb38d88341b2459e89d6e5
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "node-fetch@npm:3.3.2"
+  dependencies:
+    data-uri-to-buffer: ^4.0.0
+    fetch-blob: ^3.1.4
+    formdata-polyfill: ^4.0.10
+  checksum: 06a04095a2ddf05b0830a0d5302699704d59bda3102894ea64c7b9d4c865ecdff2d90fd042df7f5bc40337266961cb6183dcc808ea4f3000d024f422b462da92
   languageName: node
   linkType: hard
 
