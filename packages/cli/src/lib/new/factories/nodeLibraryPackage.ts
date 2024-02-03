@@ -17,10 +17,11 @@
 import chalk from 'chalk';
 import { paths } from '../../paths';
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
-import { createFactory, CreateContext } from '../types';
+import { CreateContext, createFactory } from '../types';
 import { Task } from '../../tasks';
 import { ownerPrompt, pluginIdPrompt } from './common/prompts';
 import { executePluginPackageTemplate } from './common/tasks';
+import { resolvePackageName } from './common/util';
 
 type Options = {
   id: string;
@@ -37,7 +38,11 @@ export const nodeLibraryPackage = createFactory<Options>({
   optionsPrompts: [pluginIdPrompt(), ownerPrompt()],
   async create(options: Options, ctx: CreateContext) {
     const { id } = options;
-    const name = ctx.scope ? `@${ctx.scope}/${id}` : `${id}`;
+    const name = resolvePackageName({
+      baseName: id,
+      scope: ctx.scope,
+      plugin: false,
+    });
 
     Task.log();
     Task.log(`Creating node-library package ${chalk.cyan(name)}`);

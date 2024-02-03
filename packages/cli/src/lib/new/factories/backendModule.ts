@@ -19,7 +19,7 @@ import chalk from 'chalk';
 import camelCase from 'lodash/camelCase';
 import { paths } from '../../paths';
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
-import { createFactory, CreateContext } from '../types';
+import { CreateContext, createFactory } from '../types';
 import { addPackageDependency, Task } from '../../tasks';
 import {
   moduleIdIdPrompt,
@@ -27,6 +27,7 @@ import {
   pluginIdPrompt,
 } from './common/prompts';
 import { executePluginPackageTemplate } from './common/tasks';
+import { resolvePackageName } from './common/util';
 
 type Options = {
   id: string;
@@ -45,9 +46,11 @@ export const backendModule = createFactory<Options>({
   async create(options: Options, ctx: CreateContext) {
     const { id: pluginId, moduleId } = options;
     const dirName = `${pluginId}-backend-module-${moduleId}`;
-    const name = ctx.scope
-      ? `@${ctx.scope}/plugin-${dirName}`
-      : `backstage-plugin-${dirName}`;
+    const name = resolvePackageName({
+      baseName: dirName,
+      scope: ctx.scope,
+      plugin: true,
+    });
 
     Task.log();
     Task.log(`Creating backend module ${chalk.cyan(name)}`);
