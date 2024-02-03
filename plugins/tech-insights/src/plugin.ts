@@ -57,6 +57,18 @@ export const ScorecardInfo = techInsightsPlugin.provide(
 /**
  * @public
  */
+export const FactDetails = techInsightsPlugin.provide(
+  createRoutableExtension({
+    name: 'FactDetails',
+    component: () =>
+      import('./components/FactDetails').then(m => m.FactDetails),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+/**
+ * @public
+ */
 export const ScorecardsList = techInsightsPlugin.provide(
   createRoutableExtension({
     name: 'ScorecardsList',

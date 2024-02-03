@@ -13,17 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  techInsightsPlugin,
-  EntityTechInsightsScorecardContent,
-  EntityTechInsightsScorecardCard,
-  ScorecardInfo,
-  FactDetails,
-  ScorecardsList
-} from './plugin';
 
-export { techInsightsApiRef, TechInsightsClient } from './api';
-export type { TechInsightsApi, Check, InsightFacts } from './api';
-export { BooleanCheck } from './components/BooleanCheck';
-export { jsonRulesEngineCheckResultRenderer } from './components/CheckResultRenderer';
-export type { CheckResultRenderer } from './components/CheckResultRenderer';
+export { FactDetails } from './FactDetails';
