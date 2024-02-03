@@ -6,20 +6,7 @@ To start, you need to identify a backend that will be the primary gateway for al
 
 ### Setting up your Backend Gateway
 
-If you're using the latest `rootFeatureRegistryService` and `discoveryService`, all you need to do is
-
-```shell
-# in backend/src/index.ts
-yarn add @backstage/plugin-discovery-backend
-```
-
-and then add it to your `backend/src/index.ts` like so,
-
-```ts
-backend.add(import('@backstage/plugin-discovery-backend'));
-```
-
-That's it.
+If you're using the latest `rootFeatureRegistryService` and `discoveryService`, you don't need to do anything.
 
 ### Setting up Backend A-Z
 

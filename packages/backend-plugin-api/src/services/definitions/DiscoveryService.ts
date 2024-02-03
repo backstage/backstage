@@ -60,4 +60,6 @@ export interface DiscoveryService {
    * like `https://backstage.example.com/api/catalog`
    */
   getExternalBaseUrl(pluginId: string): Promise<string>;
+
+  listPlugins?(): Promise<string[]>;
 }

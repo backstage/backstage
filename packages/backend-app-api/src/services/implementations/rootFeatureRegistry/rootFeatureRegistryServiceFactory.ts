@@ -19,36 +19,12 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { DefaultRootFeatureRegistryService } from './DefaultRootFeatureRegistry';
-import { HostDiscovery } from '../discovery';
-import { InstanceRegistration } from './InstanceRegistration';
 
 /** @public */
 export const rootFeatureRegistryServiceFactory = createServiceFactory({
   service: coreServices.rootFeatureRegistry,
-  deps: {
-    rootConfig: coreServices.rootConfig,
-    lifecycle: coreServices.rootLifecycle,
-  },
-  async factory({ rootConfig, lifecycle }) {
-    const baseUrl = rootConfig.getString('backend.baseUrl');
-    const gatewayUrl = rootConfig.getOptionalString('discovery.gatewayUrl');
-    const isGateway = !gatewayUrl;
-    const registry = new DefaultRootFeatureRegistryService();
-    const discovery = HostDiscovery.fromConfig(rootConfig);
-
-    lifecycle.addStartupHook(() => {
-      if (!isGateway) {
-        const registration = new InstanceRegistration({
-          discovery,
-          rootFeatureRegistry: registry,
-          gatewayUrl,
-          instanceUrl: baseUrl,
-        });
-
-        registration.startHeartbeat();
-      }
-    });
-
-    return registry;
+  deps: {},
+  async factory({}) {
+    return new DefaultRootFeatureRegistryService();
   },
 });

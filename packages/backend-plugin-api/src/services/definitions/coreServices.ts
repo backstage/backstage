@@ -56,7 +56,7 @@ export namespace coreServices {
    */
   export const discovery = createServiceRef<
     import('./DiscoveryService').DiscoveryService
-  >({ id: 'core.discovery', scope: 'root' });
+  >({ id: 'core.discovery' });
 
   /**
    * The service reference for the plugin scoped {@link HttpRouterService}.
@@ -140,13 +140,13 @@ export namespace coreServices {
   >({ id: 'core.scheduler' });
 
   /**
-   * The service reference for the plugin scoped {@link TokenManagerService}.
+   * The service reference for the root scoped {@link TokenManagerService}.
    *
    * @public
    */
   export const tokenManager = createServiceRef<
     import('./TokenManagerService').TokenManagerService
-  >({ id: 'core.tokenManager' });
+  >({ id: 'core.tokenManager', scope: 'root' });
 
   /**
    * The service reference for the plugin scoped {@link UrlReaderService}.

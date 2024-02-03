@@ -35,7 +35,6 @@ export class GatewayDiscovery implements DiscoveryApi {
     const response = await fetch(
       `${this.#gatewayUrl}/api/discovery/by-plugin/${pluginId}`,
     );
-    console.log(response);
     if (response.ok) {
       return (await response.json()).externalBaseUrl;
     }

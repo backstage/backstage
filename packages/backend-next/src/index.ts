@@ -17,7 +17,6 @@
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-discovery-backend'));
 
 backend.add(import('@backstage/plugin-adr-backend'));
 backend.add(import('@backstage/plugin-app-backend/alpha'));

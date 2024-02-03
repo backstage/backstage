@@ -20,18 +20,40 @@ import {
 } from '@backstage/backend-plugin-api';
 import fetch from 'node-fetch';
 import { PluginRegistrations } from '../discovery/MultipleBackendHostDiscovery';
+import { Config } from '@backstage/config';
+import { TokenManager } from '@backstage/backend-common';
 
 export class InstanceRegistration {
   #rootFeatureRegistry: RootFeatureRegistryService;
   #discovery: DiscoveryService;
+  #tokenManager: TokenManager;
+
   #gatewayUrl: string;
   #instanceUrl: string;
   #registrationIntervalId: NodeJS.Timeout | undefined;
   #plugins: Record<string, { internal: string; external: string }> = {};
 
+  static fromConfig(
+    config: Config,
+    options: {
+      rootFeatureRegistry: RootFeatureRegistryService;
+      discovery: DiscoveryService;
+      tokenManager: TokenManager;
+    },
+  ) {
+    return new InstanceRegistration({
+      rootFeatureRegistry: options.rootFeatureRegistry,
+      gatewayUrl: config.getString('discovery.gatewayUrl'),
+      instanceUrl: config.getString('backend.baseUrl'),
+      discovery: options.discovery,
+      tokenManager: options.tokenManager,
+    });
+  }
+
   constructor(options: {
     rootFeatureRegistry: RootFeatureRegistryService;
     discovery: DiscoveryService;
+    tokenManager: TokenManager;
     gatewayUrl: string;
     instanceUrl: string;
   }) {
@@ -39,6 +61,7 @@ export class InstanceRegistration {
     this.#rootFeatureRegistry = options.rootFeatureRegistry;
     this.#gatewayUrl = options.gatewayUrl;
     this.#instanceUrl = options.instanceUrl;
+    this.#tokenManager = options.tokenManager;
   }
 
   private async submitRegistration(plugins: PluginRegistrations) {
@@ -50,6 +73,7 @@ export class InstanceRegistration {
           body: JSON.stringify({ instanceUrl: this.#instanceUrl, plugins }),
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${await this.#tokenManager.getToken()}`,
           },
         },
       );
@@ -87,6 +111,7 @@ export class InstanceRegistration {
         }),
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${await this.#tokenManager.getToken()}`,
         },
       });
       if (response.ok) {

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { ServerTokenManager } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { ServerTokenManager } from '@backstage/backend-common';
 
 /** @public */
 export const tokenManagerServiceFactory = createServiceFactory({
@@ -27,12 +27,9 @@ export const tokenManagerServiceFactory = createServiceFactory({
     config: coreServices.rootConfig,
     logger: coreServices.rootLogger,
   },
-  createRootContext({ config, logger }) {
+  async factory({ config, logger }) {
     return ServerTokenManager.fromConfig(config, {
       logger,
     });
-  },
-  async factory(_deps, tokenManager) {
-    return tokenManager;
   },
 });

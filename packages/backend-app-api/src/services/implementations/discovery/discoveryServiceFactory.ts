@@ -19,6 +19,8 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { MultipleBackendHostDiscovery } from './MultipleBackendHostDiscovery';
+import { InstanceRegistration } from './InstanceRegistration';
+import { createRouter } from './service/router';
 
 /** @public */
 export const discoveryServiceFactory = createServiceFactory({
@@ -26,10 +28,54 @@ export const discoveryServiceFactory = createServiceFactory({
   deps: {
     config: coreServices.rootConfig,
     rootFeatureRegistry: coreServices.rootFeatureRegistry,
+    lifecycle: coreServices.rootLifecycle,
+    tokenManager: coreServices.tokenManager,
+    rootHttpRouter: coreServices.rootHttpRouter,
+    rootLogger: coreServices.rootLogger,
   },
-  async factory({ config, rootFeatureRegistry }) {
-    return MultipleBackendHostDiscovery.fromConfig(config, {
+  async createRootContext({
+    config,
+    lifecycle,
+    rootFeatureRegistry,
+    rootHttpRouter,
+    rootLogger,
+    tokenManager,
+  }) {
+    const discovery = MultipleBackendHostDiscovery.fromConfig(config, {
       rootFeatureRegistry,
+      tokenManager,
     });
+    lifecycle.addStartupHook(() => {
+      if (!discovery.isGateway) {
+        const registration = InstanceRegistration.fromConfig(config, {
+          rootFeatureRegistry,
+          discovery,
+          tokenManager,
+        });
+
+        registration.startHeartbeat();
+      } else if (discovery.isGateway && !discovery.isInitialized) {
+        discovery.initialize();
+      }
+    });
+
+    if (discovery.isGateway) {
+      const logger = rootLogger.child({
+        service: 'discovery',
+      });
+      rootHttpRouter.use(
+        '/api/discovery',
+        createRouter({
+          tokenManager,
+          logger,
+          discovery,
+        }),
+      );
+    }
+
+    return discovery;
+  },
+  async factory(_deps, discovery) {
+    return discovery;
   },
 });

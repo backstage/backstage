@@ -18,17 +18,19 @@ import Router from 'express-promise-router';
 import express from 'express';
 import { MultipleBackendHostDiscovery } from '@backstage/backend-app-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { TokenManager, errorHandler } from '@backstage/backend-common';
 
 export function createRouter(options: {
   discovery: MultipleBackendHostDiscovery;
   logger: LoggerService;
+  tokenManager: TokenManager;
 }) {
   const { discovery, logger } = options;
   const router = Router();
   router.use(express.json());
   if (discovery.isGateway) {
     router.post('/register', (req, res) => {
-      logger.info(`installing plugins ${JSON.stringify(req.body)}`);
+      logger.info(`registering plugins ${JSON.stringify(req.body)}`);
       const { instanceUrl, plugins } = req.body as {
         instanceUrl: string;
         plugins: Record<string, { internal: string; external: string }>;
@@ -65,5 +67,6 @@ export function createRouter(options: {
       });
     });
   }
+  router.use(errorHandler());
   return router;
 }

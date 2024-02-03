@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HostDiscovery } from '@backstage/backend-common';
+import { HostDiscovery, TokenManager } from '@backstage/backend-common';
 import {
   DiscoveryService,
   RootFeatureRegistryService,
@@ -42,6 +42,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
 
   #discovery: DiscoveryService;
   #rootFeatureRegistry: RootFeatureRegistryService;
+  #tokenManager: TokenManager;
 
   // A map of plugin to URLs.
   #plugins: PluginRegistrations = {};
@@ -52,6 +53,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     config: Config,
     options: {
       rootFeatureRegistry: RootFeatureRegistryService;
+      tokenManager: TokenManager;
       basePath?: string;
     },
   ) {
@@ -60,6 +62,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
       gatewayUrl: config.getOptionalString('discovery.gatewayUrl'),
       rootFeatureRegistry: options.rootFeatureRegistry,
       discovery: HostDiscovery.fromConfig(config),
+      tokenManager: options.tokenManager,
     });
   }
 
@@ -68,17 +71,19 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     gatewayUrl?: string;
     rootFeatureRegistry: RootFeatureRegistryService;
     discovery: DiscoveryService;
+    tokenManager: TokenManager;
   }) {
     this.#gatewayUrl = options.gatewayUrl || options.instanceUrl;
     this.#instanceUrl = options.instanceUrl;
     this.#isGateway = !options.gatewayUrl;
     this.#discovery = options.discovery;
+    this.#tokenManager = options.tokenManager;
     this.#rootFeatureRegistry = options.rootFeatureRegistry;
   }
 
   async initialize() {
     if (this.#isInitialized) {
-      throw new Error('Can not initialize twice.');
+      return;
     }
     const features = await this.#rootFeatureRegistry.getFeatures();
     const pluginIds = features
@@ -92,6 +97,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
       };
     }
     this.addPlugins(this.#instanceUrl, plugins);
+    this.#isInitialized = true;
   }
 
   addPlugins(instanceUrl: string, plugins: PluginRegistrations) {
@@ -116,11 +122,35 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     return this.#isGateway;
   }
 
+  get isInitialized() {
+    return this.#isInitialized;
+  }
+
+  async listPlugins() {
+    if (this.isGateway) {
+      return Object.keys(this.plugins);
+    }
+    // As an instance plugin, fetch the registered plugins on the gateway URL.
+    const response = await fetch(
+      `${this.#gatewayUrl}/api/discovery/registered`,
+      {
+        headers: {
+          Authorization: `Bearer ${await this.#tokenManager.getToken()}`,
+        },
+      },
+    );
+
+    if (response.ok) {
+      const plugins = (await response.json()) as PluginRegistrations;
+      return Object.keys(plugins);
+    }
+    throw new Error('Gateway failed to respond correctly.');
+  }
+
   async getUrl(pluginId: string, key: 'external' | 'internal') {
     // Because of how the services are initialized, lazy load the features when we first need them.
     if (!this.#isInitialized) {
       await this.initialize();
-      this.#isInitialized = true;
     }
     // If this instance knows about this plugin, return the value.
     // The Gateway should have all plugins registered, individual instances will have just their
@@ -144,6 +174,11 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
       // As an instance plugin, fetch the registered plugins on the gateway URL.
       const response = await fetch(
         `${this.#gatewayUrl}/api/discovery/registered`,
+        {
+          headers: {
+            Authorization: `Bearer ${await this.#tokenManager.getToken()}`,
+          },
+        },
       );
 
       if (response.ok) {
