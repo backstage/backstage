@@ -21,7 +21,6 @@ const backend = createBackend();
 backend.add(import('@backstage/plugin-adr-backend'));
 backend.add(import('@backstage/plugin-app-backend/alpha'));
 backend.add(import('@backstage/plugin-azure-devops-backend'));
-backend.add(import('@backstage/plugin-badges-backend'));
 backend.add(import('@backstage/plugin-devtools-backend'));
 backend.add(import('@backstage/plugin-entity-feedback-backend'));
 backend.add(import('@backstage/plugin-jenkins-backend'));

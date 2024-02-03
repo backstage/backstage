@@ -17,6 +17,7 @@
 import { HostDiscovery, TokenManager } from '@backstage/backend-common';
 import {
   DiscoveryService,
+  LoggerService,
   RootFeatureRegistryService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
@@ -44,8 +45,12 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
   #discovery: DiscoveryService;
   #rootFeatureRegistry: RootFeatureRegistryService;
   #tokenManager: TokenManager;
+  #logger: LoggerService;
+
   /** A cache for non-gateway instances to store gateway routings for a set period of time. */
-  #cache: Cache;
+  #gatewayResponseCache: Cache;
+
+  #instanceCheckInCache: Cache;
 
   // A map of plugin to URLs.
   #plugins: PluginRegistrations = {};
@@ -57,6 +62,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     options: {
       rootFeatureRegistry: RootFeatureRegistryService;
       tokenManager: TokenManager;
+      logger: LoggerService;
       basePath?: string;
     },
   ) {
@@ -66,6 +72,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
       rootFeatureRegistry: options.rootFeatureRegistry,
       discovery: HostDiscovery.fromConfig(config),
       tokenManager: options.tokenManager,
+      logger: options.logger,
     });
   }
 
@@ -75,6 +82,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     rootFeatureRegistry: RootFeatureRegistryService;
     discovery: DiscoveryService;
     tokenManager: TokenManager;
+    logger: LoggerService;
   }) {
     this.#gatewayUrl = options.gatewayUrl || options.instanceUrl;
     this.#instanceUrl = options.instanceUrl;
@@ -82,8 +90,19 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     this.#discovery = options.discovery;
     this.#tokenManager = options.tokenManager;
     this.#rootFeatureRegistry = options.rootFeatureRegistry;
-    this.#cache = new Cache({
+    this.#logger = options.logger;
+    this.#gatewayResponseCache = new Cache({
       stdTTL: 60, // store URLs for a minute. This should probably be adjustable.
+    });
+    this.#instanceCheckInCache = new Cache({
+      stdTTL: 60, // Let's update this to a value that makes sense.
+      checkperiod: 10,
+    });
+    this.#instanceCheckInCache.on('expired', instanceUrl => {
+      this.#logger.info(
+        `We haven't heard from ${instanceUrl} in a while. Removing their cache entry.`,
+      );
+      this.unregister(instanceUrl);
     });
   }
 
@@ -102,11 +121,12 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
         external: await this.#discovery.getExternalBaseUrl(pluginId),
       };
     }
-    this.addPlugins(this.#instanceUrl, plugins);
+    this.register(this.#instanceUrl, plugins);
     this.#isInitialized = true;
   }
 
-  addPlugins(instanceUrl: string, plugins: PluginRegistrations) {
+  register(instanceUrl: string, plugins: PluginRegistrations) {
+    console.log(`registering ${JSON.stringify(plugins)} on ${instanceUrl}`);
     for (const [pluginId, urls] of Object.entries(plugins)) {
       this.#plugins[pluginId] = urls;
       if (!this.#instancePlugins[instanceUrl]) {
@@ -114,6 +134,21 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
       }
       this.#instancePlugins[instanceUrl].add(pluginId);
     }
+  }
+
+  unregister(instanceUrl: string) {
+    const registeredPlugins = this.#instancePlugins[instanceUrl];
+    console.log(registeredPlugins, this.#instancePlugins, this.#plugins);
+    if (registeredPlugins) {
+      for (const pluginId of registeredPlugins) {
+        delete this.#plugins[pluginId];
+      }
+      delete this.#instancePlugins[instanceUrl];
+    }
+  }
+
+  checkIn(instanceUrl: string) {
+    this.#instanceCheckInCache.set(instanceUrl, true);
   }
 
   get plugins() {
@@ -177,7 +212,8 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
        *    backend B correctly.
        */
     } else {
-      const cachedValue = this.#cache.get<DiscoveryUrl>(pluginId);
+      const cachedValue =
+        this.#gatewayResponseCache.get<DiscoveryUrl>(pluginId);
       if (cachedValue) {
         return cachedValue[key];
       }
@@ -201,7 +237,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
           internal: baseUrl,
           external: externalBaseUrl,
         };
-        this.#cache.set(pluginId, pluginUrls);
+        this.#gatewayResponseCache.set(pluginId, pluginUrls);
         // Check the list of registered plugins, if it doesn't exist there, there's a good chance it
         //  doesn't exist at all.
         console.log(pluginUrls);

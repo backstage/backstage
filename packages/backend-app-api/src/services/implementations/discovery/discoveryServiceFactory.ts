@@ -41,9 +41,13 @@ export const discoveryServiceFactory = createServiceFactory({
     rootLogger,
     tokenManager,
   }) {
+    const logger = rootLogger.child({
+      service: 'discovery',
+    });
     const discovery = MultipleBackendHostDiscovery.fromConfig(config, {
       rootFeatureRegistry,
       tokenManager,
+      logger,
     });
     lifecycle.addStartupHook(() => {
       if (!discovery.isGateway) {
@@ -60,9 +64,6 @@ export const discoveryServiceFactory = createServiceFactory({
     });
 
     if (discovery.isGateway) {
-      const logger = rootLogger.child({
-        service: 'discovery',
-      });
       rootHttpRouter.use(
         '/api/discovery',
         createRouter({

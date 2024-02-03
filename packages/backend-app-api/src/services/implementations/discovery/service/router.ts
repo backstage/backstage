@@ -35,7 +35,8 @@ export function createRouter(options: {
         instanceUrl: string;
         plugins: Record<string, { internal: string; external: string }>;
       };
-      discovery.addPlugins(instanceUrl, plugins);
+      discovery.unregister(instanceUrl);
+      discovery.register(instanceUrl, plugins);
       res.status(200).send();
     });
     router.get('/registered', (_, res) => {
@@ -47,6 +48,7 @@ export function createRouter(options: {
         instanceUrl: string;
         plugins: string[];
       };
+      discovery.checkIn(instanceUrl);
 
       if (discovery.instancePlugins[instanceUrl]) {
         const installedPlugins = discovery.instancePlugins[instanceUrl];
