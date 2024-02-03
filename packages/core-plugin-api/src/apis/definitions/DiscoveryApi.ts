@@ -43,6 +43,11 @@ export type DiscoveryApi = {
    * like `https://backstage.example.com/api/auth`
    */
   getBaseUrl(pluginId: string): Promise<string>;
+
+  /**
+   * List the currently registered plugins in your Backstage installation.
+   */
+  listPlugins?(): Promise<string[]>;
 };
 
 /**

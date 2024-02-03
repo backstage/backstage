@@ -39,7 +39,7 @@ export function createRouter(options: {
       res.status(200).send();
     });
     router.get('/registered', (_, res) => {
-      res.json(discovery.plugins);
+      res.json(Object.keys(discovery.plugins));
     });
     // Check to see if the gateway has the most up to date version of my metdata.
     router.post('/check', (req, res) => {

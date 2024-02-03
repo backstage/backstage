@@ -22,6 +22,7 @@ import {
 import { Config } from '@backstage/config';
 import fetch from 'node-fetch';
 import { NotFoundError } from '@backstage/errors';
+import Cache from 'node-cache';
 
 /** @public */
 export interface DiscoveryUrl {
@@ -43,6 +44,8 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
   #discovery: DiscoveryService;
   #rootFeatureRegistry: RootFeatureRegistryService;
   #tokenManager: TokenManager;
+  /** A cache for non-gateway instances to store gateway routings for a set period of time. */
+  #cache: Cache;
 
   // A map of plugin to URLs.
   #plugins: PluginRegistrations = {};
@@ -79,6 +82,9 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     this.#discovery = options.discovery;
     this.#tokenManager = options.tokenManager;
     this.#rootFeatureRegistry = options.rootFeatureRegistry;
+    this.#cache = new Cache({
+      stdTTL: 60, // store URLs for a minute. This should probably be adjustable.
+    });
   }
 
   async initialize() {
@@ -141,8 +147,8 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     );
 
     if (response.ok) {
-      const plugins = (await response.json()) as PluginRegistrations;
-      return Object.keys(plugins);
+      const plugins = (await response.json()) as string[];
+      return plugins;
     }
     throw new Error('Gateway failed to respond correctly.');
   }
@@ -171,9 +177,14 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
        *    backend B correctly.
        */
     } else {
+      const cachedValue = this.#cache.get<DiscoveryUrl>(pluginId);
+      if (cachedValue) {
+        return cachedValue[key];
+      }
+
       // As an instance plugin, fetch the registered plugins on the gateway URL.
       const response = await fetch(
-        `${this.#gatewayUrl}/api/discovery/registered`,
+        `${this.#gatewayUrl}/api/discovery/by-plugin/${pluginId}`,
         {
           headers: {
             Authorization: `Bearer ${await this.#tokenManager.getToken()}`,
@@ -182,13 +193,19 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
       );
 
       if (response.ok) {
-        const plugins = (await response.json()) as PluginRegistrations;
+        const { baseUrl, externalBaseUrl } = (await response.json()) as {
+          baseUrl: string;
+          externalBaseUrl: string;
+        };
+        const pluginUrls = {
+          internal: baseUrl,
+          external: externalBaseUrl,
+        };
+        this.#cache.set(pluginId, pluginUrls);
         // Check the list of registered plugins, if it doesn't exist there, there's a good chance it
         //  doesn't exist at all.
-        console.log(plugins);
-        if (plugins[pluginId]) {
-          return plugins[pluginId][key];
-        }
+        console.log(pluginUrls);
+        return pluginUrls[key];
       }
     }
     throw new NotFoundError(`Plugin ${pluginId} not registered.`);

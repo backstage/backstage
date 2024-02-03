@@ -40,4 +40,14 @@ export class GatewayDiscovery implements DiscoveryApi {
     }
     throw new Error('Not a known plugin.');
   }
+
+  async listPlugins(): Promise<string[]> {
+    const response = await fetch(
+      `${this.#gatewayUrl}/api/discovery/registered`,
+    );
+    if (response.ok) {
+      return await response.json();
+    }
+    throw new Error('Unable to find the list of plugins.');
+  }
 }
