@@ -36,12 +36,11 @@ import passport from 'passport';
 import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers';
 import { AuthDatabase } from '../database/AuthDatabase';
-import { BACKSTAGE_SESSION_EXPIRATION } from '../lib/session';
+import { readBackstageTokenExpiration } from './readBackstageTokenExpiration';
 import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
-import { Config, readDurationFromConfig } from '@backstage/config';
-import { durationToMilliseconds } from '@backstage/types';
+import { Config } from '@backstage/config';
 
 /** @public */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
@@ -77,7 +76,7 @@ export async function createRouter(
 
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
-  const backstageTokenExpiration = getDefaultBackstageTokenExpiryTime(config);
+  const backstageTokenExpiration = readBackstageTokenExpiration(config);
   const authDb = AuthDatabase.create(database);
 
   const keyStore = await KeyStores.fromConfig(config, {
@@ -248,28 +247,4 @@ export function createOriginFilter(
     }
     return allowedOriginPatterns.some(pattern => pattern.match(origin));
   };
-}
-
-/** @internal */
-export function getDefaultBackstageTokenExpiryTime(config: Config) {
-  const processingIntervalKey = 'auth.backstageTokenExpiration';
-
-  if (!config.has(processingIntervalKey)) {
-    return BACKSTAGE_SESSION_EXPIRATION;
-  }
-
-  const duration = readDurationFromConfig(config, {
-    key: processingIntervalKey,
-  });
-
-  const roundedDuration = Math.round(durationToMilliseconds(duration) / 1000);
-
-  const minSeconds = Math.max(600, roundedDuration);
-
-  const maxSeconds = Math.min(86400, roundedDuration);
-
-  if (roundedDuration < minSeconds) {
-    return minSeconds
-  }
-  return maxSeconds;
 }
