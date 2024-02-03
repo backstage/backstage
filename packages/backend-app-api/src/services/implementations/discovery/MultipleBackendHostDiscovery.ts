@@ -23,13 +23,16 @@ import { Config } from '@backstage/config';
 import fetch from 'node-fetch';
 import { NotFoundError } from '@backstage/errors';
 
-interface DiscoveryUrl {
+/** @public */
+export interface DiscoveryUrl {
   internal: string;
   external: string;
 }
 
+/** @public */
 export type PluginRegistrations = Record<string, DiscoveryUrl>;
 
+/** @public */
 export class MultipleBackendHostDiscovery implements DiscoveryService {
   #gatewayUrl: string;
   #instanceUrl: string;
@@ -121,7 +124,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     }
     // If this instance knows about this plugin, return the value.
     // The Gateway should have all plugins registered, individual instances will have just their
-    //  installed plugins.
+    //  registered plugins.
     if (this.#plugins[pluginId]) {
       return this.#plugins[pluginId][key];
     }
@@ -138,14 +141,14 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
        *    backend B correctly.
        */
     } else {
-      // As an instance plugin, fetch the installed plugins on the gateway URL.
+      // As an instance plugin, fetch the registered plugins on the gateway URL.
       const response = await fetch(
-        `${this.#gatewayUrl}/api/discovery/installed`,
+        `${this.#gatewayUrl}/api/discovery/registered`,
       );
 
       if (response.ok) {
         const plugins = (await response.json()) as PluginRegistrations;
-        // Check the list of installed plugins, if it doesn't exist there, there's a good chance it
+        // Check the list of registered plugins, if it doesn't exist there, there's a good chance it
         //  doesn't exist at all.
         console.log(plugins);
         if (plugins[pluginId]) {
@@ -153,7 +156,7 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
         }
       }
     }
-    throw new NotFoundError(`Plugin ${pluginId} not installed.`);
+    throw new NotFoundError(`Plugin ${pluginId} not registered.`);
   }
 
   async getBaseUrl(pluginId: string): Promise<string> {

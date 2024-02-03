@@ -445,6 +445,15 @@ export class FrontendHostDiscovery implements DiscoveryApi {
   getBaseUrl(pluginId: string): Promise<string>;
 }
 
+// @public (undocumented)
+export class GatewayDiscovery implements DiscoveryApi {
+  constructor(options: { gatewayUrl: string });
+  // (undocumented)
+  static fromConfig(config: Config): GatewayDiscovery;
+  // (undocumented)
+  getBaseUrl(pluginId: string): Promise<string>;
+}
+
 // @public
 export class GithubAuth {
   // (undocumented)

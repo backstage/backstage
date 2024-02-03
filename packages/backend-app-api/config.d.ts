@@ -35,17 +35,9 @@ export interface Config {
     }[];
 
     /**
-     * Useful if you're planning on using the dynamic registration implementation.
+     * Internal URL for your gateway instance.
+     * Useful if you're planning on using dynamic registration.
      */
-    gatewayUrl?: {
-      // Backend internal representation, can use IP addresses or custom service discovery.
-      internal: string;
-
-      /**
-       * Public facing value.
-       * @visibility frontend
-       */
-      external: string;
-    };
+    gatewayUrl?: string;
   };
 }

@@ -116,8 +116,16 @@ export interface DefaultRootHttpRouterOptions {
 // @public (undocumented)
 export const discoveryServiceFactory: () => ServiceFactory<
   DiscoveryService,
-  'plugin'
+  'root'
 >;
+
+// @public (undocumented)
+export interface DiscoveryUrl {
+  // (undocumented)
+  external: string;
+  // (undocumented)
+  internal: string;
+}
 
 // @public
 export interface ExtendedHttpServer extends http.Server {
@@ -242,10 +250,47 @@ export interface MiddlewareFactoryOptions {
 }
 
 // @public (undocumented)
+export class MultipleBackendHostDiscovery implements DiscoveryService {
+  constructor(options: {
+    instanceUrl: string;
+    gatewayUrl?: string;
+    rootFeatureRegistry: RootFeatureRegistryService;
+    discovery: DiscoveryService;
+  });
+  // (undocumented)
+  addPlugins(instanceUrl: string, plugins: PluginRegistrations): void;
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      rootFeatureRegistry: RootFeatureRegistryService;
+      basePath?: string;
+    },
+  ): MultipleBackendHostDiscovery;
+  // (undocumented)
+  getBaseUrl(pluginId: string): Promise<string>;
+  // (undocumented)
+  getExternalBaseUrl(pluginId: string): Promise<string>;
+  // (undocumented)
+  getUrl(pluginId: string, key: 'external' | 'internal'): Promise<string>;
+  // (undocumented)
+  initialize(): Promise<void>;
+  // (undocumented)
+  get instancePlugins(): Record<string, Set<string>>;
+  // (undocumented)
+  get isGateway(): boolean;
+  // (undocumented)
+  get plugins(): PluginRegistrations;
+}
+
+// @public (undocumented)
 export const permissionsServiceFactory: () => ServiceFactory<
   PermissionsService,
   'plugin'
 >;
+
+// @public (undocumented)
+export type PluginRegistrations = Record<string, DiscoveryUrl>;
 
 // @public
 export function readCorsOptions(config?: Config): CorsOptions;

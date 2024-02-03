@@ -18,9 +18,9 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import Router from 'express-promise-router';
-import express from 'express';
+import { createRouter } from './service/router';
 
+/** @public */
 export const discoveryPlugin = createBackendPlugin({
   pluginId: 'discovery',
   register(reg) {
@@ -37,49 +37,8 @@ export const discoveryPlugin = createBackendPlugin({
             'You cannot use this module without split backends enabled.',
           );
         }
-        const router = Router();
-        router.use(express.json());
 
-        if (discovery.isGateway) {
-          router.post('/install', (req, res) => {
-            logger.info(`installing plugins ${JSON.stringify(req.body)}`);
-            const { instanceUrl, plugins } = req.body as {
-              instanceUrl: string;
-              plugins: Record<string, { internal: string; external: string }>;
-            };
-            discovery.addPlugins(instanceUrl, plugins);
-            res.status(200).send();
-          });
-          router.get('/installed', (_, res) => {
-            res.json(discovery.plugins);
-          });
-          // Check to see if the gateway has the most up to date version of my metdata.
-          router.post('/check', (req, res) => {
-            const { instanceUrl, plugins } = req.body as {
-              instanceUrl: string;
-              plugins: string[];
-            };
-
-            if (discovery.instancePlugins[instanceUrl]) {
-              const installedPlugins = discovery.instancePlugins[instanceUrl];
-              if (!plugins.every(plugin => installedPlugins.has(plugin))) {
-                res.status(400).send();
-                return;
-              }
-              res.status(200).send();
-              return;
-            }
-            res.status(404).send();
-          });
-          router.get('/by-plugin/:pluginId', async (req, res) => {
-            const { pluginId } = req.params;
-            res.json({
-              baseUrl: await discovery.getBaseUrl(pluginId),
-              externalBaseUrl: await discovery.getExternalBaseUrl(pluginId),
-            });
-          });
-          httpRouter.use(router);
-        }
+        httpRouter.use(createRouter({ discovery, logger }));
       },
     });
   },

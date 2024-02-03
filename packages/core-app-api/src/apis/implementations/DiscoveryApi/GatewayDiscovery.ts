@@ -15,8 +15,9 @@
  */
 
 import { Config } from '@backstage/config';
-import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export class GatewayDiscovery implements DiscoveryApi {
   #gatewayUrl: string;
 

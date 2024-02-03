@@ -44,7 +44,7 @@ export class InstanceRegistration {
   private async submitRegistration(plugins: PluginRegistrations) {
     try {
       const response = await fetch(
-        `${this.#gatewayUrl}/api/discovery/install`,
+        `${this.#gatewayUrl}/api/discovery/register`,
         {
           method: 'POST',
           body: JSON.stringify({ instanceUrl: this.#instanceUrl, plugins }),

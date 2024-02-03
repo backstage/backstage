@@ -126,7 +126,7 @@ export namespace coreServices {
   const cache: ServiceRef<CacheService, 'plugin'>;
   const rootConfig: ServiceRef<RootConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
-  const discovery: ServiceRef<DiscoveryService, 'plugin'>;
+  const discovery: ServiceRef<DiscoveryService, 'root'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin'>;
   const logger: ServiceRef<LoggerService, 'plugin'>;

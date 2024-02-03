@@ -17,3 +17,7 @@
 export { discoveryServiceFactory } from './discoveryServiceFactory';
 export { HostDiscovery } from './HostDiscovery';
 export { MultipleBackendHostDiscovery } from './MultipleBackendHostDiscovery';
+export type {
+  PluginRegistrations,
+  DiscoveryUrl,
+} from './MultipleBackendHostDiscovery';
