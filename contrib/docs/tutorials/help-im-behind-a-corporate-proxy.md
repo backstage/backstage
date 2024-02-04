@@ -84,7 +84,7 @@ The app port must proxy web socket connections in order to make hot reloading wo
 
 ## Alternatives to `global-agent`
 
-The `proxy-agent` package can be used as an alternative to `global-agent` (do not install both!), and also ensures that the `node-fetch` library correctly respects proxy settings, but [does NOT work](https://github.com/TooTallNate/proxy-agents/issues/239) for modern `undici` based native Node.js `fetch`, so you'll have to also do the `undici` steps in the section above in addition to this.
+The `proxy-agent` package can be used as an alternative to `global-agent` (do not install both!), and also ensures that the `node-fetch` library correctly respects proxy settings, but [does NOT work](https://github.com/TooTallNate/proxy-agents/issues/239) for modern `undici` based native Node.js `fetch`, so you'll still have to also do the `undici` steps in the section above in addition to this.
 
 `proxy-agent` is a library that you can use to override the `globalAgents` of `node` land with a tunnel to use for each request.
 
