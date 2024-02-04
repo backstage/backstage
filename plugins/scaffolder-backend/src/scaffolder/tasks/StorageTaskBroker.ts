@@ -16,7 +16,11 @@
 
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { TaskSecrets, TaskState } from '@backstage/plugin-scaffolder-node';
+import {
+  TaskSecrets,
+  TaskState,
+  UpdateCheckpointOptions,
+} from '@backstage/plugin-scaffolder-node';
 import { JsonObject, Observable } from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';
@@ -91,8 +95,12 @@ export class TaskManager implements TaskContext {
     });
   }
 
-  async updateCheckpoint?(key: string, value: JsonObject): Promise<void> {
-    this.task.state = { [key]: value };
+  async updateCheckpoint?(options: UpdateCheckpointOptions): Promise<void> {
+    if (this.task.state) {
+      this.task.state[options.key] = { ...options };
+    } else {
+      this.task.state = { [options.key]: options };
+    }
     await this.storage.saveCheckpoint?.({
       taskId: this.task.taskId,
       state: this.task.state,

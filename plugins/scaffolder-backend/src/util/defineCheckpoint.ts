@@ -16,15 +16,11 @@
 
 import { JsonObject } from '@backstage/types';
 
-export type DefineCheckpointProps<U> = {
+export const defineCheckpoint = async <U extends JsonObject>(props: {
   checkpoint?: (key: string, fn: () => Promise<U>) => Promise<U>;
   key: string;
   fn: () => Promise<U>;
-};
-
-export const defineCheckpoint = async <U extends JsonObject>(
-  props: DefineCheckpointProps<U>,
-): Promise<U> => {
+}): Promise<U> => {
   const { checkpoint, fn, key } = props;
   return checkpoint
     ? checkpoint?.(key, async () => {

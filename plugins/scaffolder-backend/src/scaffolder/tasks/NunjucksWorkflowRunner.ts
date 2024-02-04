@@ -26,7 +26,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import nunjucks from 'nunjucks';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
-import { InputError, NotAllowedError } from '@backstage/errors';
+import { InputError, NotAllowedError, stringifyError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
@@ -353,9 +353,22 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             key: string,
             fn: () => Promise<U>,
           ) {
-            const value = await fn();
-            task.updateCheckpoint?.(key, value);
-            return value;
+            try {
+              const value = await fn();
+              task.updateCheckpoint?.({
+                key,
+                status: 'success',
+                value,
+              });
+              return value;
+            } catch (err) {
+              task.updateCheckpoint?.({
+                key,
+                status: 'failed',
+                reason: stringifyError(err),
+              });
+              throw err;
+            }
           },
           createTemporaryDirectory: async () => {
             const tmpDir = await fs.mkdtemp(

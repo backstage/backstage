@@ -31,7 +31,14 @@ export type TaskSecrets = Record<string, string> & {
  *
  * @public
  */
-export type TaskState = Record<string, JsonObject>;
+export type TaskState = {
+  [key: string]:
+    | { status: 'failed'; reason: string }
+    | {
+        status: 'success';
+        value: JsonObject;
+      };
+};
 
 /**
  * The status of each step of the Task
@@ -109,6 +116,24 @@ export type TaskBrokerDispatchOptions = {
 };
 
 /**
+ * The options passed to {@link TaskBroker.updateCheckpoint}
+ * Parameters to store the result of the executed checkpoint
+ *
+ * @public
+ */
+export type UpdateCheckpointOptions =
+  | {
+      key: string;
+      status: 'success';
+      value: JsonObject;
+    }
+  | {
+      key: string;
+      status: 'failed';
+      reason: string;
+    };
+
+/**
  * Task
  *
  * @public
@@ -126,7 +151,7 @@ export interface TaskContext {
 
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
 
-  updateCheckpoint?(key: string, value: JsonObject): Promise<void>;
+  updateCheckpoint?(options: UpdateCheckpointOptions): Promise<void>;
 
   getWorkspaceName(): Promise<string>;
 }
