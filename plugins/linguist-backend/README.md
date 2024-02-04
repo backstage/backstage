@@ -14,7 +14,7 @@ Here's how to get the backend up and running:
 
    ```sh
    # From the Backstage root directory
-   yarn add --cwd packages/backend @backstage/plugin-linguist-backend
+   yarn --cwd packages/backend add @backstage/plugin-linguist-backend
    ```
 
 2. Then we will create a new file named `packages/backend/src/plugins/linguist.ts`, and add the

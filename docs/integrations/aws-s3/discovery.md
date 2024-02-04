@@ -64,7 +64,7 @@ the AWS catalog plugin:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-aws
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-aws
 ```
 
 Once you've done that, you'll also need to add the segment below to `packages/backend/src/plugins/catalog.ts`:
