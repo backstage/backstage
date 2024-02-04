@@ -25,7 +25,7 @@ The following sections will help you set up the Microsoft calendar plugin.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-microsoft-calendar
+yarn --cwd packages/app add @backstage/plugin-microsoft-calendar
 ```
 
 2. Import the Microsoft calendar React component from `@backstage/plugin-microsoft-calendar`.

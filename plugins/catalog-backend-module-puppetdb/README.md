@@ -12,7 +12,7 @@ to your backend package:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-puppetdb
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-puppetdb
 ```
 
 Update the catalog plugin initialization in your backend to add the provider and schedule it:

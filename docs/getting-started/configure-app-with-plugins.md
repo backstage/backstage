@@ -23,7 +23,7 @@ to an entity in the software catalog.
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @circleci/backstage-plugin
+   yarn --cwd packages/app add @circleci/backstage-plugin
    ```
 
    Note the plugin is added to the `app` package, rather than the root

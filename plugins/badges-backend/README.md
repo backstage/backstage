@@ -15,7 +15,7 @@ Install the `@backstage/plugin-badges-backend` package in your backend package:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-badges-backend
+yarn --cwd packages/backend add @backstage/plugin-badges-backend
 ```
 
 Add the plugin using the following default setup for

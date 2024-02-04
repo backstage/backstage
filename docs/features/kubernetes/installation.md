@@ -17,7 +17,7 @@ application.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-kubernetes
+yarn --cwd packages/app add @backstage/plugin-kubernetes
 ```
 
 Once the package has been installed, you need to import the plugin in your app
@@ -55,7 +55,7 @@ Navigate to `packages/backend` of your Backstage app, and install the
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-kubernetes-backend
+yarn --cwd packages/backend add @backstage/plugin-kubernetes-backend
 ```
 
 Create a file called `kubernetes.ts` inside `packages/backend/src/plugins/` and

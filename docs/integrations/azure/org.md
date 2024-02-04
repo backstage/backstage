@@ -16,7 +16,7 @@ The package is not installed by default, therefore you have to add `@backstage/p
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-msgraph
 ```
 
 Next add the basic configuration to `app-config.yaml`

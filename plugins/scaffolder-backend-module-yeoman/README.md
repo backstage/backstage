@@ -10,7 +10,7 @@ You need to configure the action in your backend:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-yeoman
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-yeoman
 ```
 
 Configure the action:

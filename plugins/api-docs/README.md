@@ -29,7 +29,7 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-api-docs
+yarn --cwd packages/app add @backstage/plugin-api-docs
 ```
 
 2. Add the `ApiExplorerPage` extension to the app:
