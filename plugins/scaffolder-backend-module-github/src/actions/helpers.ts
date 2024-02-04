@@ -37,7 +37,7 @@ import {
   entityRefToName,
 } from './gitHelpers';
 import { JsonObject } from '@backstage/types';
-import { defineCheckpoint } from '@backstage/plugin-scaffolder-backend';
+import { defineCheckpoint } from '@backstage/plugin-scaffolder-common';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -208,11 +208,12 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         `Failed to create the ${user.data.type} repository ${owner}/${repo}, ${e.message}`,
       );
     }
-    return { newRepo };
+    return { clone_url: newRepo.clone_url, html_url: newRepo.html_url };
   };
 
-  const { newRepo } = await defineCheckpoint<{
-    newRepo: { clone_url: string; html_url: string };
+  const { clone_url, html_url } = await defineCheckpoint<{
+    clone_url: string;
+    html_url: string;
   }>({
     key: 'v1.task.checkpoint.repo.creation',
     checkpoint,
@@ -345,7 +346,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     }
   }
 
-  return newRepo;
+  return { clone_url, html_url };
 }
 
 export async function initRepoPushAndProtect(

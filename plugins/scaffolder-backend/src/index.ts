@@ -23,6 +23,5 @@
 export * from './scaffolder';
 export * from './service/router';
 export * from './lib';
-export { defineCheckpoint } from './util/defineCheckpoint';
 
 export * from './deprecated';
