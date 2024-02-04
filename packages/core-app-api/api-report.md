@@ -452,6 +452,8 @@ export class GatewayDiscovery implements DiscoveryApi {
   static fromConfig(config: Config): GatewayDiscovery;
   // (undocumented)
   getBaseUrl(pluginId: string): Promise<string>;
+  // (undocumented)
+  listPlugins(): Promise<string[]>;
 }
 
 // @public

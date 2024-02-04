@@ -257,15 +257,17 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
     rootFeatureRegistry: RootFeatureRegistryService;
     discovery: DiscoveryService;
     tokenManager: TokenManager;
+    logger: LoggerService;
   });
   // (undocumented)
-  addPlugins(instanceUrl: string, plugins: PluginRegistrations): void;
+  checkIn(instanceUrl: string): void;
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       rootFeatureRegistry: RootFeatureRegistryService;
       tokenManager: TokenManager;
+      logger: LoggerService;
       basePath?: string;
     },
   ): MultipleBackendHostDiscovery;
@@ -287,6 +289,10 @@ export class MultipleBackendHostDiscovery implements DiscoveryService {
   listPlugins(): Promise<string[]>;
   // (undocumented)
   get plugins(): PluginRegistrations;
+  // (undocumented)
+  register(instanceUrl: string, plugins: PluginRegistrations): void;
+  // (undocumented)
+  unregister(instanceUrl: string): void;
 }
 
 // @public (undocumented)

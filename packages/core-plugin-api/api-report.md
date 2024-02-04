@@ -366,6 +366,7 @@ export function createSubRouteRef<
 // @public
 export type DiscoveryApi = {
   getBaseUrl(pluginId: string): Promise<string>;
+  listPlugins?(): Promise<string[]>;
 };
 
 // @public
