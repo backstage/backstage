@@ -42,7 +42,7 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Configure Git
         run: |
@@ -50,18 +50,18 @@ jobs:
           git config --global user.name 'GitHub e2e user'
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4.0.1
+        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: setup python
-        uses: actions/setup-python@v5.0.0
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
           python-version: '3.10'
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.3.3
+        uses: microsoft/setup-msbuild@ede762b26a2de8d110bb5a3db4d7e0e080c0e917 # v1.3.3
 
       - name: Setup gyp env
         run: |
@@ -78,7 +78,7 @@ jobs:
         uses: browser-actions/setup-chrome@803ef6dfb4fdf22089c9563225d95e4a515820a0 # latest
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.5
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
