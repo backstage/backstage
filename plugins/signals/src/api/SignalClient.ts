@@ -146,20 +146,6 @@ export class SignalClient implements SignalApi {
     url.protocol = url.protocol === 'http:' ? 'ws:' : 'wss:';
     this.ws = new WebSocket(url.toString(), token);
 
-    this.ws.onmessage = (data: MessageEvent) => {
-      this.handleMessage(data);
-    };
-
-    this.ws.onerror = () => {
-      this.reconnect();
-    };
-
-    this.ws.onclose = (ev: CloseEvent) => {
-      if (ev.code !== WS_CLOSE_NORMAL && ev.code !== WS_CLOSE_GOING_AWAY) {
-        this.reconnect();
-      }
-    };
-
     // Wait until connection is open
     let connectSleep = 0;
     while (
@@ -174,6 +160,20 @@ export class SignalClient implements SignalApi {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       throw new Error('Connect timeout');
     }
+
+    this.ws.onmessage = (data: MessageEvent) => {
+      this.handleMessage(data);
+    };
+
+    this.ws.onerror = () => {
+      this.reconnect();
+    };
+
+    this.ws.onclose = (ev: CloseEvent) => {
+      if (ev.code !== WS_CLOSE_NORMAL && ev.code !== WS_CLOSE_GOING_AWAY) {
+        this.reconnect();
+      }
+    };
   }
 
   private handleMessage(data: MessageEvent) {

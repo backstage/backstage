@@ -93,7 +93,7 @@
     "semver": "^7.5.3",
     "shx": "^0.3.2",
     "ts-node": "^10.4.0",
-    "typescript": "~5.2.0"
+    "typescript": "~5.1.0"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {

@@ -16,9 +16,9 @@
 import { SignalPayload } from './types';
 
 /** @public */
-export type SignalService = {
+export interface SignalService {
   /**
    * Publishes a message to user refs to specific topic
    */
   publish(signal: SignalPayload): Promise<void>;
-};
+}

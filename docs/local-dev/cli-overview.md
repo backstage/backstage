@@ -7,11 +7,12 @@ description: Overview of the Backstage CLI
 ## Introduction
 
 A goal of Backstage is to provide a delightful developer experience in and
-around the project. Creating new apps and plugins should be simple, iteration
+around the project. Creating new [apps](../references/glossary.md#app) and
+[plugins](../references/glossary.md#plugin) should be simple, iteration
 speed should be fast, and the overhead of maintaining custom tooling should be
 minimal. As a part of accomplishing this goal, Backstage provides its own build
 system and tooling, delivered primarily through the
-[`@backstage/cli`](https://www.npmjs.com/package/@backstage/cli) package. When
+[`@backstage/cli`](https://www.npmjs.com/package/@backstage/cli) [package](../references/glossary.md#package). When
 creating an app using
 [`@backstage/create-app`](https://www.npmjs.com/package/@backstage/create-app),
 you receive a project that's already prepared with a typical setup and package
@@ -36,18 +37,3 @@ The Backstage CLI intentionally does not provide many hooks for overriding or
 customizing the build process. This is to allow for evolution of the CLI without
 having to take a wide API surface into account. This allows us to iterate and
 improve the tooling, as well as to more easily keep the system up to date.
-
-## Glossary
-
-- **Package** - A package in the Node.js ecosystem, often published to a package
-  registry such as [NPM](https://www.npmjs.com/).
-- **Monorepo** - A project layout that consists of multiple packages within a
-  single project, where packages are able to have local dependencies on each
-  other. Often enabled through tooling such as [lerna](https://lerna.js.org/)
-  and [yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/)
-- **Local Package** - One of the packages within a monorepo. These package may
-  or may not also be published to a package registry.
-- **Bundle** - A collection of the deployment artifacts. The output of the
-  bundling process, which brings a collection of packages into a single
-  collection of deployment artifacts.
-- **Package Role** - The declared role of a package, see [package roles](./cli-build-system.md#package-roles).

@@ -2,7 +2,9 @@
 title: Backstage Notifications System
 status: provisional
 authors:
-  - Rugvip
+  - '@Rugvip'
+  - '@drodil'
+  - '@mareklibra'
 project-areas:
   - core
 creation-date: 2023-01-12
@@ -76,7 +78,15 @@ In the backend the signal plugin implements a general purpose message bus for se
 
 In the frontend the signal plugin has a persistent connection to the signal backend. This is initially implemented as a WebSocket connection, but could in the future also receive fallback mechanisms such as Server Sent Events or long polling. It is important that this connection is authenticated as we will be routing signals to specific users. The exact implementation of the authentication is not part of this proposal, but it should use whatever the outcome of the discussion in issue [#19581](https://github.com/backstage/backstage/issues/19581) is.
 
-In order to route signals from the sender to the intended receiver the signal plugin uses the concept of signaling channels. They are just like the topics on the message bus, but we use separate terminology in order to avoid confusion. They also sit one layer beneath the even topic in the protocol stack, where the signal channel is communicated as part of the event payload. In the frontend, the signal plugin exposes an API to subscribe to a signal channel. Each time the user receives a signal on the specified channel, a listener is called with the signal payload.
+In order to route signals from the sender to the intended recipient the signal plugin uses the concept of signaling channels. They are just like the topics on the message bus, but we use separate terminology in order to avoid confusion. They also sit one layer beneath the even topic in the protocol stack, where the signal channel is communicated as part of the event payload. In the frontend, the signal plugin exposes an API to subscribe to a signal channel. Each time the user receives a signal on the specified channel, a listener is called with the signal payload.
+
+Upon creating a new notification, a signal will be emitted by the `notification-backend`.
+
+The channel for notifications will be named `notifications` and the message will contain necessary information about the notification for rendering as well as action telling to refresh the notifications using the REST API.
+
+The notification payload must be in the signal to be able to show notification in the UI immediately after receiving the signal.
+
+If the notification status is updated, the signal service shall emit a signal without the notification payload and only with the action.
 
 ### Notifications Plugin
 
@@ -85,13 +95,57 @@ The role of the notifications plugin is to manage the lifecycle of notifications
 The notification backend stores notification using the [database service](https://backstage.io/docs/backend-system/core-services/index#database). In particular it needs to store the following information for each notification:
 
 - ID
-- Payload
-- Receivers
-- Read status by user
+- Read date
+- Done date
+- Saved status
+- Creation date
+- Updated date (optional, for scoped notifications)
+- Payload:
+  - Title
+  - Description (optional)
+  - Origin
+  - Link
+  - Recipients
+  - Severity (optional, default normal)
+  - Topic (optional)
+  - Scope (optional)
+  - Icon (optional)
 
-The receivers is **not** a list of users, but rather a filter that describes who should receive the notification. It must be possible to evaluate this filter in a database query, so that we can efficiently fetch all notifications for a given user. The same filter will also be used by the signal backend to determine which users should receive a signal.
+The recipients is **not** a list of users, but rather a filter that describes who should receive the notification. It must be possible to evaluate this filter in a database query, so that we can efficiently fetch all notifications for a given user. The same filter will also be used by the signal backend to determine which users should receive a signal.
 
-The notification backend does not provide any new permissions, since creating notifications can only be done by other backend plugins, while reading notifications can only be done by the authenticated user. It is possible that we want to add a permissions for reading notifications, in particular for admin and impersonation use cases, but that is not part of this proposal or the initial implementation.
+The title is mandatory human-readable text shortly describing the notifications.
+
+The description is an optional human-readable text providing more details to the user.
+
+The severity is one of the predefined values to help with presentation of the notifications or their filtering. Allowed values are: `critical`, `high`, `normal` (default), and `low`.
+
+The origin is a string identifying the creator of the notification, i.e. the BE plugin or external system.
+
+The topic is an optional string helping to group notifications of particular context. Its use cases include:
+
+- Several notifications emitted by an asynchronous external task can be grouped by a single topic
+- A backend plugin can group several related messages to a particular processing, i.e. asynchronous progress monitoring
+
+If a scope is provided for a notification, it will either:
+
+- Create a new notification if user doesn't have existing notification in that scope and origin
+- Update existing notification in that scope and origin so that it's unread considered as a new notification
+
+The idea of scope is to be able to reuse notifications about same information for example specific failing CI build.
+
+The timestamp of notification creation is auto-generated by the notifications backend at the time of receiving a request to create the notification.
+
+The icon is optional and is meant to improve UX. A string referencing an icon name from MUI icon library of a defined version. If missing, it will be determined from the severity.
+
+The link is a relative or absolute URL. As an example, it can be used:
+
+- by an external system to provide more details related to the notification
+- by an external system to request an action within an asynchronous task
+- by a BE plugin to provide link to other part of the Backstage UI (i.e. to the Catalog)
+
+The `notification-backend` does not provide any new permissions, since creating notifications can only be done by other backend plugins, while reading notifications can only be done by the authenticated user. It is possible that we want to add a permissions for reading notifications, in particular for admin and impersonation use cases, but that is not part of this proposal or the initial implementation.
+
+The `notification-backend` shall provide necessary parameters for paging and filtering notifications from the frontend.
 
 The notification frontend plugin provides a UI for viewing notifications, which in the initial implementation can be as simple as needed. The only requirement is that a user is able to view recent notifications and distinguish between read and unread notifications. A notification as marked as read once it has been interacted with. The frontend plugin also subscribes to the notifications signal channel and alerts the user when a new notification is received.
 
@@ -129,56 +183,161 @@ The following backend service interfaces are added as part of this proposal.
 ```ts
 // TODO - We may want to add an additional wrapping here with interfaces for Notification and NotificationParameters
 
-interface SendNotificationRequest {
-  receivers: SignalReceivers;
-
-  /* TODO - please contribute :) */
-}
-
-interface SendNotificationResponse {
-  id: string;
-  receivers: SignalReceivers;
-
-  /* TODO - please contribute :) */
-}
-
-interface NotificationService {
-  sendNotification(
-    request: SendNotificationRequest,
-  ): Promise<SendNotificationResponse>;
-}
-```
-
-#### `SignalService`
-
-```ts
-type SignalReceivers =
+export type NotificationRecipients =
   | {
       type: 'entity';
-      entityRef: string; // typically a user or group entity
+      entityRef: string | string[]; // typically a user or group entity, otherwise `spec.owner` of the entity/entities
     }
   | {
       type: 'broadcast'; // all users
     };
 
-interface Signal {
-  channel: string;
-  receivers: SignalReceivers;
-  payload: JsonObject;
+export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
+
+export type NotificationPayload = {
+  title: string;
+  description?: string;
+  link: string;
+  additionalLinks?: string[];
+  severity: NotificationSeverity;
+  topic?: string;
+  scope?: string;
+  icon?: string;
+};
+
+export type Notification = {
+  id: string;
+  userRef: string;
+  created: Date;
+  saved?: Date;
+  read?: Date;
+  updated?: Date;
+  origin: string;
+  payload: NotificationPayload;
+};
+
+interface SendNotificationRequest {
+  recipients: NotificationRecipients;
+  payload: NotificationPayload;
 }
 
-interface SignalService {
-  signal(signal: Signal): Promise<void>;
+interface NotificationService {
+  sendNotification(request: SendNotificationRequest): Promise<void>;
 }
 ```
 
+Each notification is always routed to individual users unless it's a broadcast. The `notification-backend` will figure out which users will receive a notification based on the `recipients` parameter, resolving it to the concrete list of users at the time of sending the notification.
+
+Each notification contains a `title` and a `link` for user to see further information. The `created`, `id`, `read` and `saved` properties are handled by the backend based and cannot be changed during the notification creation.
+
+Calling `sendNotification` should never throw an error so that it doesn't block the current processing. Notifications should be considered as second-level citizens that are not critical if not delivered.
+
+#### `SignalService`
+
+```ts
+export type SignalPayload<SignalType extends JsonObject = JsonObject> = {
+  recipients: string[] | string | null;
+  channel: string;
+  message: SignalType;
+};
+
+interface SignalService {
+  publish<SignalType extends JsonObject = JsonObject>(
+    signal: SignalPayload<SignalType>,
+  ): Promise<void>;
+}
+```
+
+Example signal payload for a new notification:
+
+```json
+{
+  "action": "new_notification",
+  "notification": {
+    "title": "New notification",
+    "description": "This is the longer description of the notification",
+    "link": "/catalog"
+  }
+}
+```
+
+#### Future considerations
+
+- Add icon for the notification request (for UX purposes)
+- Broadcast messages are to be saved to a separate table for performance reasons
+- OpenAPI tooling is taken into use for the notification router and client
+
 ### Frontend API
 
+Notification frontend shows users their own notifications in its own page and the number of unread notifications in the main menu item.
+
+By default, notifications that are `undone` will be shown in the notifications view. The notification `read` status is indicated by the UI.
+
+Notifications are set to `read` when the notification link is opened or the notification is set as `done` by the user.
+
+Notifications can be set to `done` by the user, and they are filtered out of the main view.
+
+Notifications can be saved for later use by the user.
+
+Notifications can be filtered by their `read`, `done` and `saved` statuses.
+
+Notifications are displayed in pages.
+
+User can search for notifications based on their title and description.
+
 The following frontend API is added as part of this proposal.
+
+#### `NotificationsApi`
+
+```ts
+export type NotificationType = 'undone' | 'done' | 'saved';
+
+export type GetNotificationsOptions = {
+  type?: NotificationType;
+  offset?: number;
+  limit?: number;
+  search?: string;
+};
+
+export type NotificationUpdateOptions = {
+  ids: string[];
+  done?: boolean;
+  read?: boolean;
+  saved?: boolean;
+};
+
+export type NotificationStatus = {
+  unread: number;
+  read: number;
+};
+
+interface NotificationsApi {
+  getNotifications(options?: GetNotificationsOptions): Promise<Notification[]>;
+
+  getStatus(): Promise<NotificationStatus>;
+
+  updateNotifications(
+    options: UpdateNotificationsOptions,
+  ): Promise<Notification[]>;
+}
+```
 
 #### `SignalApi`
 
 > TODO - we likely need a slightly different approach here, since APIs are lazy loaded.
+
+> TODO - signal typing in https://github.com/backstage/backstage/pull/22656
+
+```ts
+export type NotificationSignal = {
+  action: string;
+  notification?: NotificationPayload;
+};
+
+const { lastSignal, isSignalsAvailable } =
+  useSignal<NotificationSignal>('notifications');
+// isSignalsAvailable can be used to fallback to long-polling if wanted
+```
 
 ```ts
 interface SignalSubscriber {
@@ -186,32 +345,20 @@ interface SignalSubscriber {
 }
 
 interface SignalApi {
-  subscribe(
+  subscribe<SignalType extends JsonObject = JsonObject>(
     channel: string,
-    listener: (payload: JsonObject) => void,
+    onMessage: (message: SignalType) => void,
   ): SignalSubscriber;
 }
 ```
 
-> TODO: Add payload formats and API details
+#### Future considerations
 
-<!--
-
-
-- A notification can be sent to any entity
-  - If the entity is an user, the notification is sent to that user
-  - If the entity is a group, the notification is sent to all users that are members of that group
-  - In other cases, the notification is sent to to the user or group in the `spec.owner` field
-- Notification frontend shows users their own notifications in its own page and the number of unread notifications
-  in the main menu item
-- Notifications can be set to `read` by the user and they are filtered out of the main view
-- Notifications can be saved for later use by the user
-- Each notification must have title, description and link
-- Each notification can also have icon or image as an URL
-- Notification frontend utilizes [Web Notification API](https://developer.mozilla.org/en-US/docs/Web/API/Notification)
-  to notify user for new notifications
-
- -->
+- Notification frontend utilizes [Web Notification API](https://developer.mozilla.org/en-US/docs/Web/API/Notification) to notify user for new notifications
+- Unread notifications count is displayed in the title of the page
+- Configuration can be used to enable or disable features in the notification system (Web Notification API, title change, etc.)
+- Replace absent signal service with long polling. This requires changes to the `signals` plugin as well.
+- Notifications can have severity that is used to determine how notifications are shown to the user
 
 ## Release Plan
 
@@ -220,12 +367,12 @@ The notification and signal plugins are released as two new plugins in the Backs
 For the notification plugin to reach a stable release we much reach the following:
 
 - A stable notifications payload format.
-- A stable notifications receiver filter format.
+- A stable notifications recipient filter format.
 - The event broker must have at least one implementation that supports scaled deployments.
 
 For the signal plugin to reach a stable release we much reach the following:
 
-- A stable signal receiver filter format.
+- A stable signal recipient filter format.
 - A stable signal channel API in the frontend.
 
 If any changes are required to the frontend framework to facilitate the implementation of notifications or signals, these will be released as experimental alpha features. They will stay in alpha until they are deemed stable enough, which must happen before a stable release of the notifications system.
@@ -233,6 +380,8 @@ If any changes are required to the frontend framework to facilitate the implemen
 ## Dependencies
 
 Since the signal plugin relies on the event broker for communication, it is a dependency for the notifications system as a whole. The event broker does not currently implement any transport for scaled deployments, which is a requirement for scaled deployments of the notification system.
+
+Alternatively the notifications can work without the signals, but in this case the notifications are updated only during page refresh.
 
 ## Alternatives
 

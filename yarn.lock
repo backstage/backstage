@@ -3783,7 +3783,7 @@ __metadata:
     "@testing-library/react-hooks": ^8.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/prop-types": ^15.7.3
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/zen-observable": ^0.8.0
     history: ^5.0.0
     i18next: ^22.4.15
@@ -3909,7 +3909,7 @@ __metadata:
     "@types/d3-zoom": ^3.0.1
     "@types/dagre": ^0.7.44
     "@types/google-protobuf": ^3.7.2
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/react-helmet": ^6.1.0
     "@types/react-sparklines": ^1.7.0
     "@types/react-syntax-highlighter": ^15.0.0
@@ -3984,7 +3984,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     history: ^5.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -4010,6 +4010,8 @@ __metadata:
     fs-extra: 10.1.0
     handlebars: ^4.7.3
     inquirer: ^8.2.0
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
     nodemon: ^3.0.1
     ora: ^5.3.0
     recursive-readdir: ^2.2.2
@@ -4039,7 +4041,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
     zen-observable: ^0.10.0
   peerDependencies:
@@ -4106,7 +4108,7 @@ __metadata:
     "@material-ui/icons": ^4.11.3
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     lodash: ^4.17.21
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -4149,7 +4151,7 @@ __metadata:
     "@material-ui/core": ^4.12.4
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     history: ^5.3.0
     lodash: ^4.17.21
     zod: ^3.22.4
@@ -4335,7 +4337,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     lodash: ^4.17.21
     react-markdown: ^8.0.0
     react-use: ^17.2.4
@@ -4384,7 +4386,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -4408,7 +4410,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -4497,7 +4499,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     cross-fetch: ^4.0.0
     msw: ^1.0.0
     qs: ^6.10.1
@@ -4515,7 +4517,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@testing-library/jest-dom": ^6.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     grpc-docs: ^1.1.2
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -4548,7 +4550,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/swagger-ui-react": ^4.18.0
     graphiql: 3.1.0
     graphql: ^16.0.0
@@ -4576,7 +4578,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     use-deep-compare-effect: ^1.8.1
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -4675,8 +4677,9 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     express: ^4.18.2
     jose: ^4.6.0
-    jwt-decode: ^3.1.0
+    msw: ^2.0.8
     node-cache: ^5.1.2
+    node-fetch: ^2.6.7
   languageName: unknown
   linkType: soft
 
@@ -4906,12 +4909,12 @@ __metadata:
     "@backstage/plugin-auth-backend-module-okta-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@google-cloud/firestore": ^7.0.0
     "@types/body-parser": ^1.19.0
     "@types/cookie-parser": ^1.4.2
     "@types/express": ^4.17.6
     "@types/express-session": ^1.17.2
-    "@types/jwt-decode": ^3.1.0
     "@types/passport": ^1.0.3
     "@types/passport-auth0": ^1.0.5
     "@types/passport-github2": ^1.2.4
@@ -4930,7 +4933,6 @@ __metadata:
     fs-extra: 10.1.0
     google-auth-library: ^8.0.0
     jose: ^4.6.0
-    jwt-decode: ^3.1.0
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -5040,7 +5042,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     humanize-duration: ^3.27.0
     luxon: ^3.0.0
     react-use: ^17.2.4
@@ -5110,7 +5112,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
@@ -5162,7 +5164,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@testing-library/jest-dom": ^6.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -5208,7 +5210,7 @@ __metadata:
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/pickers": ^3.3.10
     "@testing-library/jest-dom": ^6.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     material-ui-search-bar: ^1.0.0
     react-hook-form: ^7.13.0
@@ -5252,7 +5254,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/recharts": ^1.8.15
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -5773,7 +5775,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     classnames: ^2.3.1
     lodash: ^4.17.15
     p-limit: ^3.1.0
@@ -5814,7 +5816,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     git-url-parse: ^13.0.0
     js-base64: ^3.6.0
     lodash: ^4.17.21
@@ -5910,7 +5912,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/zen-observable": ^0.8.0
     classnames: ^2.2.6
     lodash: ^4.17.21
@@ -5942,7 +5944,7 @@ __metadata:
     "@material-ui/lab": ^4.0.0-alpha.60
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -5983,7 +5985,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     dataloader: ^2.0.0
     expiry-map: ^2.0.0
     history: ^5.0.0
@@ -6059,7 +6061,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@types/humanize-duration": ^3.25.1
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     circleci-api: ^4.0.0
     humanize-duration: ^3.27.0
     lodash: ^4.17.21
@@ -6088,7 +6090,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
@@ -6116,7 +6118,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@types/humanize-duration": ^3.27.1
     "@types/luxon": ^3.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     humanize-duration: ^3.27.1
     luxon: ^3.0.0
     react-use: ^17.2.4
@@ -6175,7 +6177,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/highlightjs": ^10.1.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/recharts": ^1.8.15
     highlight.js: ^10.6.0
     luxon: ^3.0.0
@@ -6205,7 +6207,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     msw: ^1.0.0
     rc-progress: 3.5.1
     react-use: ^17.2.4
@@ -6232,7 +6234,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     jsonschema: ^1.2.6
     react-use: ^17.2.4
     zen-observable: ^0.10.0
@@ -6275,7 +6277,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/pluralize": ^0.0.33
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/recharts": ^1.8.14
     "@types/regression": ^2.0.0
     "@types/yup": ^0.29.13
@@ -6364,7 +6366,7 @@ __metadata:
     react-json-view: ^1.21.3
     react-use: ^17.2.4
   peerDependencies:
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -6386,7 +6388,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
   peerDependencies:
     "@backstage/plugin-catalog-react": "workspace:^"
@@ -6447,7 +6449,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -6481,7 +6483,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@uiw/react-codemirror": ^4.9.3
     lodash: ^4.17.21
     react-use: ^17.2.4
@@ -6693,7 +6695,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     classnames: ^2.2.6
     msw: ^1.0.0
     pluralize: ^8.0.0
@@ -6722,7 +6724,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -6750,7 +6752,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     cross-fetch: ^4.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -6781,7 +6783,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/dompurify": ^2.3.3
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/sanitize-html": ^2.6.2
     classnames: ^2.3.1
     dompurify: ^2.3.6
@@ -6834,7 +6836,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/recharts": ^1.8.15
     luxon: ^3.0.0
     qs: ^6.10.1
@@ -6868,7 +6870,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     git-url-parse: ^13.0.0
     luxon: ^3.0.0
     react-use: ^17.2.4
@@ -6900,7 +6902,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
@@ -6930,7 +6932,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     octokit: ^3.0.0
     react-use: ^17.4.0
@@ -6959,7 +6961,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     p-limit: ^4.0.0
   peerDependencies:
@@ -6985,7 +6987,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7044,7 +7046,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/codemirror": ^5.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     graphiql: ^3.0.6
     graphql: ^16.0.0
     graphql-ws: ^5.4.1
@@ -7068,7 +7070,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     graphql-voyager: ^1.0.0-rc.31
     react-use: ^17.2.4
   peerDependencies:
@@ -7144,7 +7146,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/react-grid-layout": ^1.3.2
     lodash: ^4.17.21
     luxon: ^3.4.3
@@ -7178,7 +7180,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     humanize-duration: ^3.26.0
     luxon: ^3.0.0
     react-use: ^17.2.4
@@ -7245,7 +7247,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/testing-library__jest-dom": ^5.9.1
     luxon: ^3.0.0
     react-use: ^17.2.4
@@ -7294,7 +7296,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     jest-when: ^3.1.0
     react-use: ^17.2.4
   peerDependencies:
@@ -7378,7 +7380,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/node": ^16.11.26
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     cronstrue: ^2.2.0
     js-yaml: ^4.0.0
     kubernetes-models: ^4.1.0
@@ -7449,7 +7451,7 @@ __metadata:
     "@material-ui/lab": ^4.0.0-alpha.61
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     cronstrue: ^2.32.0
     jest-websocket-mock: ^2.5.0
     js-yaml: ^4.1.0
@@ -7486,7 +7488,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     cronstrue: ^2.2.0
     js-yaml: ^4.0.0
     kubernetes-models: ^4.1.0
@@ -7548,7 +7550,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -7619,7 +7621,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^2.0.2
     react-use: ^17.2.4
     slugify: ^1.6.4
@@ -7646,7 +7648,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     classnames: ^2.3.1
     dompurify: ^2.3.6
     lodash: ^4.17.21
@@ -7675,7 +7677,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/jest-dom": ^6.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7699,7 +7701,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/parse-link-header": ^2.0.1
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     msw: ^1.2.3
     parse-link-header: ^2.0.0
     react-use: ^17.2.4
@@ -7744,7 +7746,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     cross-fetch: ^4.0.0
     luxon: ^3.3.0
     react-use: ^17.2.4
@@ -7769,7 +7771,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7792,7 +7794,7 @@ __metadata:
     "@material-ui/pickers": ^3.3.10
     "@material-ui/styles": ^4.11.5
     "@testing-library/jest-dom": ^6.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     axios: ^1.4.0
     date-fns: ^2.30.0
     lodash: ^4.17.21
@@ -7822,7 +7824,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7856,7 +7858,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     lodash: ^4.17.21
     p-limit: ^3.1.0
     pluralize: ^8.0.0
@@ -7889,7 +7891,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -7933,7 +7935,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/luxon": ^3.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -8050,7 +8052,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     swr: ^2.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -8123,7 +8125,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     lodash: ^4.17.21
     msw: ^1.0.0
     pluralize: ^8.0.0
@@ -8183,7 +8185,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     msw: ^1.0.1
     react-use: ^17.2.4
   peerDependencies:
@@ -8234,7 +8236,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     lodash: ^4.17.21
     react-sparklines: ^1.7.0
     react-use: ^17.2.4
@@ -8567,7 +8569,7 @@ __metadata:
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
     "@types/luxon": ^3.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     classnames: ^2.2.6
     flatted: 3.2.9
     humanize-duration: ^3.25.1
@@ -8630,7 +8632,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@uiw/react-codemirror": ^4.9.3
     classnames: ^2.2.6
     event-source-polyfill: ^1.0.31
@@ -8868,7 +8870,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     lodash: ^4.17.21
     qs: ^6.9.4
     react-use: ^17.3.2
@@ -8903,7 +8905,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     history: ^5.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
@@ -8932,7 +8934,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/luxon": ^3.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     react-sparklines: ^1.7.0
     react-use: ^17.2.4
@@ -8959,7 +8961,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/zen-observable": ^0.8.2
     react-hook-form: ^7.12.2
     react-use: ^17.2.4
@@ -9117,7 +9119,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     cross-fetch: ^4.0.0
     luxon: ^3.0.0
     msw: ^1.0.0
@@ -9149,7 +9151,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/luxon": ^3.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -9191,7 +9193,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     cross-fetch: ^4.0.0
     lodash: ^4.17.21
     msw: ^1.0.0
@@ -9220,7 +9222,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -9235,10 +9237,14 @@ __metadata:
   resolution: "@backstage/plugin-tech-insights-backend-module-jsonfc@workspace:plugins/tech-insights-backend-module-jsonfc"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-tech-insights-common": "workspace:^"
     "@backstage/plugin-tech-insights-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     ajv: ^8.10.0
     json-rules-engine: ^6.1.2
     lodash: ^4.17.21
@@ -9252,6 +9258,7 @@ __metadata:
   resolution: "@backstage/plugin-tech-insights-backend@workspace:plugins/tech-insights-backend"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
@@ -9296,6 +9303,7 @@ __metadata:
   resolution: "@backstage/plugin-tech-insights-node@workspace:plugins/tech-insights-node"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-tech-insights-common": "workspace:^"
@@ -9325,7 +9333,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
   peerDependencies:
@@ -9355,7 +9363,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/color": ^3.0.1
     "@types/d3-force": ^3.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     color: ^4.0.1
     d3-force: ^3.0.0
     react-use: ^17.2.4
@@ -9382,7 +9390,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     testing-library__dom: ^7.29.4-beta.1
   peerDependencies:
     "@testing-library/react": ^12.1.3 || ^13.0.0 || ^14.0.0
@@ -9513,7 +9521,7 @@ __metadata:
     "@material-ui/styles": ^4.11.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     jss: ~10.10.0
     lodash: ^4.17.21
     react-helmet: 6.1.0
@@ -9558,7 +9566,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/dompurify": ^2.2.2
     "@types/event-source-polyfill": ^1.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     canvas: ^2.10.2
     dompurify: ^2.2.9
     event-source-polyfill: 1.0.25
@@ -9669,7 +9677,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
     zen-observable: ^0.10.0
@@ -9737,7 +9745,7 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     msw: ^1.0.0
     react-use: ^17.2.4
   peerDependencies:
@@ -9765,7 +9773,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/luxon": ^3.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     react-use: ^17.2.4
@@ -9859,7 +9867,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/jest-dom": ^6.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     cross-fetch: ^4.0.0
     i18next: ^22.4.15
     msw: ^1.0.0
@@ -9886,7 +9894,7 @@ __metadata:
     "@types/react": ^16.13.1 || ^17.0.0
   peerDependencies:
     "@material-ui/core": ^4.12.2
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
   languageName: unknown
@@ -11392,9 +11400,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphiql/react@npm:^0.20.0, @graphiql/react@npm:^0.20.2":
-  version: 0.20.2
-  resolution: "@graphiql/react@npm:0.20.2"
+"@graphiql/react@npm:^0.20.0, @graphiql/react@npm:^0.20.2, @graphiql/react@npm:^0.20.3":
+  version: 0.20.3
+  resolution: "@graphiql/react@npm:0.20.3"
   dependencies:
     "@graphiql/toolkit": ^0.9.1
     "@headlessui/react": ^1.7.15
@@ -11415,7 +11423,7 @@ __metadata:
     graphql: ^15.5.0 || ^16.0.0
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
-  checksum: 76bd00fd144b1e3044e3239d80fbda49795e5eb41d222da373af11819d06f657a430eff6853e93724134538f3c5e619e0ecf9111b0818fe14569edb290106c84
+  checksum: e8b362bd67ff5499c8db64097f9a4050782be53420e27b4c84ad1eba99c9615984257b7a19d0fd9c6f72ce92366321014b04762b400403ee52f53248dd7a8785
   languageName: node
   linkType: hard
 
@@ -14349,13 +14357,13 @@ __metadata:
   linkType: hard
 
 "@playwright/test@npm:^1.32.3":
-  version: 1.41.1
-  resolution: "@playwright/test@npm:1.41.1"
+  version: 1.41.2
+  resolution: "@playwright/test@npm:1.41.2"
   dependencies:
-    playwright: 1.41.1
+    playwright: 1.41.2
   bin:
     playwright: cli.js
-  checksum: d9877e777a1a7f60f097df57b6abc2478e2ae342930a409c8546c8aa40d6e206cbc16bf1c71b23414ac3fbad36dcae1ad79635d7f4eb705ab54d3c705e82ea04
+  checksum: 87d9e725106111b2af1b2dec32454cd2a2d9665ff735669dc751caa30240e6db595ecfb9422719fa65dcff6ca19dea93ac2ae70d587efddde31def0754549d4c
   languageName: node
   linkType: hard
 
@@ -17467,8 +17475,8 @@ __metadata:
   linkType: hard
 
 "@testing-library/react@npm:^14.0.0":
-  version: 14.1.2
-  resolution: "@testing-library/react@npm:14.1.2"
+  version: 14.2.1
+  resolution: "@testing-library/react@npm:14.2.1"
   dependencies:
     "@babel/runtime": ^7.12.5
     "@testing-library/dom": ^9.0.0
@@ -17476,7 +17484,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 0269903e53412cf96fddb55c8a97a9987a89c3308d71fa1418fe61c47d275445e7044c5387f57cf39b8cda319a41623dbad2cce7a17016aed3a9e85185aac75a
+  checksum: 7054ae69a0e06c0777da8105fa08fac7e8dac570476a065285d7b993947acda5c948598764a203ebaac759c161c562d6712f19f5bd08be3f09a07e23baee5426
   languageName: node
   linkType: hard
 
@@ -18144,14 +18152,14 @@ __metadata:
   linkType: hard
 
 "@types/express-serve-static-core@npm:*, @types/express-serve-static-core@npm:^4.17.33, @types/express-serve-static-core@npm:^4.17.5":
-  version: 4.17.41
-  resolution: "@types/express-serve-static-core@npm:4.17.41"
+  version: 4.17.43
+  resolution: "@types/express-serve-static-core@npm:4.17.43"
   dependencies:
     "@types/node": "*"
     "@types/qs": "*"
     "@types/range-parser": "*"
     "@types/send": "*"
-  checksum: 12750f6511dd870bbaccfb8208ad1e79361cf197b147f62a3bedc19ec642f3a0f9926ace96705f4bc88ec2ae56f61f7ca8c2438e6b22f5540842b5569c28a121
+  checksum: 08e940cae52eb1388a7b5f61d65f028e783add77d1854243ae920a6a2dfb5febb6acaafbcf38be9d678b0411253b9bc325893c463a93302405f24135664ab1e4
   languageName: node
   linkType: hard
 
@@ -18363,12 +18371,12 @@ __metadata:
   linkType: hard
 
 "@types/jest@npm:*, @types/jest@npm:^29.0.0, @types/jest@npm:^29.5.11":
-  version: 29.5.11
-  resolution: "@types/jest@npm:29.5.11"
+  version: 29.5.12
+  resolution: "@types/jest@npm:29.5.12"
   dependencies:
     expect: ^29.0.0
     pretty-format: ^29.0.0
-  checksum: f892a06ec9f0afa9a61cd7fa316ec614e21d4df1ad301b5a837787e046fcb40dfdf7f264a55e813ac6b9b633cb9d366bd5b8d1cea725e84102477b366df23fdd
+  checksum: 19b1efdeed9d9a60a81edc8226cdeae5af7479e493eaed273e01243891c9651f7b8b4c08fc633a7d0d1d379b091c4179bbaa0807af62542325fd72f2dd17ce1c
   languageName: node
   linkType: hard
 
@@ -18472,15 +18480,6 @@ __metadata:
     csstype: ^2.0.0
     indefinite-observable: ^1.0.1
   checksum: 6e51707529a15f2f5ff94555ecb555d29427fd10c4f3d2d29474934292e365c2dfaa4ad30b2ab46946201cbca7f6e8df56513a22fc6ceca10a979db8338935c5
-  languageName: node
-  linkType: hard
-
-"@types/jwt-decode@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@types/jwt-decode@npm:3.1.0"
-  dependencies:
-    jwt-decode: "*"
-  checksum: 82ff0b3826e5d9da48be1f11e16fec96e56dd946995edaa100682202b9b7beb30fb04a353cbabd378d3b13a24241b48a0b662a4f181bae7f758147d92368d930
   languageName: node
   linkType: hard
 
@@ -19003,13 +19002,13 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:^18":
-  version: 18.2.48
-  resolution: "@types/react@npm:18.2.48"
+  version: 18.2.52
+  resolution: "@types/react@npm:18.2.52"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: c9ca43ed2995389b7e09492c24e6f911a8439bb8276dd17cc66a2fbebbf0b42daf7b2ad177043256533607c2ca644d7d928fdfce37a67af1f8646d2bac988900
+  checksum: 4abc9bd63879e57c3df43a9cacff54c079e21b61ef934d33801e0177c26f582aa7d1d88a0769a740a4fd273168e3b150ff61de23e0fa85d1070e82ddce2b7fd2
   languageName: node
   linkType: hard
 
@@ -19300,12 +19299,12 @@ __metadata:
   linkType: hard
 
 "@types/tar@npm:^6.1.1":
-  version: 6.1.10
-  resolution: "@types/tar@npm:6.1.10"
+  version: 6.1.11
+  resolution: "@types/tar@npm:6.1.11"
   dependencies:
     "@types/node": "*"
     minipass: ^4.0.0
-  checksum: 82d46f1246e830b98833ed94fbdfbcb3ffb8a5d7173609622d56c9326124523a3cc541607876c63a6ab9117eb59fb37ef8a6284b194164ab1d1d8c03a8ba59c6
+  checksum: 9b79f61f9179db65ecd3f5e9c0d2152839ad13381d39c38c3a9408aa1f3a2b061ba195e7d758be1863294a0ce69df6659f0e3e09f440c9f5309bded58bc87c89
   languageName: node
   linkType: hard
 
@@ -21183,7 +21182,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.6.5, axios@npm:^1.0.0, axios@npm:^1.4.0, axios@npm:^1.6.0":
+"axios@npm:1.6.5":
   version: 1.6.5
   resolution: "axios@npm:1.6.5"
   dependencies:
@@ -21210,6 +21209,17 @@ __metadata:
     follow-redirects: ^1.14.9
     form-data: ^4.0.0
   checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.0.0, axios@npm:^1.4.0, axios@npm:^1.6.0":
+  version: 1.6.7
+  resolution: "axios@npm:1.6.7"
+  dependencies:
+    follow-redirects: ^1.15.4
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: 87d4d429927d09942771f3b3a6c13580c183e31d7be0ee12f09be6d5655304996bb033d85e54be81606f4e89684df43be7bf52d14becb73a12727bf33298a082
   languageName: node
   linkType: hard
 
@@ -27027,8 +27037,8 @@ __metadata:
   linkType: hard
 
 "express-openapi-validator@npm:^5.0.4":
-  version: 5.1.2
-  resolution: "express-openapi-validator@npm:5.1.2"
+  version: 5.1.3
+  resolution: "express-openapi-validator@npm:5.1.3"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.1.2
     "@types/multer": ^1.4.7
@@ -27045,7 +27055,7 @@ __metadata:
     multer: ^1.4.5-lts.1
     ono: ^7.1.3
     path-to-regexp: ^6.2.0
-  checksum: e02eaad8549893f874916cfc52a9d81f1ef15c553e726876e6b73cc93469a21e28e42d1d25449aa04c764f8d024b1ea664b7ce6083abdd8513168ece7929ee20
+  checksum: c99785e6bf3072086a671e854369e338bce2a20fea65d2a4445dac6c40ac632e67dc91d9e0edeb4cce5e739124b5d5742bcf2447c09b3085dc76e1ba89a71ca0
   languageName: node
   linkType: hard
 
@@ -28692,7 +28702,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphiql@npm:3.1.0, graphiql@npm:^3.0.6":
+"graphiql@npm:3.1.0":
   version: 3.1.0
   resolution: "graphiql@npm:3.1.0"
   dependencies:
@@ -28705,6 +28715,22 @@ __metadata:
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
   checksum: a8969ea299561fe627ba566fb72dd90eda31b195e9983af87c4079bf807f5b356d116ece133e46d5098d6809a88b8f3b64b04a9e95dfe34cd84eb8fd109e2b8a
+  languageName: node
+  linkType: hard
+
+"graphiql@npm:^3.0.6":
+  version: 3.1.1
+  resolution: "graphiql@npm:3.1.1"
+  dependencies:
+    "@graphiql/react": ^0.20.3
+    "@graphiql/toolkit": ^0.9.1
+    graphql-language-service: ^5.2.0
+    markdown-it: ^12.2.0
+  peerDependencies:
+    graphql: ^15.5.0 || ^16.0.0
+    react: ^16.8.0 || ^17 || ^18
+    react-dom: ^16.8.0 || ^17 || ^18
+  checksum: fa0e6a6854b688a80d2d560c07c042c4d63a45ab1ebdb5b56a081a5a2aea6f77b2ef10afb73e071bbb22eb293048a9b72760e91459fe66704afce56271b13ba5
   languageName: node
   linkType: hard
 
@@ -32345,13 +32371,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jwt-decode@npm:*, jwt-decode@npm:^3.1.0":
-  version: 3.1.2
-  resolution: "jwt-decode@npm:3.1.2"
-  checksum: 20a4b072d44ce3479f42d0d2c8d3dabeb353081ba4982e40b83a779f2459a70be26441be6c160bfc8c3c6eadf9f6380a036fbb06ac5406b5674e35d8c4205eeb
-  languageName: node
-  linkType: hard
-
 "kafkajs@npm:^2.0.0":
   version: 2.2.4
   resolution: "kafkajs@npm:2.2.4"
@@ -32696,22 +32715,22 @@ __metadata:
   linkType: hard
 
 "lint-staged@npm:^15.0.0":
-  version: 15.2.0
-  resolution: "lint-staged@npm:15.2.0"
+  version: 15.2.1
+  resolution: "lint-staged@npm:15.2.1"
   dependencies:
     chalk: 5.3.0
     commander: 11.1.0
     debug: 4.3.4
     execa: 8.0.1
     lilconfig: 3.0.0
-    listr2: 8.0.0
+    listr2: 8.0.1
     micromatch: 4.0.5
     pidtree: 0.6.0
     string-argv: 0.3.2
     yaml: 2.3.4
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 4fb178b8d3ff454f7874697dfbd41017630f61a06296d12ac9dfd578d078c70aff7108b67fab38af94896ef2740a1e7541c1512d0d3c688ed90e6c3af3530f0d
+  checksum: d2b0361b311cb3384e58a5d4bfd5d34e6ff6ad41e5ea5dcc87c65379ea6e280c84f0a037df147355963dcf4d3dc1487795e3132c38e1bc5511b25889f405e189
   languageName: node
   linkType: hard
 
@@ -32722,9 +32741,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"listr2@npm:8.0.0":
-  version: 8.0.0
-  resolution: "listr2@npm:8.0.0"
+"listr2@npm:8.0.1":
+  version: 8.0.1
+  resolution: "listr2@npm:8.0.1"
   dependencies:
     cli-truncate: ^4.0.0
     colorette: ^2.0.20
@@ -32732,7 +32751,7 @@ __metadata:
     log-update: ^6.0.0
     rfdc: ^1.3.0
     wrap-ansi: ^9.0.0
-  checksum: 5cb110a710d14488c71d2207fc5141256abb1f21cbe5ebc12177ae640f94e040a1ef8c031b70ff9f24c4a8fa57c0825a54b534e52bdfaffc122a81082faae8ed
+  checksum: 4dfeabfa037b3981d0edbf30789971ba727ba4cfcc13051ceaff7a1b3d26509ef2d946015c65c600b0775ec9d1ef58a81937d94c9c03de464b654f429cc7c3ed
   languageName: node
   linkType: hard
 
@@ -37082,27 +37101,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.41.1":
-  version: 1.41.1
-  resolution: "playwright-core@npm:1.41.1"
+"playwright-core@npm:1.41.2":
+  version: 1.41.2
+  resolution: "playwright-core@npm:1.41.2"
   bin:
     playwright-core: cli.js
-  checksum: c83446a560c6bd85f6f0cd586ff8c643b77e2005567386e12f85890936cc370673114b94cd883246018797cc1580e93b0296ade7d07275bb611b8962f5bb9693
+  checksum: b41ede0db3fd3e3f7e0b0efbdfb2dbc4db345e113cf9c4451af21d1d5b5d9ab5e969f5662852925e37b2198ae5daab92aa48108fe3d4eb81c849ba8752aaf8cc
   languageName: node
   linkType: hard
 
-"playwright@npm:1.41.1":
-  version: 1.41.1
-  resolution: "playwright@npm:1.41.1"
+"playwright@npm:1.41.2":
+  version: 1.41.2
+  resolution: "playwright@npm:1.41.2"
   dependencies:
     fsevents: 2.3.2
-    playwright-core: 1.41.1
+    playwright-core: 1.41.2
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 3da7fb929abdec6adbdd8829f840580f5f210713214a8d230b130127f2270403eb2113c6c1418012221149707250fff896794c7c22c260dd09a92bf800227f31
+  checksum: acf166003ec42cd795f5fca096c5135880d78e84ec2d0a1911b2cab984cf75dc06e50d3aa24b56cbcbc5369ca8c61831e76c5f8674531a272fbd0f6e624fa387
   languageName: node
   linkType: hard
 
@@ -39029,12 +39048,12 @@ __metadata:
   linkType: hard
 
 "react-virtualized-auto-sizer@npm:^1.0.11":
-  version: 1.0.21
-  resolution: "react-virtualized-auto-sizer@npm:1.0.21"
+  version: 1.0.22
+  resolution: "react-virtualized-auto-sizer@npm:1.0.22"
   peerDependencies:
     react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
     react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
-  checksum: 9c0929a0363b3b3b10ad65ac57d7562a20966a9c38c28c10dfd296d0a6a3e678319dce2384c5177f43965c2b7f226f5766deffc4b7eaaab0ee7c2cfe0c7d6b48
+  checksum: dc3fc29437b7179de71f77e5be3514e8789944132d7eb03f7157f783ec167ad9bebf1d371c135cf74fc5787dfac313a2914a5d23b45e978ae77be36c673342e5
   languageName: node
   linkType: hard
 
@@ -40115,7 +40134,7 @@ __metadata:
     semver: ^7.5.3
     shx: ^0.3.2
     ts-node: ^10.4.0
-    typescript: ~5.2.0
+    typescript: ~5.1.0
   languageName: unknown
   linkType: soft
 
@@ -43177,16 +43196,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:~5.2.0":
-  version: 5.2.2
-  resolution: "typescript@npm:5.2.2"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 7912821dac4d962d315c36800fe387cdc0a6298dba7ec171b350b4a6e988b51d7b8f051317786db1094bd7431d526b648aba7da8236607febb26cf5b871d2d3c
-  languageName: node
-  linkType: hard
-
 "typescript@patch:typescript@~5.0.4#~builtin<compat/typescript>":
   version: 5.0.4
   resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=a1c5e5"
@@ -43204,16 +43213,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 21e88b0a0c0226f9cb9fd25b9626fb05b4c0f3fddac521844a13e1f30beb8f14e90bd409a9ac43c812c5946d714d6e0dee12d5d02dfc1c562c5aacfa1f49b606
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@~5.2.0#~builtin<compat/typescript>":
-  version: 5.2.2
-  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=a1c5e5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 07106822b4305de3f22835cbba949a2b35451cad50888759b6818421290ff95d522b38ef7919e70fb381c5fe9c1c643d7dea22c8b31652a717ddbd57b7f4d554
   languageName: node
   linkType: hard
 
@@ -45365,11 +45364,11 @@ __metadata:
   linkType: hard
 
 "zod-to-json-schema@npm:^3.20.4, zod-to-json-schema@npm:^3.21.4":
-  version: 3.22.3
-  resolution: "zod-to-json-schema@npm:3.22.3"
+  version: 3.22.4
+  resolution: "zod-to-json-schema@npm:3.22.4"
   peerDependencies:
     zod: ^3.22.4
-  checksum: 2747a3d1514f579006939c0edd6a420acae65ad016df223b09c4a542cbc8c0ae61b4d7b391228a211cde973635ed49c47b1449791982f3b32d799319bb174f42
+  checksum: 22f89d505cc3d93020de38e4471362fbecd73a8df58017553ad57fb14e69b6f2f88bcdfe9f84b291442ed0654f97344d517af291d23848e43e6e208ee23dac2b
   languageName: node
   linkType: hard
 
