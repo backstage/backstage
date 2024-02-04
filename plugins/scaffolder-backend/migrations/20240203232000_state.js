@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-export type {
-  TaskSecrets,
-  SerializedTask,
-  SerializedTaskEvent,
-  TaskBroker,
-  TaskBrokerDispatchOptions,
-  TaskBrokerDispatchResult,
-  TaskCompletionState,
-  TaskContext,
-  TaskEventType,
-  TaskState,
-  TaskStatus,
-} from './types';
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.up = async function up(knex) {
+  await knex.schema.alterTable('tasks', table => {
+    table.text('state').nullable().comment('A state of the checkpoints');
+  });
+};
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.down = async function down(knex) {
+  await knex.schema.alterTable('tasks', table => {
+    table.dropColumn('state');
+  });
+};

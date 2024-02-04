@@ -349,6 +349,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           logger: taskLogger,
           logStream: streamLogger,
           workspacePath,
+          async checkpoint<U extends JsonObject>(
+            key: string,
+            fn: () => Promise<U>,
+          ) {
+            const value = await fn();
+            task.updateCheckpoint?.(key, value);
+            return value;
+          },
           createTemporaryDirectory: async () => {
             const tmpDir = await fs.mkdtemp(
               `${workspacePath}_step-${step.id}-`,

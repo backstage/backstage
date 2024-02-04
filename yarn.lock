@@ -8354,7 +8354,9 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@octokit/webhooks": ^10.0.0
     "@types/libsodium-wrappers": ^0.7.10
     fs-extra: 10.1.0

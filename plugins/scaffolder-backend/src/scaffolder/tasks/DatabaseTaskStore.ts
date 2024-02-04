@@ -30,6 +30,7 @@ import {
   TaskStoreCreateTaskResult,
   TaskStoreShutDownTaskOptions,
   TaskStoreRecoverTaskOptions,
+  TaskStoreStateOptions,
 } from './types';
 import {
   SerializedTaskEvent,
@@ -52,6 +53,7 @@ export type RawDbTaskRow = {
   id: string;
   spec: string;
   status: TaskStatus;
+  state?: string;
   last_heartbeat_at?: string;
   created_at: string;
   created_by: string | null;
@@ -392,6 +394,17 @@ export class DatabaseTaskStore implements TaskStore {
       event_type: 'log',
       body: serializedBody,
     });
+  }
+
+  async saveCheckpoint?(options: TaskStoreStateOptions): Promise<void> {
+    if (options.state) {
+      const serializedState = JSON.stringify(options.state);
+      await this.db<RawDbTaskRow>('tasks')
+        .where({ id: options.taskId })
+        .update({
+          state: serializedState,
+        });
+    }
   }
 
   async listEvents(

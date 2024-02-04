@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-export type {
-  TaskSecrets,
-  SerializedTask,
-  SerializedTaskEvent,
-  TaskBroker,
-  TaskBrokerDispatchOptions,
-  TaskBrokerDispatchResult,
-  TaskCompletionState,
-  TaskContext,
-  TaskEventType,
-  TaskState,
-  TaskStatus,
-} from './types';
+import { JsonObject } from '@backstage/types';
+
+export type DefineCheckpointProps<U> = {
+  checkpoint?: (key: string, fn: () => Promise<U>) => Promise<U>;
+  key: string;
+  fn: () => Promise<U>;
+};
+
+export const defineCheckpoint = async <U extends JsonObject>(
+  props: DefineCheckpointProps<U>,
+): Promise<U> => {
+  const { checkpoint, fn, key } = props;
+  return checkpoint
+    ? checkpoint?.(key, async () => {
+        return await fn();
+      })
+    : fn();
+};

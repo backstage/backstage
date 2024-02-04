@@ -16,7 +16,7 @@
 
 import { JsonValue, JsonObject, HumanDuration } from '@backstage/types';
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
-import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
+import { TaskSecrets, TaskState } from '@backstage/plugin-scaffolder-node';
 import {
   TemplateAction,
   TaskStatus as _TaskStatus,
@@ -113,6 +113,11 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
   body: TBody;
 };
 
+export type TaskStoreStateOptions = {
+  taskId: string;
+  state?: TaskState;
+};
+
 /**
  * TaskStoreListEventsOptions
  *
@@ -193,6 +198,8 @@ export interface TaskStore {
   list?(options: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
 
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
+
+  saveCheckpoint?(options: TaskStoreStateOptions): Promise<void>;
 
   listEvents(
     options: TaskStoreListEventsOptions,

@@ -27,6 +27,13 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 /**
+ * TaskState
+ *
+ * @public
+ */
+export type TaskState = Record<string, JsonObject>;
+
+/**
  * The status of each step of the Task
  *
  * @public
@@ -110,6 +117,7 @@ export interface TaskContext {
   cancelSignal: AbortSignal;
   spec: TaskSpec;
   secrets?: TaskSecrets;
+  state?: TaskState;
   createdBy?: string;
   done: boolean;
   isDryRun?: boolean;
@@ -117,6 +125,8 @@ export interface TaskContext {
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
 
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
+
+  updateCheckpoint?(key: string, value: JsonObject): Promise<void>;
 
   getWorkspaceName(): Promise<string>;
 }

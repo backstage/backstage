@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
+import { TaskSecrets, TaskState } from '@backstage/plugin-scaffolder-node';
 import { JsonObject, Observable } from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';
@@ -91,6 +91,14 @@ export class TaskManager implements TaskContext {
     });
   }
 
+  async updateCheckpoint?(key: string, value: JsonObject): Promise<void> {
+    this.task.state = { [key]: value };
+    await this.storage.saveCheckpoint?.({
+      taskId: this.task.taskId,
+      state: this.task.state,
+    });
+  }
+
   async complete(
     result: TaskCompletionState,
     metadata?: JsonObject,
@@ -144,6 +152,10 @@ export interface CurrentClaimedTask {
    * The secrets that are stored with the task.
    */
   secrets?: TaskSecrets;
+  /**
+   * The state of checkpoints of the task.
+   */
+  state?: TaskState;
   /**
    * The creator of the task.
    */
