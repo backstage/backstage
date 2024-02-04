@@ -42,8 +42,8 @@ const Community = () => {
     {
       title: 'Community sessions',
       content:
-        'Maintainers and adopters meet monthly to share updates, demos, and ideas. Yep, all sessions are recorded!',
-      link: '/on-demand',
+        'Maintainers and adopters meet monthly to share updates, demos, and ideas. You can find recorded session on our YouTube channel!',
+      link: 'https://github.com/backstage/community/tree/main/backstage-community-sessions#backstage-community-sessions',
       label: 'Join a session',
     },
     {
