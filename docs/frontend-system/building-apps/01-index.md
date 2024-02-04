@@ -14,19 +14,19 @@ A Backstage App is a monorepo setup that includes everything you need to run Bac
 
 ## Creating a new app
 
-To create a Backstage app, you will need to have Node.js Active LTS Release installed.
+To create a new Backstage app we recommend using the `@backstage/create-app` command line, and the easiest way to run this package is with `npx`:
 
-The easiest way to run the create app package is with `npx`:
+:::note
+The create-app CLI requires Node.js Active LTS Release.
+:::
 
 ```sh
+# The command bellow creates a Backstage App inside the current folder.
+# The name of the app-folder is the name that was provided when prompted.
 npx @backstage/create-app@latest
 ```
 
-This will create a new Backstage App inside the current folder. The name of the app-folder is the name that was provided when prompted.
-
-:::note
-The created app will currently be templated for use in the legacy frontend system, and you will need to replace the existing app wiring code.
-:::
+The created-app is currently templated for legacy frontend system applications, so the app wiring code it creates needs to be migrated, see [the app instance](#the-app-instance) section for an example.
 
 ## The app instance
 
@@ -37,6 +37,7 @@ This is how to create a minimal app:
 ```tsx title="in src/index.ts"
 import ReactDOM from 'react-dom/client';
 import { createApp } from '@backstage/frontend-app-api';
+import catalogPlugin from '@backstage/plugin-catalog/alpha';
 
 // Create your app instance
 const app = createApp({
@@ -49,31 +50,41 @@ const root = app.createRoot();
 
 // Just like any other React we need a root element. No server side rendering is used.
 const rootEl = document.getElementById('root')!;
+
+ReactDOM.createRoot(rootEl).render(root);
 ```
 
-Note that the `createRoot` exports an element instead of a component and it no longer accepts a custom root element as parameter, so this is the reason you can pass the returned element directly to React `createRoot`. See [customizing your root app element](#app-root) for more details on how to do it with extensions.
+Note that `createRoot` returns the root element that is rendered by React. The above example is installing a catalog plugin and using default settings for the app, as no options other than the `features` array are passed to the `createApp` function.
+
+Visit the [built-in extensions](#customize-or-override-built-in-extensions) section to see what is installed by default in a Backstage application.
 
 ## Configure your app
 
-### Enable features discovering
+### Bind external routes
 
-This is how you enable the experimental feature discovering when building your app with the `@backstage/cli`, check out [here](https://backstage.io/docs/frontend-system/architecture/app#feature-discovery) for more details.
+Linking routes from different plugins requires this configuration. You can do this either through a configuration file or by coding, visit [this](https://backstage.io/docs/frontend-system/architecture/routes#binding-external-route-references) page for instructions.
+
+### Enable feature discovery
+
+Use this setting to enable experimental feature discovery when building your app with `@backstage/cli`. With this configuration your application tries to discover and install package extensions automatically, check [here](../architecture/02-app.md#feature-discovery) for more details.
 
 :::warning
 Remember that package extensions that are not auto-discovered must be manually added to the application when creating an app. See [features](#install-features-manually) for more details.
 :::
 
-### Bind external routes
+### Configure extensions individually
 
-This is the configuration you do when you want to associate an external plugin route ref with a regular one. There are two ways of doing it: via configuration file or through code. Access [this](https://backstage.io/docs/frontend-system/architecture/routes#binding-external-route-references) page for learning both ways.
+It is possible to enable, disable and configure extensions individually in the `app-config.yaml` config file. To get familiar with what is available for app extensions personalization, go to the [built-in extensions](./02-built-in-extensions.md) documentation. For plugin customizations, we recommend that you read the instructions in each plugin's README file.
 
-## Customize individual extensions
+### Customize or override built-in extensions
 
-It possible to enable, disable, order and configure extensions individually in the `app-config.yaml` config file. To get familiar with what is available for app extensions, go to the [built-in extensions](./02-built-in-extensions.md) documentation. For plugins customizations, we recommend you checking their read files instructions.
+Previously you would customize the application route, components, apis, sidebar, etc. through the code in `App.tsx`. Now we want you to write less code and install more extensions to customize your Backstage instance. See [here](../building-plugins/03-extension-types.md) which types of extensions are available for you to customize your application.
 
-## Install features manually
+## Use code to customize the app at a more granular level
 
-A manual installation is required if your packages are not discovered automatically, either because you are not using `@backstage/cli` to build your application or because the features are defined in local modules in the app package. For manually install a feature you have to import your it and pass it to the `createApp` function:
+### Install features manually
+
+A manual installation is required if your packages are not discovered automatically, either because you are not using `@backstage/cli` to build your application or because the features are defined in local modules in the app package. In order to manually install a feature, you must import it and pass it to the `createApp` function:
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-app-api';
@@ -91,34 +102,47 @@ export default app.createRoot();
 You can also pass overrides to the features array, for more details, please read the [extension overrides](../architecture/05-extension-overrides.md) documentation.
 :::
 
-If for some reason you need to perform asynchronous operations before passing features to the `createApp` function, you can use an async function as `features` option and this should return a features array promise:
+### Using an async features loader
+
+In case you need to perform asynchronous operations before passing features to the `createApp` function, define a [feature loader](https://backstage.io/docs/reference/frontend-app-api.createappfeatureloader/) object and pass it to the `features` option:
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-app-api';
 
 const app = createApp({
-  // Lazy loading the plugin feature
-  features: import('./plugins/MyPlugin').then(m => [m.default]),
+  features: {
+    getLoaderName: () => '<your-custom-features-loader-name>',
+    // there is a reference to the config api in the options param
+    load: async _options => {
+      // returning a lazy loaded plugins and overrides array
+      // could be util for module federation
+      return import('./features').then(m => m.default);
+    },
+  },
 });
 
 export default app.createRoot();
 ```
 
-## Lazy load your configuration file
+### Lazy load your configuration file
 
-In some cases we want to load our configuration from a backend server or we just want to override the default app configuration loader. If you want to do it, you can pass an async callback to the `createApp` function and it should return a promise of the config object:
+In some cases we want to load our configuration from a backend server and to do so, you can pass an callback to the `configLoader` option when calling the `createApp` function, the callback should return a promise of an object with the config object:
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-app-api';
+import { getConfigFromServer } from './utils';
 
+// Example lazy loading the app configuration
 const app = createApp({
-  // Lazy loading the plugin feature
-  features: import('./plugins/MyPlugin').then(m => [m.default]),
+  // Returns Promise<{ config: ConfigApi }>
+  configLoader: async () => {
+    // Calls an async utility method that fetches the config object from the server
+    const config = await getConfigFromServer();
+    // Feel free to manipulate the config object before returning it
+    // A common example is conditionally modify the config based on the running enviroment
+    return { config };
+  },
 });
 
 export default app.createRoot();
 ```
-
-## Customize or override built-in extensions
-
-Previously you would customize the application route, components, apis, sidebar, etc. through the code in `App.tsx`. Now we want you to write less code and install more extensions to customize your Backstage instance. See [here](../building-plugins/03-extension-types.md) which types of extensions are available for you to customize your application.
