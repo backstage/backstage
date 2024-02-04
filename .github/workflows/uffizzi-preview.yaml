@@ -106,7 +106,7 @@ jobs:
 
       # Identify comment to be updated
       - name: Find comment for Ephemeral Environment
-        uses: peter-evans/find-comment@a54c31d7fa095754bfef525c0c8e5e5674c4b4b1 # v2
+        uses: peter-evans/find-comment@d5fe37641ad8451bdd80312415672ba26c86575e # v3
         id: find-comment
         with:
           issue-number: ${{ needs.cache-manifests-file.outputs.pr-number }}
@@ -220,7 +220,7 @@ jobs:
 
       # Identify comment to be updated
       - name: Find comment for Ephemeral Environment
-        uses: peter-evans/find-comment@a54c31d7fa095754bfef525c0c8e5e5674c4b4b1 # v2
+        uses: peter-evans/find-comment@d5fe37641ad8451bdd80312415672ba26c86575e # v3
         id: find-comment
         with:
           issue-number: ${{ needs.cache-manifests-file.outputs.pr-number }}
