@@ -332,6 +332,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
       const tmpDirs = new Array<string>();
       const stepOutput: { [outputName: string]: JsonValue } = {};
+      const prevTaskState = await task.getCheckpoints?.();
 
       for (const iteration of iterations) {
         if (iteration.each) {
@@ -354,7 +355,12 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             fn: () => Promise<U>,
           ) {
             try {
-              const value = await fn();
+              let prevValue: U | undefined;
+              if (prevTaskState) {
+                prevValue = prevTaskState.state[key] as unknown as U;
+              }
+
+              const value = prevValue ? prevValue : await fn();
               task.updateCheckpoint?.({
                 key,
                 status: 'success',

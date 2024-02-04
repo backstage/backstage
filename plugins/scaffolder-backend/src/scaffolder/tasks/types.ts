@@ -199,6 +199,12 @@ export interface TaskStore {
 
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
 
+  listCheckpoints?({
+    taskId,
+  }: {
+    taskId: string;
+  }): Promise<{ state: TaskState }>;
+
   saveCheckpoint?(options: TaskStoreStateOptions): Promise<void>;
 
   listEvents(

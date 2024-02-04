@@ -19,7 +19,7 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
   TaskSecrets,
   TaskState,
-  UpdateCheckpointOptions,
+  CheckpointRecord,
 } from '@backstage/plugin-scaffolder-node';
 import { JsonObject, Observable } from '@backstage/types';
 import { Logger } from 'winston';
@@ -95,7 +95,11 @@ export class TaskManager implements TaskContext {
     });
   }
 
-  async updateCheckpoint?(options: UpdateCheckpointOptions): Promise<void> {
+  async getCheckpoints?(): Promise<{ state: TaskState } | undefined> {
+    return this.storage.listCheckpoints?.({ taskId: this.task.taskId });
+  }
+
+  async updateCheckpoint?(options: CheckpointRecord): Promise<void> {
     if (this.task.state) {
       this.task.state[options.key] = { ...options };
     } else {

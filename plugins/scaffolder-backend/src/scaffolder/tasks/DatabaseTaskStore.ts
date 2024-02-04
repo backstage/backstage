@@ -38,6 +38,7 @@ import {
   TaskStatus,
   TaskEventType,
   TaskSecrets,
+  TaskState,
 } from '@backstage/plugin-scaffolder-node';
 import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -396,7 +397,18 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async saveCheckpoint?(options: TaskStoreStateOptions): Promise<void> {
+  async listCheckpoints({
+    taskId,
+  }: {
+    taskId: string;
+  }): Promise<{ state: TaskState }> {
+    const state = await this.db<RawDbTaskRow>('tasks')
+      .where({ id: taskId })
+      .select('state');
+    return { state: JSON.stringify(state) as unknown as TaskState };
+  }
+
+  async saveCheckpoint(options: TaskStoreStateOptions): Promise<void> {
     if (options.state) {
       const serializedState = JSON.stringify(options.state);
       await this.db<RawDbTaskRow>('tasks')

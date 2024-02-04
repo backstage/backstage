@@ -116,12 +116,12 @@ export type TaskBrokerDispatchOptions = {
 };
 
 /**
- * The options passed to {@link TaskBroker.updateCheckpoint}
+ * The record passed to {@link TaskBroker.updateCheckpoint?}
  * Parameters to store the result of the executed checkpoint
  *
  * @public
  */
-export type UpdateCheckpointOptions =
+export type CheckpointRecord =
   | {
       key: string;
       status: 'success';
@@ -151,7 +151,9 @@ export interface TaskContext {
 
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
 
-  updateCheckpoint?(options: UpdateCheckpointOptions): Promise<void>;
+  getCheckpoints?(): Promise<{ state: TaskState } | undefined>;
+
+  updateCheckpoint?(options: CheckpointRecord): Promise<void>;
 
   getWorkspaceName(): Promise<string>;
 }
