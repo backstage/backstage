@@ -12,7 +12,7 @@ The CodeScene Backstage Plugin provides a page component that displays a list of
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-codescene
+yarn --cwd packages/app add @backstage/plugin-codescene
 ```
 
 2. Add the routes and pages to your `App.tsx`:
