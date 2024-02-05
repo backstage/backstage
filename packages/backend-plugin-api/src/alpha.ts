@@ -19,6 +19,8 @@ import {
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 
+export * from './wiring/alpha';
+
 /** @alpha */
 export interface FeatureDiscoveryService {
   getBackendFeatures(): Promise<{ features: Array<BackendFeature> }>;

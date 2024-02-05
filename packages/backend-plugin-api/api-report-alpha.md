@@ -6,6 +6,11 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
+// @alpha
+export function bundleBackendFeatures(
+  features: (() => BackendFeature)[],
+): () => BackendFeature;
+
 // @alpha (undocumented)
 export interface FeatureDiscoveryService {
   // (undocumented)
