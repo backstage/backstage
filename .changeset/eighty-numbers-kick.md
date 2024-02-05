@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-backend-module-pinniped-provider': patch
 ---
 
-Fixed a bug when refreshing the idToken, now when the audience query param is present on the refresh endpoint, it will be execute the rfc8693TokenExchange to get the a valid idToken for that specific audience
+Fixed a bug when refreshing ID tokens: now when the audience query parameter is passed to the refresh endpoint, the provider will perform an RFC 8693 token exchange to get a valid ID token for the specified audience.
