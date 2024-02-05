@@ -160,7 +160,7 @@ export type OpenIdConnectApi = {
  */
 export type PinnipedSupervisorApi = {
   /**
-   * Requests an Cluster Scoped ID Token which can be passed to backend services to exchange it for mTLS x509 client certs.
+   * Requests an Cluster Scoped ID Token which can be passed to a suitably-configured Pinniped Concierge in exchange for x509 client cert bundles.
    *
    * If the user has not yet logged in to Pinniped inside Backstage, the user will be prompted
    * to log in. The returned promise will not resolve until the user has successfully logged in.
