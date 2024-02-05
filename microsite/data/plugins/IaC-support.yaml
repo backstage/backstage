@@ -1,0 +1,10 @@
+---
+title: IaC Support
+author: Paul Pogonoski
+authorUrl: https://github.com/pogo61
+category: Catalogue Extension
+description: Add two new Catalogue entities - Environment and ResourceComponent as first-class entities. These are analogous to the software oriented entities System and Component.
+documentation: https://github.com/pogo61/Backstage-IaC-Plugin/blob/main/README.md
+iconUrl: /img/Iac-support.png
+npmPackageName: '@paulpogo/plugin-iac-support-backend'
+addedDate: '2024-02-14'
