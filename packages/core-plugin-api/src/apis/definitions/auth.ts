@@ -477,7 +477,7 @@ export const atlassianAuthApiRef: ApiRef<
  * @public
  * @remarks
  */
-export const pinnipedSupervisorApiRef: ApiRef<PinnipedSupervisorApi> =
+export const pinnipedSupervisorAuthApiRef: ApiRef<PinnipedSupervisorApi> =
   createApiRef({
     id: 'core.auth.pinniped',
   });
