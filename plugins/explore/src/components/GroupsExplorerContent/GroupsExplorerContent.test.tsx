@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
+import { waitFor, screen } from '@testing-library/react';
 import React from 'react';
 import { GroupsExplorerContent } from '../GroupsExplorerContent';
 
@@ -80,9 +80,11 @@ describe('<GroupsExplorerContent />', () => {
       mountedRoutes,
     );
 
-    expect(
-      screen.getByRole('link', { name: 'group:my-namespace/group-a' }),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        screen.getByRole('link', { name: 'group:my-namespace/group-a' }),
+      ).toBeInTheDocument(),
+    );
   });
 
   it('renders a custom title', async () => {
@@ -95,9 +97,11 @@ describe('<GroupsExplorerContent />', () => {
       mountedRoutes,
     );
 
-    expect(
-      screen.getByText('Our Teams', { selector: 'h2' }),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        screen.getByText('Our Teams', { selector: 'h2' }),
+      ).toBeInTheDocument(),
+    );
   });
 
   it('renders a friendly error if it cannot collect domains', async () => {
@@ -111,6 +115,8 @@ describe('<GroupsExplorerContent />', () => {
       mountedRoutes,
     );
 
-    expect(screen.getAllByText(/Error: Network timeout/).length).not.toBe(0);
+    await waitFor(() =>
+      expect(screen.getAllByText(/Error: Network timeout/).length).not.toBe(0),
+    );
   });
 });
