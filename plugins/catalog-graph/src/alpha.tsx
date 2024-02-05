@@ -26,57 +26,37 @@ import {
 } from '@backstage/core-compat-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
-import { ALL_RELATION_PAIRS, Direction } from './components';
+import { Direction } from './components';
 
-type Zod = Parameters<Parameters<typeof createSchemaFromZod>[0]>[0];
-
-function getCompoundEntityRefConfigSchema(z: Zod) {
-  return z.object({
-    kind: z.string(),
-    namespace: z.string(),
-    name: z.string(),
-  });
-}
-
-function getEntityGraphRelationsConfigSchema(z: Zod) {
+function getEntityGraphRelationsConfigSchema(
+  z: Parameters<Parameters<typeof createSchemaFromZod>[0]>[0],
+) {
   // Mapping EntityRelationsGraphProps to config
-  // TODO: Define how className and render functions will be configured
+  // The classname and render functions are configurable only via extension overrides
   return z.object({
-    rootEntityNames: getCompoundEntityRefConfigSchema(z)
-      .or(z.array(getCompoundEntityRefConfigSchema(z)))
-      .optional(),
     kinds: z.array(z.string()).optional(),
     relations: z.array(z.string()).optional(),
-    maxDepth: z.number().default(1),
+    maxDepth: z.number().optional(),
     unidirectional: z.boolean().optional(),
     mergeRelations: z.boolean().optional(),
-    direction: z.nativeEnum(Direction).default(Direction.LEFT_RIGHT),
-    relationPairs: z
-      .array(z.tuple([z.string(), z.string()]))
-      .optional()
-      .default(ALL_RELATION_PAIRS),
-    zoom: z
-      .enum(['enabled', 'disabled', 'enable-on-click'])
-      .default('enable-on-click'),
-    curve: z
-      .enum(['curveStepBefore', 'curveMonotoneX'])
-      .default('curveMonotoneX'),
+    direction: z.nativeEnum(Direction).optional(),
+    relationPairs: z.array(z.tuple([z.string(), z.string()])).optional(),
+    zoom: z.enum(['enabled', 'disabled', 'enable-on-click']).optional(),
+    curve: z.enum(['curveStepBefore', 'curveMonotoneX']).optional(),
   });
 }
 
 const CatalogGraphEntityCard = createEntityCardExtension({
-  name: 'entity-relations',
+  name: 'relations',
   configSchema: createSchemaFromZod(z =>
     z
       .object({
         // Filter is a config required to all entity cards
         filter: z.string().optional(),
-        title: z.string().optional().default('Relations'),
+        title: z.string().optional(),
         height: z.number().optional(),
-        variant: z
-          .enum(['flex', 'fullHeight', 'gridItem'])
-          .optional()
-          .default('gridItem'),
+        // Skipping a "variant" config for now, defaulting to "gridItem" in the component
+        // For more details, see this comment: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
       })
       .merge(getEntityGraphRelationsConfigSchema(z)),
   ),
@@ -93,7 +73,7 @@ const CatalogGraphPage = createPageExtension({
     z.object({
       // Path is a default config required to all pages
       path: z.string().default('/catalog-graph'),
-      // Mapping intialState prop to config
+      // Mapping intialState prop to config, these are the initial filter values, as opposed to configuration of the available filter values
       initialState: z
         .object({
           selectedKinds: z.array(z.string()).optional(),
