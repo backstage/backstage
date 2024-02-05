@@ -22644,12 +22644,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cli-table@npm:^0.3.1":
-  version: 0.3.6
-  resolution: "cli-table@npm:0.3.6"
+"cli-table@npm:^0.3.1, cli-table@npm:^0.3.11":
+  version: 0.3.11
+  resolution: "cli-table@npm:0.3.11"
   dependencies:
     colors: 1.0.3
-  checksum: b0cd08578c810240920438cc2b3ffb4b4f5106b29f3362707f1d8cfc0c0440ad2afb70b96e30ce37f72f0ffe1e844ae7341dde4df17d51ad345eb186a5903af2
+  checksum: 59fb61f992ac9bc8610ed98c72bf7f5d396c5afb42926b6747b46b0f8bb98a0dfa097998e77542ac334c1eb7c18dbf4f104d5783493273c5ec4c34084aa7c663
   languageName: node
   linkType: hard
 
@@ -39193,7 +39193,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"readdirp@npm:~3.6.0":
+"readdirp@npm:^3.3.0, readdirp@npm:~3.6.0":
   version: 3.6.0
   resolution: "readdirp@npm:3.6.0"
   dependencies:
@@ -40117,6 +40117,7 @@ __metadata:
     prettier: ^2.2.1
     semver: ^7.5.3
     shx: ^0.3.2
+    sloc: ^0.3.1
     ts-node: ^10.4.0
     typescript: ~5.1.0
   languageName: unknown
@@ -40897,6 +40898,20 @@ __metadata:
     ansi-styles: ^6.2.1
     is-fullwidth-code-point: ^5.0.0
   checksum: 10313dd3cf7a2e4b265f527b1684c7c568210b09743fd1bd74f2194715ed13ffba653dc93a5fa79e3b1711518b8990a732cb7143aa01ddafe626e99dfa6474b2
+  languageName: node
+  linkType: hard
+
+"sloc@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "sloc@npm:0.3.1"
+  dependencies:
+    async: ^3.2.4
+    cli-table: ^0.3.11
+    commander: ^11.0.0
+    readdirp: ^3.3.0
+  bin:
+    sloc: bin/sloc
+  checksum: 3075150912b4fbb90167c446b155fcfffa20351245d7ae2a7139b2c3ba5dd9fd01fe97fc11a917d5f6a66778c3a9ab4c6ceff0bcd234338f38942fb7238ab927
   languageName: node
   linkType: hard
 
