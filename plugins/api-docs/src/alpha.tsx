@@ -29,6 +29,7 @@ import { ApiEntity } from '@backstage/catalog-model';
 import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { rootRoute, registerComponentRouteRef } from './routes';
 import { apiDocsConfigRef } from './config';
+import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
 const ApiDocsConfigApi = createApiExtension({
   factory: createApiFactory({
@@ -62,6 +63,12 @@ const ApiDocsExplorerPage = createPageExtension({
     )),
 });
 
+const ApiDocsDefinitionEntityCard = createEntityCardExtension({
+  name: 'api-definition',
+  loader: () =>
+    import('./components/ApiDefinitionCard').then(m => <m.ApiDefinitionCard />),
+});
+
 export default createPlugin({
   id: 'api-docs',
   routes: {
@@ -70,5 +77,9 @@ export default createPlugin({
   externalRoutes: {
     registerApi: convertLegacyRouteRef(registerComponentRouteRef),
   },
-  extensions: [ApiDocsConfigApi, ApiDocsExplorerPage],
+  extensions: [
+    ApiDocsConfigApi,
+    ApiDocsExplorerPage,
+    ApiDocsDefinitionEntityCard,
+  ],
 });
