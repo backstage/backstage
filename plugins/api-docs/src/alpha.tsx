@@ -85,6 +85,14 @@ const ApiDocsHasApisEntityCard = createEntityCardExtension({
   loader: () => import('./components/ApisCards').then(m => <m.HasApisCard />),
 });
 
+const ApiDocsProvidedApisEntityCard = createEntityCardExtension({
+  name: 'provided-apis',
+  // we are skipping variations, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  // and columns are too complex to map to zod
+  loader: () =>
+    import('./components/ApisCards').then(m => <m.ProvidedApisCard />),
+});
+
 const ApiDocsConsumingComponentsEntityCard = createEntityCardExtension({
   name: 'consuming-components',
   // Ommiting configSchema for now
@@ -108,6 +116,7 @@ export default createPlugin({
     ApiDocsExplorerPage,
     ApiDocsHasApisEntityCard,
     ApiDocsDefinitionEntityCard,
+    ApiDocsProvidedApisEntityCard,
     ApiDocsConsumedApisEntityCard,
     ApiDocsConsumingComponentsEntityCard,
   ],
