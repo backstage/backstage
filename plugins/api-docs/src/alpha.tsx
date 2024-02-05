@@ -14,9 +14,32 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/frontend-plugin-api';
+import {
+  createApiExtension,
+  createApiFactory,
+  createPlugin,
+} from '@backstage/frontend-plugin-api';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import { ApiEntity } from '@backstage/catalog-model';
+
+import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { rootRoute, registerComponentRouteRef } from './routes';
+import { apiDocsConfigRef } from './config';
+
+const ApiDocsConfigApi = createApiExtension({
+  factory: createApiFactory({
+    api: apiDocsConfigRef,
+    deps: {},
+    factory: () => {
+      const definitionWidgets = defaultDefinitionWidgets();
+      return {
+        getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+          return definitionWidgets.find(d => d.type === apiEntity.spec.type);
+        },
+      };
+    },
+  }),
+});
 
 export default createPlugin({
   id: 'api-docs',
@@ -26,5 +49,5 @@ export default createPlugin({
   externalRoutes: {
     registerApi: convertLegacyRouteRef(registerComponentRouteRef),
   },
-  extensions: [],
+  extensions: [ApiDocsConfigApi],
 });
