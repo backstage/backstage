@@ -5,7 +5,7 @@ app:
     bindings:
       catalog.viewTechDoc: techdocs.docRoot
       catalog.createComponent: catalog-import.importPage
-  #   org.catalogIndex: catalog.catalogIndex
+      org.catalogIndex: catalog.catalogIndex
 
   extensions:
     # - apis.plugin.graphiql.browse.gitlab: true
@@ -21,12 +21,10 @@ app:
     - entity-content:techdocs
 
     # Org Plugin
-    - entity-card:org/group-profile:
-        config:
-          filter: kind:group
-    # - entity-card:org/members-list
-    # - entity-card:org/ownership
-    # - entity-card:org/user-profile
+    - entity-card:org/group-profile
+    - entity-card:org/members-list
+    - entity-card:org/ownership
+    - entity-card:org/user-profile
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

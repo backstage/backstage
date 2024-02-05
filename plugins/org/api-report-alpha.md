@@ -4,7 +4,6 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -15,11 +14,6 @@ const _default: BackstagePlugin<
   }
 >;
 export default _default;
-
-// @alpha (undocumented)
-export const EntityGroupProfileCard: ExtensionDefinition<{
-  filter?: string | undefined;
-}>;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -24,8 +24,9 @@ import { catalogIndexRouteRef } from './routes';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
 /** @alpha */
-export const EntityGroupProfileCard = createEntityCardExtension({
+const EntityGroupProfileCard = createEntityCardExtension({
   name: 'group-profile',
+  filter: 'kind:group',
   loader: async () =>
     import('./components/Cards/Group/GroupProfile/GroupProfileCard').then(m =>
       compatWrapper(<m.GroupProfileCard />),
@@ -33,8 +34,9 @@ export const EntityGroupProfileCard = createEntityCardExtension({
 });
 
 /** @alpha */
-export const EntityMembersListCard = createEntityCardExtension({
+const EntityMembersListCard = createEntityCardExtension({
   name: 'members-list',
+  filter: 'kind:group',
   loader: async () =>
     import('./components/Cards/Group/MembersList/MembersListCard').then(m =>
       compatWrapper(<m.MembersListCard />),
@@ -42,8 +44,9 @@ export const EntityMembersListCard = createEntityCardExtension({
 });
 
 /** @alpha */
-export const EntityOwnershipCard = createEntityCardExtension({
+const EntityOwnershipCard = createEntityCardExtension({
   name: 'ownership',
+  filter: 'kind:group,user',
   loader: async () =>
     import('./components/Cards/OwnershipCard/OwnershipCard').then(m =>
       compatWrapper(<m.OwnershipCard />),
@@ -51,8 +54,9 @@ export const EntityOwnershipCard = createEntityCardExtension({
 });
 
 /** @alpha */
-export const EntityUserProfileCard = createEntityCardExtension({
+const EntityUserProfileCard = createEntityCardExtension({
   name: 'user-profile',
+  filter: 'kind:user',
   loader: async () =>
     import('./components/Cards/User/UserProfileCard/UserProfileCard').then(m =>
       compatWrapper(<m.UserProfileCard />),
