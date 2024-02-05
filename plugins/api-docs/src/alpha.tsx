@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+import React from 'react';
+
 import {
   createApiExtension,
   createApiFactory,
+  createPageExtension,
   createPlugin,
+  createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { ApiEntity } from '@backstage/catalog-model';
@@ -41,6 +45,23 @@ const ApiDocsConfigApi = createApiExtension({
   }),
 });
 
+const ApiDocsExplorerPage = createPageExtension({
+  defaultPath: '/api-docs',
+  routeRef: convertLegacyRouteRef(rootRoute),
+  // Mapping DefaultApiExplorerPageProps to config
+  configSchema: createSchemaFromZod(z =>
+    z.object({
+      path: z.string().default('/api-docs'),
+      initiallySelectedFilter: z.enum(['owned', 'starred', 'all']).optional(),
+      // Ommiting columns and actions for now as their types are too complex to map to zod
+    }),
+  ),
+  loader: () =>
+    import('./components/ApiExplorerPage').then(m => (
+      <m.ApiExplorerIndexPage />
+    )),
+});
+
 export default createPlugin({
   id: 'api-docs',
   routes: {
@@ -49,5 +70,5 @@ export default createPlugin({
   externalRoutes: {
     registerApi: convertLegacyRouteRef(registerComponentRouteRef),
   },
-  extensions: [ApiDocsConfigApi],
+  extensions: [ApiDocsConfigApi, ApiDocsExplorerPage],
 });
