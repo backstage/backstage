@@ -72,7 +72,7 @@ const ApiDocsDefinitionEntityCard = createEntityCardExtension({
 const ApiDocsConsumedApisEntityCard = createEntityCardExtension({
   name: 'consumed-apis',
   // Ommiting configSchema for now
-  // we are skipping variations, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
   // and columns are too complex to map to zod
   loader: () =>
     import('./components/ApisCards').then(m => <m.ConsumedApisCard />),
@@ -80,14 +80,14 @@ const ApiDocsConsumedApisEntityCard = createEntityCardExtension({
 
 const ApiDocsHasApisEntityCard = createEntityCardExtension({
   name: 'has-apis',
-  // we are skipping variations, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
   // and columns are too complex to map to zod
   loader: () => import('./components/ApisCards').then(m => <m.HasApisCard />),
 });
 
 const ApiDocsProvidedApisEntityCard = createEntityCardExtension({
   name: 'provided-apis',
-  // we are skipping variations, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
   // and columns are too complex to map to zod
   loader: () =>
     import('./components/ApisCards').then(m => <m.ProvidedApisCard />),
@@ -96,7 +96,7 @@ const ApiDocsProvidedApisEntityCard = createEntityCardExtension({
 const ApiDocsConsumingComponentsEntityCard = createEntityCardExtension({
   name: 'consuming-components',
   // Ommiting configSchema for now
-  // we are skipping variations, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
   loader: () =>
     import('./components/ComponentsCards').then(m => (
       <m.ConsumingComponentsCard />
@@ -106,7 +106,7 @@ const ApiDocsConsumingComponentsEntityCard = createEntityCardExtension({
 const ApiDocsProvidingComponentsEntityCard = createEntityCardExtension({
   name: 'providing-components',
   // Ommiting configSchema for now
-  // we are skipping variations, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
   loader: () =>
     import('./components/ComponentsCards').then(m => (
       <m.ProvidingComponentsCard />
