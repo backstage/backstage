@@ -19,6 +19,27 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
 import { signalService } from '@backstage/plugin-signals-node';
+import {
+  NotificationProcessor,
+  notificationsProcessingExtensionPoint,
+  NotificationsProcessingExtensionPoint,
+} from '@backstage/plugin-notifications-node';
+
+class NotificationsProcessingExtensionPointImpl
+  implements NotificationsProcessingExtensionPoint
+{
+  #processors = new Array<NotificationProcessor>();
+
+  addProcessor(
+    ...processors: Array<NotificationProcessor | Array<NotificationProcessor>>
+  ): void {
+    this.#processors.push(...processors.flat());
+  }
+
+  get processors() {
+    return this.#processors;
+  }
+}
 
 /**
  * Notifications backend plugin
@@ -28,6 +49,13 @@ import { signalService } from '@backstage/plugin-signals-node';
 export const notificationsPlugin = createBackendPlugin({
   pluginId: 'notifications',
   register(env) {
+    const processingExtensions =
+      new NotificationsProcessingExtensionPointImpl();
+    env.registerExtensionPoint(
+      notificationsProcessingExtensionPoint,
+      processingExtensions,
+    );
+
     env.registerInit({
       deps: {
         httpRouter: coreServices.httpRouter,
@@ -55,6 +83,7 @@ export const notificationsPlugin = createBackendPlugin({
             tokenManager,
             discovery,
             signalService: signals,
+            processors: processingExtensions.processors,
           }),
         );
       },

@@ -37,8 +37,8 @@ import {
   RELATION_HAS_MEMBER,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { NotificationProcessor } from '../types';
-import { AuthenticationError } from '@backstage/errors';
+import { NotificationProcessor } from '@backstage/plugin-notifications-node';
+import { AuthenticationError, InputError } from '@backstage/errors';
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { SignalService } from '@backstage/plugin-signals-node';
 import {
@@ -79,7 +79,10 @@ export async function createRouter(
 
   const getUser = async (req: Request<unknown>) => {
     const user = await identity.getIdentity({ request: req });
-    return user ? user.identity.userEntityRef : 'user:default/guest';
+    if (!user) {
+      throw new AuthenticationError();
+    }
+    return user.identity.userEntityRef;
   };
 
   const authenticateService = async (req: Request<unknown>) => {
@@ -184,7 +187,7 @@ export async function createRouter(
   router.get('/notifications', async (req, res) => {
     const user = await getUser(req);
     const opts: NotificationGetOptions = {
-      user_ref: user,
+      user: user,
     };
     if (req.query.type) {
       opts.type = req.query.type.toString() as NotificationType;
@@ -205,7 +208,7 @@ export async function createRouter(
 
   router.get('/status', async (req, res) => {
     const user = await getUser(req);
-    const status = await store.getStatus({ user_ref: user, type: 'undone' });
+    const status = await store.getStatus({ user, type: 'undone' });
     res.send(status);
   });
 
@@ -213,11 +216,11 @@ export async function createRouter(
     const user = await getUser(req);
     const { ids, done, read, saved } = req.body;
     if (!ids || !Array.isArray(ids)) {
-      res.status(400).send();
-      return;
+      throw new InputError();
     }
+
     if (done === true) {
-      await store.markDone({ user_ref: user, ids });
+      await store.markDone({ user, ids });
       if (signalService) {
         await signalService.publish({
           recipients: [user],
@@ -226,7 +229,7 @@ export async function createRouter(
         });
       }
     } else if (done === false) {
-      await store.markUndone({ user_ref: user, ids });
+      await store.markUndone({ user, ids });
       if (signalService) {
         await signalService.publish({
           recipients: [user],
@@ -237,7 +240,7 @@ export async function createRouter(
     }
 
     if (read === true) {
-      await store.markRead({ user_ref: user, ids });
+      await store.markRead({ user, ids });
 
       if (signalService) {
         await signalService.publish({
@@ -247,7 +250,7 @@ export async function createRouter(
         });
       }
     } else if (read === false) {
-      await store.markUnread({ user_ref: user, ids });
+      await store.markUnread({ user: user, ids });
 
       if (signalService) {
         await signalService.publish({
@@ -259,15 +262,18 @@ export async function createRouter(
     }
 
     if (saved === true) {
-      await store.markSaved({ user_ref: user, ids });
+      await store.markSaved({ user: user, ids });
     } else if (saved === false) {
-      await store.markUnsaved({ user_ref: user, ids });
+      await store.markUnsaved({ user: user, ids });
     }
 
-    const notifications = await store.getNotifications({ ids, user_ref: user });
+    const notifications = await store.getNotifications({ ids, user: user });
     res.status(200).send(notifications);
   });
 
+  // Add new notification
+  // Allowed only for service-to-service authentication, uses `getUsersForEntityRef` to retrieve recipients for
+  // specific entity reference
   router.post('/notifications', async (req, res) => {
     const { recipients, origin, payload } = req.body;
     const notifications = [];
@@ -276,20 +282,18 @@ export async function createRouter(
     try {
       await authenticateService(req);
     } catch (e) {
-      logger.error(`Failed to authenticate notification request ${e}`);
-      res.status(401).send();
-      return;
+      throw new AuthenticationError();
     }
 
     const { title, link, description, scope } = payload;
 
     if (!recipients || !title || !origin || !link) {
       logger.error(`Invalid notification request received`);
-      res.status(400).send();
-      return;
+      throw new InputError();
     }
 
     let entityRef = null;
+    // TODO: Support for broadcast notifications
     if (recipients.entityRef && recipients.type === 'entity') {
       entityRef = recipients.entityRef;
     }
@@ -297,12 +301,10 @@ export async function createRouter(
     try {
       users = await getUsersForEntityRef(entityRef);
     } catch (e) {
-      logger.error(`Failed to resolve notification receiver ${e}`);
-      res.status(400).send();
-      return;
+      throw new InputError();
     }
 
-    const baseNotification: Omit<Notification, 'id' | 'userRef'> = {
+    const baseNotification: Omit<Notification, 'id' | 'user'> = {
       payload: {
         ...payload,
         severity: payload.severity ?? 'normal',
@@ -311,18 +313,19 @@ export async function createRouter(
       created: new Date(),
     };
 
-    for (const user of users) {
+    const uniqueUsers = [...new Set(users)];
+    for (const user of uniqueUsers) {
       const userNotification = {
         ...baseNotification,
         id: uuid(),
-        userRef: user,
+        user,
       };
       const notification = await decorateNotification(userNotification);
 
       let existingNotification;
       if (scope) {
         existingNotification = await store.getExistingScopeNotification({
-          user_ref: user,
+          user,
           scope,
           origin,
         });
@@ -345,7 +348,7 @@ export async function createRouter(
 
     if (signalService) {
       await signalService.publish({
-        recipients: entityRef === null ? null : users,
+        recipients: entityRef === null ? null : uniqueUsers,
         message: {
           action: 'new_notification',
           notification: { title, description, link },
@@ -354,7 +357,7 @@ export async function createRouter(
       });
     }
 
-    res.send(notifications);
+    res.json(notifications);
   });
 
   router.use(errorHandler());

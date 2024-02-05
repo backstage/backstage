@@ -18,7 +18,5 @@ import { NotificationSendOptions } from './DefaultNotificationService';
 
 /** @public */
 export interface NotificationService {
-  forPlugin(pluginId: string): NotificationService;
-
   send(options: NotificationSendOptions): Promise<void>;
 }

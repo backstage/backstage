@@ -22,13 +22,14 @@ import {
 
 /** @public */
 export type NotificationGetOptions = {
-  user_ref: string;
-
+  user: string;
   ids?: string[];
   type?: NotificationType;
   offset?: number;
   limit?: number;
   search?: string;
+  sort?: 'created' | 'read' | 'updated' | null;
+  sortOrder?: 'asc' | 'desc';
 };
 
 /** @public */
@@ -43,7 +44,7 @@ export interface NotificationsStore {
   saveNotification(notification: Notification): Promise<void>;
 
   getExistingScopeNotification(options: {
-    user_ref: string;
+    user: string;
     scope: string;
     origin: string;
   }): Promise<Notification | null>;

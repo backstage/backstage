@@ -4,24 +4,28 @@
 
 ```ts
 import { DiscoveryService } from '@backstage/backend-plugin-api';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { SignalService } from '@backstage/plugin-signals-node';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public (undocumented)
 export class DefaultNotificationService implements NotificationService {
   // (undocumented)
   static create({
-    logger,
     tokenManager,
     discovery,
+    pluginId,
   }: NotificationServiceOptions): DefaultNotificationService;
   // (undocumented)
-  forPlugin(pluginId: string): NotificationService;
-  // (undocumented)
   send(notification: NotificationSendOptions): Promise<void>;
+}
+
+// @public (undocumented)
+export interface NotificationProcessor {
+  decorate?(notification: Notification_2): Promise<Notification_2>;
+  send?(notification: Notification_2): Promise<void>;
 }
 
 // @public (undocumented)
@@ -39,8 +43,6 @@ export type NotificationSendOptions = {
 // @public (undocumented)
 export interface NotificationService {
   // (undocumented)
-  forPlugin(pluginId: string): NotificationService;
-  // (undocumented)
   send(options: NotificationSendOptions): Promise<void>;
 }
 
@@ -49,9 +51,19 @@ export const notificationService: ServiceRef<NotificationService, 'plugin'>;
 
 // @public (undocumented)
 export type NotificationServiceOptions = {
-  logger: LoggerService;
   discovery: DiscoveryService;
   tokenManager: TokenManager;
-  signalService: SignalService;
+  pluginId: string;
 };
+
+// @public (undocumented)
+export interface NotificationsProcessingExtensionPoint {
+  // (undocumented)
+  addProcessor(
+    ...processors: Array<NotificationProcessor | Array<NotificationProcessor>>
+  ): void;
+}
+
+// @public (undocumented)
+export const notificationsProcessingExtensionPoint: ExtensionPoint<NotificationsProcessingExtensionPoint>;
 ```

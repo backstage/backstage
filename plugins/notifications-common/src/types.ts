@@ -36,10 +36,11 @@ export type NotificationPayload = {
 /** @public */
 export type Notification = {
   id: string;
-  userRef: string;
+  user: string;
   created: Date;
   saved?: Date;
   read?: Date;
+  done?: Date;
   updated?: Date;
   origin: string;
   payload: NotificationPayload;

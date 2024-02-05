@@ -20,7 +20,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DefaultNotificationService } from './service';
 import { NotificationService } from './service/NotificationService';
-import { signalService } from '@backstage/plugin-signals-node';
 
 /** @public */
 export const notificationService = createServiceRef<NotificationService>({
@@ -30,20 +29,16 @@ export const notificationService = createServiceRef<NotificationService>({
     createServiceFactory({
       service,
       deps: {
-        logger: coreServices.rootLogger,
         discovery: coreServices.discovery,
         tokenManager: coreServices.tokenManager,
         pluginMetadata: coreServices.pluginMetadata,
-        signals: signalService,
       },
-      factory({ logger, discovery, tokenManager, signals, pluginMetadata }) {
-        // TODO: Convert to use createRootContext
+      factory({ discovery, tokenManager, pluginMetadata }) {
         return DefaultNotificationService.create({
-          logger,
           discovery,
           tokenManager,
-          signalService: signals,
-        }).forPlugin(pluginMetadata.getId());
+          pluginId: pluginMetadata.getId(),
+        });
       },
     }),
 });

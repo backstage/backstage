@@ -56,20 +56,46 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return typeof val === 'string' ? Number.parseInt(val, 10) : val ?? 0;
   };
 
+  private mapToNotifications = (rows: any[]): Notification[] => {
+    return rows.map(row => ({
+      id: row.id,
+      user: row.user,
+      created: row.created,
+      done: row.done,
+      saved: row.saved,
+      read: row.read,
+      updated: row.updated,
+      origin: row.origin,
+      payload: {
+        title: row.title,
+        description: row.description,
+        link: row.link,
+        topic: row.topic,
+        severity: row.severity,
+        scope: row.scope,
+        icon: row.icon,
+      },
+    }));
+  };
+
   private getNotificationsBaseQuery = (
     options: NotificationGetOptions | NotificationModifyOptions,
   ) => {
-    const { user_ref, type } = options;
-    const query = this.db('notifications')
-      .where('userRef', user_ref)
-      .orderBy('created', 'desc');
+    const { user, type } = options;
+    const query = this.db('notification').where('user', user);
+
+    if (options.sort !== undefined && options.sort !== null) {
+      query.orderBy(options.sort, options.sortOrder ?? 'desc');
+    } else if (options.sort !== null) {
+      query.orderBy('created', options.sortOrder ?? 'desc');
+    }
 
     if (type === 'undone') {
       query.whereNull('done');
     } else if (type === 'done') {
       query.whereNotNull('done');
     } else if (type === 'saved') {
-      query.where('saved', true);
+      query.whereNotNull('saved');
     }
 
     if (options.limit) {
@@ -81,22 +107,14 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     }
 
     if (options.search) {
-      if (this.db.client.config.client === 'pg') {
-        query.whereRaw(
-          `(to_tsvector('english', notifications.title || ' ' || notifications.description) @@ websearch_to_tsquery('english', quote_literal(?))
-          or to_tsvector('english', notifications.title || ' ' || notifications.description) @@ to_tsquery('english',quote_literal(?)))`,
-          [`${options.search}`, `${options.search.replaceAll(/\s/g, '+')}:*`],
-        );
-      } else {
-        query.whereRaw(
-          `LOWER(notifications.title || ' ' || notifications.description) LIKE LOWER(?)`,
-          [`%${options.search}%`],
-        );
-      }
+      query.whereRaw(
+        `(LOWER(notification.title) LIKE LOWER(?) OR LOWER(notification.description) LIKE LOWER(?))`,
+        [`%${options.search}%`, `%${options.search}%`],
+      );
     }
 
     if (options.ids) {
-      query.whereIn('id', options.ids);
+      query.whereIn('notification.id', options.ids);
     }
 
     return query;
@@ -104,43 +122,50 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
   async getNotifications(options: NotificationGetOptions) {
     const notificationQuery = this.getNotificationsBaseQuery(options);
-    const notifications = await notificationQuery.select('*');
-    return notifications;
+    const notifications = await notificationQuery.select();
+    return this.mapToNotifications(notifications);
   }
 
   async saveNotification(notification: Notification) {
-    await this.db.insert(notification).into('notifications');
+    await this.db.insert(notification).into('notification');
   }
 
   async getStatus(options: NotificationGetOptions) {
-    const notificationQuery = this.getNotificationsBaseQuery(options);
-    const unreadQuery = await notificationQuery
+    const notificationQuery = this.getNotificationsBaseQuery({
+      ...options,
+      sort: null,
+    });
+    const readSubQuery = notificationQuery
       .clone()
-      .whereNull('read')
-      .count('id as UNREAD')
-      .first();
-    const readQuery = await notificationQuery
-      .clone()
+      .count('id')
       .whereNotNull('read')
-      .count('id as READ')
+      .as('READ');
+    const unreadSubQuery = notificationQuery
+      .clone()
+      .count('id')
+      .whereNull('read')
+      .as('UNREAD');
+
+    const query = await notificationQuery
+      .select(readSubQuery, unreadSubQuery)
       .first();
 
     return {
-      unread: this.mapToInteger((unreadQuery as any)?.UNREAD),
-      read: this.mapToInteger((readQuery as any)?.READ),
+      unread: this.mapToInteger((query as any)?.UNREAD),
+      read: this.mapToInteger((query as any)?.READ),
     };
   }
 
   async getExistingScopeNotification(options: {
-    user_ref: string;
+    user: string;
     scope: string;
     origin: string;
   }) {
-    const query = this.db('notifications')
-      .where('userRef', options.user_ref)
+    const query = this.db('notification')
+      .where('user', options.user)
       .where('scope', options.scope)
       .where('origin', options.origin)
-      .select('*')
+      .select()
       .limit(1);
 
     const rows = await query;
@@ -154,10 +179,11 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     id: string;
     notification: Notification;
   }) {
-    const query = this.db('notifications')
+    const query = this.db('notification')
       .where('id', options.id)
-      .where('userRef', options.notification.userRef);
-    const rows = await query.update({
+      .where('user', options.notification.user);
+
+    await query.update({
       title: options.notification.payload.title,
       description: options.notification.payload.description,
       link: options.notification.payload.link,
@@ -168,22 +194,18 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       done: null,
     });
 
-    if (!rows) {
-      return null;
-    }
-
     return await this.getNotification(options);
   }
 
-  async getNotification(options: { id: string }) {
-    const rows = await this.db('notifications')
+  async getNotification(options: { id: string }): Promise<Notification | null> {
+    const rows = await this.db('notification')
       .where('id', options.id)
-      .select('*')
+      .select()
       .limit(1);
     if (!rows || rows.length === 0) {
       return null;
     }
-    return rows[0] as Notification;
+    return this.mapToNotifications(rows)[0];
   }
 
   async markRead(options: NotificationModifyOptions): Promise<void> {

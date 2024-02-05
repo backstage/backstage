@@ -66,7 +66,6 @@ import linguist from './plugins/linguist';
 import devTools from './plugins/devtools';
 import nomad from './plugins/nomad';
 import signals from './plugins/signals';
-import notifications from './plugins/notifications';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -75,7 +74,6 @@ import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { metrics } from '@opentelemetry/api';
 import { DefaultSignalService } from '@backstage/plugin-signals-node';
-import { DefaultNotificationService } from '@backstage/plugin-notifications-node';
 
 // Expose opentelemetry metrics using a Prometheus exporter on
 // http://localhost:9464/metrics . See prometheus.yml in packages/backend for
@@ -105,12 +103,6 @@ function makeCreateEnv(config: Config) {
   const signalService = DefaultSignalService.create({
     eventBroker,
   });
-  const defaultNotificationService = DefaultNotificationService.create({
-    logger: root.child({ type: 'plugin' }),
-    discovery,
-    tokenManager,
-    signalService,
-  });
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -119,7 +111,6 @@ function makeCreateEnv(config: Config) {
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
     const scheduler = taskScheduler.forPlugin(plugin);
-    const notificationService = defaultNotificationService.forPlugin(plugin);
 
     return {
       logger,
@@ -134,7 +125,6 @@ function makeCreateEnv(config: Config) {
       scheduler,
       identity,
       signalService,
-      notificationService,
     };
   };
 }
@@ -189,9 +179,6 @@ async function main() {
   const devToolsEnv = useHotMemoize(module, () => createEnv('devtools'));
   const nomadEnv = useHotMemoize(module, () => createEnv('nomad'));
   const signalsEnv = useHotMemoize(module, () => createEnv('signals'));
-  const notificationsEnv = useHotMemoize(module, () =>
-    createEnv('notifications'),
-  );
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -219,7 +206,6 @@ async function main() {
   apiRouter.use('/devtools', await devTools(devToolsEnv));
   apiRouter.use('/nomad', await nomad(nomadEnv));
   apiRouter.use('/signals', await signals(signalsEnv));
-  apiRouter.use('/notifications', await notifications(notificationsEnv));
   apiRouter.use(notFoundHandler());
 
   await lighthouse(lighthouseEnv);

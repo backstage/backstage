@@ -15,16 +15,14 @@
  */
 import { TokenManager } from '@backstage/backend-common';
 import { NotificationService } from './NotificationService';
-import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
-import { SignalService } from '@backstage/plugin-signals-node';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
 
 /** @public */
 export type NotificationServiceOptions = {
-  logger: LoggerService;
   discovery: DiscoveryService;
   tokenManager: TokenManager;
-  signalService: SignalService;
+  pluginId: string;
 };
 
 /** @public */
@@ -45,34 +43,20 @@ export type NotificationSendOptions = {
 /** @public */
 export class DefaultNotificationService implements NotificationService {
   private constructor(
-    private readonly logger: LoggerService,
     private readonly discovery: DiscoveryService,
     private readonly tokenManager: TokenManager,
-    private readonly pluginId?: string,
+    private readonly pluginId: string,
   ) {}
 
   static create({
-    logger,
     tokenManager,
     discovery,
+    pluginId,
   }: NotificationServiceOptions): DefaultNotificationService {
-    return new DefaultNotificationService(logger, discovery, tokenManager);
-  }
-
-  forPlugin(pluginId: string): NotificationService {
-    return new DefaultNotificationService(
-      this.logger,
-      this.discovery,
-      this.tokenManager,
-      pluginId,
-    );
+    return new DefaultNotificationService(discovery, tokenManager, pluginId);
   }
 
   async send(notification: NotificationSendOptions): Promise<void> {
-    if (!this.pluginId) {
-      throw new Error('Invalid initialization of the NotificationService');
-    }
-
     try {
       const baseUrl = await this.discovery.getBaseUrl('notifications');
       const { token } = await this.tokenManager.getToken();
@@ -80,6 +64,7 @@ export class DefaultNotificationService implements NotificationService {
         method: 'POST',
         body: JSON.stringify({
           ...notification,
+          // TODO: Should retrieve this in the backend from service auth instead
           origin: `plugin-${this.pluginId}`,
         }),
         headers: {
@@ -88,7 +73,8 @@ export class DefaultNotificationService implements NotificationService {
         },
       });
     } catch (error) {
-      this.logger.error(`Failed to send notifications: ${error}`);
+      // TODO: Should not throw in optimal case, see BEP
+      throw new Error(`Failed to send notifications: ${error}`);
     }
   }
 }

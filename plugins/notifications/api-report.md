@@ -68,7 +68,10 @@ export const notificationsPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export const NotificationsSidebarItem: () => React_2.JSX.Element;
+export const NotificationsSidebarItem: (props?: {
+  webNotificationsEnabled?: boolean;
+  titleCounterEnabled?: boolean;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const NotificationsTable: (props: {

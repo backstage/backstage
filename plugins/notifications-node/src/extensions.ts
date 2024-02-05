@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { Notification } from '@backstage/plugin-notifications-common';
 
-/** @public */
-export type NotificationProcessor = {
+/**
+ * @public
+ */
+export interface NotificationProcessor {
   /**
    * Decorate notification before sending it
    *
@@ -31,4 +34,21 @@ export type NotificationProcessor = {
    * @param notification - The notification to send
    */
   send?(notification: Notification): Promise<void>;
-};
+}
+
+/**
+ * @public
+ */
+export interface NotificationsProcessingExtensionPoint {
+  addProcessor(
+    ...processors: Array<NotificationProcessor | Array<NotificationProcessor>>
+  ): void;
+}
+
+/**
+ * @public
+ */
+export const notificationsProcessingExtensionPoint =
+  createExtensionPoint<NotificationsProcessingExtensionPoint>({
+    id: 'notifications.processing',
+  });

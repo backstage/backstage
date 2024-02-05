@@ -28,7 +28,6 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { SignalService } from '@backstage/plugin-signals-node';
-import { NotificationService } from '@backstage/plugin-notifications-node';
 
 export type PluginEnvironment = {
   logger: Logger;
@@ -43,5 +42,4 @@ export type PluginEnvironment = {
   identity: IdentityApi;
   eventBroker: EventBroker;
   signalService: SignalService;
-  notificationService: NotificationService;
 };

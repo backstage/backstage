@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useNotificationsApi } from '../../hooks';
 import { SidebarItem } from '@backstage/core-components';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useWebNotifications } from '../../hooks/useWebNotifications';
@@ -25,11 +25,16 @@ import { useTitleCounter } from '../../hooks/useTitleCounter';
 import { JsonObject } from '@backstage/types';
 
 /** @public */
-export const NotificationsSidebarItem = () => {
+export const NotificationsSidebarItem = (props?: {
+  webNotificationsEnabled?: boolean;
+  titleCounterEnabled?: boolean;
+}) => {
+  const { webNotificationsEnabled = false, titleCounterEnabled = true } =
+    props ?? { webNotificationsEnabled: false, titleCounterEnabled: true };
+
   const { loading, error, value, retry } = useNotificationsApi(api =>
     api.getStatus(),
   );
-  const config = useApi(configApiRef);
   const [unreadCount, setUnreadCount] = React.useState(0);
   const notificationsRoute = useRouteRef(rootRouteRef);
   // TODO: Add signal type support to `useSignal` to make it a bit easier to use
@@ -37,16 +42,6 @@ export const NotificationsSidebarItem = () => {
   const { lastSignal } = useSignal('notifications');
   const { sendWebNotification } = useWebNotifications();
   const [refresh, setRefresh] = React.useState(false);
-  const webNotificationsEnabled = useMemo(
-    () =>
-      config.getOptionalBoolean('notifications.enableWebNotifications') ??
-      false,
-    [config],
-  );
-  const titleCounterEnabled = useMemo(
-    () => config.getOptionalString('notifications.enableTitleCounter') ?? true,
-    [config],
-  );
   const { setNotificationCount } = useTitleCounter();
 
   useEffect(() => {

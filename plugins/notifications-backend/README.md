@@ -7,39 +7,12 @@ Welcome to the notifications backend plugin!
 First you have to install `@backstage/plugin-notifications-node` and `@backstage/plugin-signals-node`
 packages.
 
-Then create a new file to `packages/backend/src/plugins/notifications.ts`:
+Add the notifications to your backend:
 
 ```ts
-import { createRouter } from '@backstage/plugin-notifications-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    identity: env.identity,
-    tokenManager: env.tokenManager,
-    database: env.database,
-    discovery: env.discovery,
-    signalService: env.signalService,
-  });
-}
-```
-
-and add it to `packages/backend/src/index.ts`:
-
-```ts
-async function main() {
-  //...
-  const notificationsEnv = useHotMemoize(module, () =>
-    createEnv('notifications'),
-  );
-
-  // ...
-  apiRouter.use('/notifications', await notifications(notificationsEnv));
-}
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-notifications-backend'));
 ```
 
 ## Extending Notifications

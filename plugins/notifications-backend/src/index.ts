@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 export * from './service/router';
-export * from './plugin';
-export type { NotificationProcessor } from './types';
+export { notificationsPlugin as default } from './plugin';
