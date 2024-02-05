@@ -78,6 +78,16 @@ const ApiDocsConsumedApisEntityCard = createEntityCardExtension({
     import('./components/ApisCards').then(m => <m.ConsumedApisCard />),
 });
 
+const ApiDocsConsumingComponentsEntityCard = createEntityCardExtension({
+  name: 'consuming-components',
+  // Ommiting configSchema for now
+  // we are skipping variations, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  loader: () =>
+    import('./components/ComponentsCards').then(m => (
+      <m.ConsumingComponentsCard />
+    )),
+});
+
 export default createPlugin({
   id: 'api-docs',
   routes: {
@@ -91,5 +101,6 @@ export default createPlugin({
     ApiDocsExplorerPage,
     ApiDocsDefinitionEntityCard,
     ApiDocsConsumedApisEntityCard,
+    ApiDocsConsumingComponentsEntityCard,
   ],
 });
