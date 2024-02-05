@@ -476,6 +476,8 @@ export const atlassianAuthApiRef: ApiRef<
  *
  * @public
  * @remarks
+ *
+ * See {@link https://pinniped.dev/docs/howto/configure-auth-for-webapps/#how-a-web-application-can-perform-actions-as-the-authenticated-user-on-kubernetes-clusters} for details.
  */
 export const pinnipedSupervisorAuthApiRef: ApiRef<PinnipedSupervisorApi> =
   createApiRef({
