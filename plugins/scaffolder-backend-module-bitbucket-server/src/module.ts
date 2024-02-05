@@ -19,20 +19,17 @@ import {
 } from '@backstage/backend-plugin-api';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import {
-  createBitbucketPipelinesRunAction,
-  createPublishBitbucketCloudAction,
   createPublishBitbucketServerAction,
   createPublishBitbucketServerPullRequestAction,
-} from './deprecated';
+} from './actions';
 import { ScmIntegrations } from '@backstage/integration';
 
 /**
- * The Bitbucket Module for the Scaffolder Backend
  * @public
- * @deprecated use module by \@backstage/plugin-scaffolder-backend-module-bitbucket-cloud or \@backstage/plugin-scaffolder-backend-module-bitbucket-server instead
+ * The Bitbucket Server Module for the Scaffolder Backend
  */
-export const bitbucketModule = createBackendModule({
-  moduleId: 'bitbucket',
+export const bitbucketServerModule = createBackendModule({
+  moduleId: 'bitbucketServer',
   pluginId: 'scaffolder',
   register({ registerInit }) {
     registerInit({
@@ -44,13 +41,11 @@ export const bitbucketModule = createBackendModule({
         const integrations = ScmIntegrations.fromConfig(config);
 
         scaffolder.addActions(
-          createPublishBitbucketCloudAction({ integrations, config }),
           createPublishBitbucketServerAction({ integrations, config }),
           createPublishBitbucketServerPullRequestAction({
             integrations,
             config,
           }),
-          createBitbucketPipelinesRunAction({ integrations }),
         );
       },
     });

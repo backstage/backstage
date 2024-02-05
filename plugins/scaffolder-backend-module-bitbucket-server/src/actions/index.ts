@@ -13,12 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * A module for the scaffolder backend that lets you interact with bitbucket
- *
- * @packageDocumentation
- */
-
-export * from './deprecated';
-export { bitbucketModule as default } from './module';
+export * from './bitbucketServer';
+export * from './bitbucketServerPullRequest';
