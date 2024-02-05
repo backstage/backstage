@@ -472,7 +472,7 @@ export const atlassianAuthApiRef: ApiRef<
 });
 
 /**
- * Provides authentication towards Pinniped APIs.
+ * Provides Cluster-scoped ID tokens from a Pinniped Supervisor for use with the TokenCredentialRequest API
  *
  * @public
  * @remarks
