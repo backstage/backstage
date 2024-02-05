@@ -68,16 +68,18 @@ const EntityCountTile = ({
   type,
   kind,
   url,
+  longTextLength,
 }: {
   counter: number;
   type?: string;
   kind: string;
   url: string;
+  longTextLength: number;
 }) => {
   const classes = useStyles({ type: type ?? kind });
 
   const rawTitle = type ?? kind;
-  const isLongText = rawTitle.length > 10;
+  const isLongText = rawTitle.length > longTextLength;
 
   return (
     <Link to={url} variant="body2">
@@ -111,11 +113,13 @@ export const ComponentsGrid = ({
   relationsType,
   entityFilterKind,
   entityLimit = 6,
+  longTextLength,
 }: {
   entity: Entity;
   relationsType: EntityRelationAggregation;
   entityFilterKind?: string[];
   entityLimit?: number;
+  longTextLength?: number;
 }) => {
   const catalogLink = useRouteRef(catalogIndexRouteRef);
   const { componentsWithCounters, loading, error } = useGetEntities(
@@ -140,6 +144,7 @@ export const ComponentsGrid = ({
             kind={c.kind}
             type={c.type}
             url={`${catalogLink()}/?${c.queryParams}`}
+            longTextLength={longTextLength ?? 10}
           />
         </Grid>
       ))}

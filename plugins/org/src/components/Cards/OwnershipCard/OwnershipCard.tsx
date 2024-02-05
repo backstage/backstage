@@ -59,6 +59,7 @@ export const OwnershipCard = (props: {
   hideRelationsToggle?: boolean;
   relationsType?: EntityRelationAggregation;
   entityLimit?: number;
+  longTextLength?: number;
 }) => {
   const {
     variant,
@@ -66,6 +67,7 @@ export const OwnershipCard = (props: {
     hideRelationsToggle,
     relationsType,
     entityLimit = 6,
+    longTextLength,
   } = props;
   const relationsToggle =
     hideRelationsToggle === undefined ? false : hideRelationsToggle;
@@ -122,6 +124,7 @@ export const OwnershipCard = (props: {
         entityLimit={entityLimit}
         relationsType={getRelationsType}
         entityFilterKind={entityFilterKind}
+        longTextLength={longTextLength}
       />
     </InfoCard>
   );

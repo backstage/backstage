@@ -32,6 +32,7 @@ export const EntityOwnershipCard: (props: {
   hideRelationsToggle?: boolean | undefined;
   relationsType?: EntityRelationAggregation | undefined;
   entityLimit?: number | undefined;
+  longTextLength?: number | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
