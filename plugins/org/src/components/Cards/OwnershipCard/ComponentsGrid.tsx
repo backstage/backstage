@@ -113,7 +113,7 @@ export const ComponentsGrid = ({
   relationsType,
   entityFilterKind,
   entityLimit = 6,
-  longTextLength,
+  longTextLength = 10,
 }: {
   entity: Entity;
   relationsType: EntityRelationAggregation;
@@ -144,7 +144,7 @@ export const ComponentsGrid = ({
             kind={c.kind}
             type={c.type}
             url={`${catalogLink()}/?${c.queryParams}`}
-            longTextLength={longTextLength ?? 10}
+            longTextLength={longTextLength}
           />
         </Grid>
       ))}
