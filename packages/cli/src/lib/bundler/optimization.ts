@@ -15,9 +15,8 @@
  */
 
 import { RspackOptionsNormalized } from '@rspack/core';
+import RspackMinifyPlugin from '@rspack/plugin-minify';
 import { BundlingOptions } from './types';
-
-const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
 export const optimization = (
   options: BundlingOptions,
@@ -27,34 +26,35 @@ export const optimization = (
   return {
     minimize: !isDev,
     minimizer: [
-      new ESBuildMinifyPlugin({
-        target: 'es2019',
-        format: 'iife',
+      new RspackMinifyPlugin({
+        minifier: 'terser',
       }),
     ],
     runtimeChunk: 'single',
     splitChunks: {
       automaticNameDelimiter: '-',
+      maxAsyncRequests: Infinity,
+      maxInitialRequests: Infinity,
       cacheGroups: {
         default: false,
         // Put all vendor code needed for initial page load in individual files if they're big
         // enough, if they're smaller they end up in the main
         packages: {
           chunks: 'initial',
-          test(module: any) {
+          test(module) {
             return Boolean(
               module?.resource?.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/),
             );
           },
-          name(module: any) {
+          name(module) {
             // get the name. E.g. node_modules/packageName/not/this/part.js
             // or node_modules/packageName
-            const packageName = module.resource.match(
+            const packageName = module?.resource?.match(
               /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
-            )[1];
+            )?.[1];
 
             // npm package names are URL-safe, but some servers don't like @ symbols
-            return packageName.replace('@', '');
+            return packageName?.replace('@', '');
           },
           filename: isDev
             ? 'module-[name].js'
@@ -62,9 +62,7 @@ export const optimization = (
           priority: 10,
           minSize: 100000,
           minChunks: 1,
-          maxAsyncRequests: Infinity,
-          maxInitialRequests: Infinity,
-        } as any, // filename is not included in type, but we need it
+        }, // filename is not included in type, but we need it
         // Group together the smallest modules
         vendor: {
           chunks: 'initial',

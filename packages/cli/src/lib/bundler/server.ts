@@ -103,7 +103,6 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     withFilteredKeys: true,
     watch(appConfigs) {
       latestFrontendAppConfigs = appConfigs;
-
       rspackDevServer?.invalidate();
       viteServer?.restart();
     },

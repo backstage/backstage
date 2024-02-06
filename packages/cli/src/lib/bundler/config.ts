@@ -29,13 +29,13 @@ import { Config } from '@backstage/config';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
-import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
+// import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
+// import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import { paths as cliPaths } from '../../lib/paths';
 import fs from 'fs-extra';
 import { getPackages } from '@manypkg/get-packages';
-import { isChildPath } from '@backstage/cli-common';
+// import { isChildPath } from '@backstage/cli-common';
 import nodeExternals from 'webpack-node-externals';
 import { optimization } from './optimization';
 import pickBy from 'lodash/pickBy';
@@ -102,8 +102,8 @@ export async function createConfig(
   const { plugins, loaders } = transforms(options);
   // Any package that is part of the monorepo but outside the monorepo root dir need
   // separate resolution logic.
-  const { packages } = await getPackages(cliPaths.targetDir);
-  const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
+  // const { packages } = await getPackages(cliPaths.targetDir);
+  // const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
@@ -114,6 +114,7 @@ export async function createConfig(
 
   if (checksEnabled) {
     plugins.push(
+      // @ts-expect-error -- tsc doesn't like the types here but actually it's compatible
       new ForkTsCheckerWebpackPlugin({
         typescript: { configFile: paths.targetTsConfig, memoryLimit: 4096 },
       }),
@@ -135,6 +136,7 @@ export async function createConfig(
   );
 
   plugins.push(
+    // @ts-expect-error -- tsc doesn't like the types here but actually it's compatible
     new HtmlWebpackPlugin({
       template: paths.targetHtml,
       templateParameters: {
@@ -148,6 +150,11 @@ export async function createConfig(
   plugins.push(
     new DefinePlugin({
       'process.env.BUILD_INFO': JSON.stringify(buildInfo),
+      // FIXME: `DefinePlugin.runtimeValue()` is not supported yet, see also https://github.com/web-infra-dev/rspack/issues/5606
+      // 'process.env.APP_CONFIG': DefinePlugin.runtimeValue(
+      //   () => JSON.stringify(options.getFrontendAppConfigs()),
+      //   true,
+      // ),
       'process.env.APP_CONFIG': JSON.stringify(options.getFrontendAppConfigs()),
       // This allows for conditional imports of react-dom/client, since there's no way
       // to check for presence of it in source code without module resolution errors.
@@ -158,13 +165,13 @@ export async function createConfig(
   // These files are required by the transpiled code when using React Refresh.
   // They need to be excluded to the module scope plugin which ensures that files
   // that exist in the package are required.
-  const reactRefreshFiles = [
-    require.resolve(
-      '@pmmmwh/react-refresh-webpack-plugin/lib/runtime/RefreshUtils.js',
-    ),
-    require.resolve('@pmmmwh/react-refresh-webpack-plugin/overlay/index.js'),
-    require.resolve('react-refresh'),
-  ];
+  // const reactRefreshFiles = [
+  //   require.resolve(
+  //     '@pmmmwh/react-refresh-webpack-plugin/lib/runtime/RefreshUtils.js',
+  //   ),
+  //   require.resolve('@pmmmwh/react-refresh-webpack-plugin/overlay/index.js'),
+  //   require.resolve('react-refresh'),
+  // ];
 
   const withCache = yn(process.env[BUILD_CACHE_ENV_VAR], { default: false });
 
@@ -173,9 +180,9 @@ export async function createConfig(
     profile: false,
     optimization: optimization(options),
     bail: false,
-    performance: {
-      hints: false, // we check the gzip size instead
-    },
+    // performance: {
+    //   hints: false, // we check the gzip size instead
+    // },
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
     entry: [...(options.additionalEntryPoints ?? []), paths.targetEntry],
@@ -199,13 +206,14 @@ export async function createConfig(
         http: false,
         util: require.resolve('util/'),
       },
-      plugins: [
-        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
-        new ModuleScopePlugin(
-          [paths.targetSrc, paths.targetDev],
-          [paths.targetPackageJson, ...reactRefreshFiles],
-        ),
-      ],
+      // unsupported yet, see aslo https://github.com/web-infra-dev/rspack/issues/3408
+      // plugins: [
+      //   new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
+      //   new ModuleScopePlugin(
+      //     [paths.targetSrc, paths.targetDev],
+      //     [paths.targetPackageJson, ...reactRefreshFiles],
+      //   ),
+      // ],
     },
     module: {
       rules: loaders,
@@ -228,16 +236,7 @@ export async function createConfig(
         : {}),
     },
     plugins,
-    ...(withCache
-      ? {
-          cache: {
-            type: 'filesystem',
-            buildDependencies: {
-              config: [__filename],
-            },
-          },
-        }
-      : {}),
+    cache: withCache,
   };
 }
 
@@ -255,7 +254,7 @@ export async function createBackendConfig(
   });
   const moduleDirs = packages.map(p => resolvePath(p.dir, 'node_modules'));
   // See frontend config
-  const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
+  // const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
   const { loaders } = transforms({ ...options, isBackend: true });
 
@@ -300,9 +299,9 @@ export async function createBackendConfig(
       global: true,
     },
     bail: false,
-    performance: {
-      hints: false, // we check the gzip size instead
-    },
+    // performance: {
+    //   hints: false, // we check the gzip size instead
+    // },
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
     entry: [
@@ -313,13 +312,14 @@ export async function createBackendConfig(
       extensions: ['.ts', '.mjs', '.js', '.json'],
       mainFields: ['main'],
       modules: [paths.rootNodeModules, ...moduleDirs],
-      plugins: [
-        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
-        new ModuleScopePlugin(
-          [paths.targetSrc, paths.targetDev],
-          [paths.targetPackageJson],
-        ),
-      ],
+      // unsupported yet, see aslo https://github.com/web-infra-dev/rspack/issues/3408
+      // plugins: [
+      //   new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
+      //   new ModuleScopePlugin(
+      //     [paths.targetSrc, paths.targetDev],
+      //     [paths.targetPackageJson],
+      //   ),
+      // ],
     },
     module: {
       rules: loaders,
@@ -341,12 +341,14 @@ export async function createBackendConfig(
         : {}),
     },
     plugins: [
+      // @ts-expect-error -- tsc doesn't like the types here but actually it's compatible
       new RunScriptWebpackPlugin({
         name: 'main.js',
         nodeArgs: runScriptNodeArgs.length > 0 ? runScriptNodeArgs : undefined,
         args: process.argv.slice(3), // drop `node backstage-cli backend:dev`
       }),
       new HotModuleReplacementPlugin(),
+      // @ts-expect-error -- tsc doesn't like the types here but actually it's compatible
       ...(checksEnabled
         ? [
             new ForkTsCheckerWebpackPlugin({

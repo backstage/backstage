@@ -15,7 +15,7 @@
  */
 
 import { ModuleOptions, RspackPluginInstance } from '@rspack/core';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+// import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
@@ -172,14 +172,21 @@ export const transforms = (options: TransformOptions): Transforms => {
     {
       test: /\.css$/i,
       use: [
-        isDev
-          ? {
-              loader: require.resolve('style-loader'),
-              options: {
-                insert: insertBeforeJssStyles,
-              },
-            }
-          : MiniCssExtractPlugin.loader,
+        // unsupported yet, see also https://github.com/web-infra-dev/rspack/issues/3210
+        // isDev
+        //   ? {
+        //       loader: require.resolve('style-loader'),
+        //       options: {
+        //         insert: insertBeforeJssStyles,
+        //       },
+        //     }
+        //   : MiniCssExtractPlugin.loader,
+        {
+          loader: require.resolve('style-loader'),
+          options: {
+            insert: insertBeforeJssStyles,
+          },
+        },
         {
           loader: require.resolve('css-loader'),
           options: {
@@ -195,19 +202,21 @@ export const transforms = (options: TransformOptions): Transforms => {
   if (isDev) {
     if (!isBackend) {
       plugins.push(
+        // @ts-expect-error -- tsc doesn't like the types here but actually it's compatible
         new ReactRefreshPlugin({
           overlay: { sockProtocol: 'ws' },
         }),
       );
     }
   } else {
-    plugins.push(
-      new MiniCssExtractPlugin({
-        filename: 'static/[name].[contenthash:8].css',
-        chunkFilename: 'static/[name].[id].[contenthash:8].css',
-        insert: insertBeforeJssStyles, // Only applies to async chunks
-      }),
-    );
+    // unsupported yet, see also https://github.com/web-infra-dev/rspack/issues/3210
+    // plugins.push(
+    //   new MiniCssExtractPlugin({
+    //     filename: 'static/[name].[contenthash:8].css',
+    //     chunkFilename: 'static/[name].[id].[contenthash:8].css',
+    //     insert: insertBeforeJssStyles, // Only applies to async chunks
+    //   }),
+    // );
   }
 
   return { loaders, plugins };

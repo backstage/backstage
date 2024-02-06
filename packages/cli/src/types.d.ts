@@ -257,3 +257,9 @@ declare module 'webpack-node-externals' {
 }
 
 declare module '@esbuild-kit/cjs-loader' {}
+
+declare module '@rspack/plugin-minify' {
+  const RspackMinifyPlugin: typeof import('@rspack/core').RspackPluginInstance;
+
+  export = RspackMinifyPlugin;
+}

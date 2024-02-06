@@ -118,6 +118,7 @@ export async function buildBundle(options: BuildOptions) {
   }
 
   printFileSizesAfterBuild(
+    // @ts-expect-error -- tsc doesn't like the types here but actually it's compatible
     mainStats,
     previousFileSizes,
     paths.targetDist,
@@ -126,6 +127,7 @@ export async function buildBundle(options: BuildOptions) {
   );
   if (publicPaths && previousAuthSizes) {
     printFileSizesAfterBuild(
+      // @ts-expect-error -- tsc doesn't like the types here but actually it's compatible
       authStats,
       previousAuthSizes,
       publicPaths.targetDist,
@@ -139,6 +141,7 @@ async function build(configs: Configuration[], isCi: boolean) {
   const stats = await new Promise<MultiStats | undefined>((resolve, reject) => {
     rspack(configs, (err, buildStats) => {
       if (err) {
+        console.error(err);
         if (err.message) {
           const { errors } = formatWebpackMessages({
             errors: [err.message],
