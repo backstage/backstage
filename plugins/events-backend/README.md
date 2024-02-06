@@ -205,30 +205,19 @@ new EventsBackend(env.logger)
 Example using a module:
 
 ```ts
-import { eventsExtensionPoint } from '@backstage/plugin-events-node';
+import { eventsService } from '@backstage/plugin-events-node';
 
+const backend = createBackend();
 // [...]
-
-export const yourModuleEventsModule = createBackendModule({
-  pluginId: 'events',
-  moduleId: 'your-module',
-  register(env) {
-    // [...]
-    env.registerInit({
-      deps: {
-        // [...]
-        events: eventsExtensionPoint,
-        // [...]
-      },
-      async init({ /* ... */ events /*, ... */ }) {
-        // [...]
-        const yourEventBroker = new YourEventBroker();
-        // [...]
-        events.setEventBroker(yourEventBroker);
-      },
-    });
-  },
-});
+backend.add(
+  createServiceFactory({
+    service: eventsService,
+    deps: {},
+    factory: async () => {
+      return new YourEventBroker();
+    },
+  }),
+);
 ```
 
 ### Request Validator
