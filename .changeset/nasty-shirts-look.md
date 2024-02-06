@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-home': minor
+'@backstage/plugin-home': patch
 ---
 
 Use EntityDisplayName JSX element entity information directly for FeaturedDocsCard.
