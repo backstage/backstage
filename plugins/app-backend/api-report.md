@@ -4,8 +4,8 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
 import express from 'express';
+import { JsonObject } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
@@ -14,7 +14,9 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
 export interface RouterOptions {
-  additionalSchemas?: ConfigSchemaPackageEntry[];
+  additionalSchemas?: {
+    [context: string]: JsonObject;
+  };
   appPackageName: string;
   // (undocumented)
   config: Config;

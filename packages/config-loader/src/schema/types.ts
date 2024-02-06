@@ -18,9 +18,7 @@ import { AppConfig } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 
 /**
- * A sub-set of configuration schema for a given package.
- *
- * @public
+ * An sub-set of configuration schema.
  */
 export type ConfigSchemaPackageEntry = {
   /**

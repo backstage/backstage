@@ -20,7 +20,6 @@ import { Logger } from 'winston';
 import { AppConfig, Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { loadConfigSchema, readEnvConfig } from '@backstage/config-loader';
-import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
 
 type InjectOptions = {
   appConfigs: AppConfig[];
@@ -75,7 +74,7 @@ type ReadOptions = {
   env: { [name: string]: string | undefined };
   appDistDir: string;
   config: Config;
-  additionalSchemas?: ConfigSchemaPackageEntry[];
+  additionalSchemas?: { [context: string]: JsonObject };
 };
 
 /**

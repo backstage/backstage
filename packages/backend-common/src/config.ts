@@ -20,11 +20,9 @@ import {
 } from '@backstage/backend-app-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { AppConfig, Config } from '@backstage/config';
-import {
-  ConfigSchemaPackageEntry,
-  LoadConfigOptionsRemote,
-} from '@backstage/config-loader';
+import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { setRootLoggerRedactionList } from './logging/createRootLogger';
+import { JsonObject } from '@backstage/types';
 
 /**
  * Load configuration for a Backend.
@@ -38,7 +36,7 @@ export async function loadBackendConfig(options: {
   // process.argv or any other overrides
   remote?: LoadConfigOptionsRemote;
   additionalConfigs?: AppConfig[];
-  additionalSchemas?: ConfigSchemaPackageEntry[];
+  additionalSchemas?: { [context: string]: JsonObject };
   argv: string[];
   watch?: boolean;
 }): Promise<Config> {

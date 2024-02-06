@@ -22,15 +22,12 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { schemaDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
-import {
-  ConfigSchemaPackageEntry,
-  ConfigSources,
-  StaticConfigSource,
-} from '@backstage/config-loader';
+import { ConfigSources, StaticConfigSource } from '@backstage/config-loader';
 import { transports } from 'winston';
 import { rootLifecycleServiceFactory } from '../rootLifecycle';
 import { lifecycleServiceFactory } from '../lifecycle';
 import { loggerServiceFactory } from '../logger';
+import { JsonObject } from '@backstage/types';
 
 describe('rootLogger', () => {
   describe('rootLoggerServiceFactory', () => {
@@ -46,20 +43,17 @@ describe('rootLogger', () => {
         },
       };
 
-      const additionalSchemas = [
-        {
-          path: 'test',
-          value: {
-            type: 'object',
-            properties: {
-              secretValue: {
-                type: 'string',
-                visibility: 'secret',
-              },
+      const additionalSchemas = {
+        test: {
+          type: 'object',
+          properties: {
+            secretValue: {
+              type: 'string',
+              visibility: 'secret',
             },
           },
         },
-      ];
+      };
 
       const logs: string[] = [];
       jest
@@ -97,7 +91,7 @@ describe('rootLogger', () => {
             },
             factory: async () => ({
               getAdditionalSchemas: async (): Promise<{
-                schemas: Array<ConfigSchemaPackageEntry>;
+                schemas: { [context: string]: JsonObject };
               }> => ({
                 schemas: additionalSchemas,
               }),

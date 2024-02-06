@@ -23,19 +23,19 @@ import {
   loadConfig,
   ConfigTarget,
   LoadConfigOptionsRemote,
-  ConfigSchemaPackageEntry,
 } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import type { Config, AppConfig } from '@backstage/config';
 import { getPackages } from '@manypkg/get-packages';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 import { isValidUrl } from '../lib/urls';
+import { JsonObject } from '@backstage/types';
 
 /** @public */
 export async function createConfigSecretEnumerator(options: {
   logger: LoggerService;
   dir?: string;
-  additionalSchemas?: ConfigSchemaPackageEntry[];
+  additionalSchemas?: { [context: string]: JsonObject };
 }): Promise<(config: Config) => Iterable<string>> {
   const { logger, dir = process.cwd() } = options;
   const { packages } = await getPackages(dir);

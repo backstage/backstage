@@ -46,12 +46,6 @@ export type ConfigSchema = {
 };
 
 // @public
-export type ConfigSchemaPackageEntry = {
-  value: JsonObject;
-  path: string;
-};
-
-// @public
 export type ConfigSchemaProcessingOptions = {
   visibility?: ConfigVisibility[];
   ignoreSchemaErrors?: boolean;
@@ -199,7 +193,9 @@ export type LoadConfigSchemaOptions = (
     }
 ) & {
   noUndeclaredProperties?: boolean;
-  additionalSchemas?: ConfigSchemaPackageEntry[];
+  additionalSchemas?: {
+    [context: string]: JsonObject;
+  };
 };
 
 // @public

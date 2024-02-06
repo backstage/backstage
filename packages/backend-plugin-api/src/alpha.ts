@@ -20,7 +20,7 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
+import { JsonObject } from '@backstage/types';
 
 /** @alpha */
 export interface FeatureDiscoveryService {
@@ -39,7 +39,9 @@ export const featureDiscoveryServiceRef =
 
 /** @alpha */
 export interface SchemaDiscoveryService {
-  getAdditionalSchemas(): Promise<{ schemas: Array<ConfigSchemaPackageEntry> }>;
+  getAdditionalSchemas(): Promise<{
+    schemas: { [context: string]: JsonObject };
+  }>;
 }
 
 /**
@@ -59,7 +61,7 @@ export const schemaDiscoveryServiceRef =
         factory() {
           return {
             async getAdditionalSchemas() {
-              return { schemas: [] };
+              return { schemas: {} };
             },
           };
         },

@@ -15,20 +15,20 @@
  */
 
 import { ScannedPluginPackage } from '@backstage/backend-dynamic-feature-service';
-import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
 import fs from 'fs-extra';
 import * as path from 'path';
 import * as url from 'url';
 import { isEmpty } from 'lodash';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
 
 export async function gatherDynamicPluginsSchemas(
   packages: ScannedPluginPackage[],
   logger: LoggerService,
   schemaLocator: (pluginPackage: ScannedPluginPackage) => string = () =>
     path.join('dist', 'configSchema.json'),
-): Promise<ConfigSchemaPackageEntry[]> {
-  const allSchemas: { value: any; path: string }[] = [];
+): Promise<{ [context: string]: JsonObject }> {
+  const allSchemas: { [context: string]: JsonObject } = {};
 
   for (const pluginPackage of packages) {
     let schemaLocation = schemaLocator(pluginPackage);
@@ -61,10 +61,7 @@ export async function gatherDynamicPluginsSchemas(
       continue;
     }
 
-    allSchemas.push({
-      path: schemaLocation,
-      value: serialized,
-    });
+    allSchemas[schemaLocation] = serialized;
   }
 
   return allSchemas;

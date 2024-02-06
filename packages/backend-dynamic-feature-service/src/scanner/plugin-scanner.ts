@@ -28,9 +28,9 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { schemaDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
 import { findPaths } from '@backstage/cli-common';
 import { gatherDynamicPluginsSchemas } from './schemas';
+import { JsonObject } from '@backstage/types';
 
 export interface DynamicPluginScannerOptions {
   config: Config;
@@ -350,11 +350,11 @@ export const schemaDiscoveryServiceFactory = createServiceFactory(
       config: coreServices.rootConfig,
     },
     factory({ config }) {
-      let schemas: ConfigSchemaPackageEntry[] | undefined;
+      let schemas: { [context: string]: JsonObject } | undefined;
 
       return {
         async getAdditionalSchemas(): Promise<{
-          schemas: Array<ConfigSchemaPackageEntry>;
+          schemas: { [context: string]: JsonObject };
         }> {
           if (schemas) {
             return {

@@ -37,7 +37,7 @@ import {
   CACHE_CONTROL_NO_CACHE,
   CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
-import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
+import { JsonObject } from '@backstage/types';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
@@ -89,14 +89,14 @@ export interface RouterOptions {
 
   /**
    *
-   * Provides a list of additional config schemas, in addition to the serialized schemas
+   * Provides a map of additional config schemas, in addition to the serialized schemas
    * generated during the application build.
    * This is useful when additional plugins are dynamically loaded in the application at start,
    * which were not part of the application build. This option allows feeding the corresponding
    * JSON schemas.
    *
    */
-  additionalSchemas?: ConfigSchemaPackageEntry[];
+  additionalSchemas?: { [context: string]: JsonObject };
 }
 
 /** @public */

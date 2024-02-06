@@ -4,7 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
+import { JsonObject } from '@backstage/types';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
@@ -25,7 +25,9 @@ export const featureDiscoveryServiceRef: ServiceRef<
 export interface SchemaDiscoveryService {
   // (undocumented)
   getAdditionalSchemas(): Promise<{
-    schemas: Array<ConfigSchemaPackageEntry>;
+    schemas: {
+      [context: string]: JsonObject;
+    };
   }>;
 }
 

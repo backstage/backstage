@@ -36,20 +36,17 @@ describe('config', () => {
         },
       ];
 
-      const additionalSchemas = [
-        {
-          path: 'test',
-          value: {
-            type: 'object',
-            properties: {
-              secretValue: {
-                type: 'string',
-                visibility: 'secret',
-              },
+      const additionalSchemas = {
+        test: {
+          type: 'object',
+          properties: {
+            secretValue: {
+              type: 'string',
+              visibility: 'secret',
             },
           },
         },
-      ];
+      };
 
       const logs: string[] = [];
       jest

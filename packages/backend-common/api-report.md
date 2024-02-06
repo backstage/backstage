@@ -20,7 +20,6 @@ import { CacheService as CacheClient } from '@backstage/backend-plugin-api';
 import { CacheServiceOptions as CacheClientOptions } from '@backstage/backend-plugin-api';
 import { CacheServiceSetOptions as CacheClientSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { ConfigSchemaPackageEntry } from '@backstage/config-loader';
 import cors from 'cors';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
@@ -33,6 +32,7 @@ import { GitLabIntegration } from '@backstage/integration';
 import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
+import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
 import knexFactory from 'knex';
 import { KubeConfig } from '@kubernetes/client-node';
@@ -561,7 +561,9 @@ export function loadBackendConfig(options: {
   logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
   additionalConfigs?: AppConfig[];
-  additionalSchemas?: ConfigSchemaPackageEntry[];
+  additionalSchemas?: {
+    [context: string]: JsonObject;
+  };
   argv: string[];
   watch?: boolean;
 }): Promise<Config>;

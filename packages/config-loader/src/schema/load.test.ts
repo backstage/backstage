@@ -142,17 +142,14 @@ describe('loadConfigSchema', () => {
           },
         ],
       },
-      additionalSchemas: [
-        {
-          path: 'additionalSchema',
-          value: {
-            type: 'object',
-            properties: {
-              additionalKey: { type: 'string', visibility: 'frontend' },
-            },
+      additionalSchemas: {
+        additionalSchema: {
+          type: 'object',
+          properties: {
+            additionalKey: { type: 'string', visibility: 'frontend' },
           },
         },
-      ],
+      },
     });
 
     expect(schema.serialize()).toEqual({
