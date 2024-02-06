@@ -1,5 +1,7 @@
 # Azure Sites Plugin
 
+Azure Sites (Apps & Functions) plugin support for a given entity. View the current status of the site, quickly jump to site's Overview page, or Log Stream page.
+
 ![preview of Azure table](docs/functions-table.png)
 
 _Inspired by [roadie.io AWS Lamda plugin](https://roadie.io/backstage/plugins/aws-lambda/)_
