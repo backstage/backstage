@@ -20,3 +20,4 @@
  * @packageDocumentation
  */
 export { apolloExplorerPlugin, ApolloExplorerPage } from './plugin';
+export { ApolloExplorerBrowser } from './components/ApolloExplorerBrowser';
