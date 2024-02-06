@@ -53,7 +53,7 @@ import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { PinnipedSupervisorApi } from '@backstage/core-plugin-api';
-import { pinnipedSupervisorApiRef } from '@backstage/core-plugin-api';
+import { pinnipedSupervisorAuthApiRef } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
@@ -607,7 +607,7 @@ export class Pinniped implements PinnipedSupervisorApi {
   // (undocumented)
   static create(
     options: OAuth2CreateOptions,
-  ): typeof pinnipedSupervisorApiRef.T;
+  ): typeof pinnipedSupervisorAuthApiRef.T;
   // (undocumented)
   getClusterScopedIdToken(
     audience: string,

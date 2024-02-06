@@ -653,7 +653,7 @@ export type PinnipedSupervisorApi = {
 };
 
 // @public
-export const pinnipedSupervisorApiRef: ApiRef<PinnipedSupervisorApi>;
+export const pinnipedSupervisorAuthApiRef: ApiRef<PinnipedSupervisorApi>;
 
 // @public
 export type PluginConfig<

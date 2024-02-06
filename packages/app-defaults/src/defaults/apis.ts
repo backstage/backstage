@@ -58,7 +58,7 @@ import {
   bitbucketAuthApiRef,
   bitbucketServerAuthApiRef,
   atlassianAuthApiRef,
-  pinnipedSupervisorApiRef,
+  pinnipedSupervisorAuthApiRef,
   vmwareCloudAuthApiRef,
 } from '@backstage/core-plugin-api';
 import {
@@ -248,7 +248,7 @@ export const apis = [
       }),
   }),
   createApiFactory({
-    api: pinnipedSupervisorApiRef,
+    api: pinnipedSupervisorAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,

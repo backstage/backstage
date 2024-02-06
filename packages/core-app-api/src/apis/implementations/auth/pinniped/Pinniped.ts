@@ -19,7 +19,7 @@ import {
   AuthRequestOptions,
   ConfigApi,
   PinnipedSupervisorApi,
-  pinnipedSupervisorApiRef,
+  pinnipedSupervisorAuthApiRef,
   DiscoveryApi,
   OAuthRequestApi,
 } from '@backstage/core-plugin-api';
@@ -54,7 +54,7 @@ export default class Pinniped implements PinnipedSupervisorApi {
 
   static create(
     options: OAuth2CreateOptions,
-  ): typeof pinnipedSupervisorApiRef.T {
+  ): typeof pinnipedSupervisorAuthApiRef.T {
     return new Pinniped(options);
   }
 
