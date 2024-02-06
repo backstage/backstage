@@ -82,7 +82,7 @@ describe('<GroupsExplorerContent />', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByRole('link', { name: 'group:my-namespace/group-a' }),
+        screen.getByRole('link', { name: 'my-namespace/group-a' }),
       ).toBeInTheDocument(),
     );
   });
