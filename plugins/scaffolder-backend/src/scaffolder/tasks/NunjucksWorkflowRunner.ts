@@ -357,7 +357,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             try {
               let prevValue: U | undefined;
               if (prevTaskState) {
-                prevValue = prevTaskState.state[key] as unknown as U;
+                const prevState = prevTaskState.state[key];
+                if (prevState.status === 'success') {
+                  prevValue = prevState.value as U;
+                }
               }
 
               const value = prevValue ? prevValue : await fn();

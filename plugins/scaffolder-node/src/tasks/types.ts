@@ -27,6 +27,24 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 /**
+ * The record passed to {@link TaskBroker.updateCheckpoint?}
+ * Parameters to store the result of the executed checkpoint
+ *
+ * @public
+ */
+export type CheckpointRecord =
+  | {
+      key: string;
+      status: 'success';
+      value: JsonObject;
+    }
+  | {
+      key: string;
+      status: 'failed';
+      reason: string;
+    };
+
+/**
  * TaskState
  *
  * @public
@@ -114,24 +132,6 @@ export type TaskBrokerDispatchOptions = {
   secrets?: TaskSecrets;
   createdBy?: string;
 };
-
-/**
- * The record passed to {@link TaskBroker.updateCheckpoint?}
- * Parameters to store the result of the executed checkpoint
- *
- * @public
- */
-export type CheckpointRecord =
-  | {
-      key: string;
-      status: 'success';
-      value: JsonObject;
-    }
-  | {
-      key: string;
-      status: 'failed';
-      reason: string;
-    };
 
 /**
  * Task
