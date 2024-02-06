@@ -1,6 +1,11 @@
 app:
+  analytics:
+    ga4:
+      measurementId: G-0000000-0
+
   experimental:
     packages: 'all' # ✨
+
   routes:
     bindings:
       catalog.viewTechDoc: techdocs.docRoot

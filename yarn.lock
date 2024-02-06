@@ -4442,7 +4442,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-analytics-module-ga4@workspace:plugins/analytics-module-ga4":
+"@backstage/plugin-analytics-module-ga4@workspace:^, @backstage/plugin-analytics-module-ga4@workspace:plugins/analytics-module-ga4":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-analytics-module-ga4@workspace:plugins/analytics-module-ga4"
   dependencies:
@@ -27053,6 +27053,7 @@ __metadata:
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-adr": "workspace:^"
     "@backstage/plugin-airbrake": "workspace:^"
+    "@backstage/plugin-analytics-module-ga4": "workspace:^"
     "@backstage/plugin-apache-airflow": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"
     "@backstage/plugin-app-visualizer": "workspace:^"

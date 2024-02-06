@@ -19,6 +19,7 @@
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-adr": "workspace:^",
     "@backstage/plugin-airbrake": "workspace:^",
+    "@backstage/plugin-analytics-module-ga4": "workspace:^",
     "@backstage/plugin-apache-airflow": "workspace:^",
     "@backstage/plugin-api-docs": "workspace:^",
     "@backstage/plugin-app-visualizer": "workspace:^",
