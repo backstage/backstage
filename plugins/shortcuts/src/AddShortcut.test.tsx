@@ -148,7 +148,7 @@ describe('AddShortcut', () => {
       },
     );
 
-    fireEvent.click(screen.getByText('Use current page'));
+    fireEvent.click(screen.getByText('Add current page'));
     fireEvent.click(screen.getByText('Save'));
     await waitFor(() => {
       expect(spy).toHaveBeenCalledWith({
@@ -174,7 +174,7 @@ describe('AddShortcut', () => {
       </>,
     );
 
-    fireEvent.click(screen.getByText('Use current page'));
+    fireEvent.click(screen.getByText('Add current page'));
     fireEvent.click(screen.getByText('Save'));
     await waitFor(() => {
       expect(

@@ -116,7 +116,7 @@ export const AddShortcut = ({
               color="primary"
               onClick={handlePaste}
             >
-              Use current page
+              Add current page
             </Button>
           }
         />
