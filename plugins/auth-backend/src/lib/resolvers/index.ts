@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export {
-  CatalogAuthResolverContext,
-  getDefaultOwnershipEntityRefs,
-} from './CatalogAuthResolverContext';
+export { CatalogAuthResolverContext } from './CatalogAuthResolverContext';
+export { DefaultAuthOwnershipResolver } from './DefaultAuthOwnershipResolver';
