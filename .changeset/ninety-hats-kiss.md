@@ -2,4 +2,4 @@
 '@backstage/plugin-playlist': patch
 ---
 
-Render playlist description based on condition
+Conditionally render playlist description only when it's non-empty
