@@ -358,12 +358,11 @@ describe('TemplateCard', () => {
       },
     );
 
-    expect(
-      getByRole('link', { name: 'group:default/my-test-user' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('link', { name: 'group:default/my-test-user' }),
-    ).toHaveAttribute('href', '/catalog/group/default/my-test-user');
+    expect(getByRole('link', { name: /.*my-test-user$/ })).toBeInTheDocument();
+    expect(getByRole('link', { name: /.*my-test-user$/ })).toHaveAttribute(
+      'href',
+      '/catalog/group/default/my-test-user',
+    );
   });
 
   it('should call the onSelected handler when clicking the choose button', async () => {
