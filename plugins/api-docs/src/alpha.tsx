@@ -23,7 +23,10 @@ import {
   createPlugin,
   createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import {
+  compatWrapper,
+  convertLegacyRouteRef,
+} from '@backstage/core-compat-api';
 import { ApiEntity } from '@backstage/catalog-model';
 
 import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
@@ -57,16 +60,22 @@ const ApiDocsExplorerPage = createPageExtension({
       // Ommiting columns and actions for now as their types are too complex to map to zod
     }),
   ),
-  loader: () =>
-    import('./components/ApiExplorerPage').then(m => (
-      <m.ApiExplorerIndexPage />
-    )),
+  loader: ({ config }) =>
+    import('./components/ApiExplorerPage').then(m =>
+      compatWrapper(
+        <m.ApiExplorerIndexPage
+          initiallySelectedFilter={config.initiallySelectedFilter}
+        />,
+      ),
+    ),
 });
 
 const ApiDocsDefinitionEntityCard = createEntityCardExtension({
   name: 'api-definition',
   loader: () =>
-    import('./components/ApiDefinitionCard').then(m => <m.ApiDefinitionCard />),
+    import('./components/ApiDefinitionCard').then(m =>
+      compatWrapper(<m.ApiDefinitionCard />),
+    ),
 });
 
 const ApiDocsConsumedApisEntityCard = createEntityCardExtension({
@@ -75,7 +84,9 @@ const ApiDocsConsumedApisEntityCard = createEntityCardExtension({
   // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
   // and columns are too complex to map to zod
   loader: () =>
-    import('./components/ApisCards').then(m => <m.ConsumedApisCard />),
+    import('./components/ApisCards').then(m =>
+      compatWrapper(<m.ConsumedApisCard />),
+    ),
 });
 
 const ApiDocsHasApisEntityCard = createEntityCardExtension({
@@ -90,7 +101,9 @@ const ApiDocsProvidedApisEntityCard = createEntityCardExtension({
   // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
   // and columns are too complex to map to zod
   loader: () =>
-    import('./components/ApisCards').then(m => <m.ProvidedApisCard />),
+    import('./components/ApisCards').then(m =>
+      compatWrapper(<m.ProvidedApisCard />),
+    ),
 });
 
 const ApiDocsConsumingComponentsEntityCard = createEntityCardExtension({
@@ -98,9 +111,9 @@ const ApiDocsConsumingComponentsEntityCard = createEntityCardExtension({
   // Ommiting configSchema for now
   // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
   loader: () =>
-    import('./components/ComponentsCards').then(m => (
-      <m.ConsumingComponentsCard />
-    )),
+    import('./components/ComponentsCards').then(m =>
+      compatWrapper(<m.ConsumingComponentsCard />),
+    ),
 });
 
 const ApiDocsProvidingComponentsEntityCard = createEntityCardExtension({
@@ -108,9 +121,9 @@ const ApiDocsProvidingComponentsEntityCard = createEntityCardExtension({
   // Ommiting configSchema for now
   // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
   loader: () =>
-    import('./components/ComponentsCards').then(m => (
-      <m.ProvidingComponentsCard />
-    )),
+    import('./components/ComponentsCards').then(m =>
+      compatWrapper(<m.ProvidingComponentsCard />),
+    ),
 });
 
 export default createPlugin({
