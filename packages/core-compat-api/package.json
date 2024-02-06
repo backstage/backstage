@@ -12,6 +12,11 @@
   "backstage": {
     "role": "web-library"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/core-compat-api"
+  },
   "sideEffects": false,
   "scripts": {
     "start": "backstage-cli package start",
