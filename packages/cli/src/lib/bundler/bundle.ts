@@ -17,7 +17,7 @@
 import yn from 'yn';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import webpack from 'webpack';
+import { Configuration, MultiStats, rspack } from '@rspack/core';
 import {
   measureFileSizesBeforeBuild,
   printFileSizesAfterBuild,
@@ -135,29 +135,27 @@ export async function buildBundle(options: BuildOptions) {
   }
 }
 
-async function build(configs: webpack.Configuration[], isCi: boolean) {
-  const stats = await new Promise<webpack.MultiStats | undefined>(
-    (resolve, reject) => {
-      webpack(configs, (err, buildStats) => {
-        if (err) {
-          if (err.message) {
-            const { errors } = formatWebpackMessages({
-              errors: [err.message],
-              warnings: new Array<string>(),
-              _showErrors: true,
-              _showWarnings: true,
-            });
+async function build(configs: Configuration[], isCi: boolean) {
+  const stats = await new Promise<MultiStats | undefined>((resolve, reject) => {
+    rspack(configs, (err, buildStats) => {
+      if (err) {
+        if (err.message) {
+          const { errors } = formatWebpackMessages({
+            errors: [err.message],
+            warnings: new Array<string>(),
+            _showErrors: true,
+            _showWarnings: true,
+          });
 
-            throw new Error(errors[0]);
-          } else {
-            reject(err);
-          }
+          throw new Error(errors[0]);
         } else {
-          resolve(buildStats);
+          reject(err);
         }
-      });
-    },
-  );
+      } else {
+        resolve(buildStats);
+      }
+    });
+  });
 
   if (!stats) {
     throw new Error('Failed to compile: No stats provided');

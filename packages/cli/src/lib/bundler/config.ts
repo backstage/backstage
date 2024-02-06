@@ -16,7 +16,12 @@
 
 import { BackendBundlingOptions, BundlingOptions } from './types';
 import { posix as posixPath, resolve as resolvePath } from 'path';
-import webpack, { ProvidePlugin } from 'webpack';
+import {
+  Configuration,
+  DefinePlugin,
+  HotModuleReplacementPlugin,
+  ProvidePlugin,
+} from '@rspack/core';
 
 import { BackstagePackage } from '@backstage/cli-node';
 import { BundlingPaths } from './paths';
@@ -91,7 +96,7 @@ async function readBuildInfo() {
 export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
-): Promise<webpack.Configuration> {
+): Promise<Configuration> {
   const { checksEnabled, isDev, frontendConfig, publicSubPath = '' } = options;
 
   const { plugins, loaders } = transforms(options);
@@ -141,12 +146,9 @@ export async function createConfig(
 
   const buildInfo = await readBuildInfo();
   plugins.push(
-    new webpack.DefinePlugin({
+    new DefinePlugin({
       'process.env.BUILD_INFO': JSON.stringify(buildInfo),
-      'process.env.APP_CONFIG': webpack.DefinePlugin.runtimeValue(
-        () => JSON.stringify(options.getFrontendAppConfigs()),
-        true,
-      ),
+      'process.env.APP_CONFIG': JSON.stringify(options.getFrontendAppConfigs()),
       // This allows for conditional imports of react-dom/client, since there's no way
       // to check for presence of it in source code without module resolution errors.
       'process.env.HAS_REACT_DOM_CLIENT': JSON.stringify(hasReactDomClient()),
@@ -242,7 +244,7 @@ export async function createConfig(
 export async function createBackendConfig(
   paths: BundlingPaths,
   options: BackendBundlingOptions,
-): Promise<webpack.Configuration> {
+): Promise<Configuration> {
   const { checksEnabled, isDev } = options;
 
   // Find all local monorepo packages and their node_modules, and mark them as external.
@@ -344,7 +346,7 @@ export async function createBackendConfig(
         nodeArgs: runScriptNodeArgs.length > 0 ? runScriptNodeArgs : undefined,
         args: process.argv.slice(3), // drop `node backstage-cli backend:dev`
       }),
-      new webpack.HotModuleReplacementPlugin(),
+      new HotModuleReplacementPlugin(),
       ...(checksEnabled
         ? [
             new ForkTsCheckerWebpackPlugin({

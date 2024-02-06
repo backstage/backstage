@@ -16,6 +16,9 @@
 
 import * as os from 'os';
 import * as path from 'path';
+
+import type { Resolver } from 'enhanced-resolve';
+
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 
 describe('LinkedPackageResolvePlugin', () => {
@@ -49,7 +52,8 @@ describe('LinkedPackageResolvePlugin', () => {
       hooks: { resolve: { tapAsync } },
       doResolve,
     };
-    plugin.apply(resolver);
+
+    plugin.apply(resolver as unknown as Resolver);
 
     expect(tapAsync).toHaveBeenCalledTimes(1);
     expect(tapAsync).toHaveBeenCalledWith(

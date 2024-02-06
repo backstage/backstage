@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import webpack from 'webpack';
+import { rspack } from '@rspack/core';
 import { createBackendConfig } from './config';
 import { resolveBundlingPaths } from './paths';
 import { BackendServeOptions } from './types';
@@ -30,7 +30,7 @@ export async function serveBackend(options: BackendServeOptions) {
   // not include dependencies in node_modules. So we set it here at runtime as well.
   (process.env as { NODE_ENV: string }).NODE_ENV = 'development';
 
-  const compiler = webpack(config, (err: Error | undefined) => {
+  const compiler = rspack(config, (err: Error | null) => {
     if (err) {
       console.error(err);
     } else console.log('Build succeeded');
@@ -40,7 +40,7 @@ export async function serveBackend(options: BackendServeOptions) {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.on(signal, () => {
         // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
-        compiler.close(() => process.exit());
+        compiler?.close(() => process.exit());
       });
     }
 

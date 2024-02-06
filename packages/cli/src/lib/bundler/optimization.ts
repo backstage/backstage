@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { WebpackOptionsNormalized } from 'webpack';
+import { RspackOptionsNormalized } from '@rspack/core';
 import { BundlingOptions } from './types';
 
 const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
 export const optimization = (
   options: BundlingOptions,
-): WebpackOptionsNormalized['optimization'] => {
+): RspackOptionsNormalized['optimization'] => {
   const { isDev } = options;
 
   return {

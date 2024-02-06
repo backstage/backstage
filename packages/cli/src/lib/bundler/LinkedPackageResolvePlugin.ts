@@ -15,25 +15,27 @@
  */
 
 import { resolve as resolvePath } from 'path';
-import { WebpackPluginInstance } from 'webpack';
 import { isChildPath } from '@backstage/cli-common';
 import { Package } from '@manypkg/get-packages';
+import type { Resolver } from 'enhanced-resolve';
+
+import type { ResolvePluginInstance } from '../../resolve-plugin';
 
 // Enables proper resolution of packages when linking in external packages.
 // Without this the packages would depend on dependencies in the node_modules
 // of the external packages themselves, leading to module duplication
-export class LinkedPackageResolvePlugin implements WebpackPluginInstance {
+export class LinkedPackageResolvePlugin implements ResolvePluginInstance {
   constructor(
     private readonly targetModules: string,
     private readonly packages: Package[],
   ) {}
 
-  apply(resolver: any) {
+  apply(resolver: Resolver) {
     resolver.hooks.resolve.tapAsync(
       'LinkedPackageResolvePlugin',
       (
         data: {
-          request: string;
+          request?: string;
           path?: false | string;
           context?: { issuer?: string };
         },

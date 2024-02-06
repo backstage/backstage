@@ -43,16 +43,13 @@ declare module 'react-dev-utils/openBrowser' {
 }
 
 declare module 'react-dev-utils/ModuleScopePlugin' {
-  import webpack = require('webpack');
+  type ResolvePluginInstance = import('./resolve-plugin').ResolvePluginInstance;
 
-  export default class ModuleScopePlugin
-    implements webpack.WebpackPluginInstance
-  {
+  export default class ModuleScopePlugin implements ResolvePluginInstance {
     constructor(
       appSrc: string | ReadonlyArray<string>,
       allowedFiles?: ReadonlyArray<string>,
     );
-    apply: (resolver: any) => void;
   }
 }
 

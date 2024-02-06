@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { ModuleOptions, WebpackPluginInstance } from 'webpack';
+import { ModuleOptions, RspackPluginInstance } from '@rspack/core';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
 type Transforms = {
   loaders: ModuleOptions['rules'];
-  plugins: WebpackPluginInstance[];
+  plugins: RspackPluginInstance[];
 };
 
 type TransformOptions = {
@@ -190,7 +190,7 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
   ];
 
-  const plugins = new Array<WebpackPluginInstance>();
+  const plugins = new Array<RspackPluginInstance>();
 
   if (isDev) {
     if (!isBackend) {

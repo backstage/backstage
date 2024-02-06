@@ -20,8 +20,8 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import uniq from 'lodash/uniq';
 import openBrowser from 'react-dev-utils/openBrowser';
-import webpack from 'webpack';
-import WebpackDevServer from 'webpack-dev-server';
+import { rspack } from '@rspack/core';
+import { RspackDevServer } from '@rspack/dev-server';
 
 import {
   forbiddenDuplicatesFilter,
@@ -92,7 +92,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   const { name } = await fs.readJson(libPaths.resolveTarget('package.json'));
 
-  let webpackServer: WebpackDevServer | undefined = undefined;
+  let rspackDevServer: RspackDevServer | undefined = undefined;
   let viteServer: import('vite').ViteDevServer | undefined = undefined;
 
   let latestFrontendAppConfigs: AppConfig[] = [];
@@ -104,7 +104,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     watch(appConfigs) {
       latestFrontendAppConfigs = appConfigs;
 
-      webpackServer?.invalidate();
+      rspackDevServer?.invalidate();
       viteServer?.restart();
     },
   });
@@ -142,7 +142,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     config: fullConfig,
     targetPath: paths.targetPath,
     watch() {
-      webpackServer?.invalidate();
+      rspackDevServer?.invalidate();
       viteServer?.restart();
     },
   });
@@ -215,16 +215,16 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       );
     }
     const compiler = publicPaths
-      ? webpack([
+      ? rspack([
           config,
           await createConfig(publicPaths, {
             ...commonConfigOptions,
             publicSubPath: '/public',
           }),
         ])
-      : webpack(config);
+      : rspack(config);
 
-    webpackServer = new WebpackDevServer(
+    rspackDevServer = new RspackDevServer(
       {
         hot: !process.env.CI,
         devMiddleware: {
@@ -267,8 +267,8 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   await viteServer?.listen();
   await new Promise<void>(async (resolve, reject) => {
-    if (webpackServer) {
-      webpackServer.startCallback((err?: Error) => {
+    if (rspackDevServer) {
+      rspackDevServer.startCallback((err?: Error) => {
         if (err) {
           reject(err);
           return;
@@ -285,7 +285,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.on(signal, () => {
-        webpackServer?.close();
+        rspackDevServer?.close();
         viteServer?.close();
         // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
         process.exit();
