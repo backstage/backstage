@@ -13,8 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './bitbucket';
 export * from './bitbucketCloud';
-export * from './bitbucketServer';
-export * from './bitbucketServerPullRequest';
 export { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun';

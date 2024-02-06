@@ -8291,6 +8291,44 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:^, @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:plugins/scaffolder-backend-module-bitbucket-cloud":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud@workspace:plugins/scaffolder-backend-module-bitbucket-cloud"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    fs-extra: 10.1.0
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    yaml: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:^, @backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:plugins/scaffolder-backend-module-bitbucket-server":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket-server@workspace:plugins/scaffolder-backend-module-bitbucket-server"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    fs-extra: 10.1.0
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    yaml: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:^, @backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-bitbucket@workspace:plugins/scaffolder-backend-module-bitbucket"
@@ -8302,6 +8340,8 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-bitbucket-server": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     fs-extra: 10.1.0
     msw: ^1.0.0
@@ -8491,6 +8531,8 @@ __metadata:
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-azure": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-bitbucket": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-bitbucket-server": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-gerrit": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-github": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-gitlab": "workspace:^"

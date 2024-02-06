@@ -15,10 +15,10 @@
  */
 
 /**
- * A module for the scaffolder backend that lets you interact with bitbucket
+ * A module for the scaffolder backend that lets you interact with Bitbucket Cloud
  *
  * @packageDocumentation
  */
 
-export * from './deprecated';
-export { bitbucketModule as default } from './module';
+export * from './actions';
+export { bitbucketCloudModule as default } from './module';
