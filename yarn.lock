@@ -7830,7 +7830,9 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-notifications-common": "workspace:^"
     "@backstage/plugin-signals-node": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
     knex: ^3.0.0
+    msw: ^1.0.0
     uuid: ^8.0.0
   languageName: unknown
   linkType: soft

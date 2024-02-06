@@ -45,17 +45,17 @@ export class NotificationsClient implements NotificationsApi {
     if (options?.type) {
       queryString.append('type', options.type);
     }
-    if (options?.limit) {
+    if (options?.limit !== undefined) {
       queryString.append('limit', options.limit.toString(10));
     }
-    if (options?.offset) {
+    if (options?.offset !== undefined) {
       queryString.append('offset', options.offset.toString(10));
     }
     if (options?.search) {
       queryString.append('search', options.search);
     }
 
-    const urlSegment = `notifications?${queryString}`;
+    const urlSegment = `?${queryString}`;
 
     return await this.request<Notification[]>(urlSegment);
   }

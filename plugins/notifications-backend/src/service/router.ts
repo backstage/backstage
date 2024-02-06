@@ -184,7 +184,7 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  router.get('/notifications', async (req, res) => {
+  router.get('/', async (req, res) => {
     const user = await getUser(req);
     const opts: NotificationGetOptions = {
       user: user,
@@ -274,7 +274,7 @@ export async function createRouter(
   // Add new notification
   // Allowed only for service-to-service authentication, uses `getUsersForEntityRef` to retrieve recipients for
   // specific entity reference
-  router.post('/notifications', async (req, res) => {
+  router.post('/', async (req, res) => {
     const { recipients, origin, payload } = req.body;
     const notifications = [];
     let users = [];

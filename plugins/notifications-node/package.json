@@ -22,7 +22,9 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "msw": "^1.0.0"
   },
   "files": [
     "dist"

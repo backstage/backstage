@@ -60,7 +60,7 @@ export class DefaultNotificationService implements NotificationService {
     try {
       const baseUrl = await this.discovery.getBaseUrl('notifications');
       const { token } = await this.tokenManager.getToken();
-      await fetch(`${baseUrl}/notifications`, {
+      const response = await fetch(`${baseUrl}/`, {
         method: 'POST',
         body: JSON.stringify({
           ...notification,
@@ -69,9 +69,14 @@ export class DefaultNotificationService implements NotificationService {
         }),
         headers: {
           'Content-Type': 'application/json',
+          Accept: 'application/json',
           Authorization: `Bearer ${token}`,
         },
       });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
     } catch (error) {
       // TODO: Should not throw in optimal case, see BEP
       throw new Error(`Failed to send notifications: ${error}`);
