@@ -19,6 +19,7 @@ import React from 'react';
 import {
   createApiExtension,
   createApiFactory,
+  createNavItemExtension,
   createPageExtension,
   createPlugin,
   createSchemaFromZod,
@@ -37,6 +38,19 @@ import {
   createEntityContentExtension,
 } from '@backstage/plugin-catalog-react/alpha';
 import { Grid } from '@material-ui/core';
+import { useApp } from '@backstage/core-plugin-api';
+
+function ApiIcon() {
+  const app = useApp();
+  const Component = app.getSystemIcon('kind:api')!;
+  return <Component />;
+}
+
+const ApiDocsNavItem = createNavItemExtension({
+  title: 'APIs',
+  routeRef: convertLegacyRouteRef(rootRoute),
+  icon: () => compatWrapper(<ApiIcon />),
+});
 
 const ApiDocsConfigApi = createApiExtension({
   factory: createApiFactory({
@@ -147,6 +161,26 @@ const ApiDocsDefinitionEntityContent = createEntityContentExtension({
     ),
 });
 
+const ApiDocsApisEntityContent = createEntityContentExtension({
+  name: 'apis',
+  defaultPath: '/apis',
+  defaultTitle: 'APIs',
+  filter: 'kind:component has:apis',
+  loader: async () =>
+    import('./components/ApisCards').then(m =>
+      compatWrapper(
+        <Grid container spacing={3} alignItems="stretch">
+          <Grid item xs={12}>
+            <m.ProvidedApisCard />
+          </Grid>
+          <Grid item xs={12}>
+            <m.ConsumedApisCard />
+          </Grid>
+        </Grid>,
+      ),
+    ),
+});
+
 export default createPlugin({
   id: 'api-docs',
   routes: {
@@ -156,6 +190,7 @@ export default createPlugin({
     registerApi: convertLegacyRouteRef(registerComponentRouteRef),
   },
   extensions: [
+    ApiDocsNavItem,
     ApiDocsConfigApi,
     ApiDocsExplorerPage,
     ApiDocsHasApisEntityCard,
@@ -165,5 +200,6 @@ export default createPlugin({
     ApiDocsConsumingComponentsEntityCard,
     ApiDocsProvidingComponentsEntityCard,
     ApiDocsDefinitionEntityContent,
+    ApiDocsApisEntityContent,
   ],
 });
