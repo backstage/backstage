@@ -48,3 +48,20 @@ export const isRejected = (
 export const isFulfilled = <T>(
   input: PromiseSettledResult<T>,
 ): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
+
+/**
+ * Generates a suitable entity name from a package name by slugifying the given package name.
+ *
+ * @param packageName - The package name to generate an entity name from.
+ * @returns The generated entity name, a slugified version of the package name.
+ */
+export const safeEntityName = (packageName: string): string => {
+  return packageName
+    .replace(/^[^\w\s]|[^a-z0-9]$/g, '')
+    .replace(/[^A-Za-z0-9_\-.]+/g, '-')
+    .replace(
+      /([a-z])([A-Z])/g,
+      (_, a, b) => `${a}-${b.toLocaleLowerCase('en-US')}`,
+    )
+    .replace(/^(.)/, (_, a) => a.toLocaleLowerCase('en-US'));
+};
