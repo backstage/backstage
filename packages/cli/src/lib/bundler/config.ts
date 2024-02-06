@@ -237,6 +237,10 @@ export async function createConfig(
     },
     plugins,
     cache: withCache,
+    // We're still using `style-loader` for custom `insert` option
+    experiments: {
+      css: false,
+    },
   };
 }
 

@@ -3678,7 +3678,6 @@ __metadata:
     jest-runtime: ^29.0.2
     json-schema: ^0.4.0
     lodash: ^4.17.21
-    mini-css-extract-plugin: ^2.4.2
     minimatch: ^5.1.1
     msw: ^1.0.0
     node-fetch: ^2.6.7
@@ -3702,7 +3701,6 @@ __metadata:
     semver: ^7.5.3
     style-loader: ^3.3.1
     sucrase: ^3.20.2
-    swc-loader: ^0.2.3
     tar: ^6.1.12
     terser-webpack-plugin: ^5.1.3
     ts-node: ^10.0.0
@@ -35112,18 +35110,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mini-css-extract-plugin@npm:^2.4.2":
-  version: 2.8.0
-  resolution: "mini-css-extract-plugin@npm:2.8.0"
-  dependencies:
-    schema-utils: ^4.0.0
-    tapable: ^2.2.1
-  peerDependencies:
-    webpack: ^5.0.0
-  checksum: c1edc3ee0e1b3514c3323fa72ad38e993f357964e76737f1d7bb6cf50a0af1ac071080ec16b4e1a94688d23f78533944badad50cd0f00d2ae176f9c58c1f2029
-  languageName: node
-  linkType: hard
-
 "minim@npm:~0.23.8":
   version: 0.23.8
   resolution: "minim@npm:0.23.8"
@@ -42950,16 +42936,6 @@ __metadata:
     react: ">=16.8.0 <19"
     react-dom: ">=16.8.0 <19"
   checksum: 741780967d82cebb12754c1d085f182a2e19e8015aa80b04f9f8c985671a9a447ef7db7f1cf79a2c2a32078d6ababd3436262d81d9e531e5c74f74f1cb392b11
-  languageName: node
-  linkType: hard
-
-"swc-loader@npm:^0.2.3":
-  version: 0.2.4
-  resolution: "swc-loader@npm:0.2.4"
-  peerDependencies:
-    "@swc/core": ^1.2.147
-    webpack: ">=2"
-  checksum: f23bfe8900b35abdcb9910a2749f3c9d66edf5c660afc67fcf7983647eaec322e024d1edd3bd9fd48bd3191eea0616f67b5f8b5f923e3a648fa5b448683c3213
   languageName: node
   linkType: hard
 

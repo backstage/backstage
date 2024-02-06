@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { ModuleOptions, RspackPluginInstance } from '@rspack/core';
-// import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { svgrTemplate } from '../svgrTemplate';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import { ModuleOptions, RspackPluginInstance } from '@rspack/core';
+
+import { svgrTemplate } from '../svgrTemplate';
 
 type Transforms = {
   loaders: ModuleOptions['rules'];
@@ -55,7 +55,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       exclude: /node_modules/,
       use: [
         {
-          loader: require.resolve('swc-loader'),
+          loader: 'builtin:swc-loader',
           options: {
             jsc: {
               target: 'es2019',
@@ -83,7 +83,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       exclude: /node_modules/,
       use: [
         {
-          loader: require.resolve('swc-loader'),
+          loader: 'builtin:swc-loader',
           options: {
             jsc: {
               target: 'es2019',
@@ -116,7 +116,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       test: [/\.icon\.svg$/],
       use: [
         {
-          loader: require.resolve('swc-loader'),
+          loader: 'builtin:swc-loader',
           options: {
             jsc: {
               target: 'es2019',
@@ -172,15 +172,6 @@ export const transforms = (options: TransformOptions): Transforms => {
     {
       test: /\.css$/i,
       use: [
-        // unsupported yet, see also https://github.com/web-infra-dev/rspack/issues/3210
-        // isDev
-        //   ? {
-        //       loader: require.resolve('style-loader'),
-        //       options: {
-        //         insert: insertBeforeJssStyles,
-        //       },
-        //     }
-        //   : MiniCssExtractPlugin.loader,
         {
           loader: require.resolve('style-loader'),
           options: {
@@ -208,15 +199,6 @@ export const transforms = (options: TransformOptions): Transforms => {
         }),
       );
     }
-  } else {
-    // unsupported yet, see also https://github.com/web-infra-dev/rspack/issues/3210
-    // plugins.push(
-    //   new MiniCssExtractPlugin({
-    //     filename: 'static/[name].[contenthash:8].css',
-    //     chunkFilename: 'static/[name].[id].[contenthash:8].css',
-    //     insert: insertBeforeJssStyles, // Only applies to async chunks
-    //   }),
-    // );
   }
 
   return { loaders, plugins };
