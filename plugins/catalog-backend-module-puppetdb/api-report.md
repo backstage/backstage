@@ -64,8 +64,8 @@ export type PuppetFactSet = {
 export type PuppetNode = {
   timestamp: string;
   certname: string;
-  hash: string;
   latest_report_status: string;
+  hash: string;
   producer_timestamp: string;
   producer: string;
   environment: string;
