@@ -2,14 +2,15 @@
 
 ## Unused dependencies (2)
 
-| Name                      | Location     |
-|:--------------------------|:-------------|
-| luxon                     | package.json |
-| @backstage/backend-common | package.json |
+| Name             | Location     |
+|:-----------------|:-------------|
+| luxon            | package.json |
+| @backstage/types | package.json |
 
-## Unused devDependencies (1)
+## Unused devDependencies (2)
 
-| Name           | Location     |
-|:---------------|:-------------|
-| @backstage/cli | package.json |
+| Name                          | Location     |
+|:------------------------------|:-------------|
+| @backstage/cli                | package.json |
+| @backstage/backend-test-utils | package.json |
 

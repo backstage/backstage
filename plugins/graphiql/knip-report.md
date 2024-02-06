@@ -1,10 +1,9 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (1)
 
 | Name       | Location     |
 |:-----------|:-------------|
-| graphql    | package.json |
 | graphql-ws | package.json |
 
 ## Unused devDependencies (5)

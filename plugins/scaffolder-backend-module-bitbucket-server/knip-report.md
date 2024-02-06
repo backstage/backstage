@@ -1,13 +1,17 @@
 # Knip report
 
-## Unused devDependencies (6)
+## Unused dependencies (2)
+
+| Name                      | Location     |
+|:--------------------------|:-------------|
+| yaml                      | package.json |
+| @backstage/backend-common | package.json |
+
+## Unused devDependencies (3)
 
 | Name                          | Location     |
 |:------------------------------|:-------------|
 | msw                           | package.json |
-| ts-node                       | package.json |
-| nodemon                       | package.json |
 | @backstage/cli                | package.json |
-| @types/command-exists         | package.json |
 | @backstage/backend-test-utils | package.json |
 
