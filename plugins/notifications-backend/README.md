@@ -75,5 +75,3 @@ export const myPlugin = createBackendPlugin({
 
 To be able to send notifications to users, you have to integrate the `@backstage/plugin-notifications-node`
 to your application and plugins.
-See [README](https://github.com/backstage/backstage/blob/master/plugins/plugin-notifications-node/README.md)
-for more information.
