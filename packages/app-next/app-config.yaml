@@ -5,6 +5,7 @@ app:
     bindings:
       catalog.viewTechDoc: techdocs.docRoot
       catalog.createComponent: catalog-import.importPage
+      org.catalogIndex: catalog.catalogIndex
 
   extensions:
     # - apis.plugin.graphiql.browse.gitlab: true
@@ -25,6 +26,12 @@ app:
     - entity-content:azure-devops/pipelines
     - entity-content:azure-devops/pull-requests
     - entity-content:azure-devops/git-tags
+
+    # Org Plugin
+    - entity-card:org/group-profile
+    - entity-card:org/members-list
+    - entity-card:org/ownership
+    - entity-card:org/user-profile
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({
