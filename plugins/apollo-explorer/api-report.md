@@ -8,7 +8,16 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { JSONObject } from '@apollo/explorer/src/helpers/types';
 import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "ApolloExplorerBrowser" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ApolloExplorerBrowser: ({
+  endpoints,
+}: Props) => React_2.JSX.Element;
 
 // @public
 export const ApolloExplorerPage: (props: {
