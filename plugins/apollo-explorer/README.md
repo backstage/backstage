@@ -69,3 +69,74 @@ That's it! You should now see an `Apollo Explorer` item in your sidebar, and if 
 Once you authenticate, your graph is ready to use 🚀
 
 ![Logged In](./docs/img/logged-in.png)
+
+#### Alternative Use to pass in token
+
+In order to use a token from an async method, some changes to the above are needed.
+
+Create a function in `packages/app/src/App.tsx` such as the below to obtain a token.
+
+```typescript
+function ApolloPlugin() {
+  const ssoApi = useApi(authApiRef);
+
+  const { value, loading, error } = useAsync(async () => {
+    const authToken = await ssoApi.getAccessToken();
+    return authToken;
+  }, [ssoApi]);
+
+  return (
+    <>
+      {loading ? (
+        <Progress />
+      ) : (
+        <Box>
+          {error ? (
+            <Alert severity="error" aria-label="error">
+              Error loading token.
+            </Alert>
+          ) : (
+            <Page themeId="tool">
+              <Header title={'Apollo Explorer 👩‍🚀'} />
+              <Content noPadding>
+                <ApolloExplorerBrowser
+                  endpoints={[
+                    {
+                      title: 'Github',
+                      graphRef: 'my-github-graph-ref@current',
+                      initialState: {
+                        headers: {
+                          authorization: `Bearer ${value}`,
+                        },
+                        displayOptions: {
+                          docsPanelState: 'open',
+                          showHeadersAndEnvVars: true,
+                        },
+                      },
+                    },
+                    {
+                      title: 'Linear',
+                      graphRef: 'my-linear-graph-ref@current',
+                    },
+                  ]}
+                />
+              </Content>
+            </Page>
+          )}
+        </Box>
+      )}
+    </>
+  );
+}
+```
+
+Then use the route code below.
+
+```typescript
+import { ApolloExplorerPage } from '@backstage/plugin-apollo-explorer';
+
+const routes = (
+  <FlatRoutes>
+    {/* other routes... */}
+    <Route path="/apollo-explorer" element={<ApolloPlugin />} />
+```
