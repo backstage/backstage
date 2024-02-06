@@ -42,8 +42,8 @@ import { useApp } from '@backstage/core-plugin-api';
 
 function ApiIcon() {
   const app = useApp();
-  const Component = app.getSystemIcon('kind:api')!;
-  return <Component />;
+  const KindApiSystemIcon = app.getSystemIcon('kind:api')!;
+  return <KindApiSystemIcon />;
 }
 
 const ApiDocsNavItem = createNavItemExtension({
@@ -165,7 +165,7 @@ const ApiDocsApisEntityContent = createEntityContentExtension({
   name: 'apis',
   defaultPath: '/apis',
   defaultTitle: 'APIs',
-  filter: 'kind:component has:apis',
+  filter: 'kind:component',
   loader: async () =>
     import('./components/ApisCards').then(m =>
       compatWrapper(

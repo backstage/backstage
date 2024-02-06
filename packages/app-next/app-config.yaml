@@ -1,6 +1,7 @@
 app:
   experimental:
     packages: 'all' # ✨
+
   routes:
     bindings:
       catalog.viewTechDoc: techdocs.docRoot
@@ -22,6 +23,9 @@ app:
         config:
           height: 300
     - entity-card:azure-devops/readme
+    - entity-card:api-docs/has-apis:
+        config:
+          filter: kind:component
     - entity-card:api-docs/consumed-apis:
         config:
           filter: kind:component
