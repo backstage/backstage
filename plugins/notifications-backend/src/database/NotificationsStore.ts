@@ -20,7 +20,7 @@ import {
   NotificationType,
 } from '@backstage/plugin-notifications-common';
 
-/** @public */
+/** @internal */
 export type NotificationGetOptions = {
   user: string;
   ids?: string[];
@@ -32,12 +32,12 @@ export type NotificationGetOptions = {
   sortOrder?: 'asc' | 'desc';
 };
 
-/** @public */
+/** @internal */
 export type NotificationModifyOptions = {
   ids: string[];
 } & NotificationGetOptions;
 
-/** @public */
+/** @internal */
 export interface NotificationsStore {
   getNotifications(options: NotificationGetOptions): Promise<Notification[]>;
 

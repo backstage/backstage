@@ -4,42 +4,10 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
-import express from 'express';
-import { IdentityApi } from '@backstage/plugin-auth-node';
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { NotificationProcessor } from '@backstage/plugin-notifications-node';
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { SignalService } from '@backstage/plugin-signals-node';
-import { TokenManager } from '@backstage/backend-common';
-
-// @public (undocumented)
-export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
 const notificationsPlugin: () => BackendFeature;
 export default notificationsPlugin;
-
-// @public (undocumented)
-export interface RouterOptions {
-  // (undocumented)
-  catalog?: CatalogApi;
-  // (undocumented)
-  database: PluginDatabaseManager;
-  // (undocumented)
-  discovery: DiscoveryService;
-  // (undocumented)
-  identity: IdentityApi;
-  // (undocumented)
-  logger: LoggerService;
-  // (undocumented)
-  processors?: NotificationProcessor[];
-  // (undocumented)
-  signalService?: SignalService;
-  // (undocumented)
-  tokenManager: TokenManager;
-}
 
 // (No @packageDocumentation comment for this package)
 ```

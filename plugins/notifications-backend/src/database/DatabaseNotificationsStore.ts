@@ -30,7 +30,7 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
-/** @public */
+/** @internal */
 export class DatabaseNotificationsStore implements NotificationsStore {
   private constructor(private readonly db: Knex) {}
 

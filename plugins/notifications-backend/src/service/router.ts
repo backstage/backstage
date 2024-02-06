@@ -46,7 +46,7 @@ import {
   NotificationType,
 } from '@backstage/plugin-notifications-common';
 
-/** @public */
+/** @internal */
 export interface RouterOptions {
   logger: LoggerService;
   identity: IdentityApi;
@@ -58,7 +58,7 @@ export interface RouterOptions {
   processors?: NotificationProcessor[];
 }
 
-/** @public */
+/** @internal */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
