@@ -777,6 +777,15 @@ export function useRouteRefParams<Params extends AnyParams>(
 ): Params;
 
 // @public
+export const vmwareCloudAuthApiRef: ApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionApi
+>;
+
+// @public
 export function withApis<T extends {}>(
   apis: TypesToApiRefs<T>,
 ): <TProps extends T>(
