@@ -162,17 +162,6 @@ export async function createConfig(
     }),
   );
 
-  // These files are required by the transpiled code when using React Refresh.
-  // They need to be excluded to the module scope plugin which ensures that files
-  // that exist in the package are required.
-  // const reactRefreshFiles = [
-  //   require.resolve(
-  //     '@pmmmwh/react-refresh-webpack-plugin/lib/runtime/RefreshUtils.js',
-  //   ),
-  //   require.resolve('@pmmmwh/react-refresh-webpack-plugin/overlay/index.js'),
-  //   require.resolve('react-refresh'),
-  // ];
-
   const withCache = yn(process.env[BUILD_CACHE_ENV_VAR], { default: false });
 
   return {
@@ -211,7 +200,6 @@ export async function createConfig(
       //   new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
       //   new ModuleScopePlugin(
       //     [paths.targetSrc, paths.targetDev],
-      //     [paths.targetPackageJson, ...reactRefreshFiles],
       //   ),
       // ],
     },
