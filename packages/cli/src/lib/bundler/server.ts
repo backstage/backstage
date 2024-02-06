@@ -110,9 +110,10 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   });
   latestFrontendAppConfigs = cliConfig.frontendAppConfigs;
 
-  const appBaseUrl = cliConfig.frontendConfig.getString('app.baseUrl');
-  const backendBaseUrl = cliConfig.frontendConfig.getString('backend.baseUrl');
-  if (appBaseUrl === backendBaseUrl) {
+  const appBaseUrl = cliConfig.frontendConfig.getOptionalString('app.baseUrl');
+  const backendBaseUrl =
+    cliConfig.frontendConfig.getOptionalString('backend.baseUrl');
+  if (appBaseUrl && appBaseUrl === backendBaseUrl) {
     console.log(
       chalk.yellow(
         `⚠️   Conflict between app baseUrl and backend baseUrl:
