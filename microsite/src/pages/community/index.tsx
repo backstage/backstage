@@ -122,8 +122,8 @@ const Community = () => {
     },
     {
       name: 'VMWare',
-      url: 'https://www.vmware.com',
-      logo: 'img/partner-logo-vmware.png',
+      url: 'https://tanzu.vmware.com/',
+      logo: 'img/partner-logo-tanzubybroadcom.png',
     },
   ];
   //#endregion
