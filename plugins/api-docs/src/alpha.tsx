@@ -32,7 +32,11 @@ import { ApiEntity } from '@backstage/catalog-model';
 import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { rootRoute, registerComponentRouteRef } from './routes';
 import { apiDocsConfigRef } from './config';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import {
+  createEntityCardExtension,
+  createEntityContentExtension,
+} from '@backstage/plugin-catalog-react/alpha';
+import { Grid } from '@material-ui/core';
 
 const ApiDocsConfigApi = createApiExtension({
   factory: createApiFactory({
@@ -70,6 +74,13 @@ const ApiDocsExplorerPage = createPageExtension({
     ),
 });
 
+const ApiDocsHasApisEntityCard = createEntityCardExtension({
+  name: 'has-apis',
+  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  // and columns are too complex to map to zod
+  loader: () => import('./components/ApisCards').then(m => <m.HasApisCard />),
+});
+
 const ApiDocsDefinitionEntityCard = createEntityCardExtension({
   name: 'api-definition',
   loader: () =>
@@ -87,13 +98,6 @@ const ApiDocsConsumedApisEntityCard = createEntityCardExtension({
     import('./components/ApisCards').then(m =>
       compatWrapper(<m.ConsumedApisCard />),
     ),
-});
-
-const ApiDocsHasApisEntityCard = createEntityCardExtension({
-  name: 'has-apis',
-  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
-  // and columns are too complex to map to zod
-  loader: () => import('./components/ApisCards').then(m => <m.HasApisCard />),
 });
 
 const ApiDocsProvidedApisEntityCard = createEntityCardExtension({
@@ -126,6 +130,23 @@ const ApiDocsProvidingComponentsEntityCard = createEntityCardExtension({
     ),
 });
 
+const ApiDocsDefinitionEntityContent = createEntityContentExtension({
+  name: 'definition',
+  defaultPath: '/defintion',
+  defaultTitle: 'Definition',
+  filter: 'is:api',
+  loader: async () =>
+    import('./components/ApiDefinitionCard').then(m =>
+      compatWrapper(
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <m.ApiDefinitionCard />
+          </Grid>
+        </Grid>,
+      ),
+    ),
+});
+
 export default createPlugin({
   id: 'api-docs',
   routes: {
@@ -143,5 +164,6 @@ export default createPlugin({
     ApiDocsConsumedApisEntityCard,
     ApiDocsConsumingComponentsEntityCard,
     ApiDocsProvidingComponentsEntityCard,
+    ApiDocsDefinitionEntityContent,
   ],
 });
