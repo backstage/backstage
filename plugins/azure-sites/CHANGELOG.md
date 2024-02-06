@@ -1,5 +1,22 @@
 # @backstage/plugin-azure-sites
 
+## 0.1.19-next.2
+
+### Patch Changes
+
+- 09a9c95: Updated README
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/plugin-permission-react@0.4.20-next.1
+  - @backstage/theme@0.5.1-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/plugin-azure-sites-common@0.1.2-next.0
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 0.1.19-next.1
 
 ### Patch Changes

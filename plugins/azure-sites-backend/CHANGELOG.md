@@ -1,5 +1,22 @@
 # @backstage/plugin-azure-sites-backend
 
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 4376655: Added `permissionIntegrationRouter` for azure-sites-backend routes
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/plugin-permission-node@0.7.21-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-azure-sites-common@0.1.2-next.0
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 0.2.0-next.1
 
 ### Minor Changes
