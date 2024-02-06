@@ -24,24 +24,19 @@ import { Yaml } from '@stoplight/spectral-parsers';
 import ruleset from '@apisyouwonthate/style-guide';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import { resolve } from 'path';
-import { runner } from './runner';
-import { YAML_SCHEMA_PATH } from './constants';
+import { runner } from '../../../../lib/runner';
 import { oas } from '@stoplight/spectral-rulesets';
 import { DiagnosticSeverity } from '@stoplight/types';
 import { pretty } from '@stoplight/spectral-formatters';
+import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
 
-async function lint(
-  directoryPath: string,
-  config?: { skipMissingYamlFile: boolean; strict: boolean },
-) {
-  const { skipMissingYamlFile, strict } = config ?? {};
-  const openapiPath = resolve(directoryPath, YAML_SCHEMA_PATH);
-  if (!(await fs.pathExists(openapiPath))) {
-    if (skipMissingYamlFile) {
-      return;
-    }
-    throw new Error(`Could not find a file at ${openapiPath}.`);
+async function lint(directoryPath: string, config?: { strict: boolean }) {
+  const { strict } = config ?? {};
+  let openapiPath = '';
+  try {
+    openapiPath = await getPathToOpenApiSpec(directoryPath);
+  } catch {
+    return;
   }
   const openapiFileContent = await fs.readFile(openapiPath, 'utf8');
 
@@ -90,7 +85,7 @@ export async function bulkCommand(
   options: { strict?: boolean },
 ): Promise<void> {
   const resultsList = await runner(paths, (dir: string) =>
-    lint(dir, { skipMissingYamlFile: true, strict: !!options.strict }),
+    lint(dir, { strict: !!options.strict }),
   );
 
   let failed = false;

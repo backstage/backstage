@@ -17,18 +17,22 @@
 import fs from 'fs-extra';
 import { join } from 'path';
 import chalk from 'chalk';
-import { runner } from '../runner';
-import { YAML_SCHEMA_PATH } from '../constants';
-import { paths as cliPaths } from '../../../lib/paths';
-import { exec } from '../../../lib/exec';
+import { runner } from '../../../../lib/runner';
+import { YAML_SCHEMA_PATH } from '../../../../lib/openapi/constants';
+import { paths as cliPaths } from '../../../../lib/paths';
+import { exec } from '../../../../lib/exec';
+import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
 
 async function test(
   directoryPath: string,
   { port }: { port: number },
   options?: { update?: boolean },
 ) {
-  const openapiPath = join(directoryPath, YAML_SCHEMA_PATH);
-  if (!(await fs.pathExists(openapiPath))) {
+  let openapiPath = join(directoryPath, YAML_SCHEMA_PATH);
+  try {
+    openapiPath = await getPathToOpenApiSpec(directoryPath);
+  } catch {
+    // OpenAPI schema doesn't exist.
     return;
   }
   const opticConfigFilePath = join(directoryPath, 'optic.yml');

@@ -113,10 +113,10 @@ jobs:
         run: yarn backstage-repo-tools generate-catalog-info --ci
 
       - name: lint openapi yaml files
-        run: yarn backstage-repo-tools schema openapi lint
+        run: yarn backstage-repo-tools repo schema openapi lint
 
       - name: verify openapi yaml file matches generated ts file
-        run: yarn backstage-repo-tools schema openapi verify
+        run: yarn backstage-repo-tools repo schema openapi verify
 
       - name: verify doc links
         run: node scripts/verify-links.js
@@ -225,7 +225,7 @@ jobs:
 
       # We run the test cases before verifying the specs to prevent any failing tests from causing errors.
       - name: verify openapi specs against test cases
-        run: yarn backstage-repo-tools schema openapi test
+        run: yarn backstage-repo-tools repo schema openapi test
 
       - name: ensure clean working directory
         run: |

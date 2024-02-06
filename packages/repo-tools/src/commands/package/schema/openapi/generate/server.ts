@@ -17,30 +17,19 @@
 import fs from 'fs-extra';
 import YAML from 'js-yaml';
 import chalk from 'chalk';
-import { resolve } from 'path';
-import { paths as cliPaths } from '../../../lib/paths';
-import { runner } from '../runner';
-import { TS_SCHEMA_PATH, YAML_SCHEMA_PATH } from '../constants';
+import { paths as cliPaths } from '../../../../../lib/paths';
+import { TS_SCHEMA_PATH } from '../../../../../lib/openapi/constants';
 import { promisify } from 'util';
 import { exec as execCb } from 'child_process';
+import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers';
 
 const exec = promisify(execCb);
 
-async function generate(
-  directoryPath: string,
-  config?: { skipMissingYamlFile: boolean },
-) {
-  const { skipMissingYamlFile } = config ?? {};
-  const openapiPath = resolve(directoryPath, YAML_SCHEMA_PATH);
-  if (!(await fs.pathExists(openapiPath))) {
-    if (skipMissingYamlFile) {
-      return;
-    }
-    throw new Error(`Could not find ${YAML_SCHEMA_PATH} in root of directory.`);
-  }
+async function generate() {
+  const openapiPath = await getPathToCurrentOpenApiSpec();
   const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
 
-  const tsPath = resolve(directoryPath, TS_SCHEMA_PATH);
+  const tsPath = cliPaths.resolveTarget(TS_SCHEMA_PATH);
 
   // The first set of comment slashes allow for the eslint notice plugin to run
   // with onNonMatchingHeader: 'replace', as is the case in the open source
@@ -63,33 +52,19 @@ export const createOpenApiRouter = async (
 
   await exec(`yarn backstage-cli package lint --fix ${tsPath}`);
   if (await cliPaths.resolveTargetRoot('node_modules/.bin/prettier')) {
-    await exec(`yarn prettier --write ${tsPath}`);
+    await exec(`yarn prettier --write ${tsPath}`, {
+      cwd: cliPaths.targetRoot,
+    });
   }
 }
 
-export async function bulkCommand(paths: string[] = []): Promise<void> {
-  const resultsList = await runner(paths, (dir: string) =>
-    generate(dir, { skipMissingYamlFile: true }),
-  );
-
-  let failed = false;
-  for (const { relativeDir, resultText } of resultsList) {
-    if (resultText) {
-      console.log();
-      console.log(
-        chalk.red(
-          `OpenAPI yaml to Typescript generation failed in ${relativeDir}:`,
-        ),
-      );
-      console.log(resultText.trimStart());
-
-      failed = true;
-    }
-  }
-
-  if (failed) {
-    process.exit(1);
-  } else {
+export async function command(): Promise<void> {
+  try {
+    await generate();
     console.log(chalk.green('Generated all files.'));
+  } catch (err) {
+    console.log(chalk.red(`OpenAPI server stub generation failed.`));
+    console.log(err.message);
+    process.exit(1);
   }
 }

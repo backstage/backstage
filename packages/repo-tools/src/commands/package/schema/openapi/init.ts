@@ -14,27 +14,30 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import { join } from 'path';
-import { YAML_SCHEMA_PATH } from './../constants';
-
-import { paths as cliPaths } from '../../../lib/paths';
-import { runner } from '../runner';
+import { YAML_SCHEMA_PATH } from '../../../../lib/openapi/constants';
+import { paths as cliPaths } from '../../../../lib/paths';
 import chalk from 'chalk';
-import { exec } from '../../../lib/exec';
+import { exec } from '../../../../lib/exec';
+import {
+  getPathToCurrentOpenApiSpec,
+  getRelativePathToFile,
+} from '../../../../lib/openapi/helpers';
 
 const ROUTER_TEST_PATHS = [
   'src/service/router.test.ts',
   'src/service/createRouter.test.ts',
 ];
 
-async function init(directoryPath: string) {
-  const openapiPath = join(directoryPath, YAML_SCHEMA_PATH);
-  if (!(await fs.pathExists(openapiPath))) {
+async function init() {
+  try {
+    await getPathToCurrentOpenApiSpec();
+  } catch (err) {
     throw new Error(
-      `You do not have an OpenAPI YAML file at ${openapiPath}. Please create one and retry this command. If you already have existing test cases for your router, see 'backstage-repo-tools schema openapi test --update'`,
+      `OpenAPI.yaml not found in ${YAML_SCHEMA_PATH}. Please create one and retry this command.`,
     );
   }
-  const opticConfigFilePath = join(directoryPath, 'optic.yml');
+
+  const opticConfigFilePath = await getRelativePathToFile('optic.yml');
   if (await fs.pathExists(opticConfigFilePath)) {
     throw new Error(`This directory already has an optic.yml file. Exiting.`);
   }
@@ -45,7 +48,9 @@ async function init(directoryPath: string) {
 capture:
     ${YAML_SCHEMA_PATH}:
         # 🔧 Runnable example with simple get requests.
-        # Run with "PORT=3000 optic capture ${YAML_SCHEMA_PATH} --update interactive" in '${directoryPath}'
+        # Run with "PORT=3000 optic capture ${YAML_SCHEMA_PATH} --update interactive" in '${
+      cliPaths.targetDir
+    }'
         # You can change the server and the 'requests' section to experiment
         server:
             # This will not be used by 'backstage-repo-tools schema openapi test', but may be useful for interactive updates.
@@ -64,27 +69,13 @@ capture:
   }
 }
 
-export default async function initCommand(paths: string[] = []) {
-  const resultsList = await runner(paths, dir => init(dir), {
-    concurrencyLimit: 5,
-  });
-
-  let failed = false;
-  for (const { relativeDir, resultText } of resultsList) {
-    if (resultText) {
-      console.log();
-      console.log(
-        chalk.red(`Failed to initialize ${relativeDir} for OpenAPI commands.`),
-      );
-      console.log(resultText.trimStart());
-
-      failed = true;
-    }
-  }
-
-  if (failed) {
+export async function singleCommand() {
+  try {
+    await init();
+    console.log(chalk.green(`Successfully configured.`));
+  } catch (err) {
+    console.log(chalk.red(`OpenAPI tooling initialization failed.`));
+    console.log(err.message);
     process.exit(1);
-  } else {
-    console.log(chalk.green(`All directories have already been configured.`));
   }
 }
