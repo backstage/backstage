@@ -9,6 +9,7 @@ import { AnyExtensionInputMap } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { ResolvedExtensionInputs } from '@backstage/frontend-plugin-api';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -25,6 +26,9 @@ export const catalogExtensionData: {
 
 // @alpha (undocumented)
 export function createEntityCardExtension<
+  TConfig extends {
+    filter?: string;
+  },
   TInputs extends AnyExtensionInputMap,
 >(options: {
   namespace?: string;
@@ -35,15 +39,15 @@ export function createEntityCardExtension<
   };
   disabled?: boolean;
   inputs?: TInputs;
+  configSchema?: PortableSchema<TConfig>;
   filter?:
     | typeof catalogExtensionData.entityFilterFunction.T
     | typeof catalogExtensionData.entityFilterExpression.T;
   loader: (options: {
+    config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
-}): ExtensionDefinition<{
-  filter?: string | undefined;
-}>;
+}): ExtensionDefinition<TConfig>;
 
 // @alpha (undocumented)
 export function createEntityContentExtension<

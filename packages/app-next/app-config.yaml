@@ -16,6 +16,9 @@ app:
         config:
           filter: kind:component has:links
     - entity-card:linguist/languages
+    - entity-card:catalog-graph/relations:
+        config:
+          height: 300
     - entity-card:azure-devops/readme
     # Entity page content
     - entity-content:techdocs

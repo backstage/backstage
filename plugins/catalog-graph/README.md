@@ -1,5 +1,8 @@
 # catalog-graph
 
+> Disclaimer:
+> If you are looking for documentation on the experimental new frontend system support, please go [here](./README-alpha.md).
+
 Welcome to the catalog graph plugin! The catalog graph visualizes the relations
 between entities, like ownership, grouping or API relationships.
 
