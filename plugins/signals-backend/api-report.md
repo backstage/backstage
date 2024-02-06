@@ -18,7 +18,7 @@ export interface RouterOptions {
   // (undocumented)
   discovery: PluginEndpointDiscovery;
   // (undocumented)
-  eventBroker?: EventBroker;
+  eventBroker: EventBroker;
   // (undocumented)
   identity: IdentityApi;
   // (undocumented)

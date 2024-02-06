@@ -15,33 +15,26 @@
  */
 
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   eventsExtensionPoint,
   EventsExtensionPoint,
+  eventsService,
 } from '@backstage/plugin-events-node/alpha';
 import {
-  EventBroker,
   EventPublisher,
   EventSubscriber,
   HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
-import { DefaultEventBroker } from './DefaultEventBroker';
 import Router from 'express-promise-router';
 import { HttpPostIngressEventPublisher } from './http';
 
 class EventsExtensionPointImpl implements EventsExtensionPoint {
-  #eventBroker: EventBroker | undefined;
   #httpPostIngresses: HttpPostIngressOptions[] = [];
   #publishers: EventPublisher[] = [];
   #subscribers: EventSubscriber[] = [];
-
-  setEventBroker(eventBroker: EventBroker): void {
-    this.#eventBroker = eventBroker;
-  }
 
   addPublishers(
     ...publishers: Array<EventPublisher | Array<EventPublisher>>
@@ -57,10 +50,6 @@ class EventsExtensionPointImpl implements EventsExtensionPoint {
 
   addHttpPostIngress(options: HttpPostIngressOptions) {
     this.#httpPostIngresses.push(options);
-  }
-
-  get eventBroker() {
-    return this.#eventBroker;
   }
 
   get publishers() {
@@ -92,10 +81,9 @@ export const eventsPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         logger: coreServices.logger,
         router: coreServices.httpRouter,
+        events: eventsService,
       },
-      async init({ config, logger, router }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
-
+      async init({ config, logger, router, events }) {
         const ingresses = Object.fromEntries(
           extensionPoint.httpPostIngresses.map(ingress => [
             ingress.topic,
@@ -106,19 +94,17 @@ export const eventsPlugin = createBackendPlugin({
         const http = HttpPostIngressEventPublisher.fromConfig({
           config,
           ingresses,
-          logger: winstonLogger,
+          logger,
         });
         const eventsRouter = Router();
         http.bind(eventsRouter);
+        await http.setEventBroker(events);
+
         router.use(eventsRouter);
-
-        const eventBroker =
-          extensionPoint.eventBroker ?? new DefaultEventBroker(winstonLogger);
-
-        eventBroker.subscribe(extensionPoint.subscribers);
+        events.subscribe(extensionPoint.subscribers);
         [extensionPoint.publishers, http]
           .flat()
-          .forEach(publisher => publisher.setEventBroker(eventBroker));
+          .forEach(publisher => publisher.setEventBroker(events));
       },
     });
   },

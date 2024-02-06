@@ -16,7 +16,6 @@
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import {
-  EventBroker,
   EventPublisher,
   EventSubscriber,
   HttpPostIngressOptions,
@@ -26,8 +25,6 @@ import {
  * @alpha
  */
 export interface EventsExtensionPoint {
-  setEventBroker(eventBroker: EventBroker): void;
-
   addPublishers(
     ...publishers: Array<EventPublisher | Array<EventPublisher>>
   ): void;

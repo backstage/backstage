@@ -34,7 +34,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 /** @public */
 export interface RouterOptions {
   logger: LoggerService;
-  eventBroker?: EventBroker;
+  eventBroker: EventBroker;
   identity: IdentityApi;
   discovery: PluginEndpointDiscovery;
 }

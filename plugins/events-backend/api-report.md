@@ -4,24 +4,16 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { DefaultEventBroker } from '@backstage/plugin-events-node';
 import { EventBroker } from '@backstage/plugin-events-node';
-import { EventParams } from '@backstage/plugin-events-node';
 import { EventPublisher } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 import express from 'express';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
-// @public
-export class DefaultEventBroker implements EventBroker {
-  constructor(logger: Logger);
-  // (undocumented)
-  publish(params: EventParams): Promise<void>;
-  // (undocumented)
-  subscribe(
-    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
-  ): void;
-}
+export { DefaultEventBroker };
 
 // @public
 export class EventsBackend {
@@ -49,7 +41,7 @@ export class HttpPostIngressEventPublisher implements EventPublisher {
     ingresses?: {
       [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
     };
-    logger: Logger;
+    logger: LoggerService;
   }): HttpPostIngressEventPublisher;
   // (undocumented)
   setEventBroker(eventBroker: EventBroker): Promise<void>;

@@ -17,6 +17,7 @@
 export type { EventBroker } from './EventBroker';
 export type { EventParams } from './EventParams';
 export type { EventPublisher } from './EventPublisher';
+export { DefaultEventBroker } from './DefaultEventBroker';
 export { EventRouter } from './EventRouter';
 export type { EventSubscriber } from './EventSubscriber';
 export * from './http';

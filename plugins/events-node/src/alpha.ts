@@ -16,3 +16,5 @@
 
 export type { EventsExtensionPoint } from './extensions';
 export { eventsExtensionPoint } from './extensions';
+export { eventsService } from './lib';
+export * from './api';

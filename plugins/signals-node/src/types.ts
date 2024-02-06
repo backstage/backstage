@@ -20,7 +20,7 @@ import { JsonObject } from '@backstage/types';
  * @public
  */
 export type SignalServiceOptions = {
-  eventBroker?: EventBroker;
+  eventBroker: EventBroker;
 };
 
 /** @public */

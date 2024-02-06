@@ -24,8 +24,8 @@ import {
 } from '@backstage/plugin-events-node';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { RequestValidationContextImpl } from './validation';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Publishes events received from their origin (e.g., webhook events from an SCM system)
@@ -40,7 +40,7 @@ export class HttpPostIngressEventPublisher implements EventPublisher {
   static fromConfig(env: {
     config: Config;
     ingresses?: { [topic: string]: Omit<HttpPostIngressOptions, 'topic'> };
-    logger: Logger;
+    logger: LoggerService;
   }): HttpPostIngressEventPublisher {
     const topics =
       env.config.getOptionalStringArray('events.http.topics') ?? [];
@@ -58,7 +58,7 @@ export class HttpPostIngressEventPublisher implements EventPublisher {
   }
 
   private constructor(
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly ingresses: {
       [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
     },

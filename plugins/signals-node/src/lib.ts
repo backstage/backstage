@@ -19,6 +19,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DefaultSignalService } from './DefaultSignalService';
 import { SignalService } from './SignalService';
+import { eventsService } from '@backstage/plugin-events-node/alpha';
 
 /** @public */
 export const signalService = createServiceRef<SignalService>({
@@ -28,11 +29,10 @@ export const signalService = createServiceRef<SignalService>({
     createServiceFactory({
       service,
       deps: {
-        // TODO: EventBroker. It is optional for now but it's actually required so waiting for the new backend system
-        //       for the events-backend for this to work.
+        eventBroker: eventsService,
       },
-      factory({}) {
-        return DefaultSignalService.create({});
+      factory({ eventBroker }) {
+        return DefaultSignalService.create({ eventBroker });
       },
     }),
 });

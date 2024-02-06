@@ -15,12 +15,12 @@
  */
 
 import {
+  DefaultEventBroker,
   EventBroker,
   EventPublisher,
   EventSubscriber,
 } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
-import { DefaultEventBroker } from './DefaultEventBroker';
 
 /**
  * A builder that helps wire up all component parts of the event management.

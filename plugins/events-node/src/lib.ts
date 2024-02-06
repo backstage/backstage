@@ -13,9 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  coreServices,
+  createServiceFactory,
+  createServiceRef,
+} from '@backstage/backend-plugin-api';
+import { EventBroker } from './api';
+import { DefaultEventBroker } from './api/DefaultEventBroker';
 
-/**
- * @public
- * @deprecated Use DefaultEventBroker from `@backstage/plugin-events-node` instead
- */
-export { DefaultEventBroker } from '@backstage/plugin-events-node';
+/** @public */
+export const eventsService = createServiceRef<EventBroker>({
+  id: 'events.service',
+  scope: 'plugin',
+  defaultFactory: async service =>
+    createServiceFactory({
+      service,
+      deps: {
+        logger: coreServices.logger,
+      },
+      factory({ logger }) {
+        return new DefaultEventBroker(logger);
+      },
+    }),
+});

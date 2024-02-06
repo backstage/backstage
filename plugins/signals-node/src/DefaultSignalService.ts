@@ -19,8 +19,7 @@ import { SignalService } from './SignalService';
 
 /** @public */
 export class DefaultSignalService implements SignalService {
-  // TODO: Remove this to be optional when events-backend has eventBroker as service
-  private eventBroker?: EventBroker;
+  private eventBroker: EventBroker;
 
   static create(options: SignalServiceOptions) {
     return new DefaultSignalService(options);

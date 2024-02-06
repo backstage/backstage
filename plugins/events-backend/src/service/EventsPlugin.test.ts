@@ -21,7 +21,10 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
+import {
+  eventsExtensionPoint,
+  eventsService,
+} from '@backstage/plugin-events-node/alpha';
 import {
   TestEventBroker,
   TestEventPublisher,
@@ -52,7 +55,6 @@ describe('eventPlugin', () => {
             events: eventsExtensionPoint,
           },
           async init({ events }) {
-            events.setEventBroker(eventBroker);
             events.addPublishers(publisher);
             events.addSubscribers(subscriber);
           },
@@ -79,6 +81,13 @@ describe('eventPlugin', () => {
           service: coreServices.httpRouter,
           deps: {},
           factory: async () => httpRouter,
+        }),
+        createServiceFactory({
+          service: eventsService,
+          deps: {},
+          factory: async () => {
+            return eventBroker;
+          },
         }),
       ],
     });

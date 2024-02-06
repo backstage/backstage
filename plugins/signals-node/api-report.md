@@ -31,7 +31,7 @@ export const signalService: ServiceRef<SignalService, 'plugin'>;
 
 // @public (undocumented)
 export type SignalServiceOptions = {
-  eventBroker?: EventBroker;
+  eventBroker: EventBroker;
 };
 
 // (No @packageDocumentation comment for this package)
