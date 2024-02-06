@@ -5,44 +5,34 @@ Welcome to the Node.js library package for the notifications plugin!
 ## Getting Started
 
 To be able to send notifications from other backend plugins, the `NotificationService` must be initialized for the
-environment. This can be done by adding the following changes to `packages/backend/src/index.ts` and
-`packages/backend/src/types.ts`:
-
-`index.ts`:
+environment. Add notification service to your `plugin.ts` as a dependency for init
 
 ```ts
-import { NotificationService } from '@backstage/plugin-notifications-node';
+import { notificationService } from '@backstage/plugin-notifications-node';
 
-function makeCreateEnv(config: Config) {
-  // ...
-  const defaultNotificationService = DefaultNotificationService.create({
-    logger: root.child({ type: 'plugin' }),
-    discovery,
-    tokenManager,
-    signalService,
-  });
-
-  // ...
-  return (plugin: string): PluginEnvironment => {
-    // ...
-    const notificationService = defaultNotificationService.forPlugin(plugin);
-
-    return {
-      // ...
-      notificationService,
-    };
-  };
-}
-```
-
-`types.ts`:
-
-```ts
-import { NotificationService } from '@backstage/plugin-notifications-node';
-export type PluginEnvironment = {
-  // ...
-  notificationService: NotificationService;
-};
+export const myPlugin = createBackendPlugin({
+  pluginId: 'myPlugin',
+  register(env) {
+    env.registerInit({
+      deps: {
+        config: coreServices.rootConfig,
+        logger: coreServices.logger,
+        httpRouter: coreServices.httpRouter,
+        notificationService: notificationService,
+      },
+      async init({ config, logger, httpRouter, notificationService }) {
+        httpRouter.use(
+          await createRouter({
+            config,
+            logger,
+            permissions,
+            notificationService,
+          }),
+        );
+      },
+    });
+  },
+});
 ```
 
 You also need to set up the `@backstage/plugin-notifications-backend` and `@backstage/plugin-notifications`
@@ -57,5 +47,5 @@ When sending notifications, you can specify the entity reference of the notifica
 a user, the notification will be sent to only that user. If it's a group, the notification will be sent to all
 members of the group. If it's some other entity, the notification will be sent to the owner of that entity.
 
-If the notification has `topic` set and user already has notification with that topic, the existing notification
+If the notification has `scope` set and user already has notification with that scope, the existing notification
 will be updated with the new notification values and moved to inbox as unread.
