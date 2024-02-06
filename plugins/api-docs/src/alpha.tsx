@@ -134,7 +134,7 @@ const ApiDocsDefinitionEntityContent = createEntityContentExtension({
   name: 'definition',
   defaultPath: '/defintion',
   defaultTitle: 'Definition',
-  filter: 'is:api',
+  filter: 'kind:api',
   loader: async () =>
     import('./components/ApiDefinitionCard').then(m =>
       compatWrapper(

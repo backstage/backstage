@@ -37,6 +37,7 @@ app:
 
     # Entity page content
     - entity-content:api-docs/definition
+    - entity-content:api-docs/apis
     - entity-content:techdocs
     - entity-content:azure-devops/pipelines
     - entity-content:azure-devops/pull-requests
