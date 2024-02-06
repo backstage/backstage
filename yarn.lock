@@ -6638,8 +6638,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-node@workspace:plugins/events-node"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/plugin-events-backend-test-utils": "workspace:^"
   languageName: unknown
   linkType: soft
 
