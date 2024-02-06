@@ -9,4 +9,3 @@ This comes with breaking changes to config options:
 - `audience` is now mandatory
 - `wantAuthnResponseSigned` is now exposed and defaults to `true`
 - `wantAssertionsSigned` is now exposed and defaults to `true`
-
