@@ -84,6 +84,7 @@ export const PlaylistPage = () => {
       <ErrorPage
         status={(error as ResponseError).response?.status.toString()}
         statusMessage={error.toString()}
+        stack={error.stack}
       />
     );
   }
