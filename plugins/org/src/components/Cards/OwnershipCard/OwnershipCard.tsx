@@ -67,7 +67,7 @@ export const OwnershipCard = (props: {
     hideRelationsToggle,
     relationsType,
     entityLimit = 6,
-    longTextLength,
+    longTextLength = 10,
   } = props;
   const relationsToggle =
     hideRelationsToggle === undefined ? false : hideRelationsToggle;
