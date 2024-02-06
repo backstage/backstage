@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import ReactRefreshRspackPlugin from '@rspack/plugin-react-refresh';
 import { ModuleOptions, RspackPluginInstance } from '@rspack/core';
 
 import { svgrTemplate } from '../svgrTemplate';
@@ -192,12 +192,7 @@ export const transforms = (options: TransformOptions): Transforms => {
 
   if (isDev) {
     if (!isBackend) {
-      plugins.push(
-        // @ts-expect-error -- tsc doesn't like the types here but actually it's compatible
-        new ReactRefreshPlugin({
-          overlay: { sockProtocol: 'ws' },
-        }),
-      );
+      plugins.push(new ReactRefreshRspackPlugin());
     }
   }
 
