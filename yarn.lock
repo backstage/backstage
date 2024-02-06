@@ -41394,8 +41394,8 @@ __metadata:
   linkType: hard
 
 "sloc@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "sloc@npm:0.3.1"
+  version: 0.3.2
+  resolution: "sloc@npm:0.3.2"
   dependencies:
     async: ^3.2.4
     cli-table: ^0.3.11
@@ -41403,7 +41403,7 @@ __metadata:
     readdirp: ^3.3.0
   bin:
     sloc: bin/sloc
-  checksum: 3075150912b4fbb90167c446b155fcfffa20351245d7ae2a7139b2c3ba5dd9fd01fe97fc11a917d5f6a66778c3a9ab4c6ceff0bcd234338f38942fb7238ab927
+  checksum: ea3b0a0c5383086d5210f9a9be5df5cbd8aa0a5f6a1902ba776e9faf9bb816092929f5eb4c88c5cd3961700da4229e55eee5b3bc291892159dd947e3e838e0aa
   languageName: node
   linkType: hard
 
