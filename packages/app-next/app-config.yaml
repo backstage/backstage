@@ -19,8 +19,12 @@ app:
     - entity-card:catalog-graph/relations:
         config:
           height: 300
+    - entity-card:azure-devops/readme
     # Entity page content
     - entity-content:techdocs
+    - entity-content:azure-devops/pipelines
+    - entity-content:azure-devops/pull-requests
+    - entity-content:azure-devops/git-tags
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

@@ -5052,10 +5052,12 @@ __metadata:
   dependencies:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/core-compat-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-azure-devops-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
@@ -29841,12 +29843,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^8.0.0":
-  version: 8.0.3
-  resolution: "husky@npm:8.0.3"
+"husky@npm:^9.0.0":
+  version: 9.0.10
+  resolution: "husky@npm:9.0.10"
   bin:
-    husky: lib/bin.js
-  checksum: 837bc7e4413e58c1f2946d38fb050f5d7324c6f16b0fd66411ffce5703b294bd21429e8ba58711cd331951ee86ed529c5be4f76805959ff668a337dbfa82a1b0
+    husky: bin.mjs
+  checksum: 55f4b6db6706ff0bc181607d6a64f55310cbb18b4d7db2a5b85608c87a80abafc14ac3a8c4d0b44d6272f4a62d4c2d3d5491d6a13e2cc7ac4895309e5e5f0ec2
   languageName: node
   linkType: hard
 
@@ -40405,7 +40407,7 @@ __metadata:
     eslint-plugin-react: ^7.28.0
     eslint-plugin-testing-library: ^6.0.0
     fs-extra: 10.1.0
-    husky: ^8.0.0
+    husky: ^9.0.0
     lint-staged: ^15.0.0
     minimist: ^1.2.5
     node-gyp: ^10.0.0

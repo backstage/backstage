@@ -40,8 +40,8 @@
     "build-storybook": "yarn ./storybook run build-storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
-    "prepare": "husky install",
-    "postinstall": "husky install || true"
+    "prepare": "husky",
+    "postinstall": "husky || true"
   },
   "workspaces": {
     "packages": [
@@ -85,7 +85,7 @@
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-testing-library": "^6.0.0",
     "fs-extra": "10.1.0",
-    "husky": "^8.0.0",
+    "husky": "^9.0.0",
     "lint-staged": "^15.0.0",
     "minimist": "^1.2.5",
     "node-gyp": "^10.0.0",
