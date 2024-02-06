@@ -40,8 +40,8 @@
     "build-storybook": "yarn ./storybook run build-storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
-    "prepare": "husky install",
-    "postinstall": "husky install || true"
+    "prepare": "husky",
+    "postinstall": "husky || true"
   },
   "workspaces": {
     "packages": [
