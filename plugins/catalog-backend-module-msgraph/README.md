@@ -104,7 +104,7 @@ By default, all users are loaded. If you want to filter users based on their att
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-msgraph
 ```
 
 4. The `MicrosoftGraphOrgEntityProvider` is not registered by default, so you

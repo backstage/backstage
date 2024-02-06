@@ -11,7 +11,7 @@ All of the code was originally ported from https://github.com/opencost/opencost/
 1.  Add the OpenCost dependency to the `packages/app/package.json`:
     ```sh
     # From your Backstage root directory
-    yarn add --cwd packages/app @backstage/plugin-opencost
+    yarn --cwd packages/app add @backstage/plugin-opencost
     ```
 2.  Add the `OpenCostPage` to your `packages/app/src/App.tsx`:
 

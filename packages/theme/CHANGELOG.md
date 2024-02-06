@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.5.1-next.0
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+
 ## 0.5.0
 
 ### Minor Changes

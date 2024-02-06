@@ -1,5 +1,35 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket
 
+## 0.2.0-next.2
+
+### Minor Changes
+
+- 5eb6882: Split `@backstage/plugin-scaffolder-backend-module-bitbucket` into
+  `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud` and
+  `@backstage/plugin-scaffolder-backend-module-bitbucket-server`.
+
+  `@backstage/plugin-scaffolder-backend-module-bitbucket` was **deprecated** in favor of these two replacements.
+
+  Please use any of the two replacements depending on your needs.
+
+  ```diff
+  - backend.add(import('@backstage/plugin-scaffolder-backend-module-bitbucket'));
+  + backend.add(import('@backstage/plugin-scaffolder-backend-module-bitbucket-cloud'));
+  + backend.add(import('@backstage/plugin-scaffolder-backend-module-bitbucket-server'));
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.0-next.0
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.0-next.0
+  - @backstage/plugin-scaffolder-node@0.3.0-next.2
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.9.0-next.0
+
 ## 0.1.2-next.1
 
 ### Patch Changes

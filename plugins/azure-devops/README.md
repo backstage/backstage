@@ -146,7 +146,7 @@ To get the Azure Pipelines component working you'll need to do the following two
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzurePipelinesContent` extension to the entity page in your app. How to do this will depend on which annotation you are using in your entities:
@@ -204,7 +204,7 @@ To get the Azure Repos component working you'll need to do the following two ste
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzurePullRequestsContent` extension to the entity page in your app:
@@ -241,7 +241,7 @@ To get the Git Tags component working you'll need to do the following two steps:
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzureGitTagsContent` extension to the entity page in your app:
@@ -277,7 +277,7 @@ To get the README component working you'll need to do the following two steps:
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzureReadmeCard` extension to the entity page in your app:

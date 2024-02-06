@@ -13,7 +13,7 @@ Install dependencies
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-explore-backend
+yarn --cwd packages/backend add @backstage/plugin-explore-backend
 ```
 
 Add feature
@@ -45,7 +45,7 @@ Install dependencies
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-explore-backend
+yarn --cwd packages/backend add @backstage/plugin-explore-backend
 ```
 
 You'll need to add the plugin to the router in your `backend` package. You can
@@ -90,7 +90,7 @@ Install dependencies
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-explore-backend @backstage/plugin-explore-common
+yarn --cwd packages/backend add @backstage/plugin-explore-backend @backstage/plugin-explore-common
 ```
 
 You'll need to add the plugin to the router in your `backend` package. You can

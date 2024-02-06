@@ -80,7 +80,7 @@ Install the `@backstage/plugin-badges` package in your frontend app package:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-badges
+yarn --cwd packages/app add @backstage/plugin-badges
 ```
 
 ### Register plugin

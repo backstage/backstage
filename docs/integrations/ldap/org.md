@@ -26,7 +26,7 @@ to `@backstage/plugin-catalog-backend-module-ldap` to your backend package.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-ldap
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-ldap
 ```
 
 > Note: When configuring to use a Provider instead of a Processor you do not

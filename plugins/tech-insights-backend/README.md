@@ -10,7 +10,7 @@ as well as a framework to run fact retrievers and store fact values in to a data
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-tech-insights-backend
+yarn --cwd packages/backend add @backstage/plugin-tech-insights-backend
 ```
 
 ### Adding the plugin to your `packages/backend`
@@ -214,7 +214,7 @@ To add the default FactChecker into your Tech Insights you need to install the m
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-tech-insights-backend-module-jsonfc
+yarn --cwd packages/backend add @backstage/plugin-tech-insights-backend-module-jsonfc
 ```
 
 and modify the `techInsights.ts` file to contain a reference to the FactChecker implementation.
