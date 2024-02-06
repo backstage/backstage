@@ -51,7 +51,7 @@ export const defaultResourceTransformer: ResourceTransformer = async (
       description: node.facts?.data
         ?.find(e => e.name === 'ipaddress')
         ?.value?.toString(),
-        tags: kernel
+      tags: kernel
         ? [
             kernel.toString().toLocaleLowerCase('en-US'),
             latest_report_status.toString().toLocaleLowerCase('en-US'),
