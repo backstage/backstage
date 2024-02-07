@@ -216,12 +216,14 @@ export async function createRouter(
       req.query.host?.toString() ?? config.getString('azureDevOps.host');
     const org =
       req.query.org?.toString() ?? config.getString('azureDevOps.organization');
+    const path = req.query.path?.toString() ?? 'README.md';
     const { projectName, repoName } = req.params;
     const readme = await azureDevOpsApi.getReadme(
       host,
       org,
       projectName,
       repoName,
+      path,
     );
     res.status(200).json(readme);
   });
