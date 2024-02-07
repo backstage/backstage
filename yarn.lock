@@ -36146,6 +36146,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oauth@npm:0.10.x":
+  version: 0.10.0
+  resolution: "oauth@npm:0.10.0"
+  checksum: 68fbcd9fc382985fd6a4856245bb9f78281c08ea238e814288c51e6cfb65e442c9c4eea67d54ec595384eb3f007e7b64ae3b8e67ec309228df44aba64cc9e0c7
+  languageName: node
+  linkType: hard
+
 "oauth@npm:0.9.x":
   version: 0.9.15
   resolution: "oauth@npm:0.9.15"
@@ -37028,15 +37035,15 @@ __metadata:
   linkType: hard
 
 "passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.1.2, passport-oauth2@npm:^1.4.0, passport-oauth2@npm:^1.6.0, passport-oauth2@npm:^1.6.1":
-  version: 1.7.0
-  resolution: "passport-oauth2@npm:1.7.0"
+  version: 1.8.0
+  resolution: "passport-oauth2@npm:1.8.0"
   dependencies:
     base64url: 3.x.x
-    oauth: 0.9.x
+    oauth: 0.10.x
     passport-strategy: 1.x.x
     uid2: 0.0.x
     utils-merge: 1.x.x
-  checksum: 9e93f1f47ad5c22ef119932e03f383b503f692012352f27d2a416cc45ca5448c5a97f726da51753fff9a2ec2b6255ac27f1e68c4b44538530d2a8de682f17d42
+  checksum: a9a80b968343c9c1906f74ef613b346ec2d6a6acfe17af81e673fd774779b436729252485755c3ce182f2cdba2434d75067418952d722404d65b93c0360ca02b
   languageName: node
   linkType: hard
 
