@@ -48,6 +48,8 @@ const CACHE_PREFIX = 'providers/cloudflare-access/profile-v1';
  */
 export const CF_DEFAULT_CACHE_TTL = 3600;
 
+type ServiceTokens = Record<string, string>;
+
 /** @public */
 export type Options = {
   /**
@@ -58,6 +60,15 @@ export type Options = {
    * https://<your-team-name>.cloudflareaccess.com/cdn-cgi/access/certs
    */
   teamName: string;
+  /**
+   * Allowed Cloudflare Service Tokens
+   *
+   * Cloudflare does not currently allow assigning any sort of identity to
+   * Service Tokens. Therefore, this allows you to build an allow list mapping
+   * the Client ID of any Service Tokens that should be allowed to pass the
+   * auth check to the identity (email) you would like to associate with it.
+   */
+  serviceTokens: ServiceTokens;
   authHandler: AuthHandler<CloudflareAccessResult>;
   signInResolver: SignInResolver<CloudflareAccessResult>;
   resolverContext: AuthResolverContext;
@@ -178,6 +189,7 @@ export type CloudflareAccessResponse =
 
 export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
   private readonly teamName: string;
+  private readonly serviceTokens: ServiceTokens;
   private readonly resolverContext: AuthResolverContext;
   private readonly authHandler: AuthHandler<CloudflareAccessResult>;
   private readonly signInResolver: SignInResolver<CloudflareAccessResult>;
@@ -186,6 +198,7 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
 
   constructor(options: Options) {
     this.teamName = options.teamName;
+    this.serviceTokens = options.serviceTokens;
     this.authHandler = options.authHandler;
     this.signInResolver = options.signInResolver;
     this.resolverContext = options.resolverContext;
@@ -260,7 +273,7 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
       issuer: `https://${this.teamName}.cloudflareaccess.com`,
     });
 
-    const isServiceToken = verifyResult.payload.sub === '';
+    const isServiceToken = !verifyResult.payload.sub;
 
     const subject = isServiceToken
       ? (verifyResult.payload.common_name as string)
@@ -268,6 +281,12 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
     if (!subject) {
       throw new AuthenticationError(
         `Missing both sub and common_name from Cloudflare Access JWT`,
+      );
+    }
+
+    if (isServiceToken && !this.serviceTokens.hasOwnProperty(subject)) {
+      throw new AuthenticationError(
+        `${subject} is not a permitted Service Token.`,
       );
     }
 
@@ -289,7 +308,7 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
         cfIdentity = {
           id: subject,
           name: 'Bot',
-          email: `${subject}@${this.teamName}.com`,
+          email: this.serviceTokens[subject],
           groups: [],
         };
       } else {
@@ -372,6 +391,13 @@ export const cfAccess = createAuthProviderIntegration({
   }) {
     return ({ config, resolverContext }) => {
       const teamName = config.getString('teamName');
+      const serviceTokensConfig = config.getOptionalConfig('serviceTokens');
+      const serviceTokens: ServiceTokens = {};
+      if (serviceTokensConfig) {
+        serviceTokensConfig.keys().forEach(key => {
+          serviceTokens[key] = serviceTokensConfig.getString(key);
+        });
+      }
 
       if (!options.signIn.resolver) {
         throw new Error(
@@ -393,6 +419,7 @@ export const cfAccess = createAuthProviderIntegration({
 
       return new CloudflareAccessAuthProvider({
         teamName,
+        serviceTokens,
         signInResolver: options?.signIn.resolver,
         authHandler,
         resolverContext,

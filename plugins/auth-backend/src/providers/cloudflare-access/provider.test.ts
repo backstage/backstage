@@ -43,6 +43,15 @@ const mockServiceTokenClaims = {
   exp: 1632833763,
   iss: 'ISSUER_URL',
 };
+const mockServiceTokenDisallowedJwt =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IktFWV9JRCIsImlzcyI6IklTU1VFUl9VUkwifQ.eyJzdWIiOiIiLCJuYW1lIjoiQm90IiwiY29tbW9uX25hbWUiOiJzb21lX290aGVyX3Rva2VuX2lkLmFjY2VzcyIsImlhdCI6MTUxNjIzOTAyMn0.qQeeQW_urYrrTq-tuKZWURwTUrjzgyFyZA9ViQtD-FM';
+const mockServiceTokenDisallowedClaims = {
+  sub: '',
+  common_name: 'some_other_token_id.access',
+  iat: 1632833760,
+  exp: 1632833763,
+  iss: 'ISSUER_URL',
+};
 const mockCfIdentity = {
   name: 'foo',
   id: '123',
@@ -162,6 +171,12 @@ describe('CloudflareAccessAuthProvider', () => {
     }),
   } as unknown as express.Request;
 
+  const mockRequestWithSericeTokenDisallowedJwtHeader = {
+    header: jest.fn(() => {
+      return mockServiceTokenDisallowedJwt;
+    }),
+  } as unknown as express.Request;
+
   const mockRequestWithoutJwt = {
     header: jest.fn(_ => {
       return undefined;
@@ -179,6 +194,7 @@ describe('CloudflareAccessAuthProvider', () => {
 
   const provider = new CloudflareAccessAuthProvider({
     teamName: 'foobar',
+    serviceTokens: {},
     resolverContext: {} as AuthResolverContext,
     authHandler: async result => {
       expect(result).toEqual(
@@ -212,6 +228,9 @@ describe('CloudflareAccessAuthProvider', () => {
 
   const providerServiceToken = new CloudflareAccessAuthProvider({
     teamName: 'foobar',
+    serviceTokens: {
+      'test_token_id.access': 'test_token_id.access@foobar.com',
+    },
     resolverContext: {} as AuthResolverContext,
     authHandler: async result => {
       expect(result).toEqual(
@@ -265,6 +284,18 @@ describe('CloudflareAccessAuthProvider', () => {
       expect(mockResponse.json).toHaveBeenCalledWith(
         identityOkServiceTokenResponse,
       );
+    });
+
+    it('rejects a disallowed service token JWT without calling get-identity', async () => {
+      jwtMock.mockReturnValue(
+        Promise.resolve({ payload: mockServiceTokenDisallowedClaims }),
+      );
+      await expect(
+        providerServiceToken.refresh(
+          mockRequestWithSericeTokenDisallowedJwtHeader,
+          mockResponse,
+        ),
+      ).rejects.toThrow();
     });
 
     it('returns cfidentity also when get-identity succeeds', async () => {

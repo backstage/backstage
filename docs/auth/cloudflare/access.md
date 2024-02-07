@@ -25,6 +25,8 @@ auth:
   providers:
     cfaccess:
       teamName: <Team Name>
+      serviceTokens:
+        "1uh2fh19efvfh129f1f919u21f2f19jf2.access": "bot-user@your-company.com
 ```
 
 You can find the team name in the Cloudflare Zero Trust dashboard.
