@@ -19473,11 +19473,11 @@ __metadata:
   linkType: hard
 
 "@types/sanitize-html@npm:^2.6.2":
-  version: 2.9.5
-  resolution: "@types/sanitize-html@npm:2.9.5"
+  version: 2.11.0
+  resolution: "@types/sanitize-html@npm:2.11.0"
   dependencies:
     htmlparser2: ^8.0.0
-  checksum: fd0afee5dac91aa2c42391f0c8c9254204f4ee1f10b902aa04e8f7809043d785e28af2732f75277ef09e46838013ad60abedb02ba1424b6218264f3333437fb5
+  checksum: a901d55d31cd946a7fce0130cc7cf6bcf56602af9c87291be77d8149c60e7afc47c83ca74c67c2d84e6ba029fe9bbd6f14f89a8cb30fbd185766eebc5722c251
   languageName: node
   linkType: hard
 
