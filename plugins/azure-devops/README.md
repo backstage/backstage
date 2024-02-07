@@ -63,11 +63,19 @@ spec:
 
 #### Mono repos
 
-If you have multiple entities within a single repo, you will need to specify which pipelines belong to each entity.
+If you have multiple entities within a single repo, you will need to specify which pipelines belong to each entity:
 
 ```yaml
 dev.azure.com/project-repo: <my-project>/<my-repo>
 dev.azure.com/build-definition: <build-definition-name>
+```
+
+...and which README file belongs to each entity.
+
+Example:
+
+```yaml
+dev.azure.com/readme-path: /<path-to>/<my-readme-file>.md
 ```
 
 #### Pipeline in different project to repo
