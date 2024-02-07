@@ -111,6 +111,8 @@ type BackstageCredentials =
 export interface AuthService {
   authenticate(token: string): Promise<BackstageCredentials>;
 
+  // TODO: should the caller provide the target plugin ID?
+  // TODO: how can we make it very difficult to forget to forward credentials
   issueToken(credentials: BackstageCredentials): Promise<{ token: string }>;
 }
 ```
