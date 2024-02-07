@@ -6793,11 +6793,11 @@ __metadata:
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
-    "@types/dompurify": ^2.3.3
+    "@types/dompurify": ^3.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/sanitize-html": ^2.6.2
     classnames: ^2.3.1
-    dompurify: ^2.3.6
+    dompurify: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     material-ui-popup-state: ^1.9.3
@@ -7661,7 +7661,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     classnames: ^2.3.1
-    dompurify: ^2.3.6
+    dompurify: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     material-ui-popup-state: ^1.9.3
@@ -9708,11 +9708,11 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/dompurify": ^2.2.2
+    "@types/dompurify": ^3.0.0
     "@types/event-source-polyfill": ^1.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     canvas: ^2.10.2
-    dompurify: ^2.2.9
+    dompurify: ^3.0.0
     event-source-polyfill: 1.0.25
     git-url-parse: ^13.0.0
     jss: ~10.10.0
@@ -18433,12 +18433,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/dompurify@npm:^2.1.0, @types/dompurify@npm:^2.2.2, @types/dompurify@npm:^2.3.3":
+"@types/dompurify@npm:^2.1.0":
   version: 2.4.0
   resolution: "@types/dompurify@npm:2.4.0"
   dependencies:
     "@types/trusted-types": "*"
   checksum: b48cd81e997794ebc390c7c5bef1a67ec14a6f2f0521973e07e06af186c7583abe114d94d24868c0632b9573f5bd77131a4b76f3fffdf089ba99a4e53dd46c39
+  languageName: node
+  linkType: hard
+
+"@types/dompurify@npm:^3.0.0":
+  version: 3.0.5
+  resolution: "@types/dompurify@npm:3.0.5"
+  dependencies:
+    "@types/trusted-types": "*"
+  checksum: ffc34eca6a4536e1c8c16a47cce2623c5a118a9785492e71230052d92933ff096d14326ff449031e8dfaac509413222372d8f2b28786a13159de6241df716185
   languageName: node
   linkType: hard
 
@@ -25503,14 +25512,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:=3.0.8":
+"dompurify@npm:=3.0.8, dompurify@npm:^3.0.0":
   version: 3.0.8
   resolution: "dompurify@npm:3.0.8"
   checksum: cac660ccae15a9603f06a85344da868a4c3732d8b57f7998de0f421eb4b9e67d916be52e9bb2a57b2f95b49e994cc50bcd06bb87f2cb2849cf058bdf15266237
   languageName: node
   linkType: hard
 
-"dompurify@npm:^2.2.7, dompurify@npm:^2.2.9, dompurify@npm:^2.3.6":
+"dompurify@npm:^2.2.7":
   version: 2.4.7
   resolution: "dompurify@npm:2.4.7"
   checksum: 13c047e772a1998348191554dda403950d45ef2ec75fa0b9915cc179ccea0a39ef780d283109bd72cf83a2a085af6c77664281d4d0106a737bc5f39906364efe
