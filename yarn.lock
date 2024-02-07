@@ -5419,23 +5419,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-bitbucket@workspace:plugins/catalog-backend-module-bitbucket":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-catalog-backend-module-bitbucket@workspace:plugins/catalog-backend-module-bitbucket"
-  dependencies:
-    "@backstage/backend-common": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@backstage/config": "workspace:^"
-    "@backstage/integration": "workspace:^"
-    "@backstage/plugin-bitbucket-cloud-common": "workspace:^"
-    "@backstage/plugin-catalog-node": "workspace:^"
-    msw: ^1.0.0
-    node-fetch: ^2.6.7
-    winston: ^3.2.1
-  languageName: unknown
-  linkType: soft
-
 "@backstage/plugin-catalog-backend-module-gcp@workspace:plugins/catalog-backend-module-gcp":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-gcp@workspace:plugins/catalog-backend-module-gcp"
