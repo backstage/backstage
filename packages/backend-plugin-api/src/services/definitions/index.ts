@@ -16,6 +16,12 @@
 
 export { coreServices } from './coreServices';
 export type {
+  AuthService,
+  BackstageCredentials,
+  BackstageServiceCredentials,
+  BackstageUserCredentials,
+} from './AuthService';
+export type {
   CacheService,
   CacheServiceOptions,
   CacheServiceSetOptions,
