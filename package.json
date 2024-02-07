@@ -43,6 +43,10 @@
     "prepare": "husky",
     "postinstall": "husky || true"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage"
+  },
   "workspaces": {
     "packages": [
       "packages/*",
