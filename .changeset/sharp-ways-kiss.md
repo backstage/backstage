@@ -1,0 +1,14 @@
+---
+'@backstage/plugin-auth-backend-module-oauth2-proxy-provider': patch
+'@backstage/plugin-auth-backend-module-vmware-cloud-provider': patch
+'@backstage/plugin-auth-backend-module-atlassian-provider': patch
+'@backstage/plugin-auth-backend-module-microsoft-provider': patch
+'@backstage/plugin-auth-backend-module-pinniped-provider': patch
+'@backstage/plugin-auth-backend-module-github-provider': patch
+'@backstage/plugin-auth-backend-module-gitlab-provider': patch
+'@backstage/plugin-auth-backend-module-oauth2-provider': patch
+'@backstage/plugin-auth-backend-module-oidc-provider': patch
+'@backstage/plugin-auth-backend-module-okta-provider': patch
+---
+
+Added repo information to package.json
