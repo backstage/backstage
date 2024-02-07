@@ -68,6 +68,8 @@ export interface AuthProviderRouteHandlers {
 export interface AuthProvidersExtensionPoint {
   // (undocumented)
   registerProvider(options: AuthProviderRegistrationOptions): void;
+  // (undocumented)
+  setAuthOwnershipResolver(ownershipResolver: AuthOwnershipResolver): void;
 }
 
 // @public (undocumented)
