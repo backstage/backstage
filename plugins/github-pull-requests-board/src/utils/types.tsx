@@ -81,6 +81,14 @@ export type Label = {
   name: string;
 };
 
+export type Status = {
+  commit: {
+    statusCheckRollup: {
+      state: 'SUCCESS' | 'FAILURE' | 'ERROR' | 'EXPECTED' | 'PENDING';
+    };
+  };
+};
+
 export type PullRequest = {
   id: string;
   repository: Repository;
@@ -89,6 +97,9 @@ export type PullRequest = {
   lastEditedAt: string;
   latestReviews: {
     nodes: Reviews;
+  };
+  commits: {
+    nodes: Status;
   };
   mergeable: boolean;
   state: string;

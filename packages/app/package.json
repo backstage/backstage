@@ -45,6 +45,7 @@
     "@backstage/plugin-gcalendar": "workspace:^",
     "@backstage/plugin-gcp-projects": "workspace:^",
     "@backstage/plugin-github-actions": "workspace:^",
+    "@backstage/plugin-github-pull-requests-board": "workspace:^",
     "@backstage/plugin-gocd": "workspace:^",
     "@backstage/plugin-graphiql": "workspace:^",
     "@backstage/plugin-home": "workspace:^",

@@ -87,6 +87,9 @@ const EntityTeamPullRequestsContent = (
       return <Progress />;
     }
 
+    // eslint-disable-next-line no-console
+    console.log('pull - ', pullRequests);
+
     return (
       <Grid container spacing={2}>
         {pullRequests.length ? (
@@ -103,6 +106,7 @@ const EntityTeamPullRequestsContent = (
                     author,
                     url,
                     latestReviews,
+                    commits,
                     repository,
                     isDraft,
                     labels,
@@ -125,6 +129,7 @@ const EntityTeamPullRequestsContent = (
                       author={author}
                       url={url}
                       reviews={latestReviews.nodes}
+                      status={commits.nodes}
                       repositoryName={repository.name}
                       repositoryIsArchived={repository.isArchived}
                       isDraft={isDraft}
