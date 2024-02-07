@@ -16,6 +16,16 @@ import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Readable } from 'stream';
 
 // @public (undocumented)
+export interface AuthService {
+  // (undocumented)
+  authenticate(token: string): Promise<BackstageCredentials>;
+  // (undocumented)
+  issueServiceToken(options?: { forward?: BackstageCredentials }): Promise<{
+    token: string;
+  }>;
+}
+
+// @public (undocumented)
 export interface BackendFeature {
   // (undocumented)
   $$type: '@backstage/BackendFeature';
@@ -76,6 +86,25 @@ export interface BackendPluginRegistrationPoints {
   }): void;
 }
 
+// @public (undocumented)
+export type BackstageCredentials =
+  | BackstageUserCredentials
+  | BackstageServiceCredentials;
+
+// @public (undocumented)
+export type BackstageServiceCredentials = {
+  $$type: '@backstage/BackstageCredentials';
+  type: 'service';
+  subject: string;
+};
+
+// @public (undocumented)
+export type BackstageUserCredentials = {
+  $$type: '@backstage/BackstageCredentials';
+  type: 'user';
+  userEntityRef: string;
+};
+
 // @public
 export interface CacheService {
   delete(key: string): Promise<void>;
@@ -100,6 +129,7 @@ export type CacheServiceSetOptions = {
 
 // @public
 export namespace coreServices {
+  const auth: ServiceRef<AuthService, 'plugin'>;
   const cache: ServiceRef<CacheService, 'plugin'>;
   const rootConfig: ServiceRef<RootConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;

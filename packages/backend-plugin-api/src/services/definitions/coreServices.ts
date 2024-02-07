@@ -23,6 +23,15 @@ import { createServiceRef } from '../system';
  */
 export namespace coreServices {
   /**
+   * The service reference for the plugin scoped {@link IdentityService}.
+   *
+   * @public
+   */
+  export const auth = createServiceRef<import('./AuthService').AuthService>({
+    id: 'core.auth',
+  });
+
+  /**
    * The service reference for the plugin scoped {@link CacheService}.
    *
    * @public
