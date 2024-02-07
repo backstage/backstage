@@ -49,7 +49,6 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@types/cron": "^2.0.0",
     "wait-for-expect": "^3.0.2"
   },
   "files": [
