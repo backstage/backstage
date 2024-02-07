@@ -10,7 +10,7 @@ description: Support and Community Details and Links
   here if you want to contribute.
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - Help shape the
   technical direction by reviewing _Request for Comments_ issues.
-- [BEPs](https://github.com/backstage/backstage/tree/master/beps#backstage-enhancement-proposals-beps) - A Backstage Enhancement Proposal (BEP) is a way to propose, communicate and coordinate on new efforts for the Backstage project.
+- [BEPs](../beps/README.md) - A Backstage Enhancement Proposal (BEP) is a way to propose, communicate and coordinate on new efforts for the Backstage project.
 - [FAQ](../faq/index.md) - Frequently Asked Questions.
 - [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md) -
   This is how we roll.

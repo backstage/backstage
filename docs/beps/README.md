@@ -1,3 +1,8 @@
+---
+id: beps-overview
+title: Backstage Enhancement Proposal (BEP) Template
+---
+
 # Backstage Enhancement Proposals (BEPs)
 
 A Backstage Enhancement Proposal (BEP) is a way to propose, communicate and coordinate on new efforts for the Backstage project.
@@ -6,10 +11,10 @@ A Backstage Enhancement Proposal (BEP) is a way to propose, communicate and coor
 
 1. Discuss the idea with the community and maintainers. Either here on GitHub, Discord, or during community sessions or SIG meetings.
    Make sure that others think the work is worth taking up and will help review the BEP and any code changes required.
-1. Make a copy of the [BEP template](./NNNN-template/) directory as `beps/NNNN-short-descriptive-title`, where `NNNN` is the next available number padded with leading zeroes.
+1. Make a copy of the [BEP template](NNNN-template/README.md) directory as `beps/NNNN-short-descriptive-title`, where `NNNN` is the next available number padded with leading zeroes.
 1. Fill out as much of the YAML metadata as you can.
 1. Fill out the template as best you can.
-1. If you want the BEP to be owned by a particular project area, add an entry for the BEP folder to [CODEOWNERS](../.github/CODEOWNERS).
+1. If you want the BEP to be owned by a particular project area, add an entry for the BEP folder to [CODEOWNERS](https://github.com/backstage/backstage/blob/master/.github/CODEOWNERS).
 1. Create a PR for the BEP. Title it "BEP: &lt;title&gt;". Aim to get the high level goals clarified and avoid getting hung up on specific details. The PR can be merged early and iterated on.
 1. Once the BEP is ready to be merged, create a [feature issue](https://github.com/backstage/backstage/issues/new?template=feature.yaml) titled "BEP: &lt;title&gt;". Use the summary of the BEP as description and link to the BEP PR in the context section. Once the PR is merged, the issue should be updated to link to the BEP folder instead. This issue will serve as a general discussion issue for the BEP.
 1. Once the initial BEP is merged you should keep iterating on it until it is ready to leave that `provisional` state. Leaving the `provisional` state is a decision made by the project area maintainers.
@@ -59,14 +64,14 @@ If you want to propose a change to the BEP process you can also open a PR direct
 
 At the start of each BEP is a YAML document that contains metadata about the BEP. These are the fields that should currently be provided:
 
-| Field             | Description                                                                                                                                                                                                                              |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **title**         | The title of the BEP in plain language. The title will also be used in the BEP filename. See the template for instructions and details.                                                                                                  |
-| **status**        | The current state of the BEP, must be one of the values listed in the [BEP Status](#bep-status) section.                                                                                                                                 |
-| **authors**       | A list of GitHub IDs for the authors of the BEP. Typically only the original authors are included, but additional authors can be added if significant contributions are made.                                                            |
-| **owners**        | A list of GitHub IDs for the owners of the BEP. The owners are responsible for the implementation of the BEP, and are required for the BEP to move to the `implementable` status.                                                        |
-| **project-areas** | The Project Areas closely associated with this BEP that need to approve it. For a list of existing project areas, see [OWNERS.md](../OWNERS.md). If the BEP is not related to any existing project area, use `core-maintainers` instead. |
-| **creation-date** | The `yyyy-mm-dd` date that the BEP was first submitted in a PR.                                                                                                                                                                          |
+| Field             | Description                                                                                                                                                                                                                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **title**         | The title of the BEP in plain language. The title will also be used in the BEP filename. See the template for instructions and details.                                                                                                                                                  |
+| **status**        | The current state of the BEP, must be one of the values listed in the [BEP Status](#bep-status) section.                                                                                                                                                                                 |
+| **authors**       | A list of GitHub IDs for the authors of the BEP. Typically only the original authors are included, but additional authors can be added if significant contributions are made.                                                                                                            |
+| **owners**        | A list of GitHub IDs for the owners of the BEP. The owners are responsible for the implementation of the BEP, and are required for the BEP to move to the `implementable` status.                                                                                                        |
+| **project-areas** | The Project Areas closely associated with this BEP that need to approve it. For a list of existing project areas, see [OWNERS.md](https://github.com/backstage/backstage/blob/master/OWNERS.md). If the BEP is not related to any existing project area, use `core-maintainers` instead. |
+| **creation-date** | The `yyyy-mm-dd` date that the BEP was first submitted in a PR.                                                                                                                                                                                                                          |
 
 ## BEP Status
 

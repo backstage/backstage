@@ -477,6 +477,12 @@
       "architecture-decisions/adrs-adr012",
       "architecture-decisions/adrs-adr013"
     ],
+    "Backstage Enhancement Proposals (BEPs)": [
+      "beps/beps-overview",
+      "beps/notifications-system/beps-bep0001",
+      "beps/dynamic-frontend-plugins/beps-bep0002",
+      "beps/auth-architecture-evolution/beps-bep0003"
+    ],
     "FAQ": ["faq/index", "faq/product", "faq/technical"],
     "Accessibility": ["accessibility/index"],
     "References": ["references/glossary"]

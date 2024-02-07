@@ -1,4 +1,5 @@
 ---
+id: beps-bep0002
 title: Dynamic Frontend Plugins
 status: provisional
 authors:

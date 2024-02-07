@@ -1,4 +1,5 @@
 ---
+id: beps-bep0000
 title: BEP Title
 status: provisional
 authors:

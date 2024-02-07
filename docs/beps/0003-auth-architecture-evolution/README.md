@@ -1,4 +1,5 @@
 ---
+id: beps-bep0003
 title: Auth Architecture Evolution
 status: provisional
 authors:

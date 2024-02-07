@@ -1,4 +1,5 @@
 ---
+id: beps-bep0001
 title: Backstage Notifications System
 status: provisional
 authors:
