@@ -25,7 +25,7 @@
     "@types/webpack-env": "^1.18.0",
     "js-yaml": "^4.1.0",
     "prettier": "^2.6.2",
-    "typescript": "~5.0.0",
+    "typescript": "~5.1.0",
     "yaml-loader": "^0.8.0"
   },
   "prettier": "@spotify/prettier-config",

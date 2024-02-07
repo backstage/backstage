@@ -83,7 +83,7 @@ following command:
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/backend-defaults @backstage/backend-plugin-api
+yarn --cwd packages/backend add @backstage/backend-defaults @backstage/backend-plugin-api
 ```
 
 You should now be able to start this up with the familiar `yarn workspace
@@ -616,7 +616,7 @@ if you didn't already have one.
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/plugin-catalog-node
+yarn --cwd packages/backend add @backstage/plugin-catalog-node
 ```
 
 Here we've placed the module directly in the backend index file just to get
@@ -681,7 +681,7 @@ if you didn't already have one.
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/plugin-events-node
+yarn --cwd packages/backend add @backstage/plugin-events-node
 ```
 
 Here we've placed the module directly in the backend index file just to get
@@ -715,7 +715,7 @@ And of course you'll need to install those separately as well.
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-github
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-github
 ```
 
 You can find a list of the available modules under the [plugins directory](https://github.com/backstage/backstage/tree/master/plugins) in the monorepo.
@@ -766,7 +766,7 @@ if you didn't already have one.
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/plugin-scaffolder-node
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-node
 ```
 
 Here we've placed the module directly in the backend index file just to get

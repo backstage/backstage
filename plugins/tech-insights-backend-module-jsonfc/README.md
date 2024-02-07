@@ -10,7 +10,7 @@ To add this FactChecker into your Tech Insights you need to install the module i
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-tech-insights-backend-module-jsonfc
+yarn --cwd packages/backend add @backstage/plugin-tech-insights-backend-module-jsonfc
 ```
 
 ### Add to the backend

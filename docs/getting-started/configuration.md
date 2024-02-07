@@ -67,7 +67,7 @@ App. Use the following commands to start the PostgreSQL client installation:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend pg
+yarn --cwd packages/backend add pg
 ```
 
 Use your favorite editor to open `app-config.yaml` and add your PostgreSQL

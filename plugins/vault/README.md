@@ -18,7 +18,7 @@ To get started, first you need a running instance of Vault. You can follow [this
 
    ```bash
      # From your Backstage root directory
-     yarn add --cwd packages/app @backstage/plugin-vault
+     yarn --cwd packages/app add @backstage/plugin-vault
    ```
 
 2. Add the Vault card to the overview tab on the EntityPage:

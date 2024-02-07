@@ -8,7 +8,7 @@ Welcome to the Bazaar backend plugin!
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-bazaar-backend
+yarn --cwd packages/backend add @backstage/plugin-bazaar-backend
 ```
 
 ## Adding the plugin to your `packages/backend`

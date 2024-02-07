@@ -1,5 +1,19 @@
 # @backstage/plugin-airbrake
 
+## 0.3.30-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/dev-utils@1.0.27-next.2
+  - @backstage/test-utils@1.5.0-next.2
+  - @backstage/catalog-model@1.4.4-next.0
+
 ## 0.3.30-next.1
 
 ### Patch Changes

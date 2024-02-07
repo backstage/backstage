@@ -16,7 +16,7 @@ To get started, first you need a running instance of Vault. You can follow [this
 
    ```bash
      # From your Backstage root directory
-     yarn add --cwd packages/backend @backstage/plugin-vault-backend
+     yarn --cwd packages/backend add @backstage/plugin-vault-backend
    ```
 
 2. Create a file in `src/plugins/vault.ts` and add a reference to it in `src/index.ts`:

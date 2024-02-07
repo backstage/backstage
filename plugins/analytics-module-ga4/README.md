@@ -12,7 +12,7 @@ This plugin contains no other functionality.
 
 ```sh
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-analytics-module-ga4
+yarn --cwd packages/app add @backstage/plugin-analytics-module-ga4
 ```
 
 2. Wire up the API implementation to your App:

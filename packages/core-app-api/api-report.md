@@ -64,6 +64,7 @@ import { SessionState } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
+import { vmwareCloudAuthApiRef } from '@backstage/core-plugin-api';
 
 // @public
 export class AlertApiForwarder implements AlertApi {
@@ -649,6 +650,12 @@ export class UrlPatternDiscovery implements DiscoveryApi {
   static compile(pattern: string): UrlPatternDiscovery;
   // (undocumented)
   getBaseUrl(pluginId: string): Promise<string>;
+}
+
+// @public
+export class VMwareCloudAuth {
+  // (undocumented)
+  static create(options: OAuthApiCreateOptions): typeof vmwareCloudAuthApiRef.T;
 }
 
 // @public

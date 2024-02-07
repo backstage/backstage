@@ -27,7 +27,7 @@ For either simple or advanced installations, you'll need to add the dependency u
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-tech-radar
+yarn --cwd packages/app add @backstage/plugin-tech-radar
 ```
 
 ### Configuration

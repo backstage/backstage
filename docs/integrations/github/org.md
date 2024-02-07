@@ -27,7 +27,7 @@ to `@backstage/plugin-catalog-backend-module-github` to your backend package.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 
 > Note: When configuring to use a Provider instead of a Processor you do not
@@ -308,7 +308,7 @@ install and register it in the catalog plugin:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 
 ```typescript title="packages/backend/src/plugins/catalog.ts"

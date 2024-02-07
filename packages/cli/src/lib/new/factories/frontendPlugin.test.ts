@@ -180,7 +180,7 @@ const router = (
       fs.readJson(mockDir.resolve('packages/app/package.json')),
     ).resolves.toEqual({
       dependencies: {
-        '@internal/plugin-test': '^1.0.0',
+        '@internal/backstage-plugin-test': '^1.0.0',
       },
     });
 
@@ -188,7 +188,7 @@ const router = (
       fs.readFile(mockDir.resolve('packages/app/src/App.tsx'), 'utf8'),
     ).resolves.toBe(`
 import { createApp } from '@backstage/app-defaults';
-import { TestPage } from '@internal/plugin-test';
+import { TestPage } from '@internal/backstage-plugin-test';
 
 const router = (
   <FlatRoutes>

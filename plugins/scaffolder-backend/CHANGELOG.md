@@ -1,5 +1,52 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.21.0-next.2
+
+### Patch Changes
+
+- 5eb6882: New scaffolder module `@backstage/plugin-scaffolder-backend-module-bitbucket-server`.
+
+  Extracted from `@backstage/plugin-scaffolder-backend-module-bitbucket`
+  and replaces its actions related to Bitbucket Server.
+
+  - `publish:bitbucketServer`
+  - `publish:bitbucketServer:pull-request`
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 52ae6b9: Updated dependency `esbuild` to `^0.20.0`.
+- 5eb6882: New scaffolder module `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`.
+
+  Extracted from `@backstage/plugin-scaffolder-backend-module-bitbucket`
+  and replaces its actions related to Bitbucket Cloud.
+
+  - `publish:bitbucketCloud`
+  - `bitbucket:pipelines:run`
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.0-next.0
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.13-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/backend-tasks@0.5.15-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.2-next.2
+  - @backstage/plugin-permission-node@0.7.21-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.0-next.2
+  - @backstage/plugin-scaffolder-node@0.3.0-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.7-next.2
+  - @backstage/plugin-catalog-node@1.6.2-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+
 ## 1.21.0-next.1
 
 ### Minor Changes

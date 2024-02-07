@@ -29,7 +29,7 @@ When you have an instance running that Backstage can hook into, first install th
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-lighthouse
+yarn --cwd packages/app add @backstage/plugin-lighthouse
 ```
 
 Modify your app routes in `App.tsx` to include the `LighthousePage` component exported from the plugin, for example:

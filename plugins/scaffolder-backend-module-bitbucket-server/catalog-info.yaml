@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-scaffolder-backend-module-bitbucket-server
+  title: '@backstage/plugin-scaffolder-backend-module-bitbucket-server'
+  description: The Bitbucket Server module for @backstage/plugin-scaffolder-backend
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

@@ -1,5 +1,21 @@
 # @backstage/plugin-adr-backend
 
+## 0.4.7-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/plugin-adr-common@0.2.20-next.0
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.4.7-next.1
 
 ### Patch Changes

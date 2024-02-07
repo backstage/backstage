@@ -8,12 +8,15 @@ import { EventBroker } from '@backstage/plugin-events-node';
 import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
 export interface RouterOptions {
+  // (undocumented)
+  discovery: PluginEndpointDiscovery;
   // (undocumented)
   eventBroker?: EventBroker;
   // (undocumented)

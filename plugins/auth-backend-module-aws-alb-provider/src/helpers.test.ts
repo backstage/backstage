@@ -1,10 +1,3 @@
-import NodeCache from 'node-cache';
-import { makeProfileInfo, provisionKeyCache } from './helpers';
-import * as crypto from 'crypto';
-import { JWTHeaderParameters } from 'jose';
-import { PassportProfile } from '@backstage/plugin-auth-node';
-import jwtDecoder from 'jwt-decode';
-
 /*
  * Copyright 2020 The Backstage Authors
  *
@@ -21,40 +14,47 @@ import jwtDecoder from 'jwt-decode';
  * limitations under the License.
  */
 
-const mockKey = async () => {
-  return `-----BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnuN4LlaJhaUpx+qZFTzYCrSBLk0I
-yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
------END PUBLIC KEY-----
-`;
-};
+import * as crypto from 'crypto';
+import { JWTHeaderParameters, UnsecuredJWT } from 'jose';
+import NodeCache from 'node-cache';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { PassportProfile } from '@backstage/plugin-auth-node';
+import { makeProfileInfo, provisionKeyCache } from './helpers';
+
 jest.mock('crypto');
 const cryptoMock = crypto as jest.Mocked<any>;
-jest.mock('node-fetch', () => ({
-  __esModule: true,
-  default: async () => {
-    return {
-      text: async () => {
-        return mockKey();
-      },
-    };
-  },
-}));
-
-const jwtMock = jwtDecoder as jest.Mocked<any>;
-jest.mock('jwt-decode');
 
 describe('helpers', () => {
+  const server = setupServer();
+  setupRequestMockHandlers(server);
+
   const nodeCache = jest.fn() as unknown as NodeCache;
   nodeCache.set = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
+    server.use(
+      http.get(
+        'https://public-keys.auth.elb.eu-west-1.amazonaws.com/kid',
+        () =>
+          new HttpResponse(
+            `-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnuN4LlaJhaUpx+qZFTzYCrSBLk0I
+yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
+-----END PUBLIC KEY-----
+`,
+          ),
+      ),
+    );
   });
+
   it('should create a key', () => {
     const getKey = provisionKeyCache('eu-west-1', nodeCache);
     expect(getKey).toBeDefined();
   });
+
   it('should return a key from cache', async () => {
     const getKey = provisionKeyCache('eu-west-1', nodeCache);
 
@@ -65,6 +65,7 @@ describe('helpers', () => {
 
     expect(key).toBe('key');
   });
+
   it('should update cache if key is not found', async () => {
     const getKey = provisionKeyCache('eu-west-1', nodeCache);
 
@@ -77,6 +78,7 @@ describe('helpers', () => {
     await getKey({ kid: 'kid' } as unknown as JWTHeaderParameters);
     expect(nodeCache.set).toHaveBeenCalledWith('kid', 'key');
   });
+
   it('should throw error if key is not found', async () => {
     const getKey = provisionKeyCache('eu-west-1', nodeCache);
 
@@ -87,6 +89,7 @@ describe('helpers', () => {
       getKey({ kid: 'kid' } as unknown as JWTHeaderParameters),
     ).rejects.toThrow();
   });
+
   it('should throw if key is not present in request header', async () => {
     const getKey = provisionKeyCache('eu-west-1', nodeCache);
 
@@ -119,19 +122,19 @@ describe('makeProfileInfo', () => {
     };
     expect(makeProfileInfo(profile, accessToken)).toEqual(result);
   });
+
   it('should return profile info from id token', () => {
-    jwtMock.mockReturnValueOnce({
-      email: 'email',
-      picture: 'picture',
-      name: 'displayName',
-    });
     const profile = {
       name: {
         familyName: 'familyName',
         givenName: 'givenName',
       },
     } as PassportProfile;
-    const idToken = 'idToken';
+    const idToken = new UnsecuredJWT({
+      email: 'email',
+      picture: 'picture',
+      name: 'displayName',
+    }).encode();
     const result = {
       email: 'email',
       picture: 'picture',

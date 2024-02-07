@@ -30,6 +30,7 @@ import {
   templatingTask,
   tryInitGitRepository,
   readGitConfig,
+  fetchYarnLockSeedTask,
 } from './lib/tasks';
 
 const DEFAULT_BRANCH = 'master';
@@ -110,6 +111,8 @@ export default async (opts: OptionValues): Promise<void> => {
       await moveAppTask(tempDir, appDir, answers.name);
     }
 
+    const fetchedYarnLockSeed = await fetchYarnLockSeedTask(appDir);
+
     if (gitConfig) {
       if (await tryInitGitRepository(appDir)) {
         // Since we don't know whether we were able to init git before we
@@ -128,6 +131,20 @@ export default async (opts: OptionValues): Promise<void> => {
       chalk.green(`🥇  Successfully created ${chalk.cyan(answers.name)}`),
     );
     Task.log();
+
+    if (!fetchedYarnLockSeed) {
+      Task.log(
+        chalk.yellow(
+          [
+            'Warning: Failed to fetch the yarn.lock seed file.',
+            '         You may end up with incompatible dependencies that break the app.',
+            '         If you run into any errors, please search the issues at',
+            '         https://github.com/backstage/backstage/issues for potential solutions',
+          ].join('\n'),
+        ),
+      );
+    }
+
     Task.section('All set! Now you might want to');
     if (opts.skipInstall) {
       Task.log(

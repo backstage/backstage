@@ -27,7 +27,7 @@ restoring the plugin, if you previously removed it.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend
 ```
 
 ### Adding the plugin to your `packages/backend`

@@ -37,7 +37,6 @@
       "overview/versioning-policy",
       "overview/threat-model",
       "overview/support",
-      "overview/glossary",
       "overview/logos"
     ],
     "Getting Started": [
@@ -309,7 +308,8 @@
           "auth/google/gcp-iap-auth",
           "auth/okta/provider",
           "auth/oauth2-proxy/provider",
-          "auth/onelogin/provider"
+          "auth/onelogin/provider",
+          "auth/vmware-cloud/provider"
         ]
       },
       "auth/identity-resolver",
@@ -318,8 +318,7 @@
       "auth/add-auth-provider",
       "auth/service-to-service-auth",
       "auth/autologout",
-      "auth/troubleshooting",
-      "auth/glossary"
+      "auth/troubleshooting"
     ],
     "Permissions": [
       "permissions/overview",
@@ -479,6 +478,7 @@
       "architecture-decisions/adrs-adr013"
     ],
     "FAQ": ["faq/index", "faq/product", "faq/technical"],
-    "Accessibility": ["accessibility/index"]
+    "Accessibility": ["accessibility/index"],
+    "References": ["references/glossary"]
   }
 }
