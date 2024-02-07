@@ -81,7 +81,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
     return gkeClusterLocator;
   }
 
-  // At Line 91, in the second parameter enter a value for the property libName and libVersion to post headers to the key 'x-goog-api-client'
+  // Added an `x-goog-api-client` header to API requests made by the GKE cluster locator to clearly identify API requests from this plugin.
   static fromConfig(
     config: Config,
     refreshInterval: Duration | undefined = undefined,
@@ -89,7 +89,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
     return GkeClusterLocator.fromConfigWithClient(
       config,
       new container.v1.ClusterManagerClient({
-        libName: 'backstage/gke',
+        libName: `backstage/kubernetes-backend.GkeClusterLocator`,
         libVersion: packageinfo.version,
       }),
       refreshInterval,

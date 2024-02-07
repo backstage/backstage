@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-kubernetes-backend': minor
+'@backstage/plugin-kubernetes-backend': patch
 ---
 
-At Line 91, in the second parameter enter a value for the property `libName` and `libVersion` to post headers to the key `x-goog-api-client`
+adds a x-goog-api-client header to existing API requests in this plugin to clearly identify API requests from this GKE plugin. headers are formatted as follows where `libVersion` represents the current dotted version number of the Backstage GKE plugin and `libName` represent the current Google API used at backstage.

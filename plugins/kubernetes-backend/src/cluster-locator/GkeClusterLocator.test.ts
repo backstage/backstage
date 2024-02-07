@@ -18,9 +18,18 @@ import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernete
 import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { GkeClusterLocator } from './GkeClusterLocator';
-import { Duration } from 'luxon';
+import * as container from '@google-cloud/container';
 
 const mockedListClusters = jest.fn();
+jest.mock('@google-cloud/container', () => {
+  return {
+    v1: {
+      ClusterManagerClient: jest.fn().mockImplementation(() => {
+        mockedListClusters();
+      }),
+    },
+  };
+});
 
 describe('GkeClusterLocator', () => {
   beforeEach(() => {
@@ -486,20 +495,18 @@ describe('GkeClusterLocator', () => {
         },
       ]);
     });
-    it('Check if new container.v1.ClusterManagerClient has key and values as parameter', async () => {
+    it('constructs ClusterManagerClient with identifying metadata', async () => {
       const configs: Config = new ConfigReader({
         type: 'gke',
         projectId: 'some-project',
       });
 
-      const refreshIntervals: Duration | undefined = undefined;
-      const getHeaders: GkeClusterLocator = GkeClusterLocator.fromConfig(
-        configs,
-        refreshIntervals,
-      );
+      GkeClusterLocator.fromConfig(configs);
 
-      expect(getHeaders).toHaveProperty('client._opts.libName');
-      expect(getHeaders).toHaveProperty('client._opts.libVersion');
+      expect(container.v1.ClusterManagerClient).toHaveBeenCalledWith({
+        libName: 'backstage/kubernetes-backend.GkeClusterLocator',
+        libVersion: expect.any(String),
+      });
     });
   });
 });
