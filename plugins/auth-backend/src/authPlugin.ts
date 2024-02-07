@@ -19,11 +19,38 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import {
+  AuthOwnershipResolver,
   AuthProviderFactory,
+  AuthProviderRegistrationOptions,
+  AuthProvidersExtensionPoint,
   authProvidersExtensionPoint,
 } from '@backstage/plugin-auth-node';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { createRouter } from './service/router';
+
+class AuthProvidersExtensionPointImpl implements AuthProvidersExtensionPoint {
+  #providers = new Map<string, AuthProviderFactory>();
+  #ownershipResolver?: AuthOwnershipResolver;
+  registerProvider(options: AuthProviderRegistrationOptions): void {
+    const { providerId, factory } = options;
+    if (this.#providers.has(providerId)) {
+      throw new Error(`Auth provider '${providerId}' was already registered`);
+    }
+    this.#providers.set(providerId, factory);
+  }
+
+  setAuthOwnershipResolver(ownershipResolver: AuthOwnershipResolver): void {
+    this.#ownershipResolver = ownershipResolver;
+  }
+
+  get providers() {
+    return this.#providers;
+  }
+
+  get ownershipResolver() {
+    return this.#ownershipResolver;
+  }
+}
 
 /**
  * Auth plugin
@@ -33,18 +60,8 @@ import { createRouter } from './service/router';
 export const authPlugin = createBackendPlugin({
   pluginId: 'auth',
   register(reg) {
-    const providers = new Map<string, AuthProviderFactory>();
-
-    reg.registerExtensionPoint(authProvidersExtensionPoint, {
-      registerProvider({ providerId, factory }) {
-        if (providers.has(providerId)) {
-          throw new Error(
-            `Auth provider '${providerId}' was already registered`,
-          );
-        }
-        providers.set(providerId, factory);
-      },
-    });
+    const extensionPoint = new AuthProvidersExtensionPointImpl();
+    reg.registerExtensionPoint(authProvidersExtensionPoint, extensionPoint);
 
     reg.registerInit({
       deps: {
@@ -78,8 +95,9 @@ export const authPlugin = createBackendPlugin({
           auth,
           httpAuth,
           catalogApi,
-          providerFactories: Object.fromEntries(providers),
+          providerFactories: Object.fromEntries(extensionPoint.providers),
           disableDefaultProviderFactories: true,
+          ownershipResolver: extensionPoint.ownershipResolver,
         });
         httpRouter.addAuthPolicy({
           path: '/',

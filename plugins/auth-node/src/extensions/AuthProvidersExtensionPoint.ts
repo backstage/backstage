@@ -15,7 +15,7 @@
  */
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { AuthProviderFactory } from '../types';
+import { AuthOwnershipResolver, AuthProviderFactory } from '../types';
 
 /** @public */
 export interface AuthProviderRegistrationOptions {
@@ -26,6 +26,7 @@ export interface AuthProviderRegistrationOptions {
 /** @public */
 export interface AuthProvidersExtensionPoint {
   registerProvider(options: AuthProviderRegistrationOptions): void;
+  setAuthOwnershipResolver(ownershipResolver: AuthOwnershipResolver): void;
 }
 
 /** @public */
