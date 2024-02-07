@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/typescript-node:20@sha256:185cde4e033cd68fb4c5c9eef94ba6bde0dac2f334ecd1a7cf6cd2c87f712d85
+FROM mcr.microsoft.com/devcontainers/typescript-node:20@sha256:381a1fde32704f229b439ade94816d5619f710e35698982ec35afcd9384ae6cf
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install chromium \
