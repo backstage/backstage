@@ -11,6 +11,11 @@
   "backstage": {
     "role": "backend-plugin-module"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/scaffolder-backend-module-gerrit"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./package.json": "./package.json"

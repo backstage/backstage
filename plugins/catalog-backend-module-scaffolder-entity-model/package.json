@@ -22,6 +22,11 @@
   "backstage": {
     "role": "backend-plugin-module"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-scaffolder-entity-model"
+  },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
