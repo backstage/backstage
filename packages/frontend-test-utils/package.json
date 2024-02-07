@@ -9,6 +9,11 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/frontend-test-utils"
+  },
   "backstage": {
     "role": "web-library"
   },
