@@ -138,6 +138,8 @@ If there's any ambiguity about HOW your proposal will be implemented, this is th
 
 ### Builds API
 
+#### OpenAPI Definition
+
 ```yaml
 component:
   paths:
@@ -164,16 +166,40 @@ component:
             additionalProperties: {}
 ```
 
-### Authentication
+#### Writing a custom integration to the Builds API
 
-> TODO
+TODO
 
-The main question currently to be solved is what authentication should look like for this pattern. The current set of "Builds" plugins use a combination of both server-side and client-side authentication. For example, Github Actions has no backend plugins and uses the frontend Github authentication and Jenkins has a backend plugin that requires an API key. There are a few directions that this work can take,
+```ts
+/** @public */
+export const buildsModuleGithubProvider = createBackendModule({
+  pluginId: 'builds',
+  moduleId: 'github-provider',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        providers: buildsProvidersExtensionPoint,
+      },
+      async init({ providers }) {
+        providers.registerProvider({
+          providerId: 'github',
+          factory: new GithubBuildsProvider(),
+        });
+      },
+    });
+  },
+});
+```
 
-1. Move towards Permissions Framework + server side authentication. This would allow the Platform API to perform aggregations or access data for users asynchronously. The primary downside would be that by giving a single principal access to all builds and then enforcing permissions afterwards, users may be able to see things they aren't permissioned to in the source system.
-2. Keep the existing set up, using both backend and frontend credentials. This keeps users credentials front and center and delegates security concerns to the service provider systems. The main downside of this approach is that if the service providers plugin uses frontend authentication, the Platform API can't access that data asynchronously easily.
+#### Integrating with the Builds API
 
-### Forking the default implementation
+TODO
+
+#### Updating the frontend component
+
+TODO
+
+#### Forking the default implementation
 
 This work makes a few key assumptions.
 
@@ -181,6 +207,15 @@ This work makes a few key assumptions.
 2. Advanced users may want to fork the default interface.
 
 We have seen in the past that adopters are cautious to fork the default implementation for their own use case. This is an important concern and a common place of concern for things like the component about card, catalog table page, and others. Our goal with this pattern and implementation is that adopters should not feel the need to fork the default implementation, due in part to strong declarative integration integrations as well as to a well-opinionated implementation.
+
+### Authentication
+
+TODO
+
+The main question currently to be solved is what authentication should look like for this pattern. The current set of "Builds" plugins use a combination of both server-side and client-side authentication. For example, Github Actions has no backend plugins and uses the frontend Github authentication and Jenkins has a backend plugin that requires an API key. There are a few directions that this work can take,
+
+1. Move towards Permissions Framework + server side authentication. This would allow the Platform API to perform aggregations or access data for users asynchronously. The primary downside would be that by giving a single principal access to all builds and then enforcing permissions afterwards, users may be able to see things they aren't permissioned to in the source system.
+2. Keep the existing set up, using both backend and frontend credentials. This keeps users credentials front and center and delegates security concerns to the service provider systems. The main downside of this approach is that if the service providers plugin uses frontend authentication, the Platform API can't access that data asynchronously easily.
 
 ## Release Plan
 
