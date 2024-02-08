@@ -11,6 +11,11 @@
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/notifications-common"
+  },
   "backstage": {
     "role": "common-library"
   },

@@ -16,7 +16,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/plugins/analytics-module-ga4"
+    "directory": "plugins/analytics-module-ga4"
   },
   "sideEffects": false,
   "scripts": {

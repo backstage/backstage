@@ -5,6 +5,11 @@
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/app-visualizer"
+  },
   "backstage": {
     "role": "frontend-plugin"
   },
