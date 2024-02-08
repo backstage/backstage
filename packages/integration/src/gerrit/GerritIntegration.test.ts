@@ -83,11 +83,10 @@ describe('GerritIntegration', () => {
   });
 
   describe('resolves with a relative url', () => {
-    it('works for valid urls', () => {
-      const integration = new GerritIntegration({
-        host: 'gerrit-review.example.com',
-      } as any);
-
+    const integration = new GerritIntegration({
+      host: 'gerrit-review.example.com',
+    } as any);
+    it('works for valid urls pointing to a branch', () => {
       expect(
         integration.resolveUrl({
           url: './skeleton',
@@ -97,15 +96,24 @@ describe('GerritIntegration', () => {
         'https://gerrit-review.example.com/gerrit/plugins/repo/+/refs/heads/master/skeleton',
       );
     });
+    it('works for urls pointing to a tag', () => {
+      expect(
+        integration.resolveUrl({
+          url: './skeleton.yaml',
+          base: 'https://gerrit-review.example.com/gerrit/plugins/repo/+/refs/tags/v.1.2.3/src/template.yaml',
+        }),
+      ).toBe(
+        'https://gerrit-review.example.com/gerrit/plugins/repo/+/refs/tags/v.1.2.3/src/skeleton.yaml',
+      );
+    });
   });
 
   describe('resolves with an absolute url', () => {
-    it('works for valid urls', () => {
-      const integration = new GerritIntegration({
-        host: 'gerrit-review.example.com',
-        gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
-      } as any);
-
+    const integration = new GerritIntegration({
+      host: 'gerrit-review.example.com',
+      gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
+    } as any);
+    it('works for valid urls pointing to a branch', () => {
       expect(
         integration.resolveUrl({
           url: '/catalog-info.yaml',
@@ -113,6 +121,16 @@ describe('GerritIntegration', () => {
         }),
       ).toBe(
         'https://gerrit-review.example.com/gitiles/repo/+/refs/heads/master/catalog-info.yaml',
+      );
+    });
+    it('works for urls pointing to a tag', () => {
+      expect(
+        integration.resolveUrl({
+          url: '/skeleton.yaml',
+          base: 'https://gerrit-review.example.com/gerrit/plugins/repo/+/refs/tags/v.1.2.3/src/template.yaml',
+        }),
+      ).toBe(
+        'https://gerrit-review.example.com/gerrit/plugins/repo/+/refs/tags/v.1.2.3/skeleton.yaml',
       );
     });
   });
