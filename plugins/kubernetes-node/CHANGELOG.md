@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.1.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.4-next.1
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- cceed8a: Introduced `PinnipedHelper` class to enable authentication to Kubernetes clusters through Pinniped
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.4-next.1
+
 ## 0.1.4-next.0
 
 ### Patch Changes

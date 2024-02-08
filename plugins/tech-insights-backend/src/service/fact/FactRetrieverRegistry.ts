@@ -17,21 +17,10 @@
 import {
   FactRetriever,
   FactRetrieverRegistration,
+  FactRetrieverRegistry,
 } from '@backstage/plugin-tech-insights-node';
 import { FactSchema } from '@backstage/plugin-tech-insights-common';
 import { ConflictError, NotFoundError } from '@backstage/errors';
-
-/**
- * @public
- *
- */
-export interface FactRetrieverRegistry {
-  register(registration: FactRetrieverRegistration): Promise<void>;
-  get(retrieverReference: string): Promise<FactRetrieverRegistration>;
-  listRetrievers(): Promise<FactRetriever[]>;
-  listRegistrations(): Promise<FactRetrieverRegistration[]>;
-  getSchemas(): Promise<FactSchema[]>;
-}
 
 /**
  * A basic in memory fact retriever registry.

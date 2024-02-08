@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.92-next.0",
+  "version": "0.2.92-next.2",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -59,6 +59,7 @@
     "@backstage/plugin-newrelic": "workspace:^",
     "@backstage/plugin-newrelic-dashboard": "workspace:^",
     "@backstage/plugin-nomad": "workspace:^",
+    "@backstage/plugin-notifications": "workspace:^",
     "@backstage/plugin-octopus-deploy": "workspace:^",
     "@backstage/plugin-org": "workspace:^",
     "@backstage/plugin-pagerduty": "workspace:^",

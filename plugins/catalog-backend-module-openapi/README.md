@@ -12,7 +12,7 @@ This is useful for OpenAPI and AsyncAPI specifications.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-openapi
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-openapi
 ```
 
 ### Adding the plugin to your `packages/backend`

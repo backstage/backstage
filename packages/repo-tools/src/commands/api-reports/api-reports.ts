@@ -16,11 +16,11 @@
 
 import { OptionValues } from 'commander';
 import {
-  createTemporaryTsConfig,
+  buildDocs,
   categorizePackageDirs,
+  createTemporaryTsConfig,
   runApiExtraction,
   runCliExtraction,
-  buildDocs,
 } from './api-extractor';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { generateTypeDeclarations } from './generateTypeDeclarations';
@@ -94,6 +94,7 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
       validateReleaseTags: opts.validateReleaseTags,
     });
   }
+
   if (cliPackageDirs.length > 0) {
     console.log('# Generating package CLI reports');
     await runCliExtraction({

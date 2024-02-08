@@ -10,7 +10,7 @@ Here's how to get the DevTools Backend up and running:
 
    ```sh
    # From the Backstage root directory
-   yarn add --cwd packages/backend @backstage/plugin-devtools-backend
+   yarn --cwd packages/backend add @backstage/plugin-devtools-backend
    ```
 
 2. Then we will create a new file named `packages/backend/src/plugins/devtools.ts`, and add the

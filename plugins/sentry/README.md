@@ -10,7 +10,7 @@ The Sentry Plugin displays issues from [Sentry](https://sentry.io).
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-sentry
+yarn --cwd packages/app add @backstage/plugin-sentry
 ```
 
 2. Add the `EntitySentryCard` to the EntityPage:

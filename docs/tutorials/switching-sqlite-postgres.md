@@ -21,7 +21,7 @@ First, add PostgreSQL to your `backend` package:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend pg
+yarn --cwd packages/backend add pg
 ```
 
 ## Add PostgreSQL configuration

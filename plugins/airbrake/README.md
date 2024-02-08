@@ -8,14 +8,14 @@ The Airbrake plugin provides connectivity between Backstage and Airbrake (https:
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-airbrake
+   yarn --cwd packages/app add @backstage/plugin-airbrake
    ```
 
 2. Install the Backend plugin:
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/backend @backstage/plugin-airbrake-backend
+   yarn --cwd packages/backend add @backstage/plugin-airbrake-backend
    ```
 
 3. Add the `EntityAirbrakeContent` and `isAirbrakeAvailable` to `packages/app/src/components/catalog/EntityPage.tsx` for all the entity pages you want Airbrake to be in:

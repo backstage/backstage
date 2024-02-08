@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  JsonRulesEngineFactCheckerFactory,
-  JsonRulesEngineFactChecker,
-} from './service/JsonRulesEngineFactChecker';
+
 export { JSON_RULE_ENGINE_CHECK_TYPE } from './constants';
-export type {
-  JsonRulesEngineFactCheckerFactoryOptions,
-  JsonRulesEngineFactCheckerOptions,
-} from './service/JsonRulesEngineFactChecker';
+export { techInsightsModuleJsonRulesEngineFactCheckerFactory as default } from './module';
+export * from './service';
 export type {
   JsonRuleCheckResponse,
   JsonRuleBooleanCheckResult,

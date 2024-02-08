@@ -142,6 +142,7 @@ export const ActionsPage = () => {
       <ErrorPage
         statusMessage="Failed to load installed actions"
         status="500"
+        stack={error.stack}
       />
     );
   }

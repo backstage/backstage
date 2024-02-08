@@ -258,7 +258,7 @@ When building CommonJS or ESM output, the build commands will always use
 `src/index.ts` as the entrypoint. All non-relative modules imports are considered
 external, meaning the Rollup build will only compile the source code of the package
 itself. All import statements of external dependencies, even within the same
-monorepo, will stay intact.
+[monorepo](../references/glossary.md#monorepo), will stay intact.
 
 The build of the type definitions works quite differently. The entrypoint of the
 type definition build is the relative location of the package within the
@@ -307,11 +307,12 @@ support for them instead.
 
 ### Frontend Production
 
-The frontend production bundling creates your typical web content bundle, all
-contained within a single folder, ready for static serving. It is used when building
-packages with the `'frontend'` role, and unlike the development bundling there is no way to
-build a production bundle of an individual plugin. The output of the bundling
-process is written to the `dist` folder in the package.
+The frontend production bundling creates your typical web content
+[bundle](../references/glossary.md#bundle), all contained within a single
+folder, ready for static serving. It is used when building packages with the
+`'frontend'` role, and unlike the development bundling there is no way to
+build a production bundle of an individual plugin.
+The output of the bundling process is written to the `dist` folder in the package.
 
 Just like the development bundling, the production bundling is based on
 [Webpack](https://webpack.js.org/). It uses the

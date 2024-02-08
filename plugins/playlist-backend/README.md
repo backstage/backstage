@@ -8,7 +8,7 @@ Welcome to the playlist backend plugin!
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-playlist-backend
+yarn --cwd packages/backend add @backstage/plugin-playlist-backend
 ```
 
 ### Adding the plugin to your `packages/backend`

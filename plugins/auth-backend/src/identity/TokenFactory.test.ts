@@ -154,6 +154,23 @@ describe('TokenFactory', () => {
     }).rejects.toThrow();
   });
 
+  it('should refuse to issue excessively large tokens', async () => {
+    const factory = new TokenFactory({
+      issuer: 'my-issuer',
+      keyStore: new MemoryKeyStore(),
+      keyDurationSeconds: 5,
+      logger,
+    });
+
+    await expect(() => {
+      return factory.issueToken({
+        claims: { sub: 'user:ns/n', ent: Array(10000).fill('group:ns/n') },
+      });
+    }).rejects.toThrow(
+      /^Failed to issue a new user token. The resulting token is excessively large, with either too many ownership claims or too large custom claims./,
+    );
+  });
+
   it('should defaults to ES256 when no algorithm string is supplied', async () => {
     const keyDurationSeconds = 5;
     const factory = new TokenFactory({

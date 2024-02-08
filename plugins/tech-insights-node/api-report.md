@@ -8,6 +8,7 @@ import { Config } from '@backstage/config';
 import { DateTime } from 'luxon';
 import { Duration } from 'luxon';
 import { DurationLike } from 'luxon';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { FactSchema } from '@backstage/plugin-tech-insights-common';
 import { HumanDuration } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -79,6 +80,20 @@ export type FactRetrieverRegistration = {
   initialDelay?: Duration | HumanDuration;
 };
 
+// @public (undocumented)
+export interface FactRetrieverRegistry {
+  // (undocumented)
+  get(retrieverReference: string): Promise<FactRetrieverRegistration>;
+  // (undocumented)
+  getSchemas(): Promise<FactSchema[]>;
+  // (undocumented)
+  listRegistrations(): Promise<FactRetrieverRegistration[]>;
+  // (undocumented)
+  listRetrievers(): Promise<FactRetriever[]>;
+  // (undocumented)
+  register(registration: FactRetrieverRegistration): Promise<void>;
+}
+
 // @public
 export type FactSchemaDefinition = Omit<FactRetriever, 'handler'>;
 
@@ -90,6 +105,11 @@ export type FlatTechInsightFact = TechInsightFact & {
 // @public
 export type MaxItems = {
   maxItems: number;
+};
+
+// @public
+export type PersistenceContext = {
+  techInsightsStore: TechInsightsStore;
 };
 
 // @public
@@ -136,6 +156,47 @@ export type TechInsightFact = {
   >;
   timestamp?: DateTime;
 };
+
+// @public (undocumented)
+export interface TechInsightsFactCheckerFactoryExtensionPoint {
+  // (undocumented)
+  setFactCheckerFactory<
+    CheckType extends TechInsightCheck,
+    CheckResultType extends CheckResult,
+  >(
+    factory: FactCheckerFactory<CheckType, CheckResultType>,
+  ): void;
+}
+
+// @public
+export const techInsightsFactCheckerFactoryExtensionPoint: ExtensionPoint<TechInsightsFactCheckerFactoryExtensionPoint>;
+
+// @public (undocumented)
+export interface TechInsightsFactRetrieverRegistryExtensionPoint {
+  // (undocumented)
+  setFactRetrieverRegistry(registry: FactRetrieverRegistry): void;
+}
+
+// @public
+export const techInsightsFactRetrieverRegistryExtensionPoint: ExtensionPoint<TechInsightsFactRetrieverRegistryExtensionPoint>;
+
+// @public (undocumented)
+export interface TechInsightsFactRetrieversExtensionPoint {
+  // (undocumented)
+  addFactRetrievers(factRetrievers: Record<string, FactRetriever>): void;
+}
+
+// @public
+export const techInsightsFactRetrieversExtensionPoint: ExtensionPoint<TechInsightsFactRetrieversExtensionPoint>;
+
+// @public (undocumented)
+export interface TechInsightsPersistenceContextExtensionPoint {
+  // (undocumented)
+  setPersistenceContext(context: PersistenceContext): void;
+}
+
+// @public
+export const techInsightsPersistenceContextExtensionPoint: ExtensionPoint<TechInsightsPersistenceContextExtensionPoint>;
 
 // @public
 export interface TechInsightsStore {

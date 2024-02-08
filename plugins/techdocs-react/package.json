@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-techdocs-react",
   "description": "Shared frontend utilities for TechDocs and Addons",
-  "version": "1.1.15",
+  "version": "1.1.16-next.1",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -41,7 +41,7 @@
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/styles": "^4.11.0",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "jss": "~10.10.0",
     "lodash": "^4.17.21",
     "react-helmet": "6.1.0",

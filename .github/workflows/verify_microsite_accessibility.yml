@@ -1,0 +1,40 @@
+name: Microsite Accessibility
+on:
+  # NOTE: If you change these you must update verify_microsite_accessibility-noop.yml as well
+  pull_request:
+    branches: [master]
+    paths:
+      - '.github/workflows/verify_microsite_accessibility.yml'
+      - 'microsite/**'
+      - 'beps/**'
+      - 'mkdocs.yml'
+      - 'docs/**'
+jobs:
+  lhci:
+    name: Microsite Accessibility
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
+        with:
+          node-version: 18.x
+
+      - name: top-level install
+        run: yarn install --immutable
+
+      - name: yarn install
+        run: yarn install --immutable
+        working-directory: microsite
+
+      - name: run Lighthouse CI
+        run: |
+          yarn dlx @lhci/cli@0.11.x --config=microsite/lighthouserc.js autorun
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-notifications-node
+  title: '@backstage/plugin-notifications-node'
+  description: Node.js library for the notifications plugin
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers
