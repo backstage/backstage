@@ -20,6 +20,7 @@ import { getVoidLogger } from '../logging';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 import { UrlReaderPredicateTuple } from './types';
+import packageinfo from '../../package.json';
 
 const bucketGetFilesMock = jest.fn();
 jest.mock('@google-cloud/storage', () => {
@@ -76,6 +77,20 @@ describe('GcsUrlReader', () => {
       },
     });
     expect(entries).toHaveLength(1);
+  });
+  it('check if userAgent has been called with this key value', async () => {
+    const getStorage: any = {
+      userAgent: `backstage/kubernetes-backend.GkeClusterLocator/${packageinfo.version}`,
+    };
+    jest.mock('@google-cloud/storage', () => {
+      return {
+        Storage: jest.fn(() => getStorage),
+      };
+    });
+    const getUserAgent = getStorage.userAgent.toString();
+    expect(getUserAgent).toBe(
+      `backstage/kubernetes-backend.GkeClusterLocator/${packageinfo.version}`,
+    );
   });
 
   describe('predicates', () => {
