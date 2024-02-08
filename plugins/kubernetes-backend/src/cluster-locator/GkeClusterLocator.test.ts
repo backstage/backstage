@@ -18,8 +18,18 @@ import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernete
 import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { GkeClusterLocator } from './GkeClusterLocator';
+import * as container from '@google-cloud/container';
 
 const mockedListClusters = jest.fn();
+jest.mock('@google-cloud/container', () => {
+  return {
+    v1: {
+      ClusterManagerClient: jest.fn().mockImplementation(() => {
+        mockedListClusters();
+      }),
+    },
+  };
+});
 
 describe('GkeClusterLocator', () => {
   beforeEach(() => {
@@ -484,6 +494,19 @@ describe('GkeClusterLocator', () => {
           skipMetricsLookup: false,
         },
       ]);
+    });
+    it('constructs ClusterManagerClient with identifying metadata', async () => {
+      const configs: Config = new ConfigReader({
+        type: 'gke',
+        projectId: 'some-project',
+      });
+
+      GkeClusterLocator.fromConfig(configs);
+
+      expect(container.v1.ClusterManagerClient).toHaveBeenCalledWith({
+        libName: 'backstage/kubernetes-backend.GkeClusterLocator',
+        libVersion: expect.any(String),
+      });
     });
   });
 });
