@@ -70,7 +70,7 @@ export class GoogleGcsUrlReader implements UrlReader {
         'googleGcs credentials not found in config. Using default credentials provider.',
       );
       storage = new Storage({
-        userAgent: `backstage/kubernetes-backend.GkeClusterLocator/${packageinfo.version}`,
+        userAgent: `backstage/backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
       });
     } else {
       storage = new Storage({
@@ -78,7 +78,7 @@ export class GoogleGcsUrlReader implements UrlReader {
           client_email: gcsConfig.clientEmail || undefined,
           private_key: gcsConfig.privateKey || undefined,
         },
-        userAgent: `backstage/kubernetes-backend.GkeClusterLocator/${packageinfo.version}`,
+        userAgent: `backstage/backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
       });
     }
     const reader = new GoogleGcsUrlReader(gcsConfig, storage);
