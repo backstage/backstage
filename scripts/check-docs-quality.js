@@ -26,6 +26,7 @@ const IGNORED = [
   /^OWNERS\.md$/,
   /^.*[/\\]CHANGELOG\.md$/,
   /^.*[/\\]([^\/]+-)?api-report\.md$/,
+  /^.*[/\\]knip-report\.md$/,
   /^docs[/\\]releases[/\\].*-changelog\.md$/,
   /^docs[/\\]reference[/\\]/,
 ];
@@ -65,7 +66,7 @@ async function exitIfMissingVale() {
   } catch (e) {
     if (process.env.CI) {
       console.log(
-        `Language linter (vale) was not found. Please install vale linter (https://docs.errata.ai/vale/install).\n`,
+        `Language linter (vale) was not found. Please install vale linter (https://vale.sh/docs/vale-cli/installation/).\n`,
       );
       process.exit(1);
     }
