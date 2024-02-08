@@ -16,7 +16,7 @@
 
 import { Logger } from 'winston';
 import { Writable } from 'stream';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
@@ -35,7 +35,7 @@ export type ActionContext<
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  checkpoint?<U extends JsonObject>(
+  checkpoint<U extends JsonValue>(
     key: string,
     fn: () => Promise<U>,
   ): Promise<U>;

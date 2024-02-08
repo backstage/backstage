@@ -350,10 +350,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           logger: taskLogger,
           logStream: streamLogger,
           workspacePath,
-          async checkpoint<U extends JsonObject>(
-            key: string,
+          async checkpoint<U extends JsonValue>(
+            keySuffix: string,
             fn: () => Promise<U>,
           ) {
+            const key = `v1.task.checkpoint.${keySuffix}`;
             try {
               let prevValue: U | undefined;
               if (prevTaskState) {

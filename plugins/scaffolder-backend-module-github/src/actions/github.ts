@@ -244,7 +244,6 @@ export function createPublishGithubAction(options: {
         repoVariables,
         secrets,
         ctx.logger,
-        ctx.checkpoint,
       );
 
       const remoteUrl = newRepo.clone_url;

@@ -15,7 +15,7 @@
  */
 
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, Observable } from '@backstage/types';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
 
 /**
  * TaskSecrets
@@ -36,7 +36,7 @@ export type CheckpointRecord =
   | {
       key: string;
       status: 'success';
-      value: JsonObject;
+      value: JsonValue;
     }
   | {
       key: string;
@@ -54,7 +54,7 @@ export type TaskState = {
     | { status: 'failed'; reason: string }
     | {
         status: 'success';
-        value: JsonObject;
+        value: JsonValue;
       };
 };
 

@@ -36,8 +36,6 @@ import {
   enableBranchProtectionOnDefaultRepoBranch,
   entityRefToName,
 } from './gitHelpers';
-import { JsonObject } from '@backstage/types';
-import { defineCheckpoint } from '@backstage/plugin-scaffolder-common';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -140,10 +138,6 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   repoVariables: { [key: string]: string } | undefined,
   secrets: { [key: string]: string } | undefined,
   logger: Logger,
-  checkpoint?: <U extends JsonObject>(
-    key: string,
-    fn: () => Promise<U>,
-  ) => Promise<U>,
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-queries
   const user = await client.rest.users.getByUsername({
@@ -154,71 +148,59 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     await validateAccessTeam(client, access);
   }
 
-  const repoCreation = async () => {
-    const repoCreationPromise =
-      user.data.type === 'Organization'
-        ? client.rest.repos.createInOrg({
-            name: repo,
-            org: owner,
-            private: repoVisibility === 'private',
-            // @ts-ignore https://github.com/octokit/types.ts/issues/522
-            visibility: repoVisibility,
-            description: description,
-            delete_branch_on_merge: deleteBranchOnMerge,
-            allow_merge_commit: allowMergeCommit,
-            allow_squash_merge: allowSquashMerge,
-            squash_merge_commit_title: squashMergeCommitTitle,
-            squash_merge_commit_message: squashMergeCommitMessage,
-            allow_rebase_merge: allowRebaseMerge,
-            allow_auto_merge: allowAutoMerge,
-            homepage: homepage,
-            has_projects: hasProjects,
-            has_wiki: hasWiki,
-            has_issues: hasIssues,
-          })
-        : client.rest.repos.createForAuthenticatedUser({
-            name: repo,
-            private: repoVisibility === 'private',
-            description: description,
-            delete_branch_on_merge: deleteBranchOnMerge,
-            allow_merge_commit: allowMergeCommit,
-            allow_squash_merge: allowSquashMerge,
-            squash_merge_commit_title: squashMergeCommitTitle,
-            squash_merge_commit_message: squashMergeCommitMessage,
-            allow_rebase_merge: allowRebaseMerge,
-            allow_auto_merge: allowAutoMerge,
-            homepage: homepage,
-            has_projects: hasProjects,
-            has_wiki: hasWiki,
-            has_issues: hasIssues,
-          });
+  const repoCreationPromise =
+    user.data.type === 'Organization'
+      ? client.rest.repos.createInOrg({
+          name: repo,
+          org: owner,
+          private: repoVisibility === 'private',
+          // @ts-ignore https://github.com/octokit/types.ts/issues/522
+          visibility: repoVisibility,
+          description: description,
+          delete_branch_on_merge: deleteBranchOnMerge,
+          allow_merge_commit: allowMergeCommit,
+          allow_squash_merge: allowSquashMerge,
+          squash_merge_commit_title: squashMergeCommitTitle,
+          squash_merge_commit_message: squashMergeCommitMessage,
+          allow_rebase_merge: allowRebaseMerge,
+          allow_auto_merge: allowAutoMerge,
+          homepage: homepage,
+          has_projects: hasProjects,
+          has_wiki: hasWiki,
+          has_issues: hasIssues,
+        })
+      : client.rest.repos.createForAuthenticatedUser({
+          name: repo,
+          private: repoVisibility === 'private',
+          description: description,
+          delete_branch_on_merge: deleteBranchOnMerge,
+          allow_merge_commit: allowMergeCommit,
+          allow_squash_merge: allowSquashMerge,
+          squash_merge_commit_title: squashMergeCommitTitle,
+          squash_merge_commit_message: squashMergeCommitMessage,
+          allow_rebase_merge: allowRebaseMerge,
+          allow_auto_merge: allowAutoMerge,
+          homepage: homepage,
+          has_projects: hasProjects,
+          has_wiki: hasWiki,
+          has_issues: hasIssues,
+        });
 
-    let newRepo;
+  let newRepo;
 
-    try {
-      newRepo = (await repoCreationPromise).data;
-    } catch (e) {
-      assertError(e);
-      if (e.message === 'Resource not accessible by integration') {
-        logger.warn(
-          `The GitHub app or token provided may not have the required permissions to create the ${user.data.type} repository ${owner}/${repo}.`,
-        );
-      }
-      throw new Error(
-        `Failed to create the ${user.data.type} repository ${owner}/${repo}, ${e.message}`,
+  try {
+    newRepo = (await repoCreationPromise).data;
+  } catch (e) {
+    assertError(e);
+    if (e.message === 'Resource not accessible by integration') {
+      logger.warn(
+        `The GitHub app or token provided may not have the required permissions to create the ${user.data.type} repository ${owner}/${repo}.`,
       );
     }
-    return { clone_url: newRepo.clone_url, html_url: newRepo.html_url };
-  };
-
-  const { clone_url, html_url } = await defineCheckpoint<{
-    clone_url: string;
-    html_url: string;
-  }>({
-    key: 'v1.task.checkpoint.repo.creation',
-    checkpoint,
-    fn: repoCreation,
-  });
+    throw new Error(
+      `Failed to create the ${user.data.type} repository ${owner}/${repo}, ${e.message}`,
+    );
+  }
 
   if (access?.startsWith(`${owner}/`)) {
     const [, team] = access.split('/');
@@ -231,19 +213,11 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     });
     // No need to add access if it's the person who owns the personal account
   } else if (access && access !== owner) {
-    const addCollaborator = async () => {
-      await client.rest.repos.addCollaborator({
-        owner,
-        repo,
-        username: access,
-        permission: 'admin',
-      });
-      return {};
-    };
-    await defineCheckpoint({
-      key: 'v1.task.checkpoint.add.collaborator',
-      checkpoint,
-      fn: addCollaborator,
+    await client.rest.repos.addCollaborator({
+      owner,
+      repo,
+      username: access,
+      permission: 'admin',
     });
   }
 
@@ -251,19 +225,11 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     for (const collaborator of collaborators) {
       try {
         if ('user' in collaborator) {
-          const addCollaborator = async () => {
-            await client.rest.repos.addCollaborator({
-              owner,
-              repo,
-              username: entityRefToName(collaborator.user),
-              permission: collaborator.access,
-            });
-            return {};
-          };
-          await defineCheckpoint({
-            key: `v1.task.checkpoint.add.collaborator.${collaborator.user}`,
-            checkpoint,
-            fn: addCollaborator,
+          await client.rest.repos.addCollaborator({
+            owner,
+            repo,
+            username: entityRefToName(collaborator.user),
+            permission: collaborator.access,
           });
         } else if ('team' in collaborator) {
           await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
@@ -298,19 +264,11 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   }
 
   for (const [key, value] of Object.entries(repoVariables ?? {})) {
-    const createRepoVariable = async () => {
-      await client.rest.actions.createRepoVariable({
-        owner,
-        repo,
-        name: key,
-        value: value,
-      });
-      return {};
-    };
-    await defineCheckpoint({
-      key: `v1.task.checkpoint.create.repo.variable.${key}`,
-      checkpoint,
-      fn: createRepoVariable,
+    await client.rest.actions.createRepoVariable({
+      owner,
+      repo,
+      name: key,
+      value: value,
     });
   }
 
@@ -346,7 +304,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     }
   }
 
-  return { clone_url, html_url };
+  return newRepo;
 }
 
 export async function initRepoPushAndProtect(

@@ -100,6 +100,7 @@ export class TaskManager implements TaskContext {
   }
 
   async updateCheckpoint?(options: CheckpointRecord): Promise<void> {
+    // drop the key
     if (this.task.state) {
       this.task.state[options.key] = { ...options };
     } else {

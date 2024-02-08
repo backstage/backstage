@@ -34,5 +34,3 @@ export type {
   TemplatePermissionsV1beta3,
   TemplateRecoveryV1beta3,
 } from './TemplateEntityV1beta3';
-
-export { defineCheckpoint } from './defineCheckpoint';
