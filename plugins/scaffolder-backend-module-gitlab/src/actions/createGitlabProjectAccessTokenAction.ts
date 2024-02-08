@@ -17,7 +17,6 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { AccessTokenScopes } from '@gitbeaker/core';
 import { Gitlab } from '@gitbeaker/rest';
 import { DateTime } from 'luxon';
 import { z } from 'zod';
@@ -31,8 +30,6 @@ import { examples } from './createGitlabProjectAccessTokenAction.examples';
  * @public
  */
 
-const gitbeakerAccessTokenScopesType: z.ZodType<AccessTokenScopes[]> = z.any();
-
 export const createGitlabProjectAccessTokenAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
@@ -42,9 +39,14 @@ export const createGitlabProjectAccessTokenAction = (options: {
     examples,
     schema: {
       input: z.object({
-        projectId: z.number({
+        projectId: z.union([z.number(), z.string()], {
           description: 'Project ID/Name(slug) of the Gitlab Project',
         }),
+        token: z
+          .string({
+            description: 'The token to use for authorization to GitLab',
+          })
+          .optional(),
         name: z.string({ description: 'Name of Access Key' }).optional(),
         repoUrl: z.string({ description: 'URL to gitlab instance' }),
         accessLevel: z
@@ -53,16 +55,16 @@ export const createGitlabProjectAccessTokenAction = (options: {
               'Access Level of the Token, 10 (Guest), 20 (Reporter), 30 (Developer), 40 (Maintainer), and 50 (Owner)',
           })
           .optional(),
-        scopes: gitbeakerAccessTokenScopesType,
+        scopes: z
+          .string({
+            description: 'Scopes for a project access token',
+          })
+          .array()
+          .optional(),
         expiresAt: z
           .string({
             description:
               'Expiration date of the access token in ISO format (YYYY-MM-DD). If Empty, it will set to the maximum of 365 days.',
-          })
-          .optional(),
-        token: z
-          .string({
-            description: 'The token to use for authorization to GitLab',
           })
           .optional(),
       }),
@@ -107,7 +109,7 @@ export const createGitlabProjectAccessTokenAction = (options: {
       const response = await api.ProjectAccessTokens.create(
         projectId,
         name,
-        scopes,
+        scopes as any,
         {
           expiresAt:
             expiresAt || DateTime.now().plus({ days: 365 }).toISODate()!,

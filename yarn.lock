@@ -8381,7 +8381,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
-    "@gitbeaker/core": ^39.25.0
+    "@gitbeaker/core": ^35.8.0
     "@gitbeaker/node": ^35.8.0
     "@gitbeaker/rest": ^39.25.0
     jest-date-mock: ^1.0.8
@@ -11260,7 +11260,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/core@npm:^35.6.0, @gitbeaker/core@npm:^35.8.1":
+"@gitbeaker/core@npm:^35.6.0, @gitbeaker/core@npm:^35.8.0, @gitbeaker/core@npm:^35.8.1":
   version: 35.8.1
   resolution: "@gitbeaker/core@npm:35.8.1"
   dependencies:
