@@ -1,13 +1,12 @@
 ---
-title: Platform API - Builds
+title: The Platform API Pattern and Builds API
 status: provisional
 authors:
-  - '@ghost'
+  - '@sennyeya'
 owners:
 project-areas:
-  - aaa
-  - bbb
-creation-date: yyyy-mm-dd
+  - core?
+creation-date: 2024-02-08
 ---
 
 <!--
@@ -16,7 +15,7 @@ creation-date: yyyy-mm-dd
 When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions focused. If you disagree with what is already in a document, open a new PR with suggested changes.
 -->
 
-# BEP: Platform API - Builds
+# BEP: The Platform API Pattern and Builds API
 
 <!-- Before merging the initial BEP PR, create a feature issue and update the below link. You can wait with this step until the BEP is ready to be merged. -->
 
