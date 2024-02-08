@@ -23,21 +23,11 @@ app:
         config:
           height: 300
     - entity-card:azure-devops/readme
-    - entity-card:api-docs/has-apis:
-        config:
-          filter: kind:component
-    - entity-card:api-docs/consumed-apis:
-        config:
-          filter: kind:component
-    - entity-card:api-docs/provided-apis:
-        config:
-          filter: kind:component
-    - entity-card:api-docs/providing-components:
-        config:
-          filter: kind:api
-    - entity-card:api-docs/consuming-components:
-        config:
-          filter: kind:api
+    - entity-card:api-docs/has-apis
+    - entity-card:api-docs/consumed-apis
+    - entity-card:api-docs/provided-apis
+    - entity-card:api-docs/providing-components
+    - entity-card:api-docs/consuming-components
 
     # Entity page content
     - entity-content:api-docs/definition

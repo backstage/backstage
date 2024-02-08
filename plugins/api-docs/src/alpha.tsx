@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { Grid } from '@material-ui/core';
 
 import {
   createApiExtension,
@@ -24,21 +25,26 @@ import {
   createPlugin,
   createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
+
 import {
   compatWrapper,
   convertLegacyRouteRef,
 } from '@backstage/core-compat-api';
-import { ApiEntity } from '@backstage/catalog-model';
+import { useApp } from '@backstage/core-plugin-api';
 
-import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
-import { rootRoute, registerComponentRouteRef } from './routes';
-import { apiDocsConfigRef } from './config';
 import {
   createEntityCardExtension,
   createEntityContentExtension,
 } from '@backstage/plugin-catalog-react/alpha';
-import { Grid } from '@material-ui/core';
-import { useApp } from '@backstage/core-plugin-api';
+import {
+  ApiEntity,
+  parseEntityRef,
+  RELATION_HAS_PART,
+} from '@backstage/catalog-model';
+
+import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
+import { rootRoute, registerComponentRouteRef } from './routes';
+import { apiDocsConfigRef } from './config';
 
 function ApiIcon() {
   const app = useApp();
@@ -90,8 +96,19 @@ const apiDocsExplorerPage = createPageExtension({
 
 const apiDocsHasApisEntityCard = createEntityCardExtension({
   name: 'has-apis',
-  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
-  // and columns are too complex to map to zod
+  // Ommiting configSchema for now
+  // We are skipping variants and columns are too complex to map to zod
+  // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  filter: entity => {
+    return (
+      entity.kind === 'Component' &&
+      entity.relations?.some(
+        ({ type, targetRef }) =>
+          type.toLocaleLowerCase('en-US') === RELATION_HAS_PART &&
+          parseEntityRef(targetRef).kind === 'API',
+      )!!
+    );
+  },
   loader: () =>
     import('./components/ApisCards').then(m =>
       compatWrapper(<m.HasApisCard />),
@@ -100,6 +117,7 @@ const apiDocsHasApisEntityCard = createEntityCardExtension({
 
 const apiDocsDefinitionEntityCard = createEntityCardExtension({
   name: 'definition',
+  filter: 'kind:api',
   loader: () =>
     import('./components/ApiDefinitionCard').then(m =>
       compatWrapper(<m.ApiDefinitionCard />),
@@ -109,8 +127,9 @@ const apiDocsDefinitionEntityCard = createEntityCardExtension({
 const apiDocsConsumedApisEntityCard = createEntityCardExtension({
   name: 'consumed-apis',
   // Ommiting configSchema for now
-  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
-  // and columns are too complex to map to zod
+  // We are skipping variants and columns are too complex to map to zod
+  // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  filter: 'kind:component',
   loader: () =>
     import('./components/ApisCards').then(m =>
       compatWrapper(<m.ConsumedApisCard />),
@@ -119,8 +138,10 @@ const apiDocsConsumedApisEntityCard = createEntityCardExtension({
 
 const apiDocsProvidedApisEntityCard = createEntityCardExtension({
   name: 'provided-apis',
-  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
-  // and columns are too complex to map to zod
+  // Ommiting configSchema for now
+  // We are skipping variants and columns are too complex to map to zod
+  // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  filter: 'kind:component',
   loader: () =>
     import('./components/ApisCards').then(m =>
       compatWrapper(<m.ProvidedApisCard />),
@@ -130,7 +151,9 @@ const apiDocsProvidedApisEntityCard = createEntityCardExtension({
 const apiDocsConsumingComponentsEntityCard = createEntityCardExtension({
   name: 'consuming-components',
   // Ommiting configSchema for now
-  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  // We are skipping variants
+  // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  filter: 'kind:api',
   loader: () =>
     import('./components/ComponentsCards').then(m =>
       compatWrapper(<m.ConsumingComponentsCard />),
@@ -140,7 +163,9 @@ const apiDocsConsumingComponentsEntityCard = createEntityCardExtension({
 const apiDocsProvidingComponentsEntityCard = createEntityCardExtension({
   name: 'providing-components',
   // Ommiting configSchema for now
-  // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  // We are skipping variants
+  // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  filter: 'kind:api',
   loader: () =>
     import('./components/ComponentsCards').then(m =>
       compatWrapper(<m.ProvidingComponentsCard />),

@@ -57,39 +57,39 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
 
 1. Install the `api-docs` plugin in you Backstage app:
 
-```bash
-# From your Backstage root directory
-yarn --cwd packages/app add @backstage/plugin-api-docs
-```
+   ```bash
+   # From your Backstage root directory
+   yarn --cwd packages/app add @backstage/plugin-api-docs
+   ```
 
-2. In the app config file, enable the api docs entity cards and tabs so that the they begins to be presented on the catalog entity page:
+2. Enable which entity cards and tabs you would like to see on the catalog entity page:
 
-```yaml
-# app-config.yaml
-app:
-  experimental:
-    # Auto discovering all plugins extensions
-    packages: all
-  extensions:
-    # Enabling some entity Cards
-    # The cards will be displayed in the same order it appears in this setting list
-    # Shows a table of components that provides a particular api
-    - entity-card:api-docs/providing-components:
-        config:
-          # Presenting the card ony for entites of kind api
-          filter: kind:api
-    # Shows a table of components that consumes a particular api
-    - entity-card:api-docs/consuming-components:
-        config:
-          # Presenting the card ony for entites of kind api
-          filter: kind:api
-    # Enabling some Contents
-    # The contents will be displayed in the same order it appears in this setting list
-    # Shows a "Definition" tab for entities of kind api
-    - entity-content:api-docs/definition
-    # Shows an "Apis" tab for entities of kind component
-    - entity-content:api-docs/apis
-```
+   ```yaml
+   # app-config.yaml
+   app:
+     experimental:
+       # Auto discovering all plugins extensions
+       packages: all
+     extensions:
+       # Enabling some entity Cards
+       # The cards will be displayed in the same order it appears in this setting list
+       # Shows a table of components that provides a particular api
+       - entity-card:api-docs/providing-components:
+           config:
+             # Presenting the card ony for entites of kind api
+             filter: kind:api
+       # Shows a table of components that consumes a particular api
+       - entity-card:api-docs/consuming-components:
+           config:
+             # Presenting the card ony for entites of kind api
+             filter: kind:api
+       # Enabling some Contents
+       # The contents will be displayed in the same order it appears in this setting list
+       # Shows a "Definition" tab for entities of kind api
+       - entity-content:api-docs/definition
+       # Shows an "Apis" tab for entities of kind component
+       - entity-content:api-docs/apis
+   ```
 
 3. Then start the app, navigate to an entity's page and see the cards and contents in there;
 4. You can also access the Apis explorer page by clicking on the "APIs" sidebar item.
@@ -98,35 +98,7 @@ app:
 
 ### Packages
 
-This plugin features can be discovered automatically as soon as you install it, and it is also possible to only be enabled for certain [environments](https://backstage.io/docs/conf/writing/#configuration-files). See the examples below:
-
-_Enabling auto discovering the plugin extensions in production_
-
-```yaml
-# app-config.production.yaml
-# Overriding configurations for the local production environment
-app:
-  experimental:
-    packages:
-      # Only the following packages will be included
-      include:
-        - '@backstage/plugin-api-docs'
-```
-
-_Disabling auto discovering the plugin extensions in development_
-
-```yaml
-# app-config.local.yaml
-# Overriding configurations for the local development environment
-app:
-  experimental:
-    packages:
-      # All but the following package will be included
-      exclude:
-        - '@backstage/plugin-api-docs'
-```
-
-For more options of package configurations, see [this](https://backstage.io/docs/frontend-system/architecture/app/#feature-discovery) documentation.
+By default, the `api-docs` can be automatically discovered, and it is also possible to enable this plugin only in certain [environments](https://backstage.io/docs/conf/writing/#configuration-files). For more package configuration options, see [this](https://backstage.io/docs/frontend-system/architecture/app/#feature-discovery) documentation.
 
 ### Routes
 
@@ -167,7 +139,7 @@ Route binding is also possible through code. For more information, see [this](ht
 
 This [nav item](https://backstage.io/docs/reference/frontend-plugin-api.createnavitemextension) extension adds a link to the Apis Explorer page in the main app sidebar.
 
-| kind       | Namespace  | Name | Id                  |
+| Kind       | Namespace  | Name | Id                  |
 | ---------- | ---------- | ---- | ------------------- |
 | `nav-item` | `api-docs` | -    | `nav-item:api-docs` |
 
@@ -255,7 +227,7 @@ For more information about where to place extension overrides, see the official 
 
 This `api-docs` plugin installs an "Apis Explore" page extension that helps you visualize apis registered in the Backstage software catalog.
 
-| kind   | Namespace  | Name | Id              |
+| Kind   | Namespace  | Name | Id              |
 | ------ | ---------- | ---- | --------------- |
 | `page` | `api-docs` | -    | `page:api-docs` |
 
@@ -297,7 +269,7 @@ app:
 
 ##### Override
 
-The explorer page implementation can be overridden in situations where its default extension is not customizable enough.
+The explorer page implementation can be [overridden](https://backstage.io/docs/frontend-system/architecture/extension-overrides) in situations where its default extension is not customizable enough.
 
 Here is an example overriding the APIs Explorer page component:
 
@@ -335,13 +307,13 @@ See a complete cards list below:
 
 An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of entities that have an api relation with a particular Software catalog entity.
 
-| kind          | Namespace  | Name       | Id                              |
+| Kind          | Namespace  | Name       | Id                              |
 | ------------- | ---------- | ---------- | ------------------------------- |
 | `entity-card` | `api-docs` | `has-apis` | `entity-card:api-docs/has-apis` |
 
 ###### Disable
 
-This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled regardless of the extension's default definition, add the following configuration:
+This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled or enabled regardless of the extension's default definition, add the following configuration:
 
 ```yaml
 # app-config.yaml
@@ -361,7 +333,8 @@ app:
 
 ###### Config
 
-For now there is only one configuration available for this entity cards extension, which is setting an entity filter that determines when the cards should be displayed on the entity page.
+For now there is only one configuration available for this entity card extension, which is setting an entity filter that determines when the card should be displayed on the entity page.
+
 Here is an example showing the `has-apis` overview cards only for entities of kind component:
 
 ```yaml
@@ -373,6 +346,7 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-card:api-docs/has-apis:
         config:
+          # The default value is a function that verifies it is a components has api pat of relations
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
           filter: 'kind:component'
@@ -404,15 +378,15 @@ For more information about where to place extension overrides, see the official 
 
 ##### Definition Entity Card
 
-An Entity Card extension that renders an entity api definition widget.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders an entity api definition widget.
 
-| kind          | Namespace  | Name         | Id                                |
+| Kind          | Namespace  | Name         | Id                                |
 | ------------- | ---------- | ------------ | --------------------------------- |
 | `entity-card` | `api-docs` | `definition` | `entity-card:api-docs/definition` |
 
 ###### Disable
 
-This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled regardless of the extension's default definition, add the following configuration:
+This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled or enabled regardless of the extension's default definition, add the following configuration:
 
 ```yaml
 # app-config.yaml
@@ -432,7 +406,8 @@ app:
 
 ###### Config
 
-For now there is only one configuration available for this entity cards extension, which is setting an entity filter that determines when the cards should be displayed on the entity page.
+For now there is only one configuration available for this entity card extension, which is setting an entity filter that determines when the card should be displayed on the entity page.
+
 Here is an example showing the `definition` overview cards only for entities of kind component:
 
 ```yaml
@@ -444,6 +419,7 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-card:api-docs/definition:
         config:
+          # Default to 'kind:api'
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
           filter: 'kind:component'
@@ -475,15 +451,15 @@ For more information about where to place extension overrides, see the official 
 
 ##### Provided Apis Entity Card
 
-An Entity Card extension that renders a table of apis provided by a particular Software Catalog Component.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of apis provided by a particular Software Catalog Component.
 
-| kind          | Namespace  | Name            | Id                                   |
+| Kind          | Namespace  | Name            | Id                                   |
 | ------------- | ---------- | --------------- | ------------------------------------ |
 | `entity-card` | `api-docs` | `provided-apis` | `entity-card:api-docs/provided-apis` |
 
 ###### Disable
 
-This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled regardless of the extension's default definition, add the following configuration:
+This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled or enabled regardless of the extension's default definition, add the following configuration:
 
 ```yaml
 # app-config.yaml
@@ -503,7 +479,8 @@ app:
 
 ###### Config
 
-For now there is only one configuration available for this entity cards extension, which is setting an entity filter that determines when the cards should be displayed on the entity page.
+For now there is only one configuration available for this entity card extension, which is setting an entity filter that determines when the card should be displayed on the entity page.
+
 Here is an example showing the `provided-apis` overview cards only for entities of kind component:
 
 ```yaml
@@ -515,6 +492,7 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-card:api-docs/provided-apis:
         config:
+          # Default to 'kind:component'
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
           filter: 'kind:component'
@@ -546,15 +524,15 @@ For more information about where to place extension overrides, see the official 
 
 ##### Consumed Apis Entity Card
 
-An Entity Card extension that renders a table of apis consumed by a particular Software Catalog Component.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of apis consumed by a particular Software Catalog Component.
 
-| kind          | Namespace  | Name            | Id                                   |
+| Kind          | Namespace  | Name            | Id                                   |
 | ------------- | ---------- | --------------- | ------------------------------------ |
 | `entity-card` | `api-docs` | `consumed-apis` | `entity-card:api-docs/consumed-apis` |
 
 ###### Disable
 
-This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled regardless of the extension's default definition, add the following configuration:
+This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled or enabled regardless of the extension's default definition, add the following configuration:
 
 ```yaml
 # app-config.yaml
@@ -574,7 +552,8 @@ app:
 
 ###### Config
 
-For now there is only one configuration available for this entity cards extension, which is setting an entity filter that determines when the cards should be displayed on the entity page.
+For now there is only one configuration available for this entity card extension, which is setting an entity filter that determines when the card should be displayed on the entity page.
+
 Here is an example showing the `consumed-apis` overview cards only for entities of kind component:
 
 ```yaml
@@ -586,6 +565,7 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-card:api-docs/consumed-apis:
         config:
+          # Default to 'kind:component'
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
           filter: 'kind:component'
@@ -617,15 +597,15 @@ For more information about where to place extension overrides, see the official 
 
 ##### Providing Components Entity Card
 
-An Entity Card extension that renders a table of components that provides a particular Software Catalog api.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of components that provides a particular Software Catalog api.
 
-| kind          | Namespace  | Name                   | Id                                          |
+| Kind          | Namespace  | Name                   | Id                                          |
 | ------------- | ---------- | ---------------------- | ------------------------------------------- |
 | `entity-card` | `api-docs` | `providing-components` | `entity-card:api-docs/providing-components` |
 
 ###### Disable
 
-This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled regardless of the extension's default definition, add the following configuration:
+This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled or enabled regardless of the extension's default definition, add the following configuration:
 
 ```yaml
 # app-config.yaml
@@ -645,7 +625,8 @@ app:
 
 ###### Config
 
-For now there is only one configuration available for this entity cards extension, which is setting an entity filter that determines when the cards should be displayed on the entity page.
+For now there is only one configuration available for this entity card extension, which is setting an entity filter that determines when the card should be displayed on the entity page.
+
 Here is an example showing the `providing-components` overview cards only for entities of kind component:
 
 ```yaml
@@ -657,6 +638,7 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-card:api-docs/providing-components:
         config:
+          # Default to 'kind:api'
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
           filter: 'kind:component'
@@ -678,7 +660,9 @@ export default createExtensionOverrides({
       name: 'providing-components',
       // Returing a custom card component
       loader: () =>
-        import('./components').then(m => <m.MyCustomConsumedApisEntityCard />),
+        import('./components').then(m => (
+          <m.MyCustomProvidingComponentsEntityCard />
+        )),
     }),
   ],
 });
@@ -688,15 +672,15 @@ For more information about where to place extension overrides, see the official 
 
 ##### Consuming Components Entity Card
 
-An Entity Card extension that renders a table of components that consumes a particular Software Catalog api.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of components that consumes a particular Software Catalog api.
 
-| kind          | Namespace  | Name                   | Id                                          |
+| Kind          | Namespace  | Name                   | Id                                          |
 | ------------- | ---------- | ---------------------- | ------------------------------------------- |
 | `entity-card` | `api-docs` | `consuming-components` | `entity-card:api-docs/consuming-components` |
 
 ###### Disable
 
-This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled regardless of the extension's default definition, add the following configuration:
+This card is disabled by default when you install the `api-docs` plugin, but to ensure the card will always be disabled or enabled regardless of the extension's default definition, add the following configuration:
 
 ```yaml
 # app-config.yaml
@@ -716,7 +700,8 @@ app:
 
 ###### Config
 
-For now there is only one configuration available for this entity cards extension, which is setting an entity filter that determines when the cards should be displayed on the entity page.
+For now there is only one configuration available for this entity card extension, which is setting an entity filter that determines when the card should be displayed on the entity page.
+
 Here is an example showing the `consuming-components` overview cards only for entities of kind component:
 
 ```yaml
@@ -728,6 +713,7 @@ app:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     - entity-card:api-docs/consuming-components:
         config:
+          # Default to 'kind:api'
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
           filter: 'kind:component'
@@ -749,7 +735,9 @@ export default createExtensionOverrides({
       name: 'consuming-components',
       // Returing a custom card component
       loader: () =>
-        import('./components').then(m => <m.MyCustomConsumedApisEntityCard />),
+        import('./components').then(m => (
+          <m.MyCustomConsumingComponentsEntityCard />
+        )),
     }),
   ],
 });
@@ -762,21 +750,21 @@ For more information about where to place extension overrides, see the official 
 The `api-docs` provide some entity contents you can enable to customize the Software Catalog entity page.
 
 > [!IMPORTANT]
-> The order in which contents are listed in the configuration file will determine the order in which they appear in overview contents and tab lists on entity pages.
+> The order in which contents are listed in the configuration file will determine the order in which they appear in overview contents and tabs on entity pages.
 
 See a complete contents list below:
 
 ##### Definition Entity Content
 
-An Entity Content extension that renders a tab in the entity page showing a particular entity api definition.
+An [entity content](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a tab in the entity page showing a particular entity api definition.
 
-| kind             | Namespace  | Name         | Id                                   |
+| Kind             | Namespace  | Name         | Id                                   |
 | ---------------- | ---------- | ------------ | ------------------------------------ |
 | `entity-content` | `api-docs` | `definition` | `entity-content:api-docs/definition` |
 
 ###### Disable
 
-This content is disabled by default when you install the `api-docs` plugin, but if you want make sure the content will always be disabled independently of the extension default definition, add this configuration:
+This content is disabled by default when you install the `api-docs` plugin, but to ensure the content will always be disabled or enabled regardless of the extension's default definition, add the following configuration:
 
 ```yaml
 # app-config.yaml
@@ -850,13 +838,13 @@ For more information about where to place extension overrides, see the official 
 
 An Entity Content extension that renders a tab in the entity page showing a particular entity consumed and provided apis.
 
-| kind             | Namespace  | Name   | Id                             |
+| Kind             | Namespace  | Name   | Id                             |
 | ---------------- | ---------- | ------ | ------------------------------ |
 | `entity-content` | `api-docs` | `apis` | `entity-content:api-docs/apis` |
 
 ###### Disable
 
-This content is disabled by default when you install the `api-docs` plugin, but if you want make sure the content will always be disabled independently of the extension default definition, add this configuration:
+This content is disabled by default when you install the `api-docs` plugin, but to ensure the content will always be disabled or enabled regardless of the extension's default definition, add the following configuration:
 
 ```yaml
 # app-config.yaml
@@ -928,7 +916,7 @@ For more information about where to place extension overrides, see the official 
 
 This is an api used by the `api-docs` plugin to get the api definition widget.
 
-| kind  | Namespace                | Name | Id                           |
+| Kind  | Namespace                | Name | Id                           |
 | ----- | ------------------------ | ---- | ---------------------------- |
 | `api` | `plugin.api-docs.config` | -    | `api:plugin.api-docs.config` |
 
