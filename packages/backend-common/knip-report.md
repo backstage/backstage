@@ -2,23 +2,23 @@
 
 ## Unused dependencies (3)
 
-| Name                  | Location     |
-|:----------------------|:-------------|
-| mysql2                | package.json |
-| @types/webpack-env    | package.json |
-| @manypkg/get-packages | package.json |
+| Name                  | Location     | Severity |
+| :-------------------- | :----------- | :------- |
+| @manypkg/get-packages | package.json | error    |
+| @types/webpack-env    | package.json | error    |
+| mysql2                | package.json | error    |
 
 ## Unused devDependencies (3)
 
-| Name               | Location     |
-|:-------------------|:-------------|
-| mysql2             | package.json |
-| better-sqlite3     | package.json |
-| @types/webpack-env | package.json |
+| Name               | Location     | Severity |
+| :----------------- | :----------- | :------- |
+| @types/webpack-env | package.json | error    |
+| better-sqlite3     | package.json | error    |
+| mysql2             | package.json | error    |
 
 ## Referenced optional peerDependencies (1)
 
-| Name                 | Location     |
-|:---------------------|:-------------|
-| pg-connection-string | package.json |
+| Name                 | Location     | Severity |
+| :------------------- | :----------- | :------- |
+| pg-connection-string | package.json | error    |
 

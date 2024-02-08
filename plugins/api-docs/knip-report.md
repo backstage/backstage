@@ -2,15 +2,15 @@
 
 ## Unused dependencies (3)
 
-| Name                 | Location     |
-|:---------------------|:-------------|
-| graphql-ws           | package.json |
-| graphql-config       | package.json |
-| isomorphic-form-data | package.json |
+| Name                 | Location     | Severity |
+| :------------------- | :----------- | :------- |
+| isomorphic-form-data | package.json | error    |
+| graphql-config       | package.json | error    |
+| graphql-ws           | package.json | error    |
 
 ## Unused devDependencies (1)
 
-| Name                 | Location     |
-|:---------------------|:-------------|
-| @testing-library/dom | package.json |
+| Name                 | Location     | Severity |
+| :------------------- | :----------- | :------- |
+| @testing-library/dom | package.json | error    |
 

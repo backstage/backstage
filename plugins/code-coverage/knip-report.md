@@ -2,9 +2,9 @@
 
 ## Unused devDependencies (3)
 
-| Name                   | Location     |
-|:-----------------------|:-------------|
-| @types/highlightjs     | package.json |
-| @testing-library/dom   | package.json |
-| @testing-library/react | package.json |
+| Name                   | Location     | Severity |
+| :--------------------- | :----------- | :------- |
+| @testing-library/react | package.json | error    |
+| @testing-library/dom   | package.json | error    |
+| @types/highlightjs     | package.json | error    |
 

@@ -2,15 +2,15 @@
 
 ## Unused dependencies (2)
 
-| Name                | Location     |
-|:--------------------|:-------------|
-| history             | package.json |
-| @material-ui/styles | package.json |
+| Name                | Location     | Severity |
+| :------------------ | :----------- | :------- |
+| @material-ui/styles | package.json | error    |
+| history             | package.json | error    |
 
 ## Unused devDependencies (2)
 
-| Name                 | Location     |
-|:---------------------|:-------------|
-| canvas               | package.json |
-| @testing-library/dom | package.json |
+| Name                 | Location     | Severity |
+| :------------------- | :----------- | :------- |
+| @testing-library/dom | package.json | error    |
+| canvas               | package.json | error    |
 

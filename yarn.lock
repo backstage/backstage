@@ -33421,8 +33421,8 @@ __metadata:
   linkType: hard
 
 "knip@npm:^4.3.1":
-  version: 4.4.0
-  resolution: "knip@npm:4.4.0"
+  version: 4.5.0
+  resolution: "knip@npm:4.5.0"
   dependencies:
     "@ericcornelissen/bash-parser": 0.5.2
     "@nodelib/fs.walk": 2.0.0
@@ -33439,7 +33439,7 @@ __metadata:
     micromatch: 4.0.5
     minimist: 1.2.8
     picocolors: 1.0.0
-    picomatch: 3.0.1
+    picomatch: 4.0.1
     pretty-ms: 9.0.0
     smol-toml: 1.1.4
     strip-json-comments: 5.0.1
@@ -33451,7 +33451,7 @@ __metadata:
     typescript: ">=5.0.4"
   bin:
     knip: bin/knip.js
-  checksum: 02ce0c03f732eeee73c76028569baf8105355ad58702af485201eb3d2e65e0cafbeb65c8d40be4e43b2abc29f4d8cf46d10ed6da8660103f1acd0e7beb2707eb
+  checksum: 701e29960eb847d5d6f055a6dc92ba2437592bccc45f63137ceeed3017cbb03c9ecd88dfbdb082e66558d5ec4f7b008e5a1d54674f54756229f0ebd04770a964
   languageName: node
   linkType: hard
 
@@ -38113,10 +38113,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"picomatch@npm:3.0.1":
-  version: 3.0.1
-  resolution: "picomatch@npm:3.0.1"
-  checksum: b7fe18174bcc05bbf0ea09cc85623ae395676b3e6bc25636d4c20db79a948586237e429905453bf1ba385bc7a7aa5b56f1b351680e650d2b5c305ceb98dfc914
+"picomatch@npm:4.0.1":
+  version: 4.0.1
+  resolution: "picomatch@npm:4.0.1"
+  checksum: f135d38bb7d190186907714cf2f3abe043de9c66b1c5e5687ae7ae63fd9693a51634aa3662ac1dcd79e1209e02edcaa0740c4f3edda2ffed03f1a0bee38d8f67
   languageName: node
   linkType: hard
 

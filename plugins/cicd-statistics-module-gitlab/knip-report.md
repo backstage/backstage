@@ -2,13 +2,13 @@
 
 ## Unused dependencies (1)
 
-| Name  | Location     |
-|:------|:-------------|
-| luxon | package.json |
+| Name  | Location     | Severity |
+| :---- | :----------- | :------- |
+| luxon | package.json | error    |
 
 ## Unused devDependencies (1)
 
-| Name         | Location     |
-|:-------------|:-------------|
-| @types/react | package.json |
+| Name         | Location     | Severity |
+| :----------- | :----------- | :------- |
+| @types/react | package.json | error    |
 

@@ -2,8 +2,8 @@
 
 ## Unused devDependencies (2)
 
-| Name                   | Location     |
-|:-----------------------|:-------------|
-| @testing-library/dom   | package.json |
-| @testing-library/react | package.json |
+| Name                   | Location     | Severity |
+| :--------------------- | :----------- | :------- |
+| @testing-library/react | package.json | error    |
+| @testing-library/dom   | package.json | error    |
 

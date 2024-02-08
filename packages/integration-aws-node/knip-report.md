@@ -2,15 +2,15 @@
 
 ## Unused dependencies (2)
 
-| Name                              | Location     |
-|:----------------------------------|:-------------|
-| @backstage/errors                 | package.json |
-| @aws-sdk/credential-provider-node | package.json |
+| Name                              | Location     | Severity |
+| :-------------------------------- | :----------- | :------- |
+| @aws-sdk/credential-provider-node | package.json | error    |
+| @backstage/errors                 | package.json | error    |
 
 ## Unused devDependencies (2)
 
-| Name                     | Location     |
-|:-------------------------|:-------------|
-| @backstage/test-utils    | package.json |
-| @backstage/config-loader | package.json |
+| Name                     | Location     | Severity |
+| :----------------------- | :----------- | :------- |
+| @backstage/config-loader | package.json | error    |
+| @backstage/test-utils    | package.json | error    |
 

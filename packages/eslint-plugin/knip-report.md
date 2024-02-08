@@ -2,8 +2,8 @@
 
 ## Unlisted dependencies (2)
 
-| Name   | Location                       |
-|:-------|:-------------------------------|
-| estree | lib/visitImports.js            |
-| estree | rules/no-undeclared-imports.js |
+| Name   | Location                       | Severity |
+| :----- | :----------------------------- | :------- |
+| estree | rules/no-undeclared-imports.js | error    |
+| estree | lib/visitImports.js            | error    |
 

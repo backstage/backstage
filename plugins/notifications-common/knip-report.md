@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name               | Location     |
-|:-------------------|:-------------|
-| @material-ui/icons | package.json |
+| Name               | Location     | Severity |
+| :----------------- | :----------- | :------- |
+| @material-ui/icons | package.json | error    |
 

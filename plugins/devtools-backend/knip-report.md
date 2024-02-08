@@ -2,7 +2,7 @@
 
 ## Unused devDependencies (1)
 
-| Name            | Location     |
-|:----------------|:-------------|
-| @types/minimist | package.json |
+| Name            | Location     | Severity |
+| :-------------- | :----------- | :------- |
+| @types/minimist | package.json | error    |
 
