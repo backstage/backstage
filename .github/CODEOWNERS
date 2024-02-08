@@ -86,3 +86,5 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/tech-insights-backend-module-jsonfc      @backstage/maintainers @backstage/reviewers @xantier
 /plugins/tech-insights-tech-insights-common       @backstage/maintainers @backstage/reviewers @xantier
 /plugins/tech-insights-tech-insights-node         @backstage/maintainers @backstage/reviewers @xantier
+
+knip-report.md
