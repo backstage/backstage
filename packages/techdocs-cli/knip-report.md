@@ -6,13 +6,11 @@
 |:-------------|:-------------|
 | global-agent | package.json |
 
-## Unused devDependencies (5)
+## Unused devDependencies (3)
 
 | Name               | Location     |
 |:-------------------|:-------------|
 | ts-node            | package.json |
 | nodemon            | package.json |
-| find-process       | package.json |
-| @backstage/cli     | package.json |
 | @types/webpack-env | package.json |
 

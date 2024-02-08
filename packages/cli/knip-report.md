@@ -33,11 +33,10 @@
 | @spotify/eslint-config-react     | package.json |
 | @typescript-eslint/eslint-plugin | package.json |
 
-## Unused devDependencies (18)
+## Unused devDependencies (13)
 
 | Name                                    | Location     |
 |:----------------------------------------|:-------------|
-| msw                                     | package.json |
 | del                                     | package.json |
 | ts-node                                 | package.json |
 | nodemon                                 | package.json |
@@ -46,13 +45,9 @@
 | @backstage/theme                        | package.json |
 | @types/http-proxy                       | package.json |
 | @backstage/dev-utils                    | package.json |
-| @backstage/test-utils                   | package.json |
 | @backstage/core-app-api                 | package.json |
-| @backstage/backend-common               | package.json |
-| @backstage/core-plugin-api              | package.json |
 | @backstage/core-components              | package.json |
 | @types/terser-webpack-plugin            | package.json |
-| @backstage/backend-test-utils           | package.json |
 | @backstage/backend-plugin-api           | package.json |
 | @types/rollup-plugin-peer-deps-external | package.json |
 

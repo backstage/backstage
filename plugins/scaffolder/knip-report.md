@@ -9,15 +9,9 @@
 | @rjsf/material-ui   | package.json |
 | json-schema-library | package.json |
 
-## Unused devDependencies (7)
+## Unused devDependencies (1)
 
-| Name                        | Location     |
-|:----------------------------|:-------------|
-| msw                         | package.json |
-| @backstage/cli              | package.json |
-| @testing-library/dom        | package.json |
-| @backstage/test-utils       | package.json |
-| @testing-library/react      | package.json |
-| @backstage/core-app-api     | package.json |
-| @testing-library/user-event | package.json |
+| Name                 | Location     |
+|:---------------------|:-------------|
+| @testing-library/dom | package.json |
 

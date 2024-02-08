@@ -8,12 +8,9 @@
 | @backstage/config     | package.json |
 | http-proxy-middleware | package.json |
 
-## Unused devDependencies (4)
+## Unused devDependencies (1)
 
-| Name             | Location     |
-|:-----------------|:-------------|
-| msw              | package.json |
-| supertest        | package.json |
-| @backstage/cli   | package.json |
-| @types/supertest | package.json |
+| Name | Location     |
+|:----|:-------------|
+| msw | package.json |
 

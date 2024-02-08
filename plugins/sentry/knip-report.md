@@ -6,12 +6,10 @@
 |:--------------|:-------------|
 | @date-io/core | package.json |
 
-## Unused devDependencies (4)
+## Unused devDependencies (2)
 
 | Name                   | Location     |
 |:-----------------------|:-------------|
-| @backstage/cli         | package.json |
 | @testing-library/dom   | package.json |
-| @backstage/test-utils  | package.json |
 | @testing-library/react | package.json |
 

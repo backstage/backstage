@@ -6,10 +6,9 @@
 |:--------------------------|:-------------|
 | @backstage/plugin-catalog | package.json |
 
-## Unused devDependencies (2)
+## Unused devDependencies (1)
 
 | Name                 | Location     |
 |:---------------------|:-------------|
-| @backstage/cli       | package.json |
 | @testing-library/dom | package.json |
 

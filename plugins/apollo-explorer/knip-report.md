@@ -6,11 +6,10 @@
 |:------------------------|:-------------|
 | use-deep-compare-effect | package.json |
 
-## Unused devDependencies (3)
+## Unused devDependencies (2)
 
 | Name                   | Location     |
 |:-----------------------|:-------------|
-| @backstage/cli         | package.json |
 | @testing-library/dom   | package.json |
 | @testing-library/react | package.json |
 

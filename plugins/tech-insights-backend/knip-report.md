@@ -7,13 +7,9 @@
 | yn   | package.json |
 | uuid | package.json |
 
-## Unused devDependencies (5)
+## Unused devDependencies (1)
 
-| Name                          | Location     |
-|:------------------------------|:-------------|
-| supertest                     | package.json |
-| @backstage/cli                | package.json |
-| wait-for-expect               | package.json |
-| @types/supertest              | package.json |
-| @backstage/backend-test-utils | package.json |
+| Name            | Location     |
+|:----------------|:-------------|
+| wait-for-expect | package.json |
 

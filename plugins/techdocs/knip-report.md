@@ -1,22 +1,15 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (1)
 
-| Name             | Location     |
-|:-----------------|:-------------|
-| jss              | package.json |
-| @backstage/theme | package.json |
+| Name | Location     |
+|:----|:-------------|
+| jss | package.json |
 
-## Unused devDependencies (8)
+## Unused devDependencies (2)
 
-| Name                                             | Location     |
-|:-------------------------------------------------|:-------------|
-| canvas                                           | package.json |
-| @backstage/cli                                   | package.json |
-| @testing-library/dom                             | package.json |
-| @backstage/test-utils                            | package.json |
-| @testing-library/react                           | package.json |
-| @backstage/core-app-api                          | package.json |
-| @testing-library/user-event                      | package.json |
-| @backstage/plugin-techdocs-module-addons-contrib | package.json |
+| Name                 | Location     |
+|:---------------------|:-------------|
+| canvas               | package.json |
+| @testing-library/dom | package.json |
 

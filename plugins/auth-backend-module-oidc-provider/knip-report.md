@@ -1,24 +1,17 @@
 # Knip report
 
-## Unused dependencies (3)
+## Unused dependencies (2)
 
 | Name                      | Location     |
 |:--------------------------|:-------------|
-| express                   | package.json |
 | passport                  | package.json |
 | @backstage/backend-common | package.json |
 
-## Unused devDependencies (9)
+## Unused devDependencies (3)
 
-| Name                          | Location     |
-|:------------------------------|:-------------|
-| msw                           | package.json |
-| jose                          | package.json |
-| supertest                     | package.json |
-| cookie-parser                 | package.json |
-| @backstage/cli                | package.json |
-| express-session               | package.json |
-| @backstage/config             | package.json |
-| express-promise-router        | package.json |
-| @backstage/backend-test-utils | package.json |
+| Name                   | Location     |
+|:-----------------------|:-------------|
+| cookie-parser          | package.json |
+| express-session        | package.json |
+| express-promise-router | package.json |
 

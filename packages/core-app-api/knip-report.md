@@ -6,18 +6,14 @@
 |:--------|:-------------|
 | history | package.json |
 
-## Unused devDependencies (11)
+## Unused devDependencies (7)
 
 | Name                         | Location     |
 |:-----------------------------|:-------------|
-| msw                          | package.json |
-| @backstage/cli               | package.json |
 | react-router-beta            | package.json |
 | react-router-stable          | package.json |
 | @testing-library/dom         | package.json |
 | react-router-dom-beta        | package.json |
-| @backstage/test-utils        | package.json |
-| @testing-library/react       | package.json |
 | react-router-dom-stable      | package.json |
 | @testing-library/user-event  | package.json |
 | @testing-library/react-hooks | package.json |

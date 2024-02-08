@@ -10,11 +10,3 @@
 | @backstage/catalog-client      | package.json |
 | @backstage/plugin-signals-node | package.json |
 
-## Unused devDependencies (3)
-
-| Name                  | Location     |
-|:----------------------|:-------------|
-| msw                   | package.json |
-| @backstage/cli        | package.json |
-| @backstage/test-utils | package.json |
-

@@ -69,7 +69,7 @@
 | @roadiehq/backstage-plugin-github-pull-requests  | package.json |
 | @backstage/plugin-techdocs-module-addons-contrib | package.json |
 
-## Unused devDependencies (7)
+## Unused devDependencies (6)
 
 | Name                        | Location     |
 |:----------------------------|:-------------|
@@ -77,7 +77,6 @@
 | @types/jquery               | package.json |
 | @testing-library/dom        | package.json |
 | @types/zen-observable       | package.json |
-| @backstage/test-utils       | package.json |
 | @testing-library/react      | package.json |
 | @testing-library/user-event | package.json |
 

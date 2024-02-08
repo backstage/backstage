@@ -7,15 +7,10 @@
 | history             | package.json |
 | @material-ui/styles | package.json |
 
-## Unused devDependencies (7)
+## Unused devDependencies (2)
 
-| Name                        | Location     |
-|:----------------------------|:-------------|
-| canvas                      | package.json |
-| @backstage/cli              | package.json |
-| @testing-library/dom        | package.json |
-| @backstage/test-utils       | package.json |
-| @testing-library/react      | package.json |
-| @backstage/core-app-api     | package.json |
-| @testing-library/user-event | package.json |
+| Name                 | Location     |
+|:---------------------|:-------------|
+| canvas               | package.json |
+| @testing-library/dom | package.json |
 

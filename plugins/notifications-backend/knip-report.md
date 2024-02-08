@@ -1,19 +1,14 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (1)
 
-| Name              | Location     |
-|:------------------|:-------------|
-| node-fetch        | package.json |
-| @backstage/config | package.json |
+| Name       | Location     |
+|:-----------|:-------------|
+| node-fetch | package.json |
 
-## Unused devDependencies (5)
+## Unused devDependencies (1)
 
-| Name                          | Location     |
-|:------------------------------|:-------------|
-| msw                           | package.json |
-| supertest                     | package.json |
-| @backstage/cli                | package.json |
-| @types/supertest              | package.json |
-| @backstage/backend-test-utils | package.json |
+| Name | Location     |
+|:----|:-------------|
+| msw | package.json |
 

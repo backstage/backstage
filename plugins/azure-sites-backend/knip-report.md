@@ -7,10 +7,9 @@
 | node-fetch               | package.json |
 | @backstage/catalog-model | package.json |
 
-## Unused devDependencies (2)
+## Unused devDependencies (1)
 
 | Name             | Location     |
 |:-----------------|:-------------|
-| @backstage/cli   | package.json |
 | @types/supertest | package.json |
 

@@ -10,13 +10,10 @@
 | cronstrue               | package.json |
 | @kubernetes-models/base | package.json |
 
-## Unused devDependencies (5)
+## Unused devDependencies (2)
 
-| Name                      | Location     |
-|:--------------------------|:-------------|
-| @backstage/cli            | package.json |
-| @testing-library/dom      | package.json |
-| @backstage/test-utils     | package.json |
-| @testing-library/react    | package.json |
-| @testing-library/jest-dom | package.json |
+| Name                   | Location     |
+|:-----------------------|:-------------|
+| @testing-library/dom   | package.json |
+| @testing-library/react | package.json |
 
