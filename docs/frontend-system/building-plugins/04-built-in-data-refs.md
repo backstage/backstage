@@ -14,7 +14,7 @@ To have a better understanding of extension data references please read [the cor
 
 Data references help to define the inputs and outputs of an extension. A data ref is uniquely identified through its `id`. Through the data ref, strong typing is enforced for the input/output of the extension.
 
-### reactElement
+### `reactElement`
 
 |         id          |     type      |
 | :-----------------: | :-----------: |
@@ -40,7 +40,7 @@ const homePage = createPageExtension({
 });
 ```
 
-### routePath
+### `routePath`
 
 |         id          |   type   |
 | :-----------------: | :------: |
@@ -48,7 +48,7 @@ const homePage = createPageExtension({
 
 The `routePath` data reference can be used for defining the extension input/output of string paths.
 
-### routeRef
+### `routeRef`
 
 |         id         |    type    |
 | :----------------: | :--------: |
