@@ -1,4 +1,4 @@
-FROM ruby:3.3@sha256:edc0719e887ae8a34c9edfe0178333117cb6fbfd6f49502dbccc8ae22d26a63e
+FROM ruby:3.3@sha256:6936c28e1221d653c0d9af9d2b6a9e27ba0350cd10c9cc57464c62743d723b76
 
 RUN apt-get update -qq && \
     apt-get install -y nodejs postgresql-client git && \
