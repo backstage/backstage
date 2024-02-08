@@ -79,7 +79,7 @@
     "ctrlc-windows": "^2.1.0",
     "diff": "^5.0.0",
     "esbuild": "^0.20.0",
-    "esbuild-loader": "^2.18.0",
+    "esbuild-loader": "^4.0.0",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-formatter-friendly": "^7.0.0",
