@@ -180,22 +180,15 @@ export const UserListPicker = (props: UserListPickerProps) => {
   // external updates to the page location.
   useEffect(() => {
     if (queryParamUserFilter) {
-      setSelectedUserFilter(queryParamUserFilter as UserListFilterKind);
+      if (['group', 'user'].some(kind => kind === kindParameter)) {
+        setSelectedUserFilter('all');
+      } else {
+        setSelectedUserFilter(queryParamUserFilter as UserListFilterKind);
+      }
     }
-  }, [queryParamUserFilter]);
+  }, [queryParamUserFilter, kindParameter]);
 
   const loading = loadingOwnedEntities || loadingStarredEntities;
-
-  useEffect(() => {
-    if (
-      !loading &&
-      !!selectedUserFilter &&
-      selectedUserFilter !== 'all' &&
-      filterCounts[selectedUserFilter] === 0
-    ) {
-      setSelectedUserFilter('all');
-    }
-  }, [loading, filterCounts, selectedUserFilter, setSelectedUserFilter]);
 
   useEffect(() => {
     if (!selectedUserFilter) {

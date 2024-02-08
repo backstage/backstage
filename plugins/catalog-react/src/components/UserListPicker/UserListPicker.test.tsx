@@ -458,29 +458,48 @@ describe('<UserListPicker />', () => {
         });
       });
 
-      it('resets the filter to "all" when entities are loaded', async () => {
-        mockCatalogApi.queryEntities?.mockImplementation(async request => {
-          if (
-            (
-              (request as QueryEntitiesInitialRequest).filter as Record<
-                string,
-                string
+      it.each([
+        ['group', { user: EntityUserFilter.all() }],
+        ['user', { user: EntityUserFilter.all() }],
+      ])(
+        'resets the filter to "all" when kind filter is %s',
+        async (kind, expected) => {
+          mockCatalogApi.queryEntities?.mockImplementation(async request => {
+            if (
+              (
+                (request as QueryEntitiesInitialRequest).filter as Record<
+                  string,
+                  string
+                >
+              )['relations.ownedBy']
+            ) {
+              return { items: [], totalItems: 0, pageInfo: {} };
+            }
+            return mockQueryEntitiesImplementation(request);
+          });
+
+          render(
+            <ApiProvider apis={apis}>
+              <MockEntityListContextProvider
+                value={{
+                  updateFilters,
+                  queryParameters: { user: ['owned'], kind: kind },
+                  filters: {
+                    kind: new EntityKindFilter(kind),
+                    user: undefined,
+                  },
+                }}
               >
-            )['relations.ownedBy']
-          ) {
-            return { items: [], totalItems: 0, pageInfo: {} };
-          }
-          return mockQueryEntitiesImplementation(request);
-        });
+                <UserListPicker initialFilter="owned" />
+              </MockEntityListContextProvider>
+            </ApiProvider>,
+          );
 
-        render(<Picker initialFilter="owned" />);
-
-        await waitFor(() =>
-          expect(updateFilters).toHaveBeenLastCalledWith({
-            user: EntityUserFilter.all(),
-          }),
-        );
-      });
+          await waitFor(() =>
+            expect(updateFilters).toHaveBeenLastCalledWith(expected),
+          );
+        },
+      );
     });
 
     describe(`when there are no starred entities match the filter`, () => {
@@ -522,29 +541,48 @@ describe('<UserListPicker />', () => {
         });
       });
 
-      it('resets the filter to "all" when entities are loaded', async () => {
-        mockCatalogApi.queryEntities?.mockImplementation(async request => {
-          if (
-            (
-              (request as QueryEntitiesInitialRequest).filter as Record<
-                string,
-                string
+      it.each([
+        ['group', { user: EntityUserFilter.all() }],
+        ['user', { user: EntityUserFilter.all() }],
+      ])(
+        'resets the filter to "all" when kind filter is %s',
+        async (kind, expected) => {
+          mockCatalogApi.queryEntities?.mockImplementation(async request => {
+            if (
+              (
+                (request as QueryEntitiesInitialRequest).filter as Record<
+                  string,
+                  string
+                >
+              )['metadata.name']
+            ) {
+              return { items: [], totalItems: 0, pageInfo: {} };
+            }
+            return mockQueryEntitiesImplementation(request);
+          });
+
+          render(
+            <ApiProvider apis={apis}>
+              <MockEntityListContextProvider
+                value={{
+                  updateFilters,
+                  queryParameters: { user: ['starred'], kind: kind },
+                  filters: {
+                    kind: new EntityKindFilter(kind),
+                    user: undefined,
+                  },
+                }}
               >
-            )['metadata.name']
-          ) {
-            return { items: [], totalItems: 0, pageInfo: {} };
-          }
-          return mockQueryEntitiesImplementation(request);
-        });
+                <UserListPicker initialFilter="starred" />
+              </MockEntityListContextProvider>
+            </ApiProvider>,
+          );
 
-        render(<Picker initialFilter="starred" />);
-
-        await waitFor(() =>
-          expect(updateFilters).toHaveBeenLastCalledWith({
-            user: EntityUserFilter.all(),
-          }),
-        );
-      });
+          await waitFor(() =>
+            expect(updateFilters).toHaveBeenLastCalledWith(expected),
+          );
+        },
+      );
     });
 
     describe(`when there are some owned entities present`, () => {
