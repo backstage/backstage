@@ -249,7 +249,7 @@ export function createStatusCheckRouter(options: {
 }): Promise<express.Router>;
 
 // @public
-export class DatabaseManager {
+export class DatabaseManager implements LegacyRootDatabaseService {
   forPlugin(
     pluginId: string,
     deps?: {
@@ -554,6 +554,11 @@ export const legacyPlugin: (
     >;
   }>,
 ) => BackendFeature;
+
+// @public
+export type LegacyRootDatabaseService = {
+  forPlugin(pluginId: string): PluginDatabaseManager;
+};
 
 // @public
 export function loadBackendConfig(options: {
