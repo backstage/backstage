@@ -447,6 +447,7 @@
         "label": "Building Apps",
         "items": [
           "frontend-system/building-apps/index",
+          "frontend-system/building-apps/configuring-extensions",
           "frontend-system/building-apps/built-in-extensions",
           "frontend-system/building-apps/migrating"
         ]

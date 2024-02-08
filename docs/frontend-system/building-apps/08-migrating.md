@@ -157,7 +157,7 @@ Declaring features flags in the app is no longer supported, move these declarati
 
 ### `components`
 
-Many app components are now installed as extensions instead using `createComponentExtension`. See the section on [configuring app components](./index.md#TODO) for more information.
+Many app components are now installed as extensions instead using `createComponentExtension`. See the section on [configuring app components](./01-index.md#configure-your-app) for more information.
 
 The `Router` component is now a built-in extension that you can override using `createRouterExtension`.
 
@@ -433,7 +433,3 @@ export default app.createRoot(
 ```
 
 Any app root wrapper needs to be migrated to be an extension instead, using `createAppRootWrapperExtension`. Note that if you have multiple wrappers they must be completely independent of each other, the order in which the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
-
-## Tools
-
-- App Visualizer
