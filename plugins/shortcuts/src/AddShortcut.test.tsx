@@ -21,10 +21,10 @@ import { DefaultShortcutsApi, shortcutsApiRef } from './api';
 import {
   MockAnalyticsApi,
   MockStorageApi,
+  TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core-components';
-import { TestApiProvider } from '@backstage/test-utils';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 
 describe('AddShortcut', () => {
