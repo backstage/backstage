@@ -1,17 +1,9 @@
 # Knip report
 
-<<<<<<< HEAD
 ## Unused dependencies (4)
 
 | Name        | Location     |
 |:------------|:-------------|
-=======
-## Unused dependencies (5)
-
-| Name        | Location     |
-|:------------|:-------------|
-| yn          | package.json |
->>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 | cors        | package.json |
 | morgan      | package.json |
 | fs-extra    | package.json |

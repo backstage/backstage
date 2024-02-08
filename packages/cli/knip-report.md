@@ -33,18 +33,11 @@
 | @spotify/eslint-config-react     | package.json |
 | @typescript-eslint/eslint-plugin | package.json |
 
-<<<<<<< HEAD
 ## Unused devDependencies (18)
 
 | Name                                    | Location     |
 |:----------------------------------------|:-------------|
 | msw                                     | package.json |
-=======
-## Unused devDependencies (13)
-
-| Name                                    | Location     |
-|:----------------------------------------|:-------------|
->>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 | del                                     | package.json |
 | ts-node                                 | package.json |
 | nodemon                                 | package.json |
@@ -53,7 +46,6 @@
 | @backstage/theme                        | package.json |
 | @types/http-proxy                       | package.json |
 | @backstage/dev-utils                    | package.json |
-<<<<<<< HEAD
 | @backstage/test-utils                   | package.json |
 | @backstage/core-app-api                 | package.json |
 | @backstage/backend-common               | package.json |
@@ -61,11 +53,6 @@
 | @backstage/core-components              | package.json |
 | @types/terser-webpack-plugin            | package.json |
 | @backstage/backend-test-utils           | package.json |
-=======
-| @backstage/core-app-api                 | package.json |
-| @backstage/core-components              | package.json |
-| @types/terser-webpack-plugin            | package.json |
->>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 | @backstage/backend-plugin-api           | package.json |
 | @types/rollup-plugin-peer-deps-external | package.json |
 
@@ -78,7 +65,6 @@
 | @vitejs/plugin-react       | package.json |
 | vite-plugin-node-polyfills | package.json |
 
-<<<<<<< HEAD
 ## Unlisted dependencies (3)
 
 | Name               | Location                                   |
@@ -86,21 +72,4 @@
 | prettier           | src/commands/migrate/packageLintConfigs.ts |
 | react-dom/client   | src/lib/bundler/hasReactDomClient.ts       |
 | react/package.json | src/lib/bundler/server.ts                  |
-=======
-## Unlisted dependencies (11)
-
-| Name                              | Location                                                                                         |
-|:----------------------------------|:-------------------------------------------------------------------------------------------------|
-| prettier                          | src/commands/migrate/packageLintConfigs.ts                                                       |
-| react-dom/client                  | src/lib/bundler/hasReactDomClient.ts                                                             |
-| react/package.json                | src/lib/bundler/server.ts                                                                        |
-| supertest                         | templates/default-backend-plugin/src/service/router.test.ts                                      |
-| winston                           | templates/default-backend-plugin/src/service/router.ts                                           |
-| express-promise-router            | templates/default-backend-plugin/src/service/router.ts                                           |
-| react                             | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.test.tsx |
-| @testing-library/react            | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.test.tsx |
-| react                             | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.tsx      |
-| @material-ui/core                 | templates/default-react-plugin-package/src/components/ExampleComponent/ExampleComponent.tsx      |
-| @backstage/plugin-scaffolder-node | templates/scaffolder-module/src/actions/example/example.ts                                       |
->>>>>>> a99592ad081 (ci: introduce knip for checking unused packages)
 
