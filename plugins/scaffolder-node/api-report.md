@@ -30,6 +30,10 @@ export type ActionContext<
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
+  checkpoint?<U extends JsonValue>(
+    key: string,
+    fn: () => Promise<U>,
+  ): Promise<U>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],
@@ -59,6 +63,19 @@ export function addFiles(options: {
       };
   logger?: Logger | undefined;
 }): Promise<void>;
+
+// @public
+export type CheckpointRecord =
+  | {
+      key: string;
+      status: 'success';
+      value: JsonValue;
+    }
+  | {
+      key: string;
+      status: 'failed';
+      reason: string;
+    };
 
 // @public (undocumented)
 export function cloneRepo(options: {
@@ -345,6 +362,13 @@ export interface TaskContext {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
+  getCheckpoints?(): Promise<
+    | {
+        state: TaskState;
+      }
+    | undefined
+  >;
+  // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
   isDryRun?: boolean;
@@ -352,6 +376,10 @@ export interface TaskContext {
   secrets?: TaskSecrets;
   // (undocumented)
   spec: TaskSpec;
+  // (undocumented)
+  state?: TaskState;
+  // (undocumented)
+  updateCheckpoint?(options: CheckpointRecord): Promise<void>;
 }
 
 // @public
@@ -360,6 +388,19 @@ export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 // @public
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
+};
+
+// @public
+export type TaskState = {
+  [key: string]:
+    | {
+        status: 'failed';
+        reason: string;
+      }
+    | {
+        status: 'success';
+        value: JsonValue;
+      };
 };
 
 // @public

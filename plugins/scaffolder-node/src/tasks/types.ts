@@ -27,7 +27,7 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 /**
- * The record passed to {@link TaskBroker.updateCheckpoint?}
+ * The record passed to TaskBroker for updating a checkpoint.
  * Parameters to store the result of the executed checkpoint
  *
  * @public
@@ -45,7 +45,7 @@ export type CheckpointRecord =
     };
 
 /**
- * TaskState
+ * The state of all task's checkpoints
  *
  * @public
  */

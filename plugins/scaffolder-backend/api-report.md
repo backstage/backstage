@@ -9,6 +9,7 @@ import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucke
 import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { CatalogApi } from '@backstage/catalog-client';
+import { CheckpointRecord } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
@@ -47,6 +48,7 @@ import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TaskState } from '@backstage/plugin-scaffolder-node';
 import { TaskStatus as TaskStatus_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
@@ -359,6 +361,7 @@ export interface CurrentClaimedTask {
   createdBy?: string;
   secrets?: TaskSecrets_2;
   spec: TaskSpec;
+  state?: TaskState;
   taskId: string;
 }
 
@@ -403,6 +406,10 @@ export class DatabaseTaskStore implements TaskStore {
     tasks: SerializedTask_2[];
   }>;
   // (undocumented)
+  listCheckpoints({ taskId }: { taskId: string }): Promise<{
+    state: TaskState;
+  }>;
+  // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent_2[];
   }>;
@@ -417,6 +424,8 @@ export class DatabaseTaskStore implements TaskStore {
   recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<{
     ids: string[];
   }>;
+  // (undocumented)
+  saveCheckpoint(options: TaskStoreStateOptions): Promise<void>;
   // (undocumented)
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -519,11 +528,20 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
+  getCheckpoints?(): Promise<
+    | {
+        state: TaskState;
+      }
+    | undefined
+  >;
+  // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
   get secrets(): TaskSecrets_2 | undefined;
   // (undocumented)
   get spec(): TaskSpecV1beta3;
+  // (undocumented)
+  updateCheckpoint?(options: CheckpointRecord): Promise<void>;
 }
 
 // @public @deprecated (undocumented)
@@ -559,6 +577,10 @@ export interface TaskStore {
     tasks: SerializedTask[];
   }>;
   // (undocumented)
+  listCheckpoints?({ taskId }: { taskId: string }): Promise<{
+    state: TaskState;
+  }>;
+  // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
   }>;
@@ -572,6 +594,8 @@ export interface TaskStore {
   recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<{
     ids: string[];
   }>;
+  // (undocumented)
+  saveCheckpoint?(options: TaskStoreStateOptions): Promise<void>;
   // (undocumented)
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -608,6 +632,12 @@ export type TaskStoreRecoverTaskOptions = {
 // @public
 export type TaskStoreShutDownTaskOptions = {
   taskId: string;
+};
+
+// @public
+export type TaskStoreStateOptions = {
+  taskId: string;
+  state?: TaskState;
 };
 
 // @public

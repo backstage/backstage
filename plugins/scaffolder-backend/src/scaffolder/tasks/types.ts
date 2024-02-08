@@ -113,6 +113,11 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
   body: TBody;
 };
 
+/**
+ * TaskStoreStateOptions
+ *
+ * @public
+ */
 export type TaskStoreStateOptions = {
   taskId: string;
   state?: TaskState;
