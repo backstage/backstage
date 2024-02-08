@@ -17,7 +17,7 @@ A simple work around for this is to use a `Dockerfile` with a [multi-stage build
 
 The following two code snippets demonstrate this method. The first block of code is an example of a multi-stage build approach and should be added to a file called `Dockerfile.flightcontrol` in the `packages/backend` directory.
 
-```
+```dockerfile filename="Dockerfile.flightcontrol"
 # This dockerfile builds an image for the backend package.
 # It should be executed with the root of the repo as docker context.
 #
@@ -88,7 +88,7 @@ CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app
 
 In order to prevent the default `.dockerignore` file from preventing the copying of the relevant files into the first stage of our build, we need to override it with a custom one. This can also be added to the `packages/backend` directory, it should be called `Dockerfile.flightcontrol.dockerignore` and contain the following.
 
-```
+```ssh filename="Dockerfile.flightcontrol.dockerignore"
 .git
 .yarn/cache
 .yarn/install-state.gz
@@ -107,7 +107,7 @@ When creating a database via the Flightcontrol dashboard, we are given an enviro
 
 Within your Backstage project create a new file called `app-config.production.flightcontrol.yaml`. Add the following configuration to it:
 
-```
+```yaml filename="app-config.production.flightcontrol.yaml"
 app:
   # Should be the same as backend.baseUrl when using the `app-backend` plugin.
   baseUrl: http://localhost:7007
