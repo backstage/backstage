@@ -11653,11 +11653,11 @@ __metadata:
   linkType: hard
 
 "@google-cloud/container@npm:^5.0.0":
-  version: 5.5.0
-  resolution: "@google-cloud/container@npm:5.5.0"
+  version: 5.6.0
+  resolution: "@google-cloud/container@npm:5.6.0"
   dependencies:
     google-gax: ^4.0.3
-  checksum: e88dd56e6911d3bdbb3f63d91536636f9018d421a5e6d3ab8f002c62f1c46d488e83265406c23fe02ae10edab0fc55b32bef726795e04dd52e0b38889d323dd0
+  checksum: 3222a86659e250e82694da16d0efa67855b905b931c08901d6aff0daf3d41b300cea3937342f3f6e9995f9dacf3a61914c74d45b2dea627aceedf87415b0aa3e
   languageName: node
   linkType: hard
 
