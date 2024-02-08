@@ -58,7 +58,7 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@octokit/graphql": "^5.0.0",
     "@octokit/rest": "^19.0.3",
-    "git-url-parse": "^13.0.0",
+    "git-url-parse": "^14.0.0",
     "lodash": "^4.17.21",
     "minimatch": "^5.1.2",
     "node-fetch": "^2.6.7",
