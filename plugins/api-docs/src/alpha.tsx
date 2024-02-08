@@ -46,13 +46,13 @@ function ApiIcon() {
   return <KindApiSystemIcon />;
 }
 
-const ApiDocsNavItem = createNavItemExtension({
+const apiDocsNavItem = createNavItemExtension({
   title: 'APIs',
   routeRef: convertLegacyRouteRef(rootRoute),
   icon: () => compatWrapper(<ApiIcon />),
 });
 
-const ApiDocsConfigApi = createApiExtension({
+const apiDocsConfigApi = createApiExtension({
   factory: createApiFactory({
     api: apiDocsConfigRef,
     deps: {},
@@ -67,7 +67,7 @@ const ApiDocsConfigApi = createApiExtension({
   }),
 });
 
-const ApiDocsExplorerPage = createPageExtension({
+const apiDocsExplorerPage = createPageExtension({
   defaultPath: '/api-docs',
   routeRef: convertLegacyRouteRef(rootRoute),
   // Mapping DefaultApiExplorerPageProps to config
@@ -88,22 +88,25 @@ const ApiDocsExplorerPage = createPageExtension({
     ),
 });
 
-const ApiDocsHasApisEntityCard = createEntityCardExtension({
+const apiDocsHasApisEntityCard = createEntityCardExtension({
   name: 'has-apis',
   // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
   // and columns are too complex to map to zod
-  loader: () => import('./components/ApisCards').then(m => <m.HasApisCard />),
+  loader: () =>
+    import('./components/ApisCards').then(m =>
+      compatWrapper(<m.HasApisCard />),
+    ),
 });
 
-const ApiDocsDefinitionEntityCard = createEntityCardExtension({
-  name: 'api-definition',
+const apiDocsDefinitionEntityCard = createEntityCardExtension({
+  name: 'definition',
   loader: () =>
     import('./components/ApiDefinitionCard').then(m =>
       compatWrapper(<m.ApiDefinitionCard />),
     ),
 });
 
-const ApiDocsConsumedApisEntityCard = createEntityCardExtension({
+const apiDocsConsumedApisEntityCard = createEntityCardExtension({
   name: 'consumed-apis',
   // Ommiting configSchema for now
   // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
@@ -114,7 +117,7 @@ const ApiDocsConsumedApisEntityCard = createEntityCardExtension({
     ),
 });
 
-const ApiDocsProvidedApisEntityCard = createEntityCardExtension({
+const apiDocsProvidedApisEntityCard = createEntityCardExtension({
   name: 'provided-apis',
   // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
   // and columns are too complex to map to zod
@@ -124,7 +127,7 @@ const ApiDocsProvidedApisEntityCard = createEntityCardExtension({
     ),
 });
 
-const ApiDocsConsumingComponentsEntityCard = createEntityCardExtension({
+const apiDocsConsumingComponentsEntityCard = createEntityCardExtension({
   name: 'consuming-components',
   // Ommiting configSchema for now
   // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
@@ -134,7 +137,7 @@ const ApiDocsConsumingComponentsEntityCard = createEntityCardExtension({
     ),
 });
 
-const ApiDocsProvidingComponentsEntityCard = createEntityCardExtension({
+const apiDocsProvidingComponentsEntityCard = createEntityCardExtension({
   name: 'providing-components',
   // Ommiting configSchema for now
   // we are skipping variants, see: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
@@ -144,7 +147,7 @@ const ApiDocsProvidingComponentsEntityCard = createEntityCardExtension({
     ),
 });
 
-const ApiDocsDefinitionEntityContent = createEntityContentExtension({
+const apiDocsDefinitionEntityContent = createEntityContentExtension({
   name: 'definition',
   defaultPath: '/defintion',
   defaultTitle: 'Definition',
@@ -161,7 +164,7 @@ const ApiDocsDefinitionEntityContent = createEntityContentExtension({
     ),
 });
 
-const ApiDocsApisEntityContent = createEntityContentExtension({
+const apiDocsApisEntityContent = createEntityContentExtension({
   name: 'apis',
   defaultPath: '/apis',
   defaultTitle: 'APIs',
@@ -190,16 +193,16 @@ export default createPlugin({
     registerApi: convertLegacyRouteRef(registerComponentRouteRef),
   },
   extensions: [
-    ApiDocsNavItem,
-    ApiDocsConfigApi,
-    ApiDocsExplorerPage,
-    ApiDocsHasApisEntityCard,
-    ApiDocsDefinitionEntityCard,
-    ApiDocsProvidedApisEntityCard,
-    ApiDocsConsumedApisEntityCard,
-    ApiDocsConsumingComponentsEntityCard,
-    ApiDocsProvidingComponentsEntityCard,
-    ApiDocsDefinitionEntityContent,
-    ApiDocsApisEntityContent,
+    apiDocsNavItem,
+    apiDocsConfigApi,
+    apiDocsExplorerPage,
+    apiDocsHasApisEntityCard,
+    apiDocsDefinitionEntityCard,
+    apiDocsProvidedApisEntityCard,
+    apiDocsConsumedApisEntityCard,
+    apiDocsConsumingComponentsEntityCard,
+    apiDocsProvidingComponentsEntityCard,
+    apiDocsDefinitionEntityContent,
+    apiDocsApisEntityContent,
   ],
 });

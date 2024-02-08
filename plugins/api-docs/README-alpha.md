@@ -406,9 +406,9 @@ For more information about where to place extension overrides, see the official 
 
 An Entity Card extension that renders an entity api definition widget.
 
-| kind          | Namespace  | Name             | Id                                    |
-| ------------- | ---------- | ---------------- | ------------------------------------- |
-| `entity-card` | `api-docs` | `api-definition` | `entity-card:api-docs/api-definition` |
+| kind          | Namespace  | Name         | Id                                |
+| ------------- | ---------- | ------------ | --------------------------------- |
+| `entity-card` | `api-docs` | `definition` | `entity-card:api-docs/definition` |
 
 ###### Disable
 
@@ -416,15 +416,15 @@ This card is disabled by default when you install the `api-docs` plugin, but to 
 
 ```yaml
 # app-config.yaml
-# example disabling the api definition entity card extension
+# example disabling the definition entity card extension
 app:
   extensions:
     # this is the extension id and it follows the naming pattern bellow:
     # <extension-kind>/<plugin-namespace>:<extension-name>
     # use false as value for disabling the extension and true for enabling
-    - entity-card:api-docs/api-definition: false
+    - entity-card:api-docs/definition: false
     # or
-    # - entity-card:api-docs/api-definition:
+    # - entity-card:api-docs/definition:
     #   - config:
     #       # set 'true' for enabling it again
     #       disabled: true
@@ -433,7 +433,7 @@ app:
 ###### Config
 
 For now there is only one configuration available for this entity cards extension, which is setting an entity filter that determines when the cards should be displayed on the entity page.
-Here is an example showing the `api-definition` overview cards only for entities of kind component:
+Here is an example showing the `definition` overview cards only for entities of kind component:
 
 ```yaml
 # app-config.yaml
@@ -442,7 +442,7 @@ app:
   extensions:
     # this is the extension id and it follows the naming pattern bellow:
     # <extension-kind>/<plugin-namespace>:<extension-name>
-    - entity-card:api-docs/api-definition:
+    - entity-card:api-docs/definition:
         config:
           # For more information about entity cards filters, check out this pull request
           # https://github.com/backstage/backstage/pull/21480
@@ -460,9 +460,9 @@ import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha
 export default createExtensionOverrides({
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'api-definition' entity card extension provided by the 'api-docs' plugin
+      // These namespace and name necessary so the system knows that this extension will override the default 'definition' entity card extension provided by the 'api-docs' plugin
       namespace: 'api-docs',
-      name: 'api-definition',
+      name: 'definition',
       // Returing a custom card component
       loader: () =>
         import('./components').then(m => <m.MyCustomApiDefinitionEntityCard />),
