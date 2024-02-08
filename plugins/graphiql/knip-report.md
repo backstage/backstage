@@ -6,13 +6,10 @@
 |:-----------|:-------------|
 | graphql-ws | package.json |
 
-## Unused devDependencies (5)
+## Unused devDependencies (2)
 
-| Name                   | Location     |
-|:-----------------------|:-------------|
-| @backstage/cli         | package.json |
-| @types/codemirror      | package.json |
-| @testing-library/dom   | package.json |
-| @backstage/test-utils  | package.json |
-| @testing-library/react | package.json |
+| Name                 | Location     |
+|:---------------------|:-------------|
+| @types/codemirror    | package.json |
+| @testing-library/dom | package.json |
 

@@ -1,10 +1,8 @@
 # Knip report
 
-## Unused devDependencies (3)
+## Unused devDependencies (1)
 
-| Name                          | Location     |
-|:------------------------------|:-------------|
-| openapi-types                 | package.json |
-| @backstage/cli                | package.json |
-| @backstage/backend-test-utils | package.json |
+| Name          | Location     |
+|:--------------|:-------------|
+| openapi-types | package.json |
 

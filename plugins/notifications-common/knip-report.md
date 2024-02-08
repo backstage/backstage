@@ -6,9 +6,3 @@
 |:-------------------|:-------------|
 | @material-ui/icons | package.json |
 
-## Unused devDependencies (1)
-
-| Name           | Location     |
-|:---------------|:-------------|
-| @backstage/cli | package.json |
-

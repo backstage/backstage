@@ -9,16 +9,10 @@
 | uuid   | package.json |
 | morgan | package.json |
 
-## Unused devDependencies (8)
+## Unused devDependencies (2)
 
-| Name                          | Location     |
-|:------------------------------|:-------------|
-| msw                           | package.json |
-| supertest                     | package.json |
-| @types/yup                    | package.json |
-| @types/uuid                   | package.json |
-| @backstage/cli                | package.json |
-| @types/supertest              | package.json |
-| @backstage/config-loader      | package.json |
-| @backstage/backend-test-utils | package.json |
+| Name        | Location     |
+|:------------|:-------------|
+| @types/yup  | package.json |
+| @types/uuid | package.json |
 

@@ -60,10 +60,13 @@ async function generateKnipConfig({ packageDir }: KnipConfigOptions) {
     entry: [
       'dev/index.{ts,tsx}',
       'src/index.{ts,tsx}',
+      'src/alpha.{ts,tsx}',
       'src/routes.ts',
       'src/run.ts',
     ],
-    jest: { entry: 'src/setupTests.ts' },
+    jest: {
+      entry: ['src/setupTests.ts', '**/*.test.{ts,tsx}'],
+    },
     storybook: { entry: 'src/components/**/*.stories.tsx' },
     ignore: [
       '.eslintrc.js',
@@ -72,6 +75,9 @@ async function generateKnipConfig({ packageDir }: KnipConfigOptions) {
       'node_modules/**',
       'dist/**',
       '{fixtures,migrations,templates}/**',
+    ],
+    ignoreDependencies: [
+      '@backstage/cli', // everything depends on this for its package.json commands
     ],
   };
   await fs.writeFile(

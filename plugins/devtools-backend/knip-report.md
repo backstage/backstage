@@ -1,11 +1,8 @@
 # Knip report
 
-## Unused devDependencies (4)
+## Unused devDependencies (1)
 
-| Name             | Location     |
-|:-----------------|:-------------|
-| supertest        | package.json |
-| @backstage/cli   | package.json |
-| @types/minimist  | package.json |
-| @types/supertest | package.json |
+| Name            | Location     |
+|:----------------|:-------------|
+| @types/minimist | package.json |
 

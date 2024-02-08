@@ -11,12 +11,11 @@
 | @stoplight/spectral-functions       | package.json |
 | @openapitools/openapi-generator-cli | package.json |
 
-## Unused devDependencies (2)
+## Unused devDependencies (1)
 
-| Name                          | Location     |
-|:------------------------------|:-------------|
-| @types/is-glob                | package.json |
-| @backstage/backend-test-utils | package.json |
+| Name           | Location     |
+|:---------------|:-------------|
+| @types/is-glob | package.json |
 
 ## Referenced optional peerDependencies (1)
 

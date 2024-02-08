@@ -17,11 +17,10 @@
 | @backstage/plugin-azure-sites-common              | package.json |
 | @backstage/plugin-scaffolder-backend-module-rails | package.json |
 
-## Unused devDependencies (3)
+## Unused devDependencies (2)
 
 | Name                             | Location     |
 |:---------------------------------|:-------------|
 | @types/luxon                     | package.json |
-| @backstage/cli                   | package.json |
 | @types/express-serve-static-core | package.json |
 

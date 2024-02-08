@@ -17,14 +17,11 @@
 | google-auth-library     | package.json |
 | passport-google-oauth20 | package.json |
 
-## Unused devDependencies (10)
+## Unused devDependencies (7)
 
 | Name                           | Location     |
 |:-------------------------------|:-------------|
-| msw                            | package.json |
-| supertest                      | package.json |
 | @types/xml2js                  | package.json |
-| @backstage/cli                 | package.json |
 | @types/body-parser             | package.json |
 | @types/passport-saml           | package.json |
 | @types/passport-github2        | package.json |

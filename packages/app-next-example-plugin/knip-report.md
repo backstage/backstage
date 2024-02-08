@@ -1,10 +1,9 @@
 # Knip report
 
-## Unused devDependencies (3)
+## Unused devDependencies (2)
 
-| Name           | Location     |
-|:---------------|:-------------|
-| msw            | package.json |
-| cross-fetch    | package.json |
-| @backstage/cli | package.json |
+| Name        | Location     |
+|:------------|:-------------|
+| msw         | package.json |
+| cross-fetch | package.json |
 

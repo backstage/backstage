@@ -12,9 +12,3 @@
 | @backstage/plugin-search-backend-node            | package.json |
 | @backstage/plugin-catalog-backend-module-openapi | package.json |
 
-## Unused devDependencies (1)
-
-| Name           | Location     |
-|:---------------|:-------------|
-| @backstage/cli | package.json |
-

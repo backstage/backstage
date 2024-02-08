@@ -8,14 +8,3 @@
 | @material-ui/core          | package.json |
 | @backstage/core-components | package.json |
 
-## Unused devDependencies (6)
-
-| Name                           | Location     |
-|:-------------------------------|:-------------|
-| history                        | package.json |
-| @backstage/cli                 | package.json |
-| @backstage/test-utils          | package.json |
-| @testing-library/react         | package.json |
-| @backstage/frontend-app-api    | package.json |
-| @backstage/frontend-test-utils | package.json |
-

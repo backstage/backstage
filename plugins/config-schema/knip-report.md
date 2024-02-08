@@ -1,10 +1,8 @@
 # Knip report
 
-## Unused devDependencies (3)
+## Unused devDependencies (1)
 
-| Name                   | Location     |
-|:-----------------------|:-------------|
-| @backstage/cli         | package.json |
-| @testing-library/dom   | package.json |
-| @testing-library/react | package.json |
+| Name                 | Location     |
+|:---------------------|:-------------|
+| @testing-library/dom | package.json |
 

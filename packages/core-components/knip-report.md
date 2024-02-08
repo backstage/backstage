@@ -1,31 +1,26 @@
 # Knip report
 
-## Unused dependencies (4)
+## Unused dependencies (2)
 
-| Name              | Location     |
-|:------------------|:-------------|
-| linkifyjs         | package.json |
-| @date-io/core     | package.json |
-| zen-observable    | package.json |
-| @backstage/config | package.json |
+| Name          | Location     |
+|:--------------|:-------------|
+| linkifyjs     | package.json |
+| @date-io/core | package.json |
 
-## Unused devDependencies (9)
+## Unused devDependencies (4)
 
-| Name                        | Location     |
-|:----------------------------|:-------------|
-| msw                         | package.json |
-| cross-fetch                 | package.json |
-| @backstage/cli              | package.json |
-| @testing-library/dom        | package.json |
-| @types/zen-observable       | package.json |
-| @types/google-protobuf      | package.json |
-| @testing-library/react      | package.json |
-| @backstage/app-defaults     | package.json |
-| @testing-library/user-event | package.json |
+| Name                    | Location     |
+|:------------------------|:-------------|
+| cross-fetch             | package.json |
+| @testing-library/dom    | package.json |
+| @types/google-protobuf  | package.json |
+| @backstage/app-defaults | package.json |
 
-## Unlisted dependencies (1)
+## Unlisted dependencies (3)
 
-| Name    | Location                               |
-|:--------|:---------------------------------------|
-| csstype | src/components/Lifecycle/Lifecycle.tsx |
+| Name              | Location                                                |
+|:------------------|:--------------------------------------------------------|
+| csstype           | src/components/Lifecycle/Lifecycle.tsx                  |
+| copy-to-clipboard | src/components/LogViewer/RealLogViewer.test.tsx         |
+| copy-to-clipboard | src/components/LogViewer/useLogViewerSelection.test.tsx |
 

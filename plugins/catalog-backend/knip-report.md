@@ -7,14 +7,9 @@
 | node-fetch            | package.json |
 | @backstage/repo-tools | package.json |
 
-## Unused devDependencies (6)
+## Unused devDependencies (1)
 
-| Name             | Location     |
-|:-----------------|:-------------|
-| msw              | package.json |
-| supertest        | package.json |
-| better-sqlite3   | package.json |
-| @backstage/cli   | package.json |
-| wait-for-expect  | package.json |
-| @types/supertest | package.json |
+| Name           | Location     |
+|:---------------|:-------------|
+| better-sqlite3 | package.json |
 
