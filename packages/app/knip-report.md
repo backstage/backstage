@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (15)
+## Unused dependencies (14)
 
 | Name                              | Location     | Severity |
 | :-------------------------------- | :----------- | :------- |
@@ -11,7 +11,6 @@
 | @backstage/plugin-airbrake        | package.json | error    |
 | vite-plugin-node-polyfills        | package.json | error    |
 | @vitejs/plugin-react              | package.json | error    |
-| @backstage/theme                  | package.json | error    |
 | @material-ui/lab                  | package.json | error    |
 | vite-plugin-html                  | package.json | error    |
 | zen-observable                    | package.json | error    |

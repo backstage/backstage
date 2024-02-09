@@ -1,10 +1,9 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (1)
 
 | Name             | Location     | Severity |
 | :--------------- | :----------- | :------- |
-| @backstage/theme | package.json | error    |
 | @material-ui/lab | package.json | error    |
 
 ## Unused devDependencies (3)

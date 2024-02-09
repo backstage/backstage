@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (64)
+## Unused dependencies (63)
 
 | Name                                             | Location     | Severity |
 | :----------------------------------------------- | :----------- | :------- |
@@ -61,7 +61,6 @@
 | @backstage/plugin-todo                           | package.json | error    |
 | @backstage/plugin-adr                            | package.json | error    |
 | @backstage/plugin-org                            | package.json | error    |
-| @backstage/theme                                 | package.json | error    |
 | @material-ui/lab                                 | package.json | error    |
 | zen-observable                                   | package.json | error    |
 | @octokit/rest                                    | package.json | error    |

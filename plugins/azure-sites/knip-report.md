@@ -1,11 +1,5 @@
 # Knip report
 
-## Unused dependencies (1)
-
-| Name             | Location     | Severity |
-| :--------------- | :----------- | :------- |
-| @backstage/theme | package.json | error    |
-
 ## Unused devDependencies (2)
 
 | Name                   | Location     | Severity |

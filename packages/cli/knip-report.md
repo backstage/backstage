@@ -33,7 +33,7 @@
 | glob                             | package.json | error    |
 | util                             | package.json | error    |
 
-## Unused devDependencies (13)
+## Unused devDependencies (12)
 
 | Name                                    | Location     | Severity |
 | :-------------------------------------- | :----------- | :------- |
@@ -44,7 +44,6 @@
 | @backstage/core-app-api                 | package.json | error    |
 | @backstage/dev-utils                    | package.json | error    |
 | @types/http-proxy                       | package.json | error    |
-| @backstage/theme                        | package.json | error    |
 | @types/svgo                             | package.json | error    |
 | @types/ejs                              | package.json | error    |
 | nodemon                                 | package.json | error    |
