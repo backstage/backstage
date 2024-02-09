@@ -60,6 +60,7 @@
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.6",
     "compression": "^1.7.4",
+    "cookie": "^0.6.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
