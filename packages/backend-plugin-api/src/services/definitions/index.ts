@@ -29,7 +29,10 @@ export type {
 export type { RootConfigService } from './RootConfigService';
 export type { DatabaseService } from './DatabaseService';
 export type { DiscoveryService } from './DiscoveryService';
-export type { HttpRouterService } from './HttpRouterService';
+export type {
+  HttpRouterService,
+  HttpRouterServiceAuthPolicy,
+} from './HttpRouterService';
 export type {
   HttpAuthService,
   BackstageCredentialTypes,
