@@ -11,7 +11,7 @@ Before you begin, make sure you have a [Flightcontrol account](https://app.fligh
 
 # Creating a Dockerfile and .dockerignore
 
-Once your Flightcontrol account is setup, you will need to prepare a `Dockerfile` and `.dockerignore` to deploy Backstage to your target AWS environment. The standard `Dockerfile` included in the Backstage repository assumes that the `skeleton.tar.gz` and `bundle.tar.gz` already exist. When integrating Flightcontrol directly with a GitHub repository, changes to files within this repository will automatically start a Flightcontrol deployment, unless you have configured deployments via a webbook. Regardless of which method you have chosen, when Flightcontrol starts a deployment process it will pull all files directly from the repository, and not from a GitHub runner or other location. As Flightcontrol does not contain CI steps this results in the zip files having to be commited to the repository in order to be available for the `Dockerfile` to copy.
+Once your Flightcontrol account is setup, you will need to prepare a `Dockerfile` and `.dockerignore` to deploy Backstage to your target AWS environment. The standard `Dockerfile` included in the Backstage repository assumes that the `skeleton.tar.gz` and `bundle.tar.gz` already exist. When integrating Flightcontrol directly with a GitHub repository, changes to files within this repository will automatically start a Flightcontrol deployment, unless you have configured deployments via a webhook. Regardless of which method you have chosen, when Flightcontrol starts a deployment process it will pull all files directly from the repository, and not from a GitHub runner or other location. As Flightcontrol does not contain CI steps this results in the zip files having to be committed to the repository in order to be available for the `Dockerfile` to copy.
 
 A simple work around for this is to use a `Dockerfile` with a [multi-stage build](https://docs.docker.com/build/building/multi-stage/). Using this approach we can create our zip files in the first build stage, and copy them into the second stage ready for deployment.
 
@@ -158,7 +158,7 @@ Make a note of the environment variable used in the `connectionString`. In our e
 
 # Deployment Via Dashboard
 
-Ensure that custom `Dockerfile.flightcontrol`, `Dockerfile.flightcontrol.dockerignore` and `app-config.production.flightcontrol.yaml` have been commited to your repository before following the next steps.
+Ensure that custom `Dockerfile.flightcontrol`, `Dockerfile.flightcontrol.dockerignore` and `app-config.production.flightcontrol.yaml` have been committed to your repository before following the next steps.
 
 Login into the Flightcontrol Dashboard and complete each of the following:
 
