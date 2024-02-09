@@ -26,7 +26,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { NotAllowedError } from '@backstage/errors';
 import { parse as parseCookie } from 'cookie';
-import { Handler, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { decodeJwt } from 'jose';
 import { toInternalBackstageCredentials } from '../auth/authServiceFactory';
 
@@ -56,12 +56,13 @@ function getTokenFromRequest(req: Request) {
 }
 
 const credentialsSymbol = Symbol('backstage-credentials');
-// TODO: This is temporary and should be removed once we have proper cookie handling in place
-const isCookieSymbol = Symbol('backstage-is-cookie-credentials');
 
 type RequestWithCredentials = Request & {
-  [credentialsSymbol]?: BackstageCredentials | BackstageUnauthorizedCredentials;
-  [isCookieSymbol]?: boolean;
+  [credentialsSymbol]?: Promise<{
+    credentials: BackstageCredentials | BackstageUnauthorizedCredentials;
+    // TODO: This is temporary and should be removed once we have proper cookie handling in place
+    isCookie: boolean;
+  }>;
 };
 
 function createUnauthorizedCredentials(): BackstageUnauthorizedCredentials {
@@ -78,22 +79,17 @@ class DefaultHttpAuthService implements HttpAuthService {
     private readonly pluginId: string,
   ) {}
 
-  createHttpPluginRouterMiddleware(): Handler {
-    return async (req: RequestWithCredentials, _res, next) => {
-      try {
-        const { token, isCookie } = getTokenFromRequest(req);
-        // TODO: Is this where we match against configured rules?
-        if (!token) {
-          req[credentialsSymbol] = createUnauthorizedCredentials();
-        } else {
-          req[credentialsSymbol] = await this.auth.authenticate(token);
-          req[isCookieSymbol] = isCookie;
-        }
-        next();
-      } catch (e) {
-        next(e);
-      }
-    };
+  async #getCredentials(req: Request) {
+    const { token, isCookie } = getTokenFromRequest(req);
+    // TODO: Is this where we match against configured rules?
+    if (!token) {
+      return { credentials: createUnauthorizedCredentials(), isCookie };
+    }
+    return { credentials: await this.auth.authenticate(token), isCookie };
+  }
+
+  async #getCredentialsCached(req: /*  */ RequestWithCredentials) {
+    return (req[credentialsSymbol] ??= this.#getCredentials(req));
   }
 
   async credentials<TAllowed extends keyof BackstageCredentialTypes>(
@@ -102,12 +98,9 @@ class DefaultHttpAuthService implements HttpAuthService {
       allow: TAllowed[];
     },
   ): Promise<BackstageCredentialTypes[TAllowed]> {
-    const credentials = req[credentialsSymbol];
-    if (!credentials) {
-      throw new Error('Internal error, no credentials found on request');
-    }
+    const { credentials, isCookie } = await this.#getCredentialsCached(req);
 
-    if (credentials.type === 'user' && req[isCookieSymbol]) {
+    if (credentials.type === 'user' && isCookie) {
       if (options.allow.includes('user-cookie' as TAllowed)) {
         return credentials as BackstageCredentialTypes[TAllowed];
       }
