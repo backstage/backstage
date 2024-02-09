@@ -14,6 +14,8 @@ import { Knex } from 'knex';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Readable } from 'stream';
+import { Request as Request_2 } from 'express';
+import { Response as Response_2 } from 'express';
 
 // @public (undocumented)
 export interface AuthService {
@@ -92,10 +94,24 @@ export type BackstageCredentials =
   | BackstageServiceCredentials;
 
 // @public (undocumented)
+export type BackstageCredentialTypes = {
+  user: BackstageUserCredentials;
+  'user-cookie': BackstageUserCredentials;
+  service: BackstageServiceCredentials;
+  unauthorized: BackstageUnauthorizedCredentials;
+};
+
+// @public (undocumented)
 export type BackstageServiceCredentials = {
   $$type: '@backstage/BackstageCredentials';
   type: 'service';
   subject: string;
+};
+
+// @public (undocumented)
+export type BackstageUnauthorizedCredentials = {
+  $$type: '@backstage/BackstageCredentials';
+  type: 'unauthorized';
 };
 
 // @public (undocumented)
@@ -134,6 +150,7 @@ export namespace coreServices {
   const rootConfig: ServiceRef<RootConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
   const discovery: ServiceRef<DiscoveryService, 'plugin'>;
+  const httpAuth: ServiceRef<HttpAuthService, 'plugin'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin'>;
   const logger: ServiceRef<LoggerService, 'plugin'>;
@@ -250,6 +267,25 @@ export type ExtensionPoint<T> = {
 // @public
 export interface ExtensionPointConfig {
   id: string;
+}
+
+// @public (undocumented)
+export interface HttpAuthService {
+  // (undocumented)
+  createHttpPluginRouterMiddleware(): Handler;
+  // (undocumented)
+  credentials<TAllowed extends keyof BackstageCredentialTypes>(
+    req: Request_2,
+    options: {
+      allow: Array<TAllowed>;
+    },
+  ): Promise<BackstageCredentialTypes[TAllowed]>;
+  // (undocumented)
+  issueUserCookie(res: Response_2): Promise<void>;
+  // (undocumented)
+  requestHeaders(options?: {
+    forward?: BackstageCredentials;
+  }): Promise<Record<string, string>>;
 }
 
 // @public (undocumented)

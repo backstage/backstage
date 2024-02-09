@@ -68,6 +68,15 @@ export namespace coreServices {
   >({ id: 'core.discovery' });
 
   /**
+   * The service reference for the plugin scoped {@link HttpAuthService}.
+   *
+   * @public
+   */
+  export const httpAuth = createServiceRef<
+    import('./HttpAuthService').HttpAuthService
+  >({ id: 'core.httpAuth' });
+
+  /**
    * The service reference for the plugin scoped {@link HttpRouterService}.
    *
    * @public

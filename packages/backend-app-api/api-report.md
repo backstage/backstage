@@ -19,6 +19,7 @@ import { Format } from 'logform';
 import { Handler } from 'express';
 import { HelmetOptions } from 'helmet';
 import * as http from 'http';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IdentityService } from '@backstage/backend-plugin-api';
@@ -147,6 +148,12 @@ export class HostDiscovery implements DiscoveryService {
   // (undocumented)
   getExternalBaseUrl(pluginId: string): Promise<string>;
 }
+
+// @public (undocumented)
+export const httpAuthServiceFactory: () => ServiceFactory<
+  HttpAuthService,
+  'plugin'
+>;
 
 // @public (undocumented)
 export interface HttpRouterFactoryOptions {

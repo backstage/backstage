@@ -17,10 +17,12 @@
 import {
   coreServices,
   createServiceFactory,
+  HttpRouterServiceAuthPolicy,
 } from '@backstage/backend-plugin-api';
 import { Handler } from 'express';
 import PromiseRouter from 'express-promise-router';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
+import { createCredentialsBarrier } from './createCredentialsBarrier';
 
 /**
  * @public
@@ -40,19 +42,27 @@ export const httpRouterServiceFactory = createServiceFactory(
       plugin: coreServices.pluginMetadata,
       lifecycle: coreServices.lifecycle,
       rootHttpRouter: coreServices.rootHttpRouter,
+      httpAuth: coreServices.httpAuth,
     },
-    async factory({ plugin, rootHttpRouter, lifecycle }) {
+    async factory({ httpAuth, plugin, rootHttpRouter, lifecycle }) {
       const getPath = options?.getPath ?? (id => `/api/${id}`);
       const path = getPath(plugin.getId());
 
       const router = PromiseRouter();
       rootHttpRouter.use(path, router);
 
+      const credentialsBarrier = createCredentialsBarrier({ httpAuth });
+
       router.use(createLifecycleMiddleware({ lifecycle }));
+      router.use(httpAuth.createHttpPluginRouterMiddleware());
+      router.use(credentialsBarrier.middleware);
 
       return {
-        use(handler: Handler) {
+        use(handler: Handler): void {
           router.use(handler);
+        },
+        addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
+          credentialsBarrier.addAuthPolicy(policy);
         },
       };
     },

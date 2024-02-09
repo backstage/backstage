@@ -31,6 +31,11 @@ export type { DatabaseService } from './DatabaseService';
 export type { DiscoveryService } from './DiscoveryService';
 export type { HttpRouterService } from './HttpRouterService';
 export type {
+  HttpAuthService,
+  BackstageCredentialTypes,
+  BackstageUnauthorizedCredentials,
+} from './HttpAuthService';
+export type {
   LifecycleService,
   LifecycleServiceStartupHook,
   LifecycleServiceStartupOptions,
