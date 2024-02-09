@@ -42,6 +42,7 @@ import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
 import { UrlReader } from '@backstage/backend-common';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export const authServiceFactory: () => ServiceFactory<AuthService, 'plugin'>;
@@ -332,6 +333,12 @@ export const tokenManagerServiceFactory: () => ServiceFactory<
 
 // @public (undocumented)
 export const urlReaderServiceFactory: () => ServiceFactory<UrlReader, 'plugin'>;
+
+// @public (undocumented)
+export const userInfoServiceFactory: () => ServiceFactory<
+  UserInfoService,
+  'plugin'
+>;
 
 // @public
 export class WinstonLogger implements RootLoggerService {

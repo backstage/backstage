@@ -32,6 +32,17 @@ export namespace coreServices {
   });
 
   /**
+   * The service reference for the plugin scoped {@link UserInfoService}.
+   *
+   * @public
+   */
+  export const userInfo = createServiceRef<
+    import('./UserInfoService').UserInfoService
+  >({
+    id: 'core.userInfo',
+  });
+
+  /**
    * The service reference for the plugin scoped {@link CacheService}.
    *
    * @public
