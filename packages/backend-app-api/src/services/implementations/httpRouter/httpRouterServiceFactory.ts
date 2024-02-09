@@ -54,7 +54,6 @@ export const httpRouterServiceFactory = createServiceFactory(
       const credentialsBarrier = createCredentialsBarrier({ httpAuth });
 
       router.use(createLifecycleMiddleware({ lifecycle }));
-      router.use(httpAuth.createHttpPluginRouterMiddleware());
       router.use(credentialsBarrier.middleware);
 
       return {

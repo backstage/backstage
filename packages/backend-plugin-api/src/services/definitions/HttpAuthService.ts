@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Request, Response, Handler } from 'express';
+import { Request, Response } from 'express';
 import {
   BackstageUserCredentials,
   BackstageServiceCredentials,
@@ -38,8 +38,6 @@ export type BackstageCredentialTypes = {
 
 /** @public */
 export interface HttpAuthService {
-  createHttpPluginRouterMiddleware(): Handler;
-
   credentials<TAllowed extends keyof BackstageCredentialTypes>(
     req: Request,
     options: {
