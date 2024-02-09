@@ -84,7 +84,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "fs-extra": "10.1.0",
-    "git-url-parse": "^13.0.0",
+    "git-url-parse": "^14.0.0",
     "helmet": "^6.0.0",
     "isomorphic-git": "^1.23.0",
     "jose": "^4.6.0",

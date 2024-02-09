@@ -46,7 +46,7 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "git-url-parse": "^13.0.0",
+    "git-url-parse": "^14.0.0",
     "luxon": "^3.0.0",
     "react-use": "^17.2.4"
   },
