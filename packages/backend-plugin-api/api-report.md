@@ -121,6 +121,14 @@ export type BackstageUserCredentials = {
   userEntityRef: string;
 };
 
+// @public (undocumented)
+export interface BackstageUserInfo {
+  // (undocumented)
+  ownershipEntityRefs: string[];
+  // (undocumented)
+  userEntityRef: string;
+}
+
 // @public
 export interface CacheService {
   delete(key: string): Promise<void>;
@@ -146,6 +154,7 @@ export type CacheServiceSetOptions = {
 // @public
 export namespace coreServices {
   const auth: ServiceRef<AuthService, 'plugin'>;
+  const userInfo: ServiceRef<UserInfoService, 'plugin'>;
   const cache: ServiceRef<CacheService, 'plugin'>;
   const rootConfig: ServiceRef<RootConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
@@ -523,5 +532,13 @@ export interface UrlReaderService {
   readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+}
+
+// @public (undocumented)
+export interface UserInfoService {
+  // (undocumented)
+  getUserInfo(
+    credentials: BackstageUserCredentials,
+  ): Promise<BackstageUserInfo>;
 }
 ```

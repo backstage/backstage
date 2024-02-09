@@ -62,4 +62,5 @@ export type {
   SearchResponseFile,
   UrlReaderService,
 } from './UrlReaderService';
+export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
 export type { IdentityService } from './IdentityService';
