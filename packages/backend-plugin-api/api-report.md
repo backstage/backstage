@@ -300,7 +300,17 @@ export interface HttpAuthService {
 // @public (undocumented)
 export interface HttpRouterService {
   // (undocumented)
+  addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void;
+  // (undocumented)
   use(handler: Handler): void;
+}
+
+// @public (undocumented)
+export interface HttpRouterServiceAuthPolicy {
+  // (undocumented)
+  allow: 'unauthenticated' | 'user-cookie';
+  // (undocumented)
+  path: string;
 }
 
 // @public (undocumented)
