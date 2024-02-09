@@ -1,6 +1,7 @@
 app:
   experimental:
     packages: 'all' # ✨
+
   routes:
     bindings:
       catalog.viewTechDoc: techdocs.docRoot
@@ -11,6 +12,7 @@ app:
     # - apis.plugin.graphiql.browse.gitlab: true
     - graphiql-endpoint:graphiql/gitlab: true
 
+    # Entity page cards
     - entity-card:catalog/about
     - entity-card:catalog/labels
     - entity-card:catalog/links:
@@ -21,7 +23,15 @@ app:
         config:
           height: 300
     - entity-card:azure-devops/readme
+    - entity-card:api-docs/has-apis
+    - entity-card:api-docs/consumed-apis
+    - entity-card:api-docs/provided-apis
+    - entity-card:api-docs/providing-components
+    - entity-card:api-docs/consuming-components
+
     # Entity page content
+    - entity-content:api-docs/definition
+    - entity-content:api-docs/apis
     - entity-content:techdocs
     - entity-content:azure-devops/pipelines
     - entity-content:azure-devops/pull-requests
