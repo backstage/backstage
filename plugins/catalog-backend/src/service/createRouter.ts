@@ -219,6 +219,7 @@ export async function createRouter(
         const request = entitiesBatchRequest(req);
         const response = await entitiesCatalog.entitiesBatch({
           entityRefs: request.entityRefs,
+          filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query, request.fields),
           credentials: await httpAuth.credentials(req),
         });
