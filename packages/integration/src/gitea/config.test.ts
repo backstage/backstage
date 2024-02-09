@@ -53,7 +53,7 @@ describe('readGiteaConfig', () => {
         host: 'a.com',
         baseUrl: 'https://a.com/route/api',
         username: 'u',
-        password: 'p',
+        password: 'p        ',
       }),
     );
     expect(output).toEqual({
