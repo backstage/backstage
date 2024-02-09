@@ -418,8 +418,8 @@ By default, only packages with names starting with `@backstage` and `@internal` 
 devTools:
   info:
     packagePrefixes:
-      - @roadiehq/backstage-
-      - @spotify/backstage-
+      - '@roadiehq/backstage-'
+      - '@spotify/backstage-'
 ```
 
 ### External Dependencies Configuration
