@@ -16,9 +16,3 @@
 // package: the name of the package, e.g. @testing-library/react
 // query: the version query to pin the version for, e.g. ^14.0.0
 // version: the version to pin to, must be in range of the query, e.g. 14.11.0
-
-// Fix for https://github.com/testing-library/jest-dom/issues/574
-"@testing-library/jest-dom@^6.0.0":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@testing-library/jest-dom/-/jest-dom-6.3.0.tgz#e8d308e0c0e91d882340cbbfdea0e4daa7987d36"
-  integrity sha512-hJVIrkFizEQxoWsGBlycTcQhrpoCH4DhXfrnHFFXgkx3Xdm15zycsq5Ep+vpw4W8S0NJa8cxDHcuJib+1tEbhg==

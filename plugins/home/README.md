@@ -10,7 +10,7 @@ If you have a standalone app (you didn't clone this repo), then do
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-home
+yarn --cwd packages/app add @backstage/plugin-home
 ```
 
 ### Setting up the Home Page

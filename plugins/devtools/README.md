@@ -14,7 +14,7 @@ Lists helpful information about your current running Backstage instance such as:
 
 #### Backstage Version Reporting
 
-The Backstage Version that is reported requires `backstage.json` to be present at the root of the running backstage instance.  
+The Backstage Version that is reported requires `backstage.json` to be present at the root of the running backstage instance.
 You may need to modify your Dockerfile to ensure `backstage.json` is copied into the `WORKDIR` of your image.
 
 ```sh
@@ -66,7 +66,7 @@ To setup the DevTools frontend you'll need to do the following steps:
 
    ```sh
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-devtools
+   yarn --cwd packages/app add @backstage/plugin-devtools
    ```
 
 2. Now open the `packages/app/src/App.tsx` file
@@ -206,7 +206,7 @@ To use the permission framework to secure the DevTools sidebar option you'll wan
 
    ```sh
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-devtools-common
+   yarn --cwd packages/app add @backstage/plugin-devtools-common
    ```
 
 2. Then open the `packages/app/src/components/Root/Root.tsx` file
@@ -236,7 +236,7 @@ To use the permission framework to secure the DevTools route you'll want to do t
 
    ```sh
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-devtools-common
+   yarn --cwd packages/app add @backstage/plugin-devtools-common
    ```
 
 2. Then open the `packages/app/src/App.tsx` file
@@ -341,7 +341,7 @@ To use this policy you'll need to make sure to add the `@backstage/plugin-devtoo
 
 ```sh
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-devtools-common
+yarn --cwd packages/backend add @backstage/plugin-devtools-common
 ```
 
 You'll also need to add these imports:

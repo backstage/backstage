@@ -34,6 +34,7 @@ import {
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import { Shortcuts } from '@backstage/plugin-shortcuts';
 import {
+  Link,
   Sidebar,
   sidebarConfig,
   SidebarDivider,
@@ -42,16 +43,16 @@ import {
   SidebarPage,
   SidebarScrollWrapper,
   SidebarSpace,
-  Link,
-  useSidebarOpenState,
   SidebarSubmenu,
   SidebarSubmenuItem,
+  useSidebarOpenState,
 } from '@backstage/core-components';
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import { SearchModal } from '../search/SearchModal';
 import Score from '@material-ui/icons/Score';
 import { useApp } from '@backstage/core-plugin-api';
 import BuildIcon from '@material-ui/icons/Build';
+import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -166,6 +167,8 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         </SidebarScrollWrapper>
         <SidebarDivider />
         <Shortcuts allowExternalLinks />
+        <SidebarDivider />
+        <NotificationsSidebarItem />
       </SidebarGroup>
       <SidebarSpace />
       <SidebarDivider />

@@ -26,7 +26,7 @@ describe('AwsS3Integration', () => {
             {
               endpoint: 'https://a.com',
               accessKeyId: 'access key',
-              secretAccessKey: 'secret key',
+              secretAccessKey: ' secret key ',
             },
           ],
         },

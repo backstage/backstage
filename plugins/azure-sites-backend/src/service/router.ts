@@ -27,8 +27,10 @@ import {
 } from '@backstage/plugin-permission-common';
 import {
   azureSitesActionPermission,
+  azureSitesPermissions,
   AZURE_WEB_SITE_NAME_ANNOTATION,
 } from '@backstage/plugin-azure-sites-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { CatalogApi } from '@backstage/catalog-client';
 
 import { AzureSitesApi } from '../api';
@@ -47,8 +49,13 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { logger, azureSitesApi, permissions, catalogApi } = options;
 
+  const permissionIntegrationRouter = createPermissionIntegrationRouter({
+    permissions: azureSitesPermissions,
+  });
+
   const router = Router();
   router.use(express.json());
+  router.use(permissionIntegrationRouter);
 
   router.get('/health', (_, response) => {
     logger.info('PONG!');

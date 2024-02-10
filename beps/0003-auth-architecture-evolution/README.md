@@ -54,6 +54,7 @@ The following goals are the primary focus of this BEP:
 - Basic improvements to the service-to-service auth service interfaces such that we are confident that we do not need to break them in the near future.
   - If possible we will keep using the existing symmetrical keys that are used today, but it is likely that we will need to break compatibility of existing tokens.
   - Encapsulation of user credentials in upstream service requests, avoiding the pattern where backend plugins re-use the user token directly for their outgoing requests.
+- Separate out the ownership information out of the Backstage user tokens, since user tokens have been growing large enough to have an impact on performance and reliability.
 
 ### Non-Goals
 
@@ -72,6 +73,8 @@ In order to allow either unauthenticated access or cookie-based access, a plugin
 
 For service-to-service communication we will move away from reusing user tokens in upstream requests. We will instead implement an "On-Behalf-Of" flow where incoming user credentials are encapsulated in a service token for the upstream request. In line with this the new auth service interfaces will aim to make it difficult to directly forward credentials from incoming requests, and instead encourage that plugin backends issue new service credentials for upstream requests.
 
+An issue that has been identified in the current auth implementation is that the user information embedded in the Backstage user tokens can grow fairly large. In order to avoid that this becomes a widespread problem, especially as we implement cookie auth with a 4kb size limit, we will remove the ownership entity refs (`ent` claim) from the user tokens. There were already very few consumers of this information in practice - only the `permission-backend` and `signal-backend` plugin packages currently rely on this information. The ownership data will instead be available via a new `UserInfoService`, owned by the `auth-backend`. The implementation of this new service will keep relying on the `ent` claim of the user token initially, but we will also implement a new `/v1/userinfo` endpoint in the `auth-backend` that will migrate to transparently in the future.
+
 ## Design Details
 
 ### `AuthService` Interface
@@ -79,29 +82,56 @@ For service-to-service communication we will move away from reusing user tokens 
 The new `AuthService` interface is defined as follows:
 
 ```ts
-export type BackstageCredentials = {
-  token: string;
+// These credential types are opaque and will also store some internal information, for example bearer tokens
 
-  user?: {
-    userEntityRef: string;
-    ownershipEntityRefs: string[];
-  };
+export type BackstageUserCredentials = {
+  $$type: '@backstage/BackstageCredentials';
 
-  service?: {
-    id: string;
-  };
+  type: 'user';
+
+  userEntityRef: string;
 };
+
+export type BackstageServiceCredentials = {
+  $$type: '@backstage/BackstageCredentials';
+
+  type: 'service';
+
+  // Exact format TBD, possibly 'plugin:<pluginId>' or 'external:<externalServiceId>'
+  subject: string;
+
+  // Not implemented in the first iteration, but this is how we might extend this in the future
+  permissions?: string[];
+};
+
+type BackstageCredentials =
+  | BackstageUserCredentials
+  | BackstageServiceCredentials;
 
 export interface AuthService {
   authenticate(token: string): Promise<BackstageCredentials>;
 
-  issueToken(credentials: BackstageCredentials): Promise<{ token: string }>;
+  // TODO: should the caller provide the target plugin ID?
+  // TODO: how can we make it very difficult to forget to forward credentials
+  issueToken(options: {
+    forward?: BackstageCredentials;
+  }): Promise<{ token: string }>;
 }
 ```
 
-### `AuthService` Usage Patterns
+### `UserInfoService` Interface
 
-TODO
+The new `UserInfoService` interface is defined as follows:
+
+```ts
+export interface UserInfoService {
+  getUserInfo(
+    credentials: BackstageUserCredentials,
+  ): Promise<{ ownershipEntityRefs: string[] /* profile info too? */ }>;
+}
+```
+
+The `UserInfoService` is exported by `@backstage/auth-node`, and the initial implementation will simply read the ownership refs from the `ent` claim of the underlying token of the user credentials. The next iteration will instead call the `/v1/userinfo` endpoint of the `auth-backend`, once that has been implemented.
 
 ### `HttpRouterService` Interface
 
@@ -110,15 +140,18 @@ TODO
 The `HttpRouterService` interface will be extended with the ability to opt-out of the default protection of endpoints, enabling either cookie auth or unauthenticated access.
 
 ```ts
+export interface HttpRouterServiceAuthPolicy {
+  // The path matches in the same way as if it was passed to `express.Router.use(path, ...)`
+  path: string;
+  allow: 'unauthenticated' | 'user-cookie';
+}
+
 export interface HttpRouterService {
   // All routes only allow authenticated users and services by default.
   use(handler: Handler): void;
 
-  // Exact option structure is TBD, just highlighting the general idea for now
-  configure(options: {
-    allowCookieAuthOnPaths?: string[];
-    allowUnauthenticatedAccessPaths?: string[];
-  }): void;
+  // These are additive and the most relaxed access level takes precedence
+  addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void;
 }
 ```
 
@@ -159,8 +192,9 @@ export default createBackendPlugin({
       async init({ http }) {
         // The order of these two calls does not matter
         http.use(await createRouter(/* ... */));
-        http.configure({
-          allowCookieAuthOnPaths: ['/static'],
+        http.addAuthPolicy({
+          path: '/static',
+          allow: 'user-cookie',
         });
       },
     });
@@ -180,10 +214,16 @@ export default createBackendPlugin({
       },
       async init({ http }) {
         http.use(await createRouter(/* ... */));
-        http.configure({
-          allowCookieAuthOnPaths: ['/'],
-          // Unauthenticated access takes precedence, the /public endpoint does not require cookie auth
-          allowUnauthenticatedAccessPaths: ['/public'],
+
+        http.addAuthPolicy({
+          path: '/',
+          allow: 'user-cookie',
+        });
+
+        // Unauthenticated access takes precedence, the /public endpoint does not require cookie auth
+        http.addAuthPolicy({
+          path: '/public',
+          allow: 'unauthenticated',
         });
       },
     });
@@ -196,23 +236,35 @@ export default createBackendPlugin({
 The new `HttpAuthService` interface is defined as follows:
 
 ```ts
+export type BackstageUnauthorizedCredentials = {
+  $$type: '@backstage/BackstageCredentials';
+
+  type: 'unauthorized';
+};
+
+type BackstageCredentialTypes = {
+  user: BackstageUserCredentials;
+  'user-cookie': BackstageUserCredentials;
+  service: BackstageServiceCredentials;
+  unauthorized: BackstageUnauthorizedCredentials;
+};
+
 export interface HttpAuthService {
-  createHttpPluginRouterMiddleware(options: OptionsTBD): Handler;
-
-  credentials(
+  // Implementations should cache resolved credentials on the request object
+  credentials<TAllowed extends keyof BackstageCredentialTypes>(
     req: Request,
-    options?: HttpAuthServiceMiddlewareOptions,
-  ): BackstageCredentials;
+    options?: HttpAuthServiceMiddlewareOptions<TAllowed>,
+  ): Promise<BackstageCredentialTypes[TAllowed]>;
 
-  requestHeaders(
-    credentials: BackstageCredentials,
-  ): Promise<Record<string, string>>;
+  requestHeaders(options?: {
+    forward?: BackstageCredentials;
+  }): Promise<Record<string, string>>;
 
   issueUserCookie(res: Response): Promise<void>;
 }
 ```
 
-### `HttpAuthService` Usage Patterns
+### `AuthService`, `HttpAuthService` and `UserInfoService` Usage Patterns
 
 All of these usages patterns are from the perspective of a plugin backend.
 
@@ -221,15 +273,10 @@ All of these usages patterns are from the perspective of a plugin backend.
 ```ts
 // All routes only allow authenticated users and services by default.
 router.get('/read-data', (req, res) => {
-  // TODO: user can currently be undefined, figure out best pattern to avoid that
-  const { user } = httpAuth.credentials(req);
-  if (!user) {
-    throw new NotAllowedError(
-      'Service requests are not allowed on this endpoint',
-    );
-  }
+  const credentials = await httpAuth.credentials(req, { allow: ['user'] }); // throws if not: user (or obo), user-cookie
+  const { ownershipEntityRefs } = await userInfo.getUserInfo(credentials);
   console.log(
-    `User ref=${user.userEntityRef} ownership=${user.ownershipEntityRefs}`,
+    `User ref=${credentials.userEntityRef} ownership=${ownershipEntityRefs} claims=${credentials.extraClaims}`,
   );
   // ...
 });
@@ -238,11 +285,36 @@ router.get('/read-data', (req, res) => {
 #### Forward the user credentials from an incoming requests to upstream plugin backend
 
 ```ts
+class CatalogIntegration {
+  async getEntity(
+    res: string,
+    options: {
+      credentials: BackstageUserCredentials | BackstageServiceCredentials;
+    },
+  ) {
+    return catalogClient.getEntityByRef(req.params.entityRef, {
+      token: await auth.issueToken({
+        forward: options.credentials,
+      }),
+    });
+  }
+}
+
+// Earlier in the router setup
+const catalogIntegration = new CatalogIntegration();
+
 router.get('/read-data', (req, res) => {
   // The catalogClient will have a reference to the (plugin scoped) HttpAuthService,
   // which it uses to create the credential headers for the upstream request.
   const entity = await catalogClient.getEntityByRef(req.params.entityRef, {
-    credentials: httpAuth.credentials(req),
+    credentials: httpAuth.forwardCredentials(req, {
+      dangerouslyAllowUnauthenticated: true,
+    }),
+  });
+
+  // TODO: try this out in more places in plugins
+  const entity = await catalogIntegration.getEntity(req.params.entityRef, {
+    credentials: await httpAuth.credentials(req),
   });
   // ...
 });
@@ -252,15 +324,17 @@ router.get('/read-data', (req, res) => {
 
 ```ts
 router.get('/read-data', (req, res) => {
-  const credentials = httpAuth.credentials(req);
-  if (credentials.user) {
-    res.json(
-      // Silly example just to highlight separate code paths for user and
-      // service requests
-      todoStore.listOwnedTodos({ owner: credentials.user.userEntityRef }),
-    );
+  const credentials = await httpAuth.credentials(req, {
+    allow: ['user', 'service'],
+  });
+  if (credentials.type === 'user') {
+    res.json(todoStore.listOwnedTodos({ owner: credentials.userEntityRef }));
   } else {
-    res.json(todoStore.listTodos());
+    res.json(
+      todoStore.listTodos({
+        serviceId: credentials.subject,
+      }),
+    );
   }
 });
 ```
@@ -273,11 +347,11 @@ router.get('/cookie', async (req, res) => {
   res.json({ ok: true });
 });
 
-// Allowing cookie auth is a separate step where you call the configure method
+// Allowing cookie auth is a separate step where you call the addAuthPolicy method
 // of the httpRouter API in your plugin setup code.
-httpRouter.configure({
-  // In practice we can make this configuration a lot more capable, this is just a minimal example
-  allowCookieAuthOnPaths: ['/static'], // router.use('/static', cookieAuthMiddleware()) under the hood
+httpRouter.addAuthPolicy({
+  path: '/static',
+  allow: 'user-cookie',
 });
 
 // Separate endpoint that serves static content, allowing user cookie auth as
@@ -294,9 +368,10 @@ router.get(
   (req, res) => {
     // These credentials don't actually contain an underlying user token for cookie-authed requests
     // If you try to pass them to the AuthService, it'll throw.
-    const { user } = httpAuth.credentials(req);
+    const credentials = await httpAuth.credentials(req, { allow: ['user'] });
+    const { ownershipEntityRefs } = await userInfo.getUserInfo(credentials);
     console.log(
-      `User ref=${user.userEntityRef} ownership=${user.ownershipEntityRefs}`,
+      `User ref=${credentials.userEntityRef} ownership=${ownershipEntityRefs}`,
     );
     // ...
   },
@@ -309,6 +384,20 @@ The existing `IdentityService` and `TokenManagerService` will be deprecated and 
 
 The release plan for the `HttpAuthService` is TBD, but is likely to be shipped as a no-op for plugins using the old backend system. The goal is for all plugins using the new backend system to have endpoint security be opt-out, which will be a breaking change.
 
+### Implementation Tasks
+
+- [ ] Implement `AuthService`
+- [ ] Implement `HttpAuthService` - leave cookie auth as unimplemented for now
+- [ ] Add `addAuthPolicy()` for `HttpRouterService`, using `HttpAuthService`
+- [ ] Implement a compatibility wrapper in `backend-common` that accepts `AuthService`, `HttpAuthService`, `IdentityService`, and `TokenManagerService` (all optional), and returns implementations for `AuthService` and `HttpAuthService`, such hat existing plugins can use a single `createRouter` implementation for both the old and new backend systems.
+- [ ] Implement `UserInfoService` in `@backstage/auth-node` - for now it will just extract the ownership entity refs from the token stored in the credentials
+- [ ] Implement cookie auth in `HttpAuthService` - just put the user token in the cookie for now
+- [ ] Deprecate `IdentityService` and `TokenManagerService`, switch to using default factories that depend on the `AuthService` and `HttpAuthService`. Stop supplying implementations for these in `backend-defaults` and `backend-test-utils`
+- [ ] Migrate plugins:
+  - [ ] Permission backend
+  - [ ] TechDocs backend
+  - [ ] App backend
+
 ## Dependencies
 
 No significant dependencies have been identified for this work, although any future security audits of Backstage are considered dependent on this work.
@@ -316,3 +405,68 @@ No significant dependencies have been identified for this work, although any fut
 ## Alternatives
 
 An alternative to built-in protection from external access would be to keep relying on external mechanisms to protect access to Backstage. We feel that this is a suboptimal solution since it adds complexity to the adoption of Backstage, and increases the risk of misconfiguration and security breaches. Regardless of whether we add built-in protection or not the ability to protect API endpoints needs to be addressed in some way, since it is a requirement for the permission system to work. This means that the extra steps to ensure protection out of the box are fairly minimal when looking at just the delta for protecting API access.
+
+### Access Control Patterns
+
+These are the different patterns that we've considered for how plugins should control access to their endpoints.
+
+#### Separate methods / configuration for `use`
+
+This approach extends the `HttpRouterService` with separate methods or options for specifying the access control for different handlers.
+
+Pros:
+
+- We can make strict access control the default, making relaxed controls an opt-in
+- The routing setup is quite explicit in what handlers allow for what access levels
+
+Cons:
+
+- Forces separation of the router, splitting it into separate handlers for different levels of access.
+- Can be extremely confusing because the top-level middleware for more lax access will also apply to the more strict access levels. For example
+
+  ```ts
+  const cookieRouter = Router();
+  cookieRouter.use(rateLimit());
+  http.useWithCookieAuthentication(cookieRouter);
+
+  const mainRouter = Router();
+  // rateLimit() will apply here too
+  http.use(mainRouter);
+  ```
+
+This applied to any similar way of structuring this API, such as a single `.use()` method with additional options:
+
+```ts
+http.use(cookieRouter, { allow: ['user-cookie'] });
+```
+
+#### Separate configuration on different paths for `use`
+
+Similar to the previous approach, but also require that a path is provided. This removes much of the confusion around what middleware are applied.
+
+The downside of this approach is that it still has the drawback of forcing a separation of the router, but at the same it provides very little benefit over a top-level path configuration approach like `http.addAuthPolicy()`. The `'/static'` path in the below example essentially has the exact same logic as `.addAuthPolicy({ path: '/static', allow: 'user-cookie' })` since it'd be implemented in the same way. The `.addAuthPolicy()` approach has the benefit of allowing plugin authors to decide whether they want to keep the routes separate or not.
+
+This does have the benefit of letting the framework know which exact routes are protected, which can be useful for introspection, although that benefit also applies to the `.addAuthPolicy()` approach.
+
+```ts
+// This isn't too bad, but it's extremely similar to the addAuthPolicy() method since
+// we're just matching on the path. The benefit of addAuthPolicy is that it allows you
+// to keep everything in a singe router if desired.
+http.use('/static', cookieRouter, { allow: ['user-cookie'] });
+```
+
+#### Complete opt-out
+
+This approach simply enabled plugins to opt-out of the default access control, and instead require that they implement the necessary endpoint protection using `httpAuth.middleware()`.
+
+This approach makes it a bit easier to make mistakes compared to the `.configure()` approach, but at the same time it has the benefit of collection all access control login in a single place (the plugin router). It also doesn't allow the framework to see which endpoints have relaxed protection, which is a downside.
+
+Still, this is a pattern that is currently second in line if we don't go with the `.configure()` approach.
+
+```ts
+http.dangerouslyDisableAuthentication();
+```
+
+#### Leave access control to the plugin router
+
+Having strict access control be the default with explicit opt-out is an explicit goal of this work, so this is not an option that we are considering.

@@ -1,5 +1,24 @@
 # @backstage/backend-common
 
+## 0.21.0-next.2
+
+### Patch Changes
+
+- 3489d05: `FetchUrlReader#readUrl()` now supports passing an optional `token` to authenticate requests.
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 7fb7a79: Add a config declaration for `workingDirectory`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/backend-dev-utils@0.1.4-next.0
+  - @backstage/backend-app-api@0.5.11-next.2
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/cli-common@0.1.13
+  - @backstage/config-loader@1.6.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/types@1.1.1
+
 ## 0.21.0-next.1
 
 ### Patch Changes

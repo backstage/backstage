@@ -1,5 +1,37 @@
 # @backstage/core-components
 
+## 0.14.0-next.1
+
+### Patch Changes
+
+- 3e1c6e2: Added possibility to show arrow heads for graph edges for better understandability.
+
+  In order to show arrow heads in the catalog graph page, add `showArrowHeads` attribute to `CatalogGraphPage` component
+  (typically in `packages/app/src/App.tsx`):
+
+  ```diff
+  - <CatalogGraphPage />
+  + <CatalogGraphPage showArrowHeads />
+  ```
+
+  In order to show arrow heads in entity graphs, add `showArrowHeads` attribute to `EntityCatalogGraphCard` components
+  (typically multiple occurrences in `packages/app/src/components/catalog/EntityPage.tsx`):
+
+  ```diff
+  - <EntityCatalogGraphCard variant="gridItem" height={400} />
+  + <EntityCatalogGraphCard variant="gridItem" height={400} showArrowHeads />
+  ```
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 7f11009: Added stack trace display to `ErrorPage` and updated existing refs
+- 214f2da: Fix invalid HTTP status code 501 in Error Page
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/theme@0.5.1-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/version-bridge@1.0.7
+
 ## 0.14.0-next.0
 
 ### Minor Changes

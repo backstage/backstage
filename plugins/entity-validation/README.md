@@ -10,7 +10,7 @@ First of all, install the package in the `app` package by running the following 
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-entity-validation
+yarn --cwd packages/app add @backstage/plugin-entity-validation
 ```
 
 Add the new route to the app by adding the following line:

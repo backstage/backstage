@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog-backend
 
+## 1.17.0-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/repo-tools@0.6.0-next.2
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.14-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/backend-tasks@0.5.15-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/plugin-permission-node@0.7.21-next.2
+  - @backstage/backend-openapi-utils@0.1.3-next.2
+  - @backstage/plugin-catalog-node@1.6.2-next.2
+  - @backstage/plugin-events-node@0.2.19-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 1.17.0-next.1
 
 ### Minor Changes

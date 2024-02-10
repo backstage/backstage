@@ -21,6 +21,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import { GroupsDiagram } from './GroupsDiagram';
 
@@ -55,7 +56,7 @@ describe('<GroupsDiagram />', () => {
         }),
     };
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <GroupsDiagram />
       </TestApiProvider>,
@@ -65,6 +66,9 @@ describe('<GroupsDiagram />', () => {
         },
       },
     );
-    expect(getByText('Group A', { selector: 'div' })).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('link', { name: 'my-namespace/group-a' }),
+    ).toBeInTheDocument();
   });
 });

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 const { spawnSync } = require('child_process');
 const {
   resolve: resolvePath,
@@ -21,14 +22,17 @@ const {
 } = require('path');
 const fs = require('fs').promises;
 
-const IGNORED = [
+const IGNORED_WHEN_LISTING = [
   /^ADOPTERS\.md$/,
   /^OWNERS\.md$/,
   /^.*[/\\]CHANGELOG\.md$/,
   /^.*[/\\]([^\/]+-)?api-report\.md$/,
+  /^.*[/\\]knip-report\.md$/,
   /^docs[/\\]releases[/\\].*-changelog\.md$/,
   /^docs[/\\]reference[/\\]/,
 ];
+
+const IGNORED_WHEN_EXPLICIT = [/^.*[/\\]knip-report\.md$/];
 
 const rootDir = resolvePath(__dirname, '..');
 
@@ -41,7 +45,7 @@ async function listFiles(dir = '') {
       .map(async file => {
         const path = joinPath(dir, file);
 
-        if (IGNORED.some(pattern => pattern.test(path))) {
+        if (IGNORED_WHEN_LISTING.some(pattern => pattern.test(path))) {
           return [];
         }
         if ((await fs.stat(path)).isDirectory()) {
@@ -65,7 +69,7 @@ async function exitIfMissingVale() {
   } catch (e) {
     if (process.env.CI) {
       console.log(
-        `Language linter (vale) was not found. Please install vale linter (https://docs.errata.ai/vale/install).\n`,
+        `Language linter (vale) was not found. Please install vale linter (https://vale.sh/docs/vale-cli/installation/).\n`,
       );
       process.exit(1);
     }
@@ -113,7 +117,9 @@ async function main() {
   const absolutePaths = process.argv
     .slice(2)
     .filter(path => !path.startsWith('-'));
-  const relativePaths = absolutePaths.map(path => relativePath(rootDir, path));
+  const relativePaths = absolutePaths
+    .map(path => relativePath(rootDir, path))
+    .filter(path => !IGNORED_WHEN_EXPLICIT.some(pattern => pattern.test(path)));
 
   const success = await runVale(
     relativePaths.length === 0 ? await listFiles() : relativePaths,
