@@ -23,6 +23,46 @@ const DEFAULT_FONT_FAMILY =
 const DEFAULT_PAGE_THEME = 'home';
 
 /**
+ * Default Typography settings.
+ *
+ * @public
+ */
+export const defaultTypography: BackstageTypography = {
+  htmlFontSize: DEFAULT_HTML_FONT_SIZE,
+  fontFamily: DEFAULT_FONT_FAMILY,
+  h1: {
+    fontSize: 54,
+    fontWeight: 700,
+    marginBottom: 10,
+  },
+  h2: {
+    fontSize: 40,
+    fontWeight: 700,
+    marginBottom: 8,
+  },
+  h3: {
+    fontSize: 32,
+    fontWeight: 700,
+    marginBottom: 6,
+  },
+  h4: {
+    fontWeight: 700,
+    fontSize: 28,
+    marginBottom: 6,
+  },
+  h5: {
+    fontWeight: 700,
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  h6: {
+    fontWeight: 700,
+    fontSize: 20,
+    marginBottom: 2,
+  },
+};
+
+/**
  * Options for {@link createBaseThemeOptions}.
  *
  * @public
@@ -57,40 +97,8 @@ export function createBaseThemeOptions<PaletteOptions>(
     throw new Error(`${defaultPageTheme} is not defined in pageTheme.`);
   }
 
-  const defaultTypography: BackstageTypography = {
-    htmlFontSize,
-    fontFamily,
-    h1: {
-      fontSize: 54,
-      fontWeight: 700,
-      marginBottom: 10,
-    },
-    h2: {
-      fontSize: 40,
-      fontWeight: 700,
-      marginBottom: 8,
-    },
-    h3: {
-      fontSize: 32,
-      fontWeight: 700,
-      marginBottom: 6,
-    },
-    h4: {
-      fontWeight: 700,
-      fontSize: 28,
-      marginBottom: 6,
-    },
-    h5: {
-      fontWeight: 700,
-      fontSize: 24,
-      marginBottom: 4,
-    },
-    h6: {
-      fontWeight: 700,
-      fontSize: 20,
-      marginBottom: 2,
-    },
-  };
+  defaultTypography.htmlFontSize = htmlFontSize;
+  defaultTypography.fontFamily = fontFamily;
 
   return {
     palette,

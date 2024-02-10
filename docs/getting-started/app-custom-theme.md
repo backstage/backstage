@@ -4,54 +4,38 @@ title: Customize the look-and-feel of your App
 description: Documentation on Customizing look and feel of the App
 ---
 
-Backstage ships with a default theme with a light and dark mode variant. The
-themes are provided as a part of the
-[`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme) package,
-which also includes utilities for customizing the default theme, or creating
-completely new themes.
+Backstage ships with a default theme with a light and dark mode variant. The themes are provided as a part of the [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme) package, which also includes utilities for customizing the default theme, or creating completely new themes.
 
 ## Creating a Custom Theme
 
-The easiest way to create a new theme is to use the `createTheme` function
-exported by the
-[`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme) package. You
-can use it to override some basic parameters of the default theme such as the
-color palette and font.
+The easiest way to create a new theme is to use the `createUnifiedTheme` function exported by the [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme) package. You can use it to override some basic parameters of the default theme such as the color palette and font.
 
-For example, you can create a new theme based on the default light theme like
-this:
+For example, you can create a new theme based on the default light theme like this:
 
 ```ts
-import { createTheme, lightTheme } from '@backstage/theme';
+import {
+  createBaseThemeOptions,
+  createUnifiedTheme,
+  palettes,
+} from '@backstage/theme';
 
-const myTheme = createTheme({
-  palette: lightTheme.palette,
+const myTheme = createUnifiedTheme({
+  ...createBaseThemeOptions({
+    palette: palettes.light,
+  }),
   fontFamily: 'Comic Sans MS',
   defaultPageTheme: 'home',
 });
 ```
 
-If you want more control over the theme, and for example customize font sizes
-and margins, you can use the lower-level `createThemeOverrides` function
-exported by [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme)
-in combination with
-[`createTheme`](https://material-ui.com/customization/theming/#createmuitheme-options-args-theme)
-from [`@material-ui/core`](https://www.npmjs.com/package/@material-ui/core). See
-the "Overriding Backstage and Material UI css rules" section below.
-
-You can also create a theme from scratch that matches the `BackstageTheme` type
-exported by [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme).
-See the
-[Material UI docs on theming](https://material-ui.com/customization/theming/)
-for more information about how that can be done.
+You can also create a theme from scratch that matches the `BackstageTheme` type exported by [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme). See the
+[Material UI docs on theming](https://material-ui.com/customization/theming/) for more information about how that can be done.
 
 ## Using your Custom Theme
 
-To add a custom theme to your Backstage app, you pass it as configuration to
-`createApp`.
+To add a custom theme to your Backstage app, you pass it as configuration to `createApp`.
 
-For example, adding the theme that we created in the previous section can be
-done like this:
+For example, adding the theme that we created in the previous section can be done like this:
 
 ```tsx
 import { createApp } from '@backstage/app-defaults';
@@ -68,70 +52,68 @@ const app = createApp({
     variant: 'light',
     icon: <LightIcon />,
     Provider: ({ children }) => (
-      <ThemeProvider theme={myTheme}>
-        <CssBaseline>{children}</CssBaseline>
-      </ThemeProvider>
+      <UnifiedThemeProvider theme={myTheme} children={children} />
     ),
   }]
 })
 ```
 
-Note that your list of custom themes overrides the default themes. If you still
-want to use the default themes, they are exported as `lightTheme` and
-`darkTheme` from
-[`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme).
+Note that your list of custom themes overrides the default themes. If you still want to use the default themes, they are exported as `themes.light` and `themes.light` from [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme).
 
 ## Example of a custom theme
 
 ```ts
 import {
-  createTheme,
+  createBaseThemeOptions,
+  createUnifiedTheme,
   genPageTheme,
-  lightTheme,
+  palettes,
   shapes,
 } from '@backstage/theme';
 
-const myTheme = createTheme({
-  palette: {
-    ...lightTheme.palette,
-    primary: {
-      main: '#343b58',
+const myTheme = createUnifiedTheme({
+  ...createBaseThemeOptions({
+    palette: {
+      ...palettes.light,
+      primary: {
+        main: '#343b58',
+      },
+      secondary: {
+        main: '#565a6e',
+      },
+      error: {
+        main: '#8c4351',
+      },
+      warning: {
+        main: '#8f5e15',
+      },
+      info: {
+        main: '#34548a',
+      },
+      success: {
+        main: '#485e30',
+      },
+      background: {
+        default: '#d5d6db',
+        paper: '#d5d6db',
+      },
+      banner: {
+        info: '#34548a',
+        error: '#8c4351',
+        text: '#343b58',
+        link: '#565a6e',
+      },
+      errorBackground: '#8c4351',
+      warningBackground: '#8f5e15',
+      infoBackground: '#343b58',
+      navigation: {
+        background: '#343b58',
+        indicator: '#8f5e15',
+        color: '#d5d6db',
+        selectedColor: '#ffffff',
+      },
     },
-    secondary: {
-      main: '#565a6e',
-    },
-    error: {
-      main: '#8c4351',
-    },
-    warning: {
-      main: '#8f5e15',
-    },
-    info: {
-      main: '#34548a',
-    },
-    success: {
-      main: '#485e30',
-    },
-    background: {
-      default: '#d5d6db',
-      paper: '#d5d6db',
-    },
-    banner: {
-      info: '#34548a',
-      error: '#8c4351',
-      text: '#343b58',
-      link: '#565a6e',
-    },
-    errorBackground: '#8c4351',
-    warningBackground: '#8f5e15',
-    infoBackground: '#343b58',
-    navigation: {
-      background: '#343b58',
-      indicator: '#8f5e15',
-      color: '#d5d6db',
-      selectedColor: '#ffffff',
-    },
-  },
+  }),
   defaultPageTheme: 'home',
   fontFamily: 'Comic Sans MS',
   /* below drives the header colors */
@@ -161,16 +143,92 @@ const myTheme = createTheme({
 });
 ```
 
-For a more complete example of a custom theme including Backstage and
-Material UI component overrides, see the [Aperture
-theme](https://github.com/backstage/demo/blob/master/packages/app/src/theme/aperture.ts)
-from the [Backstage demo site](https://demo.backstage.io).
+For a more complete example of a custom theme including Backstage and Material UI component overrides, see the [Aperture theme](https://github.com/backstage/demo/blob/master/packages/app/src/theme/aperture.ts) from the [Backstage demo site](https://demo.backstage.io).
+
+## Custom Typography
+
+When creating a custom theme you can also customize vairous aspexts of the default typography, here's an exampl using simplified theme:
+
+```tsx
+import {
+  createBaseThemeOptions,
+  createUnifiedTheme,
+  palettes,
+} from '@backstage/theme';
+
+const myTheme = createUnifiedTheme({
+  ...createBaseThemeOptions({
+    palette: palettes.light,
+    typography: {
+      htmlFontSize: 16,
+      fontFamily: 'Arial, sans-serif',
+      h1: {
+        fontSize: 54,
+        fontWeight: 700,
+        marginBottom: 10,
+      },
+      h2: {
+        fontSize: 40,
+        fontWeight: 700,
+        marginBottom: 8,
+      },
+      h3: {
+        fontSize: 32,
+        fontWeight: 700,
+        marginBottom: 6,
+      },
+      h4: {
+        fontWeight: 700,
+        fontSize: 28,
+        marginBottom: 6,
+      },
+      h5: {
+        fontWeight: 700,
+        fontSize: 24,
+        marginBottom: 4,
+      },
+      h6: {
+        fontWeight: 700,
+        fontSize: 20,
+        marginBottom: 2,
+      },
+    },
+    defaultPageTheme: 'home',
+  }),
+});
+```
+
+If you wanted to only override a sub-set of the typography setting, for example just `h1` then you would do this:
+
+```tsx
+import {
+  createBaseThemeOptions,
+  createUnifiedTheme,
+  defaultTypography,
+  palettes,
+} from '@backstage/theme';
+
+const myTheme = createUnifiedTheme({
+  ...createBaseThemeOptions({
+    palette: palettes.light,
+    typography: {
+      ...defaultTypography,
+      htmlFontSize: 16,
+      fontFamily: 'Roboto, sans-serif',
+      h1: {
+        fontSize: 72,
+        fontWeight: 700,
+        marginBottom: 10,
+      },
+    },
+    defaultPageTheme: 'home',
+  }),
+});
+```
 
 ## Overriding Backstage and Material UI components styles
 
-When creating a custom theme you would be applying different values to
-component's css rules that use the theme object. For example, a Backstage
-component's styles might look like this:
+When creating a custom theme you would be applying different values to component's CSS rules that use the theme object. For example, a Backstage component's styles might look like this:
 
 ```tsx
 const useStyles = makeStyles<BackstageTheme>(
@@ -185,83 +243,50 @@ const useStyles = makeStyles<BackstageTheme>(
 );
 ```
 
-Notice how the `padding` is getting its value from `theme.spacing`, that means
-that setting a value for spacing in your custom theme would affect this
-component padding property and the same goes for `backgroundImage` which uses
-`theme.page.backgroundImage`. However, the `boxShadow` property doesn't
-reference any value from the theme, that means that creating a custom theme
-wouldn't be enough to alter the `box-shadow` property or to add css rules that
-aren't already defined like a margin. For these cases you should also create an
-override.
+Notice how the `padding` is getting its value from `theme.spacing`, that means that setting a value for spacing in your custom theme would affect this component padding property and the same goes for `backgroundImage` which uses `theme.page.backgroundImage`. However, the `boxShadow` property doesn't reference any value from the theme, that means that creating a custom theme wouldn't be enough to alter the `box-shadow` property or to add css rules that aren't already defined like a margin. For these cases you should also create an override.
+
+Here's how you would do that:
 
 ```tsx
-import { createApp } from '@backstage/core-app-api';
-import { BackstageTheme, lightTheme } from '@backstage/theme';
-/**
- * The `@backstage/core-components` package exposes this type that
- * contains all Backstage and `material-ui` components that can be
- * overridden along with the classes key those components use.
- */
-import { BackstageOverrides } from '@backstage/core-components';
+import {
+  createBaseThemeOptions,
+  createUnifiedTheme,
+  palettes,
+} from '@backstage/theme';
 
-export const createCustomThemeOverrides = (
-  theme: BackstageTheme,
-): BackstageOverrides => {
-  return {
+const myTheme = createUnifiedTheme({
+  ...createBaseThemeOptions({
+    palette: palettes.light,
+  }),
+  fontFamily: 'Comic Sans MS',
+  defaultPageTheme: 'home',
+  components: {
     BackstageHeader: {
-      header: {
-        width: 'auto',
-        margin: '20px',
-        boxShadow: 'none',
-        borderBottom: `4px solid ${theme.palette.primary.main}`,
+      styleOverrides: {
+        header: ({ theme }) => ({
+          width: 'auto',
+          margin: '20px',
+          boxShadow: 'none',
+          borderBottom: `4px solid ${theme.palette.primary.main}`,
+        }),
       },
     },
-  };
-};
-
-const customTheme: BackstageTheme = {
-  ...lightTheme,
-  overrides: {
-    // These are the overrides that Backstage applies to `material-ui` components
-    ...lightTheme.overrides,
-    // These are your custom overrides, either to `material-ui` or Backstage components.
-    ...createCustomThemeOverrides(lightTheme),
   },
-};
-
-const app = createApp({
-  apis: ...,
-  plugins: ...,
-  themes: [{
-    id: 'my-theme',
-    title: 'My Custom Theme',
-    variant: 'light',
-    Provider: ({ children }) => (
-      <ThemeProvider theme={customTheme}>
-        <CssBaseline>{children}</CssBaseline>
-      </ThemeProvider>
-    ),
-  }]
 });
 ```
 
 ## Custom Logo
 
-In addition to a custom theme, you can also customize the logo displayed at the
-far top left of the site.
+In addition to a custom theme, you can also customize the logo displayed at the far top left of the site.
 
-In your frontend app, locate `src/components/Root/` folder. You'll find two
-components:
+In your frontend app, locate `src/components/Root/` folder. You'll find two components:
 
 - `LogoFull.tsx` - A larger logo used when the Sidebar navigation is opened.
-- `LogoIcon.tsx` - A smaller logo used when the sidebar navigation is closed.
+- `LogoIcon.tsx` - A smaller logo used when the Sidebar navigation is closed.
 
-To replace the images, you can simply replace the relevant code in those
-components with raw SVG definitions.
+To replace the images, you can simply replace the relevant code in those components with raw SVG definitions.
 
-You can also use another web image format such as PNG by importing it. To do
-this, place your new image into a new subdirectory such as
-`src/components/Root/logo/my-company-logo.png`, and then add this code:
+You can also use another web image format such as PNG by importing it. To do this, place your new image into a new subdirectory such as `src/components/Root/logo/my-company-logo.png`, and then add this code:
 
 ```tsx
 import MyCustomLogoFull from './logo/my-company-logo.png';
