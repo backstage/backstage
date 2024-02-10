@@ -12,9 +12,9 @@ This guide will provide a quick tutorial on how to log in to your Backstage inst
 
 ## Prerequisites
 
-You should have already [have a standalone app](./standalone-install.md) and completed the Github OAuth app setup defined in [the authentication tutorial](./config/authentication.md).
+You should have already [have a standalone app](./index.md) and completed the Github OAuth app setup defined in [the authentication tutorial](./config/authentication.md).
 
-## 1. Login to Backstage and check profile
+## 1. Login to Backstage
 
 Run your Backstage app with `yarn dev`. Navigate to `http://localhost:3000`.
 
@@ -23,6 +23,8 @@ If you're not already logged in, you should see a login screen like this,
 To login, you should choose the "Github" provider and click the "Sign in" button. This will redirect you to a Github OAuth page. Verify that the scopes mentioned on that page match the setup you did in [the authentication tutorial](./config/authentication.md). Once you click "Confirm", you will be brought back to the Backstage interface and signed in!
 
 If you are already logged in, you will be automatically brought to your Backstage instance.
+
+## 2. Verify that you're logged in
 
 Once you've logged in, find the "Settings" item in the navigation bar to the left. Click it and you will see your profile. If you see your profile picture and name from Github here, congratulations! You've successfully set up a Github authentication integration.
 

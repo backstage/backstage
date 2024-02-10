@@ -14,7 +14,7 @@ frontend _features_, and what you install to build up a Backstage frontend [app]
 
 ## Creating a new plugin
 
-This guide assumes that you already have a Backstage project set up. Even if you only want to develop a single plugin for publishing, we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions on how to set up a new project, see our [getting started](../../getting-started/standalone-install.md#prerequisites) documentation.
+This guide assumes that you already have a Backstage project set up. Even if you only want to develop a single plugin for publishing, we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions on how to set up a new project, see our [getting started](../../getting-started/index.md#prerequisites) documentation.
 
 To create a frontend plugin, run `yarn new`, select `plugin`, and fill out the rest of the prompts. This will create a new package at `plugins/<pluginId>`, which will be the main entrypoint for your plugin.
 

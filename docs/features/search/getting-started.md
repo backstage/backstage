@@ -8,7 +8,7 @@ Search functions as a plugin to Backstage, so you will need to use Backstage to
 use Search.
 
 If you haven't setup Backstage already, start
-[here](../../getting-started/standalone-install.md).
+[here](../../getting-started/index.md).
 
 > If you used `npx @backstage/create-app`, and you have a search page defined in
 > `packages/app/src/components/search`, skip to

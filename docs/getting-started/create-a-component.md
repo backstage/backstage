@@ -18,7 +18,7 @@ If you're running Backstage with Node 20 or later, you'll need to pass the flag 
 
 :::
 
-You should already have [a standalone app](./standalone-install.md).
+You should already have [a standalone app](./index.md).
 
 ## Creating your component
 

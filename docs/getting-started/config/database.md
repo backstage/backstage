@@ -8,7 +8,7 @@ Audience: Admins
 
 ### Summary
 
-This guide walks through how to set up a PostgreSQL database to host your Backstage data. It assumes you've already have a scaffolded Backstage app from following the [Standalone Install](../standalone-install.md) guide.
+This guide walks through how to set up a PostgreSQL database to host your Backstage data. It assumes you've already have a scaffolded Backstage app from following the [Standalone Install](../index.md) guide.
 
 By the end of this tutorial, you will have a working PostgreSQL database hooked up to your Backstage install.
 
@@ -75,7 +75,7 @@ App. Run the following to install the PostgreSQL client into your backend:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend pg
+yarn --cwd packages/backend add pg
 ```
 
 Use your favorite editor to open `app-config.yaml` and add your PostgreSQL
@@ -117,7 +117,7 @@ If you opt for the second option of replacing the entire string, take care to no
 
 :::
 
-[Start the Backstage app](../standalone-install.md#2-run-the-backstage-app):
+[Start the Backstage app](../index.md#2-run-the-backstage-app):
 
 ```shell
 yarn dev

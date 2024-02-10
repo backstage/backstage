@@ -11,7 +11,7 @@ infrastructure needs - CI/CD, monitoring, auditing, and more.
 ## Adding existing plugins to your app
 
 The following steps assume that you have
-[created a Backstage app](./standalone-install.md) and want to add an existing plugin
+[created a Backstage app](./index.md) and want to add an existing plugin
 to it.
 
 We are using the
@@ -75,7 +75,7 @@ to an entity in the software catalog.
 ### Adding a plugin page to the Sidebar
 
 In a standard Backstage app created with
-[@backstage/create-app](./standalone-install.md), the sidebar is managed inside
+[@backstage/create-app](./index.md), the sidebar is managed inside
 `packages/app/src/components/Root/Root.tsx`. The file exports the entire
 `Sidebar` element of your app, which you can extend with additional entries by
 adding new `SidebarItem` elements.

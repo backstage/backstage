@@ -40,10 +40,10 @@
       "overview/logos"
     ],
     "Getting Started": [
-      "getting-started/standalone-install",
+      "getting-started/index",
       {
         "type": "category",
-        "label": "Configuring Backstage (Admin)",
+        "label": "Configuring Backstage",
         "items": [
           "getting-started/config/database",
           "getting-started/config/authentication",
@@ -52,14 +52,17 @@
           "getting-started/homepage"
         ]
       },
-      "getting-started/logging-in",
-      "getting-started/register-a-component",
-      "getting-started/create-a-component",
+      {
+        "type": "category",
+        "label": "Using Backstage",
+        "items": [
+          "getting-started/logging-in",
+          "getting-started/register-a-component",
+          "getting-started/create-a-component"
+        ]
+      },
       "getting-started/keeping-backstage-updated",
-      "getting-started/concepts",
-      "getting-started/contributors",
-      "getting-started/getting-involved",
-      "getting-started/project-structure"
+      "getting-started/concepts"
     ],
     "Local Development": [
       {
@@ -491,6 +494,11 @@
     ],
     "FAQ": ["faq/index", "faq/product", "faq/technical"],
     "Accessibility": ["accessibility/index"],
+    "Contribute": [
+      "contribute/index",
+      "contribute/getting-involved",
+      "contribute/project-structure"
+    ],
     "References": ["references/glossary"]
   }
 }

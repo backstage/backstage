@@ -16,7 +16,7 @@ backend _features_, and are the building blocks that adopters add to their
 
 ## Creating a new Plugin
 
-This guide assumes that you already have a Backend project set up. Even if you only want to develop a single plugin for publishing, we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions on how to set up a new project, see our [getting started](../../getting-started/standalone-install.md#prerequisites) documentation.
+This guide assumes that you already have a Backend project set up. Even if you only want to develop a single plugin for publishing, we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions on how to set up a new project, see our [getting started](../../getting-started/index.md#prerequisites) documentation.
 
 To create a Backend plugin, run `yarn new`, select `backend-plugin`, and fill out the rest of the prompts. This will create a new package at `plugins/<pluginId>-backend`, which will be the main entrypoint for your plugin.
 

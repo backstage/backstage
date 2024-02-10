@@ -20,19 +20,19 @@ nav:
       - Support and community: 'overview/support.md'
       - Logo assets: 'overview/logos.md'
   - Getting Started:
-      - Installing a standalone server (Developer or Admin): 'getting-started/standalone-install.md'
-      - Configuring Backstage (Admin):
+      - Installing a standalone server: 'getting-started/index.md'
+      - Configuring Backstage:
           - Database: 'getting-started/config/database.md'
           - Authentication: 'getting-started/config/authentication.md'
           - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
           - Customize the look-and-feel of your App: 'getting-started/app-custom-theme.md'
           - Customizing your Homepage: 'getting-started/homepage.md'
-      - Logging in: 'getting-started/logging-in.md'
-      - Register a component: 'getting-started/register-a-component.md'
-      - Create a component: 'getting-started/create-a-component.md'
+      - Using Backstage:
+          - Logging in: 'getting-started/logging-in.md'
+          - Register a component: 'getting-started/register-a-component.md'
+          - Create a component: 'getting-started/create-a-component.md'
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
       - Key Concepts: 'getting-started/concepts.md'
-      - Project Structure: 'getting-started/project-structure.md'
   - Local Development:
       - CLI:
           - Overview: 'local-dev/cli-overview.md'
@@ -221,5 +221,7 @@ nav:
       - Overview: 'faq/index.md'
       - Product FAQ: 'faq/product.md'
       - Technical FAQ: 'faq/technical.md'
+  - Contribute:
+      - Project Structure: 'getting-started/project-structure.md'
   - References:
       - Glossary: 'references/glossary.md'

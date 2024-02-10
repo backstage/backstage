@@ -12,7 +12,7 @@ This guide will walk you through how to pull Backstage data from other locations
 
 ## Prerequisites
 
-You should have already [have a standalone app](./standalone-install.md).
+You should have already [have a standalone app](./index.md).
 
 ## 1. Finding our template
 

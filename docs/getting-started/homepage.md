@@ -19,7 +19,7 @@ At the end of this tutorial, you can expect:
 
 Before we begin, make sure
 
-- You have created your own standalone Backstage app using [`@backstage/create-app`](./standalone-install.md#1-create-your-backstage-app) and not using a fork of the [backstage](https://github.com/backstage/backstage) repository.
+- You have created your own standalone Backstage app using [`@backstage/create-app`](./index.md#1-create-your-backstage-app) and not using a fork of the [backstage](https://github.com/backstage/backstage) repository.
 - You do not have an existing homepage, and by default you are redirected to Software Catalog when you open Backstage.
 
 Now, let's get started by installing the home plugin and creating a simple homepage for your Backstage app.

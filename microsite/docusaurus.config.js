@@ -138,7 +138,7 @@ module.exports = {
           },
           {
             from: '/docs/getting-started/running-backstage-locally',
-            to: '/docs/getting-started/standalone-install',
+            to: '/docs/getting-started/',
           },
           {
             from: '/docs/features/software-templates/testing-scaffolder-alpha',
@@ -154,15 +154,11 @@ module.exports = {
           },
           {
             from: '/docs/getting-started/create-an-app',
-            to: '/docs/getting-started/standalone-install',
+            to: '/docs/getting-started/',
           },
           {
             from: '/docs/getting-started/configuration',
-            to: '/docs/getting-started/standalone-install#next-steps',
-          },
-          {
-            from: '/docs/getting-started',
-            to: '/docs/getting-started/standalone-install'
+            to: '/docs/getting-started/#next-steps',
           },
         ],
       },

@@ -1,10 +1,11 @@
 ---
-id: standalone-install
-title: Installing a standalone server (Developer or Admin)
+id: index
+title: Installing a standalone server
+sidebar_label: Introduction
 description: How to install Backstage for your own use.
 ---
 
-Audience: All
+Audience: Developers and Admins
 
 ## Summary
 
@@ -154,9 +155,10 @@ Choose the correct next steps for your user role, if you're likely to be deployi
 
 ### Developer
 
-- [Logging into Backstage](./logging-in.md)
-- [Register a component](./register-a-component.md)
-- [Create a new component](./create-a-component.md)
+- Using your Backstage instance
+  - [Logging into Backstage](./logging-in.md)
+  - [Register a component](./register-a-component.md)
+  - [Create a new component](./create-a-component.md)
 
 Share your experiences, comments, or suggestions with us:
 [on discord](https://discord.gg/backstage-687207715902193673), file issues for any
