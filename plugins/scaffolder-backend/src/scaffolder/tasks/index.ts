@@ -25,7 +25,6 @@ export type {
   TaskStoreEmitOptions,
   TaskStoreListEventsOptions,
   TaskStoreShutDownTaskOptions,
-  TaskStoreStateOptions,
   SerializedTask,
   SerializedTaskEvent,
   TaskStatus,

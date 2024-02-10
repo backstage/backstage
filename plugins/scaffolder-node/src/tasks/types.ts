@@ -27,24 +27,6 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 /**
- * The record passed to TaskBroker for updating a checkpoint.
- * Parameters to store the result of the executed checkpoint
- *
- * @public
- */
-export type CheckpointRecord =
-  | {
-      key: string;
-      status: 'success';
-      value: JsonValue;
-    }
-  | {
-      key: string;
-      status: 'failed';
-      reason: string;
-    };
-
-/**
  * The state of all task's checkpoints
  *
  * @public
@@ -142,7 +124,14 @@ export interface TaskContext {
   cancelSignal: AbortSignal;
   spec: TaskSpec;
   secrets?: TaskSecrets;
-  state?: TaskState;
+  state?: {
+    [key: string]:
+      | { status: 'failed'; reason: string }
+      | {
+          status: 'success';
+          value: JsonValue;
+        };
+  };
   createdBy?: string;
   done: boolean;
   isDryRun?: boolean;
@@ -151,9 +140,33 @@ export interface TaskContext {
 
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
 
-  getCheckpoints?(): Promise<{ state: TaskState } | undefined>;
+  getTaskState?(): Promise<
+    | {
+        state: {
+          [key: string]:
+            | { status: 'failed'; reason: string }
+            | {
+                status: 'success';
+                value: JsonValue;
+              };
+        };
+      }
+    | undefined
+  >;
 
-  updateCheckpoint?(options: CheckpointRecord): Promise<void>;
+  updateCheckpoint?(
+    options:
+      | {
+          key: string;
+          status: 'success';
+          value: JsonValue;
+        }
+      | {
+          key: string;
+          status: 'failed';
+          reason: string;
+        },
+  ): Promise<void>;
 
   getWorkspaceName(): Promise<string>;
 }

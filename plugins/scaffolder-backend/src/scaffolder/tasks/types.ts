@@ -16,7 +16,7 @@
 
 import { JsonValue, JsonObject, HumanDuration } from '@backstage/types';
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
-import { TaskSecrets, TaskState } from '@backstage/plugin-scaffolder-node';
+import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import {
   TemplateAction,
   TaskStatus as _TaskStatus,
@@ -114,16 +114,6 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 };
 
 /**
- * TaskStoreStateOptions
- *
- * @public
- */
-export type TaskStoreStateOptions = {
-  taskId: string;
-  state?: TaskState;
-};
-
-/**
  * TaskStoreListEventsOptions
  *
  * @public
@@ -204,13 +194,31 @@ export interface TaskStore {
 
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
 
-  listCheckpoints?({
-    taskId,
-  }: {
-    taskId: string;
-  }): Promise<{ state: TaskState }>;
+  getTaskState?({ taskId }: { taskId: string }): Promise<
+    | {
+        state: {
+          [key: string]:
+            | { status: 'failed'; reason: string }
+            | {
+                status: 'success';
+                value: JsonValue;
+              };
+        };
+      }
+    | undefined
+  >;
 
-  saveCheckpoint?(options: TaskStoreStateOptions): Promise<void>;
+  saveCheckpoint?(options: {
+    taskId: string;
+    state?: {
+      [key: string]:
+        | { status: 'failed'; reason: string }
+        | {
+            status: 'success';
+            value: JsonValue;
+          };
+    };
+  }): Promise<void>;
 
   listEvents(
     options: TaskStoreListEventsOptions,

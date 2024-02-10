@@ -64,19 +64,6 @@ export function addFiles(options: {
   logger?: Logger | undefined;
 }): Promise<void>;
 
-// @public
-export type CheckpointRecord =
-  | {
-      key: string;
-      status: 'success';
-      value: JsonValue;
-    }
-  | {
-      key: string;
-      status: 'failed';
-      reason: string;
-    };
-
 // @public (undocumented)
 export function cloneRepo(options: {
   url: string;
@@ -362,9 +349,19 @@ export interface TaskContext {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
-  getCheckpoints?(): Promise<
+  getTaskState?(): Promise<
     | {
-        state: TaskState;
+        state: {
+          [key: string]:
+            | {
+                status: 'failed';
+                reason: string;
+              }
+            | {
+                status: 'success';
+                value: JsonValue;
+              };
+        };
       }
     | undefined
   >;
@@ -377,9 +374,31 @@ export interface TaskContext {
   // (undocumented)
   spec: TaskSpec;
   // (undocumented)
-  state?: TaskState;
+  state?: {
+    [key: string]:
+      | {
+          status: 'failed';
+          reason: string;
+        }
+      | {
+          status: 'success';
+          value: JsonValue;
+        };
+  };
   // (undocumented)
-  updateCheckpoint?(options: CheckpointRecord): Promise<void>;
+  updateCheckpoint?(
+    options:
+      | {
+          key: string;
+          status: 'success';
+          value: JsonValue;
+        }
+      | {
+          key: string;
+          status: 'failed';
+          reason: string;
+        },
+  ): Promise<void>;
 }
 
 // @public

@@ -16,12 +16,8 @@
 
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import {
-  TaskSecrets,
-  TaskState,
-  CheckpointRecord,
-} from '@backstage/plugin-scaffolder-node';
-import { JsonObject, Observable } from '@backstage/types';
+import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';
 import {
@@ -95,11 +91,35 @@ export class TaskManager implements TaskContext {
     });
   }
 
-  async getCheckpoints?(): Promise<{ state: TaskState } | undefined> {
-    return this.storage.listCheckpoints?.({ taskId: this.task.taskId });
+  async getTaskState?(): Promise<
+    | {
+        state: {
+          [key: string]:
+            | { status: 'failed'; reason: string }
+            | {
+                status: 'success';
+                value: JsonValue;
+              };
+        };
+      }
+    | undefined
+  > {
+    return this.storage.getTaskState?.({ taskId: this.task.taskId });
   }
 
-  async updateCheckpoint?(options: CheckpointRecord): Promise<void> {
+  async updateCheckpoint?(
+    options:
+      | {
+          key: string;
+          status: 'success';
+          value: JsonValue;
+        }
+      | {
+          key: string;
+          status: 'failed';
+          reason: string;
+        },
+  ): Promise<void> {
     const { key, ...value } = options;
     if (this.task.state) {
       this.task.state[key] = value;
@@ -168,7 +188,14 @@ export interface CurrentClaimedTask {
   /**
    * The state of checkpoints of the task.
    */
-  state?: TaskState;
+  state?: {
+    [key: string]:
+      | { status: 'failed'; reason: string }
+      | {
+          status: 'success';
+          value: JsonValue;
+        };
+  };
   /**
    * The creator of the task.
    */

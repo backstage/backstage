@@ -9,7 +9,6 @@ import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucke
 import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CheckpointRecord } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
@@ -22,6 +21,7 @@ import * as gitlab from '@backstage/plugin-scaffolder-backend-module-gitlab';
 import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
@@ -48,7 +48,6 @@ import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets as TaskSecrets_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TaskState } from '@backstage/plugin-scaffolder-node';
 import { TaskStatus as TaskStatus_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
@@ -361,7 +360,17 @@ export interface CurrentClaimedTask {
   createdBy?: string;
   secrets?: TaskSecrets_2;
   spec: TaskSpec;
-  state?: TaskState;
+  state?: {
+    [key: string]:
+      | {
+          status: 'failed';
+          reason: string;
+        }
+      | {
+          status: 'success';
+          value: JsonValue;
+        };
+  };
   taskId: string;
 }
 
@@ -400,14 +409,27 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask_2>;
   // (undocumented)
+  getTaskState({ taskId }: { taskId: string }): Promise<
+    | {
+        state: {
+          [key: string]:
+            | {
+                status: 'failed';
+                reason: string;
+              }
+            | {
+                status: 'success';
+                value: JsonValue;
+              };
+        };
+      }
+    | undefined
+  >;
+  // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
   list(options: { createdBy?: string }): Promise<{
     tasks: SerializedTask_2[];
-  }>;
-  // (undocumented)
-  listCheckpoints({ taskId }: { taskId: string }): Promise<{
-    state: TaskState;
   }>;
   // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{
@@ -425,7 +447,22 @@ export class DatabaseTaskStore implements TaskStore {
     ids: string[];
   }>;
   // (undocumented)
-  saveCheckpoint(options: TaskStoreStateOptions): Promise<void>;
+  saveCheckpoint(options: {
+    taskId: string;
+    state?:
+      | {
+          [key: string]:
+            | {
+                status: 'failed';
+                reason: string;
+              }
+            | {
+                status: 'success';
+                value: JsonValue;
+              };
+        }
+      | undefined;
+  }): Promise<void>;
   // (undocumented)
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -528,9 +565,19 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
-  getCheckpoints?(): Promise<
+  getTaskState?(): Promise<
     | {
-        state: TaskState;
+        state: {
+          [key: string]:
+            | {
+                status: 'failed';
+                reason: string;
+              }
+            | {
+                status: 'success';
+                value: JsonValue;
+              };
+        };
       }
     | undefined
   >;
@@ -541,7 +588,19 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   get spec(): TaskSpecV1beta3;
   // (undocumented)
-  updateCheckpoint?(options: CheckpointRecord): Promise<void>;
+  updateCheckpoint?(
+    options:
+      | {
+          key: string;
+          status: 'success';
+          value: JsonValue;
+        }
+      | {
+          key: string;
+          status: 'failed';
+          reason: string;
+        },
+  ): Promise<void>;
 }
 
 // @public @deprecated (undocumented)
@@ -571,14 +630,27 @@ export interface TaskStore {
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
+  getTaskState?({ taskId }: { taskId: string }): Promise<
+    | {
+        state: {
+          [key: string]:
+            | {
+                status: 'failed';
+                reason: string;
+              }
+            | {
+                status: 'success';
+                value: JsonValue;
+              };
+        };
+      }
+    | undefined
+  >;
+  // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
   list?(options: { createdBy?: string }): Promise<{
     tasks: SerializedTask[];
-  }>;
-  // (undocumented)
-  listCheckpoints?({ taskId }: { taskId: string }): Promise<{
-    state: TaskState;
   }>;
   // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{
@@ -595,7 +667,20 @@ export interface TaskStore {
     ids: string[];
   }>;
   // (undocumented)
-  saveCheckpoint?(options: TaskStoreStateOptions): Promise<void>;
+  saveCheckpoint?(options: {
+    taskId: string;
+    state?: {
+      [key: string]:
+        | {
+            status: 'failed';
+            reason: string;
+          }
+        | {
+            status: 'success';
+            value: JsonValue;
+          };
+    };
+  }): Promise<void>;
   // (undocumented)
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -632,12 +717,6 @@ export type TaskStoreRecoverTaskOptions = {
 // @public
 export type TaskStoreShutDownTaskOptions = {
   taskId: string;
-};
-
-// @public
-export type TaskStoreStateOptions = {
-  taskId: string;
-  state?: TaskState;
 };
 
 // @public

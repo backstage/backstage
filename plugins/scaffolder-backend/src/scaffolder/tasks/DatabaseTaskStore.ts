@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import {
   PluginDatabaseManager,
   resolvePackagePath,
@@ -30,7 +30,6 @@ import {
   TaskStoreCreateTaskResult,
   TaskStoreShutDownTaskOptions,
   TaskStoreRecoverTaskOptions,
-  TaskStoreStateOptions,
 } from './types';
 import {
   SerializedTaskEvent,
@@ -38,7 +37,6 @@ import {
   TaskStatus,
   TaskEventType,
   TaskSecrets,
-  TaskState,
 } from '@backstage/plugin-scaffolder-node';
 import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -397,18 +395,49 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async listCheckpoints({
-    taskId,
-  }: {
-    taskId: string;
-  }): Promise<{ state: TaskState }> {
-    const state = await this.db<RawDbTaskRow>('tasks')
+  async getTaskState({ taskId }: { taskId: string }): Promise<
+    | {
+        state: {
+          [key: string]:
+            | { status: 'failed'; reason: string }
+            | {
+                status: 'success';
+                value: JsonValue;
+              };
+        };
+      }
+    | undefined
+  > {
+    const [result] = await this.db<RawDbTaskRow>('tasks')
       .where({ id: taskId })
       .select('state');
-    return { state: JSON.stringify(state) as unknown as TaskState };
+    return result.state
+      ? {
+          state: JSON.parse(result.state) as unknown as {
+            [key: string]:
+              | { status: 'failed'; reason: string }
+              | {
+                  status: 'success';
+                  value: JsonValue;
+                };
+          },
+        }
+      : undefined;
   }
 
-  async saveCheckpoint(options: TaskStoreStateOptions): Promise<void> {
+  async saveCheckpoint(options: {
+    taskId: string;
+    state?:
+      | {
+          [key: string]:
+            | { status: 'failed'; reason: string }
+            | {
+                status: 'success';
+                value: JsonValue;
+              };
+        }
+      | undefined;
+  }): Promise<void> {
     if (options.state) {
       const serializedState = JSON.stringify(options.state);
       await this.db<RawDbTaskRow>('tasks')

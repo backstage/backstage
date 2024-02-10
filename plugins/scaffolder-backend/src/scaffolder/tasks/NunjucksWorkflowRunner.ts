@@ -332,7 +332,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
       const tmpDirs = new Array<string>();
       const stepOutput: { [outputName: string]: JsonValue } = {};
-      const prevTaskState = await task.getCheckpoints?.();
+      const prevTaskState = await task.getTaskState?.();
 
       for (const iteration of iterations) {
         if (iteration.each) {
