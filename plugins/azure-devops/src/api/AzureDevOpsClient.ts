@@ -198,6 +198,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (opts.path) {
       queryString.append('path', opts.path);
     }
+    queryString.append('entityRef', opts.entityRef);
     return await this.get(
       `readme/${encodeURIComponent(opts.project)}/${encodeURIComponent(
         opts.repo,

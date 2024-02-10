@@ -322,9 +322,11 @@ To get the README component working you'll need to do the following two steps:
 
 ## Permission Framework
 
-Azure DevOps plugin is now supporting the permission framework for PRs, GitTags, Pipelines & ReadMe.
+Azure DevOps plugin supports the permission framework for PRs, GitTags, Pipelines and Readme features.
 
-To enable the permission on the legacy backend system add the below config in `packages/backend/src/plugins/azure-devops.ts`.
+New Backend you can skip the below and proceed with [permission configuration](#configure-permission)
+
+To enable permissions for the legacy backend system in `packages/backend/src/plugins/azure-devops.ts` add the following.
 
 ```diff
 export default async function createPlugin(
@@ -341,17 +343,18 @@ export default async function createPlugin(
 
 ### Configure Permission
 
-To apply the permission rule add the following in `packages/backend/src/plugins/permissions.ts`.
+To apply the permission rules add the following in `packages/backend/src/plugins/permissions.ts`.
 
-> Note this is example only `azureDevOpsPullRequestDashboardReadPermission` is Basic permission rest all Resource Permission. As an adopter you can configure how you wanted.
+> Note: the following is just an example of how you might want to setup permissions, as an Adopter you can configure this to fit your needs. Also all the permissions are Resource Permissions as they work with an Entity with the exception of `azureDevOpsPullRequestDashboardReadPermission`.
 
 ```diff
+
 + import {
 +  azureDevOpsPullRequestReadPermission,
 +  azureDevOpsPipelineReadPermission,
 +  azureDevOpsGitTagReadPermission,
 +  azureDevOpsReadmeReadPermission,
-+  azureDevOpsPullRequestDashboardReadPermission } from '@backstage/azure-devops-common';
++  azureDevOpsPullRequestDashboardReadPermission } from '@backstage/plugin-azure-devops-common';
 ...
 async handle(
   request: PolicyQuery,
@@ -361,7 +364,7 @@ async handle(
 +      isPermission(request.permission, azureDevOpsPipelineReadPermission) ||
 +      isPermission(request.permission, azureDevOpsGitTagReadPermission) ||
 +      isPermission(request.permission, azureDevOpsReadmeReadPermission)) {
-+    return createTodoListConditionalDecision(
++    return createCatalogConditionalDecision(
 +      request.permission,
 +      catalogConditions.isEntityOwner({
 +          claims: user?.identity.ownershipEntityRefs ?? [],
@@ -370,7 +373,9 @@ async handle(
 +  }
 
 + if ( isPermission(request.permission, azureDevOpsPullRequestDashboardReadPermission) {
++ return {
 +   result: AuthorizeResult.ALLOW,
++  };
 + }
 
   return {
