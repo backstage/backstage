@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 export { EntityNamespacePicker } from './EntityNamespacePicker';
+export type { EntityNamespacePickerProps } from './EntityNamespacePicker';
 export type { CatalogReactEntityNamespacePickerClassKey } from './EntityNamespacePicker';

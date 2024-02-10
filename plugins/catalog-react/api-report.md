@@ -342,7 +342,15 @@ export class EntityNamespaceFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityNamespacePicker: () => React_2.JSX.Element;
+export const EntityNamespacePicker: (
+  props: EntityNamespacePickerProps,
+) => React_2.JSX.Element;
+
+// @public
+export interface EntityNamespacePickerProps {
+  // (undocumented)
+  initiallySelectedNamespaces?: string[];
+}
 
 // @public
 export class EntityOrphanFilter implements EntityFilter {
