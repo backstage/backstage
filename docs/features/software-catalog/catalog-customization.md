@@ -9,7 +9,7 @@ The Backstage software catalog comes with a default `CatalogIndexPage` to filter
 
 ## Pagination
 
-Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of Backstage, make sure you are on that version or newer to use this feature. To enable pagination you simply need to pass in the `paganiaiton` prop like this:
+Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of Backstage, make sure you are on that version or newer to use this feature. To enable pagination you simply need to pass in the `pagination` prop like this:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route path="/catalog" element={<CatalogIndexPage pagination />} />
@@ -17,7 +17,7 @@ Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of
 
 ## Initially Selected Filter
 
-By default the initially selected filter defaults to Owned, now you might be still building up your catalog and would prefer this to show All as the deafult. Here's how you can make that change:
+By default the initially selected filter defaults to Owned, now you might be still building up your catalog and would prefer this to show All as the default. Here's how you can make that change:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route
@@ -155,7 +155,7 @@ The above customization will override the existing actions. Currently the only w
 
 ## Custom Filters
 
-You can add custom filters. For example, suppose that I want to allow filtering by a custom annotation added to entities, `company.com/security-tier`. Her's how we can built a filter to support that need.
+You can add custom filters. For example, suppose that I want to allow filtering by a custom annotation added to entities, `company.com/security-tier`. Here is how we can built a filter to support that need.
 
 First we need to create a new filter that implements the `EntityFilter` interface:
 
