@@ -5,64 +5,159 @@ title: Catalog Customization
 description: How to add custom filters or interface elements to the Backstage software catalog
 ---
 
-The Backstage software catalog comes with a default `CatalogIndexPage` to filter
-and find catalog entities. This is already set up by default by
-`@backstage/create-app`.
+The Backstage software catalog comes with a default `CatalogIndexPage` to filter and find catalog entities. This is already set up by default by `@backstage/create-app`. If you want to change the default index page - to set the initially selected filter, adjust columns, add actions, or to add a custom filter to the catalog - the following sections will show you how.
 
-If you want to change the default index page - such as to add a custom filter to
-the catalog - you can create your own `CatalogIndexPage`.
+## Pagination
 
-> Note: The catalog index page is designed to have a minimal code footprint to
-> support easy customization, but creating a copy does introduce a possibility
-> of drifting out of date over time. Be sure to check the catalog
-> [CHANGELOG](https://github.com/backstage/backstage/blob/master/plugins/catalog/CHANGELOG.md)
-> periodically.
+Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of Backstage, make sure you are on that version or newer to use this feature. To enable pagination you simply need to pass in the `paganiaiton` prop like this:
 
-For example, suppose that I want to allow filtering by a custom annotation added
-to entities, `company.com/security-tier`. To start, I'll copy the code for the
-default catalog page and create a component.
-
-```tsx
-// imports, etc omitted for brevity. for full source see:
-// https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogPage/DefaultCatalogPage.tsx
-export const CustomCatalogPage = ({
-  columns,
-  actions,
-  initiallySelectedFilter = 'owned',
-}: CatalogPageProps) => {
-  const createComponentLink = useRouteRef(
-    catalogPlugin.externalRoutes.createComponent,
-  );
-  return (
-    <PageWithHeader title={`${orgName} Catalog`} themeId="home">
-      <EntityListProvider>
-        <Content>
-          <ContentHeader titleComponent={<CatalogKindHeader />}>
-            <CreateButton title="Create Component" to={createComponentLink()} />
-            <SupportButton>All your software catalog entities</SupportButton>
-          </ContentHeader>
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityTagPicker />
-            </CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <CatalogTable columns={columns} actions={actions} />
-            </CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </Content>
-      </EntityListProvider>
-    </PageWithHeader>
-  );
-};
+```tsx title="packages/app/src/App.tsx"
+<Route path="/catalog" element={<CatalogIndexPage pagination />} />
 ```
 
-The `EntityListProvider` shown here provides a list of entities from the
-`catalog-backend`, and a way to hook in filters.
+## Initially Selected Filter
 
-Now we're ready to create a new filter that implements the `EntityFilter`
-interface:
+By default the initially selected filter defaults to Owned, now you might be still building up your catalog and would prefer this to show All as the deafult. Here's how you can make that change:
+
+```tsx title="packages/app/src/App.tsx"
+<Route
+  path="/catalog"
+  element={<CatalogIndexPage initiallySelectedFilter="all" />}
+/>
+```
+
+Possible options are: owned, starred, or all
+
+## Initially Selected Kind
+
+By default the initially selected Kind when viewing the Catalog in Component, but you may have reasons that you want this to be different. Let's say at your Organization they would like it to always default to Domain, here's how you would do that:
+
+```tsx title="packages/app/src/App.tsx"
+<Route path="/catalog" element={<CatalogIndexPage initialKind="domain" />} />
+```
+
+Possible options are all the [default Kinds](system-model.md) as well as any custom Kinds that you have added.
+
+## Owner Picker Mode
+
+The Owner filter by default will only contain a list of Users and/or Groups that actually own an entity in the Catalog, now you may have reason to change this. Here's how:
+
+```tsx title="packages/app/src/App.tsx"
+<Route path="/catalog" element={<CatalogIndexPage ownerPickerMode="all" />} />
+```
+
+Possible options are: owners-only or all
+
+## Customize Columns
+
+By default the columns you see in the `CatalogIndexPage` were selected to be a good starting point for most but there may be reasons that you would like to customize these with more or less columns. On primary use case for this customization is if you added a custom Kind. Support for this was added in v1.23.0 of Backstage, make sure you are on that version or newer to use this feature. Here's an example of how to make this customization:
+
+```tsx title="packages/app/src/App.tsx"
+import {
+  CatalogEntityPage,
+  CatalogIndexPage,
+  catalogPlugin,
+  {/* highlight-add-start */}
+  CatalogTable,
+  CatalogTableColumnsFunc,
+  {/* highlight-add-end */}
+} from '@backstage/plugin-catalog';
+
+{/* highlight-add-start */}
+const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
+  if (entityListContext.filters.kind?.value === 'MyKind') {
+    return [
+      CatalogTable.columns.createNameColumn(),
+      CatalogTable.columns.createOwnerColumn(),
+    ];
+  }
+
+  return CatalogTable.defaultColumnsFunc(entityListContext);
+};
+{/* highlight-add-end */}
+
+{/* highlight-remove-next-line */}
+<Route path="/catalog" element={<CatalogIndexPage />} />
+{/* highlight-add-next-line */}
+<Route path="/catalog" element={<CatalogIndexPage columns={myColumnsFunc} />} />
+```
+
+> Note: the above example has been simplified and you will most likely have more code then just this in your `App.tsx` file.
+
+## Customize Actions
+
+The `CatalogIndexPage` comes with three default actions - view, edit, and star. You might want to add more here's how:
+
+First you'll need to add `@mui/utils` to your `packages/app/package.json`:
+
+```sh
+yarn --cwd packages/app add @mui/utils
+```
+
+Then you'll do the following:
+
+```tsx title="packages/app/src/App.tsx"
+import {
+  AlertDisplay,
+  OAuthRequestDialog,
+  SignInPage,
+  {/* highlight-add-next-line */}
+  TableProps,
+} from '@backstage/core-components';
+
+import {
+  CatalogEntityPage,
+  CatalogIndexPage,
+  {/* highlight-add-next-line */}
+  CatalogTableRow,
+  catalogPlugin,
+} from '@backstage/plugin-catalog';
+
+{/* highlight-add-start */}
+import { Typography } from '@material-ui/core';
+import OpenInNew from '@material-ui/icons/OpenInNew';
+import { visuallyHidden } from '@mui/utils';
+{/* highlight-add-end */}
+
+{/* highlight-add-start */}
+const customActions: TableProps<CatalogTableRow>['actions'] = [
+  ({ entity }) => {
+    const url = 'https://backstage.io/';
+    const title = `View - ${entity.metadata.name}`;
+
+    return {
+      icon: () => (
+        <>
+          <Typography style={visuallyHidden}>{title}</Typography>
+          <OpenInNew fontSize="small" />
+        </>
+      ),
+      tooltip: title,
+      disabled: !url,
+      onClick: () => {
+        if (!url) return;
+        window.open(url, '_blank');
+      },
+    };
+  },
+];
+{/* highlight-add-end */}
+
+{/* highlight-remove-next-line */}
+<Route path="/catalog" element={<CatalogIndexPage />} />
+{/* highlight-add-next-line */}
+<Route path="/catalog" element={<CatalogIndexPage actions={customActions} />} />
+```
+
+> Note: the above example has been simplified and you will most likely have more code then just this in your `App.tsx` file.
+
+The above customization will override the existing actions. Currently the only way to keep them and add your own is to also include the existing actions in your array by copying them from the [`defaultActions`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/catalog/src/components/CatalogTable/CatalogTable.tsx#L113-L168).
+
+## Custom Filters
+
+You can add custom filters. For example, suppose that I want to allow filtering by a custom annotation added to entities, `company.com/security-tier`. Her's how we can built a filter to support that need.
+
+First we need to create a new filter that implements the `EntityFilter` interface:
 
 ```ts
 import { EntityFilter } from '@backstage/plugin-catalog-react';
@@ -77,13 +172,9 @@ class EntitySecurityTierFilter implements EntityFilter {
 }
 ```
 
-The `EntityFilter` interface permits backend filters, which are passed along to
-the `catalog-backend` - or frontend filters, which are applied after entities
-are loaded from the backend.
+The `EntityFilter` interface permits backend filters, which are passed along to the `catalog-backend` - or frontend filters, which are applied after entities are loaded from the backend.
 
-We'll use this filter to extend the default filters in a type-safe way. Let's
-create the custom filter shape extending the default somewhere alongside this
-filter:
+We'll use this filter to extend the default filters in a type-safe way. Let's create the custom filter shape extending the default somewhere alongside this filter:
 
 ```ts
 export type CustomFilters = DefaultEntityFilters & {
@@ -91,11 +182,7 @@ export type CustomFilters = DefaultEntityFilters & {
 };
 ```
 
-To control this filter, we can create a React component that shows checkboxes
-for the security tiers. This component will make use of the
-`useEntityList` hook, which accepts this extended filter type as a
-[generic](https://www.typescriptlang.org/docs/handbook/2/generics.html)
-parameter:
+To control this filter, we can create a React component that shows checkboxes for the security tiers. This component will make use of the `useEntityList` hook, which accepts this extended filter type as a [generic](https://www.typescriptlang.org/docs/handbook/2/generics.html) parameter:
 
 ```tsx
 export const EntitySecurityTierPicker = () => {
@@ -140,36 +227,7 @@ export const EntitySecurityTierPicker = () => {
 };
 ```
 
-Now we can add the component to `CustomCatalogPage`:
-
-```tsx
-export const CustomCatalogPage = ({
-  columns,
-  actions,
-  initiallySelectedFilter = 'owned',
-}: CatalogPageProps) => {
-  return (
-    {/* ... */}
-        <EntityListProvider>
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>
-              <EntityKindPicker initialFilter="component" hidden />
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              {/* highlight-add-next-line */}
-              <EntitySecurityTierPicker />
-              <EntityTagPicker />
-            <CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <CatalogTable columns={columns} actions={actions} />
-            </CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </EntityListProvider>
-    {/* ... */}
-};
-```
-
-Finally, we can apply our new `CustomCatalogPage`.
+Now we can add the component to `CatalogIndexPage`:
 
 ```tsx title="packages/app/src/App.tsx"
 const routes = (
@@ -178,15 +236,30 @@ const routes = (
     {/* highlight-remove-next-line */}
     <Route path="/catalog" element={<CatalogIndexPage />} />
     {/* highlight-add-start */}
-    <Route path="/catalog" element={<CatalogIndexPage />}>
-      <CustomCatalogPage />
-    </Route>
+    <Route
+      path="/catalog"
+      element={
+        <CatalogIndexPage
+          filters={
+            <>
+              <EntityKindPicker />
+              <EntityTypePicker />
+              <UserListPicker />
+              <EntityOwnerPicker />
+              <EntityLifecyclePicker />
+              <EntityTagPicker />
+              <EntityProcessingStatusPicker />
+              <EntityNamespacePicker />
+              <EntitySecurityTierPicker />
+            </>
+          }
+        />
+      }
+    />
     {/* highlight-add-end */}
     {/* ... */}
   </FlatRoutes>
 );
 ```
 
-The same method can be used to customize the _default_ filters with a different
-interface - for such usage, the generic argument isn't needed since the filter
-shape remains the same as the default.
+The same method can be used to customize the _default_ filters with a different interface - for such usage, the generic argument isn't needed since the filter shape remains the same as the default.

@@ -103,6 +103,7 @@ export interface DefaultCatalogPageProps {
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   pagination?: boolean | { limit?: number };
+  filters?: ReactNode;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -115,21 +116,24 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     emptyContent,
     pagination,
     ownerPickerMode,
+    filters,
   } = props;
 
   return (
     <BaseCatalogPage
       filters={
-        <>
-          <EntityKindPicker initialFilter={initialKind} />
-          <EntityTypePicker />
-          <UserListPicker initialFilter={initiallySelectedFilter} />
-          <EntityOwnerPicker mode={ownerPickerMode} />
-          <EntityLifecyclePicker />
-          <EntityTagPicker />
-          <EntityProcessingStatusPicker />
-          <EntityNamespacePicker />
-        </>
+        filters ?? (
+          <>
+            <EntityKindPicker initialFilter={initialKind} />
+            <EntityTypePicker />
+            <UserListPicker initialFilter={initiallySelectedFilter} />
+            <EntityOwnerPicker mode={ownerPickerMode} />
+            <EntityLifecyclePicker />
+            <EntityTagPicker />
+            <EntityProcessingStatusPicker />
+            <EntityNamespacePicker />
+          </>
+        )
       }
       content={
         <CatalogTable
