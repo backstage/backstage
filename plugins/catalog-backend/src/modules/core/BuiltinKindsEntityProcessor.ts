@@ -26,7 +26,6 @@ import {
   GroupEntity,
   groupEntityV1alpha1Validator,
   locationEntityV1alpha1Validator,
-  parseEntityRef,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
   RELATION_CHILD_OF,
@@ -52,8 +51,8 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  processingResult,
 } from '@backstage/plugin-catalog-node';
+import { doEmit } from '../util/doEmit';
 
 /** @public */
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
@@ -91,82 +90,54 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     const selfRef = getCompoundEntityRef(entity);
 
     /*
-     * Utilities
-     */
-
-    function doEmit(
-      targets: string | string[] | undefined,
-      context: { defaultKind?: string; defaultNamespace: string },
-      outgoingRelation: string,
-      incomingRelation: string,
-    ): void {
-      if (!targets) {
-        return;
-      }
-      for (const target of [targets].flat()) {
-        const targetRef = parseEntityRef(target, context);
-        emit(
-          processingResult.relation({
-            source: selfRef,
-            type: outgoingRelation,
-            target: {
-              kind: targetRef.kind,
-              namespace: targetRef.namespace,
-              name: targetRef.name,
-            },
-          }),
-        );
-        emit(
-          processingResult.relation({
-            source: {
-              kind: targetRef.kind,
-              namespace: targetRef.namespace,
-              name: targetRef.name,
-            },
-            type: incomingRelation,
-            target: selfRef,
-          }),
-        );
-      }
-    }
-
-    /*
      * Emit relations for the Component kind
      */
 
     if (entity.kind === 'Component') {
       const component = entity as ComponentEntity;
       doEmit(
+        emit,
+        selfRef,
         component.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,
       );
       doEmit(
+        emit,
+        selfRef,
         component.spec.subcomponentOf,
         { defaultKind: 'Component', defaultNamespace: selfRef.namespace },
         RELATION_PART_OF,
         RELATION_HAS_PART,
       );
       doEmit(
+        emit,
+        selfRef,
         component.spec.providesApis,
         { defaultKind: 'API', defaultNamespace: selfRef.namespace },
         RELATION_PROVIDES_API,
         RELATION_API_PROVIDED_BY,
       );
       doEmit(
+        emit,
+        selfRef,
         component.spec.consumesApis,
         { defaultKind: 'API', defaultNamespace: selfRef.namespace },
         RELATION_CONSUMES_API,
         RELATION_API_CONSUMED_BY,
       );
       doEmit(
+        emit,
+        selfRef,
         component.spec.dependsOn,
         { defaultNamespace: selfRef.namespace },
         RELATION_DEPENDS_ON,
         RELATION_DEPENDENCY_OF,
       );
       doEmit(
+        emit,
+        selfRef,
         component.spec.system,
         { defaultKind: 'System', defaultNamespace: selfRef.namespace },
         RELATION_PART_OF,
@@ -181,12 +152,16 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'API') {
       const api = entity as ApiEntity;
       doEmit(
+        emit,
+        selfRef,
         api.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,
       );
       doEmit(
+        emit,
+        selfRef,
         api.spec.system,
         { defaultKind: 'System', defaultNamespace: selfRef.namespace },
         RELATION_PART_OF,
@@ -201,24 +176,32 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'Resource') {
       const resource = entity as ResourceEntity;
       doEmit(
+        emit,
+        selfRef,
         resource.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,
       );
       doEmit(
+        emit,
+        selfRef,
         resource.spec.dependsOn,
         { defaultNamespace: selfRef.namespace },
         RELATION_DEPENDS_ON,
         RELATION_DEPENDENCY_OF,
       );
       doEmit(
+        emit,
+        selfRef,
         resource.spec.dependencyOf,
         { defaultNamespace: selfRef.namespace },
         RELATION_DEPENDENCY_OF,
         RELATION_DEPENDS_ON,
       );
       doEmit(
+        emit,
+        selfRef,
         resource.spec.system,
         { defaultKind: 'System', defaultNamespace: selfRef.namespace },
         RELATION_PART_OF,
@@ -233,6 +216,8 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'User') {
       const user = entity as UserEntity;
       doEmit(
+        emit,
+        selfRef,
         user.spec.memberOf,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_MEMBER_OF,
@@ -247,18 +232,24 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'Group') {
       const group = entity as GroupEntity;
       doEmit(
+        emit,
+        selfRef,
         group.spec.parent,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_CHILD_OF,
         RELATION_PARENT_OF,
       );
       doEmit(
+        emit,
+        selfRef,
         group.spec.children,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_PARENT_OF,
         RELATION_CHILD_OF,
       );
       doEmit(
+        emit,
+        selfRef,
         group.spec.members,
         { defaultKind: 'User', defaultNamespace: selfRef.namespace },
         RELATION_HAS_MEMBER,
@@ -273,12 +264,16 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'System') {
       const system = entity as SystemEntity;
       doEmit(
+        emit,
+        selfRef,
         system.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,
       );
       doEmit(
+        emit,
+        selfRef,
         system.spec.domain,
         { defaultKind: 'Domain', defaultNamespace: selfRef.namespace },
         RELATION_PART_OF,
@@ -293,6 +288,8 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'Domain') {
       const domain = entity as DomainEntity;
       doEmit(
+        emit,
+        selfRef,
         domain.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,

@@ -24,6 +24,7 @@ import { CatalogProcessorParser as CatalogProcessorParser_2 } from '@backstage/p
 import { CatalogProcessorRefreshKeysResult as CatalogProcessorRefreshKeysResult_2 } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorRelationResult as CatalogProcessorRelationResult_2 } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorResult as CatalogProcessorResult_2 } from '@backstage/plugin-catalog-node';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { DefaultCatalogCollatorFactory as DefaultCatalogCollatorFactory_2 } from '@backstage/plugin-search-backend-module-catalog';
 import type { DefaultCatalogCollatorFactoryOptions as DefaultCatalogCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-catalog';
@@ -314,6 +315,21 @@ export type DefaultCatalogCollatorFactoryOptions =
 
 // @public @deprecated (undocumented)
 export type DeferredEntity = DeferredEntity_2;
+
+// Warning: (ae-missing-release-tag) "doEmit" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function doEmit(
+  emit: CatalogProcessorEmit_2,
+  selfRef: CompoundEntityRef,
+  targets: string | string[] | undefined,
+  context: {
+    defaultKind?: string;
+    defaultNamespace: string;
+  },
+  outgoingRelation: string,
+  incomingRelation: string,
+): void;
 
 // @public @deprecated (undocumented)
 export type EntitiesSearchFilter = EntitiesSearchFilter_2;

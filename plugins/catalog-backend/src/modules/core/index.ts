@@ -30,3 +30,4 @@ export type {
 } from './PlaceholderProcessor';
 export { UrlReaderProcessor } from './UrlReaderProcessor';
 export { parseEntityYaml } from '../util/parse';
+export { doEmit } from '../util/doEmit';

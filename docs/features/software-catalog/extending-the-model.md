@@ -450,13 +450,6 @@ packages, and you may choose to adopt this pattern as well.
 You can generate an isomorphic plugin package by running:`yarn new --select plugin-common`
 or you can run `yarn new` and then select "plugin-common" from the list of options
 
-There's at this point no existing templates for generating isomorphic plugins
-using the `@backstage/cli`. Perhaps the simplest wat to get started right now is
-to copy the contents of one of the existing packages in the main repository,
-such as `plugins/scaffolder-common`, and rename the folder and file contents to
-the desired name. This example uses _foobar_ as the plugin name so the plugin
-will be named _foobar-common_.
-
 Once you have a common package in place you can start adding your own entity
 definitions. For the exact details on how to do that we defer to getting
 inspired by the existing
@@ -475,9 +468,19 @@ We also provide a high-level example of what a catalog process for a custom
 entity might look like:
 
 ```ts
-import { CatalogProcessor, CatalogProcessorEmit, processingResult } from '@backstage/plugin-catalog-node';
-import { LocationSpec } from '@backstage/plugin-catalog-common'
-import { Entity, entityKindSchemaValidator } from '@backstage/catalog-model';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+} from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
+import {
+  Entity,
+  RELATION_OWNED_BY,
+  RELATION_OWNER_OF,
+  entityKindSchemaValidator,
+  getCompoundEntityRef,
+} from '@backstage/catalog-model';
+import { doEmit } from '@backstage/plugin-catalog-backend';
 
 // For an example of the JSONSchema format and how to use $ref markers to the
 // base definitions, see:
@@ -496,7 +499,7 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
 
   // Return processor name
   getProcessorName(): string {
-    return 'FoobarEntitiesProcessor'
+    return 'FoobarEntitiesProcessor';
   }
 
   // validateEntityKind is responsible for signaling to the catalog processing
@@ -525,17 +528,27 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
       entity.apiVersion === 'example.com/v1alpha1' &&
       entity.kind === 'Foobar'
     ) {
+      const selfRef = getCompoundEntityRef(entity);
       const foobarEntity = entity as FoobarEntityV1alpha1;
 
       // Typically you will want to emit any relations associated with the
-      // entity here.
-      emit(processingResult.relation({ ... }))
+      // entity here. The following example will setup the proper owner relationships as an example.
+      doEmit(
+        emit,
+        selfRef,
+        foobarEntity.spec.owner,
+        { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
+        RELATION_OWNED_BY,
+        RELATION_OWNER_OF,
+      );
     }
 
     return entity;
   }
 }
 ```
+
+The [`BuiltinKindsEntityProcessor`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/catalog-backend/src/modules/core/BuiltinKindsEntityProcessor.ts#L86) has more example of the various relations that you might want to use, feel free to look at it for inspiration.
 
 Once the processor is created it can be wired up to the catalog via the
 `CatalogBuilder` in `packages/backend/src/plugins/catalog.ts`:
