@@ -24,6 +24,5 @@ export type {
   TaskCompletionState,
   TaskContext,
   TaskEventType,
-  TaskState,
   TaskStatus,
 } from './types';

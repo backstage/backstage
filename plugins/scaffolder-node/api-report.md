@@ -410,19 +410,6 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 // @public
-export type TaskState = {
-  [key: string]:
-    | {
-        status: 'failed';
-        reason: string;
-      }
-    | {
-        status: 'success';
-        value: JsonValue;
-      };
-};
-
-// @public
 export type TaskStatus =
   | 'cancelled'
   | 'completed'

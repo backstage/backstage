@@ -27,20 +27,6 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 /**
- * The state of all task's checkpoints
- *
- * @public
- */
-export type TaskState = {
-  [key: string]:
-    | { status: 'failed'; reason: string }
-    | {
-        status: 'success';
-        value: JsonValue;
-      };
-};
-
-/**
  * The status of each step of the Task
  *
  * @public
