@@ -125,7 +125,6 @@ export type BackstagePrincipalTypes = {
 export type BackstageServicePrincipal = {
   type: 'service';
   subject: string;
-  permissions?: string[];
 };
 
 // @public (undocumented)
