@@ -15,11 +15,11 @@
  */
 
 import {
-  BackstageUserCredentials,
   UserInfoService,
   BackstageUserInfo,
   coreServices,
   createServiceFactory,
+  BackstageCredentials,
 } from '@backstage/backend-plugin-api';
 import { toInternalBackstageCredentials } from '../auth/authServiceFactory';
 import { decodeJwt } from 'jose';
@@ -27,11 +27,14 @@ import { decodeJwt } from 'jose';
 // TODO: The intention is for this to eventually be replaced by a call to the auth-backend
 export class DefaultUserInfoService implements UserInfoService {
   async getUserInfo(
-    credentials: BackstageUserCredentials,
+    credentials: BackstageCredentials,
   ): Promise<BackstageUserInfo> {
     const internalCredentials = toInternalBackstageCredentials(credentials);
-    if (internalCredentials.type !== 'user') {
+    if (internalCredentials.principal.type !== 'user') {
       throw new Error('Only user credentials are supported');
+    }
+    if (!internalCredentials.token) {
+      throw new Error('User credentials is unexpectedly missing token');
     }
     const { sub: userEntityRef, ent: ownershipEntityRefs = [] } = decodeJwt(
       internalCredentials.token,

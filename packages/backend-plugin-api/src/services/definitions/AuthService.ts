@@ -17,9 +17,7 @@
 /**
  * @public
  */
-export type BackstageUserCredentials = {
-  $$type: '@backstage/BackstageCredentials';
-
+export type BackstageUserPrincipal = {
   type: 'user';
 
   userEntityRef: string;
@@ -28,27 +26,54 @@ export type BackstageUserCredentials = {
 /**
  * @public
  */
-export type BackstageServiceCredentials = {
-  $$type: '@backstage/BackstageCredentials';
-
-  type: 'service';
-
-  subject: string;
+export type BackstageNonePrincipal = {
+  type: 'none';
 };
 
 /**
  * @public
  */
-export type BackstageCredentials =
-  | BackstageUserCredentials
-  | BackstageServiceCredentials;
+export type BackstageServicePrincipal = {
+  type: 'service';
+
+  // Exact format TBD, possibly 'plugin:<pluginId>' or 'external:<externalServiceId>'
+  subject: string;
+
+  // Not implemented in the first iteration, but this is how we might extend this in the future
+  permissions?: string[];
+};
+
+/**
+ * @public
+ */
+export type BackstageCredentials<TPrincipal = unknown> = {
+  $$type: '@backstage/BackstageCredentials';
+
+  principal: TPrincipal;
+};
+
+/**
+ * @public
+ */
+export type BackstagePrincipalTypes = {
+  user: BackstageUserPrincipal;
+  service: BackstageServicePrincipal;
+};
 
 /**
  * @public
  */
 export interface AuthService {
   authenticate(token: string): Promise<BackstageCredentials>;
-  issueServiceToken(options?: {
+
+  isPrincipal<TType extends keyof BackstagePrincipalTypes>(
+    credentials: BackstageCredentials,
+    type: TType,
+  ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
+
+  // TODO: should the caller provide the target plugin ID?
+  // TODO: how can we make it very difficult to forget to forward credentials
+  issueToken(options: {
     forward?: BackstageCredentials;
   }): Promise<{ token: string }>;
 }

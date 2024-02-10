@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstageUserCredentials } from './AuthService';
+import { BackstageCredentials } from './AuthService';
 
 /** @public */
 export interface BackstageUserInfo {
@@ -24,7 +24,5 @@ export interface BackstageUserInfo {
 
 /** @public */
 export interface UserInfoService {
-  getUserInfo(
-    credentials: BackstageUserCredentials,
-  ): Promise<BackstageUserInfo>;
+  getUserInfo(credentials: BackstageCredentials): Promise<BackstageUserInfo>;
 }

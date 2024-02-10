@@ -16,19 +16,21 @@
 
 import {
   AuthService,
-  BackstageCredentialTypes,
   BackstageCredentials,
-  BackstageUnauthorizedCredentials,
+  BackstageHttpAccessToPrincipalTypesMapping,
   DiscoveryService,
   HttpAuthService,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { NotAllowedError } from '@backstage/errors';
+import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import { parse as parseCookie } from 'cookie';
 import { Request, Response } from 'express';
 import { decodeJwt } from 'jose';
-import { toInternalBackstageCredentials } from '../auth/authServiceFactory';
+import {
+  createCredentialsWithNonePrincipal,
+  toInternalBackstageCredentials,
+} from '../auth/authServiceFactory';
 
 const BACKSTAGE_AUTH_COOKIE = 'backstage-auth';
 
@@ -58,19 +60,8 @@ function getTokenFromRequest(req: Request) {
 const credentialsSymbol = Symbol('backstage-credentials');
 
 type RequestWithCredentials = Request & {
-  [credentialsSymbol]?: Promise<{
-    credentials: BackstageCredentials | BackstageUnauthorizedCredentials;
-    // TODO: This is temporary and should be removed once we have proper cookie handling in place
-    isCookie: boolean;
-  }>;
+  [credentialsSymbol]?: Promise<BackstageCredentials>;
 };
-
-function createUnauthorizedCredentials(): BackstageUnauthorizedCredentials {
-  return {
-    $$type: '@backstage/BackstageCredentials',
-    type: 'unauthorized',
-  };
-}
 
 class DefaultHttpAuthService implements HttpAuthService {
   constructor(
@@ -79,63 +70,94 @@ class DefaultHttpAuthService implements HttpAuthService {
     private readonly pluginId: string,
   ) {}
 
-  async #getCredentials(req: Request) {
+  async #extractCredentialsFromRequest(req: Request) {
     const { token, isCookie } = getTokenFromRequest(req);
-    // TODO: Is this where we match against configured rules?
     if (!token) {
-      return { credentials: createUnauthorizedCredentials(), isCookie };
+      return createCredentialsWithNonePrincipal();
     }
-    return { credentials: await this.auth.authenticate(token), isCookie };
-  }
 
-  async #getCredentialsCached(req: /*  */ RequestWithCredentials) {
-    return (req[credentialsSymbol] ??= this.#getCredentials(req));
-  }
-
-  async credentials<TAllowed extends keyof BackstageCredentialTypes>(
-    req: RequestWithCredentials,
-    options: {
-      allow: TAllowed[];
-    },
-  ): Promise<BackstageCredentialTypes[TAllowed]> {
-    const { credentials, isCookie } = await this.#getCredentialsCached(req);
-
-    if (credentials.type === 'user' && isCookie) {
-      if (options.allow.includes('user-cookie' as TAllowed)) {
-        return credentials as BackstageCredentialTypes[TAllowed];
+    const credentials = toInternalBackstageCredentials(
+      await this.auth.authenticate(token),
+    );
+    if (isCookie) {
+      if (credentials.principal.type !== 'user') {
+        throw new AuthenticationError(
+          'Refusing to authenticate non-user principal with cookie auth',
+        );
       }
-      throw new NotAllowedError(
-        `This endpoint does not allow 'user-cookie' credentials`,
-      );
+      credentials.authMethod = 'cookie';
     }
 
-    if (!options.allow.includes(credentials.type as TAllowed)) {
-      throw new NotAllowedError(
-        `This endpoint does not allow '${credentials.type}' credentials`,
-      );
-    }
-
-    return credentials as BackstageCredentialTypes[TAllowed];
+    return credentials;
   }
 
-  async requestHeaders(options?: {
+  async #getCredentials(req: /*  */ RequestWithCredentials) {
+    return (req[credentialsSymbol] ??=
+      this.#extractCredentialsFromRequest(req));
+  }
+
+  async credentials<
+    TAllowed extends
+      | keyof BackstageHttpAccessToPrincipalTypesMapping
+      | undefined = undefined,
+  >(
+    req: Request,
+    options?: {
+      allow: Array<TAllowed>;
+    },
+  ): Promise<
+    BackstageCredentials<
+      TAllowed extends keyof BackstageHttpAccessToPrincipalTypesMapping
+        ? BackstageHttpAccessToPrincipalTypesMapping[TAllowed]
+        : unknown
+    >
+  > {
+    const credentials = toInternalBackstageCredentials(
+      await this.#getCredentials(req),
+    );
+
+    // TODO break out into more readable function as we always
+    // want to check cookie regardless if options are set or not
+    // Probably asserts function that ensures authMethod = 'token' after cookie check
+    if (credentials.authMethod === 'cookie') {
+      if (options && !options.allow.includes('user-cookie' as TAllowed)) {
+        throw new NotAllowedError(
+          `This endpoint does not allow 'user-cookie' credentials`,
+        );
+      }
+    } else if (
+      options &&
+      !options.allow.includes(credentials.principal.type as TAllowed)
+    ) {
+      throw new NotAllowedError(
+        `This endpoint does not allow '${credentials.principal.type}' credentials`,
+      );
+    }
+
+    return credentials as any;
+  }
+
+  async requestHeaders(options: {
     forward?: BackstageCredentials;
   }): Promise<Record<string, string>> {
     return {
-      Authorization: `Bearer ${await this.auth.issueServiceToken(options)}`,
+      Authorization: `Bearer ${await this.auth.issueToken(options)}`,
     };
   }
 
   async issueUserCookie(res: Response): Promise<void> {
     const credentials = await this.credentials(res.req, { allow: ['user'] });
 
-    // https://backstage.spotify.net/api/catalog
+    // https://backstage.example.com/api/catalog
     const externalBaseUrlStr = await this.discovery.getExternalBaseUrl(
       this.pluginId,
     );
     const externalBaseUrl = new URL(externalBaseUrlStr);
 
     const { token } = toInternalBackstageCredentials(credentials);
+    if (!token) {
+      throw new Error('User credentials is unexpectedly missing token');
+    }
 
     // TODO: Proper refresh and expiration handling
     const expires = decodeJwt(token).exp!;
@@ -149,6 +171,7 @@ class DefaultHttpAuthService implements HttpAuthService {
       priority: 'high',
       sameSite: 'lax', // TBD
     });
+
     throw new Error('Method not implemented.');
   }
 }
