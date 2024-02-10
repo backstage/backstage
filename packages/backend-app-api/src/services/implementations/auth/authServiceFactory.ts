@@ -18,8 +18,10 @@ import { ServerTokenManager, TokenManager } from '@backstage/backend-common';
 import {
   AuthService,
   BackstageCredentials,
-  BackstageServiceCredentials,
-  BackstageUserCredentials,
+  BackstagePrincipalTypes,
+  BackstageServicePrincipal,
+  BackstageNonePrincipal,
+  BackstageUserPrincipal,
   IdentityService,
   coreServices,
   createServiceFactory,
@@ -32,58 +34,76 @@ import {
 import { decodeJwt } from 'jose';
 
 /** @internal */
-export type InternalBackstageServiceCredentials =
-  BackstageServiceCredentials & {
+export type InternalBackstageCredentials<TPrincipal = unknown> =
+  BackstageCredentials<TPrincipal> & {
     version: string;
-    token: string;
+    token?: string;
+    authMethod: 'token' | 'cookie' | 'none';
   };
 
-function createServiceCredentials(
+export function createCredentialsWithServicePrincipal(
   sub: string,
   token: string,
-): BackstageServiceCredentials {
+): InternalBackstageCredentials<BackstageServicePrincipal> {
   return {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
     token,
-    type: 'service',
-    subject: sub,
-  } as InternalBackstageServiceCredentials;
+    principal: {
+      type: 'service',
+      subject: sub,
+    },
+    authMethod: 'token',
+  };
 }
 
-/** @internal */
-export type InternalBackstageUserCredentials = BackstageUserCredentials & {
-  version: string;
-  token: string;
-};
-
-function createUserCredentials(
+export function createCredentialsWithUserPrincipal(
   sub: string,
   token: string,
-): BackstageUserCredentials {
+  authMethod: 'token' | 'cookie' = 'token',
+): InternalBackstageCredentials<BackstageUserPrincipal> {
   return {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
     token,
-    type: 'user',
-    userEntityRef: sub,
-  } as InternalBackstageUserCredentials;
+    principal: {
+      type: 'user',
+      userEntityRef: sub,
+    },
+    authMethod,
+  };
+}
+
+export function createCredentialsWithNonePrincipal(): InternalBackstageCredentials<BackstageNonePrincipal> {
+  return {
+    $$type: '@backstage/BackstageCredentials',
+    version: 'v1',
+    principal: {
+      type: 'none',
+    },
+    authMethod: 'none',
+  };
 }
 
 export function toInternalBackstageCredentials(
   credentials: BackstageCredentials,
-): InternalBackstageServiceCredentials | InternalBackstageUserCredentials {
+): InternalBackstageCredentials<
+  BackstageUserPrincipal | BackstageServicePrincipal | BackstageNonePrincipal
+> {
   if (credentials.$$type !== '@backstage/BackstageCredentials') {
     throw new Error('Invalid credential type');
   }
-  const internalCredentials = credentials as
-    | InternalBackstageServiceCredentials
-    | InternalBackstageUserCredentials;
+
+  const internalCredentials = credentials as InternalBackstageCredentials<
+    BackstageUserPrincipal | BackstageServicePrincipal | BackstageNonePrincipal
+  >;
+
   if (internalCredentials.version !== 'v1') {
     throw new Error(
       `Invalid credential version ${internalCredentials.version}`,
     );
   }
+
   return internalCredentials;
 }
 
@@ -100,7 +120,10 @@ class DefaultAuthService implements AuthService {
     // Legacy service-to-service token
     if (sub === 'backstage-server' && !aud) {
       await this.tokenManager.authenticate(token);
-      return createServiceCredentials('external:backstage-plugin', token);
+      return createCredentialsWithServicePrincipal(
+        'external:backstage-plugin',
+        token,
+      );
     }
 
     // User Backstage token
@@ -111,21 +134,42 @@ class DefaultAuthService implements AuthService {
     } as IdentityApiGetIdentityRequest);
 
     if (!identity) {
-      throw new AuthenticationError('No identity found');
+      throw new AuthenticationError('Invalid user token');
     }
 
-    return createUserCredentials(identity.identity.userEntityRef, token);
+    return createCredentialsWithUserPrincipal(
+      identity.identity.userEntityRef,
+      token,
+    );
   }
 
-  async issueServiceToken(options?: {
+  isPrincipal<TType extends keyof BackstagePrincipalTypes>(
+    credentials: BackstageCredentials,
+    type: TType,
+  ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]> {
+    const principal = credentials.principal as
+      | BackstageUserPrincipal
+      | BackstageServicePrincipal;
+
+    if (principal.type !== type) {
+      return false;
+    }
+
+    return true;
+  }
+
+  async issueToken(options?: {
     forward?: BackstageCredentials;
   }): Promise<{ token: string }> {
     const internalForward =
       options?.forward && toInternalBackstageCredentials(options.forward);
 
     if (internalForward) {
-      const { type } = internalForward;
+      const { type } = internalForward.principal;
       if (type === 'user') {
+        if (!internalForward.token) {
+          throw new Error('User credentials is unexpectedly missing token');
+        }
         return { token: internalForward.token };
       } else if (type !== 'service') {
         throw new AuthenticationError(

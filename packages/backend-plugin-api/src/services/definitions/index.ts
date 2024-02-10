@@ -18,8 +18,10 @@ export { coreServices } from './coreServices';
 export type {
   AuthService,
   BackstageCredentials,
-  BackstageServiceCredentials,
-  BackstageUserCredentials,
+  BackstageUserPrincipal,
+  BackstageServicePrincipal,
+  BackstagePrincipalTypes,
+  BackstageNonePrincipal,
 } from './AuthService';
 export type {
   CacheService,
@@ -35,8 +37,7 @@ export type {
 } from './HttpRouterService';
 export type {
   HttpAuthService,
-  BackstageCredentialTypes,
-  BackstageUnauthorizedCredentials,
+  BackstageHttpAccessToPrincipalTypesMapping,
 } from './HttpAuthService';
 export type {
   LifecycleService,

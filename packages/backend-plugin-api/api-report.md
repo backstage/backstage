@@ -22,7 +22,12 @@ export interface AuthService {
   // (undocumented)
   authenticate(token: string): Promise<BackstageCredentials>;
   // (undocumented)
-  issueServiceToken(options?: { forward?: BackstageCredentials }): Promise<{
+  isPrincipal<TType extends keyof BackstagePrincipalTypes>(
+    credentials: BackstageCredentials,
+    type: TType,
+  ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
+  // (undocumented)
+  issueToken(options: { forward?: BackstageCredentials }): Promise<{
     token: string;
   }>;
 }
@@ -89,36 +94,35 @@ export interface BackendPluginRegistrationPoints {
 }
 
 // @public (undocumented)
-export type BackstageCredentials =
-  | BackstageUserCredentials
-  | BackstageServiceCredentials;
-
-// @public (undocumented)
-export type BackstageCredentialTypes = {
-  user: BackstageUserCredentials;
-  'user-cookie': BackstageUserCredentials;
-  service: BackstageServiceCredentials;
-  unauthorized: BackstageUnauthorizedCredentials;
+export type BackstageCredentials<TPrincipal = unknown> = {
+  $$type: '@backstage/BackstageCredentials';
+  principal: TPrincipal;
 };
 
 // @public (undocumented)
-export type BackstageServiceCredentials = {
-  $$type: '@backstage/BackstageCredentials';
+export type BackstageHttpAccessToPrincipalTypesMapping = {
+  user: BackstageUserPrincipal;
+  'user-cookie': BackstageUserPrincipal;
+  service: BackstageServicePrincipal;
+  unauthenticated: BackstageNonePrincipal;
+};
+
+// @public (undocumented)
+export type BackstageNonePrincipal = {
+  type: 'none';
+};
+
+// @public (undocumented)
+export type BackstagePrincipalTypes = {
+  user: BackstageUserPrincipal;
+  service: BackstageServicePrincipal;
+};
+
+// @public (undocumented)
+export type BackstageServicePrincipal = {
   type: 'service';
   subject: string;
-};
-
-// @public (undocumented)
-export type BackstageUnauthorizedCredentials = {
-  $$type: '@backstage/BackstageCredentials';
-  type: 'unauthorized';
-};
-
-// @public (undocumented)
-export type BackstageUserCredentials = {
-  $$type: '@backstage/BackstageCredentials';
-  type: 'user';
-  userEntityRef: string;
+  permissions?: string[];
 };
 
 // @public (undocumented)
@@ -128,6 +132,12 @@ export interface BackstageUserInfo {
   // (undocumented)
   userEntityRef: string;
 }
+
+// @public (undocumented)
+export type BackstageUserPrincipal = {
+  type: 'user';
+  userEntityRef: string;
+};
 
 // @public
 export interface CacheService {
@@ -281,14 +291,22 @@ export interface ExtensionPointConfig {
 // @public (undocumented)
 export interface HttpAuthService {
   // (undocumented)
-  createHttpPluginRouterMiddleware(): Handler;
-  // (undocumented)
-  credentials<TAllowed extends keyof BackstageCredentialTypes>(
+  credentials<
+    TAllowed extends
+      | keyof BackstageHttpAccessToPrincipalTypesMapping
+      | undefined = undefined,
+  >(
     req: Request_2,
-    options: {
+    options?: {
       allow: Array<TAllowed>;
     },
-  ): Promise<BackstageCredentialTypes[TAllowed]>;
+  ): Promise<
+    BackstageCredentials<
+      TAllowed extends keyof BackstageHttpAccessToPrincipalTypesMapping
+        ? BackstageHttpAccessToPrincipalTypesMapping[TAllowed]
+        : unknown
+    >
+  >;
   // (undocumented)
   issueUserCookie(res: Response_2): Promise<void>;
   // (undocumented)
@@ -547,8 +565,6 @@ export interface UrlReaderService {
 // @public (undocumented)
 export interface UserInfoService {
   // (undocumented)
-  getUserInfo(
-    credentials: BackstageUserCredentials,
-  ): Promise<BackstageUserInfo>;
+  getUserInfo(credentials: BackstageCredentials): Promise<BackstageUserInfo>;
 }
 ```

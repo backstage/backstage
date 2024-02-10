@@ -19,12 +19,15 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 import {
-  InternalBackstageServiceCredentials,
-  InternalBackstageUserCredentials,
+  InternalBackstageCredentials,
   authServiceFactory,
 } from './authServiceFactory';
 import { decodeJwt } from 'jose';
 import { discoveryServiceFactory } from '../discovery';
+import {
+  BackstageServicePrincipal,
+  BackstageUserPrincipal,
+} from '@backstage/backend-plugin-api';
 
 // TODO: Ship discovery mock service in the service factory tester
 const mockDeps = [
@@ -48,18 +51,22 @@ describe('authServiceFactory', () => {
     const searchAuth = await tester.get('search');
     const catalogAuth = await tester.get('catalog');
 
-    const { token: searchToken } = await searchAuth.issueServiceToken();
+    const { token: searchToken } = await searchAuth.issueToken({});
 
     await expect(searchAuth.authenticate(searchToken)).resolves.toEqual(
       expect.objectContaining({
-        type: 'service',
-        subject: 'external:backstage-plugin',
+        principal: {
+          type: 'service',
+          subject: 'external:backstage-plugin',
+        },
       }),
     );
     await expect(catalogAuth.authenticate(searchToken)).resolves.toEqual(
       expect.objectContaining({
-        type: 'service',
-        subject: 'external:backstage-plugin',
+        principal: {
+          type: 'service',
+          subject: 'external:backstage-plugin',
+        },
       }),
     );
   });
@@ -72,14 +79,17 @@ describe('authServiceFactory', () => {
     const catalogAuth = await tester.get('catalog');
 
     await expect(
-      catalogAuth.issueServiceToken({
+      catalogAuth.issueToken({
         forward: {
           $$type: '@backstage/BackstageCredentials',
           version: 'v1',
-          type: 'user',
-          userEntityRef: 'user:default/alice',
+          authMethod: 'token',
           token: 'alice-token',
-        } as InternalBackstageUserCredentials,
+          principal: {
+            type: 'user',
+            userEntityRef: 'user:default/alice',
+          },
+        } as InternalBackstageCredentials<BackstageUserPrincipal>,
       }),
     ).resolves.toEqual({ token: 'alice-token' });
   });
@@ -91,14 +101,17 @@ describe('authServiceFactory', () => {
 
     const catalogAuth = await tester.get('catalog');
 
-    const { token } = await catalogAuth.issueServiceToken({
+    const { token } = await catalogAuth.issueToken({
       forward: {
         $$type: '@backstage/BackstageCredentials',
         version: 'v1',
-        type: 'service',
-        subject: 'external:backstage-plugin',
+        authMethod: 'token',
         token: 'some-upstream-service-token',
-      } as InternalBackstageServiceCredentials,
+        principal: {
+          type: 'service',
+          subject: 'external:upstream-service',
+        },
+      } as InternalBackstageCredentials<BackstageServicePrincipal>,
     });
 
     expect(decodeJwt(token)).toEqual(

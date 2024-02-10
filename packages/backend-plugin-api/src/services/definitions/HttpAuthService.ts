@@ -16,36 +16,39 @@
 
 import { Request, Response } from 'express';
 import {
-  BackstageUserCredentials,
-  BackstageServiceCredentials,
   BackstageCredentials,
+  BackstageServicePrincipal,
+  BackstageNonePrincipal,
+  BackstageUserPrincipal,
 } from './AuthService';
 
 /** @public */
-export type BackstageUnauthorizedCredentials = {
-  $$type: '@backstage/BackstageCredentials';
-
-  type: 'unauthorized';
-};
-
-/** @public */
-export type BackstageCredentialTypes = {
-  user: BackstageUserCredentials;
-  'user-cookie': BackstageUserCredentials;
-  service: BackstageServiceCredentials;
-  unauthorized: BackstageUnauthorizedCredentials;
+export type BackstageHttpAccessToPrincipalTypesMapping = {
+  user: BackstageUserPrincipal;
+  'user-cookie': BackstageUserPrincipal;
+  service: BackstageServicePrincipal;
+  unauthenticated: BackstageNonePrincipal;
 };
 
 /** @public */
 export interface HttpAuthService {
-  credentials<TAllowed extends keyof BackstageCredentialTypes>(
+  credentials<
+    TAllowed extends
+      | keyof BackstageHttpAccessToPrincipalTypesMapping
+      | undefined = undefined,
+  >(
     req: Request,
-    options: {
+    options?: {
       allow: Array<TAllowed>;
     },
-  ): Promise<BackstageCredentialTypes[TAllowed]>;
+  ): Promise<
+    BackstageCredentials<
+      TAllowed extends keyof BackstageHttpAccessToPrincipalTypesMapping
+        ? BackstageHttpAccessToPrincipalTypesMapping[TAllowed]
+        : unknown
+    >
+  >;
 
-  // TODO: Keep an eye on this, might not be needed
   requestHeaders(options?: {
     forward?: BackstageCredentials;
   }): Promise<Record<string, string>>;
