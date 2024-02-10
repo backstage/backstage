@@ -147,7 +147,7 @@ For a more complete example of a custom theme including Backstage and Material U
 
 ## Custom Typography
 
-When creating a custom theme you can also customize vairous aspexts of the default typography, here's an exampl using simplified theme:
+When creating a custom theme you can also customize various aspects of the default typography, here's an example using simplified theme:
 
 ```tsx
 import {
