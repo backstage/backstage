@@ -19,6 +19,7 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 
+/** @public */
 export function doEmit(
   emit: CatalogProcessorEmit,
   selfRef: CompoundEntityRef,

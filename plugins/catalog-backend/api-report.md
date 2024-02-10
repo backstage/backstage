@@ -316,8 +316,6 @@ export type DefaultCatalogCollatorFactoryOptions =
 // @public @deprecated (undocumented)
 export type DeferredEntity = DeferredEntity_2;
 
-// Warning: (ae-missing-release-tag) "doEmit" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function doEmit(
   emit: CatalogProcessorEmit_2,
