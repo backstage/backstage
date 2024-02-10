@@ -28,25 +28,19 @@ export type BackstageHttpAccessToPrincipalTypesMapping = {
   'user-cookie': BackstageUserPrincipal;
   service: BackstageServicePrincipal;
   unauthenticated: BackstageNonePrincipal;
+  unknown: unknown;
 };
 
 /** @public */
 export interface HttpAuthService {
   credentials<
     TAllowed extends
-      | keyof BackstageHttpAccessToPrincipalTypesMapping
-      | undefined = undefined,
+      | keyof BackstageHttpAccessToPrincipalTypesMapping = 'unknown',
   >(
     req: Request,
-    options?: {
-      allow: Array<TAllowed>;
-    },
+    options?: { allow: Array<TAllowed> },
   ): Promise<
-    BackstageCredentials<
-      TAllowed extends keyof BackstageHttpAccessToPrincipalTypesMapping
-        ? BackstageHttpAccessToPrincipalTypesMapping[TAllowed]
-        : unknown
-    >
+    BackstageCredentials<BackstageHttpAccessToPrincipalTypesMapping[TAllowed]>
   >;
 
   requestHeaders(options?: {

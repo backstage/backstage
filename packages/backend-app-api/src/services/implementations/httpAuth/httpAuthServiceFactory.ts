@@ -98,19 +98,14 @@ class DefaultHttpAuthService implements HttpAuthService {
 
   async credentials<
     TAllowed extends
-      | keyof BackstageHttpAccessToPrincipalTypesMapping
-      | undefined = undefined,
+      | keyof BackstageHttpAccessToPrincipalTypesMapping = 'unknown',
   >(
     req: Request,
     options?: {
       allow: Array<TAllowed>;
     },
   ): Promise<
-    BackstageCredentials<
-      TAllowed extends keyof BackstageHttpAccessToPrincipalTypesMapping
-        ? BackstageHttpAccessToPrincipalTypesMapping[TAllowed]
-        : unknown
-    >
+    BackstageCredentials<BackstageHttpAccessToPrincipalTypesMapping[TAllowed]>
   > {
     const credentials = toInternalBackstageCredentials(
       await this.#getCredentials(req),
