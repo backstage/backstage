@@ -222,6 +222,7 @@ nav:
       - Product FAQ: 'faq/product.md'
       - Technical FAQ: 'faq/technical.md'
   - Contribute:
-      - Project Structure: 'getting-started/project-structure.md'
+      - Contributions: 'contribute/index.md'
+      - Project Structure: 'contribute/project-structure.md'
   - References:
       - Glossary: 'references/glossary.md'
