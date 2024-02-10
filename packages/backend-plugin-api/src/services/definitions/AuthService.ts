@@ -38,9 +38,6 @@ export type BackstageServicePrincipal = {
 
   // Exact format TBD, possibly 'plugin:<pluginId>' or 'external:<externalServiceId>'
   subject: string;
-
-  // Not implemented in the first iteration, but this is how we might extend this in the future
-  permissions?: string[];
 };
 
 /**
