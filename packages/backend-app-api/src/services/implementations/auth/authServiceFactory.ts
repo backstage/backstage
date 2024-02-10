@@ -43,12 +43,10 @@ export type InternalBackstageCredentials<TPrincipal = unknown> =
 
 export function createCredentialsWithServicePrincipal(
   sub: string,
-  token: string,
 ): InternalBackstageCredentials<BackstageServicePrincipal> {
   return {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
-    token,
     principal: {
       type: 'service',
       subject: sub,
@@ -112,6 +110,7 @@ class DefaultAuthService implements AuthService {
   constructor(
     private readonly tokenManager: TokenManager,
     private readonly identity: IdentityService,
+    private readonly pluginId: string,
   ) {}
 
   async authenticate(token: string): Promise<BackstageCredentials> {
@@ -120,10 +119,7 @@ class DefaultAuthService implements AuthService {
     // Legacy service-to-service token
     if (sub === 'backstage-server' && !aud) {
       await this.tokenManager.authenticate(token);
-      return createCredentialsWithServicePrincipal(
-        'external:backstage-plugin',
-        token,
-      );
+      return createCredentialsWithServicePrincipal('external:backstage-plugin');
     }
 
     // User Backstage token
@@ -158,28 +154,31 @@ class DefaultAuthService implements AuthService {
     return true;
   }
 
-  async issueToken(options?: {
-    forward?: BackstageCredentials;
-  }): Promise<{ token: string }> {
-    const internalForward =
-      options?.forward && toInternalBackstageCredentials(options.forward);
+  async getOwnCredentials(): Promise<
+    BackstageCredentials<BackstageServicePrincipal>
+  > {
+    return createCredentialsWithServicePrincipal(`plugin:${this.pluginId}`);
+  }
 
-    if (internalForward) {
-      const { type } = internalForward.principal;
-      if (type === 'user') {
+  async issueServiceToken(options: {
+    forward: BackstageCredentials;
+  }): Promise<{ token: string }> {
+    const internalForward = toInternalBackstageCredentials(options.forward);
+    const { type } = internalForward.principal;
+
+    switch (type) {
+      case 'service':
+        return this.tokenManager.getToken();
+      case 'user':
         if (!internalForward.token) {
           throw new Error('User credentials is unexpectedly missing token');
         }
         return { token: internalForward.token };
-      } else if (type !== 'service') {
+      default:
         throw new AuthenticationError(
           `Refused to issue service token for credential type '${type}'`,
         );
-      }
     }
-
-    const { token } = await this.tokenManager.getToken();
-    return { token };
   }
 }
 
@@ -190,12 +189,13 @@ export const authServiceFactory = createServiceFactory({
     config: coreServices.rootConfig,
     logger: coreServices.rootLogger,
     discovery: coreServices.discovery,
+    plugin: coreServices.pluginMetadata,
   },
   createRootContext({ config, logger }) {
     return ServerTokenManager.fromConfig(config, { logger });
   },
-  async factory({ discovery }, tokenManager) {
+  async factory({ discovery, plugin }, tokenManager) {
     const identity = DefaultIdentityClient.create({ discovery });
-    return new DefaultAuthService(tokenManager, identity);
+    return new DefaultAuthService(tokenManager, identity, plugin.getId());
   },
 });

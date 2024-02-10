@@ -43,8 +43,8 @@ export interface HttpAuthService {
     BackstageCredentials<BackstageHttpAccessToPrincipalTypesMapping[TAllowed]>
   >;
 
-  requestHeaders(options?: {
-    forward?: BackstageCredentials;
+  requestHeaders(options: {
+    forward: BackstageCredentials;
   }): Promise<Record<string, string>>;
 
   issueUserCookie(res: Response): Promise<void>;
