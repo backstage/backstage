@@ -194,6 +194,6 @@ export interface Config {
     /**
      * Additional app origins to allow for authenticating
      */
-    experimentalExtraAllowedOrigins?: string;
+    experimentalExtraAllowedOrigins?: string[];
   };
 }
