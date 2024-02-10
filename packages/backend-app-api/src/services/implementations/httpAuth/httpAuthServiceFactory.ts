@@ -133,10 +133,10 @@ class DefaultHttpAuthService implements HttpAuthService {
   }
 
   async requestHeaders(options: {
-    forward?: BackstageCredentials;
+    forward: BackstageCredentials;
   }): Promise<Record<string, string>> {
     return {
-      Authorization: `Bearer ${await this.auth.issueToken(options)}`,
+      Authorization: `Bearer ${await this.auth.issueServiceToken(options)}`,
     };
   }
 

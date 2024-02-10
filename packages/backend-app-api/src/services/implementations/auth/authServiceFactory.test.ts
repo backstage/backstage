@@ -51,7 +51,9 @@ describe('authServiceFactory', () => {
     const searchAuth = await tester.get('search');
     const catalogAuth = await tester.get('catalog');
 
-    const { token: searchToken } = await searchAuth.issueToken({});
+    const { token: searchToken } = await searchAuth.issueServiceToken({
+      forward: await searchAuth.getOwnCredentials(),
+    });
 
     await expect(searchAuth.authenticate(searchToken)).resolves.toEqual(
       expect.objectContaining({
@@ -79,7 +81,7 @@ describe('authServiceFactory', () => {
     const catalogAuth = await tester.get('catalog');
 
     await expect(
-      catalogAuth.issueToken({
+      catalogAuth.issueServiceToken({
         forward: {
           $$type: '@backstage/BackstageCredentials',
           version: 'v1',
@@ -101,7 +103,7 @@ describe('authServiceFactory', () => {
 
     const catalogAuth = await tester.get('catalog');
 
-    const { token } = await catalogAuth.issueToken({
+    const { token } = await catalogAuth.issueServiceToken({
       forward: {
         $$type: '@backstage/BackstageCredentials',
         version: 'v1',
