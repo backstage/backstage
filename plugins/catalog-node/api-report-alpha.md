@@ -54,6 +54,13 @@ export interface CatalogProcessingExtensionPoint {
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
   ): void;
+  // (undocumented)
+  setOnProcessingErrorHandler(
+    handler: (event: {
+      unprocessedEntity: Entity;
+      errors: Error[];
+    }) => Promise<void> | void,
+  ): void;
 }
 
 // @alpha (undocumented)

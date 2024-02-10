@@ -6,6 +6,7 @@ coverage
 templates
 api-report.md
 api-report-*.md
+knip-report.md
 cli-report.md
 plugins/scaffolder-backend/sample-templates
 .vscode

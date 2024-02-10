@@ -155,7 +155,7 @@ jobs:
     name: Test ${{ matrix.node-version }}
     services:
       postgres16:
-        image: postgres:16@sha256:4d1b17af6f66b852ee3a721f6691a2ca7352f9d28f570a6a48cee4ebe646b2fd
+        image: postgres:16@sha256:09f23e02d76670d3b346a3c00aa33a27cf57aab8341eedfcdaed41459d14f5c4
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -166,7 +166,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres12:
-        image: postgres:12@sha256:aafc7d3faafa5f95fa4709007c742864747a104c3d950f98bb606145208e4a77
+        image: postgres:12@sha256:8ffdca6e9208aceb30653fa0cc1c38956303ace453944b54b4f71019cfe854c1
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -177,7 +177,7 @@ jobs:
         ports:
           - 5432/tcp
       mysql8:
-        image: mysql:8@sha256:d7c20c5ba268c558f4fac62977f8c7125bde0630ff8946b08dde44135ef40df3
+        image: mysql:8@sha256:2a9ef1075ff30c65bbcf4f96b25a03ea3b3f492c284e6c4a612c269ce4c5bb19
         env:
           MYSQL_ROOT_PASSWORD: root
         options: >-

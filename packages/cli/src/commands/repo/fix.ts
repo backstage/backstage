@@ -22,7 +22,11 @@ import {
 } from '@backstage/cli-node';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import {
+  resolve as resolvePath,
+  join as joinPath,
+  relative as relativePath,
+} from 'path';
 import { paths } from '../../lib/paths';
 
 /**
@@ -189,12 +193,64 @@ export function fixSideEffects(pkg: FixablePackage) {
   pkg.changed = true;
 }
 
+export function createRepositoryFieldFixer() {
+  const rootPkg = require(paths.resolveTargetRoot('package.json'));
+  const rootRepoField = rootPkg.repository;
+  if (!rootRepoField) {
+    return () => {};
+  }
+
+  const rootType = rootRepoField.type || 'git';
+  const rootUrl = rootRepoField.url;
+  const rootDir = rootRepoField.directory || '';
+
+  return (pkg: FixablePackage) => {
+    const expectedPath = joinPath(
+      rootDir,
+      relativePath(paths.targetRoot, pkg.dir),
+    );
+    const repoField = pkg.packageJson.repository;
+
+    if (!repoField || typeof repoField === 'string') {
+      const pkgEntries = Object.entries(pkg.packageJson);
+      pkgEntries.splice(
+        // Place it just above the backstage field
+        pkgEntries.findIndex(([name]) => name === 'backstage'),
+        0,
+        [
+          'repository',
+          {
+            type: rootType,
+            url: rootUrl,
+            directory: expectedPath,
+          },
+        ],
+      );
+      pkg.packageJson = Object.fromEntries(pkgEntries) as BackstagePackageJson;
+      pkg.changed = true;
+      return;
+    }
+
+    // If there's a type or URL mismatch, leave the field as is
+    if (repoField.type !== rootType || repoField.url !== rootUrl) {
+      return;
+    }
+
+    if (repoField.directory !== expectedPath) {
+      repoField.directory = expectedPath;
+      pkg.changed = true;
+    }
+  };
+}
+
 export async function command(opts: OptionValues): Promise<void> {
   const packages = await readFixablePackages();
+  const fixRepositoryField = createRepositoryFieldFixer();
 
   for (const pkg of packages) {
     fixPackageExports(pkg);
     fixSideEffects(pkg);
+    fixRepositoryField(pkg);
   }
 
   if (opts.check) {

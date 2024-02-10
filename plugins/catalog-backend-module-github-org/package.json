@@ -10,6 +10,11 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-github-org"
+  },
   "backstage": {
     "role": "backend-plugin-module"
   },
