@@ -402,7 +402,7 @@ backend:
   dangerouslyDisableServiceAuth: true
 ```
 
-The exact impact that this has is that disabled the check in the `HttpRouterService` implementation, effectively applying the `unauthenticated` access level to all routes. Furthermore, it will also change `AuthService` so that the `issueServiceToken()` method will now issue an empty token for a `'none'` principal, rather than throwing.
+The exact impact that this has is that it disables the check in the `HttpRouterService` implementation, effectively applying the `unauthenticated` access level to all routes. Furthermore, it will also change `AuthService` so that the `issueServiceToken()` method will now issue an empty token for a `'none'` principal, rather than throwing.
 
 ## Release Plan
 
