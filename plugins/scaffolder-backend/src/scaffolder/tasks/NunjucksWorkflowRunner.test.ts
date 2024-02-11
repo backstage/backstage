@@ -133,6 +133,36 @@ describe('NunjucksWorkflowRunner', () => {
       },
     });
 
+    actionRegistry.register({
+      id: 'checkpoints-action',
+      description: 'Mock action with checkpoints',
+      handler: async ctx => {
+        let key1 = 0;
+        let key2 = '';
+        let i = 0;
+
+        const incrementKey1 = async () => {
+          key1 += 1;
+          return key1;
+        };
+
+        const appendKey2 = async () => {
+          key2 += 'k';
+          return key2;
+        };
+
+        while (i < 3) {
+          i += 1;
+          ctx.checkpoint?.('key1', incrementKey1);
+        }
+
+        ctx.checkpoint?.('key2', appendKey2);
+
+        ctx.output('key1', key1);
+        ctx.output('key2', key2);
+      },
+    });
+
     mockedPermissionApi.authorizeConditional.mockResolvedValue([
       { result: AuthorizeResult.ALLOW },
     ]);
@@ -536,6 +566,29 @@ describe('NunjucksWorkflowRunner', () => {
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({ input: { foo: 1 } }),
       );
+    });
+
+    it('should deal with checkpoints', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {},
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'checkpoints-action',
+            input: { foo: 1 },
+          },
+        ],
+        output: {
+          key1: '${{steps.test.output.key1}}',
+          key2: '${{steps.test.output.key2}}',
+        },
+      });
+      const result = await runner.execute(task);
+
+      expect(result.output.key1).toEqual(3);
+      expect(result.output.key2).toEqual('k');
     });
 
     it('should template the output from simple actions', async () => {
