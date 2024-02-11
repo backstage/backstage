@@ -75,6 +75,8 @@ For service-to-service communication we will move away from reusing user tokens 
 
 An issue that has been identified in the current auth implementation is that the user information embedded in the Backstage user tokens can grow fairly large. In order to avoid that this becomes a widespread problem, especially as we implement cookie auth with a 4kb size limit, we will remove the ownership entity refs (`ent` claim) from the user tokens. There were already very few consumers of this information in practice - only the `permission-backend` and `signal-backend` plugin packages currently rely on this information. The ownership data will instead be available via a new `UserInfoService`, owned by the `auth-backend`. The implementation of this new service will keep relying on the `ent` claim of the user token initially, but we will also implement a new `/v1/userinfo` endpoint in the `auth-backend` that will migrate to transparently in the future.
 
+Finally, it is also important to be able to disable the built-in protection of Backstage instances, for example when access protection is already provided by an external service, and one wishes to allow unauthenticated access for internal use. All built-in service implementation therefore support a common configuration for specifying the desired access control.
+
 ## Design Details
 
 ### `AuthService` Interface
@@ -84,18 +86,18 @@ The new `AuthService` interface is defined as follows:
 ```ts
 // These credential types are opaque and will also store some internal information, for example bearer tokens
 
-export type BackstageUserCredentials = {
-  $$type: '@backstage/BackstageCredentials';
+export type BackstageNonePrincipal = {
+  type: 'none';
+};
 
+export type BackstageUserPrincipal = {
   type: 'user';
 
   userEntityRef: string;
 };
 
-export type BackstageServiceCredentials = {
-  $$type: '@backstage/BackstageCredentials';
-
-  type: 'service';
+export type BackstageServicePrincipal = {
+  type: 'user';
 
   // Exact format TBD, possibly 'plugin:<pluginId>' or 'external:<externalServiceId>'
   subject: string;
@@ -104,17 +106,31 @@ export type BackstageServiceCredentials = {
   permissions?: string[];
 };
 
-type BackstageCredentials =
-  | BackstageUserCredentials
-  | BackstageServiceCredentials;
+export type BackstageCredentials<TPrincipal = unknown> = {
+  $$type: '@backstage/BackstageCredentials';
+
+  principal: TPrincipal;
+};
+
+export type BackstagePrincipalTypes = {
+  user: BackstageUserPrincipal;
+  service: BackstageServicePrincipal;
+  none: BackstageNonePrincipal;
+};
 
 export interface AuthService {
   authenticate(token: string): Promise<BackstageCredentials>;
 
-  // TODO: should the caller provide the target plugin ID?
-  // TODO: how can we make it very difficult to forget to forward credentials
-  issueToken(options: {
-    forward?: BackstageCredentials;
+  isPrincipal<TType extends keyof BackstagePrincipalTypes>(
+    credentials: BackstageCredentials,
+    type: TType,
+  ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
+
+  getOwnCredentials(): Promise<BackstageCredentials<BackstageServicePrincipal>>;
+
+  // TODO: should the caller provide the target plugin ID? if not - probably skip the object form
+  issueServiceToken(options: {
+    forward: BackstageCredentials;
   }): Promise<{ token: string }>;
 }
 ```
@@ -124,10 +140,13 @@ export interface AuthService {
 The new `UserInfoService` interface is defined as follows:
 
 ```ts
+export interface BackstageUserInfo {
+  userEntityRef: string;
+  ownershipEntityRefs: string[];
+}
+
 export interface UserInfoService {
-  getUserInfo(
-    credentials: BackstageUserCredentials,
-  ): Promise<{ ownershipEntityRefs: string[] /* profile info too? */ }>;
+  getUserInfo(credentials: BackstageCredentials): Promise<BackstageUserInfo>;
 }
 ```
 
@@ -236,30 +255,33 @@ export default createBackendPlugin({
 The new `HttpAuthService` interface is defined as follows:
 
 ```ts
-export type BackstageUnauthorizedCredentials = {
-  $$type: '@backstage/BackstageCredentials';
-
-  type: 'unauthorized';
-};
-
-type BackstageCredentialTypes = {
-  user: BackstageUserCredentials;
-  'user-cookie': BackstageUserCredentials;
-  service: BackstageServiceCredentials;
-  unauthorized: BackstageUnauthorizedCredentials;
+type BackstageHttpAccessToPrincipalTypesMapping = {
+  user: BackstageUserPrincipal;
+  'user-cookie': BackstageUserPrincipal;
+  service: BackstageServicePrincipal;
+  unauthenticated: BackstageNonePrincipal;
+  unknown: unknown;
 };
 
 export interface HttpAuthService {
   // Implementations should cache resolved credentials on the request object
-  credentials<TAllowed extends keyof BackstageCredentialTypes>(
+  credentials<
+    TAllowed extends
+      | keyof BackstageHttpAccessToPrincipalTypesMapping = 'unknown',
+  >(
     req: Request,
-    options?: HttpAuthServiceMiddlewareOptions<TAllowed>,
-  ): Promise<BackstageCredentialTypes[TAllowed]>;
+    options?: { allow: Array<TAllowed> },
+  ): Promise<
+    BackstageCredentials<BackstageHttpAccessToPrincipalTypesMapping[TAllowed]>
+  >;
 
-  requestHeaders(options?: {
-    forward?: BackstageCredentials;
+  requestHeaders(options: {
+    forward: BackstageCredentials;
   }): Promise<Record<string, string>>;
 
+  // The cookie issued by this method must be consumable by the `credentials` method, which in turn
+  // should create a credentials object that can be passed to the `issueServiceToken` method.
+  // The issued token must then in turn be a valid token for a user principal with full access.
   issueUserCookie(res: Response): Promise<void>;
 }
 ```
@@ -276,7 +298,7 @@ router.get('/read-data', (req, res) => {
   const credentials = await httpAuth.credentials(req, { allow: ['user'] }); // throws if not: user (or obo), user-cookie
   const { ownershipEntityRefs } = await userInfo.getUserInfo(credentials);
   console.log(
-    `User ref=${credentials.userEntityRef} ownership=${ownershipEntityRefs} claims=${credentials.extraClaims}`,
+    `User ref=${credentials.principal.userEntityRef} ownership=${ownershipEntityRefs} claims=${credentials.principal.extraClaims}`,
   );
   // ...
 });
@@ -289,11 +311,11 @@ class CatalogIntegration {
   async getEntity(
     res: string,
     options: {
-      credentials: BackstageUserCredentials | BackstageServiceCredentials;
+      credentials: BackstageCredentials;
     },
   ) {
     return catalogClient.getEntityByRef(req.params.entityRef, {
-      token: await auth.issueToken({
+      token: await auth.issueServiceToken({
         forward: options.credentials,
       }),
     });
@@ -306,13 +328,6 @@ const catalogIntegration = new CatalogIntegration();
 router.get('/read-data', (req, res) => {
   // The catalogClient will have a reference to the (plugin scoped) HttpAuthService,
   // which it uses to create the credential headers for the upstream request.
-  const entity = await catalogClient.getEntityByRef(req.params.entityRef, {
-    credentials: httpAuth.forwardCredentials(req, {
-      dangerouslyAllowUnauthenticated: true,
-    }),
-  });
-
-  // TODO: try this out in more places in plugins
   const entity = await catalogIntegration.getEntity(req.params.entityRef, {
     credentials: await httpAuth.credentials(req),
   });
@@ -327,12 +342,14 @@ router.get('/read-data', (req, res) => {
   const credentials = await httpAuth.credentials(req, {
     allow: ['user', 'service'],
   });
-  if (credentials.type === 'user') {
-    res.json(todoStore.listOwnedTodos({ owner: credentials.userEntityRef }));
+  if (credentials.principal.type === 'user') {
+    res.json(
+      todoStore.listOwnedTodos({ owner: credentials.principal.userEntityRef }),
+    );
   } else {
     res.json(
       todoStore.listTodos({
-        serviceId: credentials.subject,
+        serviceId: credentials.principal.subject,
       }),
     );
   }
@@ -366,8 +383,6 @@ router.get(
   '/read-data',
   httpAuth.middleware({ allow: ['user-cookie'] }),
   (req, res) => {
-    // These credentials don't actually contain an underlying user token for cookie-authed requests
-    // If you try to pass them to the AuthService, it'll throw.
     const credentials = await httpAuth.credentials(req, { allow: ['user'] });
     const { ownershipEntityRefs } = await userInfo.getUserInfo(credentials);
     console.log(
@@ -377,6 +392,17 @@ router.get(
   },
 );
 ```
+
+### Access Control Configuration
+
+In order to disable access control for a Backstage instance, the following configuration can be used:
+
+```yaml
+backend:
+  dangerouslyDisableServiceAuth: true
+```
+
+The exact impact that this has is that disabled the check in the `HttpRouterService` implementation, effectively applying the `unauthenticated` access level to all routes. Furthermore, it will also change `AuthService` so that the `issueServiceToken()` method will now issue an empty token for a `'none'` principal, rather than throwing.
 
 ## Release Plan
 
