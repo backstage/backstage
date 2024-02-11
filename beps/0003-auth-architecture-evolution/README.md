@@ -113,7 +113,9 @@ export interface AuthService {
 
   // TODO: should the caller provide the target plugin ID?
   // TODO: how can we make it very difficult to forget to forward credentials
-  issueToken(credentials: BackstageCredentials): Promise<{ token: string }>;
+  issueToken(options: {
+    forward?: BackstageCredentials;
+  }): Promise<{ token: string }>;
 }
 ```
 
@@ -138,15 +140,18 @@ The `UserInfoService` is exported by `@backstage/auth-node`, and the initial imp
 The `HttpRouterService` interface will be extended with the ability to opt-out of the default protection of endpoints, enabling either cookie auth or unauthenticated access.
 
 ```ts
+export interface HttpRouterServiceAuthPolicy {
+  // The path matches in the same way as if it was passed to `express.Router.use(path, ...)`
+  path: string;
+  allow: 'unauthenticated' | 'user-cookie';
+}
+
 export interface HttpRouterService {
   // All routes only allow authenticated users and services by default.
   use(handler: Handler): void;
 
-  // Exact option structure is TBD, just highlighting the general idea for now
-  configure(options: {
-    allowCookieAuthOnPaths?: string[];
-    allowUnauthenticatedAccessPaths?: string[];
-  }): void;
+  // These are additive and the most relaxed access level takes precedence
+  addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void;
 }
 ```
 
@@ -187,8 +192,9 @@ export default createBackendPlugin({
       async init({ http }) {
         // The order of these two calls does not matter
         http.use(await createRouter(/* ... */));
-        http.configure({
-          allowCookieAuthOnPaths: ['/static'],
+        http.addAuthPolicy({
+          path: '/static',
+          allow: 'user-cookie',
         });
       },
     });
@@ -208,10 +214,16 @@ export default createBackendPlugin({
       },
       async init({ http }) {
         http.use(await createRouter(/* ... */));
-        http.configure({
-          allowCookieAuthOnPaths: ['/'],
-          // Unauthenticated access takes precedence, the /public endpoint does not require cookie auth
-          allowUnauthenticatedAccessPaths: ['/public'],
+
+        http.addAuthPolicy({
+          path: '/',
+          allow: 'user-cookie',
+        });
+
+        // Unauthenticated access takes precedence, the /public endpoint does not require cookie auth
+        http.addAuthPolicy({
+          path: '/public',
+          allow: 'unauthenticated',
         });
       },
     });
@@ -232,22 +244,21 @@ export type BackstageUnauthorizedCredentials = {
 
 type BackstageCredentialTypes = {
   user: BackstageUserCredentials;
+  'user-cookie': BackstageUserCredentials;
   service: BackstageServiceCredentials;
   unauthorized: BackstageUnauthorizedCredentials;
 };
 
 export interface HttpAuthService {
-  createHttpPluginRouterMiddleware(options: OptionsTBD): Handler;
-
+  // Implementations should cache resolved credentials on the request object
   credentials<TAllowed extends keyof BackstageCredentialTypes>(
     req: Request,
     options?: HttpAuthServiceMiddlewareOptions<TAllowed>,
   ): Promise<BackstageCredentialTypes[TAllowed]>;
 
-  // TODO: Keep an eye on this, might not be needed
-  requestHeaders(
-    credentials: BackstageCredentials,
-  ): Promise<Record<string, string>>;
+  requestHeaders(options?: {
+    forward?: BackstageCredentials;
+  }): Promise<Record<string, string>>;
 
   issueUserCookie(res: Response): Promise<void>;
 }
@@ -336,11 +347,11 @@ router.get('/cookie', async (req, res) => {
   res.json({ ok: true });
 });
 
-// Allowing cookie auth is a separate step where you call the configure method
+// Allowing cookie auth is a separate step where you call the addAuthPolicy method
 // of the httpRouter API in your plugin setup code.
-httpRouter.configure({
-  // In practice we can make this configuration a lot more capable, this is just a minimal example
-  allowCookieAuthOnPaths: ['/static'], // router.use('/static', cookieAuthMiddleware()) under the hood
+httpRouter.addAuthPolicy({
+  path: '/static',
+  allow: 'user-cookie',
 });
 
 // Separate endpoint that serves static content, allowing user cookie auth as
@@ -377,10 +388,11 @@ The release plan for the `HttpAuthService` is TBD, but is likely to be shipped a
 
 - [ ] Implement `AuthService`
 - [ ] Implement `HttpAuthService` - leave cookie auth as unimplemented for now
-- [ ] Add `configure()` for `HttpRouterService`, using `HttpAuthService`
+- [ ] Add `addAuthPolicy()` for `HttpRouterService`, using `HttpAuthService`
 - [ ] Implement a compatibility wrapper in `backend-common` that accepts `AuthService`, `HttpAuthService`, `IdentityService`, and `TokenManagerService` (all optional), and returns implementations for `AuthService` and `HttpAuthService`, such hat existing plugins can use a single `createRouter` implementation for both the old and new backend systems.
 - [ ] Implement `UserInfoService` in `@backstage/auth-node` - for now it will just extract the ownership entity refs from the token stored in the credentials
 - [ ] Implement cookie auth in `HttpAuthService` - just put the user token in the cookie for now
+- [ ] Deprecate `IdentityService` and `TokenManagerService`, switch to using default factories that depend on the `AuthService` and `HttpAuthService`. Stop supplying implementations for these in `backend-defaults` and `backend-test-utils`
 - [ ] Migrate plugins:
   - [ ] Permission backend
   - [ ] TechDocs backend
@@ -432,13 +444,13 @@ http.use(cookieRouter, { allow: ['user-cookie'] });
 
 Similar to the previous approach, but also require that a path is provided. This removes much of the confusion around what middleware are applied.
 
-The downside of this approach is that it still has the drawback of forcing a separation of the router, but at the same it provides very little benefit over a top-level path configuration approach like `http.configure()`. The `'/static'` path in the below example essentially has the exact same logic as `.configure({ cookieAuthPaths: ['/static'] })` since it'd be implemented in the same way. The `.configure()` approach has the benefit of allowing plugin authors to decide whether they want to keep the routes separate or not.
+The downside of this approach is that it still has the drawback of forcing a separation of the router, but at the same it provides very little benefit over a top-level path configuration approach like `http.addAuthPolicy()`. The `'/static'` path in the below example essentially has the exact same logic as `.addAuthPolicy({ path: '/static', allow: 'user-cookie' })` since it'd be implemented in the same way. The `.addAuthPolicy()` approach has the benefit of allowing plugin authors to decide whether they want to keep the routes separate or not.
 
-This does have the benefit of letting the framework know which exact routes are protected, which can be useful for introspection, although that benefit also applies to the `.configure()` approach.
+This does have the benefit of letting the framework know which exact routes are protected, which can be useful for introspection, although that benefit also applies to the `.addAuthPolicy()` approach.
 
 ```ts
-// This isn't too bad, but it's extremely similar to the configure() method since
-// we're just matching on the path. The benefit of configure is that it allows you
+// This isn't too bad, but it's extremely similar to the addAuthPolicy() method since
+// we're just matching on the path. The benefit of addAuthPolicy is that it allows you
 // to keep everything in a singe router if desired.
 http.use('/static', cookieRouter, { allow: ['user-cookie'] });
 ```

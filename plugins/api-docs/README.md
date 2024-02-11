@@ -1,5 +1,8 @@
 # API Documentation
 
+> Disclaimer:
+> If you are looking for documentation on the experimental new frontend system support, please go [here](./README-alpha.md).
+
 This is an extension for the catalog plugin that provides components to discover and display API entities.
 APIs define the interface between components, see the [system model](https://backstage.io/docs/features/software-catalog/system-model) for details.
 They are defined in machine readable formats and provide a human readable documentation.

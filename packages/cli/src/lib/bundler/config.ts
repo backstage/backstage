@@ -44,9 +44,9 @@ import { hasReactDomClient } from './hasReactDomClient';
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
 export function resolveBaseUrl(config: Config): URL {
-  const baseUrl = config.getString('app.baseUrl');
+  const baseUrl = config.getOptionalString('app.baseUrl');
   try {
-    return new URL(baseUrl);
+    return new URL(baseUrl ?? '/', 'http://localhost:3000');
   } catch (error) {
     throw new Error(`Invalid app.baseUrl, ${error}`);
   }
@@ -100,8 +100,7 @@ export async function createConfig(
   const { packages } = await getPackages(cliPaths.targetDir);
   const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
-  const baseUrl = frontendConfig.getString('app.baseUrl');
-  const validBaseUrl = new URL(baseUrl);
+  const validBaseUrl = resolveBaseUrl(frontendConfig);
   let publicPath = validBaseUrl.pathname.replace(/\/$/, '');
   if (publicSubPath) {
     publicPath = `${publicPath}${publicSubPath}`.replace('//', '/');

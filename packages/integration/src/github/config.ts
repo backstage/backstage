@@ -123,7 +123,7 @@ export function readGithubIntegrationConfig(
   const host = config.getOptionalString('host') ?? GITHUB_HOST;
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   let rawBaseUrl = config.getOptionalString('rawBaseUrl');
-  const token = config.getOptionalString('token');
+  const token = config.getOptionalString('token')?.trim();
   const apps = config.getOptionalConfigArray('apps')?.map(c => ({
     appId: c.getNumber('appId'),
     clientId: c.getString('clientId'),

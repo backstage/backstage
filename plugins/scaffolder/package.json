@@ -76,7 +76,7 @@
     "@uiw/react-codemirror": "^4.9.3",
     "classnames": "^2.2.6",
     "event-source-polyfill": "^1.0.31",
-    "git-url-parse": "^13.0.0",
+    "git-url-parse": "^14.0.0",
     "humanize-duration": "^3.25.1",
     "immer": "^9.0.1",
     "json-schema": "^0.4.0",
