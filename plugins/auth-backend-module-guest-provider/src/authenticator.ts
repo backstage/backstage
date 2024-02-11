@@ -1,3 +1,5 @@
+import { createProxyAuthenticator } from '@backstage/plugin-auth-node';
+
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -13,4 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { default as GuestAuth } from './GuestAuth';
+export const guestAuthenticator = createProxyAuthenticator({
+  defaultProfileTransform: async () => {
+    return { profile: {} };
+  },
+  initialize() {},
+  async authenticate() {
+    return { result: {} };
+  },
+});

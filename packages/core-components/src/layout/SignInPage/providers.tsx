@@ -43,7 +43,6 @@ export type SignInProviderType = {
 };
 
 const signInProviders: { [key: string]: SignInProvider } = {
-  /** @deprecated Use `@backstage/plugin-auth-backend-module-guest-provider` */
   guest: guestProvider,
   custom: customProvider,
   common: commonProvider,

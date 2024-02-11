@@ -17,8 +17,12 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { authProvidersExtensionPoint } from '@backstage/plugin-auth-node';
-import { createGuestAuthProviderFactory } from './createGuestAuthFactory';
+import {
+  authProvidersExtensionPoint,
+  createProxyAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
+import { guestAuthenticator } from './authenticator';
+import { signInAsGuestUser } from './resolvers';
 
 /** @public */
 export const authModuleGuestProvider = createBackendModule({
@@ -31,14 +35,17 @@ export const authModuleGuestProvider = createBackendModule({
         providers: authProvidersExtensionPoint,
       },
       async init({ providers }) {
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV !== 'development') {
           throw new Error(
             'Guest provider does not support authenticating production workloads.',
           );
         }
         providers.registerProvider({
           providerId: 'guest',
-          factory: createGuestAuthProviderFactory(),
+          factory: createProxyAuthProviderFactory({
+            authenticator: guestAuthenticator,
+            signInResolver: signInAsGuestUser,
+          }),
         });
       },
     });

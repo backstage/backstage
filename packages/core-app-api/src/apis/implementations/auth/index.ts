@@ -26,5 +26,4 @@ export * from './bitbucket';
 export * from './bitbucketServer';
 export * from './atlassian';
 export * from './vmwareCloud';
-export * from './guest';
 export type { OAuthApiCreateOptions, AuthApiCreateOptions } from './types';

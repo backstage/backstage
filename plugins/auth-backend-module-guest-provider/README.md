@@ -2,7 +2,7 @@
 
 This module provides a guest auth provider implementation for `@backstage/plugin-auth-backend`. This is meant to supersede the existing `'guest'` option for authentication that does not emit tokens and is completely stored as frontend state.
 
-**NOTE**: This provider should only ever be enabled for `development` or `test`. Enabling this for production is strongly discouraged as it would give everyone a way to bypass your other authentication methods.
+**NOTE**: This provider should only ever be enabled for `development`. This package is explicitly disabled for non-development environments.
 
 ## Installation
 
@@ -20,42 +20,15 @@ const backend = createBackend();
 backend.start();
 ```
 
-#### Old Backend
-
-This module was also backported for the old backend and can be used like so,
-
-```diff
-+import {
-+  providers,
-+} from '@backstage/plugin-auth-backend';
-    ....
-  return await createRouter({
-    ...
-    providerFactories: {
-        gitlab: providers.gitlab(),
-+       guest: providers.guest(),
-        ...
-    }
-    ...
-```
-
 ### Frontend
 
 Add the following to your `SignInPage` providers,
 
 ```diff
-+import {
-+  guestAuthApiRef,
-+} from '@backstage/core-plugin-api';
-
 const providers = [
-+  {
-+    id: 'guest-auth-provider',
-+    title: 'Guest',
-+    message: 'Sign in as a guest',
-+    apiRef: guestAuthApiRef,
-+  },
++  'guest',
    ...
+]
 ```
 
 ### Config

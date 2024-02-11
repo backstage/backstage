@@ -20,6 +20,9 @@ import {
   BackstageUserIdentity,
 } from '@backstage/core-plugin-api';
 
+/**
+ * @deprecated Use `@backstage/plugin-auth-backend-module-guest-provider` instead.
+ */
 export class GuestUserIdentity implements IdentityApi {
   getUserId(): string {
     return 'guest';

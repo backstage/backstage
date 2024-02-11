@@ -23,16 +23,9 @@ import {
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
   bitbucketServerAuthApiRef,
-  guestAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 export const providers = [
-  {
-    id: 'guest-auth-provider',
-    title: 'Guest',
-    message: 'Sign in as a guest',
-    apiRef: guestAuthApiRef,
-  },
   {
     id: 'google-auth-provider',
     title: 'Google',

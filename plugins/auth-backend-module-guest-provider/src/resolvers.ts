@@ -15,7 +15,7 @@
  */
 
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { createSignInResolverFactory } from '@backstage/plugin-auth-node';
+import { SignInResolver } from '@backstage/plugin-auth-node';
 
 /**
  * Provide a default implementation of the user to resolve to. By default, this
@@ -23,24 +23,20 @@ import { createSignInResolverFactory } from '@backstage/plugin-auth-node';
  *  catalog. If that user doesn't exist in the catalog, we will still create a
  *  token for them so they can keep viewing.
  */
-export const guestResolver = createSignInResolverFactory({
-  create() {
-    return async (_, ctx) => {
-      const userRef = stringifyEntityRef({
-        kind: 'user',
-        name: 'guest',
-      });
-      try {
-        return ctx.signInWithCatalogUser({ entityRef: userRef });
-      } catch (err) {
-        // We can't guarantee that a guest user exists in the catalog, so we issue a token directly,
-        return ctx.issueToken({
-          claims: {
-            sub: userRef,
-            ent: [userRef],
-          },
-        });
-      }
-    };
-  },
-});
+export const signInAsGuestUser: SignInResolver<{}> = async (_, ctx) => {
+  const userRef = stringifyEntityRef({
+    kind: 'user',
+    name: 'guest',
+  });
+  try {
+    return ctx.signInWithCatalogUser({ entityRef: userRef });
+  } catch (err) {
+    // We can't guarantee that a guest user exists in the catalog, so we issue a token directly,
+    return ctx.issueToken({
+      claims: {
+        sub: userRef,
+        ent: [userRef],
+      },
+    });
+  }
+};

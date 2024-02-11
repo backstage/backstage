@@ -20,5 +20,4 @@
  * @packageDocumentation
  */
 
-export { createGuestAuthProviderFactory } from './createGuestAuthFactory';
 export { authModuleGuestProvider as default } from './module';

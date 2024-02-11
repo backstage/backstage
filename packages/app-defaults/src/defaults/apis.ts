@@ -35,7 +35,6 @@ import {
   createFetchApi,
   FetchMiddlewares,
   VMwareCloudAuth,
-  GuestAuth,
 } from '@backstage/core-app-api';
 
 import {
@@ -59,7 +58,6 @@ import {
   bitbucketServerAuthApiRef,
   atlassianAuthApiRef,
   vmwareCloudAuthApiRef,
-  guestAuthApiRef,
 } from '@backstage/core-plugin-api';
 import {
   permissionApiRef,
@@ -275,21 +273,6 @@ export const apis = [
         configApi,
         discoveryApi,
         oauthRequestApi,
-        environment: configApi.getOptionalString('auth.environment'),
-      });
-    },
-  }),
-
-  createApiFactory({
-    api: guestAuthApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      configApi: configApiRef,
-    },
-    factory: ({ discoveryApi, configApi }) => {
-      return GuestAuth.create({
-        configApi,
-        discoveryApi,
         environment: configApi.getOptionalString('auth.environment'),
       });
     },
