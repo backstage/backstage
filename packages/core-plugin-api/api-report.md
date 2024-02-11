@@ -504,11 +504,6 @@ export const googleAuthApiRef: ApiRef<
 >;
 
 // @public
-export const guestAuthApiRef: ApiRef<
-  ProfileInfoApi & BackstageIdentityApi & SessionApi
->;
-
-// @public
 export type IconComponent = ComponentType<
   | {
       fontSize?: 'large' | 'small' | 'default' | 'inherit';
