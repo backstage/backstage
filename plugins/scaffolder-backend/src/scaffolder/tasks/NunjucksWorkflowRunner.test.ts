@@ -18,6 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
+import { JsonValue } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
 import { TaskContext } from './types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -137,29 +138,19 @@ describe('NunjucksWorkflowRunner', () => {
       id: 'checkpoints-action',
       description: 'Mock action with checkpoints',
       handler: async ctx => {
-        let key1 = 0;
-        let key2 = '';
-        let i = 0;
-
-        const incrementKey1 = async () => {
-          key1 += 1;
-          return key1;
-        };
-
-        const appendKey2 = async () => {
-          key2 += 'k';
-          return key2;
-        };
-
-        while (i < 3) {
-          i += 1;
-          ctx.checkpoint?.('key1', incrementKey1);
-        }
-
-        ctx.checkpoint?.('key2', appendKey2);
+        const key1 = await ctx.checkpoint?.('key1', async () => {
+          return 'updated';
+        });
+        const key2 = await ctx.checkpoint?.('key2', async () => {
+          return 'updated';
+        });
+        const key3 = await ctx.checkpoint?.('key3', async () => {
+          return 'updated';
+        });
 
         ctx.output('key1', key1);
         ctx.output('key2', key2);
+        ctx.output('key3', key3);
       },
     });
 
@@ -569,26 +560,52 @@ describe('NunjucksWorkflowRunner', () => {
     });
 
     it('should deal with checkpoints', async () => {
-      const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        parameters: {},
-        steps: [
-          {
-            id: 'test',
-            name: 'name',
-            action: 'checkpoints-action',
-            input: { foo: 1 },
+      const task = {
+        ...createMockTaskWithSpec({
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          parameters: {},
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'checkpoints-action',
+              input: { foo: 1 },
+            },
+          ],
+          output: {
+            key1: '${{steps.test.output.key1}}',
+            key2: '${{steps.test.output.key2}}',
+            key3: '${{steps.test.output.key3}}',
           },
-        ],
-        output: {
-          key1: '${{steps.test.output.key1}}',
-          key2: '${{steps.test.output.key2}}',
+        }),
+        getTaskState: (): Promise<
+          | {
+              [key: string]:
+                | { status: 'failed'; reason: string }
+                | {
+                    status: 'success';
+                    value: JsonValue;
+                  };
+            }
+          | undefined
+        > => {
+          return Promise.resolve({
+            ['v1.task.checkpoint.key1']: {
+              status: 'success',
+              value: 'initial',
+            },
+            ['v1.task.checkpoint.key2']: {
+              status: 'failed',
+              reason: 'fatal error',
+            },
+          });
         },
-      });
+      };
       const result = await runner.execute(task);
 
-      expect(result.output.key1).toEqual(3);
-      expect(result.output.key2).toEqual('k');
+      expect(result.output.key1).toEqual('initial');
+      expect(result.output.key2).toEqual('updated');
+      expect(result.output.key3).toEqual('updated');
     });
 
     it('should template the output from simple actions', async () => {

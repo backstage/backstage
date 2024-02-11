@@ -351,17 +351,15 @@ export interface TaskContext {
   // (undocumented)
   getTaskState?(): Promise<
     | {
-        state: {
-          [key: string]:
-            | {
-                status: 'failed';
-                reason: string;
-              }
-            | {
-                status: 'success';
-                value: JsonValue;
-              };
-        };
+        [key: string]:
+          | {
+              status: 'failed';
+              reason: string;
+            }
+          | {
+              status: 'success';
+              value: JsonValue;
+            };
       }
     | undefined
   >;

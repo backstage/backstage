@@ -411,17 +411,15 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   getTaskState({ taskId }: { taskId: string }): Promise<
     | {
-        state: {
-          [key: string]:
-            | {
-                status: 'failed';
-                reason: string;
-              }
-            | {
-                status: 'success';
-                value: JsonValue;
-              };
-        };
+        [key: string]:
+          | {
+              status: 'failed';
+              reason: string;
+            }
+          | {
+              status: 'success';
+              value: JsonValue;
+            };
       }
     | undefined
   >;
@@ -567,17 +565,15 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   getTaskState?(): Promise<
     | {
-        state: {
-          [key: string]:
-            | {
-                status: 'failed';
-                reason: string;
-              }
-            | {
-                status: 'success';
-                value: JsonValue;
-              };
-        };
+        [key: string]:
+          | {
+              status: 'failed';
+              reason: string;
+            }
+          | {
+              status: 'success';
+              value: JsonValue;
+            };
       }
     | undefined
   >;
@@ -632,17 +628,15 @@ export interface TaskStore {
   // (undocumented)
   getTaskState?({ taskId }: { taskId: string }): Promise<
     | {
-        state: {
-          [key: string]:
-            | {
-                status: 'failed';
-                reason: string;
-              }
-            | {
-                status: 'success';
-                value: JsonValue;
-              };
-        };
+        [key: string]:
+          | {
+              status: 'failed';
+              reason: string;
+            }
+          | {
+              status: 'success';
+              value: JsonValue;
+            };
       }
     | undefined
   >;

@@ -397,14 +397,12 @@ export class DatabaseTaskStore implements TaskStore {
 
   async getTaskState({ taskId }: { taskId: string }): Promise<
     | {
-        state: {
-          [key: string]:
-            | { status: 'failed'; reason: string }
-            | {
-                status: 'success';
-                value: JsonValue;
-              };
-        };
+        [key: string]:
+          | { status: 'failed'; reason: string }
+          | {
+              status: 'success';
+              value: JsonValue;
+            };
       }
     | undefined
   > {
@@ -412,16 +410,14 @@ export class DatabaseTaskStore implements TaskStore {
       .where({ id: taskId })
       .select('state');
     return result.state
-      ? {
-          state: JSON.parse(result.state) as unknown as {
-            [key: string]:
-              | { status: 'failed'; reason: string }
-              | {
-                  status: 'success';
-                  value: JsonValue;
-                };
-          },
-        }
+      ? (JSON.parse(result.state) as unknown as {
+          [key: string]:
+            | { status: 'failed'; reason: string }
+            | {
+                status: 'success';
+                value: JsonValue;
+              };
+        })
       : undefined;
   }
 

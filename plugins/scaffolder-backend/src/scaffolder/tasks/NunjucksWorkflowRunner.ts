@@ -358,18 +358,21 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             try {
               let prevValue: U | undefined;
               if (prevTaskState) {
-                const prevState = prevTaskState.state[key];
-                if (prevState.status === 'success') {
+                const prevState = prevTaskState[key];
+                if (prevState && prevState.status === 'success') {
                   prevValue = prevState.value as U;
                 }
               }
 
               const value = prevValue ? prevValue : await fn();
-              task.updateCheckpoint?.({
-                key,
-                status: 'success',
-                value,
-              });
+
+              if (!prevValue) {
+                task.updateCheckpoint?.({
+                  key,
+                  status: 'success',
+                  value,
+                });
+              }
               return value;
             } catch (err) {
               task.updateCheckpoint?.({

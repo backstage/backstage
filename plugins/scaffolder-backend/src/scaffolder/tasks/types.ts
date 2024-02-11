@@ -196,14 +196,12 @@ export interface TaskStore {
 
   getTaskState?({ taskId }: { taskId: string }): Promise<
     | {
-        state: {
-          [key: string]:
-            | { status: 'failed'; reason: string }
-            | {
-                status: 'success';
-                value: JsonValue;
-              };
-        };
+        [key: string]:
+          | { status: 'failed'; reason: string }
+          | {
+              status: 'success';
+              value: JsonValue;
+            };
       }
     | undefined
   >;
