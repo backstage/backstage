@@ -161,6 +161,7 @@ nav:
           - GitLab: 'auth/gitlab/provider.md'
           - Google: 'auth/google/provider.md'
           - Google IAP: 'auth/google/gcp-iap-auth.md'
+          - Guest: 'auth/guest/provider.md'
           - OAuth2Proxy: 'auth/oauth2-proxy/provider.md'
           - Okta: 'auth/okta/provider.md'
           - OneLogin: 'auth/onelogin/provider.md'

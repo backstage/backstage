@@ -307,6 +307,7 @@
           "auth/gitlab/provider",
           "auth/google/provider",
           "auth/google/gcp-iap-auth",
+          "auth/guest/provider",
           "auth/okta/provider",
           "auth/oauth2-proxy/provider",
           "auth/onelogin/provider",
