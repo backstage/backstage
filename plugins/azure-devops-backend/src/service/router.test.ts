@@ -572,6 +572,14 @@ describe('createRouter', () => {
       expect(response.status).toEqual(400);
     });
   });
+
+  describe('GET /readme/:projectName/:repoName with a bad readme path (empty string)', () => {
+    it('throws InputError', async () => {
+      const response = await request(app).get('/readme/myProject/myRepo?path=');
+      expect(azureDevOpsApi.getReadme).not.toHaveBeenCalled();
+      expect(response.status).toEqual(400);
+    });
+  });
 });
 
 function getReadmeMock() {
