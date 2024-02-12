@@ -11,5 +11,5 @@ Defaults to the current, AZD default behaviour (`README.md` in the root of the g
 Example:
 
 ```yaml
-dev.azure.com/readme-path: /my-path/CHANGELOG.md
+dev.azure.com/readme-path: /my-path/README.md
 ```
