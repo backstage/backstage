@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+/** @public */
 export const InfoContent = () => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);

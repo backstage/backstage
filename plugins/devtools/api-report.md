@@ -42,8 +42,6 @@ export const devToolsPlugin: BackstagePlugin<
 // @public (undocumented)
 export const ExternalDependenciesContent: () => React_2.JSX.Element;
 
-// Warning: (ae-missing-release-tag) "InfoContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const InfoContent: () => React_2.JSX.Element;
 
