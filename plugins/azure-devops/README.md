@@ -63,7 +63,7 @@ spec:
 
 #### Mono repos
 
-If you have multiple entities within a single repo, you will need to specify which pipelines belong to each entity:
+If you have multiple entities within a single repo, you will need to specify which pipelines belong to each entity, like this:
 
 ```yaml
 dev.azure.com/project-repo: <my-project>/<my-repo>
