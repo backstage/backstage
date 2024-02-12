@@ -228,6 +228,10 @@ export async function createRouter(
       throw new InputError('Invalid path param');
     }
 
+    if (path === '') {
+      throw new InputError('If present, the path param should not be empty');
+    }
+
     const { projectName, repoName } = req.params;
     const readme = await azureDevOpsApi.getReadme(
       host,
