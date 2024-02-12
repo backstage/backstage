@@ -9,9 +9,9 @@ import { JsonObject } from '@backstage/types';
 // @public (undocumented)
 export interface SignalApi {
   // (undocumented)
-  subscribe<SignalType extends JsonObject = JsonObject>(
+  subscribe<TMessage extends JsonObject = JsonObject>(
     channel: string,
-    onMessage: (message: SignalType) => void,
+    onMessage: (message: TMessage) => void,
   ): SignalSubscriber;
 }
 
@@ -25,10 +25,10 @@ export interface SignalSubscriber {
 }
 
 // @public (undocumented)
-export const useSignal: <SignalType extends JsonObject = JsonObject>(
+export const useSignal: <TMessage extends JsonObject = JsonObject>(
   channel: string,
 ) => {
-  lastSignal: SignalType | null;
+  lastSignal: TMessage | null;
   isSignalsAvailable: boolean;
 };
 

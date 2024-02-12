@@ -35,8 +35,8 @@ export class DefaultSignalService implements SignalService {
    * Publishes a signal to user refs to specific topic
    * @param signal - Signal to publish
    */
-  async publish<SignalType extends JsonObject = JsonObject>(
-    signal: SignalPayload<SignalType>,
+  async publish<TMessage extends JsonObject = JsonObject>(
+    signal: SignalPayload<TMessage>,
   ) {
     await this.eventBroker?.publish({
       topic: 'signals',

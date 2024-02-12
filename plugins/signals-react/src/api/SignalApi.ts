@@ -28,8 +28,8 @@ export interface SignalSubscriber {
 
 /** @public */
 export interface SignalApi {
-  subscribe<SignalType extends JsonObject = JsonObject>(
+  subscribe<TMessage extends JsonObject = JsonObject>(
     channel: string,
-    onMessage: (message: SignalType) => void,
+    onMessage: (message: TMessage) => void,
   ): SignalSubscriber;
 }

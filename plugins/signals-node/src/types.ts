@@ -24,8 +24,8 @@ export type SignalServiceOptions = {
 };
 
 /** @public */
-export type SignalPayload<SignalType extends JsonObject = JsonObject> = {
+export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
   recipients: string[] | string | null;
   channel: string;
-  message: SignalType;
+  message: TMessage;
 };

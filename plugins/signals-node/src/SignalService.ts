@@ -22,7 +22,7 @@ export interface SignalService {
    * Publishes a signal to user refs to specific topic
    * @param signal - Signal to publish
    */
-  publish<SignalType extends JsonObject = JsonObject>(
-    signal: SignalPayload<SignalType>,
+  publish<TMessage extends JsonObject = JsonObject>(
+    signal: SignalPayload<TMessage>,
   ): Promise<void>;
 }

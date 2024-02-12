@@ -11,8 +11,8 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 export class DefaultSignalService implements SignalService {
   // (undocumented)
   static create(options: SignalServiceOptions): DefaultSignalService;
-  publish<SignalType extends JsonObject = JsonObject>(
-    signal: SignalPayload<SignalType>,
+  publish<TMessage extends JsonObject = JsonObject>(
+    signal: SignalPayload<TMessage>,
   ): Promise<void>;
 }
 
@@ -20,13 +20,13 @@ export class DefaultSignalService implements SignalService {
 export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
   recipients: string[] | string | null;
   channel: string;
-  message: SignalType;
+  message: TMessage;
 };
 
 // @public (undocumented)
 export interface SignalService {
-  publish<SignalType extends JsonObject = JsonObject>(
-    signal: SignalPayload<SignalType>,
+  publish<TMessage extends JsonObject = JsonObject>(
+    signal: SignalPayload<TMessage>,
   ): Promise<void>;
 }
 

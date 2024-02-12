@@ -62,9 +62,9 @@ export class SignalClient implements SignalApi {
     private reconnectTimeout: number,
   ) {}
 
-  subscribe<SignalType extends JsonObject = JsonObject>(
+  subscribe<TMessage extends JsonObject = JsonObject>(
     channel: string,
-    onMessage: (message: SignalType) => void,
+    onMessage: (message: TMessage) => void,
   ): SignalSubscriber {
     const subscriptionId = uuid();
     const exists = [...this.subscriptions.values()].find(
