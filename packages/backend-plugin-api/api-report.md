@@ -102,15 +102,6 @@ export type BackstageCredentials<TPrincipal = unknown> = {
 };
 
 // @public (undocumented)
-export type BackstageHttpAccessToPrincipalTypesMapping = {
-  user: BackstageUserPrincipal;
-  'user-cookie': BackstageUserPrincipal;
-  service: BackstageServicePrincipal;
-  unauthenticated: BackstageNonePrincipal;
-  unknown: unknown;
-};
-
-// @public (undocumented)
 export type BackstageNonePrincipal = {
   type: 'none';
 };
@@ -119,6 +110,8 @@ export type BackstageNonePrincipal = {
 export type BackstagePrincipalTypes = {
   user: BackstageUserPrincipal;
   service: BackstageServicePrincipal;
+  unauthenticated: BackstageNonePrincipal;
+  unknown: unknown;
 };
 
 // @public (undocumented)
@@ -293,16 +286,13 @@ export interface ExtensionPointConfig {
 // @public (undocumented)
 export interface HttpAuthService {
   // (undocumented)
-  credentials<
-    TAllowed extends keyof BackstageHttpAccessToPrincipalTypesMapping = 'unknown',
-  >(
+  credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
     req: Request_2,
     options?: {
-      allow: Array<TAllowed>;
+      allow?: Array<TAllowed>;
+      allowedAuthMethods?: Array<'token' | 'cookie'>;
     },
-  ): Promise<
-    BackstageCredentials<BackstageHttpAccessToPrincipalTypesMapping[TAllowed]>
-  >;
+  ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>>;
   // (undocumented)
   issueUserCookie(res: Response_2): Promise<void>;
   // (undocumented)

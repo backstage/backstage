@@ -15,33 +15,17 @@
  */
 
 import { Request, Response } from 'express';
-import {
-  BackstageCredentials,
-  BackstageServicePrincipal,
-  BackstageNonePrincipal,
-  BackstageUserPrincipal,
-} from './AuthService';
-
-/** @public */
-export type BackstageHttpAccessToPrincipalTypesMapping = {
-  user: BackstageUserPrincipal;
-  'user-cookie': BackstageUserPrincipal;
-  service: BackstageServicePrincipal;
-  unauthenticated: BackstageNonePrincipal;
-  unknown: unknown;
-};
+import { BackstageCredentials, BackstagePrincipalTypes } from './AuthService';
 
 /** @public */
 export interface HttpAuthService {
-  credentials<
-    TAllowed extends
-      | keyof BackstageHttpAccessToPrincipalTypesMapping = 'unknown',
-  >(
+  credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
     req: Request,
-    options?: { allow: Array<TAllowed> },
-  ): Promise<
-    BackstageCredentials<BackstageHttpAccessToPrincipalTypesMapping[TAllowed]>
-  >;
+    options?: {
+      allow?: Array<TAllowed>;
+      allowedAuthMethods?: Array<'token' | 'cookie'>;
+    },
+  ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>>;
 
   requestHeaders(options: {
     forward: BackstageCredentials;
