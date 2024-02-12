@@ -19,6 +19,19 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 import { FilterWrapper } from './filter/FilterWrapper';
+import { EntitySwitch } from '../components/EntitySwitch';
+import {
+  EntityOrphanWarning,
+  isOrphan,
+} from '../components/EntityOrphanWarning';
+import {
+  EntityRelationWarning,
+  hasRelationWarnings,
+} from '../components/EntityRelationWarning';
+import {
+  EntityProcessingErrorsPanel,
+  hasCatalogProcessingErrors,
+} from '../components/EntityProcessingErrorsPanel';
 
 interface EntityOverviewPageProps {
   cards: Array<{
@@ -28,10 +41,39 @@ interface EntityOverviewPageProps {
   }>;
 }
 
+const entityWarningContent = (
+  <>
+    <EntitySwitch>
+      <EntitySwitch.Case if={isOrphan}>
+        <Grid item xs={12}>
+          <EntityOrphanWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasRelationWarnings}>
+        <Grid item xs={12}>
+          <EntityRelationWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+        <Grid item xs={12}>
+          <EntityProcessingErrorsPanel />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+  </>
+);
+
 export function EntityOverviewPage(props: EntityOverviewPageProps) {
   const { entity } = useEntity();
   return (
     <Grid container spacing={3} alignItems="stretch">
+      {entityWarningContent}
       {props.cards.map((card, index) => (
         <FilterWrapper key={index} entity={entity} {...card} />
       ))}
