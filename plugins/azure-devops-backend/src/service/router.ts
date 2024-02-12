@@ -26,6 +26,7 @@ import { Logger } from 'winston';
 import { PullRequestsDashboardProvider } from '../api/PullRequestsDashboardProvider';
 import Router from 'express-promise-router';
 import { errorHandler, UrlReader } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import express from 'express';
 
 const DEFAULT_TOP = 10;
@@ -216,7 +217,17 @@ export async function createRouter(
       req.query.host?.toString() ?? config.getString('azureDevOps.host');
     const org =
       req.query.org?.toString() ?? config.getString('azureDevOps.organization');
-    const path = req.query.path?.toString() ?? 'README.md';
+    let path = req.query.path;
+
+    if (path === undefined) {
+      // if the annotation is missing, default to the previous behaviour (look for README.md in the root of the repo)
+      path = 'README.md';
+    }
+
+    if (typeof path !== 'string') {
+      throw new InputError('Invalid path param');
+    }
+
     const { projectName, repoName } = req.params;
     const readme = await azureDevOpsApi.getReadme(
       host,

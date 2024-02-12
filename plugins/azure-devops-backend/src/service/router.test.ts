@@ -562,6 +562,16 @@ describe('createRouter', () => {
       });
     });
   });
+
+  describe('GET /readme/:projectName/:repoName with a bad readme path (multiple values)', () => {
+    it('throws InputError', async () => {
+      const response = await request(app).get(
+        '/readme/myProject/myRepo?path=1&path=2',
+      );
+      expect(azureDevOpsApi.getReadme).not.toHaveBeenCalled();
+      expect(response.status).toEqual(400);
+    });
+  });
 });
 
 function getReadmeMock() {
