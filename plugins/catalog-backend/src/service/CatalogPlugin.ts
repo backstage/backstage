@@ -128,19 +128,10 @@ class CatalogPermissionExtensionPointImpl
 }
 
 class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
-  #entityPolicies = new Array<EntityPolicy>();
   #fieldValidators: Partial<Validators> = {};
-
-  addEntityPolicies(...policies: Array<EntityPolicy | Array<EntityPolicy>>) {
-    this.#entityPolicies.push(...policies.flat());
-  }
 
   setFieldValidators(validators: Partial<Validators>): void {
     merge(this.#fieldValidators, validators);
-  }
-
-  get entityPolicies() {
-    return this.#entityPolicies;
   }
 
   get fieldValidators() {
@@ -219,7 +210,6 @@ export const catalogPlugin = createBackendPlugin({
         );
         builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
-        builder.addEntityPolicy(...modelExtensions.entityPolicies);
         builder.setFieldFormatValidators(modelExtensions.fieldValidators);
 
         const { processingEngine, router } = await builder.build();
