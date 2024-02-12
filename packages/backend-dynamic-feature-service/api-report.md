@@ -7,6 +7,7 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
+import { ConfigSchema } from '@backstage/config-loader';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventsBackend } from '@backstage/plugin-events-backend';
 import { FeatureDiscoveryService } from '@backstage/backend-plugin-api/alpha';
@@ -23,8 +24,8 @@ import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
-import { SchemaDiscoveryService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TaskRunner } from '@backstage/backend-tasks';
@@ -117,9 +118,31 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory: () => ServiceFactory<
 >;
 
 // @public (undocumented)
-export interface DynamicPluginsSchemaDiscoveryOptions {
+export const dynamicPluginsFrontendSchemas: () => BackendFeature;
+
+// @public (undocumented)
+export const dynamicPluginsRootLoggerServiceFactory: () => ServiceFactory<
+  RootLoggerService,
+  'root'
+>;
+
+// @public (undocumented)
+export interface DynamicPluginsSchemasOptions {
   schemaLocator?: (pluginPackage: ScannedPluginPackage) => string;
 }
+
+// @public (undocumented)
+export interface DynamicPluginsSchemasService {
+  // (undocumented)
+  addDynamicPluginsSchemas(configSchema: ConfigSchema): Promise<{
+    schema: ConfigSchema;
+  }>;
+}
+
+// @public (undocumented)
+export const dynamicPluginsSchemasServiceFactory: (
+  options?: DynamicPluginsSchemasOptions | undefined,
+) => ServiceFactory<DynamicPluginsSchemasService, 'root'>;
 
 // @public (undocumented)
 export const dynamicPluginsServiceFactory: (
@@ -225,11 +248,6 @@ export interface ScannedPluginPackage {
   // (undocumented)
   manifest: ScannedPluginManifest;
 }
-
-// @public (undocumented)
-export const schemaDiscoveryServiceFactory: (
-  options?: DynamicPluginsSchemaDiscoveryOptions | undefined,
-) => ServiceFactory<SchemaDiscoveryService, 'root'>;
 
 // (No @packageDocumentation comment for this package)
 ```

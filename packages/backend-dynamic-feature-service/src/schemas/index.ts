@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-export { mergeConfigSchemas } from './compile';
-export { loadConfigSchema } from './load';
-export type { LoadConfigSchemaOptions } from './load';
-export type {
-  ConfigSchema,
-  ConfigVisibility,
-  ConfigSchemaProcessingOptions,
-  TransformFunc,
-} from './types';
+export {
+  dynamicPluginsSchemasServiceFactory,
+  type DynamicPluginsSchemasService,
+  type DynamicPluginsSchemasOptions,
+} from './schemas';
+
+export { dynamicPluginsFrontendSchemas } from './appBackendModule';
+export { dynamicPluginsRootLoggerServiceFactory } from './rootLoggerServiceFactory';

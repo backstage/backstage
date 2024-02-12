@@ -32,7 +32,6 @@ import { GitLabIntegration } from '@backstage/integration';
 import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
-import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
 import knexFactory from 'knex';
 import { KubeConfig } from '@kubernetes/client-node';
@@ -561,9 +560,6 @@ export function loadBackendConfig(options: {
   logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
   additionalConfigs?: AppConfig[];
-  additionalSchemas?: {
-    [context: string]: JsonObject;
-  };
   argv: string[];
   watch?: boolean;
 }): Promise<Config>;

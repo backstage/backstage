@@ -16,11 +16,8 @@
 
 import {
   BackendFeature,
-  coreServices,
-  createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { JsonObject } from '@backstage/types';
 
 /** @alpha */
 export interface FeatureDiscoveryService {
@@ -35,35 +32,4 @@ export const featureDiscoveryServiceRef =
   createServiceRef<FeatureDiscoveryService>({
     id: 'core.featureDiscovery',
     scope: 'root',
-  });
-
-/** @alpha */
-export interface SchemaDiscoveryService {
-  getAdditionalSchemas(): Promise<{
-    schemas: { [context: string]: JsonObject };
-  }>;
-}
-
-/**
- * An optional service that can be used to dynamically load in additional BackendFeatures at runtime.
- * @alpha
- */
-export const schemaDiscoveryServiceRef =
-  createServiceRef<SchemaDiscoveryService>({
-    id: 'core.schemaDiscovery',
-    scope: 'root',
-    defaultFactory: async service =>
-      createServiceFactory({
-        service,
-        deps: {
-          config: coreServices.rootConfig,
-        },
-        factory() {
-          return {
-            async getAdditionalSchemas() {
-              return { schemas: {} };
-            },
-          };
-        },
-      }),
   });

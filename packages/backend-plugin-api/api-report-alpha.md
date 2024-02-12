@@ -4,7 +4,6 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { JsonObject } from '@backstage/types';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
@@ -18,22 +17,6 @@ export interface FeatureDiscoveryService {
 // @alpha
 export const featureDiscoveryServiceRef: ServiceRef<
   FeatureDiscoveryService,
-  'root'
->;
-
-// @alpha (undocumented)
-export interface SchemaDiscoveryService {
-  // (undocumented)
-  getAdditionalSchemas(): Promise<{
-    schemas: {
-      [context: string]: JsonObject;
-    };
-  }>;
-}
-
-// @alpha
-export const schemaDiscoveryServiceRef: ServiceRef<
-  SchemaDiscoveryService,
   'root'
 >;
 

@@ -37,7 +37,7 @@ import {
   CACHE_CONTROL_NO_CACHE,
   CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
-import { JsonObject } from '@backstage/types';
+import { ConfigSchema } from '@backstage/config-loader';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
@@ -89,14 +89,10 @@ export interface RouterOptions {
 
   /**
    *
-   * Provides a map of additional config schemas, in addition to the serialized schemas
-   * generated during the application build.
-   * This is useful when additional plugins are dynamically loaded in the application at start,
-   * which were not part of the application build. This option allows feeding the corresponding
-   * JSON schemas.
+   * Provides a ConfigSchema.
    *
    */
-  additionalSchemas?: { [context: string]: JsonObject };
+  schema?: ConfigSchema;
 }
 
 /** @public */
@@ -133,7 +129,7 @@ export async function createRouter(
       config,
       appDistDir,
       env: process.env,
-      additionalSchemas: options.additionalSchemas,
+      schema: options.schema,
     });
 
     injectedConfigPath = await injectConfig({ appConfigs, logger, staticDir });

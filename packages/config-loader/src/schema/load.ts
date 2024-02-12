@@ -43,7 +43,6 @@ export type LoadConfigSchemaOptions =
         }
     ) & {
       noUndeclaredProperties?: boolean;
-      additionalSchemas?: { [context: string]: JsonObject };
     };
 
 function errorsToError(errors: ValidationError[]): Error {
@@ -83,16 +82,6 @@ export async function loadConfigSchema(
       );
     }
     schemas = serialized.schemas as ConfigSchemaPackageEntry[];
-  }
-  if (options.additionalSchemas) {
-    schemas.push(
-      ...Object.keys(options.additionalSchemas).map(context => {
-        return {
-          path: context,
-          value: options.additionalSchemas![context],
-        };
-      }),
-    );
   }
 
   const validate = compileConfigSchemas(schemas, {

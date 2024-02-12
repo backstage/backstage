@@ -15,6 +15,7 @@
  */
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import { ConfigSchema } from '@backstage/config-loader';
 import { Handler } from 'express';
 
 /**
@@ -49,4 +50,26 @@ export interface StaticFallbackHandlerExtensionPoint {
 export const staticFallbackHandlerExtensionPoint =
   createExtensionPoint<StaticFallbackHandlerExtensionPoint>({
     id: 'app.staticFallbackHandler',
+  });
+
+/**
+ * The interface for {@link configSchemaExtensionPoint}.
+ *
+ * @public
+ */
+export interface ConfigSchemaExtensionPoint {
+  /**
+   * Sets the config schema. This can only be done once.
+   */
+  setConfigSchema(configSchema: ConfigSchema): void;
+}
+
+/**
+ * An extension point the exposes the ability to override the config schema used by the frontend application.
+ *
+ * @public
+ */
+export const configSchemaExtensionPoint =
+  createExtensionPoint<ConfigSchemaExtensionPoint>({
+    id: 'app.configSchema',
   });

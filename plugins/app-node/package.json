@@ -29,7 +29,9 @@
   ],
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/config-loader": "workspace:^",
     "@types/express": "^4.17.6",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "fs-extra": "10.1.0"
   }
 }

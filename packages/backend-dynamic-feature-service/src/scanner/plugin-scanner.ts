@@ -22,15 +22,7 @@ import * as path from 'path';
 import * as url from 'url';
 import debounce from 'lodash/debounce';
 import { PackagePlatform, PackageRoles } from '@backstage/cli-node';
-import {
-  LoggerService,
-  coreServices,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
-import { schemaDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { findPaths } from '@backstage/cli-common';
-import { gatherDynamicPluginsSchemas } from './schemas';
-import { JsonObject } from '@backstage/types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface DynamicPluginScannerOptions {
   config: Config;
@@ -323,72 +315,3 @@ export class PluginScanner {
     this.untrackChanges();
   }
 }
-
-/**
- * @public
- */
-export interface DynamicPluginsSchemaDiscoveryOptions {
-  /**
-   * Function that returns the path to the Json schema file for a given scanned plugin package.
-   * The path is either absolute, or relative to the plugin package root directory.
-   *
-   * Default behavior is to look for the `dist/configSchema.json` relative path.
-   *
-   * @param pluginPackage - The scanned plugin package.
-   * @returns the absolute or plugin-relative path to the Json schema file.
-   */
-  schemaLocator?: (pluginPackage: ScannedPluginPackage) => string;
-}
-
-/**
- * @public
- */
-export const schemaDiscoveryServiceFactory = createServiceFactory(
-  (options?: DynamicPluginsSchemaDiscoveryOptions) => ({
-    service: schemaDiscoveryServiceRef,
-    deps: {
-      config: coreServices.rootConfig,
-    },
-    factory({ config }) {
-      let schemas: { [context: string]: JsonObject } | undefined;
-
-      return {
-        async getAdditionalSchemas(): Promise<{
-          schemas: { [context: string]: JsonObject };
-        }> {
-          if (schemas) {
-            return {
-              schemas,
-            };
-          }
-
-          const logger = {
-            ...console,
-            child() {
-              return this;
-            },
-          };
-
-          const scanner = PluginScanner.create({
-            config,
-            logger,
-            // eslint-disable-next-line no-restricted-syntax
-            backstageRoot: findPaths(__dirname).targetRoot,
-            preferAlpha: true,
-          });
-
-          const { packages } = await scanner.scanRoot();
-
-          schemas = await gatherDynamicPluginsSchemas(
-            packages,
-            logger,
-            options?.schemaLocator,
-          );
-          return {
-            schemas,
-          };
-        },
-      };
-    },
-  }),
-);

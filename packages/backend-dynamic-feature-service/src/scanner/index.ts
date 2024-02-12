@@ -15,5 +15,3 @@
  */
 
 export type { ScannedPluginManifest, ScannedPluginPackage } from './types';
-export type { DynamicPluginsSchemaDiscoveryOptions } from './plugin-scanner';
-export { schemaDiscoveryServiceFactory } from './plugin-scanner';

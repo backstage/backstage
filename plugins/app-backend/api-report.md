@@ -4,8 +4,8 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { ConfigSchema } from '@backstage/config-loader';
 import express from 'express';
-import { JsonObject } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
@@ -14,9 +14,6 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
 export interface RouterOptions {
-  additionalSchemas?: {
-    [context: string]: JsonObject;
-  };
   appPackageName: string;
   // (undocumented)
   config: Config;
@@ -24,6 +21,7 @@ export interface RouterOptions {
   disableConfigInjection?: boolean;
   // (undocumented)
   logger: Logger;
+  schema?: ConfigSchema;
   staticFallbackHandler?: express.Handler;
 }
 ```

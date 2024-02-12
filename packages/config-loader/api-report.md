@@ -193,9 +193,6 @@ export type LoadConfigSchemaOptions = (
     }
 ) & {
   noUndeclaredProperties?: boolean;
-  additionalSchemas?: {
-    [context: string]: JsonObject;
-  };
 };
 
 // @public

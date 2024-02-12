@@ -1,6 +1,5 @@
 ---
 '@backstage/backend-app-api': patch
-'@backstage/backend-common': patch
 ---
 
-Make the root logger use the additional configuration schemas when hiding secrets.
+Allow the `createConfigSecretEnumerator` to take an optional `configSchema` argument with an already-loaded global configuration schema.

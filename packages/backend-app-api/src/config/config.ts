@@ -23,26 +23,27 @@ import {
   loadConfig,
   ConfigTarget,
   LoadConfigOptionsRemote,
+  ConfigSchema,
 } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import type { Config, AppConfig } from '@backstage/config';
 import { getPackages } from '@manypkg/get-packages';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 import { isValidUrl } from '../lib/urls';
-import { JsonObject } from '@backstage/types';
 
 /** @public */
 export async function createConfigSecretEnumerator(options: {
   logger: LoggerService;
   dir?: string;
-  additionalSchemas?: { [context: string]: JsonObject };
+  schema?: ConfigSchema;
 }): Promise<(config: Config) => Iterable<string>> {
   const { logger, dir = process.cwd() } = options;
   const { packages } = await getPackages(dir);
-  const schema = await loadConfigSchema({
-    dependencies: packages.map(p => p.packageJson.name),
-    additionalSchemas: options.additionalSchemas,
-  });
+  const schema =
+    options.schema ??
+    (await loadConfigSchema({
+      dependencies: packages.map(p => p.packageJson.name).filter(() => false),
+    }));
 
   return (config: Config) => {
     const [secretsData] = schema.process(
