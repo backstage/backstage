@@ -6,7 +6,7 @@
 
 Ability to fetch the README file from a different AZD path.
 
-Defaults to the current, AZD default behaviour (`README.md` in the root of the git repo); to use a different path, add the annotation `dev.azure.com/readme-path`
+Defaults to the current, Azure DevOps default behaviour (`README.md` in the root of the git repo); to use a different path, add the annotation `dev.azure.com/readme-path`
 
 Example:
 
