@@ -46,6 +46,7 @@ import {
 import { AbortController } from '@aws-sdk/abort-controller';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { Readable } from 'stream';
+import { relative } from 'path/posix';
 
 export const DEFAULT_REGION = 'us-east-1';
 
@@ -345,7 +346,7 @@ export class AwsS3UrlReader implements UrlReader {
 
         responses.push({
           data: s3ObjectData,
-          path: String(allObjects[i]),
+          path: relative(path, String(allObjects[i])),
           lastModifiedAt: response?.LastModified ?? undefined,
         });
       }
