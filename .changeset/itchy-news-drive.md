@@ -4,7 +4,7 @@
 '@backstage/plugin-azure-devops': minor
 ---
 
-Ability to fetch the README file from a different AZD path.
+Ability to fetch the README file from a different Azure DevOps path.
 
 Defaults to the current, Azure DevOps default behaviour (`README.md` in the root of the git repo); to use a different path, add the annotation `dev.azure.com/readme-path`
 
