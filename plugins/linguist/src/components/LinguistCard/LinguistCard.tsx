@@ -55,7 +55,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const LinguistCard = () => {
+export const LinguistCard = ({ title = 'Languages' }) => {
   const classes = useStyles();
   const theme = useTheme();
   const { entity } = useEntity();
@@ -70,7 +70,7 @@ export const LinguistCard = () => {
 
   if (items && items.languageCount === 0 && items.totalBytes === 0) {
     return (
-      <InfoCard title="Languages" className={classes.infoCard}>
+      <InfoCard title={title} className={classes.infoCard}>
         <Grid container spacing={3}>
           <Box p={2}>
             <Typography>
