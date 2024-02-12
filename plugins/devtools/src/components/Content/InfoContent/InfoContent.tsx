@@ -26,7 +26,8 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
-import React from 'react';
+import { useApi, alertApiRef } from '@backstage/core-plugin-api';
+import React, { useState } from 'react';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
 import DescriptionIcon from '@material-ui/icons/Description';
@@ -34,7 +35,6 @@ import MemoryIcon from '@material-ui/icons/Memory';
 import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import { DevToolsInfo } from '@backstage/plugin-devtools-common';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,29 +54,37 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
-  if (about) {
-    let formatted = `OS: ${about.operatingSystem}\nResources: ${about.resourceUtilization}\nnode: ${about.nodeJsVersion}\nbackstage: ${about.backstageVersion}\nDependencies:\n`;
-    const deps = about.dependencies;
-    for (const key in deps) {
-      if (Object.prototype.hasOwnProperty.call(deps, key)) {
-        formatted = `${formatted}    ${deps[key].name}: ${deps[key].versions}\n`;
-      }
-    }
-    window.navigator.clipboard.writeText(formatted);
-  }
-};
-
-/** @public */
 export const InfoContent = () => {
   const classes = useStyles();
+  const alertApi = useApi(alertApiRef);
+  const [infoCopied, setInfoCopied] = useState(false);
   const { about, loading, error } = useInfo();
+
+  const copyToClipboard = () => {
+    if (about) {
+      let formatted = `OS: ${about.operatingSystem}\nResources: ${about.resourceUtilization}\nnode: ${about.nodeJsVersion}\nbackstage: ${about.backstageVersion}\nDependencies:\n`;
+      const deps = about.dependencies;
+      for (const key in deps) {
+        if (Object.prototype.hasOwnProperty.call(deps, key)) {
+          formatted = `${formatted}    ${deps[key].name}: ${deps[key].versions}\n`;
+        }
+      }
+      window.navigator.clipboard.writeText(formatted);
+      setInfoCopied(true);
+      alertApi.post({
+        message: `Info copied to the clipboard`,
+        severity: 'success',
+        display: 'transient',
+      });
+    }
+  };
 
   if (loading) {
     return <Progress />;
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
   }
+
   return (
     <Box>
       <Paper className={classes.paperStyle}>
@@ -128,13 +136,12 @@ export const InfoContent = () => {
         </List>
         <Divider orientation="vertical" variant="middle" flexItem />
         <Button
-          onClick={() => {
-            copyToClipboard({ about });
-          }}
+          onClick={copyToClipboard}
           className={classes.copyButton}
           startIcon={<FileCopyIcon />}
+          disabled={infoCopied}
         >
-          Copy Info to Clipboard
+          {infoCopied ? 'Copied!' : 'Copy Info to Clipboard'}
         </Button>
       </Paper>
       <InfoDependenciesTable infoDependencies={about?.dependencies} />
