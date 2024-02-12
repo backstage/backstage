@@ -27897,8 +27897,8 @@ __metadata:
   linkType: hard
 
 "express-openapi-validator@npm:^5.0.4":
-  version: 5.1.3
-  resolution: "express-openapi-validator@npm:5.1.3"
+  version: 5.1.6
+  resolution: "express-openapi-validator@npm:5.1.6"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^9.1.2
     "@types/multer": ^1.4.7
@@ -27909,13 +27909,11 @@ __metadata:
     json-schema-traverse: ^1.0.0
     lodash.clonedeep: ^4.5.0
     lodash.get: ^4.4.2
-    lodash.uniq: ^4.5.0
-    lodash.zipobject: ^4.1.3
     media-typer: ^1.1.0
     multer: ^1.4.5-lts.1
     ono: ^7.1.3
     path-to-regexp: ^6.2.0
-  checksum: c99785e6bf3072086a671e854369e338bce2a20fea65d2a4445dac6c40ac632e67dc91d9e0edeb4cce5e739124b5d5742bcf2447c09b3085dc76e1ba89a71ca0
+  checksum: 46be5236101e51593d1365505879d380a40d0307be8173cdaa3b643def518fcca25944f2e0eb5b2c48a7a09eacb192e5287b3a995b1903275dbca0e59fa669e3
   languageName: node
   linkType: hard
 
@@ -34050,13 +34048,6 @@ __metadata:
   version: 4.5.0
   resolution: "lodash.uniq@npm:4.5.0"
   checksum: a4779b57a8d0f3c441af13d9afe7ecff22dd1b8ce1129849f71d9bbc8e8ee4e46dfb4b7c28f7ad3d67481edd6e51126e4e2a6ee276e25906d10f7140187c392d
-  languageName: node
-  linkType: hard
-
-"lodash.zipobject@npm:^4.1.3":
-  version: 4.1.3
-  resolution: "lodash.zipobject@npm:4.1.3"
-  checksum: 1ab635b665c0488a905779705a6683e9024115176e9e947d75d2a6b1e8673230fdb11c417788fbaf26d71e1cac5ad8e59a558924612cbf7d6615780836048883
   languageName: node
   linkType: hard
 
