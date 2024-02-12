@@ -17,7 +17,7 @@
 import {
   AuthService,
   BackstageCredentials,
-  BackstageHttpAccessToPrincipalTypesMapping,
+  BackstagePrincipalTypes,
   DiscoveryService,
   HttpAuthService,
   coreServices,
@@ -96,33 +96,33 @@ class DefaultHttpAuthService implements HttpAuthService {
       this.#extractCredentialsFromRequest(req));
   }
 
-  async credentials<
-    TAllowed extends
-      | keyof BackstageHttpAccessToPrincipalTypesMapping = 'unknown',
-  >(
+  async credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
     req: Request,
     options?: {
-      allow: Array<TAllowed>;
+      allow?: Array<TAllowed>;
+      allowedAuthMethods?: Array<'token' | 'cookie'>;
     },
-  ): Promise<
-    BackstageCredentials<BackstageHttpAccessToPrincipalTypesMapping[TAllowed]>
-  > {
+  ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>> {
     const credentials = toInternalBackstageCredentials(
       await this.#getCredentials(req),
     );
 
-    // TODO break out into more readable function as we always
-    // want to check cookie regardless if options are set or not
-    // Probably asserts function that ensures authMethod = 'token' after cookie check
-    if (credentials.authMethod === 'cookie') {
-      if (options && !options.allow.includes('user-cookie' as TAllowed)) {
-        throw new NotAllowedError(
-          `This endpoint does not allow 'user-cookie' credentials`,
-        );
-      }
-    } else if (
-      options &&
-      !options.allow.includes(credentials.principal.type as TAllowed)
+    const allowedPrincipalTypes = options?.allow;
+    const allowedAuthMethods: Array<'token' | 'cookie' | 'none'> =
+      options?.allowedAuthMethods ?? ['token'];
+
+    if (
+      credentials.authMethod !== 'none' &&
+      !allowedAuthMethods.includes(credentials.authMethod)
+    ) {
+      throw new NotAllowedError(
+        `This endpoint does not allow the '${credentials.authMethod}' auth method`,
+      );
+    }
+
+    if (
+      allowedPrincipalTypes &&
+      !allowedPrincipalTypes.includes(credentials.principal.type as TAllowed)
     ) {
       throw new NotAllowedError(
         `This endpoint does not allow '${credentials.principal.type}' credentials`,
@@ -175,10 +175,8 @@ class DefaultHttpAuthService implements HttpAuthService {
 export const httpAuthServiceFactory = createServiceFactory({
   service: coreServices.httpAuth,
   deps: {
-    config: coreServices.rootConfig,
-    logger: coreServices.rootLogger,
-    discovery: coreServices.discovery,
     auth: coreServices.auth,
+    discovery: coreServices.discovery,
     plugin: coreServices.pluginMetadata,
   },
   async factory({ auth, discovery, plugin }) {

@@ -60,18 +60,11 @@ export function createCredentialsBarrier(options: {
       predicate(req.path),
     );
 
-    if (allowsCookie) {
-      // don't we need a user-cookie allow type here?
-      await httpAuth.credentials(req, {
-        allow: ['user-cookie', 'user', 'service'],
-      });
-      next();
-      return;
-    }
-
     await httpAuth.credentials(req, {
       allow: ['user', 'service'],
+      allowedAuthMethods: allowsCookie ? ['token', 'cookie'] : ['token'],
     });
+
     next();
   };
 

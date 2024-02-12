@@ -35,10 +35,7 @@ export type {
   HttpRouterService,
   HttpRouterServiceAuthPolicy,
 } from './HttpRouterService';
-export type {
-  HttpAuthService,
-  BackstageHttpAccessToPrincipalTypesMapping,
-} from './HttpAuthService';
+export type { HttpAuthService } from './HttpAuthService';
 export type {
   LifecycleService,
   LifecycleServiceStartupHook,
