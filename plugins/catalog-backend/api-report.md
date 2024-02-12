@@ -422,11 +422,6 @@ export type PlaceholderResolverRead = PlaceholderResolverRead_2;
 export type PlaceholderResolverResolveUrl = PlaceholderResolverResolveUrl_2;
 
 // @public
-export function policyToProcessorTransformer(
-  policy: EntityPolicy,
-): CatalogProcessor_2;
-
-// @public
 export type ProcessingIntervalFunction = () => number;
 
 // @public @deprecated (undocumented)
@@ -454,6 +449,11 @@ export const processingResult: Readonly<{
 
 // @public @deprecated (undocumented)
 export type ScmLocationAnalyzer = ScmLocationAnalyzer_2;
+
+// @public
+export function transformLegacyPolicyToProcessor(
+  policy: EntityPolicy,
+): CatalogProcessor_2;
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor_2 {

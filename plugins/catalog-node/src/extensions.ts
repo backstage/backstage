@@ -48,7 +48,7 @@ export interface CatalogProcessingExtensionPoint {
 /** @alpha */
 export interface CatalogModelExtensionPoint {
   /**
-   * @deprecated Use `policyToProcessorTransformer` from `@backstage/plugin-catalog-backend`
+   * @deprecated Use `transformLegacyPolicyToProcessor` from `@backstage/plugin-catalog-backend`
    *  and `CatalogProcessingExtensionPoint.addProcessor` instead.
    */
   addEntityPolicies(

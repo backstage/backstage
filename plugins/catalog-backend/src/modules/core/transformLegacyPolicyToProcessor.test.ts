@@ -15,10 +15,10 @@
  */
 
 import { Entity, EntityPolicy } from '@backstage/catalog-model';
-import { policyToProcessorTransformer } from './policyToProcessorTransformer';
+import { transformLegacyPolicyToProcessor } from './transformLegacyPolicyToProcessor';
 import { clone } from 'lodash';
 
-describe('policyToProcessorTransformer', () => {
+describe('transformLegacyPolicyToProcessor', () => {
   const entityToProcess: Entity = {
     apiVersion: 'backstage.io/v1alpha',
     kind: 'Component',
@@ -33,7 +33,7 @@ describe('policyToProcessorTransformer', () => {
         return entity;
       },
     };
-    const processor = policyToProcessorTransformer(policy);
+    const processor = transformLegacyPolicyToProcessor(policy);
     const clonedEntity = clone(entityToProcess);
     const entity = await processor.preProcessEntity?.(
       clonedEntity,
@@ -54,7 +54,7 @@ describe('policyToProcessorTransformer', () => {
         return undefined;
       },
     };
-    const processor = policyToProcessorTransformer(policy);
+    const processor = transformLegacyPolicyToProcessor(policy);
     const clonedEntity = clone(entityToProcess);
     const entity = await processor.preProcessEntity?.(
       clonedEntity,
@@ -75,7 +75,7 @@ describe('policyToProcessorTransformer', () => {
         throw new TypeError('Invalid value for metadata.name');
       },
     };
-    const processor = policyToProcessorTransformer(policy);
+    const processor = transformLegacyPolicyToProcessor(policy);
     const clonedEntity = clone(entityToProcess);
     await expect(
       processor.preProcessEntity?.(
