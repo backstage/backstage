@@ -79,12 +79,6 @@ To setup the Linguist Card frontend you'll need to do the following steps:
     </Grid>
    ```
 
-3. (optionally) Set component's title - default is "Languages"
-
-   ```tsx
-   <EntityLinguistCard title="Tech stack" />
-   ```
-
 **Notes:**
 
 - The `if` prop is optional on the `EntitySwitch.Case`, you can remove it if you always want to see the tab even if the entity being viewed does not have the needed annotation

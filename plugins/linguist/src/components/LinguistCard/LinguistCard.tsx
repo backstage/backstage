@@ -27,6 +27,8 @@ import React from 'react';
 import slugify from 'slugify';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useLanguages } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { linguistTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   infoCard: {
@@ -55,7 +57,8 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const LinguistCard = ({ title = 'Languages' }) => {
+export const LinguistCard = () => {
+  const { t } = useTranslationRef(linguistTranslationRef);
   const classes = useStyles();
   const theme = useTheme();
   const { entity } = useEntity();
@@ -70,7 +73,7 @@ export const LinguistCard = ({ title = 'Languages' }) => {
 
   if (items && items.languageCount === 0 && items.totalBytes === 0) {
     return (
-      <InfoCard title={title} className={classes.infoCard}>
+      <InfoCard title={t('component.title')} className={classes.infoCard}>
         <Grid container spacing={3}>
           <Box p={2}>
             <Typography>

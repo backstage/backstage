@@ -10,11 +10,7 @@ import { Entity } from '@backstage/catalog-model';
 import { JSX as JSX_2 } from 'react';
 
 // @public (undocumented)
-export const EntityLinguistCard: ({
-  title,
-}: {
-  title?: string | undefined;
-}) => JSX_2.Element;
+export const EntityLinguistCard: () => JSX_2.Element;
 
 // @public (undocumented)
 export const isLinguistAvailable: (entity: Entity) => boolean;
