@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './compatWrapper';
 
-export * from './apis';
-
-export * from './components';
-
-export { convertLegacyApp } from './convertLegacyApp';
-export {
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-  type ToNewRouteRef,
-} from './convertLegacyRouteRef';
+export { SystemIcon, type SystemIconProps } from './SystemIcon';
