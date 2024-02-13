@@ -27,10 +27,10 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 import {
+  SystemIcon,
   compatWrapper,
   convertLegacyRouteRef,
 } from '@backstage/core-compat-api';
-import { useApp } from '@backstage/core-plugin-api';
 
 import {
   createEntityCardExtension,
@@ -46,16 +46,10 @@ import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { rootRoute, registerComponentRouteRef } from './routes';
 import { apiDocsConfigRef } from './config';
 
-function ApiIcon() {
-  const app = useApp();
-  const KindApiSystemIcon = app.getSystemIcon('kind:api')!;
-  return <KindApiSystemIcon />;
-}
-
 const apiDocsNavItem = createNavItemExtension({
   title: 'APIs',
   routeRef: convertLegacyRouteRef(rootRoute),
-  icon: () => compatWrapper(<ApiIcon />),
+  icon: () => <SystemIcon id="kind:api" />,
 });
 
 const apiDocsConfigApi = createApiExtension({
