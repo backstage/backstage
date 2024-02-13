@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { EntityTeamPullRequestsCard } from '../EntityTeamPullRequestsCard';
-import { PullRequestsColumn } from '../../utils/types';
+import { PullRequestsColumn, Status } from '../../utils/types';
 import { render } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 
@@ -39,6 +39,7 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
     repoName: string,
     isDraft: boolean,
     isArchived: boolean,
+    status: Status,
   ) => {
     return {
       id: 'id',
@@ -62,6 +63,9 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
       labels: {
         nodes: [],
       },
+      commits: {
+        nodes: status,
+      },
       isDraft: isDraft,
       author: {
         login: authorLogin,
@@ -83,6 +87,13 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
           'team-repo',
           false,
           false,
+          {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
         ),
         buildPullRequest(
           'non-team-non-draft-is-archive',
@@ -90,6 +101,13 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
           'team-repo',
           false,
           true,
+          {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
         ),
         buildPullRequest(
           'non-team-is-draft-non-archive',
@@ -97,6 +115,13 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
           'team-repo',
           true,
           false,
+          {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
         ),
         buildPullRequest(
           'non-team-is-draft-is-archive',
@@ -104,6 +129,13 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
           'team-repo',
           true,
           true,
+          {
+            commit: {
+              statusCheckRollup: {
+                state: 'SUCCESS',
+              },
+            },
+          },
         ),
         buildPullRequest(
           'is-team-non-draft-non-archive',
@@ -111,6 +143,13 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
           'non-team-repo',
           false,
           false,
+          {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
         ),
         buildPullRequest(
           'is-team-non-draft-is-archive',
@@ -118,6 +157,13 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
           'non-team-repo',
           false,
           true,
+          {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
         ),
         buildPullRequest(
           'is-team-is-draft-non-archive',
@@ -125,6 +171,13 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
           'non-team-repo',
           true,
           false,
+          {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
         ),
         buildPullRequest(
           'is-team-is-draft-is-archive',
@@ -132,6 +185,13 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
           'non-team-repo',
           true,
           true,
+          {
+            commit: {
+              statusCheckRollup: {
+                state: 'SUCCESS',
+              },
+            },
+          },
         ),
       ],
     },
