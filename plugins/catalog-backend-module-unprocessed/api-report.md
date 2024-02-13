@@ -6,6 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 // @public
 const catalogModuleUnprocessedEntities: () => BackendFeature;
@@ -15,6 +16,6 @@ export default catalogModuleUnprocessedEntities;
 export class UnprocessedEntitiesModule {
   constructor(database: Knex, router: Pick<HttpRouterService, 'use'>);
   // (undocumented)
-  registerRoutes(): void;
+  registerRoutes({ permissions }: { permissions: PermissionEvaluator }): void;
 }
 ```

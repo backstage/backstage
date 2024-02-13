@@ -5,10 +5,10 @@
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
 
-// @alpha
+// @public
 export const unprocessedEntitiesDeletePermission: BasicPermission;
 
-// @alpha
+// @public
 export const unprocessedEntitiesPermissions: {
   unprocessedEntitiesDeletePermission: BasicPermission;
 };
