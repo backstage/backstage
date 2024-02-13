@@ -2,7 +2,7 @@
 
 ## Unused devDependencies (1)
 
-| Name    | Location     |
-|:--------|:-------------|
-| ts-node | package.json |
+| Name    | Location     | Severity |
+| :------ | :----------- | :------- |
+| ts-node | package.json | error    |
 

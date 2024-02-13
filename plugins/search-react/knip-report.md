@@ -2,8 +2,8 @@
 
 ## Unused devDependencies (2)
 
-| Name                        | Location     |
-|:----------------------------|:-------------|
-| @testing-library/dom        | package.json |
-| @backstage/frontend-app-api | package.json |
+| Name                        | Location     | Severity |
+| :-------------------------- | :----------- | :------- |
+| @backstage/frontend-app-api | package.json | error    |
+| @testing-library/dom        | package.json | error    |
 

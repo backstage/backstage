@@ -2,7 +2,7 @@
 
 ## Unused devDependencies (1)
 
-| Name          | Location     |
-|:--------------|:-------------|
-| openapi-types | package.json |
+| Name          | Location     | Severity |
+| :------------ | :----------- | :------- |
+| openapi-types | package.json | error    |
 

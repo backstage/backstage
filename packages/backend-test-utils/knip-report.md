@@ -2,11 +2,11 @@
 
 ## Unused dependencies (5)
 
-| Name              | Location     |
-|:------------------|:-------------|
-| pg                | package.json |
-| msw               | package.json |
-| mysql2            | package.json |
-| better-sqlite3    | package.json |
-| @backstage/errors | package.json |
+| Name              | Location     | Severity |
+| :---------------- | :----------- | :------- |
+| @backstage/errors | package.json | error    |
+| better-sqlite3    | package.json | error    |
+| mysql2            | package.json | error    |
+| msw               | package.json | error    |
+| pg                | package.json | error    |
 

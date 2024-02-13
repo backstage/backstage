@@ -2,9 +2,9 @@
 
 ## Unused devDependencies (3)
 
-| Name             | Location     |
-|:-----------------|:-------------|
-| ts-node          | package.json |
-| nodemon          | package.json |
-| @types/puppeteer | package.json |
+| Name             | Location     | Severity |
+| :--------------- | :----------- | :------- |
+| @types/puppeteer | package.json | error    |
+| nodemon          | package.json | error    |
+| ts-node          | package.json | error    |
 

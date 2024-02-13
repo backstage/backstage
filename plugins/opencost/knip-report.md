@@ -2,7 +2,7 @@
 
 ## Unused devDependencies (1)
 
-| Name                      | Location     |
-|:--------------------------|:-------------|
-| @testing-library/jest-dom | package.json |
+| Name                      | Location     | Severity |
+| :------------------------ | :----------- | :------- |
+| @testing-library/jest-dom | package.json | error    |
 

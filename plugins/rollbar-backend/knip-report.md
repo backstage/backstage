@@ -2,10 +2,10 @@
 
 ## Unused dependencies (4)
 
-| Name        | Location     |
-|:------------|:-------------|
-| cors        | package.json |
-| morgan      | package.json |
-| fs-extra    | package.json |
-| compression | package.json |
+| Name        | Location     | Severity |
+| :---------- | :----------- | :------- |
+| compression | package.json | error    |
+| fs-extra    | package.json | error    |
+| morgan      | package.json | error    |
+| cors        | package.json | error    |
 

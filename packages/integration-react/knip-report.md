@@ -2,8 +2,8 @@
 
 ## Unused devDependencies (2)
 
-| Name                 | Location     |
-|:---------------------|:-------------|
-| msw                  | package.json |
-| @testing-library/dom | package.json |
+| Name                 | Location     | Severity |
+| :------------------- | :----------- | :------- |
+| @testing-library/dom | package.json | error    |
+| msw                  | package.json | error    |
 
