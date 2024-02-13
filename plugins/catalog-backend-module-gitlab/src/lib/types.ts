@@ -116,6 +116,7 @@ export type GitLabDescendantGroupsResponse = {
             name: string;
             description: string;
             fullPath: string;
+            visibility: string;
             parent: {
               id: string;
             };

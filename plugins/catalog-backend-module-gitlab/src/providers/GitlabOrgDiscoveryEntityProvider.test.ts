@@ -526,6 +526,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
                       name: 'group2',
                       description: 'Group2',
                       fullPath: 'group1/group2',
+                      visibility: 'private',
                       parent: {
                         id: 'gid://gitlab/Group/123',
                       },
@@ -535,6 +536,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
                       name: 'group3',
                       description: 'Group3',
                       fullPath: 'group1/group3',
+                      visibility: 'public',
                       parent: {
                         id: 'gid://gitlab/Group/123',
                       },
@@ -704,6 +706,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
               'backstage.io/managed-by-origin-location':
                 'url:https://gitlab.com/group1/group2',
               'gitlab.com/team-path': 'group1/group2',
+              'gitlab.com/visibility': 'private',
             },
             description: 'Group2',
             name: 'group2',
@@ -729,6 +732,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
               'backstage.io/managed-by-origin-location':
                 'url:https://gitlab.com/group1/group3',
               'gitlab.com/team-path': 'group1/group3',
+              'gitlab.com/visibility': 'public',
             },
             description: 'Group3',
             name: 'group3',
