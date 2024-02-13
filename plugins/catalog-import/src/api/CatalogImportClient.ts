@@ -189,8 +189,7 @@ the component will become available.\n\nFor more information, read an \
       this.scmIntegrationsApi,
       repositoryUrl,
     );
-    // eslint-disable-next-line no-console
-    console.log({ ghConfig });
+
     if (ghConfig) {
       return await this.submitGitHubPrToRepo({
         ...ghConfig,
