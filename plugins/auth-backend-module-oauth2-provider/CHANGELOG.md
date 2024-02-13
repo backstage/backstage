@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-oauth2-provider
 
+## 0.1.7-next.3
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+
 ## 0.1.7-next.2
 
 ### Patch Changes

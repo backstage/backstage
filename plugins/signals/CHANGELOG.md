@@ -1,5 +1,18 @@
 # @backstage/plugin-signals
 
+## 0.0.1-next.3
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- 1ab22c4: Allow defining signal type to publish and receive
+- Updated dependencies
+  - @backstage/theme@0.5.1-next.1
+  - @backstage/plugin-signals-react@0.0.1-next.3
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/types@1.1.1
+
 ## 0.0.1-next.2
 
 ### Patch Changes
