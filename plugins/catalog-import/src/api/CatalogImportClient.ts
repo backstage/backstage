@@ -28,6 +28,7 @@ import { ScmAuthApi } from '@backstage/integration-react';
 import { Octokit } from '@octokit/rest';
 import { Base64 } from 'js-base64';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
+import YAML from 'yaml';
 import { getGithubIntegrationConfig } from './GitHub';
 import { getBranchName, getCatalogFilename } from '../components/helpers';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
@@ -175,12 +176,21 @@ the component will become available.\n\nFor more information, read an \
     body: string;
   }): Promise<{ link: string; location: string }> {
     const { repositoryUrl, fileContent, title, body } = options;
-
+    const parseData = YAML.parse(fileContent);
+    const {
+      metadata: { name },
+    } = parseData;
+    if (!isValidComponentName(name)) {
+      throw new Error(
+        'Component name: Must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
+      );
+    }
     const ghConfig = getGithubIntegrationConfig(
       this.scmIntegrationsApi,
       repositoryUrl,
     );
-
+    // eslint-disable-next-line no-console
+    console.log({ ghConfig });
     if (ghConfig) {
       return await this.submitGitHubPrToRepo({
         ...ghConfig,
@@ -351,4 +361,13 @@ function formatHttpErrorMessage(
   error: { status: number; message: string },
 ) {
   return `${message}, received http response status code ${error.status}: ${error.message}`;
+}
+
+function isValidComponentName(componentName: string) {
+  return (
+    typeof componentName === 'string' &&
+    componentName.length >= 1 &&
+    componentName.length <= 63 &&
+    /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/.test(componentName)
+  );
 }

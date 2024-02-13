@@ -143,25 +143,11 @@ export const StepPrepareCreatePullRequest = (
       .sort();
   });
 
-  const isValidObjectName = (value: unknown): boolean => {
-    return (
-      typeof value === 'string' &&
-      value.length >= 1 &&
-      value.length <= 63 &&
-      /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/.test(value)
-    );
-  };
-
   const handleResult = useCallback(
     async (data: FormData) => {
       setSubmitted(true);
 
       try {
-        if (!isValidObjectName(data.componentName)) {
-          throw new Error(
-            'Component name: Must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
-          );
-        }
         const pr = await catalogImportApi.submitPullRequest({
           repositoryUrl: analyzeResult.url,
           title: data.title,
