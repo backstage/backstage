@@ -235,16 +235,35 @@ export function createDatabaseClient(
 ): knexFactory.Knex<any, any[]>;
 
 // @public (undocumented)
-export function createLegacyAuthAdapters(options: {
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
-  identity?: IdentityService;
-  tokenManager?: TokenManager;
-  discovery: PluginEndpointDiscovery;
-}): {
-  auth: AuthService;
-  httpAuth: HttpAuthService;
-};
+export function createLegacyAuthAdapters<
+  TOptions extends {
+    auth?: AuthService;
+    httpAuth?: HttpAuthService;
+    identity?: IdentityService;
+    tokenManager?: TokenManager;
+    discovery: PluginEndpointDiscovery;
+  },
+  TAdapters = TOptions extends {
+    auth?: AuthService;
+  }
+    ? TOptions extends {
+        httpAuth?: HttpAuthService;
+      }
+      ? {
+          auth: AuthService;
+          httpAuth: HttpAuthService;
+        }
+      : {
+          auth: AuthService;
+        }
+    : TOptions extends {
+        httpAuth?: HttpAuthService;
+      }
+    ? {
+        httpAuth: HttpAuthService;
+      }
+    : 'error: at least one of auth and/or httpAuth must be provided',
+>(options: TOptions): TAdapters;
 
 // @public
 export function createRootLogger(
