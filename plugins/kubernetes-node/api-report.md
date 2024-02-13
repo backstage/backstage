@@ -51,6 +51,7 @@ export interface ClusterDetails {
   skipMetricsLookup?: boolean;
   // (undocumented)
   skipTLSVerify?: boolean;
+  title?: string;
   // (undocumented)
   url: string;
 }

@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 import { Pod } from 'kubernetes-models/v1';
-import { DetectedError } from '@backstage/plugin-kubernetes-common';
+import {
+  ClusterAttributes,
+  DetectedError,
+} from '@backstage/plugin-kubernetes-common';
 
 /**
- * Wraps a pod with the associated detected errors and cluster name
+ * Wraps a pod with the associated detected errors and cluster
  *
  * @public
  */
 export interface PodAndErrors {
-  clusterName: string;
+  cluster: ClusterAttributes;
   pod: Pod;
   errors: DetectedError[];
 }
