@@ -1,5 +1,64 @@
 # @backstage/plugin-home
 
+## 0.6.2-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- dc7ae8b: Use EntityDisplayName JSX element entity information directly for FeaturedDocsCard.
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-app-api@1.12.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/theme@0.5.1-next.0
+  - @backstage/plugin-home-react@0.1.8-next.2
+  - @backstage/core-compat-api@0.2.0-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- 384c132: Added filter support for HomePageVisitedByType in order to enable filtering entities from the list
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-compat-api@0.2.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/core-app-api@1.11.4-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/plugin-home-react@0.1.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/theme@0.5.0
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- 6a74ffd: Updated dependency `@rjsf/utils` to `5.16.1`.
+  Updated dependency `@rjsf/core` to `5.16.1`.
+  Updated dependency `@rjsf/material-ui` to `5.16.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.16.1`.
+- e9cdfd3: Fix typo in VisitsStorageApi
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.2-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/plugin-home-react@0.1.8-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-app-api@1.11.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/theme@0.5.0
+
 ## 0.6.1
 
 ### Patch Changes

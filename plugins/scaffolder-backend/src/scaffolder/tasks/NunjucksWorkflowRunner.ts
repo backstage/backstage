@@ -55,6 +55,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
+import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -68,6 +69,7 @@ type NunjucksWorkflowRunnerOptions = {
 
 type TemplateContext = {
   parameters: JsonObject;
+  EXPERIMENTAL_recovery?: TaskRecovery;
   steps: {
     [stepName: string]: { output: { [outputName: string]: JsonValue } };
   };
@@ -119,6 +121,7 @@ const isActionAuthorized = createConditionAuthorizer(
 
 export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
+
   constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
     this.defaultTemplateFilters = createDefaultFilters({
       integrations: this.options.integrations,

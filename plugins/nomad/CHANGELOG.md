@@ -1,5 +1,37 @@
 # @backstage/plugin-nomad
 
+## 0.1.11-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/catalog-model@1.4.4-next.0
+
+## 0.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+
 ## 0.1.10
 
 ### Patch Changes

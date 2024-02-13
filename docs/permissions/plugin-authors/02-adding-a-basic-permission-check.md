@@ -4,9 +4,9 @@ title: 2. Adding a basic permission check
 description: Explains how to add a basic permission check to a Backstage plugin
 ---
 
-If the outcome of a permission check doesn't need to change for different [resources](../concepts.md#resources-and-rules), you can use a _basic permission check_. For this kind of check, we simply need to define a [permission](../concepts.md#resources-and-rules), and call `authorize` with it.
+If the outcome of a permission check doesn't need to change for different [resources](../../references/glossary.md#resource-permission-plugin), you can use a _basic permission check_. For this kind of check, we simply need to define a permission, and call `authorize` with it.
 
-For this tutorial, we'll use a basic permission check to authorize the `create` endpoint in our todo-backend. This will allow Backstage integrators to control whether each of their users is authorized to create todos by adjusting their [permission policy](../concepts.md#policy).
+For this tutorial, we'll use a basic permission check to authorize the `create` endpoint in our todo-backend. This will allow Backstage integrators to control whether each of their users is authorized to create todos by adjusting their [permission policy](../../references/glossary.md#policy-permission-plugin).
 
 We'll start by creating a new permission, and then we'll use the permission api to call `authorize` with it during todo creation.
 

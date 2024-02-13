@@ -1,5 +1,34 @@
 # @backstage/core-plugin-api
 
+## 1.9.0-next.1
+
+### Minor Changes
+
+- f919be9: Added a utility API for VMware Cloud auth; the API ref is available in the
+  `@backstage/core-plugin-api` and `@backstage/frontend-plugin-api` packages, the
+  implementation is in `@backstage/core-app-api` and a factory has been added to
+  `@backstage/app-defaults`.
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.8.3-next.0
+
+### Patch Changes
+
+- e586f79: Throw a more specific exception `NotImplementedError` when an API implementation cannot be found.
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 1.8.2
 
 ### Patch Changes

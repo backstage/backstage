@@ -11,11 +11,13 @@
     "start-backend": "yarn workspace example-backend start",
     "start:next": "yarn workspace example-app-next start",
     "start-backend:next": "yarn workspace example-backend-next start",
+    "start:microsite": "cd microsite/ && yarn start",
     "build:backend": "yarn workspace example-backend build",
     "build:all": "backstage-cli repo build --all",
     "build:api-reports": "yarn build:api-reports:only --tsc",
     "build:api-reports:only": "backstage-repo-tools api-reports --allow-warnings 'packages/core-components,plugins/+(catalog|catalog-import|git-release-manager|jenkins|kubernetes)' -o ae-wrong-input-file-type --validate-release-tags",
-    "build:api-docs": "LANG=en_EN yarn build:api-reports --docs",
+    "build:knip-reports": "backstage-repo-tools knip-reports",
+    "build:api-docs": "LANG=en_EN yarn build:api-reports --docs --exclude 'plugins/@(adr|adr-backend|adr-common|airbrake|airbrake-backend|allure|analytics-module-ga|analytics-module-ga4|analytics-module-newrelic-browser|apache-airflow|api-docs|api-docs-module-protoc-gen-doc|apollo-explorer|app-visualizer|azure-devops|azure-devops-backend|azure-devops-common|azure-sites|azure-sites-backend|azure-sites-common|badges|badges-backend|bazaar|bazaar-backend|bitbucket-cloud-common|bitrise|catalog-graph|catalog-graphql|catalog-import|catalog-unprocessed-entities|cicd-statistics|cicd-statistics-module-gitlab|circleci|cloudbuild|code-climate|code-coverage|code-coverage-backend|codescene|config-schema|cost-insights|cost-insights-common|dynatrace|entity-feedback|entity-feedback-backend|entity-feedback-common|entity-validation|example-todo-list|example-todo-list-backend|example-todo-list-common|firehydrant|fossa|gcalendar|gcp-projects|git-release-manager|github-actions|github-deployments|github-issues|github-pull-requests-board|gitops-profiles|gocd|graphiql|graphql-backend|graphql-voyager|ilert|jenkins|jenkins-backend|jenkins-common|kafka|kafka-backend|lighthouse|lighthouse-backend|lighthouse-common|linguist|linguist-backend|linguist-common|microsoft-calendar|newrelic|newrelic-dashboard|nomad|nomad-backend|octopus-deploy|opencost|pagerduty|periskop|periskop-backend|playlist|playlist-backend|playlist-common|proxy-backend|puppetdb|rollbar|rollbar-backend|sentry|shortcuts|splunk-on-call|stack-overflow|stack-overflow-backend|stackstorm|tech-radar|tech-radar-2|todo|todo-backend|xcmetrics)'",
     "build:plugins-report": "node ./scripts/build-plugins-report",
     "tsc": "tsc",
     "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false",
@@ -28,7 +30,7 @@
     "lint:docs": "node ./scripts/check-docs-quality",
     "lint:all": "backstage-cli repo lint",
     "lint:type-deps": "backstage-repo-tools type-deps",
-    "docker-build": "yarn tsc && yarn workspace example-backend build --build-dependencies && yarn workspace example-backend build-image",
+    "docker-build": "yarn tsc && yarn workspace example-backend build && yarn workspace example-backend build-image",
     "new": "backstage-cli new --scope backstage --baseVersion 0.0.0 --no-private",
     "create-plugin": "echo \"use 'yarn new' instead\"",
     "release": "node scripts/prepare-release.js && changeset version && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' '.changeset/*.json' && yarn install --no-immutable",
@@ -40,8 +42,12 @@
     "build-storybook": "yarn ./storybook run build-storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
-    "prepare": "husky install",
-    "postinstall": "husky install || true"
+    "prepare": "husky",
+    "postinstall": "husky || true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage"
   },
   "workspaces": {
     "packages": [
@@ -56,7 +62,7 @@
     "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch"
   },
-  "version": "1.22.0",
+  "version": "1.23.0-next.2",
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
@@ -85,15 +91,17 @@
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-testing-library": "^6.0.0",
     "fs-extra": "10.1.0",
-    "husky": "^8.0.0",
+    "husky": "^9.0.0",
+    "knip": "^4.3.1",
     "lint-staged": "^15.0.0",
     "minimist": "^1.2.5",
     "node-gyp": "^10.0.0",
     "prettier": "^2.2.1",
     "semver": "^7.5.3",
     "shx": "^0.3.2",
+    "sloc": "^0.3.1",
     "ts-node": "^10.4.0",
-    "typescript": "~5.2.0"
+    "typescript": "~5.1.0"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {

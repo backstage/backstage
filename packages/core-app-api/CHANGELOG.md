@@ -1,5 +1,35 @@
 # @backstage/core-app-api
 
+## 1.12.0-next.1
+
+### Minor Changes
+
+- f919be9: Added a utility API for VMware Cloud auth; the API ref is available in the
+  `@backstage/core-plugin-api` and `@backstage/frontend-plugin-api` packages, the
+  implementation is in `@backstage/core-app-api` and a factory has been added to
+  `@backstage/app-defaults`.
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 1.11.4-next.0
+
+### Patch Changes
+
+- 7da67ce: Change `defaultScopes` for Bitbucket auth from invalid `team` to `account`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 1.11.3
 
 ### Patch Changes

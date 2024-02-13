@@ -1,7 +1,7 @@
 {
   "name": "app-next-example-plugin",
   "description": "Backstage internal example plugin",
-  "version": "0.0.5",
+  "version": "0.0.6-next.2",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",

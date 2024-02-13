@@ -1,5 +1,61 @@
 # @backstage/plugin-search-backend
 
+## 1.5.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/plugin-permission-node@0.7.21-next.2
+  - @backstage/plugin-search-backend-node@1.2.14-next.2
+  - @backstage/backend-openapi-utils@0.1.3-next.2
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.5.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/backend-openapi-utils@0.1.3-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.4-next.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-node@0.7.21-next.1
+  - @backstage/plugin-search-backend-node@1.2.14-next.1
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.5.0-next.0
+
+### Minor Changes
+
+- 126c2f9: Updates the OpenAPI spec to use plugin as `info.title` instead of package name.
+- 04907c3: Updates the OpenAPI specification title to plugin ID instead of package name.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/backend-openapi-utils@0.1.3-next.0
+  - @backstage/plugin-auth-node@0.4.4-next.0
+  - @backstage/plugin-permission-node@0.7.21-next.0
+  - @backstage/plugin-search-backend-node@1.2.14-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-search-common@1.2.10
+
 ## 1.4.9
 
 ### Patch Changes

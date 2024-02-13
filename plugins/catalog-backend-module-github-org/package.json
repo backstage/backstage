@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-github-org",
   "description": "The github-org backend module for the catalog plugin.",
-  "version": "0.1.3",
+  "version": "0.1.4-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -9,6 +9,11 @@
     "access": "public",
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-github-org"
   },
   "backstage": {
     "role": "backend-plugin-module"

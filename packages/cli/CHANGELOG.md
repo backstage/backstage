@@ -1,5 +1,61 @@
 # @backstage/cli
 
+## 0.25.2-next.2
+
+### Patch Changes
+
+- 52ae6b9: Updated dependency `esbuild` to `^0.20.0`.
+- 5c05f8a: Harmonize the package naming and allow custom prefix
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/release-manifests@0.0.11
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.2
+  - @backstage/config-loader@1.6.1
+  - @backstage/errors@1.2.3
+  - @backstage/eslint-plugin@0.1.5-next.0
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/types@1.1.1
+
+## 0.25.2-next.1
+
+### Patch Changes
+
+- b58673e: Upgrade jest
+- 08804c3: Fixed an issue that would cause an invalid `__backstage-autodetected-plugins__.js` to be written when using experimental module discovery.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.2
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.1
+  - @backstage/errors@1.2.3
+  - @backstage/eslint-plugin@0.1.5-next.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.25.2-next.0
+
+### Patch Changes
+
+- c624938: Add experimental support for optional `auth` app entry point.
+- acd2860: Updated dependency `vite-plugin-node-polyfills` to `^0.19.0`.
+- 35725e2: Updated dependencies in frontend plugin templates
+- c7259dc: Updated the backend module template to make the module instance the package default export.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.5-next.0
+  - @backstage/cli-node@0.2.2
+  - @backstage/config-loader@1.6.1
+  - @backstage/catalog-model@1.4.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.25.1
 
 ### Patch Changes

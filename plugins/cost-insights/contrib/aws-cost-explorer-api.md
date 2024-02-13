@@ -34,7 +34,7 @@ Install the AWS Cost Explorer SDK. The AWS docs recommend using the SDK over mak
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @aws-sdk/client-cost-explorer
+yarn --cwd packages/app add @aws-sdk/client-cost-explorer
 ```
 
 ## Usage of the SDK

@@ -129,6 +129,7 @@ export type ScaffolderPageContextMenuProps = {
   onEditorClicked?: () => void;
   onActionsClicked?: () => void;
   onTasksClicked?: () => void;
+  onCreateClicked?: () => void;
 };
 
 // @alpha

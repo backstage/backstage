@@ -1,66 +1,65 @@
 # Running the backend behind a Corporate Proxy
 
-Let's admit it, we've all been there. Sometimes you've gotta run stuff with no way out to the public internet, only the smallest of corporate proxy tunnels.
+This article helps you get your backend installation up and running making calls through corporate proxies.
 
-Whilst this isn't supported natively by Backstage, this might help you get your installation up and running making calls through the said proxy tunnel.
+## Background
 
-## backend
+Let's admit it, we've all been there. Sometimes you have to run stuff with no way out to the public internet, except via the smallest of corporate proxy tunnels. It's most likely that you're going to run into these issues from the backend part of Backstage as that's the part that isn't helped by your browser or OS settings for the corporate proxy.
 
-Unfortunately, `nodejs` does not respect `HTTP(S)_PROXY` environment variables by default, and the library that we use to provide `fetch` functionality `node-fetch` (provided by `cross-fetch`) does not also respect these environment variables.
+Unfortunately, neither the Node.js native `fetch` nor the other frequently used library `node-fetch` (see [ADR013](https://backstage.io/docs/architecture-decisions/adrs-adr013)) respect `HTTP(S)_PROXY` environment variables by default. As an additional complication, there is no single solution for configuring both native `fetch` and `node-fetch` at once, uniformly.
 
-There are however some ways to get this to work without too much effort. It's most likely that you're going to run into these issues from the `backend` part of `backstage` as that's the part that isn't helped by your browser or OS's settings for the corporate proxy.
+There are however some ways to get this to work without too much effort.
 
-**Note:** You're gonna want to be in your backend working directory for these solutions as that's where the requests come from that don't go through this proxy.
+## Installation
 
-### Using `global-agent`
+**Note:** You're going to want to be in your backend working directory for these solutions as that's where the requests come from that don't go through this proxy.
 
-1. Install `global-agent` using `yarn add global-agent`
-2. Go to the entry file for the backend (`src/index.ts`)
-3. At the top of the file paste the following:
+1. Install the required packages in your backend, by running the following command inside your backend directory (typically `packages/backend` under your repository root).
 
-```ts
-import 'global-agent/bootstrap';
-```
+   ```bash
+   yarn add undici global-agent
+   ```
 
-4. Start the backend with the `global-agent` variables
+   `undici` exposes the settings for native `fetch`, and `global-agent` can set things up for `node-fetch`.
 
-```sh
-export GLOBAL_AGENT_HTTP_PROXY=$HTTP_PROXY
-export GLOBAL_AGENT_NO_PROXY=$NO_PROXY
-yarn start
-```
+1. Go to the entry file for the backend (typically `packages/backend/src/index.ts`), and add the following at the top:
 
-More information and more options for configuring `global-agent` including just using the default environment variables can be found here: https://github.com/gajus/global-agent
+   ```ts
+   import 'global-agent/bootstrap';
+   import { setGlobalDispatcher, ProxyAgent } from 'undici';
 
-### Using `proxy-agent`
+   const proxyEnv =
+     process.env.GLOBAL_AGENT_HTTP_PROXY ||
+     process.env.GLOBAL_AGENT_HTTPS_PROXY;
 
-`proxy-agent` is a library that you can use to override the `globalAgents` of `node` land with a tunnel to use for each request.
+   if (proxyEnv) {
+     const proxyUrl = new URL(proxyEnv);
+     setGlobalDispatcher(
+       new ProxyAgent({
+         uri: proxyUrl.protocol + proxyUrl.host,
+         token:
+           proxyUrl.username && proxyUrl.password
+             ? `Basic ${Buffer.from(
+                 `${proxyUrl.username}:${proxyUrl.password}`,
+               ).toString('base64')}`
+             : undefined,
+       }),
+     );
+   }
+   ```
 
-1. Install `proxy-agent` using `yarn add proxy-agent`
-2. Go to the entry file for the backend (`src/index.ts`)
-3. At the top of the file paste the following:
+   The first import automatically bootstraps `global-agent`, which addresses `node-fetch` proxying. The lines of code below that peeks into the same environment variables as `global-agent` uses, and also leverages them to set up the `undici` package which affects native `fetch`. Does that seem weird? Yes, we think so too. But in the current state of the Node.js ecosystem, that's how it works.
 
-```ts
-import ProxyAgent from 'proxy-agent';
-import http from 'http';
-import https from 'https';
+   This code is kept brief for illustrative purposes. You may want to adjust it slightly if you need support for [no-proxy excludes](https://gist.github.com/zicklag/1bb50db6c5138de347c224fda14286da) or only do proxying in local development etc. Also see [the `global-agent` docs](https://github.com/gajus/global-agent) for information about its configuration options.
 
-/*
-  Something to note here, this might need different configuration depending on your own setup.
-  If you only have an http_proxy then you'll need to set that as both the http and https globalAgent instead.
-*/
-if (process.env.HTTP_PROXY) {
-  http.globalAgent = new ProxyAgent(process.env.HTTP_PROXY);
-}
+1. Start the backend with the correct environment variables set. For example:
 
-if (process.env.HTTPS_PROXY) {
-  https.globalAgent = new ProxyAgent(process.env.HTTPS_PROXY);
-}
-```
+   ```sh
+   export GLOBAL_AGENT_HTTP_PROXY=http://username:password@proxy.example.net:8888
+   yarn start
+   ```
 
-4. Start the backend with `yarn start`
-
-## config
+## Configuration
 
 If your development environment is in the cloud (like with [AWS Cloud9](https://aws.amazon.com/cloud9/) or an instance of [Theia](https://theia-ide.org/)), you will need to update your configuration.
 
@@ -82,3 +81,33 @@ backend:
 ```
 
 The app port must proxy web socket connections in order to make hot reloading work.
+
+## Alternatives to `global-agent`
+
+The `proxy-agent` package can be used as an alternative to `global-agent` (do not install both!), and also ensures that the `node-fetch` library correctly respects proxy settings, but [does NOT work](https://github.com/TooTallNate/proxy-agents/issues/239) for modern `undici` based native Node.js `fetch`, so you'll still have to also do the `undici` steps in the section above in addition to this.
+
+`proxy-agent` is a library that you can use to override the `globalAgents` of `node` land with a tunnel to use for each request.
+
+1. Install `proxy-agent` using `yarn add proxy-agent`
+2. Go to the entry file for the backend (`src/index.ts`)
+3. At the top of the file paste the following:
+
+   ```ts
+   import ProxyAgent from 'proxy-agent';
+   import http from 'http';
+   import https from 'https';
+
+   /*
+     Something to note here, this might need different configuration depending on your own setup.
+     If you only have an http_proxy then you'll need to set that as both the http and https globalAgent instead.
+   */
+   if (process.env.HTTP_PROXY) {
+     http.globalAgent = new ProxyAgent(process.env.HTTP_PROXY);
+   }
+
+   if (process.env.HTTPS_PROXY) {
+     https.globalAgent = new ProxyAgent(process.env.HTTPS_PROXY);
+   }
+   ```
+
+4. Start the backend with `yarn start`

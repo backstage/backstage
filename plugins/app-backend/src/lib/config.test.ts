@@ -62,6 +62,28 @@ describe('injectConfig', () => {
     expect(JSON.parse(eval(fsMock.writeFile.mock.calls[0][1]))).toEqual([]);
   });
 
+  it('should inject config repeatedly if marker appears multiple times', async () => {
+    fsMock.readdir.mockResolvedValue(['main.js'] as any);
+    readFileMock.mockImplementation(
+      async () =>
+        '({a:"__APP_INJECTED_RUNTIME_CONFIG__",b:"__APP_INJECTED_RUNTIME_CONFIG__"})',
+    );
+    await injectConfig(baseOptions);
+    expect(fsMock.readdir).toHaveBeenCalledTimes(1);
+    expect(fsMock.readFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.writeFile).toHaveBeenCalledWith(
+      resolvePath(MOCK_DIR, 'main.js'),
+      '({a:/*__APP_INJECTED_CONFIG_MARKER__*/"[]"/*__INJECTED_END__*/,b:/*__APP_INJECTED_CONFIG_MARKER__*/"[]"/*__INJECTED_END__*/})',
+      'utf8',
+    );
+
+    // eslint-disable-next-line no-eval
+    expect(JSON.parse(eval(fsMock.writeFile.mock.calls[0][1]).a)).toEqual([]);
+    // eslint-disable-next-line no-eval
+    expect(JSON.parse(eval(fsMock.writeFile.mock.calls[0][1]).b)).toEqual([]);
+  });
+
   it('should find the correct file to inject', async () => {
     fsMock.readdir.mockResolvedValue([
       'before.js',
@@ -149,6 +171,57 @@ describe('injectConfig', () => {
 
     // eslint-disable-next-line no-eval
     expect(eval(fsMock.writeFile.mock.calls[1][1])).toEqual([
+      { data: { x: 1, y: 2 }, context: 'test' },
+    ]);
+  });
+
+  it('should re-inject config repeatedly if needed', async () => {
+    fsMock.readdir.mockResolvedValue(['main.js'] as any);
+    readFileMock.mockResolvedValue(
+      '({ a: JSON.parse("__APP_INJECTED_RUNTIME_CONFIG__"), b: JSON.parse("__APP_INJECTED_RUNTIME_CONFIG__") })',
+    );
+
+    await injectConfig({
+      ...baseOptions,
+      appConfigs: [{ data: { x: 0 }, context: 'test' }],
+    });
+
+    expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.writeFile).toHaveBeenCalledWith(
+      resolvePath(MOCK_DIR, 'main.js'),
+      '({ a: JSON.parse(/*__APP_INJECTED_CONFIG_MARKER__*/"[{\\"data\\":{\\"x\\":0},\\"context\\":\\"test\\"}]"/*__INJECTED_END__*/), b: JSON.parse(/*__APP_INJECTED_CONFIG_MARKER__*/"[{\\"data\\":{\\"x\\":0},\\"context\\":\\"test\\"}]"/*__INJECTED_END__*/) })',
+      'utf8',
+    );
+
+    // eslint-disable-next-line no-eval
+    expect(eval(fsMock.writeFile.mock.calls[0][1]).a).toEqual([
+      { data: { x: 0 }, context: 'test' },
+    ]);
+    // eslint-disable-next-line no-eval
+    expect(eval(fsMock.writeFile.mock.calls[0][1]).b).toEqual([
+      { data: { x: 0 }, context: 'test' },
+    ]);
+
+    readFileMock.mockResolvedValue(fsMock.writeFile.mock.calls[0][1]);
+
+    await injectConfig({
+      ...baseOptions,
+      appConfigs: [{ data: { x: 1, y: 2 }, context: 'test' }],
+    });
+
+    expect(fsMock.writeFile).toHaveBeenCalledTimes(2);
+    expect(fsMock.writeFile).toHaveBeenLastCalledWith(
+      resolvePath(MOCK_DIR, 'main.js'),
+      '({ a: JSON.parse(/*__APP_INJECTED_CONFIG_MARKER__*/"[{\\"data\\":{\\"x\\":1,\\"y\\":2},\\"context\\":\\"test\\"}]"/*__INJECTED_END__*/), b: JSON.parse(/*__APP_INJECTED_CONFIG_MARKER__*/"[{\\"data\\":{\\"x\\":1,\\"y\\":2},\\"context\\":\\"test\\"}]"/*__INJECTED_END__*/) })',
+      'utf8',
+    );
+
+    // eslint-disable-next-line no-eval
+    expect(eval(fsMock.writeFile.mock.calls[1][1]).a).toEqual([
+      { data: { x: 1, y: 2 }, context: 'test' },
+    ]);
+    // eslint-disable-next-line no-eval
+    expect(eval(fsMock.writeFile.mock.calls[1][1]).b).toEqual([
       { data: { x: 1, y: 2 }, context: 'test' },
     ]);
   });

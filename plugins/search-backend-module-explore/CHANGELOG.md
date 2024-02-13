@@ -1,5 +1,45 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.1.14-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/backend-tasks@0.5.15-next.2
+  - @backstage/plugin-search-backend-node@1.2.14-next.2
+  - @backstage/config@1.1.1
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.1.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/backend-tasks@0.5.15-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-backend-node@1.2.14-next.1
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.1.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/backend-tasks@0.5.15-next.0
+  - @backstage/plugin-search-backend-node@1.2.14-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.1.13
 
 ### Patch Changes

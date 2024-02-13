@@ -1,5 +1,50 @@
 # @backstage/app-defaults
 
+## 1.5.0-next.2
+
+### Minor Changes
+
+- f919be9: Added a utility API for VMware Cloud auth; the API ref is available in the
+  `@backstage/core-plugin-api` and `@backstage/frontend-plugin-api` packages, the
+  implementation is in `@backstage/core-app-api` and a factory has been added to
+  `@backstage/app-defaults`.
+- 7f11009: Added stack trace display to `ErrorPage` and updated existing refs
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 214f2da: Fix invalid HTTP status code 501 in Error Page
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-app-api@1.12.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-permission-react@0.4.20-next.1
+  - @backstage/theme@0.5.1-next.0
+
+## 1.4.8-next.1
+
+### Patch Changes
+
+- 7da67ce: Change `defaultScopes` for Bitbucket auth from invalid `team` to `account`.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/core-app-api@1.11.4-next.0
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-permission-react@0.4.20-next.0
+
+## 1.4.8-next.0
+
+### Patch Changes
+
+- f899eec: Change default icon for `kind:resource` to the storage icon.
+- Updated dependencies
+  - @backstage/core-components@0.13.10
+  - @backstage/core-app-api@1.11.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-permission-react@0.4.19
+
 ## 1.4.7
 
 ### Patch Changes

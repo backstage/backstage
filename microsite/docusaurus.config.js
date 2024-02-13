@@ -144,6 +144,14 @@ module.exports = {
             from: '/docs/features/software-templates/testing-scaffolder-alpha',
             to: '/docs/features/software-templates/migrating-to-rjsf-v5',
           },
+          {
+            from: '/docs/auth/glossary',
+            to: '/docs/references/glossary',
+          },
+          {
+            from: '/docs/overview/glossary',
+            to: '/docs/references/glossary',
+          },
         ],
       },
     ],
@@ -277,14 +285,14 @@ module.exports = {
                 to: 'https://developer.spotify.com/',
               },
               {
-                label: 'Github',
+                label: 'GitHub',
                 to: 'https://github.com/backstage/',
               },
             ],
           },
         ],
         copyright:
-          '<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © 2023 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>',
+          '<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © 2024 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>',
       },
       algolia: {
         apiKey: '1f0ba86672ccfc3576faa94583e5b318',

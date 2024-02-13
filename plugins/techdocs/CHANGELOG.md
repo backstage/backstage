@@ -1,5 +1,71 @@
 # @backstage/plugin-techdocs
 
+## 1.10.0-next.2
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/plugin-techdocs-react@1.1.16-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/plugin-search-react@1.7.6-next.2
+  - @backstage/theme@0.5.1-next.0
+  - @backstage/integration-react@1.1.24-next.1
+  - @backstage/core-compat-api@0.2.0-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.10.0-next.1
+
+### Minor Changes
+
+- af4d147: Updated the styling for <code> tags to avoid word break.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-compat-api@0.2.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/plugin-search-react@1.7.6-next.1
+  - @backstage/integration-react@1.1.24-next.0
+  - @backstage/plugin-techdocs-react@1.1.16-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.9.4-next.0
+
+### Patch Changes
+
+- 912ca7b: Use `convertLegacyRouteRefs` to define routes in `/alpha` export plugin.
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.2-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/plugin-search-react@1.7.6-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/integration-react@1.1.23
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-search-common@1.2.10
+  - @backstage/plugin-techdocs-react@1.1.15
+
 ## 1.9.3
 
 ### Patch Changes

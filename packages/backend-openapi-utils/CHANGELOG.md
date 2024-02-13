@@ -1,5 +1,30 @@
 # @backstage/backend-openapi-utils
 
+## 0.1.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/errors@1.2.3
+
+## 0.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/errors@1.2.3
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- 2067689: Internal updates due to `json-schema-to-ts`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/errors@1.2.3
+
 ## 0.1.2
 
 ### Patch Changes

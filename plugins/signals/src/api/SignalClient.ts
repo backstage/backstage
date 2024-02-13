@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SignalApi } from '@backstage/plugin-signals-react';
+import { SignalApi, SignalSubscriber } from '@backstage/plugin-signals-react';
 import { JsonObject } from '@backstage/types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { v4 as uuid } from 'uuid';
 
 type Subscription = {
   channel: string;
-  callback: (message: JsonObject) => void;
+  callback: (message: any) => void;
 };
 
 const WS_CLOSE_NORMAL = 1000;
@@ -62,16 +62,16 @@ export class SignalClient implements SignalApi {
     private reconnectTimeout: number,
   ) {}
 
-  subscribe(
+  subscribe<TMessage extends JsonObject = JsonObject>(
     channel: string,
-    onMessage: (message: JsonObject) => void,
-  ): { unsubscribe: () => void } {
+    onMessage: (message: TMessage) => void,
+  ): SignalSubscriber {
     const subscriptionId = uuid();
     const exists = [...this.subscriptions.values()].find(
       sub => sub.channel === channel,
     );
     this.subscriptions.set(subscriptionId, {
-      channel: channel,
+      channel,
       callback: onMessage,
     });
 
@@ -146,20 +146,6 @@ export class SignalClient implements SignalApi {
     url.protocol = url.protocol === 'http:' ? 'ws:' : 'wss:';
     this.ws = new WebSocket(url.toString(), token);
 
-    this.ws.onmessage = (data: MessageEvent) => {
-      this.handleMessage(data);
-    };
-
-    this.ws.onerror = () => {
-      this.reconnect();
-    };
-
-    this.ws.onclose = (ev: CloseEvent) => {
-      if (ev.code !== WS_CLOSE_NORMAL && ev.code !== WS_CLOSE_GOING_AWAY) {
-        this.reconnect();
-      }
-    };
-
     // Wait until connection is open
     let connectSleep = 0;
     while (
@@ -174,16 +160,32 @@ export class SignalClient implements SignalApi {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       throw new Error('Connect timeout');
     }
+
+    this.ws.onmessage = (data: MessageEvent) => {
+      this.handleMessage(data);
+    };
+
+    this.ws.onerror = () => {
+      this.reconnect();
+    };
+
+    this.ws.onclose = (ev: CloseEvent) => {
+      if (ev.code !== WS_CLOSE_NORMAL && ev.code !== WS_CLOSE_GOING_AWAY) {
+        this.reconnect();
+      }
+    };
   }
 
   private handleMessage(data: MessageEvent) {
     try {
-      const json = JSON.parse(data.data) as JsonObject;
-      if (json.channel) {
-        for (const sub of this.subscriptions.values()) {
-          if (sub.channel === json.channel) {
-            sub.callback(json.message as JsonObject);
-          }
+      const json = JSON.parse(data.data);
+      if (!json.channel) {
+        return;
+      }
+
+      for (const sub of this.subscriptions.values()) {
+        if (sub.channel === json.channel) {
+          sub.callback(json.message);
         }
       }
     } catch (e) {

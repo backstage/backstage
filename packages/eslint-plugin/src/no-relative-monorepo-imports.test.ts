@@ -28,6 +28,11 @@ const ERR_FORBIDDEN = (newImp: string) => ({
   message: `Relative imports of monorepo packages are forbidden, use '${newImp}' instead`,
 });
 
+// cwd must be restored
+const origDir = process.cwd();
+afterAll(() => {
+  process.chdir(origDir);
+});
 process.chdir(FIXTURE);
 
 const ruleTester = new RuleTester({

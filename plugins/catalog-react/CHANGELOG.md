@@ -1,5 +1,66 @@
 # @backstage/plugin-catalog-react
 
+## 1.10.0-next.2
+
+### Minor Changes
+
+- 3dc64e9: Add support to `configSchema` option on the `createEntityCardExtension` factory function.
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-permission-react@0.4.20-next.1
+  - @backstage/integration-react@1.1.24-next.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-permission-common@0.7.12
+
+## 1.9.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/integration-react@1.1.24-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-react@0.4.20-next.0
+
+## 1.9.4-next.0
+
+### Patch Changes
+
+- 916da47: Change default icon for unknown entities to nothing instead of the help icon.
+- 71c6d7a: Overflowing labels in OwnerPicker (Catalog) are now truncated. Hovering over them shows the full label
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/integration-react@1.1.23
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.20
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-react@0.4.19
+
 ## 1.9.3
 
 ### Patch Changes

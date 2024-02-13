@@ -50,6 +50,10 @@ export type PuppetNode = {
   /**
    * A hash of the factset's certname, environment, timestamp, facts, and producer_timestamp.
    */
+  latest_report_status: string;
+  /**
+   *  The status of the latest report. Possible values come from Puppet's report status failed, changed, or unchanged.
+   */
   hash: string;
   /**
    *  The most recent time of fact submission for the relevant certname from the Puppet Server.

@@ -9,6 +9,7 @@ import type { AppConfig } from '@backstage/config';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheClient } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
+import { ConfigSchema } from '@backstage/config-loader';
 import { CorsOptions } from 'cors';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ErrorRequestHandler } from 'express';
@@ -64,6 +65,7 @@ export const cacheServiceFactory: () => ServiceFactory<CacheClient, 'plugin'>;
 export function createConfigSecretEnumerator(options: {
   logger: LoggerService;
   dir?: string;
+  schema?: ConfigSchema;
 }): Promise<(config: Config) => Iterable<string>>;
 
 // @public

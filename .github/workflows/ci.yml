@@ -28,20 +28,20 @@ jobs:
     name: Install ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4.0.1
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.5
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -64,20 +64,20 @@ jobs:
     name: Verify ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4.0.1
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.5
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -113,10 +113,10 @@ jobs:
         run: yarn backstage-repo-tools generate-catalog-info --ci
 
       - name: lint openapi yaml files
-        run: yarn backstage-repo-tools schema openapi lint
+        run: yarn backstage-repo-tools repo schema openapi lint
 
       - name: verify openapi yaml file matches generated ts file
-        run: yarn backstage-repo-tools schema openapi verify
+        run: yarn backstage-repo-tools repo schema openapi verify
 
       - name: verify doc links
         run: node scripts/verify-links.js
@@ -155,7 +155,7 @@ jobs:
     name: Test ${{ matrix.node-version }}
     services:
       postgres16:
-        image: postgres:16
+        image: postgres:16@sha256:09f23e02d76670d3b346a3c00aa33a27cf57aab8341eedfcdaed41459d14f5c4
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -166,7 +166,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres12:
-        image: postgres:12
+        image: postgres:12@sha256:8ffdca6e9208aceb30653fa0cc1c38956303ace453944b54b4f71019cfe854c1
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -177,7 +177,7 @@ jobs:
         ports:
           - 5432/tcp
       mysql8:
-        image: mysql:8
+        image: mysql:8@sha256:2a9ef1075ff30c65bbcf4f96b25a03ea3b3f492c284e6c4a612c269ce4c5bb19
         env:
           MYSQL_ROOT_PASSWORD: root
         options: >-
@@ -190,25 +190,25 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: ${{ matrix.node-version == '20.x' && '--max-old-space-size=4096 --no-node-snapshot' || '--max-old-space-size=4096' }}
       INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
       INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
       INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: fetch branch master
         run: git fetch origin master
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4.0.1
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.5
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -225,7 +225,7 @@ jobs:
 
       # We run the test cases before verifying the specs to prevent any failing tests from causing errors.
       - name: verify openapi specs against test cases
-        run: yarn backstage-repo-tools schema openapi test
+        run: yarn backstage-repo-tools repo schema openapi test
 
       - name: ensure clean working directory
         run: |

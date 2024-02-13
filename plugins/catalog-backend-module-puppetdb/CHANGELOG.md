@@ -1,5 +1,49 @@
 # @backstage/plugin-catalog-backend-module-puppetdb
 
+## 0.1.15-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- bc644fb: Added `latest_report_status` parameter from the PuppetDB node api and added it as a tag to the nodes. The status is valuable information as it displays which nodes are compliant to your configuration and which ones are failing are making changes.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/backend-tasks@0.5.15-next.2
+  - @backstage/plugin-catalog-node@1.6.2-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.1.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/backend-tasks@0.5.15-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.6.2-next.1
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/backend-tasks@0.5.15-next.0
+  - @backstage/plugin-catalog-node@1.6.2-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.1.14
 
 ### Patch Changes

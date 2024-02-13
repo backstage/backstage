@@ -1,5 +1,103 @@
 # @backstage/plugin-azure-sites-backend
 
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 4376655: Added `permissionIntegrationRouter` for azure-sites-backend routes
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/plugin-permission-node@0.7.21-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-azure-sites-common@0.1.2-next.0
+  - @backstage/plugin-permission-common@0.7.12
+
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 28610f4: **BREAKING**: `catalogApi` and `permissionsApi` are now a requirement to be passed through to the `createRouter` function.
+
+  You can fix the typescript issues by passing through the required dependencies like the below `diff` shows:
+
+  ```diff
+    import {
+      createRouter,
+      AzureSitesApi,
+    } from '@backstage/plugin-azure-sites-backend';
+    import { Router } from 'express';
+    import { PluginEnvironment } from '../types';
+
+    export default async function createPlugin(
+      env: PluginEnvironment,
+    ): Promise<Router> {
+  +   const catalogClient = new CatalogClient({
+  +     discoveryApi: env.discovery,
+  +   });
+
+      return await createRouter({
+        logger: env.logger,
+        azureSitesApi: AzureSitesApi.fromConfig(env.config),
+  +     catalogApi: catalogClient,
+  +     permissionsApi: env.permissions,
+      });
+    }
+  ```
+
+### Patch Changes
+
+- 5a409bb: Azure Sites `start` and `stop` action is now protected with the Permissions framework.
+
+  The below example describes an action that forbids anyone but the owner of the catalog entity to trigger actions towards a site tied to an entity.
+
+  ```typescript
+     // packages/backend/src/plugins/permission.ts
+    import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common';
+     ...
+     class TestPermissionPolicy implements PermissionPolicy {
+    async handle(request: PolicyQuery, user?: BackstageIdentityResponse): Promise<PolicyDecision> {
+       if (isPermission(request.permission, azureSitesActionPermission)) {
+         return createCatalogConditionalDecision(
+           request.permission,
+           catalogConditions.isEntityOwner({
+             claims: user?.identity.ownershipEntityRefs ??  [],
+           }),
+         );
+       }
+       ...
+       return {
+         result: AuthorizeResult.ALLOW,
+       };
+     }
+     ...
+     }
+  ```
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/plugin-azure-sites-common@0.1.2-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-auth-node@0.4.4-next.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-node@0.7.21-next.1
+
+## 0.1.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-sites-common@0.1.1
+
 ## 0.1.19
 
 ### Patch Changes

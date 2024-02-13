@@ -1,5 +1,69 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.8.0-next.2
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 2985186: Fix bug that erroneously caused a separator or a 0 to render in the TemplateCard for Templates with empty links
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/theme@0.5.1-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+
+## 1.8.0-next.1
+
+### Minor Changes
+
+- b07ec70: Use more distinguishable icons for link (`Link`) and text output (`Description`).
+
+### Patch Changes
+
+- 3f60ad5: fix for: converting circular structure to JSON error
+- 31f0a0a: Added `ScaffolderPageContextMenu` to `ActionsPage`, `ListTaskPage`, and `TemplateEditorPage` so that you can more easily navigate between these pages
+- 82affc7: Fix issue where `ui:schema` was replaced with an empty object if `dependencies` is defined
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/theme@0.5.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+
+## 1.8.0-next.0
+
+### Minor Changes
+
+- c56f1a2: Remove the old legacy exports from `/alpha`
+- 11b9a08: Introduced the first version of recoverable tasks.
+
+### Patch Changes
+
+- 0b0c6b6: Allow defining default output text to be shown
+- 6a74ffd: Updated dependency `@rjsf/utils` to `5.16.1`.
+  Updated dependency `@rjsf/core` to `5.16.1`.
+  Updated dependency `@rjsf/material-ui` to `5.16.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.16.1`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/theme@0.5.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 1.7.1
 
 ### Patch Changes

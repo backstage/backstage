@@ -1,5 +1,49 @@
 # @backstage/plugin-devtools
 
+## 0.1.9-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-permission-react@0.4.20-next.1
+  - @backstage/core-compat-api@0.2.0-next.2
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-devtools-common@0.1.8
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-compat-api@0.2.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-devtools-common@0.1.8
+  - @backstage/plugin-permission-react@0.4.20-next.0
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- c12a86c: Refactored code to improve accessibility by moving elements outside the `ul` tag and placing them appropriately. Also adjusted theme to offer better contrast.
+- b89d8be: Added alpha support for the New Frontend System (Declarative Integration)
+- 995d280: Updated imports from named to default imports to help with the Material UI v4 to v5 migration
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.2-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-devtools-common@0.1.8
+  - @backstage/plugin-permission-react@0.4.19
+
 ## 0.1.8
 
 ### Patch Changes

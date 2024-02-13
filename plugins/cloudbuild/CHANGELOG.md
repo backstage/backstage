@@ -1,5 +1,48 @@
 # @backstage/plugin-cloudbuild
 
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/catalog-model@1.4.4-next.0
+
+## 0.4.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 0328d1b: Changed build list view to automatically filter builds based on repository name matching component-info's metadata.name.
+  Added optional `google.com/cloudbuild-repo-name` annotation which allows you to specify a different repository to filter on.
+  Added optional `google.com/cloudbuild-trigger-name` annotation which allows you to filter based on a trigger name instead of a repo name.
+  Updated the ReadMe with information about the filtering and some other minor verbiage updates.
+  Changed `substitutions.BRANCH_NAME` to `substitutions.REF_NAME` so that the Ref field is populated properly.
+  Added optional `google.com/cloudbuild-location` annotation which allows you to specify the Cloud Build location of your builds. Default is global scope.
+  Changed build list view to show builds in a specific location if the location annotation is used.
+  Updated ReadMe with information about the use of the location filtering.
+
+### Patch Changes
+
+- ef3cad4: Add telemetry HTTP header Google Cloud Platform
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+
 ## 0.3.29
 
 ### Patch Changes

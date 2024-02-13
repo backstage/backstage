@@ -1,5 +1,92 @@
 # @backstage/plugin-scaffolder
 
+## 1.18.0-next.2
+
+### Minor Changes
+
+- 7f11009: Added stack trace display to `ErrorPage` and updated existing refs
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/plugin-permission-react@0.4.20-next.1
+  - @backstage/plugin-scaffolder-react@1.8.0-next.2
+  - @backstage/integration-react@1.1.24-next.1
+  - @backstage/core-compat-api@0.2.0-next.2
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+
+## 1.18.0-next.1
+
+### Minor Changes
+
+- 9b9c05c: Updating the `EntityPicker` to only select `kind` `metadata.name` and `metadata.namespace` by default to improve performance on larger datasets.
+
+### Patch Changes
+
+- 31f0a0a: Added `ScaffolderPageContextMenu` to `ActionsPage`, `ListTaskPage`, and `TemplateEditorPage` so that you can more easily navigate between these pages
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/plugin-scaffolder-react@1.8.0-next.1
+  - @backstage/core-compat-api@0.2.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/integration-react@1.1.24-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-permission-react@0.4.20-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+
+## 1.18.0-next.0
+
+### Minor Changes
+
+- c56f1a2: Remove the old legacy exports from `/alpha`
+- a86920b: Introduced a new `MultiEntityPicker` field that supports selecting multiple Entities
+
+### Patch Changes
+
+- b0d1d80: Added basic support for the new frontend system, exported from the `/alpha` subpath.
+- 912ca7b: Use `convertLegacyRouteRefs` to define routes in `/alpha` export plugin.
+- da059d7: Removed alpha symbol from Task List header
+- 6a74ffd: Updated dependency `@rjsf/utils` to `5.16.1`.
+  Updated dependency `@rjsf/core` to `5.16.1`.
+  Updated dependency `@rjsf/material-ui` to `5.16.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.16.1`.
+- 11b9a08: Introduced the first version of recoverable tasks.
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.2-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/plugin-scaffolder-react@1.8.0-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+  - @backstage/integration-react@1.1.23
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.20
+  - @backstage/plugin-permission-react@0.4.19
+
 ## 1.17.1
 
 ### Patch Changes

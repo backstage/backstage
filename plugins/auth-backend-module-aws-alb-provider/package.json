@@ -1,0 +1,54 @@
+{
+  "name": "@backstage/plugin-auth-backend-module-aws-alb-provider",
+  "description": "The aws-alb provider module for the Backstage auth backend.",
+  "version": "0.1.0-next.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/auth-backend-module-aws-alb-provider"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-auth-backend": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "jose": "^4.6.0",
+    "node-cache": "^5.1.2",
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "express": "^4.18.2",
+    "msw": "^2.0.8"
+  },
+  "files": [
+    "dist"
+  ]
+}

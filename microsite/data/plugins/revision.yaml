@@ -1,0 +1,10 @@
+---
+title: Revision
+author: Revision
+authorUrl: https://github.com/revision-org
+category: Visualization
+description: Access Revision architecture diagrams from within Backstage
+documentation: https://github.com/revision-org/backstage-plugins/tree/main/plugins/revision
+iconUrl: https://raw.githubusercontent.com/revision-org/revision-assets/b4895ae036e99341576caf1c9bbf92ec89fb65dc/logo-black-full.svg
+npmPackageName: '@revisionapp/backstage-revision-plugin'
+addedDate: '2024-01-26'

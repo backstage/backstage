@@ -1,5 +1,8 @@
 # API Documentation
 
+> Disclaimer:
+> If you are looking for documentation on the experimental new frontend system support, please go [here](./README-alpha.md).
+
 This is an extension for the catalog plugin that provides components to discover and display API entities.
 APIs define the interface between components, see the [system model](https://backstage.io/docs/features/software-catalog/system-model) for details.
 They are defined in machine readable formats and provide a human readable documentation.
@@ -29,7 +32,7 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-api-docs
+yarn --cwd packages/app add @backstage/plugin-api-docs
 ```
 
 2. Add the `ApiExplorerPage` extension to the app:
@@ -263,3 +266,56 @@ createApiFactory({
 ```
 
 In the same way as the `requestInterceptor` you can override any property of Swagger UI
+
+### Provide Specific Supported Methods to Swagger UI
+
+This can be done through utilising the
+[supportedSubmitMethods prop](https://github.com/swagger-api/swagger-ui/tree/master/flavors/swagger-ui-react#supportedsubmitmethods-proptypesarrayofproptypesoneofget-put-post-delete-options-head-patch-trace).
+If you wish to limit the HTTP methods available for the `Try It Out` feature of an OpenAPI API
+component, you will need to add the following to your `api.tsx`, listing the permitted methods for
+your API in the `supportedSubmitMethods` parameter:
+
+```tsx
+...
+import {
+  OpenApiDefinitionWidget,
+  apiDocsConfigRef,
+  defaultDefinitionWidgets,
+} from '@backstage/plugin-api-docs';
+import { ApiEntity } from '@backstage/catalog-model';
+
+export const apis: AnyApiFactory[] = [
+...
+  createApiFactory({
+    api: apiDocsConfigRef,
+    deps: {},
+    factory: () => {
+      const supportedSubmitMethods = ['get', 'post', 'put', 'delete'];
+      const definitionWidgets = defaultDefinitionWidgets().map(obj => {
+        if (obj.type === 'openapi') {
+          return {
+            ...obj,
+            component: definition => (
+              <OpenApiDefinitionWidget
+                definition={definition}
+                supportedSubmitMethods={supportedSubmitMethods}
+              />
+            ),
+          };
+        }
+        return obj;
+      });
+
+      return {
+        getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+          return definitionWidgets.find(d => d.type === apiEntity.spec.type);
+        }
+      };
+    }
+  })
+]
+
+```
+
+N.B. if you wish to disable the `Try It Out` feature for your API, you can provide an empty list to
+the `supportedSubmitMethods` parameter.

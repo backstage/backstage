@@ -1,5 +1,30 @@
 # @backstage/plugin-auth-backend-module-microsoft-provider
 
+## 0.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/plugin-auth-node@0.4.4-next.1
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 1ff2684: Added the possibility to use custom scopes for performing login with Microsoft EntraID.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.4-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+
 ## 0.1.4
 
 ### Patch Changes

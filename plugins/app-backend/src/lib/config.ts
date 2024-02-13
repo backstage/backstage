@@ -19,7 +19,11 @@ import { resolve as resolvePath } from 'path';
 import { Logger } from 'winston';
 import { AppConfig, Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-import { loadConfigSchema, readEnvConfig } from '@backstage/config-loader';
+import {
+  ConfigSchema,
+  loadConfigSchema,
+  readEnvConfig,
+} from '@backstage/config-loader';
 
 type InjectOptions = {
   appConfigs: AppConfig[];
@@ -31,7 +35,9 @@ type InjectOptions = {
 /**
  * Injects configs into the app bundle, replacing any existing injected config.
  */
-export async function injectConfig(options: InjectOptions) {
+export async function injectConfig(
+  options: InjectOptions,
+): Promise<string | undefined> {
   const { staticDir, logger, appConfigs } = options;
 
   const files = await fs.readdir(staticDir);
@@ -47,30 +53,32 @@ export async function injectConfig(options: InjectOptions) {
     if (content.includes('__APP_INJECTED_RUNTIME_CONFIG__')) {
       logger.info(`Injecting env config into ${jsFile}`);
 
-      const newContent = content.replace(
+      const newContent = content.replaceAll(
         '"__APP_INJECTED_RUNTIME_CONFIG__"',
         injected,
       );
       await fs.writeFile(path, newContent, 'utf8');
-      return;
+      return path;
     } else if (content.includes('__APP_INJECTED_CONFIG_MARKER__')) {
       logger.info(`Replacing injected env config in ${jsFile}`);
 
-      const newContent = content.replace(
-        /\/\*__APP_INJECTED_CONFIG_MARKER__\*\/.*\/\*__INJECTED_END__\*\//,
+      const newContent = content.replaceAll(
+        /\/\*__APP_INJECTED_CONFIG_MARKER__\*\/.*?\/\*__INJECTED_END__\*\//g,
         injected,
       );
       await fs.writeFile(path, newContent, 'utf8');
-      return;
+      return path;
     }
   }
   logger.info('Env config not injected');
+  return undefined;
 }
 
 type ReadOptions = {
   env: { [name: string]: string | undefined };
   appDistDir: string;
   config: Config;
+  schema?: ConfigSchema;
 };
 
 /**
@@ -87,7 +95,11 @@ export async function readConfigs(options: ReadOptions): Promise<AppConfig[]> {
     const serializedSchema = await fs.readJson(schemaPath);
 
     try {
-      const schema = await loadConfigSchema({ serialized: serializedSchema });
+      const schema =
+        options.schema ||
+        (await loadConfigSchema({
+          serialized: serializedSchema,
+        }));
 
       const frontendConfigs = await schema.process(
         [{ data: config.get() as JsonObject, context: 'app' }],

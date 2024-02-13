@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder-backend-module-sentry
 
+## 0.1.18-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-scaffolder-node@0.3.0-next.2
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.1.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/plugin-scaffolder-node@0.3.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- e9a5228: Exporting a default module for the new Backend System
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.3.0-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.17
 
 ### Patch Changes

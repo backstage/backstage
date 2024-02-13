@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-github-pull-requests-board",
   "description": "A Backstage plugin that allows you to see all open Pull Requests for all the repositories owned by your team",
-  "version": "0.1.23",
+  "version": "0.1.24-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -44,7 +44,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "luxon": "^3.0.0",
     "p-limit": "^4.0.0"
   },

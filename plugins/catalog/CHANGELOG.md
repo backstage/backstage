@@ -1,5 +1,79 @@
 # @backstage/plugin-catalog
 
+## 1.17.0-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/plugin-permission-react@0.4.20-next.1
+  - @backstage/plugin-search-react@1.7.6-next.2
+  - @backstage/integration-react@1.1.24-next.1
+  - @backstage/core-compat-api@0.2.0-next.2
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.17.0-next.1
+
+### Patch Changes
+
+- 987f565: Add line clamping to `CatalogSearchResultListItem`
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-compat-api@0.2.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/plugin-search-react@1.7.6-next.1
+  - @backstage/integration-react@1.1.24-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-permission-react@0.4.20-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.17.0-next.0
+
+### Minor Changes
+
+- e541c0e: Exported `CatalogTable.defaultColumnsFunc` for defining the columns in `<CatalogTable />` of some Kinds while using the default columns for the others.
+
+### Patch Changes
+
+- 916da47: Change default icon for unknown entities to nothing instead of the help icon.
+- f899eec: Change default icon for `kind:resource` to the storage icon.
+- 912ca7b: Use `convertLegacyRouteRefs` to define routes in `/alpha` export plugin.
+- 797a329: Fixed inconsistencies in icons used for System and Template
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.2-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/plugin-search-react@1.7.6-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/integration-react@1.1.23
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.20
+  - @backstage/plugin-permission-react@0.4.19
+  - @backstage/plugin-search-common@1.2.10
+
 ## 1.16.1
 
 ### Patch Changes

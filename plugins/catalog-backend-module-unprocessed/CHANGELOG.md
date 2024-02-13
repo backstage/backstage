@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.3.7-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/catalog-model@1.4.4-next.0
+
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/plugin-auth-node@0.4.4-next.1
+
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.4-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+
 ## 0.3.6
 
 ### Patch Changes

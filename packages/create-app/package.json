@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.5.9",
+  "version": "0.5.11-next.2",
   "publishConfig": {
     "access": "public"
   },
@@ -29,7 +29,8 @@
     "clean": "backstage-cli package clean",
     "prepack": "node scripts/prepack.js",
     "postpack": "node scripts/postpack.js",
-    "start": "yarn nodemon --"
+    "start": "yarn nodemon --",
+    "add-lock-seed": "node scripts/add-lock-seed.js"
   },
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
@@ -38,6 +39,7 @@
     "fs-extra": "10.1.0",
     "handlebars": "^4.7.3",
     "inquirer": "^8.2.0",
+    "node-fetch": "^2.6.7",
     "ora": "^5.3.0",
     "recursive-readdir": "^2.2.2"
   },
@@ -49,6 +51,7 @@
     "@types/inquirer": "^8.1.3",
     "@types/node": "^18.17.8",
     "@types/recursive-readdir": "^2.2.0",
+    "msw": "^1.0.0",
     "nodemon": "^3.0.1",
     "ts-node": "^10.0.0"
   },

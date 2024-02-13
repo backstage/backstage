@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-app-api",
-  "version": "0.5.0",
+  "version": "0.6.0-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -8,6 +8,11 @@
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/frontend-app-api"
   },
   "backstage": {
     "role": "web-library"
@@ -45,7 +50,7 @@
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {

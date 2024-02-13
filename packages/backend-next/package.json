@@ -1,6 +1,6 @@
 {
   "name": "example-backend-next",
-  "version": "0.0.19",
+  "version": "0.0.20-next.2",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -45,6 +45,7 @@
     "@backstage/plugin-lighthouse-backend": "workspace:^",
     "@backstage/plugin-linguist-backend": "workspace:^",
     "@backstage/plugin-nomad-backend": "workspace:^",
+    "@backstage/plugin-notifications-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
@@ -57,6 +58,7 @@
     "@backstage/plugin-search-backend-module-explore": "workspace:^",
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
+    "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-sonarqube-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
     "@backstage/plugin-todo-backend": "workspace:^"

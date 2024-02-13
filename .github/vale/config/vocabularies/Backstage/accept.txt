@@ -185,6 +185,7 @@ Kaswell
 keepalive
 Keyv
 Knex
+knip
 Koyeb
 KPIs
 Kuang
@@ -330,6 +331,7 @@ Rollbar
 Rollup
 routable
 Routable
+Rspack
 rst
 rsync
 ruleset

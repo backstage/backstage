@@ -12,7 +12,7 @@ From your Backstage root directory run:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 ```
 
 Then configure the action:

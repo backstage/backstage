@@ -8,7 +8,7 @@ Add the module package as a dependency:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-search-backend-module-catalog
+yarn --cwd packages/backend add @backstage/plugin-search-backend-module-catalog
 ```
 
 Add the collator to your backend instance, along with the search plugin itself:

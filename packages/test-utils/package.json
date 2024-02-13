@@ -1,7 +1,7 @@
 {
   "name": "@backstage/test-utils",
   "description": "Utilities to test Backstage plugins and apps.",
-  "version": "1.4.7",
+  "version": "1.5.0-next.2",
   "publishConfig": {
     "access": "public"
   },
@@ -55,7 +55,7 @@
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "cross-fetch": "^4.0.0",
     "i18next": "^22.4.15",
     "zen-observable": "^0.10.0"

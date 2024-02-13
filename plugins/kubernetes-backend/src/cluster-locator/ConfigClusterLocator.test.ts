@@ -405,4 +405,25 @@ describe('ConfigClusterLocator', () => {
       `Invalid cluster 'cluster1': mock error`,
     );
   });
+
+  it('fails on duplicate cluster names', () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster',
+          url: 'url',
+          authProvider: 'authProvider',
+        },
+        {
+          name: 'cluster',
+          url: 'url',
+          authProvider: 'authProvider',
+        },
+      ],
+    });
+
+    expect(() => ConfigClusterLocator.fromConfig(config, authStrategy)).toThrow(
+      `Duplicate cluster name 'cluster'`,
+    );
+  });
 });

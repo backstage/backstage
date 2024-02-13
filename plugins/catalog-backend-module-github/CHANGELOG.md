@@ -1,5 +1,61 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.5.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-catalog-backend@1.17.0-next.2
+  - @backstage/backend-tasks@0.5.15-next.2
+  - @backstage/plugin-catalog-node@1.6.2-next.2
+  - @backstage/plugin-events-node@0.2.19-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+
+## 0.5.0-next.1
+
+### Minor Changes
+
+- a950ed0: Prevent Entity Providers from eliminating Users and Groups from the DB when the synchronisation fails
+
+### Patch Changes
+
+- 9477133: Decreased number of teams fetched by GraphQL Query responsible for fetching Teams and Members in organization, due to timeouts when running against big organizations
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/plugin-catalog-backend@1.17.0-next.1
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/backend-tasks@0.5.15-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-catalog-node@1.6.2-next.1
+  - @backstage/plugin-events-node@0.2.19-next.1
+
+## 0.4.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/plugin-catalog-backend@1.17.0-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/backend-tasks@0.5.15-next.0
+  - @backstage/plugin-catalog-node@1.6.2-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/integration@1.8.0
+  - @backstage/plugin-catalog-common@1.0.20
+  - @backstage/plugin-events-node@0.2.19-next.0
+
 ## 0.4.7
 
 ### Patch Changes

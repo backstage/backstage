@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 import { SignalPayload } from './types';
+import { JsonObject } from '@backstage/types';
 
 /** @public */
-export type SignalService = {
+export interface SignalService {
   /**
-   * Publishes a message to user refs to specific topic
+   * Publishes a signal to user refs to specific topic
+   * @param signal - Signal to publish
    */
-  publish(signal: SignalPayload): Promise<void>;
-};
+  publish<TMessage extends JsonObject = JsonObject>(
+    signal: SignalPayload<TMessage>,
+  ): Promise<void>;
+}

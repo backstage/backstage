@@ -1,7 +1,12 @@
 {
   "name": "example-app-next",
-  "version": "0.0.5",
+  "version": "0.0.6-next.2",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/app-next"
+  },
   "backstage": {
     "role": "frontend"
   },
@@ -81,7 +86,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
-    "@oriflame/backstage-plugin-score-card": "^0.7.0",
+    "@oriflame/backstage-plugin-score-card": "^0.8.0",
     "@roadiehq/backstage-plugin-buildkite": "^2.0.8",
     "@roadiehq/backstage-plugin-github-insights": "^2.0.5",
     "@roadiehq/backstage-plugin-github-pull-requests": "^2.2.7",

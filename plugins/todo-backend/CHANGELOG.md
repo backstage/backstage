@@ -1,5 +1,53 @@
 # @backstage/plugin-todo-backend
 
+## 0.3.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/repo-tools@0.6.0-next.2
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/backend-openapi-utils@0.1.3-next.2
+  - @backstage/plugin-catalog-node@1.6.2-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.9.0-next.0
+
+## 0.3.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/backend-openapi-utils@0.1.3-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-node@1.6.2-next.1
+
+## 0.3.8-next.0
+
+### Patch Changes
+
+- 126c2f9: Updates the OpenAPI spec to use plugin as `info.title` instead of package name.
+- 04907c3: Updates the OpenAPI specification title to plugin ID instead of package name.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/backend-openapi-utils@0.1.3-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/plugin-catalog-node@1.6.2-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.8.0
+
 ## 0.3.7
 
 ### Patch Changes

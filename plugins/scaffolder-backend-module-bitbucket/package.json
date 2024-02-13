@@ -1,17 +1,32 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-bitbucket",
   "description": "The bitbucket module for @backstage/plugin-scaffolder-backend",
-  "version": "0.1.1",
+  "version": "0.2.0-next.2",
+  "deprecated": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/scaffolder-backend-module-bitbucket"
   },
   "backstage": {
     "role": "backend-plugin-module"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "scripts": {
     "start": "backstage-cli package start",
@@ -24,10 +39,14 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^",
+    "@backstage/plugin-scaffolder-backend-module-bitbucket-server": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
+    "fs-extra": "10.1.0",
     "node-fetch": "^2.6.7",
     "yaml": "^2.0.0"
   },

@@ -1,0 +1,60 @@
+{
+  "name": "@backstage/plugin-notifications-backend",
+  "version": "0.0.1-next.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/notifications-backend"
+  },
+  "backstage": {
+    "role": "backend-plugin"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-notifications-common": "workspace:^",
+    "@backstage/plugin-notifications-node": "workspace:^",
+    "@backstage/plugin-signals-node": "workspace:^",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "knex": "^3.0.0",
+    "node-fetch": "^2.6.7",
+    "uuid": "^8.0.0",
+    "winston": "^3.2.1",
+    "yn": "^4.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@types/express": "^4.17.6",
+    "@types/supertest": "^2.0.8",
+    "msw": "^1.0.0",
+    "supertest": "^6.2.4"
+  },
+  "files": [
+    "dist"
+  ]
+}

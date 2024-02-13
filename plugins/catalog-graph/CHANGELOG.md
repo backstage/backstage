@@ -1,5 +1,69 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.0-next.2
+
+### Minor Changes
+
+- 3dc64e9: Migrate plugin to the new frontend system, it is experimental and available via alpha subpath.
+
+### Patch Changes
+
+- 3e1c6e2: Added possibility to show arrow heads for graph edges for better understandability.
+
+  In order to show arrow heads in the catalog graph page, add `showArrowHeads` attribute to `CatalogGraphPage` component
+  (typically in `packages/app/src/App.tsx`):
+
+  ```diff
+  - <CatalogGraphPage />
+  + <CatalogGraphPage showArrowHeads />
+  ```
+
+  In order to show arrow heads in entity graphs, add `showArrowHeads` attribute to `EntityCatalogGraphCard` components
+  (typically multiple occurrences in `packages/app/src/components/catalog/EntityPage.tsx`):
+
+  ```diff
+  - <EntityCatalogGraphCard variant="gridItem" height={400} />
+  + <EntityCatalogGraphCard variant="gridItem" height={400} showArrowHeads />
+  ```
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/core-compat-api@0.2.0-next.2
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/types@1.1.1
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- f937aae: use `CatalogClient.getEntitiesByRefs()` to reduce the number of backend requests from plugin `catalog-graph`
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/types@1.1.1
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- 916da47: Change default icon for unknown entities to nothing instead of the help icon.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/types@1.1.1
+
 ## 0.3.3
 
 ### Patch Changes

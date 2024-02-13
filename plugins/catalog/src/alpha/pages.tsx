@@ -31,6 +31,7 @@ import {
 import { catalogExtensionData } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
+import { buildFilterFn } from './filter/FilterWrapper';
 
 export const catalogPage = createPageExtension({
   defaultPath: '/catalog',
@@ -57,24 +58,29 @@ export const catalogEntityPage = createPageExtension({
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
       title: catalogExtensionData.entityContentTitle,
+      filterFunction: catalogExtensionData.entityFilterFunction.optional(),
+      filterExpression: catalogExtensionData.entityFilterExpression.optional(),
     }),
   },
   loader: async ({ inputs }) => {
     const { EntityLayout } = await import('../components/EntityLayout');
     const Component = () => {
+      const { entity, ...rest } = useEntityFromUrl();
       return (
-        <AsyncEntityProvider {...useEntityFromUrl()}>
-          <EntityLayout>
-            {inputs.contents.map(content => (
-              <EntityLayout.Route
-                key={content.output.path}
-                path={content.output.path}
-                title={content.output.title}
-              >
-                {content.output.element}
-              </EntityLayout.Route>
-            ))}
-          </EntityLayout>
+        <AsyncEntityProvider entity={entity} {...rest}>
+          {entity ? (
+            <EntityLayout>
+              {inputs.contents
+                .filter(({ output: { filterFunction, filterExpression } }) =>
+                  buildFilterFn(filterFunction, filterExpression)(entity),
+                )
+                .map(({ output: { path, title, element } }) => (
+                  <EntityLayout.Route key={path} path={path} title={title}>
+                    {element}
+                  </EntityLayout.Route>
+                ))}
+            </EntityLayout>
+          ) : null}
         </AsyncEntityProvider>
       );
     };

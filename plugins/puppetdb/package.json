@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-puppetdb",
   "description": "Backstage plugin to visualize resource information and Puppet facts from PuppetDB.",
-  "version": "0.1.12",
+  "version": "0.1.13-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -41,7 +41,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@material-ui/core": "^4.12.2",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {

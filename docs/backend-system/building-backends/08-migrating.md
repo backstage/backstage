@@ -83,7 +83,7 @@ following command:
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/backend-defaults @backstage/backend-plugin-api
+yarn --cwd packages/backend add @backstage/backend-defaults @backstage/backend-plugin-api
 ```
 
 You should now be able to start this up with the familiar `yarn workspace
@@ -616,7 +616,7 @@ if you didn't already have one.
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/plugin-catalog-node
+yarn --cwd packages/backend add @backstage/plugin-catalog-node
 ```
 
 Here we've placed the module directly in the backend index file just to get
@@ -681,7 +681,7 @@ if you didn't already have one.
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/plugin-events-node
+yarn --cwd packages/backend add @backstage/plugin-events-node
 ```
 
 Here we've placed the module directly in the backend index file just to get
@@ -699,6 +699,26 @@ const backend = createBackend();
 /* highlight-add-next-line */
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 ```
+
+With the new Backend System version of the Scaffolder plugin, any provider specific actions will need to be installed separately.
+For example - GitHub actions are now collected under the `@backstage/plugin-scaffolder-backend-module-github` package.
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+
+/* highlight-add-next-line */
+backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
+```
+
+And of course you'll need to install those separately as well.
+
+```bash
+# from the repository root
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-github
+```
+
+You can find a list of the available modules under the [plugins directory](https://github.com/backstage/backstage/tree/master/plugins) in the monorepo.
 
 If you have other customizations made to `plugins/scaffolder.ts`, such as adding
 custom actions, read on. Otherwise, you should be able to just delete that file
@@ -746,7 +766,7 @@ if you didn't already have one.
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/plugin-scaffolder-node
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-node
 ```
 
 Here we've placed the module directly in the backend index file just to get

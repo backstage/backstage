@@ -38,15 +38,17 @@ const createGerritProject = async (
     parent: string;
     owner?: string;
     description: string;
+    defaultBranch: string;
   },
 ): Promise<void> => {
-  const { projectName, parent, owner, description } = options;
+  const { projectName, parent, owner, description, defaultBranch } = options;
 
   const fetchOptions: RequestInit = {
     method: 'PUT',
     body: JSON.stringify({
       parent,
       description,
+      branches: [defaultBranch],
       owners: owner ? [owner] : [],
       create_empty_commit: false,
     }),
@@ -221,6 +223,7 @@ export function createPublishGerritAction(options: {
         owner: owner,
         projectName: repo,
         parent: workspace,
+        defaultBranch,
       });
       const auth = {
         username: integrationConfig.config.username!,

@@ -1,5 +1,49 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.3.0-next.2
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.4-next.1
+
+## 0.3.0-next.1
+
+### Patch Changes
+
+- 3c184af: Extracted common dialog component.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.4-next.1
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 0d526c8: **BREAKING** The pod exec terminal is now disabled by default since there are several scenarios where it is known not to work. It can be re-enabled at your own risk by setting the config parameter `kubernetes.podExecTerminal.enabled` to `true`.
+
+### Patch Changes
+
+- 536f67d: Fix broken XtermJS CSS import
+- db1054b: Fixed a bug where the logs dialog and any other functionality depending on the proxy endpoint would fail for clusters configured with the OIDC auth provider.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.7.4-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.2.1
 
 ### Patch Changes

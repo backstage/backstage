@@ -688,3 +688,122 @@ export class SystemXReaderProcessor implements CatalogProcessor {
   }
 }
 ```
+
+### Supporting different metadata file formats
+
+Sometimes you might already have files in GitHub or some provider that Backstage already supports but the metadata format that you use is not the same as `catalog-info.yaml` files. In this case you can implement a custom parser that can read the files and convert them on-the-fly to the `Entity` format that Backstage expects, and it will integrate seamlessly into Catalog so that you can use things like the `GithubEntityProvider` to read these files.
+
+What you will need to do is to provide a custom `CatalogProcessorParser` and provide that to `builder.setEntityDataParser`.
+
+Let's say my format looks something like this:
+
+```yaml
+id: my-service
+type: service
+author: user@backstage.com
+```
+
+We need to build a custom parser that can read this format and convert it to the `Entity` format that Backstage expects.
+
+```ts title="packages/backend/src/lib/customEntityDataParser.ts"
+import {
+  CatalogProcessorParser,
+  CatalogProcessorResult,
+  LocationSpec,
+  processingResult,
+} from '@backstage/plugin-catalog-node';
+import yaml from 'yaml';
+import {
+  Entity,
+  stringifyLocationRef,
+  ANNOTATION_ORIGIN_LOCATION,
+  ANNOTATION_LOCATION,
+} from '@backstage/catalog-model';
+import _ from 'lodash';
+import parseGitUrl from 'git-url-parse';
+
+// This implementation will map whatever your own format is into valid Entity objects.
+const makeEntityFromCustomFormatJson = (
+  component: { id: string; type: string; author: string },
+  location: LocationSpec,
+): Entity => {
+  return {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      name: component.id,
+      namespace: 'default',
+      annotations: {
+        [ANNOTATION_LOCATION]: `${location.type}:${location.target}`,
+        [ANNOTATION_ORIGIN_LOCATION]: `${location.type}:${location.target}`,
+      },
+    }
+    spec: {
+      type: component.type,
+      owner: component.author,
+      lifecycle: 'experimental'
+    }
+  }
+};
+
+export const customEntityDataParser: CatalogProcessorParser = async function* ({
+  data,
+  location,
+}) {
+  let documents: yaml.Document.Parsed[];
+  try {
+    // let's treat the incoming file always as yaml, you can of course change this if your format is not yaml.
+    documents = yaml.parseAllDocuments(data.toString('utf8')).filter(d => d);
+  } catch (e) {
+    // if we failed to parse as yaml throw some errors.
+    const loc = stringifyLocationRef(location);
+    const message = `Failed to parse YAML at ${loc}, ${e}`;
+    yield processingResult.generalError(location, message);
+    return;
+  }
+
+  for (const document of documents) {
+    // If there's errors parsing the document as yaml, we should throw an error.
+    if (document.errors?.length) {
+      const loc = stringifyLocationRef(location);
+      const message = `YAML error at ${loc}, ${document.errors[0]}`;
+      yield processingResult.generalError(location, message);
+    } else {
+      // Convert the document to JSON
+      const json = document.toJSON();
+      if (_.isPlainObject(json)) {
+        // Is this a catalog-info.yaml file?
+        if (json.apiVersion) {
+          yield processingResult.entity(location, json as Entity);
+
+        // let's treat this like it's our custom format instead.
+        } else {
+          yield processingResult.entity(
+            location,
+            makeEntityFromCustomFormatJson(json, location),
+          );
+        }
+      } else if (json === null) {
+        // Ignore null values, these happen if there is an empty document in the
+        // YAML file, for example if --- is added to the end of the file.
+      } else {
+        // We don't support this format.
+        const message = `Expected object at root, got ${typeof json}`;
+        yield processingResult.generalError(location, message);
+      }
+    }
+  }
+}
+```
+
+This is a lot of code right now, as this is a pretty niche use-case, so we don't currently provide many helpers for you to be able to provide custom implementations easier or to compose together different parsers.
+
+You then should be able to provide this `customEntityDataParser` to the `CatalogBuilder`:
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+import { customEntityDataParser } from '../lib/customEntityDataParser';
+
+...
+
+builder.setEntityDataParser(customEntityDataParser);
+```

@@ -1,5 +1,40 @@
 # @backstage/backend-plugin-api
 
+## 0.6.10-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.15-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
+## 0.6.10-next.1
+
+### Patch Changes
+
+- 1f020fe: Support `token` in `readTree`, `readUrl` and `search`
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.15-next.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.4-next.1
+  - @backstage/plugin-permission-common@0.7.12
+
+## 0.6.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.15-next.0
+  - @backstage/plugin-auth-node@0.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 0.6.9
 
 ### Patch Changes

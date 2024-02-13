@@ -1,5 +1,49 @@
 # @backstage/plugin-api-docs
 
+## 0.10.4-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/plugin-catalog@1.17.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/plugin-permission-react@0.4.20-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+
+## 0.10.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/plugin-catalog@1.17.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-permission-react@0.4.20-next.0
+
+## 0.10.4-next.0
+
+### Patch Changes
+
+- 170c023: Adding `supportedSubmitMethods` prop to `api-docs` to pass to the Swagger UI. This allows users to specify which HTTP methods they wish to allow end-users to make requests through the `Try It Out` button on the Swagger UI.
+- c03f977: Updated dependency `graphiql` to `3.1.0`.
+- 49b3b5e: Updated dependency `@asyncapi/react-component` to `1.2.13`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/plugin-catalog@1.17.0-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-catalog-common@1.0.20
+  - @backstage/plugin-permission-react@0.4.19
+
 ## 0.10.3
 
 ### Patch Changes

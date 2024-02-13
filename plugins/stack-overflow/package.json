@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-stack-overflow",
-  "version": "0.1.24",
+  "version": "0.1.25-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -52,7 +52,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@testing-library/jest-dom": "^6.0.0",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "cross-fetch": "^4.0.0",
     "lodash": "^4.17.21",
     "qs": "^6.9.4",

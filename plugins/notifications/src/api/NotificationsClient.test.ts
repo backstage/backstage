@@ -1,0 +1,104 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { NotificationsClient } from './NotificationsClient';
+import { Notification } from '@backstage/plugin-notifications-common';
+
+const server = setupServer();
+
+const testNotification: Partial<Notification> = {
+  user: 'user:default/john.doe',
+  origin: 'plugin-test',
+  payload: {
+    title: 'Notification 1',
+    link: '/catalog',
+    severity: 'normal',
+  },
+};
+
+describe('NotificationsClient', () => {
+  setupRequestMockHandlers(server);
+  const mockBaseUrl = 'http://backstage/api/notifications';
+  const discoveryApi = { getBaseUrl: async () => mockBaseUrl };
+  const fetchApi = new MockFetchApi();
+
+  let client: NotificationsClient;
+  beforeEach(() => {
+    client = new NotificationsClient({ discoveryApi, fetchApi });
+  });
+
+  describe('getNotifications', () => {
+    const expectedResp = [testNotification];
+
+    it('should fetch notifications from correct endpoint', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/`, (_, res, ctx) =>
+          res(ctx.json(expectedResp)),
+        ),
+      );
+      const response = await client.getNotifications();
+      expect(response).toEqual(expectedResp);
+    });
+
+    it('should fetch notifications with options', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/`, (req, res, ctx) => {
+          expect(req.url.search).toBe(
+            '?type=undone&limit=10&offset=0&search=find+me',
+          );
+          return res(ctx.json(expectedResp));
+        }),
+      );
+      const response = await client.getNotifications({
+        type: 'undone',
+        limit: 10,
+        offset: 0,
+        search: 'find me',
+      });
+      expect(response).toEqual(expectedResp);
+    });
+
+    it('should fetch status from correct endpoint', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/status`, (_, res, ctx) =>
+          res(ctx.json({ read: 1, unread: 1 })),
+        ),
+      );
+      const response = await client.getStatus();
+      expect(response).toEqual({ read: 1, unread: 1 });
+    });
+
+    it('should update notifications', async () => {
+      server.use(
+        rest.post(`${mockBaseUrl}/update`, async (req, res, ctx) => {
+          expect(await req.json()).toEqual({
+            ids: ['acdaa8ca-262b-43c1-b74b-de06e5f3b3c7'],
+            done: true,
+          });
+          return res(ctx.json(expectedResp));
+        }),
+      );
+      const response = await client.updateNotifications({
+        ids: ['acdaa8ca-262b-43c1-b74b-de06e5f3b3c7'],
+        done: true,
+      });
+      expect(response).toEqual(expectedResp);
+    });
+  });
+});

@@ -1,5 +1,53 @@
 # @backstage/plugin-adr
 
+## 0.6.13-next.2
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/plugin-search-react@1.7.6-next.2
+  - @backstage/integration-react@1.1.24-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/plugin-adr-common@0.2.20-next.0
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.6.13-next.1
+
+### Patch Changes
+
+- 987f565: Fix alignment of text in `AdrSearchResultListItem`. Update size and font to match other `SearchResultListItem`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/plugin-search-react@1.7.6-next.1
+  - @backstage/integration-react@1.1.24-next.0
+  - @backstage/plugin-adr-common@0.2.20-next.0
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.6.13-next.0
+
+### Patch Changes
+
+- 0b03962: Updated README
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/plugin-search-react@1.7.6-next.0
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/integration-react@1.1.23
+  - @backstage/plugin-adr-common@0.2.19
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.6.12
 
 ### Patch Changes

@@ -1,5 +1,69 @@
 # @backstage/plugin-tech-insights-node
 
+## 0.4.16-next.2
+
+### Patch Changes
+
+- 7201af3: Add support for the new backend system.
+
+  A new backend plugin for the tech-insights backend
+  was added and exported as `default`.
+
+  You can use it with the new backend system like
+
+  ```ts title="packages/backend/src/index.ts"
+  backend.add(import('@backstage/plugin-tech-insights-backend'));
+  ```
+
+- 341c2a2: Move `FactRetrieverRegistry` and `PersistenceContext` to `@backstage/plugin-tech-insights-node`.
+
+  Original exports are marked as deprecated and re-export the moved types.
+
+  Please replace uses like
+
+  ```ts
+  import {
+    FactRetrieverRegistry,
+    PersistenceContext,
+  } from '@backstage/plugin-tech-insights-backend';
+  ```
+
+  with
+
+  ```ts
+  import {
+    FactRetrieverRegistry,
+    PersistenceContext,
+  } from '@backstage/plugin-tech-insights-node';
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.4.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.4.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
 ## 0.4.15
 
 ### Patch Changes

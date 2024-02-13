@@ -1,5 +1,46 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.25-next.2
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-search-react@1.7.6-next.2
+  - @backstage/plugin-home-react@0.1.8-next.2
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.1.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-search-react@1.7.6-next.1
+  - @backstage/plugin-home-react@0.1.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- c1bc331: Fixes a bug that made the API return questions not related to the tags provided
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/plugin-home-react@0.1.8-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/plugin-search-react@1.7.6-next.0
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.1.24
 
 ### Patch Changes

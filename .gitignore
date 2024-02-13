@@ -163,3 +163,6 @@ e2e-test-report/
 
 # Scripts
 plugins-report.csv
+
+# Temporary knip configs
+knip.json

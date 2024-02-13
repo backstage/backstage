@@ -13,35 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React from 'react';
 
-import {
-  Button,
-  createStyles,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  makeStyles,
-  Theme,
-} from '@material-ui/core';
 import SubjectIcon from '@material-ui/icons/Subject';
 
-import CloseIcon from '@material-ui/icons/Close';
-
+import { KubernetesDialog } from '../../KubernetesDialog';
 import { PodLogs } from './PodLogs';
 import { ContainerScope } from './types';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    closeButton: {
-      position: 'absolute',
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-      color: theme.palette.grey[500],
-    },
-  }),
-);
 
 /**
  * Props for PodLogsDialog
@@ -58,43 +36,15 @@ export interface PodLogsDialogProps {
  * @public
  */
 export const PodLogsDialog = ({ containerScope }: PodLogsDialogProps) => {
-  const classes = useStyles();
-  const [open, setOpen] = useState(false);
-
-  const openDialog = () => {
-    setOpen(true);
-  };
-
-  const closeDialog = () => {
-    setOpen(false);
-  };
   return (
-    <>
-      <Dialog maxWidth="xl" fullWidth open={open} onClose={closeDialog}>
-        <DialogTitle id="dialog-title">
-          {containerScope.podName} - {containerScope.containerName} logs on
-          cluster {containerScope.clusterName}
-          <IconButton
-            aria-label="close"
-            className={classes.closeButton}
-            onClick={closeDialog}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <PodLogs containerScope={containerScope} />
-        </DialogContent>
-      </Dialog>
-      <Button
-        variant="outlined"
-        aria-label="get logs"
-        component="label"
-        onClick={openDialog}
-        startIcon={<SubjectIcon />}
-      >
-        Logs
-      </Button>
-    </>
+    <KubernetesDialog
+      buttonAriaLabel="get logs"
+      buttonIcon={<SubjectIcon />}
+      buttonText="Logs"
+      disabled={false}
+      title={`${containerScope.podName} - ${containerScope.containerName} logs on cluster ${containerScope.clusterName}`}
+    >
+      <PodLogs containerScope={containerScope} />
+    </KubernetesDialog>
   );
 };

@@ -1,5 +1,46 @@
 # @backstage/core-compat-api
 
+## 0.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.12.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/version-bridge@1.0.7
+
+## 0.2.0-next.1
+
+### Minor Changes
+
+- e586f79: Add support to the new analytics api.
+
+### Patch Changes
+
+- edfd3a5: Updated dependency `@oriflame/backstage-plugin-score-card` to `^0.8.0`.
+- bc621aa: Updates to use the new `RouteResolutionsApi`.
+- 46b63de: Allow external route refs in the new system to have a `defaultTarget` pointing to a route that it'll resolve to by default if no explicit bindings were made by the adopter.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/core-app-api@1.11.4-next.0
+  - @backstage/version-bridge@1.0.7
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- 1fa5041: The backwards compatibility provider will now use the new `ComponentsApi` and `IconsApi` when implementing the old `AppContext`.
+- 7155c30: Added `convertLegacyRouteRefs` for bulk conversion of plugin routes.
+- 2f2a1d2: Plugins converted by `convertLegacyApp` now have their `routes` and `externalRoutes` included as well, allowing them to be used to bind external routes in configuration.
+- 1184990: collectLegacyRoutes throws in case invalid <Route /> element is found
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/core-app-api@1.11.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/version-bridge@1.0.7
+
 ## 0.1.1
 
 ### Patch Changes

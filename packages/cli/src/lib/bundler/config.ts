@@ -44,9 +44,9 @@ import { hasReactDomClient } from './hasReactDomClient';
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
 export function resolveBaseUrl(config: Config): URL {
-  const baseUrl = config.getString('app.baseUrl');
+  const baseUrl = config.getOptionalString('app.baseUrl');
   try {
-    return new URL(baseUrl);
+    return new URL(baseUrl ?? '/', 'http://localhost:3000');
   } catch (error) {
     throw new Error(`Invalid app.baseUrl, ${error}`);
   }
@@ -92,7 +92,7 @@ export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): Promise<webpack.Configuration> {
-  const { checksEnabled, isDev, frontendConfig } = options;
+  const { checksEnabled, isDev, frontendConfig, publicSubPath = '' } = options;
 
   const { plugins, loaders } = transforms(options);
   // Any package that is part of the monorepo but outside the monorepo root dir need
@@ -100,9 +100,12 @@ export async function createConfig(
   const { packages } = await getPackages(cliPaths.targetDir);
   const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
-  const baseUrl = frontendConfig.getString('app.baseUrl');
-  const validBaseUrl = new URL(baseUrl);
-  const publicPath = validBaseUrl.pathname.replace(/\/$/, '');
+  const validBaseUrl = resolveBaseUrl(frontendConfig);
+  let publicPath = validBaseUrl.pathname.replace(/\/$/, '');
+  if (publicSubPath) {
+    publicPath = `${publicPath}${publicSubPath}`.replace('//', '/');
+  }
+
   if (checksEnabled) {
     plugins.push(
       new ForkTsCheckerWebpackPlugin({

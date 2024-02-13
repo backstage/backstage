@@ -1,14 +1,27 @@
 {
   "name": "@backstage/plugin-org",
   "description": "A Backstage plugin that helps you create entity pages for your organization",
-  "version": "0.6.19",
+  "version": "0.6.20-next.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.tsx",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.tsx"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "license": "Apache-2.0",
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "backstage": {
     "role": "frontend-plugin"
@@ -31,14 +44,16 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "lodash": "^4.17.21",
     "p-limit": "^3.1.0",
     "pluralize": "^8.0.0",

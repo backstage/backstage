@@ -16,6 +16,7 @@
 import { EventBroker } from '@backstage/plugin-events-node';
 import { SignalPayload, SignalServiceOptions } from './types';
 import { SignalService } from './SignalService';
+import { JsonObject } from '@backstage/types';
 
 /** @public */
 export class DefaultSignalService implements SignalService {
@@ -31,20 +32,15 @@ export class DefaultSignalService implements SignalService {
   }
 
   /**
-   * Publishes a message to user refs to specific topic
-   * @param recipients - string or array of user ref strings to publish message to
-   * @param topic - message topic
-   * @param message - message to publish
+   * Publishes a signal to user refs to specific topic
+   * @param signal - Signal to publish
    */
-  async publish(signal: SignalPayload) {
-    const { recipients, channel, message } = signal;
+  async publish<TMessage extends JsonObject = JsonObject>(
+    signal: SignalPayload<TMessage>,
+  ) {
     await this.eventBroker?.publish({
       topic: 'signals',
-      eventPayload: {
-        recipients,
-        message,
-        channel,
-      },
+      eventPayload: signal,
     });
   }
 }

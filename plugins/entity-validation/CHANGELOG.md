@@ -1,5 +1,48 @@
 # @backstage/plugin-entity-validation
 
+## 0.1.15-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+
+## 0.1.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- 916da47: Change default icon for unknown entities to nothing instead of the help icon.
+- 1f70e46: Improves UX of the EntityValidationPage: Moves the validate button below the EntityTextArea which is actually validated, the location TextField can now be hidden to prevent confusion about what is validated and additional content can be added to the top of the validation page.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/catalog-client@1.6.0-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.20
+
 ## 0.1.14
 
 ### Patch Changes

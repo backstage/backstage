@@ -1,9 +1,14 @@
 {
   "name": "@backstage/plugin-app-visualizer",
   "description": "Visualizes the Backstage app structure",
-  "version": "0.1.0",
+  "version": "0.1.1-next.2",
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/app-visualizer"
   },
   "backstage": {
     "role": "frontend-plugin"
