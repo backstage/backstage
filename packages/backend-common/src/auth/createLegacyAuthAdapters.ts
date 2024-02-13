@@ -210,29 +210,47 @@ class HttpAuthCompat implements HttpAuthService {
   async issueUserCookie(_res: Response): Promise<void> {}
 }
 
-/** @public */
-export function createLegacyAuthAdapters(options: {
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
-  identity?: IdentityService;
-  tokenManager?: TokenManager;
-  discovery: PluginEndpointDiscovery;
-}): {
-  auth: AuthService;
-  httpAuth: HttpAuthService;
-} {
+/**
+ * An adapter that ensures presence of the auth and/or httpAuth services.
+ * @public
+ */
+export function createLegacyAuthAdapters<
+  TOptions extends {
+    auth?: AuthService;
+    httpAuth?: HttpAuthService;
+    identity?: IdentityService;
+    tokenManager?: TokenManager;
+    discovery: PluginEndpointDiscovery;
+  },
+  TAdapters = TOptions extends {
+    auth?: AuthService;
+  }
+    ? TOptions extends { httpAuth?: HttpAuthService }
+      ? { auth: AuthService; httpAuth: HttpAuthService }
+      : { auth: AuthService }
+    : TOptions extends { httpAuth?: HttpAuthService }
+    ? { httpAuth: HttpAuthService }
+    : 'error: at least one of auth and/or httpAuth must be provided',
+>(options: TOptions): TAdapters {
   const { auth, httpAuth, discovery } = options;
 
-  if (auth || httpAuth) {
-    // TODO: Is this sensible? Could be that a lot of plugins only want one of them and in
-    // that case overloads might be better, so that it's possible to only provide one of them.
-    if (!(auth && httpAuth)) {
-      throw new Error('Both auth and httpAuth must be provided');
-    }
+  if (auth && httpAuth) {
     return {
       auth,
       httpAuth,
-    };
+    } as TAdapters;
+  }
+
+  if (auth) {
+    return {
+      auth,
+    } as TAdapters;
+  }
+
+  if (httpAuth) {
+    return {
+      httpAuth,
+    } as TAdapters;
   }
 
   const identity =
@@ -240,10 +258,11 @@ export function createLegacyAuthAdapters(options: {
   const tokenManager = options.tokenManager ?? ServerTokenManager.noop();
 
   const authImpl = new AuthCompat(identity, tokenManager);
+
   const httpAuthImpl = new HttpAuthCompat(authImpl);
 
   return {
     auth: authImpl,
     httpAuth: httpAuthImpl,
-  };
+  } as TAdapters;
 }
