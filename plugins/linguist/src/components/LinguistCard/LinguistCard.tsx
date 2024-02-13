@@ -89,7 +89,7 @@ export const LinguistCard = () => {
   const processedDate = items?.processedDate;
 
   return breakdown && processedDate ? (
-    <InfoCard title="Languages" className={classes.infoCard}>
+    <InfoCard title={t('entityCard.title')} className={classes.infoCard}>
       <Box className={classes.barContainer}>
         {breakdown.map((language, index: number) => {
           barWidth = barWidth + language.percentage;
