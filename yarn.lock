@@ -33411,8 +33411,8 @@ __metadata:
   linkType: hard
 
 "knip@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "knip@npm:5.0.0"
+  version: 5.0.1
+  resolution: "knip@npm:5.0.1"
   dependencies:
     "@ericcornelissen/bash-parser": 0.5.2
     "@nodelib/fs.walk": 2.0.0
@@ -33442,7 +33442,7 @@ __metadata:
     typescript: ">=5.0.4"
   bin:
     knip: bin/knip.js
-  checksum: b70e1baa694ac71543245f1b926b0f7d8527e970966d37864a936785072d99889f8d7a1fa2bfdb3fb46ecc83fba80ca859507630a38c1971a505af72a1b7ee4f
+  checksum: d4d97e44c45d0c7b2b0c86495e6337d89cd94e005a4d29190498f29dc61945d51be2e6d2373b53104a98949c6b1eb9ca71f24f58526459d6118ea72713536ad4
   languageName: node
   linkType: hard
 
