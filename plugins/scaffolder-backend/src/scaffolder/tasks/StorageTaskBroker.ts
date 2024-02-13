@@ -124,7 +124,7 @@ export class TaskManager implements TaskContext {
     } else {
       this.task.state = { [key]: value };
     }
-    await this.storage.saveCheckpoint?.({
+    await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
       state: this.task.state,
     });

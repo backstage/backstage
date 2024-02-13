@@ -445,7 +445,7 @@ export class DatabaseTaskStore implements TaskStore {
     ids: string[];
   }>;
   // (undocumented)
-  saveCheckpoint(options: {
+  saveTaskState(options: {
     taskId: string;
     state?:
       | {
@@ -661,7 +661,7 @@ export interface TaskStore {
     ids: string[];
   }>;
   // (undocumented)
-  saveCheckpoint?(options: {
+  saveTaskState?(options: {
     taskId: string;
     state?: {
       [key: string]:

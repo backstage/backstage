@@ -206,7 +206,7 @@ export interface TaskStore {
     | undefined
   >;
 
-  saveCheckpoint?(options: {
+  saveTaskState?(options: {
     taskId: string;
     state?: {
       [key: string]:

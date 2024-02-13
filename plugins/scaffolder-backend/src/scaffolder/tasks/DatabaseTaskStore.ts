@@ -421,7 +421,7 @@ export class DatabaseTaskStore implements TaskStore {
       : undefined;
   }
 
-  async saveCheckpoint(options: {
+  async saveTaskState(options: {
     taskId: string;
     state?:
       | {
