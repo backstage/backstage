@@ -16,30 +16,29 @@
 
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 
 import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
+
 import {
-  KubernetesObjectsProviderExtensionPoint,
-  kubernetesObjectsProviderExtensionPoint,
-  KubernetesObjectsProvider,
-  KubernetesClusterSupplierExtensionPoint,
-  kubernetesClusterSupplierExtensionPoint,
-  KubernetesClustersSupplier,
-  KubernetesAuthStrategyExtensionPoint,
-  AuthenticationStrategy,
   kubernetesAuthStrategyExtensionPoint,
-  KubernetesFetcher,
-  KubernetesServiceLocatorExtensionPoint,
-  KubernetesServiceLocator,
-  kubernetesServiceLocatorExtensionPoint,
-} from '@backstage/plugin-kubernetes-node';
-import {
-  KubernetesFetcherExtensionPoint,
+  kubernetesClusterSupplierExtensionPoint,
   kubernetesFetcherExtensionPoint,
+  kubernetesObjectsProviderExtensionPoint,
+  kubernetesServiceLocatorExtensionPoint,
+  type AuthenticationStrategy,
+  type KubernetesAuthStrategyExtensionPoint,
+  type KubernetesClusterSupplierExtensionPoint,
+  type KubernetesClustersSupplier,
+  type KubernetesFetcher,
+  type KubernetesFetcherExtensionPoint,
+  type KubernetesObjectsProvider,
+  type KubernetesObjectsProviderExtensionPoint,
+  type KubernetesServiceLocator,
+  type KubernetesServiceLocatorExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {

@@ -71,6 +71,20 @@ export async function run() {
     env: { ...process.env, CI: undefined },
   });
 
+  await switchToReact17(appDir);
+
+  print(`Running 'yarn install' to install React 17`);
+  await runPlain(['yarn', 'install'], { cwd: appDir });
+
+  print(`Running 'yarn tsc' with React 17`);
+  await runPlain(['yarn', 'tsc'], { cwd: appDir });
+
+  print(`Running 'yarn test:e2e' with React 17`);
+  await runPlain(['yarn', 'test:e2e'], {
+    cwd: appDir,
+    env: { ...process.env, CI: undefined },
+  });
+
   if (
     Boolean(process.env.POSTGRES_USER) ||
     Boolean(process.env.MYSQL_CONNECTION)
@@ -263,6 +277,9 @@ async function createApp(
 
     const appDir = resolvePath(rootDir, appName);
 
+    print('Overriding yarn.lock with seed file from the create-app package');
+    overrideYarnLockSeed(appDir);
+
     print('Rewriting module resolutions of app to use workspace packages');
     await overrideModuleResolutions(appDir, workspaceDir);
 
@@ -303,6 +320,22 @@ async function createApp(
   } finally {
     child.kill();
   }
+}
+
+/**
+ * Overrides the downloaded yarn.lock file with the seed file packages/create-app/seed-yarn.lock
+ * This ensures that the E2E tests use the same seed file as users would receive when creating a new app
+ */
+async function overrideYarnLockSeed(appDir: string) {
+  const content = await fs.readFile(
+    paths.resolveOwnRoot('packages/create-app/seed-yarn.lock'),
+    'utf8',
+  );
+  const trimmedContent = content
+    .split('\n')
+    .filter(l => !l.startsWith('//'))
+    .join('\n');
+  await fs.writeFile(resolvePath(appDir, 'yarn.lock'), trimmedContent, 'utf8');
 }
 
 /**
@@ -372,6 +405,35 @@ async function createPlugin(options: {
   } finally {
     child.kill();
   }
+}
+
+/**
+ * Switch the entire project to use React 17
+ */
+async function switchToReact17(appDir: string) {
+  const rootPkg = await fs.readJson(resolvePath(appDir, 'package.json'));
+  rootPkg.resolutions = {
+    ...(rootPkg.resolutions || {}),
+    react: '^17.0.0',
+    'react-dom': '^17.0.0',
+    '@types/react': '^17.0.0',
+    '@types/react-dom': '^17.0.0',
+  };
+  await fs.writeJson(resolvePath(appDir, 'package.json'), rootPkg, {
+    spaces: 2,
+  });
+
+  await fs.writeFile(
+    resolvePath(appDir, 'packages/app/src/index.tsx'),
+    `import '@backstage/cli/asset-types';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+
+ReactDOM.render(<App />, document.getElementById('root'));
+`,
+    'utf8',
+  );
 }
 
 /** Drops PG databases */

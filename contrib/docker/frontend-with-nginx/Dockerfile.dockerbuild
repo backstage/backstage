@@ -46,7 +46,7 @@ RUN yarn workspace app build
 
 
 
-FROM nginx:mainline
+FROM nginx:mainline@sha256:84c52dfd55c467e12ef85cad6a252c0990564f03c4850799bf41dd738738691f
 
 RUN apt-get update && apt-get -y install jq && rm -rf /var/lib/apt/lists/*
 

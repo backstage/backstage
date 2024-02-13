@@ -23,12 +23,13 @@ import {
   createPublishBitbucketCloudAction,
   createPublishBitbucketServerAction,
   createPublishBitbucketServerPullRequestAction,
-} from './actions';
+} from './deprecated';
 import { ScmIntegrations } from '@backstage/integration';
 
 /**
- * @public
  * The Bitbucket Module for the Scaffolder Backend
+ * @public
+ * @deprecated use module by \@backstage/plugin-scaffolder-backend-module-bitbucket-cloud or \@backstage/plugin-scaffolder-backend-module-bitbucket-server instead
  */
 export const bitbucketModule = createBackendModule({
   moduleId: 'bitbucket',

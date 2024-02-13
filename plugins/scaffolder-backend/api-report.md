@@ -6,6 +6,8 @@
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
 import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucket';
+import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
+import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
@@ -145,6 +147,7 @@ export function createFetchPlainAction(options: {
   {
     url: string;
     targetPath?: string | undefined;
+    token?: string | undefined;
   },
   JsonObject
 >;
@@ -157,6 +160,7 @@ export function createFetchPlainFileAction(options: {
   {
     url: string;
     targetPath: string;
+    token?: string | undefined;
   },
   JsonObject
 >;
@@ -179,6 +183,7 @@ export function createFetchTemplateAction(options: {
     replace?: boolean | undefined;
     trimBlocks?: boolean | undefined;
     lstripBlocks?: boolean | undefined;
+    token?: string | undefined;
   },
   JsonObject
 >;
@@ -235,13 +240,13 @@ export const createPublishAzureAction: typeof azure.createPublishAzureAction;
 export const createPublishBitbucketAction: typeof bitbucket.createPublishBitbucketAction;
 
 // @public @deprecated (undocumented)
-export const createPublishBitbucketCloudAction: typeof bitbucket.createPublishBitbucketCloudAction;
+export const createPublishBitbucketCloudAction: typeof bitbucketCloud.createPublishBitbucketCloudAction;
 
 // @public @deprecated (undocumented)
-export const createPublishBitbucketServerAction: typeof bitbucket.createPublishBitbucketServerAction;
+export const createPublishBitbucketServerAction: typeof bitbucketServer.createPublishBitbucketServerAction;
 
 // @public @deprecated (undocumented)
-export const createPublishBitbucketServerPullRequestAction: typeof bitbucket.createPublishBitbucketServerPullRequestAction;
+export const createPublishBitbucketServerPullRequestAction: typeof bitbucketServer.createPublishBitbucketServerPullRequestAction;
 
 // @public @deprecated (undocumented)
 export const createPublishGerritAction: typeof gerrit.createPublishGerritAction;

@@ -28,7 +28,7 @@ Install this module:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-events-backend-module-bitbucket-cloud
+yarn --cwd packages/backend add @backstage/plugin-events-backend-module-bitbucket-cloud
 ```
 
 ### Add to backend

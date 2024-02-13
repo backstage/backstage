@@ -1,5 +1,37 @@
 # @backstage/plugin-user-settings
 
+## 0.8.1-next.2
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- d5b14a0: conditionally rendering the user name and email in user settings page
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-app-api@1.12.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/theme@0.5.1-next.0
+  - @backstage/core-compat-api@0.2.0-next.2
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.8.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-compat-api@0.2.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/core-app-api@1.11.4-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/theme@0.5.0
+  - @backstage/types@1.1.1
+
 ## 0.8.1-next.0
 
 ### Patch Changes

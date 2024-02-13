@@ -23,7 +23,7 @@ import {
   printFileSizesAfterBuild,
 } from 'react-dev-utils/FileSizeReporter';
 import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
-import { createConfig, resolveBaseUrl } from './config';
+import { createConfig } from './config';
 import { BuildOptions } from './types';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import chalk from 'chalk';
@@ -51,7 +51,6 @@ export async function buildBundle(options: BuildOptions) {
     ...options,
     checksEnabled: false,
     isDev: false,
-    baseUrl: resolveBaseUrl(options.frontendConfig),
     getFrontendAppConfigs: () => options.frontendAppConfigs,
   };
   const configs = [
@@ -68,7 +67,7 @@ export async function buildBundle(options: BuildOptions) {
   if (publicPaths) {
     console.log(
       chalk.yellow(
-        `⚠️  WARNING: The app /auth entry point is an experimental feature that may receive immediate breaking changes.`,
+        `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
       ),
     );
     configs.push(

@@ -20,6 +20,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import Popover from '@material-ui/core/Popover';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { makeStyles } from '@material-ui/core/styles';
 import Description from '@material-ui/icons/Description';
 import Edit from '@material-ui/icons/Edit';
@@ -40,6 +41,7 @@ export type ScaffolderPageContextMenuProps = {
   onEditorClicked?: () => void;
   onActionsClicked?: () => void;
   onTasksClicked?: () => void;
+  onCreateClicked?: () => void;
 };
 
 /**
@@ -48,7 +50,8 @@ export type ScaffolderPageContextMenuProps = {
 export function ScaffolderPageContextMenu(
   props: ScaffolderPageContextMenuProps,
 ) {
-  const { onEditorClicked, onActionsClicked, onTasksClicked } = props;
+  const { onEditorClicked, onActionsClicked, onTasksClicked, onCreateClicked } =
+    props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
@@ -89,6 +92,14 @@ export function ScaffolderPageContextMenu(
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
+          {onCreateClicked && (
+            <MenuItem onClick={onCreateClicked}>
+              <ListItemIcon>
+                <CreateComponentIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Create" />
+            </MenuItem>
+          )}
           {onEditorClicked && (
             <MenuItem onClick={onEditorClicked}>
               <ListItemIcon>

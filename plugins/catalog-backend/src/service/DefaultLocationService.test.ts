@@ -28,6 +28,7 @@ describe('DefaultLocationServiceTest', () => {
     createLocation: jest.fn(),
     listLocations: jest.fn(),
     getLocation: jest.fn(),
+    getLocationByEntity: jest.fn(),
   };
   const locationService = new DefaultLocationService(store, orchestrator);
 
@@ -345,6 +346,21 @@ describe('DefaultLocationServiceTest', () => {
     it('should call locationStore.getLocation', async () => {
       await locationService.getLocation('123');
       expect(store.getLocation).toHaveBeenCalledWith('123');
+    });
+  });
+
+  describe('getLocationByEntity', () => {
+    it('should call locationStore.getLocationByEntity', async () => {
+      await locationService.getLocationByEntity({
+        kind: 'c',
+        namespace: 'ns',
+        name: 'n',
+      });
+      expect(store.getLocationByEntity).toHaveBeenCalledWith({
+        kind: 'c',
+        namespace: 'ns',
+        name: 'n',
+      });
     });
   });
 });

@@ -10,7 +10,7 @@ Here you can find all Gitlab related features to improve your scaffolder:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-gitlab
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-gitlab
 ```
 
 Configure the action:

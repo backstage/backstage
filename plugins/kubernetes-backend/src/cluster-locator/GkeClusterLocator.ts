@@ -21,6 +21,7 @@ import * as container from '@google-cloud/container';
 import { Duration } from 'luxon';
 import { runPeriodically } from '../service/runPeriodically';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import packageinfo from '../../package.json';
 
 interface MatchResourceLabelEntry {
   key: string;
@@ -80,13 +81,17 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
     return gkeClusterLocator;
   }
 
+  // Added an `x-goog-api-client` header to API requests made by the GKE cluster locator to clearly identify API requests from this plugin.
   static fromConfig(
     config: Config,
     refreshInterval: Duration | undefined = undefined,
   ): GkeClusterLocator {
     return GkeClusterLocator.fromConfigWithClient(
       config,
-      new container.v1.ClusterManagerClient(),
+      new container.v1.ClusterManagerClient({
+        libName: `backstage/kubernetes-backend.GkeClusterLocator`,
+        libVersion: packageinfo.version,
+      }),
       refreshInterval,
     );
   }

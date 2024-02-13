@@ -1,5 +1,11 @@
 # @backstage/backend-dev-utils
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+
 ## 0.1.3
 
 ### Patch Changes

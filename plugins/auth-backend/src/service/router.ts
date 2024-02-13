@@ -29,7 +29,6 @@ import {
 } from '@backstage/backend-common';
 import { assertError, NotFoundError } from '@backstage/errors';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
 import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
 import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
@@ -37,10 +36,11 @@ import passport from 'passport';
 import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers';
 import { AuthDatabase } from '../database/AuthDatabase';
-import { BACKSTAGE_SESSION_EXPIRATION } from '../lib/session';
+import { readBackstageTokenExpiration } from './readBackstageTokenExpiration';
 import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
+import { Config } from '@backstage/config';
 
 /** @public */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
@@ -76,9 +76,8 @@ export async function createRouter(
 
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
-
+  const backstageTokenExpiration = readBackstageTokenExpiration(config);
   const authDb = AuthDatabase.create(database);
-  const sessionExpirationSeconds = BACKSTAGE_SESSION_EXPIRATION;
 
   const keyStore = await KeyStores.fromConfig(config, {
     logger,
@@ -91,7 +90,7 @@ export async function createRouter(
       {
         logger: logger.child({ component: 'token-factory' }),
         issuer: authUrl,
-        sessionExpirationSeconds: sessionExpirationSeconds,
+        sessionExpirationSeconds: backstageTokenExpiration,
       },
       keyStore as StaticKeyStore,
     );
@@ -99,7 +98,7 @@ export async function createRouter(
     tokenIssuer = new TokenFactory({
       issuer: authUrl,
       keyStore,
-      keyDurationSeconds: sessionExpirationSeconds,
+      keyDurationSeconds: backstageTokenExpiration,
       logger: logger.child({ component: 'token-factory' }),
       algorithm:
         tokenFactoryAlgorithm ??

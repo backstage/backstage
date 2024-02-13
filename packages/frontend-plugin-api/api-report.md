@@ -86,6 +86,7 @@ import { TypesToApiRefs } from '@backstage/core-plugin-api';
 import { useApi } from '@backstage/core-plugin-api';
 import { useApiHolder } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { vmwareCloudAuthApiRef } from '@backstage/core-plugin-api';
 import { withApis } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 import { ZodSchema } from 'zod';
@@ -573,6 +574,7 @@ export function createExternalRouteRef<
     ? (keyof TParams)[]
     : TParamKeys[];
   optional?: TOptional;
+  defaultTarget?: string;
 }): ExternalRouteRef<
   keyof TParams extends never
     ? undefined
@@ -1166,6 +1168,8 @@ export function useRouteRefParams<Params extends AnyRouteRefParams>(
 ): Params;
 
 export { useTranslationRef };
+
+export { vmwareCloudAuthApiRef };
 
 export { withApis };
 ```

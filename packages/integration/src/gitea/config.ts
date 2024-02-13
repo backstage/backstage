@@ -56,7 +56,7 @@ export function readGiteaConfig(config: Config): GiteaIntegrationConfig {
   const host = config.getString('host');
   let baseUrl = config.getOptionalString('baseUrl');
   const username = config.getOptionalString('username');
-  const password = config.getOptionalString('password');
+  const password = config.getOptionalString('password')?.trim();
 
   if (!isValidHost(host)) {
     throw new Error(

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-analytics-module-newrelic-browser",
-  "version": "0.0.6",
+  "version": "0.1.0-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -8,6 +8,11 @@
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/analytics-module-newrelic-browser"
   },
   "backstage": {
     "role": "frontend-plugin-module"
@@ -26,6 +31,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@newrelic/browser-agent": "^1.236.0"
   },
   "peerDependencies": {

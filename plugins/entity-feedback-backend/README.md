@@ -12,7 +12,7 @@ out of the box, this plugin will not work when you test it.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-entity-feedback-backend
+yarn --cwd packages/backend add @backstage/plugin-entity-feedback-backend
 ```
 
 ### Adding the plugin to your `packages/backend`

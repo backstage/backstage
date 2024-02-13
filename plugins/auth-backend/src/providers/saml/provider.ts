@@ -15,16 +15,15 @@
  */
 
 import express from 'express';
-import { SamlConfig } from 'passport-saml/lib/passport-saml/types';
+import { SamlConfig, VerifiedCallback } from '@node-saml/passport-saml';
 import {
   Strategy as SamlStrategy,
   Profile as SamlProfile,
   VerifyWithoutRequest,
-} from 'passport-saml';
+} from '@node-saml/passport-saml';
 import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
-  PassportDoneCallback,
 } from '../../lib/passport';
 import {
   AuthProviderRouteHandlers,
@@ -62,17 +61,19 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
     this.resolverContext = options.resolverContext;
-    this.strategy = new SamlStrategy({ ...options }, ((
-      fullProfile: SamlProfile,
-      done: PassportDoneCallback<SamlAuthResult>,
+
+    const verifier: VerifyWithoutRequest = (
+      profile: SamlProfile | null,
+      done: VerifiedCallback,
     ) => {
       // TODO: There's plenty more validation and profile handling to do here,
       //       this provider is currently only intended to validate the provider pattern
       //       for non-oauth auth flows.
       // TODO: This flow doesn't issue an identity token that can be used to validate
       //       the identity of the user in other backends, which we need in some form.
-      done(undefined, { fullProfile });
-    }) as VerifyWithoutRequest);
+      done(null, { fullProfile: profile });
+    };
+    this.strategy = new SamlStrategy(options, verifier, verifier);
   }
 
   async start(req: express.Request, res: express.Response): Promise<void> {
@@ -169,7 +170,7 @@ export const saml = createAuthProviderIntegration({
         callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
         entryPoint: config.getString('entryPoint'),
         logoutUrl: config.getOptionalString('logoutUrl'),
-        audience: config.getOptionalString('audience'),
+        audience: config.getString('audience'),
         issuer: config.getString('issuer'),
         cert: config.getString('cert'),
         privateKey: config.getOptionalString('privateKey'),
@@ -181,7 +182,10 @@ export const saml = createAuthProviderIntegration({
           | undefined,
         digestAlgorithm: config.getOptionalString('digestAlgorithm'),
         acceptedClockSkewMs: config.getOptionalNumber('acceptedClockSkewMs'),
-
+        wantAuthnResponseSigned: config.getOptionalBoolean(
+          'wantAuthnResponseSigned',
+        ),
+        wantAssertionsSigned: config.getOptionalBoolean('wantAssertionsSigned'),
         appUrl: globalConfig.appUrl,
         authHandler,
         signInResolver: options?.signIn?.resolver,

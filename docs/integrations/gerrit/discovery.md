@@ -18,7 +18,7 @@ the Gerrit provider plugin:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-gerrit
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gerrit
 ```
 
 Then add the plugin to the plugin catalog `packages/backend/src/plugins/catalog.ts`:

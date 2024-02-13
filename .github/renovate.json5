@@ -1,6 +1,15 @@
 {
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+
   labels: ['dependencies'],
-  extends: ['config:base', ':disableDependencyDashboard', ':gitSignOff'],
+
+  extends: ['config:best-practices', ':gitSignOff'],
+  // do not pin dev dependencies, which are part of the best-practices preset
+  ignorePresets: [':pinDevDependencies'],
+
+  // the default limit are 10 PRs
+  prConcurrentLimit: 20,
+
   postUpdateOptions: ['yarnDedupeHighest'],
   rangeStrategy: 'update-lockfile',
   // @elastic/elasticsearch is ignored due to licensing issues. See #10992

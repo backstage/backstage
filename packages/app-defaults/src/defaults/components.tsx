@@ -49,7 +49,7 @@ const DefaultBootErrorPage = ({ step, error }: BootErrorPageProps) => {
   // TODO: figure out a nicer way to handle routing on the error page, when it can be done.
   return (
     <OptionallyWrapInRouter>
-      <ErrorPage status="501" statusMessage={message} />
+      <ErrorPage statusMessage={message} stack={error.stack} />
     </OptionallyWrapInRouter>
   );
 };

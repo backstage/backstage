@@ -1,0 +1,183 @@
+{
+  "$schema": "https://backstage.io/schema/config-v1",
+  "type": "object",
+  "properties": {
+    "techInsights": {
+      "type": "object",
+      "properties": {
+        "factChecker": {
+          "type": "object",
+          "properties": {
+            "checks": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/check"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "required": ["type", "name", "description", "factIds", "rule"],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "factIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rule": {
+          "$ref": "#/$defs/rule"
+        }
+      }
+    },
+    "conditionProperties": {
+      "type": "object",
+      "required": ["fact", "operator", "value"],
+      "properties": {
+        "fact": {
+          "type": "string"
+        },
+        "operator": {
+          "type": "string"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["fact"],
+              "properties": {
+                "fact": {
+                  "type": "string"
+                }
+              }
+            },
+            {}
+          ]
+        },
+        "path": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "number"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "conditionReference": {
+      "type": "object",
+      "required": ["condition"],
+      "properties": {
+        "condition": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "number"
+        }
+      }
+    },
+    "nestedCondition": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/conditionProperties"
+        },
+        {
+          "$ref": "#/$defs/topLevelCondition"
+        }
+      ]
+    },
+    "rule": {
+      "type": "string",
+      "required": ["conditions"],
+      "properties": {
+        "conditions": {
+          "$ref": "#/$defs/topLevelCondition"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "number"
+        },
+        "successMetadata": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "failureMetadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "topLevelCondition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["all"],
+          "properties": {
+            "all": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/nestedCondition"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["any"],
+          "properties": {
+            "any": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/nestedCondition"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["not"],
+          "properties": {
+            "not": {
+              "$ref": "#/$defs/nestedCondition"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/conditionReference"
+        }
+      ]
+    }
+  }
+}

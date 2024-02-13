@@ -41,7 +41,7 @@
       href="<%= publicPath %>/safari-pinned-tab.svg"
       color="#5bbad5"
     />
-    <title><%= config.getString('app.title') %></title>
+    <title><%= config.getOptionalString('app.title') ?? 'Backstage' %></title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

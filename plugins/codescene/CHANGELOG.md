@@ -1,5 +1,27 @@
 # @backstage/plugin-codescene
 
+## 0.1.22-next.1
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.1.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.21
 
 ### Patch Changes

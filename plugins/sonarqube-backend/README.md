@@ -22,7 +22,7 @@ This plugin needs to be added to an existing backstage instance.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-sonarqube-backend
+yarn --cwd packages/backend add @backstage/plugin-sonarqube-backend
 ```
 
 Typically, this means creating a `src/plugins/sonarqube.ts` file and adding a reference to it to `src/index.ts` in the backend package.
