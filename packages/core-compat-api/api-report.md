@@ -70,6 +70,15 @@ export class NoOpAnalyticsApi implements AnalyticsApi, AnalyticsApi_2 {
 }
 
 // @public
+export function SystemIcon(props: SystemIconProps): React_2.JSX.Element;
+
+// @public
+export type SystemIconProps = {
+  id: string;
+  fallback?: JSX.Element;
+};
+
+// @public
 export type ToNewRouteRef<T extends RouteRef | SubRouteRef | ExternalRouteRef> =
   T extends RouteRef<infer IParams>
     ? RouteRef_2<IParams>
