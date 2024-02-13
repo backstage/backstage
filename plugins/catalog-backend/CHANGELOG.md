@@ -1,5 +1,41 @@
 # @backstage/plugin-catalog-backend
 
+## 1.17.0-next.3
+
+### Patch Changes
+
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- 9b2eb3f: Add support for `onProcessingError` handler at the catalog plugin (new backend system).
+
+  You can use `setOnProcessingErrorHandler` at the `catalogProcessingExtensionPoint`
+  as replacement for
+
+  ```ts
+  catalogBuilder.subscribe({
+    onProcessingError: hander,
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/repo-tools@0.6.0-next.3
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/backend-tasks@0.5.15-next.3
+  - @backstage/plugin-catalog-node@1.6.2-next.3
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/plugin-permission-node@0.7.21-next.3
+  - @backstage/plugin-search-backend-module-catalog@0.1.14-next.3
+  - @backstage/backend-openapi-utils@0.1.3-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-events-node@0.2.19-next.3
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 1.17.0-next.2
 
 ### Patch Changes

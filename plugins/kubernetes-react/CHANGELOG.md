@@ -1,5 +1,30 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.3.0-next.3
+
+### Minor Changes
+
+- 0dfc185: **BREAKING** The `PodScope`, `PodAndErrors`, and `PodExecTerminalProps` types no
+  longer have a `clusterName` field; instead they now have the field `cluster`
+  which contains the full `ClusterAttributes`.
+
+### Patch Changes
+
+- 5bf0c17: Pod dialogs display cluster title when specified.
+- 74770c8: The `ErrorPanel` component will display the `title` field (when specified) for
+  clusters with errors.
+- b01c86c: The `ErrorReporting` component's cluster column now displays cluster titles when
+  specified.
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- 2b305eb: The `Cluster` component now renders the cluster's title, if specified.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.7.4-next.2
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.3.0-next.2
 
 ### Patch Changes

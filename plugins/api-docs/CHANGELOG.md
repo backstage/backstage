@@ -1,5 +1,25 @@
 # @backstage/plugin-api-docs
 
+## 0.11.0-next.3
+
+### Minor Changes
+
+- 172a717: Migrate the `api-docs` to the new frontend system. It is experimental and available via alpha subpath.
+
+### Patch Changes
+
+- 874e8cf: Updated README to list AsyncApi v3 as supported
+- Updated dependencies
+  - @backstage/plugin-catalog@1.17.0-next.3
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-compat-api@0.2.0-next.3
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.3
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-permission-react@0.4.20-next.1
+
 ## 0.10.4-next.2
 
 ### Patch Changes

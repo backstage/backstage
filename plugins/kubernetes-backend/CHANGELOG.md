@@ -1,5 +1,32 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.15.0-next.3
+
+### Patch Changes
+
+- afe9473: The `/clusters` API now surfaces cluster titles.
+- 2a50cbf: adds a x-goog-api-client header to existing API requests in this plugin to clearly identify API requests from this GKE plugin. headers are formatted as follows where `libVersion` represents the current dotted version number of the Backstage GKE plugin and `libName` represent the current Google API used at backstage.
+- 3b3d549: Responses from the `/api/kubernetes/services/:serviceId` endpoint now include the cluster title.
+- a2e7fc6: Organized imports in plugin.ts
+- 6009d2a: Clusters in the catalog can now specify a human-readable title via `metadata.title`.
+- 7ee5b30: Clusters in the app-config can now specify a `title` property for human readability.
+- ceda378: On LocalKubectlProxyClusterLocator, when resolving localhost, IPv4 address is placed before IPv6 address, ignoring the order from the DNS resolver. This change is necessary since by default kubectl proxy listen on IPv4
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/plugin-kubernetes-common@0.7.4-next.2
+  - @backstage/integration-aws-node@0.1.9-next.0
+  - @backstage/plugin-kubernetes-node@0.1.4-next.3
+  - @backstage/plugin-catalog-node@1.6.2-next.3
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/plugin-permission-node@0.7.21-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 0.15.0-next.2
 
 ### Minor Changes

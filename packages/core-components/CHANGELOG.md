@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.14.0-next.2
+
+### Patch Changes
+
+- 09cedb9: Updated dependency `@react-hookz/web` to `^24.0.0`.
+- Updated dependencies
+  - @backstage/theme@0.5.1-next.1
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/version-bridge@1.0.7
+
 ## 0.14.0-next.1
 
 ### Patch Changes
