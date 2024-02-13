@@ -955,6 +955,14 @@ some form, that the group may wish to be used for contacting them. The picture
 is expected to be a URL pointing to an image that's representative of the group,
 and that a browser could fetch and render on a group page or similar.
 
+The fields of a profile are:
+
+| Field                    | Type   | Description                                                    |
+| ------------------------ | ------ | -------------------------------------------------------------- |
+| `displayName` (optional) | String | A human-readable name for the group.                           |
+| `email` (optional)       | String | An email the group may wish to be used for contacting them.    |
+| `picture` (optional)     | String | A URL pointing to an image that's representative of the group. |
+
 ### `spec.parent` [optional]
 
 The immediate parent group in the hierarchy, if any. Not all groups must have a
@@ -1039,6 +1047,14 @@ fields of this structure are also optional. The email would be a primary email
 of some form, that the user may wish to be used for contacting them. The picture
 is expected to be a URL pointing to an image that's representative of the user,
 and that a browser could fetch and render on a profile page or similar.
+
+The fields of a profile are:
+
+| Field                    | Type   | Description                                                    |
+| ------------------------ | ------ | -------------------------------------------------------------- |
+| `displayName` (optional) | String | A human-readable name for the group.                           |
+| `email` (optional)       | String | An email the group may wish to be used for contacting them.    |
+| `picture` (optional)     | String | A URL pointing to an image that's representative of the group. |
 
 ### `spec.memberOf` [required]
 
