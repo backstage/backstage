@@ -559,7 +559,23 @@ describe('CatalogImportClient', () => {
       await expect(
         catalogImportClient.submitPullRequest({
           repositoryUrl: 'https://github.com/backstage/backstage',
-          fileContent: 'some content 🤖',
+          fileContent: `
+            {
+                "apiVersion": "backstage.io/v1alpha1",
+                "kind": "Component",
+                "metadata": {
+                  "name": "valid-name",
+                  "annotations": {
+                      "github.com/project-slug": "backstage/example-repo"
+                }
+              },
+              "spec": {
+                  "type": "other",
+                  "lifecycle": "unknown",
+                  "owner": "backstage"
+              }
+            }
+          `,
           title: 'A title/message',
           body: 'A body',
         }),
@@ -585,7 +601,8 @@ describe('CatalogImportClient', () => {
         repo: 'backstage',
         path: 'catalog-info.yaml',
         message: 'A title/message',
-        content: 'c29tZSBjb250ZW50IPCfpJY=',
+        content:
+          'CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJhcGlWZXJzaW9uIjogImJhY2tzdGFnZS5pby92MWFscGhhMSIsCiAgICAgICAgICAgICAgICAia2luZCI6ICJDb21wb25lbnQiLAogICAgICAgICAgICAgICAgIm1ldGFkYXRhIjogewogICAgICAgICAgICAgICAgICAibmFtZSI6ICJ2YWxpZC1uYW1lIiwKICAgICAgICAgICAgICAgICAgImFubm90YXRpb25zIjogewogICAgICAgICAgICAgICAgICAgICAgImdpdGh1Yi5jb20vcHJvamVjdC1zbHVnIjogImJhY2tzdGFnZS9leGFtcGxlLXJlcG8iCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAic3BlYyI6IHsKICAgICAgICAgICAgICAgICAgInR5cGUiOiAib3RoZXIiLAogICAgICAgICAgICAgICAgICAibGlmZWN5Y2xlIjogInVua25vd24iLAogICAgICAgICAgICAgICAgICAib3duZXIiOiAiYmFja3N0YWdlIgogICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgICAg',
         branch: 'backstage-integration',
       });
       expect(
@@ -599,7 +616,34 @@ describe('CatalogImportClient', () => {
         base: 'main',
       });
     });
-
+    it('Submit Pull Request with invalid component name', async () => {
+      await expect(
+        catalogImportClient.submitPullRequest({
+          repositoryUrl: 'https://github.com/acme-corp/our-awesome-api',
+          fileContent: `
+            {
+                "apiVersion": "backstage.io/v1alpha1",
+                "kind": "Component",
+                "metadata": {
+                  "name": "invalid name",
+                  "annotations": {
+                      "github.com/project-slug": "backstage/example-repo"
+                }
+              },
+              "spec": {
+                  "type": "other",
+                  "lifecycle": "unknown",
+                  "owner": "backstage"
+              }
+            }
+          `,
+          title: 'A title/message',
+          body: 'A body',
+        }),
+      ).rejects.toThrow(
+        'Component name: Must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
+      );
+    });
     it('should create GitHub pull request with custom filename and branch name', async () => {
       const entityFilename = 'anvil.yaml';
       const pullRequestBranchName = 'anvil-integration';
@@ -623,7 +667,23 @@ describe('CatalogImportClient', () => {
       await expect(
         catalogImportClient.submitPullRequest({
           repositoryUrl: 'https://github.com/acme-corp/our-awesome-api',
-          fileContent: '',
+          fileContent: `
+            {
+                "apiVersion": "backstage.io/v1alpha1",
+                "kind": "Component",
+                "metadata": {
+                  "name": "valid-name",
+                  "annotations": {
+                      "github.com/project-slug": "backstage/example-repo"
+                }
+              },
+              "spec": {
+                  "type": "other",
+                  "lifecycle": "unknown",
+                  "owner": "backstage"
+              }
+            }
+          `,
           title: `Add ${entityFilename} config file`,
           body: `Add ${entityFilename} config file`,
         }),
