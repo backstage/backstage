@@ -104,7 +104,7 @@ export const createGitlabProjectAccessTokenAction = (options: {
         });
       }
 
-      const mappedAccessLevel = Number(accessLevel.valueOf()) as AccessLevel;
+      const mappedAccessLevel = Number(accessLevel.valueOf());
 
       const response = await api.ProjectAccessTokens.create(
         projectId,
@@ -124,5 +124,3 @@ export const createGitlabProjectAccessTokenAction = (options: {
     },
   });
 };
-
-declare type AccessLevel = 0 | 5 | 10 | 20 | 30 | 40 | 50;
