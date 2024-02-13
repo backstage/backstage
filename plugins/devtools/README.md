@@ -418,6 +418,8 @@ By default, only packages with names starting with `@backstage` and `@internal` 
 devTools:
   info:
     packagePrefixes:
+      # Note that you MUST have quotes around these. The YAML won't be valid
+      # if you don't, because of the leading at-symbols.
       - '@roadiehq/backstage-'
       - '@spotify/backstage-'
 ```
