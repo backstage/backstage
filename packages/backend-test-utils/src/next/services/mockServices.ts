@@ -23,6 +23,7 @@ import {
   ServiceFactory,
   ServiceRef,
   TokenManagerService,
+  AuthService,
 } from '@backstage/backend-plugin-api';
 import {
   cacheServiceFactory,
@@ -35,11 +36,13 @@ import {
   rootLifecycleServiceFactory,
   schedulerServiceFactory,
   urlReaderServiceFactory,
+  httpAuthServiceFactory,
 } from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { MockIdentityService } from './MockIdentityService';
 import { MockRootLoggerService } from './MockRootLoggerService';
+import { MockAuthService } from './MockAuthService';
 
 /** @internal */
 function simpleFactory<
@@ -160,6 +163,23 @@ export namespace mockServices {
     }));
   }
 
+  export function auth(options?: { pluginId?: string }): AuthService {
+    return new MockAuthService(options?.pluginId ?? 'test');
+  }
+  export namespace auth {
+    export const factory = createServiceFactory({
+      service: coreServices.auth,
+      deps: { plugin: coreServices.pluginMetadata },
+      factory: ({ plugin }) => new MockAuthService(plugin.getId()),
+    });
+    export const mock = simpleMock(coreServices.auth, () => ({
+      authenticate: jest.fn(),
+      getOwnCredentials: jest.fn(),
+      isPrincipal: jest.fn() as any,
+      issueServiceToken: jest.fn(),
+    }));
+  }
+
   // TODO(Rugvip): Not all core services have implementations available here yet.
   //               some may need a bit more refactoring for it to be simpler to
   //               re-implement functioning mock versions here.
@@ -183,6 +203,14 @@ export namespace mockServices {
     export const mock = simpleMock(coreServices.httpRouter, () => ({
       use: jest.fn(),
       addAuthPolicy: jest.fn(),
+    }));
+  }
+  export namespace httpAuth {
+    export const factory = httpAuthServiceFactory;
+    export const mock = simpleMock(coreServices.httpAuth, () => ({
+      credentials: jest.fn(),
+      issueUserCookie: jest.fn(),
+      requestHeaders: jest.fn(),
     }));
   }
   export namespace rootHttpRouter {

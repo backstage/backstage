@@ -6,12 +6,14 @@
 /// <reference types="jest" />
 /// <reference types="node" />
 
+import { AuthService } from '@backstage/backend-plugin-api';
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterFactoryOptions } from '@backstage/backend-app-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
@@ -87,6 +89,17 @@ export interface MockDirectoryOptions {
 // @public (undocumented)
 export namespace mockServices {
   // (undocumented)
+  export function auth(options?: { pluginId?: string }): AuthService;
+  // (undocumented)
+  export namespace auth {
+    const // (undocumented)
+      factory: () => ServiceFactory<AuthService, 'plugin'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<AuthService> | undefined,
+      ) => ServiceMock<AuthService>;
+  }
+  // (undocumented)
   export namespace cache {
     const // (undocumented)
       factory: () => ServiceFactory<CacheService, 'plugin'>;
@@ -103,6 +116,15 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<DatabaseService> | undefined,
       ) => ServiceMock<DatabaseService>;
+  }
+  // (undocumented)
+  export namespace httpAuth {
+    const // (undocumented)
+      factory: () => ServiceFactory<HttpAuthService, 'plugin'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<HttpAuthService> | undefined,
+      ) => ServiceMock<HttpAuthService>;
   }
   // (undocumented)
   export namespace httpRouter {
