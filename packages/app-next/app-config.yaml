@@ -29,13 +29,14 @@ app:
     - entity-card:api-docs/providing-components
     - entity-card:api-docs/consuming-components
 
+    # - entity-card:azure-devops/readme
     # Entity page content
     - entity-content:api-docs/definition
     - entity-content:api-docs/apis
     - entity-content:techdocs
-    - entity-content:azure-devops/pipelines
-    - entity-content:azure-devops/pull-requests
-    - entity-content:azure-devops/git-tags
+    # - entity-content:azure-devops/pipelines
+    # - entity-content:azure-devops/pull-requests
+    # - entity-content:azure-devops/git-tags
 
     # Org Plugin
     - entity-card:org/group-profile
