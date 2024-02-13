@@ -212,25 +212,40 @@ describe('createRouter', () => {
   });
 
   describe('GET /entity/:namespace/:kind/:name/obfuscated', () => {
-    catalog.getEntityByRef.mockResolvedValueOnce(entity);
-    catalog.getEntities.mockResolvedValueOnce({ items: entities });
+    beforeEach(() => {
+      catalog.getEntityByRef = jest.fn().mockResolvedValueOnce(entity);
+      catalog.getEntities = jest
+        .fn()
+        .mockResolvedValueOnce({ items: entities });
+    });
 
-    it('returns obfuscated 401 if no auth', async () => {
+    it('returns obfuscated 404 if the user token does not return a catalog entity', async () => {
+      catalog.getEntityByRef = jest.fn().mockResolvedValue(undefined);
+
       const obfuscatedEntity = await request(app).get(
         '/entity/default/component/test/obfuscated',
       );
-      expect(obfuscatedEntity.status).toEqual(401);
+
+      expect(obfuscatedEntity.status).toEqual(404);
     });
 
     it('returns obfuscated entity and badges', async () => {
+      catalog.getEntityByRef = jest.fn().mockResolvedValue(entity);
+
       const obfuscatedEntity = await request(app)
         .get('/entity/default/component/test/obfuscated')
         .set('Authorization', 'Bearer fakeToken');
+
       expect(obfuscatedEntity.status).toEqual(200);
       expect(obfuscatedEntity.body.uuid).toMatch(
         new RegExp(
           '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
         ),
+      );
+
+      expect(catalog.getEntityByRef).toHaveBeenCalledWith(
+        { namespace: 'default', kind: 'component', name: 'test' },
+        { token: 'fakeToken' },
       );
 
       const uuid = obfuscatedEntity.body.uuid;
