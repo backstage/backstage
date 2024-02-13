@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend-module-gitlab': patch
 ---
 
-Establishing compatibility of scaffolder action gitlab:projectAccessToken:create with GitLab version ^16 by introducing the expired at parameter.
+Use the Gitbeaker library for `gitlab:projectAccessToken:create` action, enabling the `expiresAt` option

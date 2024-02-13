@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { Gitlab } from '@gitbeaker/rest';
+import { AccessTokenScopes, Gitlab } from '@gitbeaker/rest';
 import { DateTime } from 'luxon';
 import { z } from 'zod';
 import { getToken } from '../util';
@@ -104,18 +104,17 @@ export const createGitlabProjectAccessTokenAction = (options: {
         });
       }
 
-      const mappedAccessLevel = Number(accessLevel.valueOf());
-
       const response = await api.ProjectAccessTokens.create(
         projectId,
         name,
-        scopes as any,
+        scopes as AccessTokenScopes[],
         {
           expiresAt:
             expiresAt || DateTime.now().plus({ days: 365 }).toISODate()!,
-          accessLevel: mappedAccessLevel,
+          accessLevel,
         },
       );
+
       if (!response.token) {
         throw new Error('Could not create project access token');
       }
