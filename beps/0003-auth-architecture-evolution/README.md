@@ -14,7 +14,7 @@ creation-date: 2024-01-28
 
 <!-- Before merging the initial BEP PR, create a feature issue and update the below link. You can wait with this step until the BEP is ready to be merged. -->
 
-[**Discussion Issue**](https://github.com/backstage/backstage/issues/NNNNN)
+[**Discussion Issue**](https://github.com/backstage/backstage/issues/22605)
 
 - [Summary](#summary)
 - [Motivation](#motivation)
