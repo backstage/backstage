@@ -1,6 +1,5 @@
 ---
-'@backstage/catalog-model': patch
 '@backstage/plugin-api-docs': patch
 ---
 
-Add documentation & example that AsyncApi 3 is supported
+Updated README to list AsyncApi v3 as supported
