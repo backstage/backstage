@@ -19,7 +19,7 @@ import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const linguistTranslationRef = createTranslationRef({
   id: 'linguist',
   messages: {
-    component: {
+    entityCard: {
       title: 'Languages',
       noData: 'There is currently no language data for this entity.',
     },

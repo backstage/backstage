@@ -73,10 +73,10 @@ export const LinguistCard = () => {
 
   if (items && items.languageCount === 0 && items.totalBytes === 0) {
     return (
-      <InfoCard title={t('component.title')} className={classes.infoCard}>
+      <InfoCard title={t('entityCard.title')} className={classes.infoCard}>
         <Grid container spacing={3}>
           <Box p={2}>
-            <Typography>{t('component.noData')}</Typography>
+            <Typography>{t('entityCard.noData')}</Typography>
           </Box>
         </Grid>
       </InfoCard>

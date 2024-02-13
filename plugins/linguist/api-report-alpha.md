@@ -14,8 +14,8 @@ export default _default;
 export const linguistTranslationRef: TranslationRef<
   'linguist',
   {
-    readonly 'component.title': 'Languages';
-    readonly 'component.noData': 'There is currently no language data for this entity.';
+    readonly 'entityCard.title': 'Languages';
+    readonly 'entityCard.noData': 'There is currently no language data for this entity.';
   }
 >;
 
