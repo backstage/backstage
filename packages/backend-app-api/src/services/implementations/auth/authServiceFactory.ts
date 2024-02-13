@@ -167,6 +167,7 @@ class DefaultAuthService implements AuthService {
     const { type } = internalForward.principal;
 
     switch (type) {
+      // TODO: Check whether the principal is ourselves
       case 'service':
         return this.tokenManager.getToken();
       case 'user':
