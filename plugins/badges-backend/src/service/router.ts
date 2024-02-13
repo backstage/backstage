@@ -24,13 +24,12 @@ import {
 } from '@backstage/backend-common';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { AuthenticationError, NotFoundError } from '@backstage/errors';
+import { NotFoundError } from '@backstage/errors';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
 import { BadgeContext, BadgeFactories } from '../types';
 import { isNil } from 'lodash';
 import { Logger } from 'winston';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { BadgesStore, DatabaseBadgesStore } from '../database/badgesStore';
 import { createDefaultBadgeFactories } from '../badges';
 
@@ -215,39 +214,19 @@ async function obfuscatedRoute(
     res.status(200).send(data);
   });
 
-  router.get(
-    '/entity/:namespace/:kind/:name/obfuscated',
-    function authenticate(req, _res, next) {
-      const token =
-        getBearerTokenFromAuthorizationHeader(req.headers.authorization) ||
-        (req.cookies?.token as string | undefined);
+  router.get('/entity/:namespace/:kind/:name/obfuscated', async (req, res) => {
+    const { namespace, kind, name } = req.params;
+    const storedEntityUuid: { uuid: string } | undefined =
+      await store.getBadgeUuid(name, namespace, kind);
 
-      if (!token) {
-        throw new AuthenticationError('Unauthorized');
-      }
+    if (isNil(storedEntityUuid)) {
+      throw new NotFoundError(
+        `No uuid found for entity "${namespace}/${kind}/${name}"`,
+      );
+    }
 
-      try {
-        req.user = identity.getIdentity({ request: req });
-        next();
-      } catch (error) {
-        tokenManager.authenticate(token.toString());
-        next(error);
-      }
-    },
-    async (req, res) => {
-      const { namespace, kind, name } = req.params;
-      const storedEntityUuid: { uuid: string } | undefined =
-        await store.getBadgeUuid(name, namespace, kind);
-
-      if (isNil(storedEntityUuid)) {
-        throw new NotFoundError(
-          `No uuid found for entity "${namespace}/${kind}/${name}"`,
-        );
-      }
-
-      return res.status(200).json(storedEntityUuid);
-    },
-  );
+    return res.status(200).json(storedEntityUuid);
+  });
 
   router.use(errorHandler());
 
