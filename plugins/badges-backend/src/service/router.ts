@@ -24,7 +24,7 @@ import {
 } from '@backstage/backend-common';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { AuthenticationError, NotFoundError } from '@backstage/errors';
+import { NotFoundError } from '@backstage/errors';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
 import { BadgeContext, BadgeFactories } from '../types';
 import { isNil } from 'lodash';
@@ -236,10 +236,8 @@ async function obfuscatedRoute(
       );
 
       if (!entity) {
-        next(
-          new NotFoundError(
-            `No ${kind} entity in ${namespace} named "${name}"`,
-          ),
+        throw new NotFoundError(
+          `No ${kind} entity in ${namespace} named "${name}"`,
         );
       } else {
         next();
