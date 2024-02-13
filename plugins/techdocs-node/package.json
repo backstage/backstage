@@ -58,7 +58,7 @@
     "@trendyol-js/openstack-swift-sdk": "^0.0.7",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
-    "fs-extra": "10.1.0",
+    "fs-extra": "^11.2.0",
     "git-url-parse": "^14.0.0",
     "hpagent": "^1.2.0",
     "js-yaml": "^4.0.0",
@@ -71,7 +71,7 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@types/fs-extra": "^9.0.5",
+    "@types/fs-extra": "^11.0.0",
     "@types/js-yaml": "^4.0.0",
     "@types/mime-types": "^2.1.0",
     "@types/recursive-readdir": "^2.2.0",

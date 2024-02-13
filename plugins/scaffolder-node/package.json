@@ -49,7 +49,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/types": "workspace:^",
-    "fs-extra": "10.1.0",
+    "fs-extra": "^11.2.0",
     "globby": "^11.0.0",
     "jsonschema": "^1.2.6",
     "p-limit": "^3.1.0",

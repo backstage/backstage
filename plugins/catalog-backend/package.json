@@ -70,7 +70,7 @@
     "core-js": "^3.6.5",
     "express": "^4.17.1",
     "fast-json-stable-stringify": "^2.1.0",
-    "fs-extra": "10.1.0",
+    "fs-extra": "^11.2.0",
     "git-url-parse": "^14.0.0",
     "glob": "^7.1.6",
     "knex": "^3.0.0",

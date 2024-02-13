@@ -41,12 +41,12 @@
   },
   "dependencies": {
     "@manypkg/get-packages": "^1.1.3",
-    "fs-extra": "^10.1.0"
+    "fs-extra": "^11.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/cli-node": "workspace:^",
-    "@types/fs-extra": "^9.0.1"
+    "@types/fs-extra": "^11.0.0"
   },
   "peerDependencies": {
     "@playwright/test": "^1.32.3"

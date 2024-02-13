@@ -51,7 +51,7 @@
     "chalk": "^4.0.0",
     "codeowners-utils": "^1.0.2",
     "commander": "^9.1.0",
-    "fs-extra": "10.1.0",
+    "fs-extra": "^11.2.0",
     "glob": "^8.0.3",
     "is-glob": "^4.0.3",
     "js-yaml": "^4.1.0",
