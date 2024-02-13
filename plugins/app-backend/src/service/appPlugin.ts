@@ -21,7 +21,11 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { staticFallbackHandlerExtensionPoint } from '@backstage/plugin-app-node';
+import {
+  configSchemaExtensionPoint,
+  staticFallbackHandlerExtensionPoint,
+} from '@backstage/plugin-app-node';
+import { ConfigSchema } from '@backstage/config-loader';
 
 /**
  * The App plugin is responsible for serving the frontend app bundle and static assets.
@@ -31,6 +35,7 @@ export const appPlugin = createBackendPlugin({
   pluginId: 'app',
   register(env) {
     let staticFallbackHandler: express.Handler | undefined;
+    let schema: ConfigSchema | undefined;
 
     env.registerExtensionPoint(staticFallbackHandlerExtensionPoint, {
       setStaticFallbackHandler(handler) {
@@ -40,6 +45,17 @@ export const appPlugin = createBackendPlugin({
           );
         }
         staticFallbackHandler = handler;
+      },
+    });
+
+    env.registerExtensionPoint(configSchemaExtensionPoint, {
+      setConfigSchema(configSchema) {
+        if (schema) {
+          throw new Error(
+            'Attempted to set config schema for the app-backend twice',
+          );
+        }
+        schema = configSchema;
       },
     });
 
@@ -53,6 +69,7 @@ export const appPlugin = createBackendPlugin({
       async init({ logger, config, database, httpRouter }) {
         const appPackageName =
           config.getOptionalString('app.packageName') ?? 'app';
+
         const winstonLogger = loggerToWinstonLogger(logger);
 
         const router = await createRouter({
@@ -61,6 +78,7 @@ export const appPlugin = createBackendPlugin({
           database,
           appPackageName,
           staticFallbackHandler,
+          schema,
         });
         httpRouter.use(router);
       },
