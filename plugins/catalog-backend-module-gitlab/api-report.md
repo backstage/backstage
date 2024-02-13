@@ -63,6 +63,7 @@ export type GitLabGroup = {
   name: string;
   full_path: string;
   description?: string;
+  visibility: string;
   parent_id?: number;
 };
 
