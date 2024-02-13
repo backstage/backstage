@@ -49,6 +49,7 @@ export function defaultGroupEntitiesTransformer(
     const annotations: { [annotationName: string]: string } = {};
 
     annotations[`${options.providerConfig.host}/team-path`] = group.full_path;
+    annotations[`${options.providerConfig.host}/visibility`] = group.visibility;
 
     const entity: GroupEntity = {
       apiVersion: 'backstage.io/v1alpha1',

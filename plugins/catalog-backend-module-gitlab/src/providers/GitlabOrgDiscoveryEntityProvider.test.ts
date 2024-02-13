@@ -452,6 +452,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
               'backstage.io/managed-by-origin-location':
                 'url:https://test-gitlab/group1/group2',
               'test-gitlab/team-path': 'group1/group2',
+              'test-gitlab/visibility': 'internal',
             },
             description: 'Group2',
             name: 'group1-group2',
