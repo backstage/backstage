@@ -60,7 +60,7 @@ export async function createRouter(
     );
   const router = Router();
 
-  const { config, logger, tokenManager, discovery, identity } = options;
+  const { config, logger, tokenManager, discovery } = options;
   const baseUrl = await discovery.getExternalBaseUrl('badges');
 
   if (config.getOptionalBoolean('app.badges.obfuscate')) {
@@ -72,7 +72,6 @@ export async function createRouter(
       logger,
       options,
       config,
-      identity,
       baseUrl,
     );
   }
@@ -94,7 +93,6 @@ async function obfuscatedRoute(
   logger: Logger,
   options: RouterOptions,
   config: Config,
-  identity: IdentityApi,
   baseUrl: string,
 ) {
   logger.info('Badges obfuscation is enabled');
@@ -130,6 +128,7 @@ async function obfuscatedRoute(
       },
       token,
     );
+
     if (isNil(entity)) {
       throw new NotFoundError(
         `No ${kind} entity in ${namespace} named "${name}"`,
