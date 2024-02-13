@@ -8533,6 +8533,7 @@ __metadata:
     "@gitbeaker/node": ^35.8.0
     "@gitbeaker/rest": ^39.25.0
     jest-date-mock: ^1.0.8
+    luxon: ^3.0.0
     yaml: ^2.0.0
     zod: ^3.22.4
   languageName: unknown
@@ -27741,6 +27742,7 @@ __metadata:
     "@backstage/plugin-rollbar-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-gitlab": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-rails": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"
     "@backstage/plugin-search-backend-module-catalog": "workspace:^"
