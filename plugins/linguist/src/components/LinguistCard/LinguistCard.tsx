@@ -76,9 +76,7 @@ export const LinguistCard = () => {
       <InfoCard title={t('component.title')} className={classes.infoCard}>
         <Grid container spacing={3}>
           <Box p={2}>
-            <Typography>
-              There is currently no language data for this entity.
-            </Typography>
+            <Typography>{t('component.noData')}</Typography>
           </Box>
         </Grid>
       </InfoCard>

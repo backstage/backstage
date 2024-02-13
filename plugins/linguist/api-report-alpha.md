@@ -4,10 +4,20 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<{}, {}>;
 export default _default;
+
+// @alpha (undocumented)
+export const linguistTranslationRef: TranslationRef<
+  'linguist',
+  {
+    readonly 'component.title': 'Languages';
+    readonly 'component.noData': 'There is currently no language data for this entity.';
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

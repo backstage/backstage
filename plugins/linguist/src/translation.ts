@@ -21,6 +21,7 @@ export const linguistTranslationRef = createTranslationRef({
   messages: {
     component: {
       title: 'Languages',
+      noData: 'There is currently no language data for this entity.',
     },
   },
 });
