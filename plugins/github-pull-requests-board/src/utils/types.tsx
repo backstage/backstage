@@ -84,7 +84,7 @@ export type Label = {
 export type Status = {
   commit: {
     statusCheckRollup: {
-      state: 'SUCCESS' | 'FAILURE' | 'ERROR' | 'EXPECTED' | 'PENDING';
+      state: string;
     };
   };
 };

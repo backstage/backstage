@@ -37,6 +37,13 @@ const props = {
       name: 'documentation',
     },
   ],
+  status: {
+    commit: {
+      statusCheckRollup: {
+        state: 'SUCCESS',
+      },
+    },
+  },
 };
 
 describe('<CardHeader/>', () => {
@@ -53,5 +60,11 @@ describe('<CardHeader/>', () => {
     };
     await renderInTestApp(<CardHeader {...propsWithNoLabels} />);
     expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+  });
+
+  it('finds commit status in PR Card Header', async () => {
+    await renderInTestApp(<CardHeader {...props} />);
+    expect(screen.getByText('Commit Status:')).toBeInTheDocument();
+    expect(props.status.commit.statusCheckRollup.state).toBeTruthy();
   });
 });

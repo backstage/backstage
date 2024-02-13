@@ -33,14 +33,21 @@ jest.mock('../../hooks/useUserRepositoriesAndTeam', () => {
 });
 
 jest.mock('../../hooks/usePullRequestsByTeam', () => {
-  const buildPullRequest = (
-    prTitle: string,
-    authorLogin: string,
-    repoName: string,
-    isDraft: boolean,
-    isArchived: boolean,
-    status: Status,
-  ) => {
+  const buildPullRequest = ({
+    prTitle,
+    authorLogin,
+    repoName,
+    isDraft,
+    isArchived,
+    status,
+  }: {
+    prTitle: string;
+    authorLogin: string;
+    repoName: string;
+    isDraft: boolean;
+    isArchived: boolean;
+    status: Status;
+  }) => {
     return {
       id: 'id',
       title: prTitle,
@@ -81,118 +88,118 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
     {
       title: 'column',
       content: [
-        buildPullRequest(
-          'non-team-non-draft-non-archive',
-          'non-team-member',
-          'team-repo',
-          false,
-          false,
-          {
+        buildPullRequest({
+          prTitle: 'non-team-non-draft-non-archive',
+          authorLogin: 'non-team-member',
+          repoName: 'team-repo',
+          isDraft: false,
+          isArchived: false,
+          status: {
             commit: {
               statusCheckRollup: {
                 state: 'FAILURE',
               },
             },
           },
-        ),
-        buildPullRequest(
-          'non-team-non-draft-is-archive',
-          'non-team-member',
-          'team-repo',
-          false,
-          true,
-          {
+        }),
+        buildPullRequest({
+          prTitle: 'non-team-non-draft-is-archive',
+          authorLogin: 'non-team-member',
+          repoName: 'team-repo',
+          isDraft: false,
+          isArchived: true,
+          status: {
             commit: {
               statusCheckRollup: {
                 state: 'FAILURE',
               },
             },
           },
-        ),
-        buildPullRequest(
-          'non-team-is-draft-non-archive',
-          'non-team-member',
-          'team-repo',
-          true,
-          false,
-          {
+        }),
+        buildPullRequest({
+          prTitle: 'non-team-is-draft-non-archive',
+          authorLogin: 'non-team-member',
+          repoName: 'team-repo',
+          isDraft: true,
+          isArchived: false,
+          status: {
             commit: {
               statusCheckRollup: {
                 state: 'FAILURE',
               },
             },
           },
-        ),
-        buildPullRequest(
-          'non-team-is-draft-is-archive',
-          'non-team-member',
-          'team-repo',
-          true,
-          true,
-          {
+        }),
+        buildPullRequest({
+          prTitle: 'non-team-is-draft-is-archive',
+          authorLogin: 'non-team-member',
+          repoName: 'team-repo',
+          isDraft: true,
+          isArchived: true,
+          status: {
             commit: {
               statusCheckRollup: {
                 state: 'SUCCESS',
               },
             },
           },
-        ),
-        buildPullRequest(
-          'is-team-non-draft-non-archive',
-          'team-member',
-          'non-team-repo',
-          false,
-          false,
-          {
+        }),
+        buildPullRequest({
+          prTitle: 'is-team-non-draft-non-archive',
+          authorLogin: 'team-member',
+          repoName: 'non-team-repo',
+          isDraft: false,
+          isArchived: false,
+          status: {
             commit: {
               statusCheckRollup: {
                 state: 'FAILURE',
               },
             },
           },
-        ),
-        buildPullRequest(
-          'is-team-non-draft-is-archive',
-          'team-member',
-          'non-team-repo',
-          false,
-          true,
-          {
+        }),
+        buildPullRequest({
+          prTitle: 'is-team-non-draft-is-archive',
+          authorLogin: 'team-member',
+          repoName: 'non-team-repo',
+          isDraft: false,
+          isArchived: true,
+          status: {
             commit: {
               statusCheckRollup: {
                 state: 'FAILURE',
               },
             },
           },
-        ),
-        buildPullRequest(
-          'is-team-is-draft-non-archive',
-          'team-member',
-          'non-team-repo',
-          true,
-          false,
-          {
+        }),
+        buildPullRequest({
+          prTitle: 'is-team-is-draft-non-archive',
+          authorLogin: 'team-member',
+          repoName: 'non-team-repo',
+          isDraft: true,
+          isArchived: false,
+          status: {
             commit: {
               statusCheckRollup: {
                 state: 'FAILURE',
               },
             },
           },
-        ),
-        buildPullRequest(
-          'is-team-is-draft-is-archive',
-          'team-member',
-          'non-team-repo',
-          true,
-          true,
-          {
+        }),
+        buildPullRequest({
+          prTitle: 'is-team-is-draft-is-archive',
+          authorLogin: 'team-member',
+          repoName: 'non-team-repo',
+          isDraft: true,
+          isArchived: true,
+          status: {
             commit: {
               statusCheckRollup: {
                 state: 'SUCCESS',
               },
             },
           },
-        ),
+        }),
       ],
     },
   ];

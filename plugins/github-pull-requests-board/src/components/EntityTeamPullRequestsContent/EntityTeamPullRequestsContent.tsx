@@ -87,9 +87,6 @@ const EntityTeamPullRequestsContent = (
       return <Progress />;
     }
 
-    // eslint-disable-next-line no-console
-    console.log('pull - ', pullRequests);
-
     return (
       <Grid container spacing={2}>
         {pullRequests.length ? (
