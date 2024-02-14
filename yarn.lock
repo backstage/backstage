@@ -5735,7 +5735,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     p-limit: ^3.0.2
-    prom-client: ^14.0.1
+    prom-client: ^15.0.0
     supertest: ^6.1.3
     uuid: ^8.0.0
     wait-for-expect: ^3.0.2
@@ -8640,7 +8640,7 @@ __metadata:
     nunjucks: ^3.2.3
     p-limit: ^3.1.0
     p-queue: ^6.6.2
-    prom-client: ^14.0.1
+    prom-client: ^15.0.0
     strip-ansi: ^7.1.0
     supertest: ^6.1.3
     uuid: ^8.2.0
@@ -14735,7 +14735,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/api@npm:^1.0.1, @opentelemetry/api@npm:^1.3.0, @opentelemetry/api@npm:^1.4.1":
+"@opentelemetry/api@npm:^1.0.1, @opentelemetry/api@npm:^1.3.0, @opentelemetry/api@npm:^1.4.0, @opentelemetry/api@npm:^1.4.1":
   version: 1.7.0
   resolution: "@opentelemetry/api@npm:1.7.0"
   checksum: 2398cbe65f199c3a7050125b3ad9c835f789bb0a616665e9c7f4475a29ac8334b6a3c15f38db48d345b522180c41c00b04cc174cd0eeffba98eb4874a565fa7e
@@ -27789,7 +27789,7 @@ __metadata:
     mysql2: ^2.2.5
     pg: ^8.11.3
     pg-connection-string: ^2.3.0
-    prom-client: ^14.0.1
+    prom-client: ^15.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -39016,12 +39016,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prom-client@npm:^14.0.1":
-  version: 14.2.0
-  resolution: "prom-client@npm:14.2.0"
+"prom-client@npm:^15.0.0":
+  version: 15.1.0
+  resolution: "prom-client@npm:15.1.0"
   dependencies:
+    "@opentelemetry/api": ^1.4.0
     tdigest: ^0.1.1
-  checksum: d4c04e57616c72643dd02862d0d4bde09cf8869a19d0aef5e7b785e6e27d02439b66cdc165e3492f62d579fa91579183820870cc757a09b99399d2d02f46b9f1
+  checksum: 85bb134dfd0aab4606a27bce2d478d82650053da4340390210ed8280c14af24fc703a28fbc401b5edb4b756686a3df229f243ce5c7166c53925236fb763e4a51
   languageName: node
   linkType: hard
 
