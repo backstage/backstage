@@ -3133,7 +3133,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime-corejs3@npm:^7.20.7, @babel/runtime-corejs3@npm:^7.22.15, @babel/runtime-corejs3@npm:^7.23.8":
+"@babel/runtime-corejs3@npm:^7.20.7, @babel/runtime-corejs3@npm:^7.22.15, @babel/runtime-corejs3@npm:^7.23.9":
   version: 7.23.9
   resolution: "@babel/runtime-corejs3@npm:7.23.9"
   dependencies:
@@ -43155,10 +43155,10 @@ __metadata:
   linkType: hard
 
 "swagger-ui-react@npm:^5.0.0":
-  version: 5.11.3
-  resolution: "swagger-ui-react@npm:5.11.3"
+  version: 5.11.4
+  resolution: "swagger-ui-react@npm:5.11.4"
   dependencies:
-    "@babel/runtime-corejs3": ^7.23.8
+    "@babel/runtime-corejs3": ^7.23.9
     "@braintree/sanitize-url": =7.0.0
     base64-js: ^1.5.1
     classnames: ^2.5.1
@@ -43195,7 +43195,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 <19"
     react-dom: ">=16.8.0 <19"
-  checksum: 44b6693cb3285c83ef54ea3484a5b2d3285517d77b3a7ba9cd8dfb7a2b25a25242f99ae04c0c0a5786841d490e2a0e1c4021c4d69012caf6983096fc8ead70dd
+  checksum: 080a367c28019e20193887a6a1dc70d42c030e2b489c9099b60f4a0cb7ebc4779d0731703060f72022bc997d6e6811661f055514e1ace1454f3bc46bb8aceaa9
   languageName: node
   linkType: hard
 
