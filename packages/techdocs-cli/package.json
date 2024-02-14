@@ -64,7 +64,7 @@
     "@backstage/plugin-techdocs-node": "workspace:^",
     "@types/dockerode": "^3.3.0",
     "commander": "^9.1.0",
-    "dockerode": "^3.3.1",
+    "dockerode": "^4.0.0",
     "fs-extra": "^11.0.0",
     "global-agent": "^3.0.0",
     "http-proxy": "^1.18.1",
