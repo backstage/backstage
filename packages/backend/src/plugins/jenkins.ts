@@ -32,6 +32,8 @@ export default async function createPlugin(
     jenkinsInfoProvider: DefaultJenkinsInfoProvider.fromConfig({
       catalog,
       config: env.config,
+      discovery: env.discovery,
     }),
+    discovery: env.discovery,
   });
 }

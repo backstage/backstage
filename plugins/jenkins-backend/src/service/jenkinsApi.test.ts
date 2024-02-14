@@ -20,6 +20,7 @@ import { JenkinsInfo } from './jenkinsInfoProvider';
 import { JenkinsBuild, JenkinsProject } from '../types';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import fetch, { Response } from 'node-fetch';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('jenkins');
 jest.mock('node-fetch');
@@ -716,6 +717,8 @@ describe('JenkinsApi', () => {
     );
   });
   describe('rebuildProject', () => {
+    const auth = mockServices.auth();
+
     it('successfully rebuilds', async () => {
       mockFetch.mockResolvedValueOnce({ status: 200 } as Response);
       const status = await jenkinsApi.rebuildProject(
@@ -723,6 +726,7 @@ describe('JenkinsApi', () => {
         jobFullName,
         buildNumber,
         resourceRef,
+        { credentials: await auth.getOwnServiceCredentials() },
       );
       expect(status).toEqual(200);
     });
@@ -733,6 +737,7 @@ describe('JenkinsApi', () => {
         jobFullName,
         buildNumber,
         resourceRef,
+        { credentials: await auth.getOwnServiceCredentials() },
       );
       expect(status).toEqual(401);
     });
@@ -750,6 +755,7 @@ describe('JenkinsApi', () => {
         jobFullName,
         buildNumber,
         resourceRef,
+        { credentials: await auth.getOwnServiceCredentials() },
       );
       expect(status).toEqual(401);
     });
