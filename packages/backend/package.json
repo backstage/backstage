@@ -90,13 +90,13 @@
     "dockerode": "^4.0.0",
     "example-app": "link:../app",
     "express": "^4.17.1",
-    "express-prom-bundle": "^6.3.6",
+    "express-prom-bundle": "^7.0.0",
     "express-promise-router": "^4.1.0",
     "luxon": "^3.0.0",
     "mysql2": "^2.2.5",
     "pg": "^8.11.3",
     "pg-connection-string": "^2.3.0",
-    "prom-client": "^14.0.1",
+    "prom-client": "^15.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
