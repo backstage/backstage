@@ -95,7 +95,7 @@
     "fork-ts-checker-webpack-plugin": "^9.0.0",
     "fs-extra": "^11.2.0",
     "git-url-parse": "^14.0.0",
-    "glob": "^7.1.7",
+    "glob": "^10.0.0",
     "global-agent": "^3.0.0",
     "handlebars": "^4.7.3",
     "html-webpack-plugin": "^5.3.1",

@@ -3668,7 +3668,7 @@ __metadata:
     fork-ts-checker-webpack-plugin: ^9.0.0
     fs-extra: ^11.2.0
     git-url-parse: ^14.0.0
-    glob: ^7.1.7
+    glob: ^10.0.0
     global-agent: ^3.0.0
     handlebars: ^4.7.3
     html-webpack-plugin: ^5.3.1
@@ -5728,7 +5728,7 @@ __metadata:
     fast-json-stable-stringify: ^2.1.0
     fs-extra: ^11.2.0
     git-url-parse: ^14.0.0
-    glob: ^7.1.6
+    glob: ^10.0.0
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -9981,7 +9981,7 @@ __metadata:
     codeowners-utils: ^1.0.2
     commander: ^12.0.0
     fs-extra: ^11.2.0
-    glob: ^8.0.3
+    glob: ^10.0.0
     is-glob: ^4.0.3
     js-yaml: ^4.1.0
     lodash: ^4.17.21
@@ -29201,7 +29201,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.2.2, glob@npm:^10.3.10":
+"glob@npm:^10.0.0, glob@npm:^10.2.2, glob@npm:^10.3.10":
   version: 10.3.10
   resolution: "glob@npm:10.3.10"
   dependencies:
