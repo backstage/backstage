@@ -1054,7 +1054,7 @@ The fields of a profile are:
 | ------------------------ | ------ | -------------------------------------------------------------- |
 | `displayName` (optional) | String | A human-readable name for the group.                           |
 | `email` (optional)       | String | An email the group may wish to be used for contacting them.    |
-| `picture` (optional)     | String | A URL pointing to an image that's representative of the group. |
+| `picture` (optional)     | String | A URL pointing to an image that's representative of the user. |
 
 ### `spec.memberOf` [required]
 
