@@ -16,8 +16,10 @@
 import { parseEntityRef } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
 import type { JsonObject, JsonValue } from '@backstage/types';
-import { TemplateFilter } from '..';
-import { parseRepoUrl } from '@backstage/plugin-scaffolder-node';
+import {
+  parseRepoUrl,
+  TemplateFilter,
+} from '@backstage/plugin-scaffolder-node';
 import get from 'lodash/get';
 
 export const createDefaultFilters = ({

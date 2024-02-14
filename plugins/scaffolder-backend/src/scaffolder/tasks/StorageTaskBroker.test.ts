@@ -17,10 +17,12 @@
 import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
+import {
+  TaskSecrets,
+  SerializedTaskEvent,
+} from '@backstage/plugin-scaffolder-node';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
-import { SerializedTaskEvent } from './types';
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(
@@ -81,12 +83,12 @@ describe('StorageTaskBroker', () => {
     const taskA = await broker.claim();
     const taskB = await broker.claim();
     const taskC = await broker.claim();
-    await expect(taskA).toEqual(expect.any(TaskManager as any));
-    await expect(taskB).toEqual(expect.any(TaskManager as any));
-    await expect(taskC).toEqual(expect.any(TaskManager as any));
-    await expect(taskA.spec.steps[0].id).toBe('a');
-    await expect(taskB.spec.steps[0].id).toBe('b');
-    await expect(taskC.spec.steps[0].id).toBe('c');
+    expect(taskA).toEqual(expect.any(TaskManager as any));
+    expect(taskB).toEqual(expect.any(TaskManager as any));
+    expect(taskC).toEqual(expect.any(TaskManager as any));
+    expect(taskA.spec.steps[0].id).toBe('a');
+    expect(taskB.spec.steps[0].id).toBe('b');
+    expect(taskC.spec.steps[0].id).toBe('c');
   });
 
   it('should store secrets', async () => {
