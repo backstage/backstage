@@ -38,8 +38,18 @@ export const lighthousePlugin = createBackendPlugin({
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         tokenManager: coreServices.tokenManager,
+        discovery: coreServices.discovery,
+        auth: coreServices.auth,
       },
-      async init({ catalogClient, config, logger, scheduler, tokenManager }) {
+      async init({
+        catalogClient,
+        config,
+        logger,
+        scheduler,
+        tokenManager,
+        discovery,
+        auth,
+      }) {
         const winstonLogger = loggerToWinstonLogger(logger);
 
         await createScheduler({
@@ -48,6 +58,8 @@ export const lighthousePlugin = createBackendPlugin({
           logger: winstonLogger,
           scheduler,
           tokenManager,
+          discovery,
+          auth,
         });
       },
     });
