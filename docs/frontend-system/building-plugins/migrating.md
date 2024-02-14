@@ -82,8 +82,6 @@ export const workApiRef = createApiRef<WorkApi>({
 });
 ```
 
-In this example, the plugin ID already follows the [Frontend System Naming Patterns](../architecture/naming-patterns). If it doesn't, you may want to consider renaming that ID at this point. Don't worry, this won't hurt consumers in the old frontend system since the ID is mostly used for debugging purposes there. In the new system, it's much more important and appears in app-config files and similar.
-
 Note at the top of the file that it uses the updated import from `@backstage/frontend-plugin-api` that we migrated in the previous section, instead of the old `@backstage/core-plugin-api`.
 
 ### Plugin package changes
