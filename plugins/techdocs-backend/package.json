@@ -58,7 +58,7 @@
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
     "@types/express": "^4.17.6",
-    "dockerode": "^3.3.1",
+    "dockerode": "^4.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "fs-extra": "^11.2.0",
