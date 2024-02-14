@@ -59,9 +59,9 @@ const useStyles = makeStyles((theme: Theme) =>
 export const InfoContent = () => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
-  const copyContentToClipboard = useCopyToClipboard();
   const [infoCopied, setInfoCopied] = useState(false);
   const { about, loading, error } = useInfo();
+  const [isCopied, setCopied] = useCopyToClipboard();
 
   const copyToClipboard = () => {
     if (about) {
@@ -72,7 +72,7 @@ export const InfoContent = () => {
           formatted = `${formatted}    ${deps[key].name}: ${deps[key].versions}\n`;
         }
       }
-      copyContentToClipboard(formatted);
+      setCopied(formatted);
       setInfoCopied(true);
       alertApi.post({
         message: `Info copied to the clipboard`,
