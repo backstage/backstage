@@ -281,6 +281,7 @@ type SidebarItemButtonProps = SidebarItemBaseProps & {
 type SidebarItemLinkProps = SidebarItemBaseProps & {
   to: string;
   onClick?: (ev: React.MouseEvent) => void;
+  reloadDocument?: boolean;
 } & NavLinkProps;
 
 type SidebarItemWithSubmenuProps = SidebarItemBaseProps & {
@@ -325,6 +326,7 @@ export const WorkaroundNavLink = React.forwardRef<
     className,
     activeStyle,
     caseSensitive,
+    reloadDocument,
     activeClassName = 'active',
     'aria-current': ariaCurrentProp = 'page',
     ...rest
@@ -358,6 +360,7 @@ export const WorkaroundNavLink = React.forwardRef<
         typeof className !== 'function' ? className : undefined,
         isActive ? activeClassName : undefined,
       ])}
+      reloadDocument={reloadDocument ?? false}
     />
   );
 });
@@ -484,6 +487,7 @@ const SidebarItemBase = forwardRef<
       aria-label={text ? text : props.to}
       {...navLinkProps}
       onClick={handleClick}
+      reloadDocument={(props as SidebarItemLinkProps).reloadDocument}
     >
       {content}
     </WorkaroundNavLink>
