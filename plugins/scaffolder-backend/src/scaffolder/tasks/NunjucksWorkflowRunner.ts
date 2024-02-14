@@ -15,12 +15,7 @@
  */
 
 import { ScmIntegrations } from '@backstage/integration';
-import {
-  TaskContext,
-  TaskTrackType,
-  WorkflowResponse,
-  WorkflowRunner,
-} from './types';
+import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 import * as winston from 'winston';
 import fs from 'fs-extra';
 import path from 'path';
@@ -32,10 +27,8 @@ import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { TemplateActionRegistry } from '../actions';
 import {
-  TemplateFilter,
   SecureTemplater,
   SecureTemplateRenderer,
-  TemplateGlobal,
 } from '../../lib/templating/SecureTemplater';
 import {
   TaskSpec,
@@ -43,7 +36,12 @@ import {
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
 
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  TemplateAction,
+  TemplateFilter,
+  TemplateGlobal,
+  TaskContext,
+} from '@backstage/plugin-scaffolder-node';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
@@ -226,7 +224,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
     try {
       if (step.if) {
-        const ifResult = await this.render(step.if, context, renderTemplate);
+        const ifResult = this.render(step.if, context, renderTemplate);
         if (!isTruthy(ifResult)) {
           await stepTrack.skipFalsy();
           return;
