@@ -11,6 +11,7 @@ import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
@@ -117,6 +118,19 @@ export namespace mockServices {
         partialImpl?: Partial<DatabaseService> | undefined,
       ) => ServiceMock<DatabaseService>;
   }
+  // (undocumented)
+  export function discovery(): DiscoveryService;
+  // (undocumented)
+  export namespace discovery {
+    const // (undocumented)
+      factory: () => ServiceFactory<DiscoveryService, 'plugin'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<DiscoveryService> | undefined,
+      ) => ServiceMock<DiscoveryService>;
+  }
+  // (undocumented)
+  export function httpAuth(options?: { pluginId?: string }): HttpAuthService;
   // (undocumented)
   export namespace httpAuth {
     const // (undocumented)
