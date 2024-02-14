@@ -45,7 +45,7 @@
     "@yarnpkg/parsers": "^3.0.0-rc.4",
     "express": "^4.18.1",
     "express-promise-router": "^4.1.0",
-    "fs-extra": "^10.0.0",
+    "fs-extra": "^11.0.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "ping": "^0.4.1",

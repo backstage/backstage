@@ -42,7 +42,7 @@
     "@types/express": "*",
     "express": "^4.18.1",
     "express-promise-router": "^4.1.0",
-    "fs-extra": "^10.0.0",
+    "fs-extra": "^11.0.0",
     "knex": "^3.0.0",
     "linguist-js": "^2.5.3",
     "luxon": "^2.0.2",

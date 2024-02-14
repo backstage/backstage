@@ -54,7 +54,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/libsodium-wrappers": "^0.7.10",
-    "fs-extra": "10.1.0",
+    "fs-extra": "^11.2.0",
     "jest-when": "^3.1.0",
     "jsonschema": "^1.2.6"
   },
