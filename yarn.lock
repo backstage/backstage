@@ -27957,7 +27957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-equals@npm:^5.0.0":
+"fast-equals@npm:^5.0.1":
   version: 5.0.1
   resolution: "fast-equals@npm:5.0.1"
   checksum: fbb3b6a74f3a0fa930afac151ff7d01639159b4fddd2678b5d50708e0ba38e9ec14602222d10dadb8398187342692c04fbef5a62b1cfcc7942fe03e754e064bc
@@ -39939,17 +39939,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-smooth@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "react-smooth@npm:2.0.5"
+"react-smooth@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "react-smooth@npm:4.0.0"
   dependencies:
-    fast-equals: ^5.0.0
-    react-transition-group: 2.9.0
+    fast-equals: ^5.0.1
+    prop-types: ^15.8.1
+    react-transition-group: ^4.4.5
   peerDependencies:
-    prop-types: ^15.6.0
-    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 914c17f741e8b533ff6e3d5e3285aea0625cdd0f98e04202d01351f9516dbdc0a0e297dc22cc2377d6916fb819da8d4ed999c0314a4c186592ca51870012e6f7
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 0b4859593d4e24c500aab3a6660b23ca458a3cb7f3e74a00864fbdceafbdef93c8962d606bd97fff13f6075f4f5429b3826276b261e54577f7326511e3cb812b
   languageName: node
   linkType: hard
 
@@ -40036,7 +40036,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-transition-group@npm:2.9.0, react-transition-group@npm:^2.2.1":
+"react-transition-group@npm:^2.2.1":
   version: 2.9.0
   resolution: "react-transition-group@npm:2.9.0"
   dependencies:
@@ -40317,22 +40317,21 @@ __metadata:
   linkType: hard
 
 "recharts@npm:^2.5.0":
-  version: 2.11.0
-  resolution: "recharts@npm:2.11.0"
+  version: 2.12.0
+  resolution: "recharts@npm:2.12.0"
   dependencies:
     clsx: ^2.0.0
     eventemitter3: ^4.0.1
     lodash: ^4.17.19
     react-is: ^16.10.2
-    react-smooth: ^2.0.5
+    react-smooth: ^4.0.0
     recharts-scale: ^0.4.4
     tiny-invariant: ^1.3.1
     victory-vendor: ^36.6.8
   peerDependencies:
-    prop-types: ^15.6.0
     react: ^16.0.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 5c81ff38a244901757c594d8cd48de5d0ad3450d357de826a7ca98cfd1658732f320699ae32e497fb51e8c0db3fe6e7338d1990f1278a1c774ee5b9f00146e2d
+  checksum: 13fc3f8405a16dc8555b5aba9928e7339549b1db2da4821e659df8ac59cbdccec044b985be21093a546c2b2c231113103064c6ea4799322ca360805aede0358b
   languageName: node
   linkType: hard
 
