@@ -24,6 +24,8 @@ import {
   ServiceRef,
   TokenManagerService,
   AuthService,
+  DiscoveryService,
+  HttpAuthService,
 } from '@backstage/backend-plugin-api';
 import {
   cacheServiceFactory,
@@ -37,12 +39,16 @@ import {
   schedulerServiceFactory,
   urlReaderServiceFactory,
   httpAuthServiceFactory,
+  discoveryServiceFactory,
+  HostDiscovery,
 } from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { MockIdentityService } from './MockIdentityService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockAuthService } from './MockAuthService';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { DefaultHttpAuthService } from '../../../../backend-app-api/src/services/implementations/httpAuth/httpAuthServiceFactory';
 
 /** @internal */
 function simpleFactory<
@@ -180,6 +186,41 @@ export namespace mockServices {
     }));
   }
 
+  export function discovery(): DiscoveryService {
+    return HostDiscovery.fromConfig(
+      new ConfigReader({
+        backend: {
+          // Invalid port to make sure that requests are always mocked
+          baseUrl: 'http://localhost:0',
+          listen: { port: 0 },
+        },
+      }),
+    );
+  }
+  export namespace discovery {
+    export const factory = discoveryServiceFactory;
+    export const mock = simpleMock(coreServices.discovery, () => ({
+      getBaseUrl: jest.fn(),
+      getExternalBaseUrl: jest.fn(),
+    }));
+  }
+
+  export function httpAuth(options?: { pluginId?: string }): HttpAuthService {
+    return new DefaultHttpAuthService(
+      auth(),
+      discovery(),
+      options?.pluginId ?? 'test',
+    );
+  }
+  export namespace httpAuth {
+    export const factory = httpAuthServiceFactory;
+    export const mock = simpleMock(coreServices.httpAuth, () => ({
+      credentials: jest.fn(),
+      issueUserCookie: jest.fn(),
+      requestHeaders: jest.fn(),
+    }));
+  }
+
   // TODO(Rugvip): Not all core services have implementations available here yet.
   //               some may need a bit more refactoring for it to be simpler to
   //               re-implement functioning mock versions here.
@@ -203,14 +244,6 @@ export namespace mockServices {
     export const mock = simpleMock(coreServices.httpRouter, () => ({
       use: jest.fn(),
       addAuthPolicy: jest.fn(),
-    }));
-  }
-  export namespace httpAuth {
-    export const factory = httpAuthServiceFactory;
-    export const mock = simpleMock(coreServices.httpAuth, () => ({
-      credentials: jest.fn(),
-      issueUserCookie: jest.fn(),
-      requestHeaders: jest.fn(),
     }));
   }
   export namespace rootHttpRouter {
