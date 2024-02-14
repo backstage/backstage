@@ -1052,7 +1052,7 @@ The fields of a profile are:
 
 | Field                    | Type   | Description                                                    |
 | ------------------------ | ------ | -------------------------------------------------------------- |
-| `displayName` (optional) | String | A human-readable name for the group.                           |
+| `displayName` (optional) | String | A human-readable name for the user.                           |
 | `email` (optional)       | String | An email the user may wish to be used for contacting them.    |
 | `picture` (optional)     | String | A URL pointing to an image that's representative of the user. |
 
