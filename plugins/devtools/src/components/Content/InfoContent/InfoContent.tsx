@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const InfoContent = () => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
-  const [state, copyContentToClipboard] = useCopyToClipboard();
+  const copyContentToClipboard = useCopyToClipboard();
   const [infoCopied, setInfoCopied] = useState(false);
   const { about, loading, error } = useInfo();
 
