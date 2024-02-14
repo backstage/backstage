@@ -3643,7 +3643,7 @@ __metadata:
     buffer: ^6.0.3
     chalk: ^4.0.0
     chokidar: ^3.3.1
-    commander: ^9.1.0
+    commander: ^12.0.0
     cross-fetch: ^4.0.0
     cross-spawn: ^7.0.3
     css-loader: ^6.5.1
@@ -3743,7 +3743,7 @@ __metadata:
     "@types/jscodeshift": ^0.11.0
     "@types/node": ^18.17.8
     chalk: ^4.0.0
-    commander: ^9.1.0
+    commander: ^12.0.0
     jscodeshift: ^0.15.0
     jscodeshift-add-imports: ^1.0.10
     ts-node: ^10.0.0
@@ -4031,7 +4031,7 @@ __metadata:
     "@types/node": ^18.17.8
     "@types/recursive-readdir": ^2.2.0
     chalk: ^4.0.0
-    commander: ^9.1.0
+    commander: ^12.0.0
     fs-extra: ^11.2.0
     handlebars: ^4.7.3
     inquirer: ^8.2.0
@@ -9978,7 +9978,7 @@ __metadata:
     "@types/prettier": ^2.0.0
     chalk: ^4.0.0
     codeowners-utils: ^1.0.2
-    commander: ^9.1.0
+    commander: ^12.0.0
     fs-extra: ^11.2.0
     glob: ^8.0.3
     is-glob: ^4.0.3
@@ -17911,7 +17911,7 @@ __metadata:
     "@types/node": ^18.17.8
     "@types/serve-handler": ^6.1.0
     "@types/webpack-env": ^1.15.3
-    commander: ^9.1.0
+    commander: ^12.0.0
     dockerode: ^4.0.0
     find-process: ^1.4.5
     fs-extra: ^11.0.0
@@ -23675,7 +23675,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:*, commander@npm:11.1.0, commander@npm:^11.0.0":
+"commander@npm:*, commander@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "commander@npm:12.0.0"
+  checksum: bce9e243dc008baba6b8d923f95b251ad115e6e7551a15838d7568abebcca0fc832da1800cf37caf37852f35ce4b7fb794ba7a4824b88c5adb1395f9268642df
+  languageName: node
+  linkType: hard
+
+"commander@npm:11.1.0, commander@npm:^11.0.0":
   version: 11.1.0
   resolution: "commander@npm:11.1.0"
   checksum: fd1a8557c6b5b622c89ecdfde703242ab7db3b628ea5d1755784c79b8e7cb0d74d65b4a262289b533359cd58e1bfc0bf50245dfbcd2954682a6f367c828b79ef
@@ -23731,7 +23738,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^9.1.0, commander@npm:^9.5.0 <10":
+"commander@npm:^9.5.0 <10":
   version: 9.5.0
   resolution: "commander@npm:9.5.0"
   checksum: c7a3e27aa59e913b54a1bafd366b88650bc41d6651f0cbe258d4ff09d43d6a7394232a4dadd0bf518b3e696fdf595db1028a0d82c785b88bd61f8a440cecfade
@@ -25978,7 +25985,7 @@ __metadata:
     "@types/node": ^18.17.8
     "@types/puppeteer": ^5.4.4
     chalk: ^4.0.0
-    commander: ^9.1.0
+    commander: ^12.0.0
     cross-fetch: ^4.0.0
     fs-extra: ^11.2.0
     handlebars: ^4.7.3
