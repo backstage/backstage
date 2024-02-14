@@ -61,7 +61,7 @@ export const InfoContent = () => {
   const alertApi = useApi(alertApiRef);
   const [infoCopied, setInfoCopied] = useState(false);
   const { about, loading, error } = useInfo();
-  const [isCopied, setCopied] = useCopyToClipboard();
+  const [, setCopied] = useCopyToClipboard();
 
   const copyToClipboard = () => {
     if (about) {
