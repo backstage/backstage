@@ -166,7 +166,7 @@ In the legacy frontend system a plugin was defined in its own `plugin.ts` file a
 In order to migrate the actual definition of the plugin you need to recreate the plugin using the new `createPlugin` utility exported by `@backstage/frontend-plugin-api`.
 The new `createPlugin` function doesn't accept apis anymore as apis are now extensions.
 
-```ts title="my-plugin/src/index.ts"
+```ts title="my-plugin/src/alpha.ts"
   import { createPlugin } from '@backstage/frontend-plugin-api';
 
   export default createPlugin({
@@ -186,4 +186,25 @@ The new `createPlugin` function doesn't accept apis anymore as apis are now exte
   });
 ```
 
-The code above binds all the extensions to the plugin. _Important_: Make sure to export the plugin as default export of your package in `src/index.ts`.
+The code above binds all the extensions to the plugin. _Important_: Make sure to export the plugin as default export of your package as a separate entrypoint, preferably `/alpha`, as suggested by the code snippet above. Make sure `src/alpha.ts` is exported in your `package.json`:
+
+```ts title="my-plugin/package.json"
+  "exports": {
+    ".": "./src/index.ts",
+    /* highlight-add-next-line */
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      /* highlight-add-start */
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      /* highlight-add-end */
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+```
