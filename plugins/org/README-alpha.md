@@ -25,11 +25,11 @@ And below is an example of how a user page looks with the user profile and owner
 - [Packages](#packages)
 - [Routes](#routes)
 - [Extensions](#extensions)
-  - [My Groups Sidebar Item](#my-groups-sidebar-item)
   - [Entity Group Profile Card](#entity-group-profile-card)
   - [Entity Group Profile Card](#entity-members-list-card)
   - [Entity Group Profile Card](#entity-members-list-card)
   - [Entity Group Profile Card](#entity-user-profile-card)
+  - [My Groups Sidebar Item](#my-groups-sidebar-item)
 
 ## Installation
 
@@ -84,73 +84,6 @@ app:
 Route binding is also possible through code. For more information, see [this](https://backstage.io/docs/frontend-system/architecture/routes#binding-external-route-references) documentation.
 
 ## Extensions
-
-### My Groups Sidebar Item
-
-As the [NavItem](https://backstage.io/docs/reference/frontend-plugin-api.createnavitemextension) extension type does not support conditional rendering, this plugin does not provide navigation items, so to use the `MyGroupsSidebarItem` component, we recommend overriding the [App/Nav](https://backstage.io/docs/frontend-system/building-apps/built-in-extensions#app-nav) extension and adding the item statically.
-
-> [!IMPORTANT]
-> As you can see in the example below, we are using the same attachment point, inputs and outputs as the default App/Nav extension to avoid side effects on the NavItem and NavLogo extensions.
-
-```tsx
-// ...
-import { MyGroupsSidebarItem } from '@backstage/plugin-org';
-import GroupIcon from '@material-ui/icons/People';
-
-export default createExtensionOverrides({
-  extensions: [
-    createExtension({
-      // These namespace and name are necessary so the system knows that this extension will override the default app nav extension
-      namespace: 'app',
-      name: 'nav',
-      // Keeping the same attachment point as in the default App/Nav extension
-      attachTo: { id: 'app/layout', input: 'nav' },
-      // Keeping the same inputs as in the default App/Nav extension
-      inputs: {
-        items: createExtensionInput({
-          target: createNavItemExtension.targetDataRef,
-        }),
-        logos: createExtensionInput(
-          {
-            elements: createNavLogoExtension.logoElementsDataRef,
-          },
-          {
-            singleton: true,
-            optional: true,
-          },
-        ),
-      },
-      // Keeping the same output as in the default App/Nav extension
-      output: {
-        element: coreExtensionData.reactElement,
-      },
-      factory({ inputs }) {
-        return {
-          element: (
-            <Sidebar>
-              {/* Code borrowed from the default extension implementation to render the logos and items inputs */}
-              <SidebarLogo {...inputs.logos?.output.elements} />
-              <SidebarDivider />
-              {inputs.items.map((item, index) => (
-                <SidebarNavItem {...item.output.target} key={index} />
-              ))}
-              {/* Here is where we actually modifies the default implementation by adding a static item to render a group of squad pages */}
-              <SidebarGroup label="Menu" icon={<MenuIcon />}>
-                {/* The MyGroupsSidebarItem provides quick access to the group(s) the logged in user is a member of directly in the sidebar. */}
-                <MyGroupsSidebarItem
-                  singularTitle="My Squad"
-                  pluralTitle="My Squads"
-                  icon={GroupIcon}
-                />
-              </SidebarGroup>
-            </Sidebar>
-          ),
-        };
-      },
-    }),
-  ],
-});
-```
 
 ### Entity Cards
 
@@ -221,7 +154,7 @@ import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha
 export default createExtensionOverrides({
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'group-profile' entity card extension provided by the 'org' plugin
+      // These namespace and name are necessary so the system knows that this extension will override the default 'group-profile' entity card extension provided by the 'org' plugin
       namespace: 'org',
       name: 'group-profile',
       // By default, this card will show up only for groups
@@ -296,7 +229,7 @@ import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha
 export default createExtensionOverrides({
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'members-list' entity card extension provided by the 'org' plugin
+      // These namespace and name are necessary so the system knows that this extension will override the default 'members-list' entity card extension provided by the 'org' plugin
       namespace: 'org',
       name: 'members-list',
       // By default, this card will show up only for groups
@@ -371,7 +304,7 @@ import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha
 export default createExtensionOverrides({
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'ownership' entity card extension provided by the 'org' plugin
+      // These namespace and name are necessary so the system knows that this extension will override the default 'ownership' entity card extension provided by the 'org' plugin
       namespace: 'org',
       name: 'ownership',
       // By default, this card will show up only for groups or users
@@ -446,7 +379,7 @@ import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha
 export default createExtensionOverrides({
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'user-profile' entity card extension provided by the 'org' plugin
+      // These namespace and name are necessary so the system knows that this extension will override the default 'user-profile' entity card extension provided by the 'org' plugin
       namespace: 'org',
       name: 'user-profile',
       // By default, this card will show up only for groups or users
@@ -460,3 +393,70 @@ export default createExtensionOverrides({
 ```
 
 For more information about where to place extension overrides, see the official [documentation](https://backstage.io/docs/frontend-system/architecture/extension-overrides).
+
+### My Groups Sidebar Item
+
+As the [NavItem](https://backstage.io/docs/reference/frontend-plugin-api.createnavitemextension) extension type does not support conditional rendering, this plugin does not provide navigation items, so to use the `MyGroupsSidebarItem` component, we recommend overriding the [App/Nav](https://backstage.io/docs/frontend-system/building-apps/built-in-extensions#app-nav) extension and adding the item statically.
+
+> [!IMPORTANT]
+> As you can see in the example below, we are using the same attachment point, inputs and outputs as the default App/Nav extension to avoid side effects on the NavItem and NavLogo extensions.
+
+```tsx
+// ...
+import { MyGroupsSidebarItem } from '@backstage/plugin-org';
+import GroupIcon from '@material-ui/icons/People';
+
+export default createExtensionOverrides({
+  extensions: [
+    createExtension({
+      // These namespace and name are necessary so the system knows that this extension will override the default app nav extension
+      namespace: 'app',
+      name: 'nav',
+      // Keeping the same attachment point as in the default App/Nav extension
+      attachTo: { id: 'app/layout', input: 'nav' },
+      // Keeping the same inputs as in the default App/Nav extension
+      inputs: {
+        items: createExtensionInput({
+          target: createNavItemExtension.targetDataRef,
+        }),
+        logos: createExtensionInput(
+          {
+            elements: createNavLogoExtension.logoElementsDataRef,
+          },
+          {
+            singleton: true,
+            optional: true,
+          },
+        ),
+      },
+      // Keeping the same output as in the default App/Nav extension
+      output: {
+        element: coreExtensionData.reactElement,
+      },
+      factory({ inputs }) {
+        return {
+          element: (
+            <Sidebar>
+              {/* Code borrowed from the default extension implementation to render the logos and items inputs */}
+              <SidebarLogo {...inputs.logos?.output.elements} />
+              <SidebarDivider />
+              {inputs.items.map((item, index) => (
+                <SidebarNavItem {...item.output.target} key={index} />
+              ))}
+              {/* Here is where we actually modifies the default implementation by adding a static item to render a group of squad pages */}
+              <SidebarGroup label="Menu" icon={<MenuIcon />}>
+                {/* The MyGroupsSidebarItem provides quick access to the group(s) the logged in user is a member of directly in the sidebar. */}
+                <MyGroupsSidebarItem
+                  singularTitle="My Squad"
+                  pluralTitle="My Squads"
+                  icon={GroupIcon}
+                />
+              </SidebarGroup>
+            </Sidebar>
+          ),
+        };
+      },
+    }),
+  ],
+});
+```
