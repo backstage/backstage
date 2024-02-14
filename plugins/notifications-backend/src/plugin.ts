@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   coreServices,
   createBackendPlugin,
@@ -58,6 +59,8 @@ export const notificationsPlugin = createBackendPlugin({
 
     env.registerInit({
       deps: {
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
         httpRouter: coreServices.httpRouter,
         logger: coreServices.logger,
         identity: coreServices.identity,
@@ -67,6 +70,8 @@ export const notificationsPlugin = createBackendPlugin({
         signals: signalService,
       },
       async init({
+        auth,
+        httpAuth,
         httpRouter,
         logger,
         identity,
@@ -77,6 +82,8 @@ export const notificationsPlugin = createBackendPlugin({
       }) {
         httpRouter.use(
           await createRouter({
+            auth,
+            httpAuth,
             logger,
             identity,
             database,
