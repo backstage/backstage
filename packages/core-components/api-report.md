@@ -1114,6 +1114,7 @@ export const SidebarSubmenuItem: (
 export type SidebarSubmenuItemDropdownItem = {
   title: string;
   to: string;
+  reloadDocument?: boolean;
 };
 
 // @public
@@ -1124,6 +1125,7 @@ export type SidebarSubmenuItemProps = {
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
+  reloadDocument?: boolean;
 };
 
 // @public
