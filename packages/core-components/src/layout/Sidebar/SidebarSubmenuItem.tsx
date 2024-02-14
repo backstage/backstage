@@ -111,6 +111,7 @@ const useStyles = makeStyles(
 export type SidebarSubmenuItemDropdownItem = {
   title: string;
   to: string;
+  reloadDocument?: boolean;
 };
 /**
  * Holds submenu item content.
@@ -131,6 +132,7 @@ export type SidebarSubmenuItemProps = {
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
+  reloadDocument?: boolean;
 };
 
 /**
@@ -139,7 +141,15 @@ export type SidebarSubmenuItemProps = {
  * @public
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
-  const { title, subtitle, to, icon: Icon, dropdownItems, exact } = props;
+  const {
+    title,
+    subtitle,
+    to,
+    icon: Icon,
+    dropdownItems,
+    exact,
+    reloadDocument,
+  } = props;
   const classes = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
@@ -211,6 +221,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                   className={classes.dropdownItem}
                   onClick={closeSubmenu}
                   onTouchStart={e => e.stopPropagation()}
+                  reloadDocument={object.reloadDocument ?? false}
                 >
                   <Typography component="span" className={classes.textContent}>
                     {object.title}
@@ -236,6 +247,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           )}
           onClick={closeSubmenu}
           onTouchStart={e => e.stopPropagation()}
+          reloadDocument={reloadDocument ?? false}
         >
           {Icon && <Icon fontSize="small" />}
           <Typography
