@@ -31748,11 +31748,11 @@ __metadata:
   linkType: hard
 
 "jenkins@npm:^1.0.0":
-  version: 1.0.2
-  resolution: "jenkins@npm:1.0.2"
+  version: 1.1.0
+  resolution: "jenkins@npm:1.1.0"
   dependencies:
     papi: ^1.1.0
-  checksum: b400698ccbfee44ce5d69fdd264d8c0f24c8b9fbfa89e882b77e224ef22816d21af7c1abf7297a8922044e852c8cdfdf9850e138d938383d2c3b734d4dc76ef9
+  checksum: 3aada79e2e081926f2d335320e3993a39605124a22c0429c2acd6d4dd3bd5ccded9c6e03fb84f120ebb0755f9e70d931a7ffb36aaa18bc73d7ca3b7f2a5391e6
   languageName: node
   linkType: hard
 
