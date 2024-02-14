@@ -35,6 +35,7 @@ import MemoryIcon from '@material-ui/icons/Memory';
 import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,6 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const InfoContent = () => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
+  const [state, copyContentToClipboard] = useCopyToClipboard();
   const [infoCopied, setInfoCopied] = useState(false);
   const { about, loading, error } = useInfo();
 
@@ -70,7 +72,7 @@ export const InfoContent = () => {
           formatted = `${formatted}    ${deps[key].name}: ${deps[key].versions}\n`;
         }
       }
-      window.navigator.clipboard.writeText(formatted);
+      copyContentToClipboard(formatted);
       setInfoCopied(true);
       alertApi.post({
         message: `Info copied to the clipboard`,
