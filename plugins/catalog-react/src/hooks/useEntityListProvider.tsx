@@ -234,7 +234,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
 
           if (!isEqual(previousBackendFilter, backendFilter)) {
             const response = await catalogApi.queryEntities({
-              filter: backendFilter,
+              ...backendFilter,
               limit,
               orderFields: [{ field: 'metadata.name', order: 'asc' }],
             });
@@ -317,7 +317,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       // changing filters will affect pagination, so we need to reset
       // the cursor and start from the first page.
       // TODO(vinzscam): this is currently causing issues at page reload
-      // where the state is not kept. Unfortunately we need to rething
+      // where the state is not kept. Unfortunately we need to rethink
       // the way filters work in order to fix this.
       setCursor(undefined);
       setRequestedFilters(prevFilters => {

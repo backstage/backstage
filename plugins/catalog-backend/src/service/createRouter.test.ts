@@ -38,7 +38,7 @@ import {
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { z } from 'zod';
-import { encodeCursor } from './util';
+import { decodeCursor, encodeCursor } from './util';
 import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
 import { Server } from 'http';
 
@@ -263,6 +263,47 @@ describe('createRouter readonly disabled', () => {
         items,
         totalItems: 100,
         pageInfo: { nextCursor: expect.any(String) },
+      });
+    });
+
+    it('parses cursor request with fullTextFilter', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items,
+        totalItems: 100,
+        pageInfo: {
+          nextCursor: mockCursor({ fullTextFilter: { term: 'mySearch' } }),
+        },
+      });
+
+      const cursor = mockCursor({
+        totalItems: 100,
+        isPrevious: false,
+        fullTextFilter: { term: 'mySearch' },
+      });
+
+      const response = await request(app).get(
+        `/entities/by-query?cursor=${encodeCursor(cursor)}`,
+      );
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
+        cursor,
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items,
+        totalItems: 100,
+        pageInfo: { nextCursor: expect.any(String) },
+      });
+      const decodedCursor = decodeCursor(response.body.pageInfo.nextCursor);
+      expect(decodedCursor).toMatchObject({
+        isPrevious: false,
+        fullTextFilter: {
+          term: 'mySearch',
+        },
       });
     });
 
