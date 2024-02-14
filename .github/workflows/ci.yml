@@ -177,7 +177,7 @@ jobs:
         ports:
           - 5432/tcp
       mysql8:
-        image: mysql:8@sha256:2a9ef1075ff30c65bbcf4f96b25a03ea3b3f492c284e6c4a612c269ce4c5bb19
+        image: mysql:8@sha256:343b82684a6b05812c58ca20ccd3af8bcf8a5f48b1842f251c54379bfce848f9
         env:
           MYSQL_ROOT_PASSWORD: root
         options: >-
