@@ -15,9 +15,13 @@
  */
 
 import { gcpProjectsPlugin } from './plugin';
+import * as container from '@backstage/plugin-gcp-projects';
 
 describe('gcp-projects', () => {
   it('should export plugin', () => {
     expect(gcpProjectsPlugin).toBeDefined();
+  });
+  it('should exist the GcpClient class', () => {
+    expect(container.GcpClient).toBeDefined();
   });
 });
