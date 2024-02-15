@@ -25,7 +25,7 @@ import {
   GetEntitiesRequest,
   CatalogApi,
 } from '@backstage/catalog-client';
-import { TokenManager, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
 
 import { DateTime } from 'luxon';
 import { LINGUIST_ANNOTATION } from '@backstage/plugin-linguist-common';
@@ -40,6 +40,7 @@ import {
 import { assertError } from '@backstage/errors';
 import { HumanDuration } from '@backstage/types';
 import { Results } from 'linguist-js/dist/types';
+import { type AuthService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface LinguistBackendApi {
@@ -52,7 +53,7 @@ export class LinguistBackendClient implements LinguistBackendApi {
   private readonly logger: Logger;
   private readonly store: LinguistBackendStore;
   private readonly urlReader: UrlReader;
-  private readonly tokenManager: TokenManager;
+  private readonly auth: AuthService;
 
   private readonly catalogApi: CatalogApi;
   private readonly age?: HumanDuration;
@@ -64,7 +65,7 @@ export class LinguistBackendClient implements LinguistBackendApi {
     logger: Logger,
     store: LinguistBackendStore,
     urlReader: UrlReader,
-    tokenManager: TokenManager,
+    auth: AuthService,
     catalogApi: CatalogApi,
     age?: HumanDuration,
     batchSize?: number,
@@ -75,7 +76,7 @@ export class LinguistBackendClient implements LinguistBackendApi {
     this.logger = logger;
     this.store = store;
     this.urlReader = urlReader;
-    this.tokenManager = tokenManager;
+    this.auth = auth;
     this.catalogApi = catalogApi;
     this.batchSize = batchSize;
     this.age = age;
@@ -114,7 +115,10 @@ export class LinguistBackendClient implements LinguistBackendApi {
       fields: ['kind', 'metadata'],
     };
 
-    const { token } = await this.tokenManager.getToken();
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
     const response = await this.catalogApi.getEntities(request, { token });
     const entities = response.items;
 
@@ -130,7 +134,10 @@ export class LinguistBackendClient implements LinguistBackendApi {
     const allEntities = await this.store.getAllEntities();
 
     for (const entityRef of allEntities) {
-      const { token } = await this.tokenManager.getToken();
+      const { token } = await this.auth.getPluginRequestToken({
+        onBehalfOf: await this.auth.getOwnServiceCredentials(),
+        targetPluginId: 'catalog',
+      });
       const result = await this.catalogApi.getEntityByRef(entityRef, { token });
 
       if (!result) {
@@ -155,7 +162,10 @@ export class LinguistBackendClient implements LinguistBackendApi {
     );
 
     for (const entityRef of entities) {
-      const { token } = await this.tokenManager.getToken();
+      const { token } = await this.auth.getPluginRequestToken({
+        onBehalfOf: await this.auth.getOwnServiceCredentials(),
+        targetPluginId: 'catalog',
+      });
       const entity = await this.catalogApi.getEntityByRef(entityRef, {
         token,
       });
