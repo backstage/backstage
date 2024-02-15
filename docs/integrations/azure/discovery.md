@@ -160,11 +160,14 @@ catalog:
     # Or use a custom file format and location
     - type: azure-discovery
       target: https://dev.azure.com/myorg/myproject/_git/*?path=/src/*/catalog-info.yaml
+    # And optionally provide a specific branch name using the version parameter
+    - type: azure-discovery
+      target: https://dev.azure.com/myorg/myproject/_git/*?path=/catalog-info.yaml&version=GBdevelopment
 ```
 
 Note the `azure-discovery` type, as this is not a regular `url` processor.
 
-When using a custom pattern, the target is composed of five parts:
+When using a custom pattern, the target is composed of six parts:
 
 - The base instance URL, `https://dev.azure.com` in this case
 - The organization name which is required, `myorg` in this case
@@ -175,3 +178,4 @@ When using a custom pattern, the target is composed of five parts:
 - The path within each repository to find the catalog YAML file. This will
   usually be `/catalog-info.yaml`, `/src/*/catalog-info.yaml` or a similar
   variation for catalog files stored in the root directory of each repository.
+- The repository branch to scan which is optional, `development` in this case. The `GB` prefix is mandatory, as this is how Azure DevOps identifies the version as a branch. If omitted, the repo's default branch will be scanned.
