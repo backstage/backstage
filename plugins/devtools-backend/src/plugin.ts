@@ -35,13 +35,24 @@ export const devtoolsPlugin = createBackendPlugin({
         logger: coreServices.logger,
         permissions: coreServices.permissions,
         httpRouter: coreServices.httpRouter,
+        discovery: coreServices.discovery,
+        httpAuth: coreServices.httpAuth,
       },
-      async init({ config, logger, permissions, httpRouter }) {
+      async init({
+        config,
+        logger,
+        permissions,
+        httpRouter,
+        discovery,
+        httpAuth,
+      }) {
         httpRouter.use(
           await createRouter({
             config,
             logger: loggerToWinstonLogger(logger),
             permissions,
+            discovery,
+            httpAuth,
           }),
         );
       },

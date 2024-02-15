@@ -50,6 +50,7 @@ export async function startStandaloneServer(
     logger,
     config,
     permissions,
+    discovery,
   });
 
   let service = createServiceBuilder(module)
