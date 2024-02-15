@@ -15,32 +15,32 @@
  */
 
 import {
-  Entity,
   CompoundEntityRef,
+  Entity,
   parseEntityRef,
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 import {
-  CATALOG_FILTER_EXISTS,
   AddLocationRequest,
   AddLocationResponse,
+  CATALOG_FILTER_EXISTS,
   CatalogApi,
-  GetEntitiesRequest,
-  GetEntitiesResponse,
   CatalogRequestOptions,
-  GetEntityAncestorsRequest,
-  GetEntityAncestorsResponse,
-  Location,
-  GetEntityFacetsRequest,
-  GetEntityFacetsResponse,
-  ValidateEntityResponse,
+  EntityFilterQuery,
   GetEntitiesByRefsRequest,
   GetEntitiesByRefsResponse,
+  GetEntitiesRequest,
+  GetEntitiesResponse,
+  GetEntityAncestorsRequest,
+  GetEntityAncestorsResponse,
+  GetEntityFacetsRequest,
+  GetEntityFacetsResponse,
+  Location,
   QueryEntitiesRequest,
-  EntityFilterQuery,
   QueryEntitiesResponse,
+  ValidateEntityResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest } from './utils';
 import { DefaultApiClient, TypedResponse } from './generated';
@@ -209,6 +209,7 @@ export class CatalogClient implements CatalogApi {
         fields = [],
         filter,
         limit,
+        offset,
         orderFields,
         fullTextFilter,
       } = request;
@@ -216,6 +217,9 @@ export class CatalogClient implements CatalogApi {
 
       if (limit !== undefined) {
         params.limit = limit;
+      }
+      if (offset !== undefined) {
+        params.offset = offset;
       }
       if (orderFields !== undefined) {
         params.orderField = (

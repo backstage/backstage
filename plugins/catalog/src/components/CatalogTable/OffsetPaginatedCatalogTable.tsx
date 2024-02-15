@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Table, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
@@ -23,17 +23,19 @@ import {
   useEntityList,
 } from '@backstage/plugin-catalog-react';
 
-type PaginatedCatalogTableProps = {
-  prev?(): void;
-  next?(): void;
-} & TableProps<CatalogTableRow>;
-
 /**
  * @internal
  */
-export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
-  const { columns, data, next, prev } = props;
-  const { updateFilters } = useEntityList();
+export function OffsetPaginatedCatalogTable(
+  props: TableProps<CatalogTableRow>,
+) {
+  const { columns, data } = props;
+  const { updateFilters, setLimit, setOffset, limit } = useEntityList();
+  const [page, setPage] = React.useState(0);
+
+  useEffect(() => {
+    setOffset!(page * limit);
+  }, [setOffset, page, limit]);
 
   return (
     <Table
@@ -41,9 +43,8 @@ export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
       data={data}
       options={{
         paginationPosition: 'both',
-        pageSizeOptions: [],
-        showFirstLastPageButtons: false,
-        pageSize: Number.MAX_SAFE_INTEGER,
+        pageSizeOptions: [5, 10, 20, 50, 100],
+        pageSize: limit,
         emptyRowsWhenPaging: false,
       }}
       onSearchChange={(searchText: string) =>
@@ -51,17 +52,14 @@ export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
           text: searchText ? new EntityTextFilter(searchText) : undefined,
         })
       }
-      onPageChange={page => {
-        if (page > 0) {
-          next?.();
-        } else {
-          prev?.();
-        }
+      page={page}
+      onPageChange={newPage => {
+        setPage(newPage);
       }}
-      /* this will enable the prev button accordingly */
-      page={prev ? 1 : 0}
-      /* this will enable the next button accordingly */
-      totalCount={next ? Number.MAX_VALUE : Number.MAX_SAFE_INTEGER}
+      onRowsPerPageChange={pageSize => {
+        setLimit(pageSize);
+      }}
+      totalCount={7} // TODO: Add real total count
       localization={{ pagination: { labelDisplayedRows: '' } }}
     />
   );

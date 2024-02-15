@@ -146,6 +146,7 @@ export async function createRouter(
         const { items, pageInfo, totalItems } =
           await entitiesCatalog.queryEntities({
             limit: req.query.limit,
+            offset: req.query.offset,
             ...parseQueryEntitiesParams(req.query),
             authorizationToken: getBearerTokenFromAuthorizationHeader(
               req.header('authorization'),

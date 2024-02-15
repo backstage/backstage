@@ -161,7 +161,10 @@ const routes = (
     <Route path="/home" element={<HomepageCompositionRoot />}>
       {homePage}
     </Route>
-    <Route path="/catalog" element={<CatalogIndexPage />} />
+    <Route
+      path="/catalog"
+      element={<CatalogIndexPage pagination={{ mode: 'offset', limit: 20 }} />}
+    />
     <Route
       path="/catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}

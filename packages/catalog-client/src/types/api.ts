@@ -408,6 +408,7 @@ export type QueryEntitiesRequest =
 export type QueryEntitiesInitialRequest = {
   fields?: string[];
   limit?: number;
+  offset?: number;
   filter?: EntityFilterQuery;
   orderFields?: EntityOrderQuery;
   fullTextFilter?: {

@@ -34,16 +34,16 @@ import {
   EntityErrorFilter,
   EntityKindFilter,
   EntityLifecycleFilter,
+  EntityNamespaceFilter,
   EntityOrphanFilter,
   EntityOwnerFilter,
   EntityTagFilter,
   EntityTextFilter,
   EntityTypeFilter,
-  UserListFilter,
-  EntityNamespaceFilter,
   EntityUserFilter,
+  UserListFilter,
 } from '../filters';
-import { EntityFilter } from '../types';
+import { EntityFilter, EntityListPagination } from '../types';
 import {
   reduceBackendCatalogFilters,
   reduceCatalogFilters,
@@ -65,6 +65,9 @@ export type DefaultEntityFilters = {
   error?: EntityErrorFilter;
   namespace?: EntityNamespaceFilter;
 };
+
+/** @public */
+export type PaginationMode = 'cursor' | 'offset' | 'none';
 
 /** @public */
 export type EntityListContextProps<
@@ -108,6 +111,11 @@ export type EntityListContextProps<
     next?: () => void;
     prev?: () => void;
   };
+  limit: number;
+  offset?: number;
+  setLimit: (limit: number) => void;
+  setOffset?: (offset: number) => void;
+  paginationMode: PaginationMode;
 };
 
 /**
@@ -130,7 +138,7 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
  * @public
  */
 export type EntityListProviderProps = PropsWithChildren<{
-  pagination?: boolean | { limit?: number };
+  pagination?: EntityListPagination;
 }>;
 
 /**
@@ -152,15 +160,21 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // update of the URL or two catalog sidebar links with different catalog filters.
   const location = useLocation();
 
-  const enablePagination =
-    props.pagination === true || typeof props.pagination === 'object';
+  let paginationMode: PaginationMode =
+    typeof props.pagination === 'object' ? props.pagination.mode : 'none';
+  if (props.pagination === true) {
+    paginationMode = 'cursor';
+  }
 
-  const limit =
-    props.pagination &&
-    typeof props.pagination === 'object' &&
-    typeof props.pagination.limit === 'number'
-      ? props.pagination.limit
-      : 20;
+  let initialLimit = 20;
+  if (typeof props.pagination === 'object') {
+    initialLimit = props.pagination.limit ?? 20;
+  }
+
+  const [limit, setLimit] = useState(initialLimit);
+  const [offset, setOffset] = useState<number | undefined>(
+    paginationMode === 'offset' ? 0 : undefined,
+  );
 
   const { queryParameters, cursor: initialCursor } = useMemo(() => {
     const parsed = qs.parse(location.search, {
@@ -172,9 +186,12 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         string,
         string | string[]
       >,
-      cursor: typeof parsed.cursor === 'string' ? parsed.cursor : undefined,
+      cursor:
+        typeof parsed.cursor === 'string' && paginationMode === 'cursor'
+          ? parsed.cursor
+          : undefined,
     };
-  }, [location]);
+  }, [paginationMode, location]);
 
   const [cursor, setCursor] = useState(initialCursor);
 
@@ -184,7 +201,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         appliedFilters: {} as EntityFilters,
         entities: [],
         backendEntities: [],
-        pageInfo: enablePagination ? {} : undefined,
+        pageInfo: paginationMode === 'cursor' ? {} : undefined,
       };
     },
   );
@@ -209,7 +226,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         {} as Record<string, string | string[]>,
       );
 
-      if (enablePagination) {
+      if (paginationMode !== 'none') {
         if (cursor) {
           if (cursor !== outputState.appliedCursor) {
             const entityFilter = reduceEntityFilters(compacted);
@@ -232,10 +249,14 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             compact(Object.values(outputState.appliedFilters)),
           );
 
-          if (!isEqual(previousBackendFilter, backendFilter)) {
+          if (
+            paginationMode === 'offset' ||
+            !isEqual(previousBackendFilter, backendFilter)
+          ) {
             const response = await catalogApi.queryEntities({
               ...backendFilter,
               limit,
+              offset,
               orderFields: [{ field: 'metadata.name', order: 'asc' }],
             });
             setOutputState({
@@ -299,14 +320,16 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       requestedFilters,
       outputState,
       cursor,
-      enablePagination,
+      paginationMode,
+      limit,
+      offset,
     ],
     { loading: true },
   );
 
   // Slight debounce on the refresh, since (especially on page load) several
   // filters will be calling this in rapid succession.
-  useDebounce(refresh, 10, [requestedFilters, cursor]);
+  useDebounce(refresh, 10, [requestedFilters, cursor, limit, offset]);
 
   const updateFilters = useCallback(
     (
@@ -320,17 +343,18 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       // where the state is not kept. Unfortunately we need to rethink
       // the way filters work in order to fix this.
       setCursor(undefined);
+      setOffset(paginationMode === 'offset' ? 0 : undefined);
       setRequestedFilters(prevFilters => {
         const newFilters =
           typeof update === 'function' ? update(prevFilters) : update;
         return { ...prevFilters, ...newFilters };
       });
     },
-    [],
+    [paginationMode],
   );
 
   const pageInfo = useMemo(() => {
-    if (!enablePagination) {
+    if (paginationMode !== 'cursor') {
       return undefined;
     }
 
@@ -340,7 +364,15 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       prev: prevCursor ? () => setCursor(prevCursor) : undefined,
       next: nextCursor ? () => setCursor(nextCursor) : undefined,
     };
-  }, [enablePagination, outputState.pageInfo]);
+  }, [paginationMode, outputState.pageInfo]);
+
+  const setLimitCb = useCallback((newLimit: number) => {
+    setLimit(newLimit);
+  }, []);
+
+  const setOffsetCb = useCallback((newOffset: number) => {
+    setOffset(newOffset);
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -352,8 +384,25 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       loading,
       error,
       pageInfo,
+      limit,
+      offset,
+      setLimit: setLimitCb,
+      setOffset: setOffsetCb,
+      paginationMode,
     }),
-    [outputState, updateFilters, queryParameters, loading, error, pageInfo],
+    [
+      outputState,
+      updateFilters,
+      queryParameters,
+      loading,
+      error,
+      pageInfo,
+      limit,
+      offset,
+      paginationMode,
+      setLimitCb,
+      setOffsetCb,
+    ],
   );
 
   return (

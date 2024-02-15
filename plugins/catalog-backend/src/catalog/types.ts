@@ -195,6 +195,7 @@ export interface QueryEntitiesInitialRequest {
   authorizationToken?: string;
   fields?: (entity: Entity) => Entity;
   limit?: number;
+  offset?: number;
   filter?: EntityFilter;
   orderFields?: EntityOrder[];
   fullTextFilter?: {

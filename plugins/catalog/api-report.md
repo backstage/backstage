@@ -12,6 +12,7 @@ import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
+import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { EntityRefPresentation } from '@backstage/plugin-catalog-react';
@@ -239,11 +240,7 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   // (undocumented)
-  pagination?:
-    | boolean
-    | {
-        limit?: number;
-      };
+  pagination?: EntityListPagination;
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
 }

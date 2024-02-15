@@ -46,7 +46,8 @@ import pluralize from 'pluralize';
 import React, { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
-import { PaginatedCatalogTable } from './PaginatedCatalogTable';
+import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
+import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 
 /**
@@ -88,8 +89,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
   } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const entityListContext = useEntityList();
-  const { loading, error, entities, filters, pageInfo } = entityListContext;
-  const enablePagination = !!pageInfo;
+  const { loading, error, entities, filters, pageInfo, paginationMode } =
+    entityListContext;
 
   const tableColumns = useMemo(
     () =>
@@ -185,9 +186,9 @@ export const CatalogTable = (props: CatalogTableProps) => {
     ...tableOptions,
   };
 
-  if (enablePagination) {
+  if (paginationMode === 'cursor') {
     return (
-      <PaginatedCatalogTable
+      <CursorPaginatedCatalogTable
         columns={tableColumns}
         emptyContent={emptyContent}
         isLoading={loading}
@@ -196,8 +197,21 @@ export const CatalogTable = (props: CatalogTableProps) => {
         subtitle={subtitle}
         options={options}
         data={entities.map(toEntityRow)}
-        next={pageInfo.next}
-        prev={pageInfo.prev}
+        next={pageInfo?.next}
+        prev={pageInfo?.prev}
+      />
+    );
+  } else if (paginationMode === 'offset') {
+    return (
+      <OffsetPaginatedCatalogTable
+        columns={tableColumns}
+        emptyContent={emptyContent}
+        isLoading={loading}
+        title={title}
+        actions={actions}
+        subtitle={subtitle}
+        options={options}
+        data={entities.map(toEntityRow)}
       />
     );
   }

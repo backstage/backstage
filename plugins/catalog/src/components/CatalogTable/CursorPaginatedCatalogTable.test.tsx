@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import React, { ReactNode } from 'react';
-import { fireEvent, render } from '@testing-library/react';
-import { PaginatedCatalogTable } from './PaginatedCatalogTable';
-import { screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { CatalogTableRow } from './types';
 import {
   DefaultEntityFilters,
@@ -24,7 +23,7 @@ import {
   MockEntityListContextProvider,
 } from '@backstage/plugin-catalog-react';
 
-describe('PaginatedCatalogTable', () => {
+describe('CursorPaginatedCatalogTable', () => {
   const data = new Array(100).fill(0).map((_, index) => {
     const name = `component-${index}`;
     return {
@@ -63,7 +62,9 @@ describe('PaginatedCatalogTable', () => {
 
   it('should display all the items', () => {
     render(
-      wrapInContext(<PaginatedCatalogTable data={data} columns={columns} />),
+      wrapInContext(
+        <CursorPaginatedCatalogTable data={data} columns={columns} />,
+      ),
     );
 
     for (const item of data) {
@@ -74,7 +75,7 @@ describe('PaginatedCatalogTable', () => {
   it('should display and invoke the next button', async () => {
     const { rerender } = render(
       wrapInContext(
-        <PaginatedCatalogTable
+        <CursorPaginatedCatalogTable
           data={data}
           columns={columns}
           next={undefined}
@@ -90,7 +91,7 @@ describe('PaginatedCatalogTable', () => {
 
     rerender(
       wrapInContext(
-        <PaginatedCatalogTable data={data} columns={columns} next={fn} />,
+        <CursorPaginatedCatalogTable data={data} columns={columns} next={fn} />,
       ),
     );
 
@@ -106,7 +107,7 @@ describe('PaginatedCatalogTable', () => {
   it('should display and invoke the prev button', async () => {
     const { rerender } = render(
       wrapInContext(
-        <PaginatedCatalogTable
+        <CursorPaginatedCatalogTable
           data={data}
           columns={columns}
           prev={undefined}
@@ -122,7 +123,7 @@ describe('PaginatedCatalogTable', () => {
 
     rerender(
       wrapInContext(
-        <PaginatedCatalogTable data={data} columns={columns} prev={fn} />,
+        <CursorPaginatedCatalogTable data={data} columns={columns} prev={fn} />,
       ),
     );
 

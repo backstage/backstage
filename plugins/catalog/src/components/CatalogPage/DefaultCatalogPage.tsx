@@ -26,17 +26,18 @@ import {
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   CatalogFilterLayout,
+  EntityKindPicker,
   EntityLifecyclePicker,
+  EntityListPagination,
   EntityListProvider,
-  EntityProcessingStatusPicker,
+  EntityNamespacePicker,
   EntityOwnerPicker,
+  EntityOwnerPickerProps,
+  EntityProcessingStatusPicker,
   EntityTagPicker,
   EntityTypePicker,
   UserListFilterKind,
   UserListPicker,
-  EntityKindPicker,
-  EntityNamespacePicker,
-  EntityOwnerPickerProps,
 } from '@backstage/plugin-catalog-react';
 import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
@@ -52,7 +53,7 @@ import { usePermission } from '@backstage/plugin-permission-react';
 export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
-  pagination?: boolean | { limit?: number };
+  pagination?: EntityListPagination;
 };
 
 /** @internal */
@@ -102,7 +103,7 @@ export interface DefaultCatalogPageProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
-  pagination?: boolean | { limit?: number };
+  pagination?: EntityListPagination;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {

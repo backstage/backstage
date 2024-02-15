@@ -247,6 +247,7 @@ export class DefaultApiClient {
       query: {
         fields?: Array<string>;
         limit?: number;
+        offset?: number;
         orderField?: Array<string>;
         cursor?: string;
         filter?: Array<string>;
@@ -258,7 +259,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/entities/by-query{?fields,limit,orderField*,cursor,filter*,fullTextFilterTerm,fullTextFilterFields}`;
+    const uriTemplate = `/entities/by-query{?fields,limit,offset,orderField*,cursor,filter*,fullTextFilterTerm,fullTextFilterFields}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,

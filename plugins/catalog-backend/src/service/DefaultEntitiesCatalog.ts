@@ -21,23 +21,23 @@ import {
 } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
-import { isEqual, chunk as lodashChunk } from 'lodash';
+import { chunk as lodashChunk, isEqual } from 'lodash';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
+  Cursor,
   EntitiesBatchRequest,
   EntitiesBatchResponse,
-  Cursor,
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
   EntityAncestryResponse,
   EntityFacetsRequest,
   EntityFacetsResponse,
+  EntityOrder,
   EntityPagination,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
-  EntityOrder,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
@@ -447,6 +447,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       ])
       // fetch an extra item to check if there are more items.
       .limit(isFetchingBackwards ? limit : limit + 1);
+
+    if (
+      isQueryEntitiesInitialRequest(request) &&
+      request.offset !== undefined
+    ) {
+      dbQuery.offset(request.offset);
+    }
 
     countQuery.count('search.entity_id', { as: 'count' });
 
