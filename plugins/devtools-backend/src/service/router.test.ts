@@ -20,6 +20,7 @@ import express from 'express';
 import request from 'supertest';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createRouter } from './router';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
   jest.fn();
@@ -49,6 +50,7 @@ describe('createRouter', () => {
           ],
         },
       }),
+      discovery: mockServices.discovery(),
       permissions: permissionEvaluator,
     });
     app = express().use(router);
