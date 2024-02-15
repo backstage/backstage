@@ -16,15 +16,20 @@
 
 import {
   TokenManager,
-  PluginEndpointDiscovery,
+  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
+import {
+  AuthService,
+  BackstageCredentials,
+  DiscoveryService,
+  PermissionsService,
+  PermissionsServiceRequestOptions,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
   AuthorizeResult,
   PermissionClient,
-  PermissionEvaluator,
   AuthorizePermissionRequest,
-  EvaluatorRequestOptions,
   AuthorizePermissionResponse,
   PolicyDecision,
   QueryPermissionRequest,
@@ -36,16 +41,17 @@ import {
  * service-to-service requests.
  * @public
  */
-export class ServerPermissionClient implements PermissionEvaluator {
+export class ServerPermissionClient implements PermissionsService {
+  private readonly auth: AuthService;
   private readonly permissionClient: PermissionClient;
-  private readonly tokenManager: TokenManager;
   private readonly permissionEnabled: boolean;
 
   static fromConfig(
     config: Config,
     options: {
-      discovery: PluginEndpointDiscovery;
+      discovery: DiscoveryService;
       tokenManager: TokenManager;
+      auth?: AuthService;
     },
   ) {
     const { discovery, tokenManager } = options;
@@ -62,58 +68,88 @@ export class ServerPermissionClient implements PermissionEvaluator {
       );
     }
 
+    const { auth } = createLegacyAuthAdapters(options);
+
     return new ServerPermissionClient({
+      auth,
       permissionClient,
-      tokenManager,
       permissionEnabled,
     });
   }
 
   private constructor(options: {
+    auth: AuthService;
     permissionClient: PermissionClient;
-    tokenManager: TokenManager;
     permissionEnabled: boolean;
   }) {
+    this.auth = options.auth;
     this.permissionClient = options.permissionClient;
-    this.tokenManager = options.tokenManager;
     this.permissionEnabled = options.permissionEnabled;
   }
 
   async authorizeConditional(
     queries: QueryPermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: PermissionsServiceRequestOptions,
   ): Promise<PolicyDecision[]> {
-    return (await this.isEnabled(options?.token))
-      ? this.permissionClient.authorizeConditional(queries, options)
+    return (await this.shouldPermissionsBeApplied(options))
+      ? this.permissionClient.authorizeConditional(
+          queries,
+          await this.getRequestOptions(options),
+        )
       : queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
   }
 
   async authorize(
     requests: AuthorizePermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
-    return (await this.isEnabled(options?.token))
-      ? this.permissionClient.authorize(requests, options)
+    return (await this.shouldPermissionsBeApplied(options))
+      ? this.permissionClient.authorize(
+          requests,
+          await this.getRequestOptions(options),
+        )
       : requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
   }
 
-  private async isValidServerToken(
-    token: string | undefined,
-  ): Promise<boolean> {
-    if (!token) {
-      return false;
+  private async getRequestOptions(options?: PermissionsServiceRequestOptions) {
+    if (options && 'credentials' in options) {
+      if (this.auth.isPrincipal(options.credentials, 'none')) {
+        return {};
+      }
+
+      return this.auth.getPluginRequestToken({
+        onBehalfOf: options.credentials,
+        targetPluginId: 'permissions',
+      });
     }
-    return this.tokenManager
-      .authenticate(token)
-      .then(() => true)
-      .catch(() => false);
+
+    return options;
   }
 
-  private async isEnabled(token?: string) {
-    // Check if permissions are enabled before validating the server token. That
-    // way when permissions are disabled, the noop token manager can be used
-    // without fouling up the logic inside the ServerPermissionClient, because
-    // the code path won't be reached.
-    return this.permissionEnabled && !(await this.isValidServerToken(token));
+  private async shouldPermissionsBeApplied(
+    options?: PermissionsServiceRequestOptions,
+  ) {
+    if (!this.permissionEnabled) {
+      return false;
+    }
+
+    let credentials: BackstageCredentials;
+    if (options && 'credentials' in options) {
+      credentials = options.credentials;
+    } else {
+      if (!options?.token) {
+        return true;
+      }
+      try {
+        credentials = await this.auth.authenticate(options.token);
+      } catch {
+        return true;
+      }
+    }
+
+    if (this.auth.isPrincipal(credentials, 'service')) {
+      return false;
+    }
+    return true;
   }
 }
