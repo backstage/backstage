@@ -37,7 +37,7 @@ export function useWebNotifications() {
   });
 
   const sendWebNotification = useCallback(
-    (options: { title: string; description: string }) => {
+    (options: { title: string; description: string; link?: string }) => {
       if (webNotificationPermission !== 'granted') {
         return null;
       }
@@ -45,6 +45,15 @@ export function useWebNotifications() {
       const notification = new Notification(options.title, {
         body: options.description,
       });
+
+      notification.onclick = event => {
+        event.preventDefault();
+        notification.close();
+        if (options.link) {
+          window.open(options.link, '_blank');
+        }
+      };
+
       return notification;
     },
     [webNotificationPermission],
