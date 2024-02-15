@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { BackstageTypography, PageTheme, PageThemeSelector } from './types';
+import { BackstageTypography, PageThemeSelector } from './types';
 import { pageTheme as defaultPageThemes } from './pageTheme';
+import { UnifiedThemeOptions } from '../unified';
 
 const DEFAULT_HTML_FONT_SIZE = 16;
 const DEFAULT_FONT_FAMILY =
@@ -27,30 +28,21 @@ const DEFAULT_PAGE_THEME = 'home';
  *
  * @public
  */
-export interface BaseThemeOptionsInput<PaletteOptions> {
-  palette: PaletteOptions;
-  defaultPageTheme?: string;
-  pageTheme?: Record<string, PageTheme>;
-  fontFamily?: string;
-  htmlFontSize?: number;
-  typography?: BackstageTypography;
-}
+export type BaseThemeOptionsInput = UnifiedThemeOptions;
 
 /**
  * A helper for creating theme options.
  *
  * @public
  */
-export function createBaseThemeOptions<PaletteOptions>(
-  options: BaseThemeOptionsInput<PaletteOptions>,
-) {
+export function createBaseThemeOptions(options: BaseThemeOptionsInput) {
   const {
-    palette,
     htmlFontSize = DEFAULT_HTML_FONT_SIZE,
     fontFamily = DEFAULT_FONT_FAMILY,
     defaultPageTheme = DEFAULT_PAGE_THEME,
     pageTheme = defaultPageThemes,
     typography,
+    ...rest
   } = options;
 
   if (!pageTheme[defaultPageTheme]) {
@@ -93,7 +85,7 @@ export function createBaseThemeOptions<PaletteOptions>(
   };
 
   return {
-    palette,
+    ...rest,
     typography: typography ?? defaultTypography,
     page: pageTheme[defaultPageTheme],
     getPageTheme: ({ themeId }: PageThemeSelector) =>
