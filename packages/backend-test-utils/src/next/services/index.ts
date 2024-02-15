@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { mockServices, type ServiceMock } from './mockServices';
+export { mockCredentials } from './mockCredentials';

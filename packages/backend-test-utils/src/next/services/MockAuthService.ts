@@ -23,25 +23,50 @@ import {
   AuthService,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
+import {
+  mockCredentials,
+  MOCK_USER_TOKEN,
+  MOCK_USER_TOKEN_PREFIX,
+  MOCK_SERVICE_TOKEN,
+  MOCK_SERVICE_TOKEN_PREFIX,
+  DEFAULT_MOCK_USER_ENTITY_REF,
+  DEFAULT_MOCK_SERVICE_SUBJECT,
+} from './mockCredentials';
 
 /** @internal */
 export class MockAuthService implements AuthService {
   constructor(private readonly pluginId: string) {}
 
   async authenticate(token: string): Promise<BackstageCredentials> {
-    if (token === 'mock-user-token') {
-      return {
-        $$type: '@backstage/BackstageCredentials',
-        principal: { type: 'user', userEntityRef: 'user:default/mock' },
-      };
-    } else if (token === 'mock-service-token') {
-      return {
-        $$type: '@backstage/BackstageCredentials',
-        principal: { type: 'service', subject: 'external:test-service' },
-      };
+    if (token === MOCK_USER_TOKEN) {
+      return mockCredentials.user();
+    }
+    if (token === MOCK_SERVICE_TOKEN) {
+      return mockCredentials.service();
     }
 
-    throw new AuthenticationError('Invalid token');
+    if (token.startsWith(MOCK_USER_TOKEN_PREFIX)) {
+      const { userEntityRef }: mockCredentials.user.TokenPayload = JSON.parse(
+        token.slice(MOCK_USER_TOKEN_PREFIX.length),
+      );
+
+      return mockCredentials.user(userEntityRef);
+    }
+
+    if (token.startsWith(MOCK_SERVICE_TOKEN_PREFIX)) {
+      const { targetPluginId, subject }: mockCredentials.service.TokenPayload =
+        JSON.parse(token.slice(MOCK_SERVICE_TOKEN_PREFIX.length));
+
+      if (targetPluginId && targetPluginId !== this.pluginId) {
+        throw new AuthenticationError(
+          `Invalid mock token target, got ${targetPluginId} but expected ${this.pluginId}`,
+        );
+      }
+
+      return mockCredentials.service(subject);
+    }
+
+    throw new AuthenticationError('Invalid mock token');
   }
 
   async getOwnServiceCredentials(): Promise<
@@ -79,9 +104,24 @@ export class MockAuthService implements AuthService {
 
     switch (principal.type) {
       case 'user':
-        return { token: 'mock-user-token' };
+        if (principal.userEntityRef === DEFAULT_MOCK_USER_ENTITY_REF) {
+          return { token: mockCredentials.user.token() };
+        }
+        return {
+          token: mockCredentials.user.token({
+            userEntityRef: principal.userEntityRef,
+          }),
+        };
       case 'service':
-        return { token: `mock-service-token-for-${options.targetPluginId}` };
+        return {
+          token: mockCredentials.service.token({
+            targetPluginId: options.targetPluginId,
+            subject:
+              principal.subject === DEFAULT_MOCK_SERVICE_SUBJECT
+                ? undefined
+                : principal.subject,
+          }),
+        };
       default:
         throw new AuthenticationError(
           `Refused to issue service token for credential type '${principal.type}'`,

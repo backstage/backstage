@@ -9,6 +9,10 @@
 import { AuthService } from '@backstage/backend-plugin-api';
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { BackstageNonePrincipal } from '@backstage/backend-plugin-api';
+import { BackstageServicePrincipal } from '@backstage/backend-plugin-api';
+import { BackstageUserPrincipal } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
@@ -41,6 +45,30 @@ export function createMockDirectory(
 
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
+
+// @public (undocumented)
+export namespace mockCredentials {
+  export function none(): BackstageCredentials<BackstageNonePrincipal>;
+  export function service(
+    subject?: string,
+  ): BackstageCredentials<BackstageServicePrincipal>;
+  export namespace service {
+    export function token(payload?: TokenPayload): string;
+    export type TokenPayload = {
+      subject?: string;
+      targetPluginId?: string;
+    };
+  }
+  export function user(
+    userEntityRef?: string,
+  ): BackstageCredentials<BackstageUserPrincipal>;
+  export namespace user {
+    export function token(payload?: TokenPayload): string;
+    export type TokenPayload = {
+      userEntityRef: string;
+    };
+  }
+}
 
 // @public
 export interface MockDirectory {
