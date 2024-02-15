@@ -64,8 +64,8 @@ export type ODataQuery = {
  * @public
  */
 export type GroupMember =
-  | (MicrosoftGraph.Group & { '@odata.type': '#microsoft.graph.user' })
-  | (MicrosoftGraph.User & { '@odata.type': '#microsoft.graph.group' });
+  | (MicrosoftGraph.Group & { '@odata.type': '#microsoft.graph.group' })
+  | (MicrosoftGraph.User & { '@odata.type': '#microsoft.graph.user' });
 
 /**
  * A HTTP Client that communicates with Microsoft Graph API.
