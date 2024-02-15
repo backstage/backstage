@@ -43237,8 +43237,8 @@ __metadata:
   linkType: hard
 
 "swagger-ui-react@npm:^5.0.0":
-  version: 5.11.4
-  resolution: "swagger-ui-react@npm:5.11.4"
+  version: 5.11.6
+  resolution: "swagger-ui-react@npm:5.11.6"
   dependencies:
     "@babel/runtime-corejs3": ^7.23.9
     "@braintree/sanitize-url": =7.0.0
@@ -43277,7 +43277,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 <19"
     react-dom: ">=16.8.0 <19"
-  checksum: 080a367c28019e20193887a6a1dc70d42c030e2b489c9099b60f4a0cb7ebc4779d0731703060f72022bc997d6e6811661f055514e1ace1454f3bc46bb8aceaa9
+  checksum: 4556acd2fca69d5b0f7fd1592467818428611f7fce37aeea002c71604c3fdf5314425a99180f08ad257676eec80123cd9ac31e2576102ac9f9fb5f420cb5bbf4
   languageName: node
   linkType: hard
 
