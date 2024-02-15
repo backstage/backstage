@@ -17,7 +17,11 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import {
   defaultAuthProviderFactories,
   AuthProviderFactory,
@@ -26,6 +30,7 @@ import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   TokenManager,
+  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import { assertError, NotFoundError } from '@backstage/errors';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
@@ -52,6 +57,8 @@ export interface RouterOptions {
   config: Config;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
   disableDefaultProviderFactories?: boolean;
@@ -72,6 +79,9 @@ export async function createRouter(
     providerFactories = {},
     catalogApi,
   } = options;
+
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
+
   const router = Router();
 
   const appUrl = config.getString('app.baseUrl');
@@ -165,6 +175,9 @@ export async function createRouter(
               catalogApi ?? new CatalogClient({ discoveryApi: discovery }),
             tokenIssuer,
             tokenManager,
+            discovery,
+            auth,
+            httpAuth,
           }),
         });
 

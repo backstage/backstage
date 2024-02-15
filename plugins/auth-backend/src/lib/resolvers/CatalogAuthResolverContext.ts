@@ -24,7 +24,12 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { TokenIssuer, TokenParams } from '../../identity/types';
 import { AuthResolverContext } from '../../providers';
 import { AuthResolverCatalogUserQuery } from '../../providers/types';
@@ -58,17 +63,24 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     catalogApi: CatalogApi;
     tokenIssuer: TokenIssuer;
     tokenManager: TokenManager;
+    discovery: DiscoveryService;
+    auth: AuthService;
+    httpAuth: HttpAuthService;
   }): CatalogAuthResolverContext {
     const catalogIdentityClient = new CatalogIdentityClient({
       catalogApi: options.catalogApi,
       tokenManager: options.tokenManager,
+      discovery: options.discovery,
+      auth: options.auth,
+      httpAuth: options.httpAuth,
     });
+
     return new CatalogAuthResolverContext(
       options.logger,
       options.tokenIssuer,
       catalogIdentityClient,
       options.catalogApi,
-      options.tokenManager,
+      options.auth,
     );
   }
 
@@ -77,7 +89,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     public readonly tokenIssuer: TokenIssuer,
     public readonly catalogIdentityClient: CatalogIdentityClient,
     private readonly catalogApi: CatalogApi,
-    private readonly tokenManager: TokenManager,
+    private readonly auth: AuthService,
   ) {}
 
   async issueToken(params: TokenParams) {
@@ -87,7 +99,10 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
 
   async findCatalogUser(query: AuthResolverCatalogUserQuery) {
     let result: Entity[] | Entity | undefined = undefined;
-    const { token } = await this.tokenManager.getToken();
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
 
     if ('entityRef' in query) {
       const entityRef = parseEntityRef(query.entityRef, {
