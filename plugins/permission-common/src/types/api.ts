@@ -263,9 +263,16 @@ export interface PermissionEvaluator {
 
 /**
  * Options for {@link PermissionEvaluator} requests.
- * The Backstage identity token should be defined if available.
+ *
  * @public
  */
 export type EvaluatorRequestOptions = {
+  /**
+   * @deprecated Backend plugins should no longer depend on the
+   * `PermissionEvaluator`, but instead use the `PermissionService` from
+   * `@backstage/backend-plugin-api`. Frontend plugins should not need to inject
+   * this token at all, but instead implicitly rely on underlying fetchApi to do
+   * it for them.
+   */
   token?: string;
 };
