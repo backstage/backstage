@@ -429,7 +429,7 @@ The exact impact that this has is that it disables the check in the `HttpRouterS
 
 The existing `IdentityService` and `TokenManagerService` will be deprecated and instead implemented in terms of the new `AuthService`.
 
-The new `AuthService` and `HttpAuthService` will need backwards compatible implementations for the old backend system. The plan is to not apply any access restrictions for the old Backend system, only implementing that in the new system. The backwards compatibility helpers will use the provided `identity` and `tokenManager` services if available, and plugins should provide fallbacks in the same way as they currently do. If these are not provided, the `identity` client will fall back to `DefaultIdentityClient`, and `tokenManager` will fall back `ServicerTokenManager.noop()`.
+The new `AuthService` and `HttpAuthService` will need backwards compatible implementations for the old backend system. The plan is to not apply any access restrictions for the old Backend system, only implementing that in the new system. The backwards compatibility helpers will use the provided `identity` and `tokenManager` services if available, and plugins should provide fallbacks in the same way as they currently do. If these are not provided, the `identity` client will fall back to `DefaultIdentityClient`, and `tokenManager` will fall back to `ServicerTokenManager.noop()`.
 
 The backwards compatibility helpers will have the following behavior for each individual service call:
 
