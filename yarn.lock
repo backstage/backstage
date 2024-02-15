@@ -4724,7 +4724,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
     express: ^4.18.2
-    google-auth-library: ^8.0.0
+    google-auth-library: ^9.0.0
   languageName: unknown
   linkType: soft
 
@@ -4770,7 +4770,7 @@ __metadata:
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@types/passport-google-oauth20": ^2.0.3
-    google-auth-library: ^8.0.0
+    google-auth-library: ^9.0.0
     passport-google-oauth20: ^2.0.0
     supertest: ^6.1.3
   languageName: unknown
@@ -4962,7 +4962,7 @@ __metadata:
     express-promise-router: ^4.1.0
     express-session: ^1.17.1
     fs-extra: ^11.2.0
-    google-auth-library: ^8.0.0
+    google-auth-library: ^9.0.0
     jose: ^4.6.0
     knex: ^3.0.0
     lodash: ^4.17.21
@@ -28056,13 +28056,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-text-encoding@npm:^1.0.0":
-  version: 1.0.3
-  resolution: "fast-text-encoding@npm:1.0.3"
-  checksum: 3e51365896f06d0dcab128092d095a0037d274deec419fecbd2388bc236d7b387610e0c72f920c6126e00c885ab096fbfaa3645712f5b98f721bef6b064916a8
-  languageName: node
-  linkType: hard
-
 "fast-url-parser@npm:1.1.3, fast-url-parser@npm:^1.1.3":
   version: 1.1.3
   resolution: "fast-url-parser@npm:1.1.3"
@@ -28915,18 +28908,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gaxios@npm:^5.0.0, gaxios@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "gaxios@npm:5.0.1"
-  dependencies:
-    extend: ^3.0.2
-    https-proxy-agent: ^5.0.0
-    is-stream: ^2.0.0
-    node-fetch: ^2.6.7
-  checksum: 65464122a5be72084d07947536d18a0dcebd115b28cbcd19da8a98763a67c8c8fde995bf2f358251397c939df9d2ff84f54628a94f634a98a16c7b7553cdb4a5
-  languageName: node
-  linkType: hard
-
 "gaxios@npm:^6.0.0, gaxios@npm:^6.0.2":
   version: 6.1.1
   resolution: "gaxios@npm:6.1.1"
@@ -28936,16 +28917,6 @@ __metadata:
     is-stream: ^2.0.0
     node-fetch: ^2.6.9
   checksum: bb4a4e6c81847b690ee29e01294d2093eb9bb4f9e60bbf81fcc6cd3b274f3c551c50a9bc134e7e7019a9b116eac9d9df6af9f2519c695da7ddd785f36564da72
-  languageName: node
-  linkType: hard
-
-"gcp-metadata@npm:^5.3.0":
-  version: 5.3.0
-  resolution: "gcp-metadata@npm:5.3.0"
-  dependencies:
-    gaxios: ^5.0.0
-    json-bigint: ^1.0.0
-  checksum: 891ea0b902a17f33d7bae753830d23962b63af94ed071092c30496e7d26f8128ba9af43c3d38474bea29cb32a884b4bcb5720ce8b9de4a7e1108475d3d7ae219
   languageName: node
   linkType: hard
 
@@ -29333,23 +29304,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^8.0.0":
-  version: 8.9.0
-  resolution: "google-auth-library@npm:8.9.0"
-  dependencies:
-    arrify: ^2.0.0
-    base64-js: ^1.3.0
-    ecdsa-sig-formatter: ^1.0.11
-    fast-text-encoding: ^1.0.0
-    gaxios: ^5.0.0
-    gcp-metadata: ^5.3.0
-    gtoken: ^6.1.0
-    jws: ^4.0.0
-    lru-cache: ^6.0.0
-  checksum: 8e0bc5f1e91804523786413bf4358e4c5ad94b1e873c725ddd03d0f1c242e2b38e26352c0f375334fbc1d94110f761b304aa0429de49b4a27ebc3875a5b56644
-  languageName: node
-  linkType: hard
-
 "google-auth-library@npm:^9.0.0":
   version: 9.2.0
   resolution: "google-auth-library@npm:9.2.0"
@@ -29380,17 +29334,6 @@ __metadata:
     protobufjs: 7.2.5
     retry-request: ^7.0.0
   checksum: d4b5f2fc4a902b29d23552ab0fa498785ce88516ff07f7e7f08cac0f6572a78113a7f468f47b17e98d235d4049eeda8d77cfcad6291f6d14bda39b9eb19f935d
-  languageName: node
-  linkType: hard
-
-"google-p12-pem@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "google-p12-pem@npm:4.0.0"
-  dependencies:
-    node-forge: ^1.3.1
-  bin:
-    gp12-pem: build/src/bin/gp12-pem.js
-  checksum: f41a88d339e9fe633dc915bc0f3335c0196fa318f994dcd5dfaa0f3f7aa2d99f6122e2c80bd0f4bb22f2b61ff645b7cc782a74e12ceaf6c9ad9e08cdeb4d615e
   languageName: node
   linkType: hard
 
@@ -29652,17 +29595,6 @@ __metadata:
   peerDependencies:
     react: ^16.0.0
   checksum: 1bcd3179ce276e8fd34229acc6d3f1024908b7e6734e36ddcc4852c6db0100b900093355652577ab476c9927167cff92b05e560713995803154d4dbd4459f973
-  languageName: node
-  linkType: hard
-
-"gtoken@npm:^6.1.0":
-  version: 6.1.1
-  resolution: "gtoken@npm:6.1.1"
-  dependencies:
-    gaxios: ^5.0.1
-    google-p12-pem: ^4.0.0
-    jws: ^4.0.0
-  checksum: f063ed3f418f5a9c33fbe599b09f56a55b18f6c8d2913f11cc2fc5025d53b96fd6ab1b4deb2c7631167d6b89d0939e4ea77f94767fcf338862ffda8911250980
   languageName: node
   linkType: hard
 
