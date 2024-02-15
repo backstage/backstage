@@ -192,7 +192,8 @@ export const SearchModal = (props: SearchModalProps) => {
         paperFullWidth: classes.paperFullWidth,
       }}
       onClose={toggleModal}
-      aria-labelledby="search-modal-title"
+      aria-label="Search Modal"
+      aria-modal="true"
       fullWidth
       maxWidth="lg"
       open={open}
