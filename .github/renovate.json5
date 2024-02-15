@@ -3,7 +3,11 @@
 
   labels: ['dependencies'],
 
-  extends: ['config:best-practices', ':gitSignOff'],
+  extends: [
+    'config:best-practices',
+    ':gitSignOff',
+    'default:pinDigestsDisabled',
+  ],
   // do not pin dev dependencies, which are part of the best-practices preset
   ignorePresets: [':pinDevDependencies'],
 
@@ -12,8 +16,11 @@
 
   postUpdateOptions: ['yarnDedupeHighest'],
   rangeStrategy: 'update-lockfile',
-  // @elastic/elasticsearch is ignored due to licensing issues. See #10992
-  ignoreDeps: ['@elastic/elasticsearch', 'event-source-polyfill'],
+  ignoreDeps: [
+    // ignored due to licensing issues. See #10992
+    '@elastic/elasticsearch',
+    'event-source-polyfill',
+  ],
   packageRules: [
     {
       matchSourceUrlPrefixes: ['https://github.com/spotify/web-scripts'],
