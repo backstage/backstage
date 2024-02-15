@@ -36,6 +36,7 @@ import {
 import { setupServer } from 'msw/node';
 import {
   ServiceMock,
+  mockCredentials,
   mockServices,
   setupRequestMockHandlers,
   startTestBackend,
@@ -757,9 +758,9 @@ metadata:
   });
 
   it('serves permission integration endpoint', async () => {
-    const response = await request(app).get(
-      '/api/kubernetes/.well-known/backstage/permissions/metadata',
-    );
+    const response = await request(app)
+      .get('/api/kubernetes/.well-known/backstage/permissions/metadata')
+      .set('authorization', mockCredentials.service.header());
 
     expect(response.status).toEqual(200);
     expect(response.body).toMatchObject({
