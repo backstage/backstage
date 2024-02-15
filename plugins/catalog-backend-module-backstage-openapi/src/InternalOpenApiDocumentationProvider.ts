@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -25,7 +26,6 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { merge, isErrorResult } from 'openapi-merge';
-import { TokenManager } from '@backstage/backend-common';
 import { getOpenApiSpecRoute } from '@backstage/backend-openapi-utils';
 import type {
   OpenAPIObject,
@@ -33,7 +33,11 @@ import type {
   PathItemObject,
 } from 'openapi3-ts';
 import fetch from 'cross-fetch';
-import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import * as uuid from 'uuid';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 
@@ -108,19 +112,22 @@ const loadSpecs = async ({
   discovery,
   plugins,
   logger,
-  tokenManager,
+  auth,
 }: {
   baseUrl: string;
   plugins: string[];
   discovery: DiscoveryService;
   logger: LoggerService;
-  tokenManager: TokenManager;
+  auth: AuthService;
 }) => {
   const specs: OpenAPIObject[] = [];
   for (const pluginId of plugins) {
     const url = await discovery.getExternalBaseUrl(pluginId);
     const openApiUrl = getOpenApiSpecRoute(url);
-    const { token } = await tokenManager.getToken();
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await auth.getOwnServiceCredentials(),
+      targetPluginId: pluginId,
+    });
     const response = await fetch(openApiUrl, {
       method: 'GET',
       headers: {
@@ -149,11 +156,12 @@ const loadSpecs = async ({
 export class InternalOpenApiDocumentationProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private readonly scheduleFn: () => Promise<void>;
+
   constructor(
     public readonly config: Config,
     public readonly discovery: DiscoveryService,
     public readonly logger: LoggerService,
-    public readonly tokenManager: TokenManager,
+    public readonly auth: AuthService,
     taskRunner: TaskRunner,
   ) {
     this.scheduleFn = this.createScheduleFn(taskRunner);
@@ -165,7 +173,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       discovery: DiscoveryService;
       logger: LoggerService;
       schedule: PluginTaskScheduler;
-      tokenManager: TokenManager;
+      auth: AuthService;
     },
   ) {
     const taskRunner = options.schedule.createScheduledTaskRunner({
@@ -180,7 +188,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       config,
       options.discovery,
       options.logger,
-      options.tokenManager,
+      options.auth,
       taskRunner,
     );
   }
@@ -243,7 +251,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
           await loadSpecs({
             baseUrl: this.config.getString('backend.baseUrl'),
             discovery: this.discovery,
-            tokenManager: this.tokenManager,
+            auth: this.auth,
             plugins: pluginsToMerge,
             logger,
           }),
