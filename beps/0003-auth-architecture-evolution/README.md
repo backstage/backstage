@@ -446,7 +446,7 @@ We do not roll out support for the new auth services for the old backend system,
 
 Users of the old backend system may already have their own protection set up, which we need to take into account, ensuring that we do not break these existing implementations.
 
-Several API clients will be updated to support passing `BackstageCredentials` instead of a token, although it is not a requirement to update all clients. In particular we hold of on migration isomorphic clients, leaving them to keep consuming tokens where possible. Adding support for credentials to be passed to these clients is a separate future improvement.
+Several API clients will be updated to support passing `BackstageCredentials` instead of a token, although it is not a requirement to update all clients. In particular we will hold off on migrating isomorphic clients, leaving them to keep consuming tokens where possible. Adding support for credentials to be passed to these clients is a separate future improvement.
 
 ## Dependencies
 
