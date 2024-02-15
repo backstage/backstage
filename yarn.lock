@@ -7714,6 +7714,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
+    lodash: ^4.17.21
     msw: ^1.0.0
     react-relative-time: ^0.0.9
     react-use: ^17.2.4

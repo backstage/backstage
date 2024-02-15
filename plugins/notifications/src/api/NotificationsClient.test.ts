@@ -60,16 +60,16 @@ describe('NotificationsClient', () => {
       server.use(
         rest.get(`${mockBaseUrl}/`, (req, res, ctx) => {
           expect(req.url.search).toBe(
-            '?type=undone&limit=10&offset=0&search=find+me',
+            '?limit=10&offset=0&search=find+me&read=true',
           );
           return res(ctx.json(expectedResp));
         }),
       );
       const response = await client.getNotifications({
-        type: 'undone',
         limit: 10,
         offset: 0,
         search: 'find me',
+        read: true,
       });
       expect(response).toEqual(expectedResp);
     });
@@ -103,14 +103,12 @@ describe('NotificationsClient', () => {
         rest.post(`${mockBaseUrl}/update`, async (req, res, ctx) => {
           expect(await req.json()).toEqual({
             ids: ['acdaa8ca-262b-43c1-b74b-de06e5f3b3c7'],
-            done: true,
           });
           return res(ctx.json(expectedResp));
         }),
       );
       const response = await client.updateNotifications({
         ids: ['acdaa8ca-262b-43c1-b74b-de06e5f3b3c7'],
-        done: true,
       });
       expect(response).toEqual(expectedResp);
     });
