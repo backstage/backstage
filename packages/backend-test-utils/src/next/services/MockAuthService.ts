@@ -44,7 +44,7 @@ export class MockAuthService implements AuthService {
     throw new AuthenticationError('Invalid token');
   }
 
-  async getOwnCredentials(): Promise<
+  async getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
   > {
     return {
@@ -68,10 +68,11 @@ export class MockAuthService implements AuthService {
     return true;
   }
 
-  async issueServiceToken(options: {
-    forward: BackstageCredentials;
+  async getPluginRequestToken(options: {
+    onBehalfOf: BackstageCredentials;
+    targetPluginId: string;
   }): Promise<{ token: string }> {
-    const principal = options.forward.principal as
+    const principal = options.onBehalfOf.principal as
       | BackstageUserPrincipal
       | BackstageServicePrincipal
       | BackstageNonePrincipal;
@@ -80,7 +81,7 @@ export class MockAuthService implements AuthService {
       case 'user':
         return { token: 'mock-user-token' };
       case 'service':
-        return { token: 'mock-service-token' };
+        return { token: `mock-service-token-for-${options.targetPluginId}` };
       default:
         throw new AuthenticationError(
           `Refused to issue service token for credential type '${principal.type}'`,

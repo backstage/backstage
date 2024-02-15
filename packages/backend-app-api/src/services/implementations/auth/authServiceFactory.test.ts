@@ -51,8 +51,9 @@ describe('authServiceFactory', () => {
     const searchAuth = await tester.get('search');
     const catalogAuth = await tester.get('catalog');
 
-    const { token: searchToken } = await searchAuth.issueServiceToken({
-      forward: await searchAuth.getOwnCredentials(),
+    const { token: searchToken } = await searchAuth.getPluginRequestToken({
+      onBehalfOf: await searchAuth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
     });
 
     await expect(searchAuth.authenticate(searchToken)).resolves.toEqual(
@@ -81,8 +82,8 @@ describe('authServiceFactory', () => {
     const catalogAuth = await tester.get('catalog');
 
     await expect(
-      catalogAuth.issueServiceToken({
-        forward: {
+      catalogAuth.getPluginRequestToken({
+        onBehalfOf: {
           $$type: '@backstage/BackstageCredentials',
           version: 'v1',
           authMethod: 'token',
@@ -92,6 +93,7 @@ describe('authServiceFactory', () => {
             userEntityRef: 'user:default/alice',
           },
         } as InternalBackstageCredentials<BackstageUserPrincipal>,
+        targetPluginId: 'catalog',
       }),
     ).resolves.toEqual({ token: 'alice-token' });
   });
@@ -103,8 +105,8 @@ describe('authServiceFactory', () => {
 
     const catalogAuth = await tester.get('catalog');
 
-    const { token } = await catalogAuth.issueServiceToken({
-      forward: {
+    const { token } = await catalogAuth.getPluginRequestToken({
+      onBehalfOf: {
         $$type: '@backstage/BackstageCredentials',
         version: 'v1',
         authMethod: 'token',
@@ -114,6 +116,7 @@ describe('authServiceFactory', () => {
           subject: 'external:upstream-service',
         },
       } as InternalBackstageCredentials<BackstageServicePrincipal>,
+      targetPluginId: 'catalog',
     });
 
     expect(decodeJwt(token)).toEqual(

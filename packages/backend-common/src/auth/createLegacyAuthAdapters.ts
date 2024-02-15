@@ -63,42 +63,43 @@ class AuthCompat implements AuthService {
     return true;
   }
 
-  async getOwnCredentials(): Promise<
+  async getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
   > {
     return createCredentialsWithServicePrincipal('external:backstage-plugin');
   }
 
   async authenticate(token: string): Promise<BackstageCredentials> {
-    const { sub, aud } = decodeJwt(token);
+    const { aud } = decodeJwt(token);
 
-    // Legacy service-to-service token
-    if (sub === 'backstage-server' && !aud) {
-      await this.tokenManager.authenticate(token);
-      return createCredentialsWithServicePrincipal('external:backstage-plugin');
+    if (aud === 'backstage') {
+      // User Backstage token
+      const identity = await this.identity.getIdentity({
+        request: {
+          headers: { authorization: `Bearer ${token}` },
+        },
+      } as IdentityApiGetIdentityRequest);
+
+      if (!identity) {
+        throw new AuthenticationError('Invalid user token');
+      }
+
+      return createCredentialsWithUserPrincipal(
+        identity.identity.userEntityRef,
+        token,
+      );
     }
 
-    // User Backstage token
-    const identity = await this.identity.getIdentity({
-      request: {
-        headers: { authorization: `Bearer ${token}` },
-      },
-    } as IdentityApiGetIdentityRequest);
+    await this.tokenManager.authenticate(token);
 
-    if (!identity) {
-      throw new AuthenticationError('Invalid user token');
-    }
-
-    return createCredentialsWithUserPrincipal(
-      identity.identity.userEntityRef,
-      token,
-    );
+    return createCredentialsWithServicePrincipal('external:backstage-plugin');
   }
 
-  async issueServiceToken(options: {
-    forward: BackstageCredentials;
+  async getPluginRequestToken(options: {
+    onBehalfOf: BackstageCredentials;
+    targetPluginId: string;
   }): Promise<{ token: string }> {
-    const internalForward = toInternalBackstageCredentials(options.forward);
+    const internalForward = toInternalBackstageCredentials(options.onBehalfOf);
     const { type } = internalForward.principal;
 
     switch (type) {
@@ -197,14 +198,6 @@ class HttpAuthCompat implements HttpAuthService {
     }
 
     return credentials as any;
-  }
-
-  async requestHeaders(options: {
-    forward: BackstageCredentials;
-  }): Promise<Record<string, string>> {
-    return {
-      Authorization: `Bearer ${await this.auth.issueServiceToken(options)}`,
-    };
   }
 
   async issueUserCookie(_res: Response): Promise<void> {}

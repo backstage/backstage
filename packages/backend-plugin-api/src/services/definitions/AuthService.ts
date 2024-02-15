@@ -70,10 +70,12 @@ export interface AuthService {
     type: TType,
   ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
 
-  getOwnCredentials(): Promise<BackstageCredentials<BackstageServicePrincipal>>;
+  getOwnServiceCredentials(): Promise<
+    BackstageCredentials<BackstageServicePrincipal>
+  >;
 
-  // TODO: should the caller provide the target plugin ID?
-  issueServiceToken(options: {
-    forward: BackstageCredentials;
+  getPluginRequestToken(options: {
+    onBehalfOf: BackstageCredentials;
+    targetPluginId: string;
   }): Promise<{ token: string }>;
 }
