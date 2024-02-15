@@ -98,9 +98,9 @@ See a complete cards list below:
 
 This [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension allows you to view, edit, or update groups metadata, such as team avatar, name, email, parent, and child groups.
 
-| Kind          | Namespace | Name            | Id                              | Example                                                                                   |
-| ------------- | --------- | --------------- | ------------------------------- | ----------------------------------------------------------------------------------------- |
-| `entity-card` | `org`     | `group-profile` | `entity-card:org/group-profile` | <img alt="Entity Group Profile Card" src="./OrgGroupProfileEntityCard.png" width="200" /> |
+| Kind          | Namespace | Name            | Id                              |
+| ------------- | --------- | --------------- | ------------------------------- |
+| `entity-card` | `org`     | `group-profile` | `entity-card:org/group-profile` |
 
 ##### Disable
 
@@ -173,9 +173,9 @@ For more information about where to place extension overrides, see the official 
 
 An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that displays the names and emails of group members. By clicking the member's name, you'll be directed to the user's catalog page, and the email opens your default email program.
 
-| Kind          | Namespace | Name           | Id                             | Example                                                                            |
-| ------------- | --------- | -------------- | ------------------------------ | ---------------------------------------------------------------------------------- |
-| `entity-card` | `org`     | `members-list` | `entity-card:org/members-list` | <img alt="Entity Group Profile Card" src="./OrgMembersListCard.png" width="200" /> |
+| Kind          | Namespace | Name           | Id                             |
+| ------------- | --------- | -------------- | ------------------------------ |
+| `entity-card` | `org`     | `members-list` | `entity-card:org/members-list` |
 
 ##### Disable
 
@@ -248,9 +248,9 @@ For more information about where to place extension overrides, see the official 
 
 An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that displays direct or aggregated group or user ownership relationships. Each entity listed in the card links to its respective entity page in the catalog.
 
-| Kind          | Namespace | Name        | Id                          | Example                                                                          |
-| ------------- | --------- | ----------- | --------------------------- | -------------------------------------------------------------------------------- |
-| `entity-card` | `org`     | `ownership` | `entity-card:org/ownership` | <img alt="Entity Group Profile Card" src="./OrgOwnershipCard.png" width="200" /> |
+| Kind          | Namespace | Name        | Id                          |
+| ------------- | --------- | ----------- | --------------------------- |
+| `entity-card` | `org`     | `ownership` | `entity-card:org/ownership` |
 
 ##### Disable
 
@@ -323,9 +323,9 @@ For more information about where to place extension overrides, see the official 
 
 This [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension allows you to view user metadata including avatar, name, email, and team. Clicking on the email link will open your default email program while clicking on the team link will direct you to the team page in the catalog plugin.
 
-| Kind          | Namespace | Name           | Id                             | Example                                                                                  |
-| ------------- | --------- | -------------- | ------------------------------ | ---------------------------------------------------------------------------------------- |
-| `entity-card` | `org`     | `user-profile` | `entity-card:org/user-profile` | <img alt="Entity Group Profile Card" src="./OrgUserProfileEntityCard.png" width="200" /> |
+| Kind          | Namespace | Name           | Id                             |
+| ------------- | --------- | -------------- | ------------------------------ |
+| `entity-card` | `org`     | `user-profile` | `entity-card:org/user-profile` |
 
 ##### Disable
 
