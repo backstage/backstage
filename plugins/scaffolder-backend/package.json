@@ -74,7 +74,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "fs-extra": "^11.2.0",
-    "globby": "^11.0.0",
+    "globby": "^14.0.0",
     "isbinaryfile": "^5.0.0",
     "isolated-vm": "^4.5.0",
     "jsonschema": "^1.2.6",
