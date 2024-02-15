@@ -34,7 +34,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres12:
-        image: postgres:12@sha256:7a4c3f690fa767db8aaa4a9da3870037535307cc7f8f1880f1d7275a1be29b4d
+        image: postgres:12@sha256:e3a26937c96da6f4e99c1e843ab8a3ce8396c50a348c99d7b5fe1273cad1b56b
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
