@@ -324,6 +324,11 @@ To get the README component working you'll need to do the following two steps:
 
 Azure DevOps plugin supports the permission framework for PRs, GitTags, Pipelines and Readme features.
 
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-azure-devops-common
+```
+
 New Backend you can skip the below and proceed with [permission configuration](#configure-permission)
 
 To enable permissions for the legacy backend system in `packages/backend/src/plugins/azure-devops.ts` add the following.
@@ -355,6 +360,15 @@ To apply the permission rules add the following in `packages/backend/src/plugins
 +  azureDevOpsGitTagReadPermission,
 +  azureDevOpsReadmeReadPermission,
 +  azureDevOpsPullRequestDashboardReadPermission } from '@backstage/plugin-azure-devops-common';
++ import {
++  AuthorizeResult,
++  PolicyDecision,
++  isPermission,
++ } from '@backstage/plugin-permission-common';
++ import {
++   catalogConditions,
++   createCatalogConditionalDecision,
++ } from '@backstage/plugin-catalog-backend/alpha';
 ...
 async handle(
   request: PolicyQuery,

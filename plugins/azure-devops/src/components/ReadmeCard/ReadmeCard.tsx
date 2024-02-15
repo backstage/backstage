@@ -28,9 +28,6 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 
 import { useReadme } from '../../hooks';
-import { RequirePermission } from '@backstage/plugin-permission-react';
-import { azureDevOpsReadmeReadPermission } from '@backstage/plugin-azure-devops-common';
-import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const useStyles = makeStyles(theme => ({
   readMe: {
@@ -90,7 +87,6 @@ const ReadmeCardError = ({ error }: ErrorProps) => {
 export const ReadmeCard = (props: Props) => {
   const classes = useStyles();
   const { entity } = useEntity();
-
   const { loading, error, item: value } = useReadme(entity);
 
   if (loading) {
@@ -100,22 +96,16 @@ export const ReadmeCard = (props: Props) => {
   }
 
   return (
-    <RequirePermission
-      permission={azureDevOpsReadmeReadPermission}
-      resourceRef={stringifyEntityRef(entity)}
-      errorPage={null}
+    <InfoCard
+      title="Readme"
+      deepLink={{
+        link: value!.url,
+        title: 'Readme',
+      }}
     >
-      <InfoCard
-        title="Readme"
-        deepLink={{
-          link: value!.url,
-          title: 'Readme',
-        }}
-      >
-        <Box className={classes.readMe} sx={{ maxHeight: props.maxHeight }}>
-          <MarkdownContent content={value?.content ?? ''} />
-        </Box>
-      </InfoCard>
-    </RequirePermission>
+      <Box className={classes.readMe} sx={{ maxHeight: props.maxHeight }}>
+        <MarkdownContent content={value?.content ?? ''} />
+      </Box>
+    </InfoCard>
   );
 };
