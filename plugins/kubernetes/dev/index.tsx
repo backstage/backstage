@@ -17,12 +17,7 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import {
-  EntityKubernetesContent,
-  kubernetesPlugin,
-  kubernetesApiRef,
-  KubernetesApi,
-} from '../src';
+import { EntityKubernetesContent, kubernetesPlugin } from '../src';
 import {
   CustomObjectsByEntityRequest,
   FetchResponse,
@@ -34,6 +29,10 @@ import fixture2 from '../src/__fixtures__/2-deployments.json';
 import fixture3 from '../src/__fixtures__/1-cronjobs.json';
 import fixture4 from '../src/__fixtures__/2-cronjobs.json';
 import { TestApiProvider } from '@backstage/test-utils';
+import {
+  KubernetesApi,
+  kubernetesApiRef,
+} from '@backstage/plugin-kubernetes-react/api';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',

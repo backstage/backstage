@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { KubernetesApi } from './types';
 import {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
@@ -23,7 +21,10 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { KubernetesAuthProvidersApi } from '../kubernetes-auth-provider';
+import {
+  KubernetesAuthProvidersApi,
+  KubernetesApi,
+} from '@backstage/plugin-kubernetes-react/api';
 import { NotFoundError } from '@backstage/errors';
 
 /** @public */

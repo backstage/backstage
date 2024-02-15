@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { KubernetesAuthProvidersApi } from '../kubernetes-auth-provider';
 import { KubernetesBackendClient } from './KubernetesBackendClient';
 import { rest } from 'msw';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
@@ -27,6 +26,7 @@ import {
   WorkloadsByEntityRequest,
 } from '@backstage/plugin-kubernetes-common';
 import { NotFoundError } from '@backstage/errors';
+import { KubernetesAuthProvidersApi } from '@backstage/plugin-kubernetes-react/api';
 
 describe('KubernetesBackendClient', () => {
   let backendClient: KubernetesBackendClient;

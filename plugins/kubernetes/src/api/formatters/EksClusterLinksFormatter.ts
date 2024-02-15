@@ -16,7 +16,7 @@
 import {
   ClusterLinksFormatter,
   ClusterLinksFormatterOptions,
-} from '../../types';
+} from '@backstage/plugin-kubernetes-react/api';
 
 /** @public */
 export class EksClusterLinksFormatter implements ClusterLinksFormatter {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { OAuthApi } from '@backstage/core-plugin-api';
+
+import { KubernetesAuthProvider } from '@backstage/plugin-kubernetes-react/api';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
-import { KubernetesAuthProvider } from './types';
+import { OAuthApi } from '@backstage/core-plugin-api';
 
 /** @public */
-export class AksKubernetesAuthProvider implements KubernetesAuthProvider {
-  constructor(private readonly microsoftAuthApi: OAuthApi) {}
+export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
+  authProvider: OAuthApi;
+
+  constructor(authProvider: OAuthApi) {
+    this.authProvider = authProvider;
+  }
 
   async decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {
-    return {
-      ...requestBody,
-      auth: { ...requestBody.auth, aks: (await this.getCredentials()).token },
-    };
+    const googleAuthToken: string = (await this.getCredentials()).token;
+    if ('auth' in requestBody) {
+      requestBody.auth!.google = googleAuthToken;
+    } else {
+      requestBody.auth = { google: googleAuthToken };
+    }
+    return requestBody;
   }
-
-  async getCredentials(): Promise<{ token?: string }> {
+  async getCredentials(): Promise<{ token: string }> {
     return {
-      token: await this.microsoftAuthApi.getAccessToken(
-        '6dae42f8-4368-4678-94ff-3960e28e3630/user.read',
+      token: await this.authProvider.getAccessToken(
+        'https://www.googleapis.com/auth/cloud-platform.read-only',
       ),
     };
   }

@@ -15,13 +15,13 @@
  */
 
 import { AksClusterLinksFormatter } from './AksClusterLinksFormatter';
-import { ClusterLinksFormatter } from '../../types';
 import { EksClusterLinksFormatter } from './EksClusterLinksFormatter';
 import { GkeClusterLinksFormatter } from './GkeClusterLinksFormatter';
 import { StandardClusterLinksFormatter } from './StandardClusterLinksFormatter';
 import { OpenshiftClusterLinksFormatter } from './OpenshiftClusterLinksFormatter';
 import { RancherClusterLinksFormatter } from './RancherClusterLinksFormatter';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
+import { ClusterLinksFormatter } from '@backstage/plugin-kubernetes-react/api';
 
 export {
   StandardClusterLinksFormatter,

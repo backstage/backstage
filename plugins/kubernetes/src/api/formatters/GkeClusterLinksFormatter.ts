@@ -16,7 +16,7 @@
 import {
   ClusterLinksFormatter,
   ClusterLinksFormatterOptions,
-} from '../../types';
+} from '@backstage/plugin-kubernetes-react/api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 
 const kindMappings: Record<string, string> = {

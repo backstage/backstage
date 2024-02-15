@@ -19,8 +19,8 @@ import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { KubernetesContent } from './KubernetesContent';
 import { useKubernetesObjects } from '@backstage/plugin-kubernetes-react';
-import * as oneDeployment from './__fixtures__/1-deployments.json';
-import * as twoDeployments from './__fixtures__/2-deployments.json';
+import * as oneDeployment from '../__fixtures__/1-deployments.json';
+import * as twoDeployments from '../__fixtures__/2-deployments.json';
 
 jest.mock('@backstage/plugin-kubernetes-react', () => ({
   ...jest.requireActual('@backstage/plugin-kubernetes-react'),

@@ -25,8 +25,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { KubernetesObjects } from './useKubernetesObjects';
 import { generateAuth } from './auth';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import { kubernetesAuthProvidersApiRef } from '../kubernetes-auth-provider';
-import { kubernetesApiRef } from '../api/types';
+import { kubernetesApiRef, kubernetesAuthProvidersApiRef } from '../api/types';
 
 /**
  * Retrieves the provided custom resources related to the provided entity, refreshes at an interval.

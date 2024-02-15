@@ -107,3 +107,43 @@ export interface KubernetesClusterLinkFormatterApi {
     options: FormatClusterLinkOptions,
   ): Promise<string | undefined>;
 }
+
+/** @public */
+export interface KubernetesAuthProvider {
+  decorateRequestBodyForAuth(
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody>;
+  getCredentials(): Promise<{ token?: string }>;
+}
+
+/** @public */
+export const kubernetesAuthProvidersApiRef =
+  createApiRef<KubernetesAuthProvidersApi>({
+    id: 'plugin.kubernetes-auth-providers.service',
+  });
+
+/** @public */
+export interface KubernetesAuthProvidersApi {
+  decorateRequestBodyForAuth(
+    authProvider: string,
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody>;
+  getCredentials(authProvider: string): Promise<{ token?: string }>;
+}
+
+/**
+ * @public
+ */
+export interface ClusterLinksFormatterOptions {
+  dashboardUrl?: URL;
+  dashboardParameters?: JsonObject;
+  object: any;
+  kind: string;
+}
+
+/**
+ * @public
+ */
+export interface ClusterLinksFormatter {
+  formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL>;
+}

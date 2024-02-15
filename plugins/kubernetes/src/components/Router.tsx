@@ -15,38 +15,18 @@
  */
 
 import React from 'react';
-import { Entity } from '@backstage/catalog-model';
 import {
-  useEntity,
   MissingAnnotationEmptyState,
+  useEntity,
 } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
 import { KubernetesContent } from './KubernetesContent';
 import { Button } from '@material-ui/core';
-
-const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
-const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
-  'backstage.io/kubernetes-label-selector';
-
-export const isKubernetesAvailable = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[KUBERNETES_ANNOTATION]) ||
-  Boolean(
-    entity.metadata.annotations?.[KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION],
-  );
+import { isKubernetesAvailable, KUBERNETES_ANNOTATION } from '../conditions';
 
 export const Router = (props: { refreshIntervalMs?: number }) => {
   const { entity } = useEntity();
-
-  const kubernetesAnnotationValue =
-    entity.metadata.annotations?.[KUBERNETES_ANNOTATION];
-
-  const kubernetesLabelSelectorQueryAnnotationValue =
-    entity.metadata.annotations?.[KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION];
-
-  if (
-    kubernetesAnnotationValue ||
-    kubernetesLabelSelectorQueryAnnotationValue
-  ) {
+  if (isKubernetesAvailable(entity)) {
     return (
       <Routes>
         <Route

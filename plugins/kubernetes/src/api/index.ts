@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { JsonObject } from '@backstage/types';
-
-/**
- * @public
- */
-export interface ClusterLinksFormatterOptions {
-  dashboardUrl?: URL;
-  dashboardParameters?: JsonObject;
-  object: any;
-  kind: string;
-}
-
-/**
- * @public
- */
-export interface ClusterLinksFormatter {
-  formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL>;
-}
+export { KubernetesBackendClient } from './KubernetesBackendClient';
+export { KubernetesClusterLinkFormatter } from './KubernetesClusterLinkFormatter';
+export { KubernetesProxyClient } from './KubernetesProxyClient';
+export * from './kubernetes-auth-provider';
+export * from './formatters';

@@ -16,7 +16,7 @@
 import {
   ClusterLinksFormatter,
   ClusterLinksFormatterOptions,
-} from '../../types';
+} from '@backstage/plugin-kubernetes-react/api';
 
 const basePath =
   'https://portal.azure.com/#blade/Microsoft_Azure_ContainerService/AksK8ResourceMenuBlade/overview-Deployment/aksClusterId';

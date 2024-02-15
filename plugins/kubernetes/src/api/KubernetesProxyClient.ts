@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { KubernetesApi } from './types';
+import { KubernetesApi } from '@backstage/plugin-kubernetes-react/api';
 import { Event } from 'kubernetes-models/v1';
 
 /**

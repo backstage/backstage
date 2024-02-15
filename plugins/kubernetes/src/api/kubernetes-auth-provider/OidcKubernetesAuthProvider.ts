@@ -14,34 +14,38 @@
  * limitations under the License.
  */
 
-import { KubernetesAuthProvider } from './types';
+import { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
-import { OAuthApi } from '@backstage/core-plugin-api';
+import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { KubernetesAuthProvider } from '@backstage/plugin-kubernetes-react/api';
 
 /** @public */
-export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
-  authProvider: OAuthApi;
+export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
+  providerName: string;
+  authProvider: OpenIdConnectApi;
 
-  constructor(authProvider: OAuthApi) {
+  constructor(providerName: string, authProvider: OpenIdConnectApi) {
+    this.providerName = providerName;
     this.authProvider = authProvider;
   }
 
   async decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {
-    const googleAuthToken: string = (await this.getCredentials()).token;
-    if ('auth' in requestBody) {
-      requestBody.auth!.google = googleAuthToken;
+    const authToken: string = (await this.getCredentials()).token;
+    const auth = { ...(requestBody.auth as JsonObject) };
+    if (auth.oidc) {
+      (auth.oidc as JsonObject)[this.providerName] = authToken;
     } else {
-      requestBody.auth = { google: googleAuthToken };
+      auth.oidc = { [this.providerName]: authToken };
     }
+    requestBody.auth = auth;
     return requestBody;
   }
+
   async getCredentials(): Promise<{ token: string }> {
     return {
-      token: await this.authProvider.getAccessToken(
-        'https://www.googleapis.com/auth/cloud-platform.read-only',
-      ),
+      token: await this.authProvider.getIdToken(),
     };
   }
 }

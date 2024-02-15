@@ -14,34 +14,33 @@
  * limitations under the License.
  */
 import {
-  KubernetesBackendClient,
   kubernetesApiRef,
-  kubernetesProxyApiRef,
   kubernetesAuthProvidersApiRef,
-  KubernetesAuthProviders,
-  KubernetesProxyClient,
   kubernetesClusterLinkFormatterApiRef,
-  getDefaultFormatters,
-  KubernetesClusterLinkFormatter,
-  DEFAULT_FORMATTER_NAME,
-} from '@backstage/plugin-kubernetes-react';
+  kubernetesProxyApiRef,
+} from '@backstage/plugin-kubernetes-react/api';
 import {
   createApiFactory,
   createPlugin,
-  createRouteRef,
+  createRoutableExtension,
   discoveryApiRef,
-  identityApiRef,
   gitlabAuthApiRef,
   googleAuthApiRef,
+  identityApiRef,
   microsoftAuthApiRef,
   oktaAuthApiRef,
   oneloginAuthApiRef,
-  createRoutableExtension,
 } from '@backstage/core-plugin-api';
-
-export const rootCatalogKubernetesRouteRef = createRouteRef({
-  id: 'kubernetes',
-});
+import { rootCatalogKubernetesRouteRef } from './routes';
+import { EntityKubernetesContentProps } from './types';
+import {
+  DEFAULT_FORMATTER_NAME,
+  KubernetesAuthProviders,
+  KubernetesBackendClient,
+  KubernetesClusterLinkFormatter,
+  KubernetesProxyClient,
+  getDefaultFormatters,
+} from './api';
 
 export const kubernetesPlugin = createPlugin({
   id: 'kubernetes',
@@ -118,24 +117,12 @@ export const kubernetesPlugin = createPlugin({
   },
 });
 
-/**
- * Props of EntityKubernetesContent
- *
- * @public
- */
-export type EntityKubernetesContentProps = {
-  /**
-   * Sets the refresh interval in milliseconds. The default value is 10000 (10 seconds)
-   */
-  refreshIntervalMs?: number;
-};
-
 export const EntityKubernetesContent: (
   props: EntityKubernetesContentProps,
 ) => JSX.Element = kubernetesPlugin.provide(
   createRoutableExtension({
     name: 'EntityKubernetesContent',
-    component: () => import('./Router').then(m => m.Router),
+    component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootCatalogKubernetesRouteRef,
   }),
 );

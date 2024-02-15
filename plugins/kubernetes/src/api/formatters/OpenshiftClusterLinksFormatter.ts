@@ -16,20 +16,21 @@
 import {
   ClusterLinksFormatter,
   ClusterLinksFormatterOptions,
-} from '../../types';
+} from '@backstage/plugin-kubernetes-react/api';
 
 const kindMappings: Record<string, string> = {
-  deployment: 'apps.deployment',
-  ingress: 'networking.k8s.io.ingress',
-  service: 'service',
-  horizontalpodautoscaler: 'autoscaling.horizontalpodautoscaler',
+  deployment: 'deployments',
+  ingress: 'ingresses',
+  service: 'services',
+  horizontalpodautoscaler: 'horizontalpodautoscalers',
+  persistentvolume: 'persistentvolumes',
 };
 
 /** @public */
-export class RancherClusterLinksFormatter implements ClusterLinksFormatter {
+export class OpenshiftClusterLinksFormatter implements ClusterLinksFormatter {
   async formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL> {
     if (!options.dashboardUrl) {
-      throw new Error('Rancher dashboard requires a dashboardUrl option');
+      throw new Error('OpenShift dashboard requires a dashboardUrl option');
     }
     const basePath = new URL(options.dashboardUrl.href);
     const name = encodeURIComponent(options.object.metadata?.name ?? '');
@@ -40,15 +41,22 @@ export class RancherClusterLinksFormatter implements ClusterLinksFormatter {
     if (!basePath.pathname.endsWith('/')) {
       // a dashboard url with a path should end with a slash otherwise
       // the new combined URL will replace the last segment with the appended path!
-      // https://foobar.com/abc/def + explorer/service/test  --> https://foobar.com/abc/explorer/service/test
-      // https://foobar.com/abc/def/ + explorer/service/test --> https://foobar.com/abc/def/explorer/service/test
+      // https://foobar.com/abc/def + k8s/cluster/projects/test  --> https://foobar.com/abc/k8s/cluster/projects/test
+      // https://foobar.com/abc/def/ + k8s/cluster/projects/test --> https://foobar.com/abc/def/k8s/cluster/projects/test
       basePath.pathname += '/';
     }
     let path = '';
-    if (validKind && name && namespace) {
-      path = `explorer/${validKind}/${namespace}/${name}`;
-    } else if (namespace) {
-      path = 'explorer/workload';
+    if (namespace) {
+      if (name && validKind) {
+        path = `k8s/ns/${namespace}/${validKind}/${name}`;
+      } else {
+        path = `k8s/cluster/projects/${namespace}`;
+      }
+    } else if (validKind) {
+      path = `k8s/cluster/${validKind}`;
+      if (name) {
+        path += `/${name}`;
+      }
     }
     return new URL(path, basePath);
   }

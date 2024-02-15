@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  kubernetesApiRef,
-  kubernetesProxyApiRef,
-  kubernetesClusterLinkFormatterApiRef,
-  kubernetesAuthProvidersApiRef,
-} from './types';
-export type {
-  KubernetesApi,
-  KubernetesProxyApi,
-  FormatClusterLinkOptions,
-  KubernetesClusterLinkFormatterApi,
-  KubernetesAuthProvidersApi,
-  KubernetesAuthProvider,
-  ClusterLinksFormatter,
-  ClusterLinksFormatterOptions,
-} from './types';
+
+export * from './KubernetesAuthProviders';
+export * from './GoogleKubernetesAuthProvider';
+export * from './ServerSideAuthProvider';
+export * from './OidcKubernetesAuthProvider';
+export * from './AksKubernetesAuthProvider';

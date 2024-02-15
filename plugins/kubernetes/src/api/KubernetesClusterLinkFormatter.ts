@@ -15,10 +15,10 @@
  */
 
 import {
-  KubernetesClusterLinkFormatterApi,
+  ClusterLinksFormatter,
   FormatClusterLinkOptions,
-} from './types';
-import { ClusterLinksFormatter } from '../types';
+  KubernetesClusterLinkFormatterApi,
+} from '@backstage/plugin-kubernetes-react/api';
 
 /** @public */
 export class KubernetesClusterLinkFormatter

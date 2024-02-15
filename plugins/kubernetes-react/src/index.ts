@@ -24,7 +24,4 @@
 // that are useful to other plugins or modules.
 
 export * from './hooks';
-export * from './api';
-export * from './kubernetes-auth-provider';
 export * from './components';
-export * from './types';

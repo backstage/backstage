@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,14 @@
  * limitations under the License.
  */
 
-export * from './types';
+import { Entity } from '@backstage/catalog-model';
+
+export const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
+export const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
+  'backstage.io/kubernetes-label-selector';
+
+export const isKubernetesAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[KUBERNETES_ANNOTATION]) ||
+  Boolean(
+    entity.metadata.annotations?.[KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION],
+  );

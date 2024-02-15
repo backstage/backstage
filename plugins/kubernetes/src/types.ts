@@ -13,19 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  kubernetesApiRef,
-  kubernetesProxyApiRef,
-  kubernetesClusterLinkFormatterApiRef,
-  kubernetesAuthProvidersApiRef,
-} from './types';
-export type {
-  KubernetesApi,
-  KubernetesProxyApi,
-  FormatClusterLinkOptions,
-  KubernetesClusterLinkFormatterApi,
-  KubernetesAuthProvidersApi,
-  KubernetesAuthProvider,
-  ClusterLinksFormatter,
-  ClusterLinksFormatterOptions,
-} from './types';
+
+export type EntityKubernetesContentProps = {
+  /**
+   * Sets the refresh interval in milliseconds. The default value is 10000 (10 seconds)
+   */
+  refreshIntervalMs?: number;
+};
