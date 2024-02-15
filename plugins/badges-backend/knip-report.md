@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name | Location     |
-|:-----|:-------------|
-| cors | package.json |
+| Name | Location     | Severity |
+| :--- | :----------- | :------- |
+| cors | package.json | error    |
 

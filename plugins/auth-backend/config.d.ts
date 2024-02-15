@@ -191,5 +191,9 @@ export interface Config {
        */
       backstageTokenExpiration?: HumanDuration;
     };
+    /**
+     * Additional app origins to allow for authenticating
+     */
+    experimentalExtraAllowedOrigins?: string[];
   };
 }

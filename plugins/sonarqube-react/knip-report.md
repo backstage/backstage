@@ -2,7 +2,7 @@
 
 ## Unused devDependencies (1)
 
-| Name         | Location     |
-|:-------------|:-------------|
-| @types/react | package.json |
+| Name         | Location     | Severity |
+| :----------- | :----------- | :------- |
+| @types/react | package.json | error    |
 

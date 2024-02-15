@@ -1,5 +1,16 @@
 # @backstage/frontend-test-utils
 
+## 0.1.2-next.3
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.0-next.3
+  - @backstage/frontend-plugin-api@0.6.0-next.3
+  - @backstage/test-utils@1.5.0-next.3
+  - @backstage/types@1.1.1
+
 ## 0.1.2-next.2
 
 ### Patch Changes

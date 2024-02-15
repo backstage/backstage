@@ -22,14 +22,17 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  TemplateAction,
+  TemplateFilter,
+  TemplateGlobal,
+} from '@backstage/plugin-scaffolder-node';
 import {
   createCatalogRegisterAction,
   createCatalogWriteAction,
   createFetchCatalogEntityAction,
 } from './catalog';
 
-import { TemplateFilter, TemplateGlobal } from '../../../lib';
 import { createDebugLogAction, createWaitAction } from './debug';
 import {
   createFetchPlainAction,

@@ -20,7 +20,7 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import type { Logger } from 'winston';
-import { ProcessingIntervalFunction } from '../processing/refresh';
+import { ProcessingIntervalFunction } from '../processing';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
 import {

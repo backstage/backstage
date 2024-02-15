@@ -1,5 +1,17 @@
 # @backstage/backend-tasks
 
+## 0.5.15-next.3
+
+### Patch Changes
+
+- 6707216: The `TaskScheduler.fromConfig` method now accepts the `LegacyRootDatabaseService` interface rather than the full `DatabaseManager` implementation.
+- b68248b: Updated dependency `cron` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.5.15-next.2
 
 ### Patch Changes

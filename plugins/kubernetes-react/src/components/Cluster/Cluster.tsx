@@ -132,7 +132,9 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <ClusterSummary
-                  clusterName={clusterObjects.cluster.name}
+                  clusterName={
+                    clusterObjects.cluster.title || clusterObjects.cluster.name
+                  }
                   totalNumberOfPods={groupedResponses.pods.length}
                   numberOfPodsWithErrors={podsWithErrors.size}
                 />

@@ -2,24 +2,24 @@
 
 ## Unused dependencies (6)
 
-| Name                                | Location     |
-|:------------------------------------|:-------------|
-| glob                                | package.json |
-| ts-node                             | package.json |
-| is-glob                             | package.json |
-| @stoplight/spectral-runtime         | package.json |
-| @stoplight/spectral-functions       | package.json |
-| @openapitools/openapi-generator-cli | package.json |
+| Name                                | Location     | Severity |
+| :---------------------------------- | :----------- | :------- |
+| @openapitools/openapi-generator-cli | package.json | error    |
+| @stoplight/spectral-functions       | package.json | error    |
+| @stoplight/spectral-runtime         | package.json | error    |
+| is-glob                             | package.json | error    |
+| ts-node                             | package.json | error    |
+| glob                                | package.json | error    |
 
 ## Unused devDependencies (1)
 
-| Name           | Location     |
-|:---------------|:-------------|
-| @types/is-glob | package.json |
+| Name           | Location     | Severity |
+| :------------- | :----------- | :------- |
+| @types/is-glob | package.json | error    |
 
 ## Referenced optional peerDependencies (1)
 
-| Name     | Location     |
-|:---------|:-------------|
-| prettier | package.json |
+| Name     | Location     | Severity |
+| :------- | :----------- | :------- |
+| prettier | package.json | error    |
 

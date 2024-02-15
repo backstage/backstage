@@ -30,10 +30,10 @@ import {
 import {
   CatalogProcessor,
   EntityProvider,
+  PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { PlaceholderResolver } from '../modules';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint

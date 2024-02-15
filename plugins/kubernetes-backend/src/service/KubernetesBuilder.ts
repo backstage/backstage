@@ -381,6 +381,7 @@ export class KubernetesBuilder {
 
           return {
             name: cd.name,
+            title: cd.title,
             dashboardUrl: cd.dashboardUrl,
             authProvider,
             ...(oidcTokenProvider && { oidcTokenProvider }),

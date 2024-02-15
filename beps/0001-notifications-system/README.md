@@ -261,11 +261,13 @@ Example signal payload for a new notification:
 }
 ```
 
-#### Future considerations
+#### Future considerations and BEP TODO
 
-- Add icon for the notification request (for UX purposes)
 - Broadcast messages are to be saved to a separate table for performance reasons
 - OpenAPI tooling is taken into use for the notification router and client
+- Allow using dynamic values in notification payload, for example entity references `{{ user:default/john.doe }}` should be rendered by the frontend with `EntityRefLink` component. Defining the dynamic data values should be done before implementation.
+- Add configurable automatic clean-up of old notifications to save storage space
+- Support for saving user notification settings
 
 ### Frontend API
 
@@ -352,13 +354,15 @@ interface SignalApi {
 }
 ```
 
-#### Future considerations
+#### Future considerations and BEP TODO
 
-- Notification frontend utilizes [Web Notification API](https://developer.mozilla.org/en-US/docs/Web/API/Notification) to notify user for new notifications
-- Unread notifications count is displayed in the title of the page
-- Configuration can be used to enable or disable features in the notification system (Web Notification API, title change, etc.)
 - Replace absent signal service with long polling. This requires changes to the `signals` plugin as well.
-- Notifications can have severity that is used to determine how notifications are shown to the user
+- Render dynamic values with various different React elements such as the `EntityRefLink` for entity references (for example `{{ user:default/john.doe }}`) in the notification payload
+- Handle `link` values that use route references. For example instead hard-coding link to `/catalog/default/component/artist-web` it should be possible to use `catalogPlugin.catalogEntity` route reference as a link of the notification. This should also allow using parameters to be passed to the route reference
+- Add support for `analyticsApi` to notification actions like marking notifications done, saved or opening links in the notifications
+- Add support for user settings to control how notifications are shown to the user and which notifications user wants to receive. This should also include support for different `NotificationProcessor`s that can send notification to external systems
+- Add a sound to be played when notification is received
+- Add i18n internationalization support for the notification payload
 
 ## Release Plan
 

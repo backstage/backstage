@@ -1,5 +1,23 @@
 # @backstage/backend-app-api
 
+## 0.5.11-next.3
+
+### Patch Changes
+
+- 54ad8e1: Allow the `createConfigSecretEnumerator` to take an optional `schema` argument with an already-loaded global configuration schema.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/cli-node@0.2.3-next.0
+  - @backstage/backend-tasks@0.5.15-next.3
+  - @backstage/config-loader@1.6.2-next.0
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/plugin-permission-node@0.7.21-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.5.11-next.2
 
 ### Patch Changes

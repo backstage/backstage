@@ -23,7 +23,7 @@ jobs:
 
     services:
       postgres16:
-        image: postgres:16@sha256:09f23e02d76670d3b346a3c00aa33a27cf57aab8341eedfcdaed41459d14f5c4
+        image: postgres:16@sha256:39d764950f22cfe878661247bb15cb344169dc3d55c9d4676303a2ef8675c057
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -34,7 +34,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres12:
-        image: postgres:12@sha256:8ffdca6e9208aceb30653fa0cc1c38956303ace453944b54b4f71019cfe854c1
+        image: postgres:12@sha256:7a4c3f690fa767db8aaa4a9da3870037535307cc7f8f1880f1d7275a1be29b4d
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -45,7 +45,7 @@ jobs:
         ports:
           - 5432/tcp
       mysql8:
-        image: mysql:8@sha256:2a9ef1075ff30c65bbcf4f96b25a03ea3b3f492c284e6c4a612c269ce4c5bb19
+        image: mysql:8@sha256:343b82684a6b05812c58ca20ccd3af8bcf8a5f48b1842f251c54379bfce848f9
         env:
           MYSQL_ROOT_PASSWORD: root
         options: >-
@@ -58,7 +58,7 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: ${{ matrix.node-version == '20.x' && '--max-old-space-size=4096 --no-node-snapshot' || '--max-old-space-size=4096' }}
+      NODE_OPTIONS: ${{ matrix.node-version == '20.x' && '--max-old-space-size=8192 --no-node-snapshot' || '--max-old-space-size=8192' }}
       INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
       INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
       INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
@@ -140,7 +140,7 @@ jobs:
 
     env:
       CI: 'true'
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=8192
 
     steps:
       - name: Harden Runner

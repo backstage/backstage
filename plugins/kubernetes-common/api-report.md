@@ -112,6 +112,7 @@ export interface ClusterAttributes {
   dashboardParameters?: JsonObject;
   dashboardUrl?: string;
   name: string;
+  title?: string;
 }
 
 // @public (undocumented)

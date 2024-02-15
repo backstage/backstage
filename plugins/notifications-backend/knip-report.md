@@ -2,13 +2,13 @@
 
 ## Unused dependencies (1)
 
-| Name       | Location     |
-|:-----------|:-------------|
-| node-fetch | package.json |
+| Name       | Location     | Severity |
+| :--------- | :----------- | :------- |
+| node-fetch | package.json | error    |
 
 ## Unused devDependencies (1)
 
-| Name | Location     |
-|:----|:-------------|
-| msw | package.json |
+| Name | Location     | Severity |
+| :-- | :----------- | :------- |
+| msw | package.json | error    |
 

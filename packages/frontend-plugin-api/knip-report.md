@@ -2,9 +2,9 @@
 
 ## Unused dependencies (3)
 
-| Name                       | Location     |
-|:---------------------------|:-------------|
-| lodash                     | package.json |
-| @material-ui/core          | package.json |
-| @backstage/core-components | package.json |
+| Name                       | Location     | Severity |
+| :------------------------- | :----------- | :------- |
+| @backstage/core-components | package.json | error    |
+| @material-ui/core          | package.json | error    |
+| lodash                     | package.json | error    |
 

@@ -20,12 +20,12 @@ import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonValue } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
-import { TaskContext } from './types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
   createTemplateAction,
   TaskSecrets,
   TemplateAction,
+  TaskContext,
 } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { z } from 'zod';

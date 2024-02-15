@@ -2,25 +2,25 @@
 
 ## Unused dependencies (2)
 
-| Name          | Location     |
-|:--------------|:-------------|
-| linkifyjs     | package.json |
-| @date-io/core | package.json |
+| Name          | Location     | Severity |
+| :------------ | :----------- | :------- |
+| @date-io/core | package.json | error    |
+| linkifyjs     | package.json | error    |
 
 ## Unused devDependencies (4)
 
-| Name                    | Location     |
-|:------------------------|:-------------|
-| cross-fetch             | package.json |
-| @testing-library/dom    | package.json |
-| @types/google-protobuf  | package.json |
-| @backstage/app-defaults | package.json |
+| Name                    | Location     | Severity |
+| :---------------------- | :----------- | :------- |
+| @backstage/app-defaults | package.json | error    |
+| @types/google-protobuf  | package.json | error    |
+| @testing-library/dom    | package.json | error    |
+| cross-fetch             | package.json | error    |
 
 ## Unlisted dependencies (3)
 
-| Name              | Location                                                |
-|:------------------|:--------------------------------------------------------|
-| csstype           | src/components/Lifecycle/Lifecycle.tsx                  |
-| copy-to-clipboard | src/components/LogViewer/RealLogViewer.test.tsx         |
-| copy-to-clipboard | src/components/LogViewer/useLogViewerSelection.test.tsx |
+| Name              | Location                                                | Severity |
+| :---------------- | :------------------------------------------------------ | :------- |
+| copy-to-clipboard | src/components/LogViewer/useLogViewerSelection.test.tsx | error    |
+| copy-to-clipboard | src/components/LogViewer/RealLogViewer.test.tsx         | error    |
+| csstype           | src/components/Lifecycle/Lifecycle.tsx                  | error    |
 

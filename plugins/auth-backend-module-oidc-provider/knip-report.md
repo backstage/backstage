@@ -2,16 +2,16 @@
 
 ## Unused dependencies (2)
 
-| Name                      | Location     |
-|:--------------------------|:-------------|
-| passport                  | package.json |
-| @backstage/backend-common | package.json |
+| Name                      | Location     | Severity |
+| :------------------------ | :----------- | :------- |
+| @backstage/backend-common | package.json | error    |
+| passport                  | package.json | error    |
 
 ## Unused devDependencies (3)
 
-| Name                   | Location     |
-|:-----------------------|:-------------|
-| cookie-parser          | package.json |
-| express-session        | package.json |
-| express-promise-router | package.json |
+| Name                   | Location     | Severity |
+| :--------------------- | :----------- | :------- |
+| express-promise-router | package.json | error    |
+| express-session        | package.json | error    |
+| cookie-parser          | package.json | error    |
 

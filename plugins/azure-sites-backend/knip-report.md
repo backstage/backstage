@@ -2,14 +2,14 @@
 
 ## Unused dependencies (2)
 
-| Name                     | Location     |
-|:-------------------------|:-------------|
-| node-fetch               | package.json |
-| @backstage/catalog-model | package.json |
+| Name                     | Location     | Severity |
+| :----------------------- | :----------- | :------- |
+| @backstage/catalog-model | package.json | error    |
+| node-fetch               | package.json | error    |
 
 ## Unused devDependencies (1)
 
-| Name             | Location     |
-|:-----------------|:-------------|
-| @types/supertest | package.json |
+| Name             | Location     | Severity |
+| :--------------- | :----------- | :------- |
+| @types/supertest | package.json | error    |
 

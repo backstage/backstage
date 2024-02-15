@@ -32,10 +32,15 @@ import path from 'path';
 import { getVoidLogger } from '../logging';
 import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
-import { GerritUrlReader } from './GerritUrlReader';
+import {
+  GITILES_BASE_URL_DEPRECATION_MESSSAGE,
+  GerritUrlReader,
+} from './GerritUrlReader';
 import getRawBody from 'raw-body';
 
 const mockDir = createMockDirectory({ mockOsTmpDir: true });
+const env = process.env;
+process.env = { ...env, DISABLE_GERRIT_GITILES_REQUIREMENT: '1' };
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -93,10 +98,14 @@ describe.skip('GerritUrlReader', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
-  beforeEach(mockDir.clear);
+  beforeEach(() => {
+    mockDir.clear();
+    process.env = { ...env, DISABLE_GERRIT_GITILES_REQUIREMENT: '1' };
+  });
 
   afterAll(() => {
     jest.clearAllMocks();
+    process.env = env;
   });
 
   describe('reader factory', () => {
@@ -114,6 +123,29 @@ describe.skip('GerritUrlReader', () => {
         integrations: {},
       });
       expect(readers).toHaveLength(0);
+    });
+  });
+
+  describe('handle optional gitilesBaseUrl deprecation', () => {
+    it('should throw if gitilesBaseUrl is not set.', () => {
+      process.env = env;
+      expect(() =>
+        createReader({
+          integrations: {
+            gerrit: [{ host: 'gerrit.com' }],
+          },
+        }),
+      ).toThrow(GITILES_BASE_URL_DEPRECATION_MESSSAGE);
+    });
+    it('should not throw if gitilesBaseUrl requirement is overridden.', () => {
+      process.env = { ...env, DISABLE_GERRIT_GITILES_REQUIREMENT: '1' };
+      expect(() =>
+        createReader({
+          integrations: {
+            gerrit: [{ host: 'gerrit.com' }],
+          },
+        }),
+      ).not.toThrow();
     });
   });
 

@@ -2,9 +2,9 @@
 
 ## Unused devDependencies (3)
 
-| Name                  | Location     |
-|:----------------------|:-------------|
-| ts-node               | package.json |
-| nodemon               | package.json |
-| @types/command-exists | package.json |
+| Name                  | Location     | Severity |
+| :-------------------- | :----------- | :------- |
+| @types/command-exists | package.json | error    |
+| nodemon               | package.json | error    |
+| ts-node               | package.json | error    |
 

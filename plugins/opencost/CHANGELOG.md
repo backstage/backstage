@@ -1,5 +1,14 @@
 # @backstage/plugin-opencost
 
+## 0.2.5-next.2
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+
 ## 0.2.5-next.1
 
 ### Patch Changes

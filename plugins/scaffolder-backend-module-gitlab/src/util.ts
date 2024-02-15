@@ -19,9 +19,9 @@ import {
   GitLabIntegration,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
+import { Gitlab, GroupSchema } from '@gitbeaker/rest';
 import { z } from 'zod';
 import commonGitlabConfig from './commonGitlabConfig';
-import { Gitlab, GroupSchema } from '@gitbeaker/rest';
 import * as util from './util';
 
 export const parseRepoHost = (repoUrl: string): string => {
@@ -50,11 +50,6 @@ export const getToken = (
   }
 
   const token = config.token || integrationConfig.config.token!;
-  const tokenType = config.token ? 'oauthToken' : 'token';
-
-  if (tokenType === 'oauthToken') {
-    throw new InputError(`OAuth Token is currently not supported`);
-  }
 
   return { token: token, integrationConfig: integrationConfig };
 };

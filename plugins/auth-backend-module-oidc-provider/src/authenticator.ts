@@ -42,6 +42,7 @@ export type OidcAuthResult = {
 
 /** @public */
 export const oidcAuthenticator = createOAuthAuthenticator({
+  shouldPersistScopes: true,
   defaultProfileTransform: async (
     input: OAuthAuthenticatorResult<OidcAuthResult>,
   ) => ({
@@ -161,9 +162,6 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     const tokenset = await client.refresh(input.refreshToken);
     if (!tokenset.access_token) {
       throw new Error('Refresh failed');
-    }
-    if (!tokenset.scope) {
-      tokenset.scope = input.scope;
     }
     const userinfo = await client.userinfo(tokenset.access_token);
 

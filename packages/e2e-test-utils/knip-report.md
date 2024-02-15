@@ -2,7 +2,7 @@
 
 ## Referenced optional peerDependencies (1)
 
-| Name             | Location     |
-|:-----------------|:-------------|
-| @playwright/test | package.json |
+| Name             | Location     | Severity |
+| :--------------- | :----------- | :------- |
+| @playwright/test | package.json | error    |
 

@@ -19,18 +19,23 @@ import { JsonObject } from '@backstage/types';
 import { useEffect, useMemo, useState } from 'react';
 
 /** @public */
-export const useSignal = (channel: string) => {
+export const useSignal = <TMessage extends JsonObject = JsonObject>(
+  channel: string,
+): { lastSignal: TMessage | null; isSignalsAvailable: boolean } => {
   const apiHolder = useApiHolder();
   // Use apiHolder instead useApi in case signalApi is not available in the
   // backstage instance this is used
   const signals = apiHolder.get(signalApiRef);
-  const [lastSignal, setLastSignal] = useState<JsonObject | null>(null);
+  const [lastSignal, setLastSignal] = useState<TMessage | null>(null);
   useEffect(() => {
     let unsub: null | (() => void) = null;
     if (signals) {
-      const { unsubscribe } = signals.subscribe(channel, (msg: JsonObject) => {
-        setLastSignal(msg);
-      });
+      const { unsubscribe } = signals.subscribe<TMessage>(
+        channel,
+        (msg: TMessage) => {
+          setLastSignal(msg);
+        },
+      );
       unsub = unsubscribe;
     }
     return () => {

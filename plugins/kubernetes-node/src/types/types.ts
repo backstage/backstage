@@ -67,9 +67,13 @@ export type AuthMetadata = Record<string, string>;
  */
 export interface ClusterDetails {
   /**
-   * Specifies the name of the Kubernetes cluster.
+   * Name of the Kubernetes cluster; used as an internal identifier.
    */
   name: string;
+  /**
+   * Human-readable name for the cluster, to be dispayed in UIs.
+   */
+  title?: string;
   url: string;
   authMetadata: AuthMetadata;
   skipTLSVerify?: boolean;

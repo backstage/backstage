@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.7.4-next.2
+
+### Patch Changes
+
+- a643af8: The `ClusterAttributes` type now includes the cluster title.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 0.7.4-next.1
 
 ### Patch Changes

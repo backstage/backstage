@@ -79,9 +79,9 @@ export const createBuiltinActions: (
 
 // @public
 export interface CreateBuiltInActionsOptions {
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   // (undocumented)
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   catalogClient: CatalogApi;
   config: Config;
   integrations: ScmIntegrations;
@@ -170,8 +170,8 @@ export function createFetchPlainFileAction(options: {
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
 }): TemplateAction_2<
   {
     url: string;
@@ -344,14 +344,14 @@ export function createWaitAction(options?: {
 
 // @public
 export type CreateWorkerOptions = {
-  taskBroker: TaskBroker;
+  taskBroker: TaskBroker_2;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   concurrentTasksLimit?: number;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   permissions?: PermissionEvaluator;
 };
 
@@ -544,11 +544,11 @@ export type TaskContext = TaskContext_2;
 export type TaskEventType = TaskEventType_2;
 
 // @public
-export class TaskManager implements TaskContext {
+export class TaskManager implements TaskContext_2 {
   // (undocumented)
   get cancelSignal(): AbortSignal;
   // (undocumented)
-  complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
+  complete(result: TaskCompletionState_2, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   static create(
     task: CurrentClaimedTask,
@@ -722,7 +722,7 @@ export class TaskWorker {
   // (undocumented)
   recoverTasks(): Promise<void>;
   // (undocumented)
-  runOneTask(task: TaskContext): Promise<void>;
+  runOneTask(task: TaskContext_2): Promise<void>;
   // (undocumented)
   start(): void;
   // (undocumented)

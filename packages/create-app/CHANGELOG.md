@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.5.11-next.3
+
+### Patch Changes
+
+- 03e55b1: Updated the default app index template at `packages/app/public/index.html` to have a fallback value for the `app.title` config.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.5.11-next.2
 
 ### Patch Changes

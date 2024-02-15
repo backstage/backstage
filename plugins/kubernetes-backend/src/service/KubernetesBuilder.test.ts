@@ -278,6 +278,32 @@ describe('API integration tests', () => {
         ],
       });
     });
+
+    it('surfaces cluster title', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          minimalValidConfigService,
+          import('@backstage/plugin-kubernetes-backend/alpha'),
+          withClusters([
+            {
+              name: 'cluster-name',
+              title: 'cluster-title',
+              url: 'url',
+              authMetadata: {
+                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+              },
+            },
+          ]),
+        ],
+      });
+      app = server;
+
+      const response = await request(app).get('/api/kubernetes/clusters');
+
+      expect(response.body).toEqual({
+        items: [expect.objectContaining({ title: 'cluster-title' })],
+      });
+    });
   });
 
   describe('post /services/:serviceId', () => {

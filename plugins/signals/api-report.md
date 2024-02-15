@@ -8,6 +8,7 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { SignalApi } from '@backstage/plugin-signals-react';
+import { SignalSubscriber } from '@backstage/plugin-signals-react';
 
 // @public (undocumented)
 export class SignalClient implements SignalApi {
@@ -23,12 +24,10 @@ export class SignalClient implements SignalApi {
   // (undocumented)
   static readonly DEFAULT_RECONNECT_TIMEOUT_MS: number;
   // (undocumented)
-  subscribe(
+  subscribe<TMessage extends JsonObject = JsonObject>(
     channel: string,
-    onMessage: (message: JsonObject) => void,
-  ): {
-    unsubscribe: () => void;
-  };
+    onMessage: (message: TMessage) => void,
+  ): SignalSubscriber;
 }
 
 // @public (undocumented)

@@ -93,5 +93,5 @@ export function createUnifiedThemeFromV4(
 ): UnifiedTheme {
   const v5Theme = adaptV4Theme(options as DeprecatedThemeOptions);
   const v4Theme = createTheme(options);
-  return new UnifiedThemeHolder(v4Theme, v5Theme);
+  return new UnifiedThemeHolder(v4Theme, createV5Theme(v5Theme));
 }

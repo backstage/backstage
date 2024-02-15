@@ -56,4 +56,25 @@ describe('Cluster', () => {
     expect(screen.getByText('cluster-1')).toBeInTheDocument();
     expect(screen.getByText('10 pods')).toBeInTheDocument();
   });
+
+  it('renders title', async () => {
+    await renderInTestApp(
+      <Cluster
+        {...({
+          clusterObjects: {
+            cluster: {
+              name: 'cluster-1',
+              title: 'Cluster Number One',
+            },
+            resources: [],
+            podMetrics: [],
+            errors: [],
+          },
+          podsWithErrors: new Set<string>(),
+        } as any)}
+      />,
+    );
+
+    expect(screen.getByText('Cluster Number One')).toBeInTheDocument();
+  });
 });

@@ -59,11 +59,11 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
               'amazonaws.com/arn':
                 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
               'amazonaws.com/account-id': '957140518395',
+              'amazonaws.com/account-email': 'aws-test-account@backstage.io',
               'amazonaws.com/organization-id': 'o-1vl18kc5a3',
             },
             labels: {
               'amazonaws.com/account-status': 'active',
-              'amazonaws.com/account-email': 'aws-test-account@backstage.io',
             },
             name: 'test-account',
             title: 'Test Account',
@@ -108,11 +108,11 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
               'amazonaws.com/arn':
                 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
               'amazonaws.com/account-id': '957140518395',
+              'amazonaws.com/account-email': '',
               'amazonaws.com/organization-id': 'o-1vl18kc5a3',
             },
             labels: {
               'amazonaws.com/account-status': '',
-              'amazonaws.com/account-email': '',
             },
             name: 'test-account',
             title: 'Test Account',
