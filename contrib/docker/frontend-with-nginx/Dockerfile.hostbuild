@@ -27,7 +27,7 @@
 
 
 
-FROM nginx:mainline
+FROM nginx:mainline@sha256:74c1bb767ec295c0fcab2f4057f5f402953979c9385b86951673d335aa537536
 
 RUN apt-get update && apt-get -y install jq && rm -rf /var/lib/apt/lists/*
 
