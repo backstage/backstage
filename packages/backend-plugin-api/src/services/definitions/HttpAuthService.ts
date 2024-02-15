@@ -20,7 +20,7 @@ import { BackstageCredentials, BackstagePrincipalTypes } from './AuthService';
 /** @public */
 export interface HttpAuthService {
   credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
-    req: Request,
+    req: Request<any, any, any, any, any>,
     options?: {
       allow?: Array<TAllowed>;
       allowedAuthMethods?: Array<'token' | 'cookie'>;

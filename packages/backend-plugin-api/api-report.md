@@ -292,7 +292,7 @@ export interface ExtensionPointConfig {
 export interface HttpAuthService {
   // (undocumented)
   credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
-    req: Request_2,
+    req: Request_2<any, any, any, any, any>,
     options?: {
       allow?: Array<TAllowed>;
       allowedAuthMethods?: Array<'token' | 'cookie'>;
