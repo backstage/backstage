@@ -196,6 +196,7 @@ export interface QueryEntitiesInitialRequest {
   credentials: BackstageCredentials;
   fields?: (entity: Entity) => Entity;
   limit?: number;
+  offset?: number;
   filter?: EntityFilter;
   orderFields?: EntityOrder[];
   fullTextFilter?: {

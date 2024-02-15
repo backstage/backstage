@@ -307,7 +307,25 @@ export type EntityListContextProps<
     prev?: () => void;
   };
   totalItems?: number;
+  limit: number;
+  offset?: number;
+  setLimit: (limit: number) => void;
+  setOffset?: (offset: number) => void;
+  paginationMode: PaginationMode;
 };
+
+// @public (undocumented)
+export type EntityListPagination =
+  | boolean
+  | {
+      mode?: 'cursor';
+      limit?: number;
+    }
+  | {
+      mode: 'offset';
+      limit?: number;
+      offset?: number;
+    };
 
 // @public
 export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
@@ -316,11 +334,7 @@ export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
 
 // @public (undocumented)
 export type EntityListProviderProps = PropsWithChildren<{
-  pagination?:
-    | boolean
-    | {
-        limit?: number;
-      };
+  pagination?: EntityListPagination;
 }>;
 
 // @public (undocumented)
@@ -691,6 +705,9 @@ export class MockStarredEntitiesApi implements StarredEntitiesApi {
   // (undocumented)
   toggleStarred(entityRef: string): Promise<void>;
 }
+
+// @public (undocumented)
+export type PaginationMode = 'cursor' | 'offset' | 'none';
 
 // @public
 export interface StarredEntitiesApi {
