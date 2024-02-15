@@ -8,6 +8,7 @@ import { AuthProviderFactory as AuthProviderFactory_2 } from '@backstage/plugin-
 import { AuthProviderRouteHandlers as AuthProviderRouteHandlers_2 } from '@backstage/plugin-auth-node';
 import { AuthResolverCatalogUserQuery as AuthResolverCatalogUserQuery_2 } from '@backstage/plugin-auth-node';
 import { AuthResolverContext as AuthResolverContext_2 } from '@backstage/plugin-auth-node';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { AwsAlbResult as AwsAlbResult_2 } from '@backstage/plugin-auth-backend-module-aws-alb-provider';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
@@ -17,11 +18,13 @@ import { ClientAuthResponse } from '@backstage/plugin-auth-node';
 import { Config } from '@backstage/config';
 import { CookieConfigurer as CookieConfigurer_2 } from '@backstage/plugin-auth-node';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { encodeOAuthState } from '@backstage/plugin-auth-node';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GcpIapResult as GcpIapResult_2 } from '@backstage/plugin-auth-backend-module-gcp-iap-provider';
 import { GcpIapTokenInfo as GcpIapTokenInfo_2 } from '@backstage/plugin-auth-backend-module-gcp-iap-provider';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { OAuth2ProxyResult as OAuth2ProxyResult_2 } from '@backstage/plugin-auth-backend-module-oauth2-proxy-provider';
 import { OAuthEnvironmentHandler as OAuthEnvironmentHandler_2 } from '@backstage/plugin-auth-node';
@@ -117,7 +120,13 @@ export type BitbucketServerOAuthResult = {
 
 // @public
 export class CatalogIdentityClient {
-  constructor(options: { catalogApi: CatalogApi; tokenManager: TokenManager });
+  constructor(options: {
+    catalogApi: CatalogApi;
+    tokenManager: TokenManager;
+    discovery: DiscoveryService;
+    auth?: AuthService;
+    httpAuth?: HttpAuthService;
+  });
   findUser(query: { annotations: Record<string, string> }): Promise<UserEntity>;
   resolveCatalogMembership(query: {
     entityRefs: string[];
@@ -643,6 +652,8 @@ export const readState: typeof decodeOAuthState;
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
+  auth?: AuthService;
+  // (undocumented)
   catalogApi?: CatalogApi;
   // (undocumented)
   config: Config;
@@ -652,6 +663,8 @@ export interface RouterOptions {
   disableDefaultProviderFactories?: boolean;
   // (undocumented)
   discovery: PluginEndpointDiscovery;
+  // (undocumented)
+  httpAuth?: HttpAuthService;
   // (undocumented)
   logger: LoggerService;
   // (undocumented)
