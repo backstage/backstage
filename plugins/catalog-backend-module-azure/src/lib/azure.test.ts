@@ -89,6 +89,7 @@ describe('azure', () => {
           'engineering',
           '',
           '/catalog-info.yaml',
+          '',
         ),
       ).resolves.toEqual([]);
     });
@@ -154,6 +155,7 @@ describe('azure', () => {
         'engineering',
         '',
         '/catalog-info.yaml',
+        '',
       ),
     ).resolves.toEqual(response.results);
   });
@@ -210,6 +212,7 @@ describe('azure', () => {
         'engineering',
         'backstage',
         '/catalog-info.yaml',
+        '',
       ),
     ).resolves.toEqual(response.results);
   });
@@ -325,6 +328,7 @@ describe('azure', () => {
         'engineering',
         '',
         '/catalog-info.yaml',
+        '',
       ),
     ).resolves.toEqual(response.results);
   });
@@ -384,6 +388,7 @@ describe('azure', () => {
         'engineering',
         'backstage',
         '/catalog-info.yaml',
+        '',
       ),
     ).resolves.toHaveLength(totalCount);
   });
