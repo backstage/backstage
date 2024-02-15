@@ -180,9 +180,9 @@ export namespace mockServices {
     });
     export const mock = simpleMock(coreServices.auth, () => ({
       authenticate: jest.fn(),
-      getOwnCredentials: jest.fn(),
+      getOwnServiceCredentials: jest.fn(),
       isPrincipal: jest.fn() as any,
-      issueServiceToken: jest.fn(),
+      getPluginRequestToken: jest.fn(),
     }));
   }
 
@@ -217,7 +217,6 @@ export namespace mockServices {
     export const mock = simpleMock(coreServices.httpAuth, () => ({
       credentials: jest.fn(),
       issueUserCookie: jest.fn(),
-      requestHeaders: jest.fn(),
     }));
   }
 

@@ -22,16 +22,21 @@ export interface AuthService {
   // (undocumented)
   authenticate(token: string): Promise<BackstageCredentials>;
   // (undocumented)
-  getOwnCredentials(): Promise<BackstageCredentials<BackstageServicePrincipal>>;
+  getOwnServiceCredentials(): Promise<
+    BackstageCredentials<BackstageServicePrincipal>
+  >;
+  // (undocumented)
+  getPluginRequestToken(options: {
+    onBehalfOf: BackstageCredentials;
+    targetPluginId: string;
+  }): Promise<{
+    token: string;
+  }>;
   // (undocumented)
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(
     credentials: BackstageCredentials,
     type: TType,
   ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
-  // (undocumented)
-  issueServiceToken(options: { forward: BackstageCredentials }): Promise<{
-    token: string;
-  }>;
 }
 
 // @public (undocumented)
@@ -295,10 +300,6 @@ export interface HttpAuthService {
   ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>>;
   // (undocumented)
   issueUserCookie(res: Response_2): Promise<void>;
-  // (undocumented)
-  requestHeaders(options: {
-    forward: BackstageCredentials;
-  }): Promise<Record<string, string>>;
 }
 
 // @public (undocumented)

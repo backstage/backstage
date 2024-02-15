@@ -63,7 +63,7 @@ type RequestWithCredentials = Request & {
   [credentialsSymbol]?: Promise<BackstageCredentials>;
 };
 
-class DefaultHttpAuthService implements HttpAuthService {
+export class DefaultHttpAuthService implements HttpAuthService {
   constructor(
     private readonly auth: AuthService,
     private readonly discovery: DiscoveryService,
@@ -130,14 +130,6 @@ class DefaultHttpAuthService implements HttpAuthService {
     }
 
     return credentials as any;
-  }
-
-  async requestHeaders(options: {
-    forward: BackstageCredentials;
-  }): Promise<Record<string, string>> {
-    return {
-      Authorization: `Bearer ${await this.auth.issueServiceToken(options)}`,
-    };
   }
 
   async issueUserCookie(res: Response): Promise<void> {

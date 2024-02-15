@@ -234,7 +234,7 @@ export function createDatabaseClient(
   },
 ): knexFactory.Knex<any, any[]>;
 
-// @public (undocumented)
+// @public
 export function createLegacyAuthAdapters<
   TOptions extends {
     auth?: AuthService;

@@ -154,16 +154,17 @@ class DefaultAuthService implements AuthService {
     return true;
   }
 
-  async getOwnCredentials(): Promise<
+  async getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
   > {
     return createCredentialsWithServicePrincipal(`plugin:${this.pluginId}`);
   }
 
-  async issueServiceToken(options: {
-    forward: BackstageCredentials;
+  async getPluginRequestToken(options: {
+    onBehalfOf: BackstageCredentials;
+    targetPluginId: string;
   }): Promise<{ token: string }> {
-    const internalForward = toInternalBackstageCredentials(options.forward);
+    const internalForward = toInternalBackstageCredentials(options.onBehalfOf);
     const { type } = internalForward.principal;
 
     switch (type) {
