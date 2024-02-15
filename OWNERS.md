@@ -108,6 +108,20 @@ Scope: The TechDocs plugin and related tooling
 
 These incubating project areas have shared ownership with @backstage/maintainers.
 
+### Community Plugins
+
+Team: @backstage/community-plugins-maintainers
+
+Scope: Tooling related to the Backstage [Community Plugins repository](https://github.com/backstage/community-plugins)
+
+| Name                 | Organization | GitHub                                      | Discord      |
+| -------------------- | ------------ | ------------------------------------------- | ------------ |
+| Bethany Griggs       | Red Hat      | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
+| Tomas Kral           | Red Hat      | [kadel](https://github.com/kadel)           | `tomkral`    |
+| André Wanlin         | Spotify      | [awanlin](https://github.com/awanlin)       | `ahhhndre`   |
+| Philipp Hugenroth    | Spotify      | [tudi2d](https://github.com/tudi2d)         | `tudi2d`     |
+| Vincenzo Scamporlino | Spotify      | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
+
 ### OpenAPI Tooling
 
 Team: @backstage/openapi-tooling-maintainers
