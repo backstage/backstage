@@ -12,7 +12,7 @@ The easiest way to create a new theme is to use the `createUnifiedTheme` functio
 
 For example, you can create a new theme based on the default light theme like this:
 
-```ts
+```ts title="packages/app/src/theme/myTheme.ts"
 import {
   createBaseThemeOptions,
   createUnifiedTheme,
@@ -28,6 +28,8 @@ const myTheme = createUnifiedTheme({
 });
 ```
 
+> Note: we recommend creating a `theme` folder in `packages/app/src` to place your theme file to keep things nicely organized.
+
 You can also create a theme from scratch that matches the `BackstageTheme` type exported by [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme). See the
 [Material UI docs on theming](https://material-ui.com/customization/theming/) for more information about how that can be done.
 
@@ -37,7 +39,7 @@ To add a custom theme to your Backstage app, you pass it as configuration to `cr
 
 For example, adding the theme that we created in the previous section can be done like this:
 
-```tsx
+```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/app-defaults';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -62,7 +64,7 @@ Note that your list of custom themes overrides the default themes. If you still 
 
 ## Example of a custom theme
 
-```ts
+```ts title="packages/app/src/theme/myTheme.ts"
 import {
   createBaseThemeOptions,
   createUnifiedTheme,
@@ -149,7 +151,7 @@ For a more complete example of a custom theme including Backstage and Material U
 
 When creating a custom theme you can also customize various aspects of the default typography, here's an example using simplified theme:
 
-```tsx
+```ts title="packages/app/src/theme/myTheme.ts"
 import {
   createBaseThemeOptions,
   createUnifiedTheme,
@@ -200,7 +202,7 @@ const myTheme = createUnifiedTheme({
 
 If you wanted to only override a sub-set of the typography setting, for example just `h1` then you would do this:
 
-```tsx
+```ts title="packages/app/src/theme/myTheme.ts"
 import {
   createBaseThemeOptions,
   createUnifiedTheme,
@@ -247,7 +249,7 @@ Notice how the `padding` is getting its value from `theme.spacing`, that means t
 
 Here's how you would do that:
 
-```tsx
+```ts title="packages/app/src/theme/myTheme.ts"
 import {
   createBaseThemeOptions,
   createUnifiedTheme,
@@ -433,7 +435,7 @@ For this example we'll show you how you can expand the sidebar with a sub-menu:
 
 3. Then update the `@backstage/core-components` import like this:
 
-   ```tsx
+   ```tsx title="packages/app/src/components/Root/Root.tsx"
    import {
      Sidebar,
      sidebarConfig,
@@ -455,7 +457,7 @@ For this example we'll show you how you can expand the sidebar with a sub-menu:
 
 4. Finally replace `<SidebarItem icon={HomeIcon} to="catalog" text="Home" />` with this:
 
-   ```tsx
+   ```tsx title="packages/app/src/components/Root/Root.tsx"
    <SidebarItem icon={HomeIcon} to="catalog" text="Home">
      <SidebarSubmenu title="Catalog">
        <SidebarSubmenuItem
