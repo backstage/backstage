@@ -64,7 +64,7 @@
     "express-promise-router": "^4.1.0",
     "express-session": "^1.17.1",
     "fs-extra": "^11.2.0",
-    "google-auth-library": "^8.0.0",
+    "google-auth-library": "^9.0.0",
     "jose": "^4.6.0",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",

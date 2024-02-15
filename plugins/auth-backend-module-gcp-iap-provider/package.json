@@ -36,7 +36,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "google-auth-library": "^8.0.0"
+    "google-auth-library": "^9.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
