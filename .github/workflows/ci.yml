@@ -155,7 +155,7 @@ jobs:
     name: Test ${{ matrix.node-version }}
     services:
       postgres16:
-        image: postgres:16@sha256:39d764950f22cfe878661247bb15cb344169dc3d55c9d4676303a2ef8675c057
+        image: postgres:16@sha256:1dedd4d752a0db1f7de69c6c1a7f4c573a18992b73ce705380db2ce34e0a2dbb
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
