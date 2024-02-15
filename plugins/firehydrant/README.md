@@ -8,9 +8,9 @@ The [FireHydrant](https://firehydrant.io) plugin brings incident management to B
 
 ## Features
 
-- View total active incidents for a service declared in FireHydrant
-- Quick links to the top 5 most recent active incidents in FireHydrant
-- View incident metrics for a given service within the last 30 days, including: healthiness, total time impacted, total number of incidents, and MTT* (Mean Time To *) data such as MTTD (detect), MTTA (acknowledge), MTTM (mitigate) and MTTR (resolve).
+- View all active incidents for a declared service in FireHydrant.
+- Quickly access the top 5 most recent active occurrences in the system.
+- View issue metrics for a certain service for the previous 30 days, including: healthiness, total time impacted, total number of incidents, and MTT* (Mean Time To *) statistics like MTTD (detect), MTTA (acknowledge), MTTM (mitigate), and MTTR (resolve).
 
 ## Setup
 
