@@ -24,7 +24,7 @@ import {
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
-import globby from 'globby';
+import { globby } from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
 import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
