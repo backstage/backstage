@@ -21,3 +21,4 @@
  */
 
 export * from './actions';
+export { giteaModule as default } from './module';
