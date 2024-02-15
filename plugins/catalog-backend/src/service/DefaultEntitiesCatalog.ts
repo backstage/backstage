@@ -452,6 +452,13 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       // fetch an extra item to check if there are more items.
       .limit(isFetchingBackwards ? limit : limit + 1);
 
+    if (
+      isQueryEntitiesInitialRequest(request) &&
+      request.offset !== undefined
+    ) {
+      dbQuery.offset(request.offset);
+    }
+
     countQuery.count('search.entity_id', { as: 'count' });
 
     const [rows, [{ count }]] = await Promise.all([
