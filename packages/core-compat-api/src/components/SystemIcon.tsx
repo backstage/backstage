@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 
-import { useApp } from '@backstage/core-plugin-api';
-import React from 'react';
+import React, { ComponentProps } from 'react';
+import { useApp, IconComponent } from '@backstage/core-plugin-api';
 import { compatWrapper } from '../compatWrapper';
 
 /**
  * @public
- * Props for the System Icon component.
+ * Props for the SystemIcon component.
  */
-export type SystemIconProps = {
-  // The id of the system icon to render.
-  id: string;
-  // An optional fallback element to render when the system icon is not found.
-  fallback?: JSX.Element;
+export type SystemIconProps = ComponentProps<IconComponent> & {
+  // The id of the system icon to render, if provided as an array, the first icon found will be rendered.
+  keys: string | string[];
+  // An optional fallback icon component to render when the system icon is not found.
+  // Default to () => null.
+  Fallback?: IconComponent;
 };
 
 function SystemIcon(props: SystemIconProps) {
-  const { id, fallback = null } = props;
+  const { keys, Fallback = () => null, ...rest } = props;
   const app = useApp();
-  const Component = app.getSystemIcon(id);
-  return Component ? <Component /> : fallback;
+  for (const key of Array.isArray(keys) ? keys : [keys]) {
+    const Icon = app.getSystemIcon(key);
+    if (Icon) return <Icon {...rest} />;
+  }
+  return <Fallback {...rest} />;
 }
 
 /**
@@ -42,11 +46,33 @@ function SystemIcon(props: SystemIconProps) {
  * @example
  * Rendering the "kind:api" icon:
  * ```tsx
- * <SystemIcon id="kind:api" />
+ * <SystemIcon keys="kind:api" />
+ * ```
+ * @example
+ * Providing multiple icon ids:
+ * ```tsx
+ * <SystemIcon keys={['kind:user', 'user']} />
+ * ```
+ * @example
+ * Customizing the fallback icon:
+ * ```tsx
+ * <SystemIcon keys="kind:api" Fallback={ApiFallbackIcon} />
+ * ```
+ * @example
+ * Customizing the icon font size:
+ * ```tsx
+ * <SystemIcon keys="kind:api" fontSize="medium" />
  * ```
  */
 function CompatSystemIcon(props: SystemIconProps) {
-  return compatWrapper(<SystemIcon {...props} />);
+  try {
+    // Check if the app context is available
+    useApp();
+    return <SystemIcon {...props} />;
+  } catch {
+    // Fallback to the compat wrapper if the app context is not available
+    return compatWrapper(<SystemIcon {...props} />);
+  }
 }
 
 export { CompatSystemIcon as SystemIcon };

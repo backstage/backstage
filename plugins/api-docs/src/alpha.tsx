@@ -49,7 +49,7 @@ import { apiDocsConfigRef } from './config';
 const apiDocsNavItem = createNavItemExtension({
   title: 'APIs',
   routeRef: convertLegacyRouteRef(rootRoute),
-  icon: () => <SystemIcon id="kind:api" />,
+  icon: () => <SystemIcon keys="kind:api" />,
 });
 
 const apiDocsConfigApi = createApiExtension({
