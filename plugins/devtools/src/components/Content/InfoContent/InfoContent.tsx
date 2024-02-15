@@ -61,7 +61,7 @@ export const InfoContent = () => {
   const alertApi = useApi(alertApiRef);
   const [infoCopied, setInfoCopied] = useState(false);
   const { about, loading, error } = useInfo();
-  const [, setCopied] = useCopyToClipboard();
+  const [state, setCopied] = useCopyToClipboard();
 
   const copyToClipboard = () => {
     if (about) {
@@ -74,11 +74,13 @@ export const InfoContent = () => {
       }
       setCopied(formatted);
       setInfoCopied(true);
-      alertApi.post({
-        message: `Info copied to the clipboard`,
-        severity: 'success',
-        display: 'transient',
-      });
+      if (state.error) {
+        alertApi.post({
+          message: state.error.message,
+          severity: 'error',
+          display: 'transient',
+        });
+      }
     }
   };
 
