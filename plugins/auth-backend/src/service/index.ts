@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-export { bindOidcRouter } from './router';
-export { TokenFactory } from './TokenFactory';
-export { DatabaseKeyStore } from './DatabaseKeyStore';
-export { MemoryKeyStore } from './MemoryKeyStore';
-export { FirestoreKeyStore } from './FirestoreKeyStore';
-export { KeyStores } from './KeyStores';
-export type { KeyStore, TokenParams } from './types';
+export { createRouter, type RouterOptions } from './router';
