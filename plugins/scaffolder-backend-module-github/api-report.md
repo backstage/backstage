@@ -205,6 +205,12 @@ export function createGithubRepoCreateAction(options: {
           [key: string]: string;
         }
       | undefined;
+    oidcCustomization?:
+      | {
+          useDefault: boolean;
+          includeClaimKeys?: string[] | undefined;
+        }
+      | undefined;
     requireCommitSigning?: boolean | undefined;
   },
   JsonObject
@@ -350,6 +356,12 @@ export function createPublishGithubAction(options: {
     secrets?:
       | {
           [key: string]: string;
+        }
+      | undefined;
+    oidcCustomization?:
+      | {
+          useDefault: boolean;
+          includeClaimKeys?: string[] | undefined;
         }
       | undefined;
     requiredCommitSigning?: boolean | undefined;
