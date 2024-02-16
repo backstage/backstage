@@ -63,7 +63,7 @@ type RequestWithCredentials = Request & {
   [credentialsSymbol]?: Promise<BackstageCredentials>;
 };
 
-export class DefaultHttpAuthService implements HttpAuthService {
+class DefaultHttpAuthService implements HttpAuthService {
   constructor(
     private readonly auth: AuthService,
     private readonly discovery: DiscoveryService,

@@ -38,7 +38,6 @@ import {
   rootLifecycleServiceFactory,
   schedulerServiceFactory,
   urlReaderServiceFactory,
-  httpAuthServiceFactory,
   discoveryServiceFactory,
   HostDiscovery,
 } from '@backstage/backend-app-api';
@@ -47,8 +46,7 @@ import { JsonObject } from '@backstage/types';
 import { MockIdentityService } from './MockIdentityService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockAuthService } from './MockAuthService';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { DefaultHttpAuthService } from '../../../../backend-app-api/src/services/implementations/httpAuth/httpAuthServiceFactory';
+import { MockHttpAuthService } from './MockHttpAuthService';
 
 /** @internal */
 function simpleFactory<
@@ -206,14 +204,14 @@ export namespace mockServices {
   }
 
   export function httpAuth(options?: { pluginId?: string }): HttpAuthService {
-    return new DefaultHttpAuthService(
-      auth(),
-      discovery(),
-      options?.pluginId ?? 'test',
-    );
+    return new MockHttpAuthService(options?.pluginId ?? 'test');
   }
   export namespace httpAuth {
-    export const factory = httpAuthServiceFactory;
+    export const factory = createServiceFactory({
+      service: coreServices.httpAuth,
+      deps: { plugin: coreServices.pluginMetadata },
+      factory: ({ plugin }) => new MockHttpAuthService(plugin.getId()),
+    });
     export const mock = simpleMock(coreServices.httpAuth, () => ({
       credentials: jest.fn(),
       issueUserCookie: jest.fn(),
