@@ -27,9 +27,9 @@ describe('MockAuthService', () => {
   const auth = new MockAuthService('test');
 
   it('should reject invalid tokens', async () => {
-    await expect(auth.authenticate('')).rejects.toThrow('Invalid mock token');
+    await expect(auth.authenticate('')).rejects.toThrow('Token is empty');
     await expect(auth.authenticate('not-a-mock-token')).rejects.toThrow(
-      'Invalid mock token',
+      "Unknown mock token 'not-a-mock-token'",
     );
     await expect(auth.authenticate(MOCK_USER_TOKEN_PREFIX)).rejects.toThrow(
       'Unexpected end of JSON input',
