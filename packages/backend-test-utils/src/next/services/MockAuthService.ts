@@ -49,6 +49,8 @@ export class MockAuthService implements AuthService {
         throw new AuthenticationError('User token is invalid');
       case MOCK_INVALID_SERVICE_TOKEN:
         throw new AuthenticationError('Service token is invalid');
+      case '':
+        throw new AuthenticationError('Token is empty');
       default:
     }
 
@@ -73,7 +75,7 @@ export class MockAuthService implements AuthService {
       return mockCredentials.service(subject);
     }
 
-    throw new AuthenticationError('Invalid mock token');
+    throw new AuthenticationError(`Unknown mock token '${token}'`);
   }
 
   async getOwnServiceCredentials(): Promise<
