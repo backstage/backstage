@@ -17,7 +17,9 @@
 import {
   PluginEndpointDiscovery,
   TokenManager,
+  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ExploreTool } from '@backstage/plugin-explore-common';
 import {
@@ -44,6 +46,7 @@ export type ToolDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger;
   tokenManager?: TokenManager;
+  auth?: AuthService;
 };
 
 /**
@@ -56,12 +59,13 @@ export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
 
   private readonly discovery: PluginEndpointDiscovery;
   private readonly logger: Logger;
-  private readonly tokenManager?: TokenManager;
+  private readonly auth: AuthService;
 
   private constructor(options: ToolDocumentCollatorFactoryOptions) {
     this.discovery = options.discovery;
     this.logger = options.logger;
-    this.tokenManager = options.tokenManager;
+
+    this.auth = createLegacyAuthAdapters(options).auth;
   }
 
   static fromConfig(
@@ -94,16 +98,13 @@ export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
   private async fetchTools() {
     const baseUrl = await this.discovery.getBaseUrl('explore');
 
-    let headers = {};
-
-    if (this.tokenManager) {
-      const { token } = await this.tokenManager.getToken();
-      headers = {
-        Authorization: `Bearer ${token}`,
-      };
-    }
-
-    const response = await fetch(`${baseUrl}/tools`, headers);
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: 'explore',
+    });
+    const response = await fetch(`${baseUrl}/tools`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (!response.ok) {
       throw new Error(

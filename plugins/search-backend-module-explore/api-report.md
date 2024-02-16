@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { AuthService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { ExploreTool } from '@backstage/plugin-explore-common';
@@ -37,5 +38,6 @@ export type ToolDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger;
   tokenManager?: TokenManager;
+  auth?: AuthService;
 };
 ```
