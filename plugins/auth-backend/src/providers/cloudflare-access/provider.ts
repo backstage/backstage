@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  AuthHandler,
-  AuthProviderRouteHandlers,
-  AuthResolverContext,
-  AuthResponse,
-  SignInResolver,
-} from '../types';
+
+import { AuthHandler } from '../types';
 import fetch, { Headers } from 'node-fetch';
 import express from 'express';
 import * as _ from 'lodash';
@@ -33,6 +28,12 @@ import { CacheClient } from '@backstage/backend-common';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 import { commonByEmailResolver } from '../resolvers';
+import {
+  AuthProviderRouteHandlers,
+  AuthResolverContext,
+  ClientAuthResponse,
+  SignInResolver,
+} from '@backstage/plugin-auth-node';
 
 // JWT Web Token definitions are in the URL below
 // https://developers.cloudflare.com/cloudflare-one/identity/users/validating-json/
@@ -174,7 +175,7 @@ export type CloudflareAccessProviderInfo = {
 };
 
 export type CloudflareAccessResponse =
-  AuthResponse<CloudflareAccessProviderInfo>;
+  ClientAuthResponse<CloudflareAccessProviderInfo>;
 
 export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
   private readonly teamName: string;

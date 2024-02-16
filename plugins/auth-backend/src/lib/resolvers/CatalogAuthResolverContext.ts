@@ -25,10 +25,13 @@ import {
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { TokenIssuer, TokenParams } from '../../identity/types';
-import { AuthResolverContext } from '../../providers';
-import { AuthResolverCatalogUserQuery } from '../../providers/types';
+import { TokenIssuer } from '../../identity/types';
 import { CatalogIdentityClient } from '../catalog';
+import {
+  AuthResolverCatalogUserQuery,
+  AuthResolverContext,
+  TokenParams,
+} from '@backstage/plugin-auth-node';
 
 /**
  * Uses the default ownership resolution logic to return an array

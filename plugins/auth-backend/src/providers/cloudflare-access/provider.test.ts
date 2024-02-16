@@ -21,8 +21,8 @@ import {
   CF_AUTH_IDENTITY,
   CloudflareAccessAuthProvider,
 } from './provider';
-import { AuthResolverContext } from '../types';
 import fetch from 'node-fetch';
+import { AuthResolverContext } from '@backstage/plugin-auth-node';
 
 const jwtMock = jwtVerify as jest.Mocked<any>;
 const mockJwt =

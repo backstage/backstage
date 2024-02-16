@@ -18,14 +18,13 @@ import express, { CookieOptions } from 'express';
 import crypto from 'crypto';
 import { URL } from 'url';
 import {
+  AuthProviderConfig,
+  AuthProviderRouteHandlers,
   BackstageIdentityResponse,
   BackstageSignInResult,
-} from '@backstage/plugin-auth-node';
-import {
-  AuthProviderRouteHandlers,
-  AuthProviderConfig,
   CookieConfigurer,
-} from '../../providers/types';
+  OAuthState,
+} from '@backstage/plugin-auth-node';
 import {
   AuthenticationError,
   InputError,
@@ -42,7 +41,6 @@ import {
   OAuthHandlers,
   OAuthStartRequest,
   OAuthRefreshRequest,
-  OAuthState,
   OAuthLogoutRequest,
 } from './types';
 import { prepareBackstageIdentityResponse } from '../../providers/prepareBackstageIdentityResponse';
