@@ -74,11 +74,11 @@ export const InfoContent = () => {
       }
       setCopied(formatted);
       setInfoCopied(true);
-    } else if (state.error) {
+    }
+    if (state.error) {
       alertApi.post({
         message: state.error.message,
         severity: 'error',
-        display: 'transient',
       });
     }
   };
