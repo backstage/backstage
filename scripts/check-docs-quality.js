@@ -32,7 +32,11 @@ const IGNORED_WHEN_LISTING = [
   /^docs[/\\]reference[/\\]/,
 ];
 
-const IGNORED_WHEN_EXPLICIT = [/^.*[/\\]knip-report\.md$/];
+const IGNORED_WHEN_EXPLICIT = [
+  /^ADOPTERS\.md$/,
+  /^OWNERS\.md$/,
+  /^.*[/\\]knip-report\.md$/,
+];
 
 const rootDir = resolvePath(__dirname, '..');
 
@@ -120,7 +124,6 @@ async function main() {
   const relativePaths = absolutePaths
     .map(path => relativePath(rootDir, path))
     .filter(path => !IGNORED_WHEN_EXPLICIT.some(pattern => pattern.test(path)));
-
   const success = await runVale(
     relativePaths.length === 0 ? await listFiles() : relativePaths,
   );
