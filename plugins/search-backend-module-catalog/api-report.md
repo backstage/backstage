@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { Config } from '@backstage/config';
@@ -41,6 +42,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
 
 // @public (undocumented)
 export type DefaultCatalogCollatorFactoryOptions = {
+  auth?: AuthService;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
   locationTemplate?: string;

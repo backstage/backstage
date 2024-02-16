@@ -74,6 +74,8 @@ export default createBackendModule({
       deps: {
         config: coreServices.rootConfig,
         logger: coreServices.logger,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
         discovery: coreServices.discovery,
         tokenManager: coreServices.tokenManager,
         scheduler: coreServices.scheduler,
@@ -83,6 +85,8 @@ export default createBackendModule({
       async init({
         config,
         logger,
+        auth,
+        httpAuth,
         discovery,
         tokenManager,
         scheduler,
@@ -106,6 +110,8 @@ export default createBackendModule({
           factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
             discovery,
             tokenManager,
+            auth,
+            httpAuth,
             logger: loggerToWinstonLogger(logger),
             catalogClient: catalog,
             entityTransformer: transformer,
