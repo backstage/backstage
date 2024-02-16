@@ -70,9 +70,7 @@ dev.azure.com/project-repo: <my-project>/<my-repo>
 dev.azure.com/build-definition: <build-definition-name>
 ```
 
-...and which README file belongs to each entity.
-
-Example:
+Then to display the `README` file that belongs to each entity you would do this:
 
 ```yaml
 dev.azure.com/readme-path: /<path-to>/<my-readme-file>.md
