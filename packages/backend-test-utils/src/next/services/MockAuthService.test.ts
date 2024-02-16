@@ -55,9 +55,7 @@ describe('MockAuthService', () => {
     ).resolves.toEqual(mockCredentials.user(DEFAULT_MOCK_USER_ENTITY_REF));
 
     await expect(
-      auth.authenticate(
-        mockCredentials.user.token({ userEntityRef: 'user:default/other' }),
-      ),
+      auth.authenticate(mockCredentials.user.token('user:default/other')),
     ).resolves.toEqual(mockCredentials.user('user:default/other'));
   });
 
