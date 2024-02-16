@@ -195,7 +195,7 @@ export class DefaultCatalogProcessingEngine {
             const location =
               unprocessedEntity?.metadata?.annotations?.[ANNOTATION_LOCATION];
             for (const error of result.errors) {
-              this.logger.warn(error.message, {
+              this.logger.debug(error.message, {
                 entity: entityRef,
                 location,
               });
