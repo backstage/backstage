@@ -110,9 +110,7 @@ export class MockAuthService implements AuthService {
           return { token: mockCredentials.user.token() };
         }
         return {
-          token: mockCredentials.user.token({
-            userEntityRef: principal.userEntityRef,
-          }),
+          token: mockCredentials.user.token(principal.userEntityRef),
         };
       case 'service':
         return {

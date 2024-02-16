@@ -29,6 +29,14 @@ export const MOCK_USER_TOKEN_PREFIX = 'mock-user-token:';
 export const MOCK_SERVICE_TOKEN = 'mock-service-token';
 export const MOCK_SERVICE_TOKEN_PREFIX = 'mock-service-token:';
 
+function validateUserEntityRef(ref: string) {
+  if (!ref.match(/^.+:.+\/.+$/)) {
+    throw new TypeError(
+      `Invalid user entity reference '${ref}', expected <kind>:<namespace>/<name>`,
+    );
+  }
+}
+
 /**
  * @public
  */
@@ -51,6 +59,7 @@ export namespace mockCredentials {
   export function user(
     userEntityRef: string = DEFAULT_MOCK_USER_ENTITY_REF,
   ): BackstageCredentials<BackstageUserPrincipal> {
+    validateUserEntityRef(userEntityRef);
     return {
       $$type: '@backstage/BackstageCredentials',
       principal: { type: 'user', userEntityRef },
@@ -71,9 +80,9 @@ export namespace mockCredentials {
      * into the token and forwarded to the credentials object when authenticated
      * by the mock auth service.
      */
-    export function token(payload?: TokenPayload): string {
-      if (payload) {
-        const { userEntityRef } = payload; // for fixed ordering
+    export function token(userEntityRef?: string): string {
+      if (userEntityRef) {
+        validateUserEntityRef(userEntityRef);
         return `${MOCK_USER_TOKEN_PREFIX}${JSON.stringify({ userEntityRef })}`;
       }
       return MOCK_USER_TOKEN;
@@ -84,8 +93,8 @@ export namespace mockCredentials {
      * provided it will be encoded into the token and forwarded to the
      * credentials object when authenticated by the mock auth service.
      */
-    export function header(payload?: TokenPayload): string {
-      return `Bearer ${token(payload)}`;
+    export function header(userEntityRef?: string): string {
+      return `Bearer ${token(userEntityRef)}`;
     }
   }
 
