@@ -23,7 +23,7 @@ jobs:
 
     services:
       postgres16:
-        image: postgres:16
+        image: postgres:16@sha256:1bd17d36d605b63fd62f03800a932bae292250659ffc417cf8c29836cc353b5f
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -34,7 +34,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres12:
-        image: postgres:12
+        image: postgres:12@sha256:1c3cb052f7308f8289dfe6920fe710764a6f8eb0ff6ee0583950cab3d1a61cfb
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -45,7 +45,7 @@ jobs:
         ports:
           - 5432/tcp
       mysql8:
-        image: mysql:8
+        image: mysql:8@sha256:ff5ab9cdce0b4c59704b4e2a09deed5ab8467be795e0ea20228b8528f53fcf82
         env:
           MYSQL_ROOT_PASSWORD: root
         options: >-
