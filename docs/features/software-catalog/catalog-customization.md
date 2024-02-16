@@ -30,7 +30,7 @@ Possible options are: owned, starred, or all
 
 ## Initially Selected Kind
 
-By default the initially selected Kind when viewing the Catalog in Component, but you may have reasons that you want this to be different. Let's say at your Organization they would like it to always default to Domain, here's how you would do that:
+By default the initially selected Kind when viewing the Catalog is Component, but you may have reasons that you want this to be different. Let's say at your Organization they would like it to always default to Domain, here's how you would do that:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route path="/catalog" element={<CatalogIndexPage initialKind="domain" />} />
@@ -50,7 +50,7 @@ Possible options are: owners-only or all
 
 ## Customize Columns
 
-By default the columns you see in the `CatalogIndexPage` were selected to be a good starting point for most but there may be reasons that you would like to customize these with more or less columns. On primary use case for this customization is if you added a custom Kind. Support for this was added in v1.23.0 of Backstage, make sure you are on that version or newer to use this feature. Here's an example of how to make this customization:
+By default the columns you see in the `CatalogIndexPage` were selected to be a good starting point for most but there may be reasons that you would like to customize these with more or less columns. One primary use case for this customization is if you added a custom Kind. Support for this was added in v1.23.0 of Backstage, make sure you are on that version or newer to use this feature. Here's an example of how to make this customization:
 
 ```tsx title="packages/app/src/App.tsx"
 import {
@@ -86,9 +86,9 @@ const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
 
 ## Customize Actions
 
-The `CatalogIndexPage` comes with three default actions - view, edit, and star. You might want to add more here's how:
+The `CatalogIndexPage` comes with three default actions - view, edit, and star. You might want to add more.
 
-First you'll need to add `@mui/utils` to your `packages/app/package.json`:
+To do this, first you'll need to add `@mui/utils` to your `packages/app/package.json`:
 
 ```sh
 yarn --cwd packages/app add @mui/utils
@@ -155,7 +155,7 @@ The above customization will override the existing actions. Currently the only w
 
 ## Custom Filters
 
-You can add custom filters. For example, suppose that I want to allow filtering by a custom annotation added to entities, `company.com/security-tier`. Here is how we can built a filter to support that need.
+You can add custom filters. For example, suppose that I want to allow filtering by a custom annotation added to entities, `company.com/security-tier`. Here is how we can build a filter to support that need.
 
 First we need to create a new filter that implements the `EntityFilter` interface:
 
