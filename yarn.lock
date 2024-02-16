@@ -9752,7 +9752,7 @@ __metadata:
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
-    leasot: ^12.0.0
+    leasot: ^13.0.0
     supertest: ^6.1.3
     winston: ^3.2.1
     yn: ^4.0.0
@@ -21633,7 +21633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:^3.2.0, async@npm:^3.2.3, async@npm:^3.2.4":
+"async@npm:^3.2.3, async@npm:^3.2.4":
   version: 3.2.4
   resolution: "async@npm:3.2.4"
   checksum: 43d07459a4e1d09b84a20772414aa684ff4de085cbcaec6eea3c7a8f8150e8c62aa6cd4e699fe8ee93c3a5b324e777d34642531875a0817a35697522c1b02e89
@@ -22993,7 +22993,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:5.3.0":
+"chalk@npm:5.3.0, chalk@npm:^5.0.0, chalk@npm:^5.0.1":
   version: 5.3.0
   resolution: "chalk@npm:5.3.0"
   checksum: 623922e077b7d1e9dedaea6f8b9e9352921f8ae3afe739132e0e00c275971bdd331268183b2628cf4ab1727c45ea1f28d7e24ac23ce1db1eb653c414ca8a5a80
@@ -23739,7 +23739,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^9.5.0 <10":
+"commander@npm:^9.4.0, commander@npm:^9.5.0 <10":
   version: 9.5.0
   resolution: "commander@npm:9.5.0"
   checksum: c7a3e27aa59e913b54a1bafd366b88650bc41d6651f0cbe258d4ff09d43d6a7394232a4dadd0bf518b3e696fdf595db1028a0d82c785b88bd61f8a440cecfade
@@ -29041,10 +29041,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-stdin@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "get-stdin@npm:8.0.0"
-  checksum: 40128b6cd25781ddbd233344f1a1e4006d4284906191ed0a7d55ec2c1a3e44d650f280b2c9eeab79c03ac3037da80257476c0e4e5af38ddfb902d6ff06282d77
+"get-stdin@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "get-stdin@npm:9.0.0"
+  checksum: 5972bc34d05932b45512c8e2d67b040f1c1ca8afb95c56cbc480985f2d761b7e37fe90dc8abd22527f062cc5639a6930ff346e9952ae4c11a2d4275869459594
   languageName: node
   linkType: hard
 
@@ -31410,6 +31410,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-unicode-supported@npm:^1.1.0":
+  version: 1.3.0
+  resolution: "is-unicode-supported@npm:1.3.0"
+  checksum: 20a1fc161afafaf49243551a5ac33b6c4cf0bbcce369fcd8f2951fbdd000c30698ce320de3ee6830497310a8f41880f8066d440aa3eb0a853e2aa4836dd89abc
+  languageName: node
+  linkType: hard
+
 "is-url@npm:^1.2.4":
   version: 1.2.4
   resolution: "is-url@npm:1.2.4"
@@ -33410,25 +33417,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"leasot@npm:^12.0.0":
-  version: 12.5.0
-  resolution: "leasot@npm:12.5.0"
+"leasot@npm:^13.0.0":
+  version: 13.3.0
+  resolution: "leasot@npm:13.3.0"
   dependencies:
-    async: ^3.2.0
-    chalk: ^4.1.0
-    commander: ^7.2.0
+    async: ^3.2.4
+    chalk: ^5.0.1
+    commander: ^9.4.0
     eol: ^0.9.1
-    get-stdin: ^8.0.0
-    globby: ^11.0.3
+    get-stdin: ^9.0.0
+    globby: ^13.1.2
     json2xml: ^0.1.3
     lodash: ^4.17.21
-    log-symbols: ^4.1.0
-    strip-ansi: ^6.0.0
+    log-symbols: ^5.1.0
+    strip-ansi: ^7.0.1
     text-table: ^0.2.0
   bin:
-    leasot: bin/leasot
-    leasot-reporter: bin/leasot-reporter
-  checksum: 1f27381bafc226f4242ec4bd907229d68a45be79463f26a8b7b41179212841668f49b1ee8b675b48f9452f6222c91fafe6e4eccb01b5004ec1a806d75d372b7c
+    leasot: dist/cli/leasot.js
+    leasot-reporter: dist/cli/leasot-reporter.js
+  checksum: 69eadd0992b8646470676ff59033352dcc1d0159f3303ef5bf638f425da49c9b5524356b9d42cef30be6a257b32fe985cca22e8ef1161aec3302aff7f63112d7
   languageName: node
   linkType: hard
 
@@ -33956,6 +33963,16 @@ __metadata:
     chalk: ^4.1.0
     is-unicode-supported: ^0.1.0
   checksum: fce1497b3135a0198803f9f07464165e9eb83ed02ceb2273930a6f8a508951178d8cf4f0378e9d28300a2ed2bc49050995d2bd5f53ab716bb15ac84d58c6ef74
+  languageName: node
+  linkType: hard
+
+"log-symbols@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "log-symbols@npm:5.1.0"
+  dependencies:
+    chalk: ^5.0.0
+    is-unicode-supported: ^1.1.0
+  checksum: 7291b6e7f1b3df6865bdaeb9b59605c832668ac2fa0965c63b1e7dd3700349aec09c1d7d40c368d5041ff58b7f89461a56e4009471921301af7b3609cbff9a29
   languageName: node
   linkType: hard
 
