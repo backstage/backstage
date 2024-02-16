@@ -397,31 +397,3 @@ async handle(
   };
 }
 ```
-
-#### Configure Azure DevOps PullRequest Dashboard Permission
-
-To Integrate Azure DevOps PullRequest Dashboard permssion, add the following in `packages/app/src/App.tsx`
-
-```diff
-...
-+ import { RequirePermission } from '@backstage/plugin-permission-react';
-+ import { azureDevOpsPullRequestDashboardReadPermission } from '@backstage/plugin-azure-devops-common';
-...
-...
-  const routes =(
-    <FlatRoutes>
-    ...
-+   <Route
-+     path="/pullrequest-dashboard"
-+     element={
-+      <RequirePermission permission={azureDevOpsPullRequestDashboardReadPermission}>
-+         <AzurePullRequestsPage />
-+       </RequirePermission>
-+     }
-+   >
-+   </Route>
-    ...
-    </FlatRoutes>
-  )
-...
-```
