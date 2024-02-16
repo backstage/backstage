@@ -86,6 +86,11 @@ export class MockAuthService implements AuthService {
       | BackstageUserPrincipal
       | BackstageServicePrincipal
       | BackstageNonePrincipal;
+
+    if (type === 'unknown') {
+      return true;
+    }
+
     if (principal.type !== type) {
       return false;
     }

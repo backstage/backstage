@@ -147,6 +147,10 @@ class DefaultAuthService implements AuthService {
       | BackstageUserPrincipal
       | BackstageServicePrincipal;
 
+    if (type === 'unknown') {
+      return true;
+    }
+
     if (principal.type !== type) {
       return false;
     }
