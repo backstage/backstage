@@ -15,7 +15,11 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  TestDatabaseId,
+  TestDatabases,
+  mockCredentials,
+} from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
 import { Knex } from 'knex';
@@ -220,6 +224,7 @@ describe('DefaultRefreshService', () => {
 
       await refreshService.refresh({
         entityRef: 'component:default/mycomp',
+        credentials: mockCredentials.none(),
       });
 
       await expect(
@@ -273,6 +278,7 @@ describe('DefaultRefreshService', () => {
 
       await refreshService.refresh({
         entityRef: 'api:default/myapi',
+        credentials: mockCredentials.none(),
       });
 
       await expect(waitForRefresh(knex, 'api:default/myapi')).resolves.toBe(
@@ -324,6 +330,7 @@ describe('DefaultRefreshService', () => {
 
       await refreshService.refresh({
         entityRef: 'component:default/mycomp',
+        credentials: mockCredentials.none(),
       });
 
       await expect(
@@ -334,6 +341,7 @@ describe('DefaultRefreshService', () => {
 
       await refreshService.refresh({
         entityRef: 'component:default/mycomp',
+        credentials: mockCredentials.none(),
       });
 
       await expect(
