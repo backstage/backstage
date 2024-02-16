@@ -58,6 +58,9 @@ export const groupResponses = (
         case 'statefulsets':
           prev.statefulsets.push(...next.resources);
           break;
+        case 'daemonsets':
+          prev.daemonSets.push(...next.resources);
+          break;
         default:
       }
       return prev;
@@ -74,6 +77,7 @@ export const groupResponses = (
       cronJobs: [],
       customResources: [],
       statefulsets: [],
+      daemonSets: [],
     } as GroupedResponses,
   );
 };
