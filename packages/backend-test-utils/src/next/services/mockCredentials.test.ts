@@ -53,9 +53,14 @@ describe('mockCredentials', () => {
     expect(mockCredentials.user.token('user:default/other')).toBe(
       'mock-user-token:{"userEntityRef":"user:default/other"}',
     );
+    expect(mockCredentials.user.invalidToken()).toBe('mock-invalid-user-token');
+
     expect(mockCredentials.user.header()).toBe('Bearer mock-user-token');
     expect(mockCredentials.user.header('user:default/other')).toBe(
       'Bearer mock-user-token:{"userEntityRef":"user:default/other"}',
+    );
+    expect(mockCredentials.user.invalidHeader()).toBe(
+      'Bearer mock-invalid-user-token',
     );
   });
 
@@ -86,6 +91,9 @@ describe('mockCredentials', () => {
     ).toBe(
       'mock-service-token:{"subject":"external:other","targetPluginId":"other"}',
     );
+    expect(mockCredentials.service.invalidToken()).toBe(
+      'mock-invalid-service-token',
+    );
 
     expect(mockCredentials.service.header()).toBe('Bearer mock-service-token');
     expect(mockCredentials.service.header({ subject: 'external:other' })).toBe(
@@ -112,6 +120,9 @@ describe('mockCredentials', () => {
       }),
     ).toBe(
       'Bearer mock-service-token:{"subject":"external:other","targetPluginId":"other"}',
+    );
+    expect(mockCredentials.service.invalidHeader()).toBe(
+      'Bearer mock-invalid-service-token',
     );
   });
 

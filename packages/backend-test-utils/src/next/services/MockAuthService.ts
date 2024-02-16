@@ -31,6 +31,8 @@ import {
   MOCK_SERVICE_TOKEN_PREFIX,
   DEFAULT_MOCK_USER_ENTITY_REF,
   DEFAULT_MOCK_SERVICE_SUBJECT,
+  MOCK_INVALID_USER_TOKEN,
+  MOCK_INVALID_SERVICE_TOKEN,
 } from './mockCredentials';
 
 /** @internal */
@@ -38,11 +40,16 @@ export class MockAuthService implements AuthService {
   constructor(private readonly pluginId: string) {}
 
   async authenticate(token: string): Promise<BackstageCredentials> {
-    if (token === MOCK_USER_TOKEN) {
-      return mockCredentials.user();
-    }
-    if (token === MOCK_SERVICE_TOKEN) {
-      return mockCredentials.service();
+    switch (token) {
+      case MOCK_USER_TOKEN:
+        return mockCredentials.user();
+      case MOCK_SERVICE_TOKEN:
+        return mockCredentials.service();
+      case MOCK_INVALID_USER_TOKEN:
+        throw new AuthenticationError('User token is invalid');
+      case MOCK_INVALID_SERVICE_TOKEN:
+        throw new AuthenticationError('Service token is invalid');
+      default:
     }
 
     if (token.startsWith(MOCK_USER_TOKEN_PREFIX)) {

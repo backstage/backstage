@@ -57,6 +57,10 @@ describe('MockAuthService', () => {
     await expect(
       auth.authenticate(mockCredentials.user.token('user:default/other')),
     ).resolves.toEqual(mockCredentials.user('user:default/other'));
+
+    await expect(
+      auth.authenticate(mockCredentials.user.invalidToken()),
+    ).rejects.toThrow('User token is invalid');
   });
 
   it('should authenticate mock service tokens', async () => {
@@ -91,6 +95,10 @@ describe('MockAuthService', () => {
     ).rejects.toThrow(
       "Invalid mock token target plugin ID, got 'other' but expected 'test'",
     );
+
+    await expect(
+      auth.authenticate(mockCredentials.service.invalidToken()),
+    ).rejects.toThrow('Service token is invalid');
   });
 
   it('should return own service credentials', async () => {
