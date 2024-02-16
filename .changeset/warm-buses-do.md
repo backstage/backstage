@@ -5,4 +5,3 @@
 ---
 
 Add the ability to delete an unprocessed entity from the `refresh_state` table
-∫
