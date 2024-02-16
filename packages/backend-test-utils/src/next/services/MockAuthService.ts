@@ -59,7 +59,7 @@ export class MockAuthService implements AuthService {
 
       if (targetPluginId && targetPluginId !== this.pluginId) {
         throw new AuthenticationError(
-          `Invalid mock token target, got ${targetPluginId} but expected ${this.pluginId}`,
+          `Invalid mock token target plugin ID, got '${targetPluginId}' but expected '${this.pluginId}'`,
         );
       }
 
@@ -72,10 +72,7 @@ export class MockAuthService implements AuthService {
   async getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
   > {
-    return {
-      $$type: '@backstage/BackstageCredentials',
-      principal: { type: 'service', subject: `plugin:${this.pluginId}` },
-    };
+    return mockCredentials.service(`plugin:${this.pluginId}`);
   }
 
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(
