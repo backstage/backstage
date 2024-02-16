@@ -26,8 +26,10 @@ export const DEFAULT_MOCK_SERVICE_SUBJECT = 'external:test-service';
 
 export const MOCK_USER_TOKEN = 'mock-user-token';
 export const MOCK_USER_TOKEN_PREFIX = 'mock-user-token:';
+export const MOCK_INVALID_USER_TOKEN = 'mock-invalid-user-token';
 export const MOCK_SERVICE_TOKEN = 'mock-service-token';
 export const MOCK_SERVICE_TOKEN_PREFIX = 'mock-service-token:';
+export const MOCK_INVALID_SERVICE_TOKEN = 'mock-invalid-service-token';
 
 function validateUserEntityRef(ref: string) {
   if (!ref.match(/^.+:.+\/.+$/)) {
@@ -96,6 +98,14 @@ export namespace mockCredentials {
     export function header(userEntityRef?: string): string {
       return `Bearer ${token(userEntityRef)}`;
     }
+
+    export function invalidToken(): string {
+      return MOCK_INVALID_USER_TOKEN;
+    }
+
+    export function invalidHeader(): string {
+      return `Bearer ${invalidToken()}`;
+    }
   }
 
   /**
@@ -147,6 +157,14 @@ export namespace mockCredentials {
      */
     export function header(payload?: TokenPayload): string {
       return `Bearer ${token(payload)}`;
+    }
+
+    export function invalidToken(): string {
+      return MOCK_INVALID_SERVICE_TOKEN;
+    }
+
+    export function invalidHeader(): string {
+      return `Bearer ${invalidToken()}`;
     }
   }
 }
