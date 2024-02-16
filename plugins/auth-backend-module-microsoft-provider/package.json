@@ -33,7 +33,7 @@
     "express": "^4.18.2",
     "jose": "^4.6.0",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "passport": "^0.7.0",
     "passport-microsoft": "^1.0.0"
   },

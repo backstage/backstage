@@ -61,7 +61,7 @@
     "git-url-parse": "^14.0.0",
     "lodash": "^4.17.21",
     "minimatch": "^5.1.2",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "uuid": "^8.0.0",
     "winston": "^3.2.1"
   },

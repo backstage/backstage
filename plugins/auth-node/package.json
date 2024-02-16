@@ -40,7 +40,7 @@
     "express": "^4.17.1",
     "jose": "^4.6.0",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "passport": "^0.7.0",
     "winston": "^3.2.1",
     "zod": "^3.22.4",

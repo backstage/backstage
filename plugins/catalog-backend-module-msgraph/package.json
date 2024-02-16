@@ -56,7 +56,7 @@
     "@microsoft/microsoft-graph-types": "^2.6.0",
     "@types/node-fetch": "^2.5.12",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "p-limit": "^3.0.2",
     "qs": "^6.9.4",
     "uuid": "^8.0.0",

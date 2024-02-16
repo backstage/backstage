@@ -46,7 +46,7 @@
     "knex": "^3.0.0",
     "linguist-js": "^2.5.3",
     "luxon": "^2.0.2",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "uuid": "^8.3.2",
     "winston": "^3.2.1",
     "yn": "^4.0.0"

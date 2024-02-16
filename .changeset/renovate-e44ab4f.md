@@ -1,0 +1,50 @@
+---
+'@backstage/backend-common': patch
+'@backstage/cli': patch
+'@backstage/config-loader': patch
+'@backstage/create-app': patch
+'@backstage/plugin-adr-backend': patch
+'@backstage/plugin-app-backend': patch
+'@backstage/plugin-auth-backend-module-aws-alb-provider': patch
+'@backstage/plugin-auth-backend-module-microsoft-provider': patch
+'@backstage/plugin-auth-backend': patch
+'@backstage/plugin-auth-node': patch
+'@backstage/plugin-azure-sites-backend': patch
+'@backstage/plugin-catalog-backend-module-azure': patch
+'@backstage/plugin-catalog-backend-module-bitbucket-server': patch
+'@backstage/plugin-catalog-backend-module-gerrit': patch
+'@backstage/plugin-catalog-backend-module-github': patch
+'@backstage/plugin-catalog-backend-module-gitlab': patch
+'@backstage/plugin-catalog-backend-module-msgraph': patch
+'@backstage/plugin-catalog-backend-module-puppetdb': patch
+'@backstage/plugin-catalog-backend': patch
+'@backstage/plugin-devtools-backend': patch
+'@backstage/plugin-entity-feedback-backend': patch
+'@backstage/plugin-explore-backend': patch
+'@backstage/plugin-jenkins-backend': patch
+'@backstage/plugin-kubernetes-backend': patch
+'@backstage/plugin-kubernetes-node': patch
+'@backstage/plugin-linguist-backend': patch
+'@backstage/plugin-nomad-backend': patch
+'@backstage/plugin-notifications-backend': patch
+'@backstage/plugin-periskop-backend': patch
+'@backstage/plugin-permission-backend': patch
+'@backstage/plugin-playlist-backend': patch
+'@backstage/plugin-rollbar-backend': patch
+'@backstage/plugin-scaffolder-backend-module-bitbucket-cloud': patch
+'@backstage/plugin-scaffolder-backend-module-bitbucket-server': patch
+'@backstage/plugin-scaffolder-backend-module-bitbucket': patch
+'@backstage/plugin-scaffolder-backend-module-confluence-to-markdown': patch
+'@backstage/plugin-scaffolder-backend-module-gerrit': patch
+'@backstage/plugin-scaffolder-backend-module-gitea': patch
+'@backstage/plugin-search-backend-module-explore': patch
+'@backstage/plugin-search-backend-module-stack-overflow-collator': patch
+'@backstage/plugin-search-backend-module-techdocs': patch
+'@backstage/plugin-signals-backend': patch
+'@backstage/plugin-sonarqube-backend': patch
+'@backstage/plugin-stack-overflow-backend': patch
+'@backstage/plugin-techdocs-backend': patch
+'@backstage/plugin-vault-backend': patch
+---
+
+Updated dependency `node-fetch` to `^3.0.0`.

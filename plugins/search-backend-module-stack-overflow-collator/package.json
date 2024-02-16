@@ -35,7 +35,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "qs": "^6.9.4",
     "winston": "^3.2.1"
   },

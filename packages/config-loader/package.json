@@ -46,7 +46,7 @@
     "json-schema-traverse": "^1.0.0",
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "typescript-json-schema": "^0.63.0",
     "yaml": "^2.0.0"
   },

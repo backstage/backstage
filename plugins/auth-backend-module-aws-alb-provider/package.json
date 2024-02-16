@@ -39,7 +39,7 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "jose": "^4.6.0",
     "node-cache": "^5.1.2",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^3.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

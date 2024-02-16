@@ -95,7 +95,7 @@
     "luxon": "^3.0.0",
     "minimatch": "^5.0.0",
     "mysql2": "^2.2.5",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "p-limit": "^3.1.0",
     "pg": "^8.11.3",
     "raw-body": "^2.4.1",

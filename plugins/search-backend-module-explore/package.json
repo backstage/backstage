@@ -49,7 +49,7 @@
     "@backstage/plugin-explore-common": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {

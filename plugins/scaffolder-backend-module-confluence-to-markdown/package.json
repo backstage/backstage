@@ -47,7 +47,7 @@
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "fs-extra": "^11.2.0",
     "git-url-parse": "^14.0.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "node-html-markdown": "^1.3.0",
     "yaml": "^2.0.0"
   },

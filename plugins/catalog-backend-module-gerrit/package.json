@@ -49,7 +49,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "fs-extra": "^11.2.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "uuid": "^8.0.0",
     "winston": "^3.2.1"
   },

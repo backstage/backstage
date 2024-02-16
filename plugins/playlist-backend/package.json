@@ -42,7 +42,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0",

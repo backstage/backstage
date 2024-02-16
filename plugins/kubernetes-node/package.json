@@ -44,7 +44,7 @@
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@kubernetes/client-node": "^0.20.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.0.0",
     "winston": "^3.2.1"
   }
 }
