@@ -15,13 +15,37 @@
  */
 
 import { gcpProjectsPlugin } from './plugin';
-import * as container from '@backstage/plugin-gcp-projects';
+import { GcpClient } from './api';
+import { OAuthApi } from '@backstage/core-plugin-api';
+import packageinfo from '../package.json';
 
 describe('gcp-projects', () => {
+  let sut: GcpClient;
+  let googleAuthApi: OAuthApi;
+  beforeEach(() => {
+    sut = new GcpClient(googleAuthApi);
+  });
+
   it('should export plugin', () => {
     expect(gcpProjectsPlugin).toBeDefined();
   });
-  it('should exist the GcpClient class', () => {
-    expect(container.GcpClient).toBeDefined();
+
+  it('should exist the GcpClient class', async () => {
+    const response: any = {
+      headers: {
+        Accept: '*/*',
+        'X-Goog-Api-Client': `backstage/cloudbuild/${packageinfo.version}`,
+      },
+    };
+    jest.spyOn(sut, 'listProjects').mockImplementation((): any => {
+      return response;
+    });
+
+    expect(response).toStrictEqual({
+      headers: {
+        Accept: '*/*',
+        'X-Goog-Api-Client': `backstage/cloudbuild/${packageinfo.version}`,
+      },
+    });
   });
 });
