@@ -33,7 +33,7 @@ export class GcpClient implements GcpApi {
       headers: {
         Accept: '*/*',
         Authorization: `Bearer ${await this.getToken()}`,
-        'X-Goog-Api-Client': `backstage/cloudbuild/${version}`,
+        'X-Goog-Api-Client': `backstage/gcpprojects/${version}`,
       },
     });
 
@@ -52,7 +52,7 @@ export class GcpClient implements GcpApi {
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${await this.getToken()}`,
-        'X-Goog-Api-Client': `backstage/cloudbuild/${version}`,
+        'X-Goog-Api-Client': `backstage/gcpprojects/${version}`,
       },
     });
 
@@ -79,7 +79,7 @@ export class GcpClient implements GcpApi {
       headers: {
         Accept: '*/*',
         Authorization: `Bearer ${await this.getToken()}`,
-        'X-Goog-Api-Client': `backstage/cloudbuild/${version}`,
+        'X-Goog-Api-Client': `backstage/gcpprojects/${version}`,
       },
       body: JSON.stringify(newProject),
     });
