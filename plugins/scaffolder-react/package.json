@@ -68,7 +68,6 @@
     "classnames": "^2.2.6",
     "flatted": "3.2.9",
     "humanize-duration": "^3.25.1",
-    "immer": "^9.0.1",
     "json-schema": "^0.4.0",
     "json-schema-library": "^7.3.9",
     "lodash": "^4.17.21",
