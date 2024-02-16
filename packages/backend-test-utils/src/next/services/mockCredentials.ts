@@ -73,7 +73,8 @@ export namespace mockCredentials {
      */
     export function token(payload?: TokenPayload): string {
       if (payload) {
-        return `${MOCK_USER_TOKEN_PREFIX}:${JSON.stringify(payload)}`;
+        const { userEntityRef } = payload; // for fixed ordering
+        return `${MOCK_USER_TOKEN_PREFIX}${JSON.stringify({ userEntityRef })}`;
       }
       return MOCK_USER_TOKEN;
     }
@@ -112,7 +113,11 @@ export namespace mockCredentials {
      */
     export function token(payload?: TokenPayload): string {
       if (payload) {
-        return `${MOCK_SERVICE_TOKEN_PREFIX}:${payload}`;
+        const { subject, targetPluginId } = payload; // for fixed ordering
+        return `${MOCK_SERVICE_TOKEN_PREFIX}${JSON.stringify({
+          subject,
+          targetPluginId,
+        })}`;
       }
       return MOCK_SERVICE_TOKEN;
     }
