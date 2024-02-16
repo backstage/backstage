@@ -192,6 +192,11 @@ export interface Config {
                * E.g. ["id", "displayName", "description"]
                */
               select?: string[];
+              /**
+               * Whether to ingest groups that are members of the found/filtered/searched groups.
+               * Default value is `false`.
+               */
+              includeSubGroups?: boolean;
             };
 
             userGroupMember?: {
