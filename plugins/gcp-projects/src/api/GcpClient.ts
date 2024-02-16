@@ -17,7 +17,7 @@
 import { GcpApi } from './GcpApi';
 import { Operation, Project } from './types';
 import { OAuthApi } from '@backstage/core-plugin-api';
-import packageinfo from '../../package.json';
+import packageinfo from '../../version.json';
 
 const BASE_URL =
   'https://content-cloudresourcemanager.googleapis.com/v1/projects';
