@@ -41,7 +41,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "luxon": "^3.0.0",
-    "marked": "^4.0.14",
+    "marked": "^12.0.0",
     "node-fetch": "^2.6.5",
     "winston": "^3.2.1",
     "yn": "^4.0.0"

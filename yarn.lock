@@ -4230,7 +4230,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     luxon: ^3.0.0
-    marked: ^4.0.14
+    marked: ^12.0.0
     node-fetch: ^2.6.5
     supertest: ^6.1.3
     winston: ^3.2.1
@@ -34173,6 +34173,15 @@ __metadata:
   peerDependencies:
     react: ">= 0.14.0"
   checksum: 2888cb2389cb810ab35454a59d0623474a60a78e28f281ae0081f87053f6c59b033232a2cd269cc383a5edcaa1eab8ca4b3cf639fe4e1aa3fb418648d14bcc7d
+  languageName: node
+  linkType: hard
+
+"marked@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "marked@npm:12.0.0"
+  bin:
+    marked: bin/marked.js
+  checksum: 973e803debf7eca946213cd583792c2968ecab1b6698653604272d5406f9f07375a4865a7a28633a7200c8a4682761f8d866198fb36c10c686e3bda3a9b36fc9
   languageName: node
   linkType: hard
 
