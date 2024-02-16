@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  HostDiscovery,
+  UrlReader,
+  createLegacyAuthAdapters,
+} from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import {
   DefaultNamespaceEntityPolicy,
@@ -84,7 +89,6 @@ import { permissionRules as catalogPermissionRules } from '../permissions/rules'
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import {
   PermissionAuthorizer,
-  PermissionEvaluator,
   toPermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import {
@@ -102,6 +106,12 @@ import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { durationToMilliseconds } from '@backstage/types';
+import {
+  DiscoveryService,
+  AuthService,
+  HttpAuthService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -118,8 +128,11 @@ export type CatalogEnvironment = {
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
-  permissions: PermissionEvaluator | PermissionAuthorizer;
+  permissions: PermissionsService | PermissionAuthorizer;
   scheduler?: PluginTaskScheduler;
+  discovery?: DiscoveryService;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 };
 
 /**
@@ -438,7 +451,19 @@ export class CatalogBuilder {
     processingEngine: CatalogProcessingEngine;
     router: Router;
   }> {
-    const { config, database, logger, permissions, scheduler } = this.env;
+    const {
+      config,
+      database,
+      logger,
+      permissions,
+      scheduler,
+      discovery = HostDiscovery.fromConfig(config),
+    } = this.env;
+
+    const { auth, httpAuth } = createLegacyAuthAdapters({
+      ...this.env,
+      discovery,
+    });
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
@@ -486,25 +511,26 @@ export class CatalogBuilder {
       stitcher,
     });
 
-    let permissionEvaluator: PermissionEvaluator;
+    let permissionsService: PermissionsService;
     if ('authorizeConditional' in permissions) {
-      permissionEvaluator = permissions as PermissionEvaluator;
+      permissionsService = permissions as PermissionsService;
     } else {
       logger.warn(
         'PermissionAuthorizer is deprecated. Please use an instance of PermissionEvaluator instead of PermissionAuthorizer in PluginEnvironment#permissions',
       );
-      permissionEvaluator = toPermissionEvaluator(permissions);
+      permissionsService = toPermissionEvaluator(permissions);
     }
 
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
-      permissionEvaluator,
+      permissionsService,
       createConditionTransformer(this.permissionRules),
     );
     const permissionIntegrationRouter = createPermissionIntegrationRouter({
       resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
       getResources: async (resourceRefs: string[]) => {
         const { entities } = await unauthorizedEntitiesCatalog.entities({
+          credentials: await auth.getOwnServiceCredentials(),
           filter: {
             anyOf: resourceRefs.map(resourceRef => {
               const { kind, namespace, name } = parseEntityRef(resourceRef);
@@ -558,12 +584,13 @@ export class CatalogBuilder {
       new DefaultLocationService(locationStore, orchestrator, {
         allowedLocationTypes: this.allowedLocationType,
       }),
-      permissionEvaluator,
+      permissionsService,
     );
     const refreshService = new AuthorizedRefreshService(
       new DefaultRefreshService({ database: catalogDatabase }),
-      permissionEvaluator,
+      permissionsService,
     );
+
     const router = await createRouter({
       entitiesCatalog,
       locationAnalyzer,
@@ -573,6 +600,8 @@ export class CatalogBuilder {
       logger,
       config,
       permissionIntegrationRouter,
+      auth,
+      httpAuth,
     });
 
     await connectEntityProviders(providerDatabase, entityProviders);

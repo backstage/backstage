@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
 
@@ -48,7 +49,7 @@ export type EntitiesRequest = {
   fields?: (entity: Entity) => Entity;
   order?: EntityOrder[];
   pagination?: EntityPagination;
-  authorizationToken?: string;
+  credentials: BackstageCredentials;
 };
 
 export type EntitiesResponse = {
@@ -75,9 +76,9 @@ export interface EntitiesBatchRequest {
    */
   fields?: (entity: Entity) => Entity;
   /**
-   * The optional token that authorizes the action.
+   * The credentials that authorizes the action.
    */
-  authorizationToken?: string;
+  credentials: BackstageCredentials;
 }
 
 export interface EntitiesBatchResponse {
@@ -115,9 +116,9 @@ export interface EntityFacetsRequest {
    */
   facets: string[];
   /**
-   * The optional token that authorizes the action.
+   * The credentials that authorizes the action.
    */
-  authorizationToken?: string;
+  credentials: BackstageCredentials;
 }
 
 /**
@@ -157,7 +158,7 @@ export interface EntitiesCatalog {
    */
   removeEntityByUid(
     uid: string,
-    options?: { authorizationToken?: string },
+    options: { credentials: BackstageCredentials },
   ): Promise<void>;
 
   /**
@@ -167,7 +168,7 @@ export interface EntitiesCatalog {
    */
   entityAncestry(
     entityRef: string,
-    options?: { authorizationToken?: string },
+    options: { credentials: BackstageCredentials },
   ): Promise<EntityAncestryResponse>;
 
   /**
@@ -192,7 +193,7 @@ export type QueryEntitiesRequest =
  * for the current and the next pagination requests.
  */
 export interface QueryEntitiesInitialRequest {
-  authorizationToken?: string;
+  credentials: BackstageCredentials;
   fields?: (entity: Entity) => Entity;
   limit?: number;
   filter?: EntityFilter;
@@ -208,7 +209,7 @@ export interface QueryEntitiesInitialRequest {
  * move forward or backward on the data.
  */
 export interface QueryEntitiesCursorRequest {
-  authorizationToken?: string;
+  credentials: BackstageCredentials;
   fields?: (entity: Entity) => Entity;
   limit?: number;
   cursor: Cursor;

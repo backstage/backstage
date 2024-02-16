@@ -28,12 +28,12 @@ import { internal } from '@backstage/backend-openapi-utils';
 
 export function parseQueryEntitiesParams(
   params: internal.QuerySchema<typeof spec, '/entities/by-query', 'get'>,
-): Omit<QueryEntitiesRequest, 'authorizationToken' | 'limit'> {
+): Omit<QueryEntitiesRequest, 'credentials' | 'limit'> {
   const fields = parseEntityTransformParams(params);
 
   if (params.cursor) {
     const decodedCursor = decodeCursor(params.cursor);
-    const response: Omit<QueryEntitiesCursorRequest, 'authorizationToken'> = {
+    const response: Omit<QueryEntitiesCursorRequest, 'credentials'> = {
       cursor: decodedCursor,
       fields,
     };
@@ -43,7 +43,7 @@ export function parseQueryEntitiesParams(
   const filter = parseEntityFilterParams(params);
   const orderFields = parseEntityOrderFieldParams(params);
 
-  const response: Omit<QueryEntitiesInitialRequest, 'authorizationToken'> = {
+  const response: Omit<QueryEntitiesInitialRequest, 'credentials'> = {
     fields,
     filter,
     orderFields,
