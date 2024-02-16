@@ -21,71 +21,97 @@ import { mockCredentials } from './mockCredentials';
 describe('MockHttpAuthService', () => {
   const httpAuth = new MockHttpAuthService('test');
 
-  it('should authenticate requests', async () => {
+  function makeAuthReq(header?: string) {
+    return { headers: { authorization: header } } as Request;
+  }
+
+  it('should authenticate unauthenticated requests', async () => {
+    await expect(httpAuth.credentials(makeAuthReq())).resolves.toEqual(
+      mockCredentials.none(),
+    );
+
     await expect(
-      httpAuth.credentials({
-        headers: {},
-      } as Request),
+      httpAuth.credentials(makeAuthReq(), { allow: ['none'] }),
     ).resolves.toEqual(mockCredentials.none());
 
     await expect(
-      httpAuth.credentials({
-        headers: {
-          authorization: mockCredentials.user.header(),
-        },
-      } as Request),
+      httpAuth.credentials(makeAuthReq(), { allow: ['user'] }),
+    ).rejects.toThrow("This endpoint does not allow 'none' credentials");
+
+    await expect(httpAuth.credentials(makeAuthReq())).resolves.toEqual(
+      mockCredentials.none(),
+    );
+  });
+
+  it('should authenticate user requests', async () => {
+    await expect(
+      httpAuth.credentials(makeAuthReq(mockCredentials.user.header())),
     ).resolves.toEqual(mockCredentials.user());
 
     await expect(
-      httpAuth.credentials({
-        headers: {
-          authorization: mockCredentials.user.header('user:default/other'),
-        },
-      } as Request),
-    ).resolves.toEqual(mockCredentials.user('user:default/other'));
+      httpAuth.credentials(makeAuthReq(mockCredentials.user.header()), {
+        allow: ['user'],
+      }),
+    ).resolves.toEqual(mockCredentials.user());
 
     await expect(
-      httpAuth.credentials({
-        headers: {
-          authorization: mockCredentials.service.header(),
-        },
-      } as Request),
+      httpAuth.credentials(makeAuthReq(mockCredentials.user.header()), {
+        allow: ['none', 'service'],
+      }),
+    ).rejects.toThrow("This endpoint does not allow 'user' credentials");
+
+    await expect(
+      httpAuth.credentials(
+        makeAuthReq(mockCredentials.user.header('user:default/other')),
+      ),
+    ).resolves.toEqual(mockCredentials.user('user:default/other'));
+  });
+
+  it('should authenticate service requests', async () => {
+    await expect(
+      httpAuth.credentials(makeAuthReq(mockCredentials.service.header())),
     ).resolves.toEqual(mockCredentials.service());
 
     await expect(
-      httpAuth.credentials({
-        headers: {
-          authorization: mockCredentials.service.header({
-            subject: 'plugin:other',
-          }),
-        },
-      } as Request),
+      httpAuth.credentials(makeAuthReq(mockCredentials.service.header()), {
+        allow: ['none', 'service'],
+      }),
+    ).resolves.toEqual(mockCredentials.service());
+
+    await expect(
+      httpAuth.credentials(
+        makeAuthReq(
+          mockCredentials.service.header({ subject: 'plugin:other' }),
+        ),
+      ),
     ).resolves.toEqual(mockCredentials.service('plugin:other'));
+
+    await expect(
+      httpAuth.credentials(makeAuthReq(mockCredentials.service.header()), {
+        allow: ['user'],
+      }),
+    ).rejects.toThrow("This endpoint does not allow 'service' credentials");
   });
 
   it('should reject invalid credentials', async () => {
     await expect(
-      httpAuth.credentials({
-        headers: {
-          authorization: 'Bearer bad',
-        },
-      } as Request),
+      httpAuth.credentials(makeAuthReq('Bearer bad')),
     ).rejects.toThrow("Unknown mock token 'bad'");
 
     await expect(
-      httpAuth.credentials({
-        headers: {
-          authorization: mockCredentials.user.invalidHeader(),
-        },
-      } as Request),
+      httpAuth.credentials(makeAuthReq(mockCredentials.user.invalidHeader())),
     ).rejects.toThrow('User token is invalid');
 
     await expect(
-      httpAuth.credentials({
-        headers: {
-          authorization: mockCredentials.service.invalidHeader(),
-        },
-      } as Request),
+      httpAuth.credentials(
+        makeAuthReq(mockCredentials.service.invalidHeader()),
+      ),
     ).rejects.toThrow('Service token is invalid');
+  });
+
+  it('does not implement .issueUserCookie', async () => {
+    await expect(httpAuth.issueUserCookie({} as any)).rejects.toThrow(
+      'Not implemented',
+    );
   });
 });
