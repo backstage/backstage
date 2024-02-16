@@ -78,6 +78,15 @@ export namespace mockCredentials {
       }
       return MOCK_USER_TOKEN;
     }
+
+    /**
+     * Returns an authorization header with a mocked user token. If a payload is
+     * provided it will be encoded into the token and forwarded to the
+     * credentials object when authenticated by the mock auth service.
+     */
+    export function header(payload?: TokenPayload): string {
+      return `Bearer ${token(payload)}`;
+    }
   }
 
   /**
@@ -120,6 +129,15 @@ export namespace mockCredentials {
         })}`;
       }
       return MOCK_SERVICE_TOKEN;
+    }
+
+    /**
+     * Returns an authorization header with a mocked service token.  If a
+     * payload is provided it will be encoded into the token and forwarded to
+     * the credentials object when authenticated by the mock auth service.
+     */
+    export function header(payload?: TokenPayload): string {
+      return `Bearer ${token(payload)}`;
     }
   }
 }

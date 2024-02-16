@@ -53,6 +53,7 @@ export namespace mockCredentials {
     subject?: string,
   ): BackstageCredentials<BackstageServicePrincipal>;
   export namespace service {
+    export function header(payload?: TokenPayload): string;
     export function token(payload?: TokenPayload): string;
     export type TokenPayload = {
       subject?: string;
@@ -63,9 +64,10 @@ export namespace mockCredentials {
     userEntityRef?: string,
   ): BackstageCredentials<BackstageUserPrincipal>;
   export namespace user {
+    export function header(payload?: TokenPayload): string;
     export function token(payload?: TokenPayload): string;
     export type TokenPayload = {
-      userEntityRef: string;
+      userEntityRef?: string;
     };
   }
 }
