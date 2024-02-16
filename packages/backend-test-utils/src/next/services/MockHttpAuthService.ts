@@ -60,13 +60,13 @@ export class MockHttpAuthService implements HttpAuthService {
       return credentials as any;
     }
 
-    if (this.#auth.isPrincipal(credentials, 'unauthenticated')) {
+    if (this.#auth.isPrincipal(credentials, 'none')) {
       if (allowedPrincipalTypes.includes('none' as TAllowed)) {
         return credentials as any;
       }
 
       throw new NotAllowedError(
-        `This endpoint does not allow 'unauthenticated' credentials`,
+        `This endpoint does not allow 'none' credentials`,
       );
     } else if (this.#auth.isPrincipal(credentials, 'user')) {
       if (allowedPrincipalTypes.includes('user' as TAllowed)) {

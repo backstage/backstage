@@ -55,7 +55,7 @@ export type BackstageCredentials<TPrincipal = unknown> = {
 export type BackstagePrincipalTypes = {
   user: BackstageUserPrincipal;
   service: BackstageServicePrincipal;
-  unauthenticated: BackstageNonePrincipal;
+  none: BackstageNonePrincipal;
   unknown: unknown;
 };
 
