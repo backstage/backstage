@@ -175,6 +175,7 @@ describe('readProviderConfigs', () => {
                 expand: 'member',
                 filter: 'securityEnabled eq false',
                 select: ['id', 'displayName', 'description'],
+                ingestMemberGroups: true,
               },
               schedule: {
                 frequency: 'PT30M',
@@ -203,6 +204,7 @@ describe('readProviderConfigs', () => {
         groupExpand: 'member',
         groupSelect: ['id', 'displayName', 'description'],
         groupFilter: 'securityEnabled eq false',
+        groupIngestMemberGroups: true,
         schedule: {
           frequency: Duration.fromISO('PT30M'),
           timeout: {
