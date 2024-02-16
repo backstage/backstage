@@ -30,7 +30,7 @@ describe('gcp-projects', () => {
     expect(gcpProjectsPlugin).toBeDefined();
   });
 
-  it('should exist the GcpClient class', async () => {
+  it('spy headers with identifying metadata', async () => {
     const response: any = {
       headers: {
         Accept: '*/*',
