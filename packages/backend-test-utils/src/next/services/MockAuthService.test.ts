@@ -139,6 +139,15 @@ describe('MockAuthService', () => {
 
     await expect(
       auth.getPluginRequestToken({
+        onBehalfOf: mockCredentials.user('user:default/other'),
+        targetPluginId: 'test',
+      }),
+    ).resolves.toEqual({
+      token: mockCredentials.user.token('user:default/other'),
+    });
+
+    await expect(
+      auth.getPluginRequestToken({
         onBehalfOf: mockCredentials.service(),
         targetPluginId: 'test',
       }),
@@ -171,5 +180,14 @@ describe('MockAuthService', () => {
         targetPluginId: 'other',
       }),
     });
+
+    await expect(
+      auth.getPluginRequestToken({
+        onBehalfOf: await mockCredentials.none(),
+        targetPluginId: 'other',
+      }),
+    ).rejects.toThrow(
+      `Refused to issue service token for credential type 'none'`,
+    );
   });
 });
