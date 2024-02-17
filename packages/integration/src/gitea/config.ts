@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
-import { isValidHost } from '../helpers';
+import { isValidHost, isValidUrl } from '../helpers';
 
 /**
  * The configuration for a single Gitea integration.
@@ -61,6 +61,10 @@ export function readGiteaConfig(config: Config): GiteaIntegrationConfig {
   if (!isValidHost(host)) {
     throw new Error(
       `Invalid Gitea integration config, '${host}' is not a valid host`,
+    );
+  } else if (baseUrl && !isValidUrl(baseUrl)) {
+    throw new Error(
+      `Invalid Gitea integration config, '${baseUrl}' is not a valid baseUrl`,
     );
   }
 

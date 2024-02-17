@@ -81,6 +81,8 @@ import {
   createPublishGitlabMergeRequestAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
+import { createPublishGiteaAction } from '@backstage/plugin-scaffolder-backend-module-gitea';
+
 /**
  * The options passed to {@link createBuiltinActions}
  * @public
@@ -155,6 +157,10 @@ export const createBuiltinActions = (
       config,
     }),
     createPublishGerritReviewAction({
+      integrations,
+      config,
+    }),
+    createPublishGiteaAction({
       integrations,
       config,
     }),

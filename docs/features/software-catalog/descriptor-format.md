@@ -1119,7 +1119,7 @@ Some common values for this field could be:
 
 - `database`
 - `s3-bucket`
-- `cluster`
+- `kubernetes-cluster`
 
 ### `spec.system` [optional]
 
