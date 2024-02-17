@@ -73,9 +73,9 @@ export function createCredentialsBarrier(options: {
       unauthenticatedPredicates.push(createPathPolicyPredicate(policy.path));
     } else if (policy.allow === 'user-cookie') {
       cookiePredicates.push(createPathPolicyPredicate(policy.path));
+    } else {
+      throw new Error('Invalid auth policy');
     }
-
-    throw new Error('Invalid auth policy');
   };
 
   return { middleware, addAuthPolicy };
