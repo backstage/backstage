@@ -49,15 +49,22 @@ export function isDockerDisabledForTests(): boolean;
 // @public (undocumented)
 export namespace mockCredentials {
   export function none(): BackstageCredentials<BackstageNonePrincipal>;
+  export namespace none {
+    export function header(): string;
+  }
   export function service(
     subject?: string,
   ): BackstageCredentials<BackstageServicePrincipal>;
   export namespace service {
-    export function header(payload?: TokenPayload): string;
-    export function token(payload?: TokenPayload): string;
-    export type TokenPayload = {
-      subject?: string;
-      targetPluginId?: string;
+    export function header(options?: TokenOptions): string;
+    // (undocumented)
+    export function invalidHeader(): string;
+    // (undocumented)
+    export function invalidToken(): string;
+    export function token(options?: TokenOptions): string;
+    export type TokenOptions = {
+      onBehalfOf: BackstageCredentials;
+      targetPluginId: string;
     };
   }
   export function user(
@@ -65,10 +72,11 @@ export namespace mockCredentials {
   ): BackstageCredentials<BackstageUserPrincipal>;
   export namespace user {
     export function header(userEntityRef?: string): string;
+    // (undocumented)
+    export function invalidHeader(): string;
+    // (undocumented)
+    export function invalidToken(): string;
     export function token(userEntityRef?: string): string;
-    export type TokenPayload = {
-      userEntityRef?: string;
-    };
   }
 }
 
@@ -159,12 +167,19 @@ export namespace mockServices {
         partialImpl?: Partial<DiscoveryService> | undefined,
       ) => ServiceMock<DiscoveryService>;
   }
-  // (undocumented)
-  export function httpAuth(options?: { pluginId?: string }): HttpAuthService;
+  export function httpAuth(options?: {
+    pluginId?: string;
+    defaultCredentials?: BackstageCredentials;
+  }): HttpAuthService;
   // (undocumented)
   export namespace httpAuth {
-    const // (undocumented)
-      factory: () => ServiceFactory<HttpAuthService, 'plugin'>;
+    const factory: (
+      options?:
+        | {
+            defaultCredentials?: BackstageCredentials | undefined;
+          }
+        | undefined,
+    ) => ServiceFactory<HttpAuthService, 'plugin'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<HttpAuthService> | undefined,

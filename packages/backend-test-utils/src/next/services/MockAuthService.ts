@@ -29,10 +29,10 @@ import {
   MOCK_USER_TOKEN_PREFIX,
   MOCK_SERVICE_TOKEN,
   MOCK_SERVICE_TOKEN_PREFIX,
-  DEFAULT_MOCK_USER_ENTITY_REF,
-  DEFAULT_MOCK_SERVICE_SUBJECT,
   MOCK_INVALID_USER_TOKEN,
   MOCK_INVALID_SERVICE_TOKEN,
+  UserTokenPayload,
+  ServiceTokenPayload,
 } from './mockCredentials';
 
 /** @internal */
@@ -55,7 +55,7 @@ export class MockAuthService implements AuthService {
     }
 
     if (token.startsWith(MOCK_USER_TOKEN_PREFIX)) {
-      const { userEntityRef }: mockCredentials.user.TokenPayload = JSON.parse(
+      const { sub: userEntityRef }: UserTokenPayload = JSON.parse(
         token.slice(MOCK_USER_TOKEN_PREFIX.length),
       );
 
@@ -63,16 +63,20 @@ export class MockAuthService implements AuthService {
     }
 
     if (token.startsWith(MOCK_SERVICE_TOKEN_PREFIX)) {
-      const { targetPluginId, subject }: mockCredentials.service.TokenPayload =
-        JSON.parse(token.slice(MOCK_SERVICE_TOKEN_PREFIX.length));
+      const { sub, target, obo }: ServiceTokenPayload = JSON.parse(
+        token.slice(MOCK_SERVICE_TOKEN_PREFIX.length),
+      );
 
-      if (targetPluginId && targetPluginId !== this.pluginId) {
+      if (target && target !== this.pluginId) {
         throw new AuthenticationError(
-          `Invalid mock token target plugin ID, got '${targetPluginId}' but expected '${this.pluginId}'`,
+          `Invalid mock token target plugin ID, got '${target}' but expected '${this.pluginId}'`,
         );
       }
+      if (obo) {
+        return mockCredentials.user(obo);
+      }
 
-      return mockCredentials.service(subject);
+      return mockCredentials.service(sub);
     }
 
     throw new AuthenticationError(`Unknown mock token '${token}'`);
@@ -113,28 +117,17 @@ export class MockAuthService implements AuthService {
       | BackstageServicePrincipal
       | BackstageNonePrincipal;
 
-    switch (principal.type) {
-      case 'user':
-        if (principal.userEntityRef === DEFAULT_MOCK_USER_ENTITY_REF) {
-          return { token: mockCredentials.user.token() };
-        }
-        return {
-          token: mockCredentials.user.token(principal.userEntityRef),
-        };
-      case 'service':
-        return {
-          token: mockCredentials.service.token({
-            targetPluginId: options.targetPluginId,
-            subject:
-              principal.subject === DEFAULT_MOCK_SERVICE_SUBJECT
-                ? undefined
-                : principal.subject,
-          }),
-        };
-      default:
-        throw new AuthenticationError(
-          `Refused to issue service token for credential type '${principal.type}'`,
-        );
+    if (principal.type !== 'user' && principal.type !== 'service') {
+      throw new AuthenticationError(
+        `Refused to issue service token for credential type '${principal.type}'`,
+      );
     }
+
+    return {
+      token: mockCredentials.service.token({
+        onBehalfOf: options.onBehalfOf,
+        targetPluginId: options.targetPluginId,
+      }),
+    };
   }
 }
