@@ -209,9 +209,11 @@ describe('DatabaseTaskStore', () => {
     const state = await store.getTaskState({ taskId });
 
     expect(state).toStrictEqual({
-      'repo.create': {
-        status: 'success',
-        value: { repoUrl: 'https://github.com/backstage/backstage.git' },
+      state: {
+        'repo.create': {
+          status: 'success',
+          value: { repoUrl: 'https://github.com/backstage/backstage.git' },
+        },
       },
     });
   });

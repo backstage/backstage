@@ -360,17 +360,7 @@ export interface CurrentClaimedTask {
   createdBy?: string;
   secrets?: TaskSecrets_2;
   spec: TaskSpec;
-  state?: {
-    [key: string]:
-      | {
-          status: 'failed';
-          reason: string;
-        }
-      | {
-          status: 'success';
-          value: JsonValue;
-        };
-  };
+  state?: JsonObject;
   taskId: string;
 }
 
@@ -411,15 +401,7 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   getTaskState({ taskId }: { taskId: string }): Promise<
     | {
-        [key: string]:
-          | {
-              status: 'failed';
-              reason: string;
-            }
-          | {
-              status: 'success';
-              value: JsonValue;
-            };
+        state: JsonObject;
       }
     | undefined
   >;
@@ -445,22 +427,7 @@ export class DatabaseTaskStore implements TaskStore {
     ids: string[];
   }>;
   // (undocumented)
-  saveTaskState(options: {
-    taskId: string;
-    state?:
-      | {
-          [key: string]:
-            | {
-                status: 'failed';
-                reason: string;
-              }
-            | {
-                status: 'success';
-                value: JsonValue;
-              };
-        }
-      | undefined;
-  }): Promise<void>;
+  saveTaskState(options: { taskId: string; state?: JsonObject }): Promise<void>;
   // (undocumented)
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -565,15 +532,7 @@ export class TaskManager implements TaskContext_2 {
   // (undocumented)
   getTaskState?(): Promise<
     | {
-        [key: string]:
-          | {
-              status: 'failed';
-              reason: string;
-            }
-          | {
-              status: 'success';
-              value: JsonValue;
-            };
+        state?: JsonObject;
       }
     | undefined
   >;
@@ -628,15 +587,7 @@ export interface TaskStore {
   // (undocumented)
   getTaskState?({ taskId }: { taskId: string }): Promise<
     | {
-        [key: string]:
-          | {
-              status: 'failed';
-              reason: string;
-            }
-          | {
-              status: 'success';
-              value: JsonValue;
-            };
+        state: JsonObject;
       }
     | undefined
   >;
@@ -663,17 +614,7 @@ export interface TaskStore {
   // (undocumented)
   saveTaskState?(options: {
     taskId: string;
-    state?: {
-      [key: string]:
-        | {
-            status: 'failed';
-            reason: string;
-          }
-        | {
-            status: 'success';
-            value: JsonValue;
-          };
-    };
+    state?: JsonObject;
   }): Promise<void>;
   // (undocumented)
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;

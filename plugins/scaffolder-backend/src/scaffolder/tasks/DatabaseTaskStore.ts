@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 import {
   PluginDatabaseManager,
   resolvePackagePath,
@@ -397,42 +397,19 @@ export class DatabaseTaskStore implements TaskStore {
 
   async getTaskState({ taskId }: { taskId: string }): Promise<
     | {
-        [key: string]:
-          | { status: 'failed'; reason: string }
-          | {
-              status: 'success';
-              value: JsonValue;
-            };
+        state: JsonObject;
       }
     | undefined
   > {
     const [result] = await this.db<RawDbTaskRow>('tasks')
       .where({ id: taskId })
       .select('state');
-    return result.state
-      ? (JSON.parse(result.state) as unknown as {
-          [key: string]:
-            | { status: 'failed'; reason: string }
-            | {
-                status: 'success';
-                value: JsonValue;
-              };
-        })
-      : undefined;
+    return result.state ? { state: JSON.parse(result.state) } : undefined;
   }
 
   async saveTaskState(options: {
     taskId: string;
-    state?:
-      | {
-          [key: string]:
-            | { status: 'failed'; reason: string }
-            | {
-                status: 'success';
-                value: JsonValue;
-              };
-        }
-      | undefined;
+    state?: JsonObject;
   }): Promise<void> {
     if (options.state) {
       const serializedState = JSON.stringify(options.state);

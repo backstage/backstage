@@ -93,12 +93,7 @@ export class TaskManager implements TaskContext {
 
   async getTaskState?(): Promise<
     | {
-        [key: string]:
-          | { status: 'failed'; reason: string }
-          | {
-              status: 'success';
-              value: JsonValue;
-            };
+        state?: JsonObject;
       }
     | undefined
   > {
@@ -186,14 +181,7 @@ export interface CurrentClaimedTask {
   /**
    * The state of checkpoints of the task.
    */
-  state?: {
-    [key: string]:
-      | { status: 'failed'; reason: string }
-      | {
-          status: 'success';
-          value: JsonValue;
-        };
-  };
+  state?: JsonObject;
   /**
    * The creator of the task.
    */

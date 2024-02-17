@@ -580,23 +580,27 @@ describe('NunjucksWorkflowRunner', () => {
         }),
         getTaskState: (): Promise<
           | {
-              [key: string]:
-                | { status: 'failed'; reason: string }
-                | {
-                    status: 'success';
-                    value: JsonValue;
-                  };
+              state: {
+                [key: string]:
+                  | { status: 'failed'; reason: string }
+                  | {
+                      status: 'success';
+                      value: JsonValue;
+                    };
+              };
             }
           | undefined
         > => {
           return Promise.resolve({
-            ['v1.task.checkpoint.key1']: {
-              status: 'success',
-              value: 'initial',
-            },
-            ['v1.task.checkpoint.key2']: {
-              status: 'failed',
-              reason: 'fatal error',
+            state: {
+              ['v1.task.checkpoint.key1']: {
+                status: 'success',
+                value: 'initial',
+              },
+              ['v1.task.checkpoint.key2']: {
+                status: 'failed',
+                reason: 'fatal error',
+              },
             },
           });
         },

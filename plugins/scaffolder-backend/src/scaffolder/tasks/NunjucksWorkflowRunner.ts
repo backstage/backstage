@@ -79,6 +79,18 @@ type TemplateContext = {
   each?: JsonValue;
 };
 
+type TaskState = {
+  [key: string]:
+    | {
+        status: 'failed';
+        reason: string;
+      }
+    | {
+        status: 'success';
+        value: JsonValue;
+      };
+};
+
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
   return taskSpec.apiVersion === 'scaffolder.backstage.io/v1beta3';
 };
@@ -356,7 +368,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             try {
               let prevValue: U | undefined;
               if (prevTaskState) {
-                const prevState = prevTaskState[key];
+                const prevState = (prevTaskState.state as TaskState)?.[key];
                 if (prevState && prevState.status === 'success') {
                   prevValue = prevState.value as U;
                 }

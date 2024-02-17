@@ -196,26 +196,14 @@ export interface TaskStore {
 
   getTaskState?({ taskId }: { taskId: string }): Promise<
     | {
-        [key: string]:
-          | { status: 'failed'; reason: string }
-          | {
-              status: 'success';
-              value: JsonValue;
-            };
+        state: JsonObject;
       }
     | undefined
   >;
 
   saveTaskState?(options: {
     taskId: string;
-    state?: {
-      [key: string]:
-        | { status: 'failed'; reason: string }
-        | {
-            status: 'success';
-            value: JsonValue;
-          };
-    };
+    state?: JsonObject;
   }): Promise<void>;
 
   listEvents(
