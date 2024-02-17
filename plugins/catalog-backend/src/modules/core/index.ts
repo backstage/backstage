@@ -24,3 +24,4 @@ export { PlaceholderProcessor } from './PlaceholderProcessor';
 export type { PlaceholderProcessorOptions } from './PlaceholderProcessor';
 export { UrlReaderProcessor } from './UrlReaderProcessor';
 export { parseEntityYaml } from '../util/parse';
+export { transformLegacyPolicyToProcessor } from './transformLegacyPolicyToProcessor';
