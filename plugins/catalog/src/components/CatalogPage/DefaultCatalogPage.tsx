@@ -26,16 +26,8 @@ import {
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   CatalogFilterLayout,
-  EntityLifecyclePicker,
   EntityListProvider,
-  EntityProcessingStatusPicker,
-  EntityOwnerPicker,
-  EntityTagPicker,
-  EntityTypePicker,
   UserListFilterKind,
-  UserListPicker,
-  EntityKindPicker,
-  EntityNamespacePicker,
   EntityOwnerPickerProps,
 } from '@backstage/plugin-catalog-react';
 import React, { ReactNode } from 'react';
@@ -47,6 +39,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
+import { DefaultFilters } from '@backstage/plugin-catalog-react';
 
 /** @internal */
 export type BaseCatalogPageProps = {
@@ -123,16 +116,11 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     <BaseCatalogPage
       filters={
         filters ?? (
-          <>
-            <EntityKindPicker initialFilter={initialKind} />
-            <EntityTypePicker />
-            <UserListPicker initialFilter={initiallySelectedFilter} />
-            <EntityOwnerPicker mode={ownerPickerMode} />
-            <EntityLifecyclePicker />
-            <EntityTagPicker />
-            <EntityProcessingStatusPicker />
-            <EntityNamespacePicker />
-          </>
+          <DefaultFilters
+            initialKind={initialKind}
+            initiallySelectedFilter={initiallySelectedFilter}
+            ownerPickerMode={ownerPickerMode}
+          />
         )
       }
       content={

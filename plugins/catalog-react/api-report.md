@@ -12,6 +12,7 @@ import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { EntityOwnerPickerProps as EntityOwnerPickerProps_2 } from '@backstage/plugin-catalog-react';
 import { IconButton } from '@material-ui/core';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
@@ -28,6 +29,7 @@ import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TextFieldProps } from '@material-ui/core';
+import { UserListFilterKind as UserListFilterKind_2 } from '@backstage/plugin-catalog-react';
 
 // @public (undocumented)
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
@@ -171,6 +173,18 @@ export function defaultEntityPresentation(
     defaultNamespace?: string;
   },
 ): EntityRefPresentationSnapshot;
+
+// @public (undocumented)
+export const DefaultFilters: (
+  props: DefaultFiltersProps,
+) => React_2.JSX.Element;
+
+// @public
+export type DefaultFiltersProps = {
+  initialKind?: string;
+  initiallySelectedFilter?: UserListFilterKind_2;
+  ownerPickerMode?: EntityOwnerPickerProps_2['mode'];
+};
 
 // @public (undocumented)
 export function EntityAutocompletePicker<

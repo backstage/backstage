@@ -153,7 +153,67 @@ const customActions: TableProps<CatalogTableRow>['actions'] = [
 
 The above customization will override the existing actions. Currently the only way to keep them and add your own is to also include the existing actions in your array by copying them from the [`defaultActions`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/catalog/src/components/CatalogTable/CatalogTable.tsx#L113-L168).
 
-## Custom Filters
+## Customize Filters
+
+There are tree options you have for filters: adjusting the existing filters with props, adding or removing the default filters, or creating a brand new custom filter. The following sections cover these cases
+
+### Default Filter Props
+
+There is a set of default filters that you can use, they surface all the props mentioned earlier in this document. Here's how they can be used:
+
+```tsx title="packages/app/src/App.tsx"
+import { DefaultFilters } from '@backstage/plugin-catalog-react';
+
+<Route
+  path="/catalog"
+  element={
+    <CatalogIndexPage
+      filters={
+        <>
+          <DefaultFilters
+            initialKind="Domain"
+            initiallySelectedFilter="all"
+            ownerPickerMode="all"
+          />
+        </>
+      }
+    />
+  }
+/>;
+```
+
+### Removing Default Filters
+
+You may have reasons not use the Lifecycle, Tag, and Processing Status filters, here's an example of how you would remove them:
+
+```tsx title="packages/app/src/App.tsx"
+import {
+  EntityKindPicker,
+  EntityTypePicker,
+  UserListPicker,
+  EntityOwnerPicker,
+  EntityNamespacePicker,
+} from '@backstage/plugin-catalog-react';
+
+<Route
+  path="/catalog"
+  element={
+    <CatalogIndexPage
+      filters={
+        <>
+          <EntityKindPicker />
+          <EntityTypePicker />
+          <UserListPicker />
+          <EntityOwnerPicker />
+          <EntityNamespacePicker />
+        </>
+      }
+    />
+  }
+/>;
+```
+
+### Custom Filters
 
 You can add custom filters. For example, suppose that I want to allow filtering by a custom annotation added to entities, `company.com/security-tier`. Here is how we can build a filter to support that need.
 
@@ -230,6 +290,14 @@ export const EntitySecurityTierPicker = () => {
 Now we can add the component to `CatalogIndexPage`:
 
 ```tsx title="packages/app/src/App.tsx"
+{
+  /* highlight-add-start */
+}
+import { DefaultFilters } from '@backstage/plugin-catalog-react';
+{
+  /* highlight-add-end */
+}
+
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="catalog" />
@@ -242,14 +310,7 @@ const routes = (
         <CatalogIndexPage
           filters={
             <>
-              <EntityKindPicker />
-              <EntityTypePicker />
-              <UserListPicker />
-              <EntityOwnerPicker />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
-              <EntityProcessingStatusPicker />
-              <EntityNamespacePicker />
+              <DefaultFilters />
               <EntitySecurityTierPicker />
             </>
           }
