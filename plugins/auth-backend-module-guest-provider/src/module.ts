@@ -33,18 +33,21 @@ export const authModuleGuestProvider = createBackendModule({
       deps: {
         logger: coreServices.logger,
         providers: authProvidersExtensionPoint,
+        config: coreServices.rootConfig,
       },
-      async init({ providers }) {
+      async init({ providers, logger, config }) {
         if (process.env.NODE_ENV !== 'development') {
-          throw new Error(
-            'Guest provider does not support authenticating production workloads.',
+          logger.warn(
+            'You should NOT be using the guest provider outside of a development environment.',
           );
         }
         providers.registerProvider({
           providerId: 'guest',
           factory: createProxyAuthProviderFactory({
             authenticator: guestAuthenticator,
-            signInResolver: signInAsGuestUser,
+            signInResolver: signInAsGuestUser(
+              config.getOptionalString('auth.guestEntityRef'),
+            ),
           }),
         });
       },

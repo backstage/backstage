@@ -242,7 +242,7 @@ catalog:
         - Domain
         - Location
   providers:
-    openapi:
+    backstageOpenapi:
       plugins:
         - catalog
         - search
