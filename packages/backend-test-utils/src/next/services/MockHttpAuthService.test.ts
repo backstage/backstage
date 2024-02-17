@@ -81,7 +81,10 @@ describe('MockHttpAuthService', () => {
     await expect(
       httpAuth.credentials(
         makeAuthReq(
-          mockCredentials.service.header({ subject: 'plugin:other' }),
+          mockCredentials.service.header({
+            onBehalfOf: mockCredentials.service('plugin:other'),
+            targetPluginId: 'test',
+          }),
         ),
       ),
     ).resolves.toEqual(mockCredentials.service('plugin:other'));

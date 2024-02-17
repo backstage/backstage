@@ -41,6 +41,24 @@ function validateUserEntityRef(ref: string) {
 }
 
 /**
+ * The payload that can be encoded into a mock user token.
+ * @internal
+ */
+export type UserTokenPayload = {
+  sub?: string;
+};
+
+/**
+ * The payload that can be encoded into a mock service token.
+ * @internal
+ */
+export type ServiceTokenPayload = {
+  sub?: string; // service subject
+  obo?: string; // user entity reference
+  target?: string; // target plugin id
+};
+
+/**
  * @public
  */
 export namespace mockCredentials {
@@ -93,11 +111,6 @@ export namespace mockCredentials {
    */
   export namespace user {
     /**
-     * The payload that can be encoded into a mock user token.
-     */
-    export type TokenPayload = { userEntityRef?: string };
-
-    /**
      * Creates a mocked user token. If a payload is provided it will be encoded
      * into the token and forwarded to the credentials object when authenticated
      * by the mock auth service.
@@ -105,7 +118,9 @@ export namespace mockCredentials {
     export function token(userEntityRef?: string): string {
       if (userEntityRef) {
         validateUserEntityRef(userEntityRef);
-        return `${MOCK_USER_TOKEN_PREFIX}${JSON.stringify({ userEntityRef })}`;
+        return `${MOCK_USER_TOKEN_PREFIX}${JSON.stringify({
+          sub: userEntityRef,
+        } satisfies UserTokenPayload)}`;
       }
       return MOCK_USER_TOKEN;
     }
@@ -147,36 +162,47 @@ export namespace mockCredentials {
    */
   export namespace service {
     /**
-     * The payload that can be encoded into a mock service token.
+     * Options for the creation of mock service tokens.
      */
-    export type TokenPayload = {
-      subject?: string;
-      targetPluginId?: string;
+    export type TokenOptions = {
+      onBehalfOf: BackstageCredentials;
+      targetPluginId: string;
     };
 
     /**
-     * Creates a mocked service token. If a payload is provided it will be
-     * encoded into the token and forwarded to the credentials object when
-     * authenticated by the mock auth service.
+     * Creates a mocked service token. The provided options will be encoded into
+     * the token and forwarded to the credentials object when authenticated by
+     * the mock auth service.
      */
-    export function token(payload?: TokenPayload): string {
-      if (payload) {
-        const { subject, targetPluginId } = payload; // for fixed ordering
+    export function token(options?: TokenOptions): string {
+      if (options) {
+        const { targetPluginId, onBehalfOf } = options; // for fixed ordering
+
+        const oboPrincipal = onBehalfOf?.principal as
+          | BackstageServicePrincipal
+          | BackstageUserPrincipal
+          | BackstageNonePrincipal;
+        const obo =
+          oboPrincipal.type === 'user' ? oboPrincipal.userEntityRef : undefined;
+        const subject =
+          oboPrincipal.type === 'service' ? oboPrincipal.subject : undefined;
+
         return `${MOCK_SERVICE_TOKEN_PREFIX}${JSON.stringify({
-          subject,
-          targetPluginId,
-        })}`;
+          sub: subject,
+          obo,
+          target: targetPluginId,
+        } satisfies ServiceTokenPayload)}`;
       }
       return MOCK_SERVICE_TOKEN;
     }
 
     /**
-     * Returns an authorization header with a mocked service token.  If a
-     * payload is provided it will be encoded into the token and forwarded to
-     * the credentials object when authenticated by the mock auth service.
+     * Returns an authorization header with a mocked service token. The provided
+     * options will be encoded into the token and forwarded to the credentials
+     * object when authenticated by the mock auth service.
      */
-    export function header(payload?: TokenPayload): string {
-      return `Bearer ${token(payload)}`;
+    export function header(options?: TokenOptions): string {
+      return `Bearer ${token(options)}`;
     }
 
     export function invalidToken(): string {

@@ -73,22 +73,31 @@ describe('MockAuthService', () => {
     ).resolves.toEqual(mockCredentials.service(DEFAULT_MOCK_SERVICE_SUBJECT));
 
     await expect(
+      auth.authenticate(mockCredentials.service.token()),
+    ).resolves.toEqual(mockCredentials.service());
+
+    await expect(
       auth.authenticate(
-        mockCredentials.service.token({ subject: 'plugin:catalog' }),
+        mockCredentials.service.token({
+          onBehalfOf: mockCredentials.service('plugin:catalog'),
+          targetPluginId: 'test',
+        }),
       ),
     ).resolves.toEqual(mockCredentials.service('plugin:catalog'));
 
     await expect(
       auth.authenticate(
         mockCredentials.service.token({
+          onBehalfOf: await auth.getOwnServiceCredentials(),
           targetPluginId: 'test',
         }),
       ),
-    ).resolves.toEqual(mockCredentials.service());
+    ).resolves.toEqual(mockCredentials.service('plugin:test'));
 
     await expect(
       auth.authenticate(
         mockCredentials.service.token({
+          onBehalfOf: await auth.getOwnServiceCredentials(),
           targetPluginId: 'other',
         }),
       ),
@@ -135,7 +144,12 @@ describe('MockAuthService', () => {
         onBehalfOf: mockCredentials.user(),
         targetPluginId: 'test',
       }),
-    ).resolves.toEqual({ token: mockCredentials.user.token() });
+    ).resolves.toEqual({
+      token: mockCredentials.service.token({
+        onBehalfOf: mockCredentials.user(),
+        targetPluginId: 'test',
+      }),
+    });
 
     await expect(
       auth.getPluginRequestToken({
@@ -143,7 +157,10 @@ describe('MockAuthService', () => {
         targetPluginId: 'test',
       }),
     ).resolves.toEqual({
-      token: mockCredentials.user.token('user:default/other'),
+      token: mockCredentials.service.token({
+        onBehalfOf: mockCredentials.user('user:default/other'),
+        targetPluginId: 'test',
+      }),
     });
 
     await expect(
@@ -153,6 +170,7 @@ describe('MockAuthService', () => {
       }),
     ).resolves.toEqual({
       token: mockCredentials.service.token({
+        onBehalfOf: mockCredentials.service(),
         targetPluginId: 'test',
       }),
     });
@@ -164,7 +182,7 @@ describe('MockAuthService', () => {
       }),
     ).resolves.toEqual({
       token: mockCredentials.service.token({
-        subject: 'external:other',
+        onBehalfOf: mockCredentials.service('external:other'),
         targetPluginId: 'test',
       }),
     });
@@ -176,7 +194,7 @@ describe('MockAuthService', () => {
       }),
     ).resolves.toEqual({
       token: mockCredentials.service.token({
-        subject: 'plugin:test',
+        onBehalfOf: await mockCredentials.service('plugin:test'),
         targetPluginId: 'other',
       }),
     });

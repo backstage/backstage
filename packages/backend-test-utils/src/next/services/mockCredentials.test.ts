@@ -55,13 +55,13 @@ describe('mockCredentials', () => {
   it('creates user tokens and headers', () => {
     expect(mockCredentials.user.token()).toBe('mock-user-token');
     expect(mockCredentials.user.token('user:default/other')).toBe(
-      'mock-user-token:{"userEntityRef":"user:default/other"}',
+      'mock-user-token:{"sub":"user:default/other"}',
     );
     expect(mockCredentials.user.invalidToken()).toBe('mock-invalid-user-token');
 
     expect(mockCredentials.user.header()).toBe('Bearer mock-user-token');
     expect(mockCredentials.user.header('user:default/other')).toBe(
-      'Bearer mock-user-token:{"userEntityRef":"user:default/other"}',
+      'Bearer mock-user-token:{"sub":"user:default/other"}',
     );
     expect(mockCredentials.user.invalidHeader()).toBe(
       'Bearer mock-invalid-user-token',
@@ -70,60 +70,38 @@ describe('mockCredentials', () => {
 
   it('creates service tokens and headers', () => {
     expect(mockCredentials.service.token()).toBe('mock-service-token');
-    expect(mockCredentials.service.token({ subject: 'external:other' })).toBe(
-      'mock-service-token:{"subject":"external:other"}',
-    );
     expect(
       mockCredentials.service.token({
+        onBehalfOf: mockCredentials.service('external:other'),
         targetPluginId: 'other',
       }),
-    ).toBe('mock-service-token:{"targetPluginId":"other"}');
+    ).toBe('mock-service-token:{"sub":"external:other","target":"other"}');
     expect(
       mockCredentials.service.token({
-        subject: 'external:other',
+        onBehalfOf: mockCredentials.user('user:default/other'),
         targetPluginId: 'other',
       }),
-    ).toBe(
-      'mock-service-token:{"subject":"external:other","targetPluginId":"other"}',
-    );
-    // Object keys are reordered, ordering in the token should be stable
-    expect(
-      mockCredentials.service.token({
-        targetPluginId: 'other',
-        subject: 'external:other',
-      }),
-    ).toBe(
-      'mock-service-token:{"subject":"external:other","targetPluginId":"other"}',
-    );
+    ).toBe('mock-service-token:{"obo":"user:default/other","target":"other"}');
     expect(mockCredentials.service.invalidToken()).toBe(
       'mock-invalid-service-token',
     );
 
     expect(mockCredentials.service.header()).toBe('Bearer mock-service-token');
-    expect(mockCredentials.service.header({ subject: 'external:other' })).toBe(
-      'Bearer mock-service-token:{"subject":"external:other"}',
-    );
     expect(
       mockCredentials.service.header({
-        targetPluginId: 'other',
-      }),
-    ).toBe('Bearer mock-service-token:{"targetPluginId":"other"}');
-    expect(
-      mockCredentials.service.header({
-        subject: 'external:other',
+        onBehalfOf: mockCredentials.service('external:other'),
         targetPluginId: 'other',
       }),
     ).toBe(
-      'Bearer mock-service-token:{"subject":"external:other","targetPluginId":"other"}',
+      'Bearer mock-service-token:{"sub":"external:other","target":"other"}',
     );
-    // Object keys are reordered, ordering in the token should be stable
     expect(
       mockCredentials.service.header({
+        onBehalfOf: mockCredentials.user('user:default/other'),
         targetPluginId: 'other',
-        subject: 'external:other',
       }),
     ).toBe(
-      'Bearer mock-service-token:{"subject":"external:other","targetPluginId":"other"}',
+      'Bearer mock-service-token:{"obo":"user:default/other","target":"other"}',
     );
     expect(mockCredentials.service.invalidHeader()).toBe(
       'Bearer mock-invalid-service-token',
