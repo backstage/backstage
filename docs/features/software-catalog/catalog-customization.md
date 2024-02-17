@@ -48,6 +48,19 @@ The Owner filter by default will only contain a list of Users and/or Groups that
 
 Possible options are: owners-only or all
 
+## Table Options
+
+The tables used within Backstage are built on top of [`@material-table/core`](https://material-table-core.github.io/) and the `CatalogIndexPage` has a `tableOptions` prop that allows you to customize the underlying table to a certain extent, there are some hard coded Backstage settings that can't be changed. Here's an example of how to use this prop to disable the search filter field in the table's header:
+
+```tsx title="packages/app/src/App.tsx"
+<Route
+  path="/catalog"
+  element={<CatalogIndexPage tableOptions={{ search: false }} />}
+/>
+```
+
+There are many options that can be set using `tableOptions`, the full list of settings can be found in the [`@material-table/core` `Options` interface](https://github.com/material-table-core/core/blob/v3.1.0/types/index.d.ts#L323) (this link goes to `v3.1.0` of `@material-table/core` as that is the version currently used by Backstage).
+
 ## Customize Columns
 
 By default the columns you see in the `CatalogIndexPage` were selected to be a good starting point for most but there may be reasons that you would like to customize these with more or less columns. One primary use case for this customization is if you added a custom Kind. Support for this was added in v1.23.0 of Backstage, make sure you are on that version or newer to use this feature. Here's an example of how to make this customization:
