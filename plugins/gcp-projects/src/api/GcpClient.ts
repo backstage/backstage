@@ -17,9 +17,7 @@
 import { GcpApi } from './GcpApi';
 import { Operation, Project } from './types';
 import { OAuthApi } from '@backstage/core-plugin-api';
-import packageVers from '../../package.json';
-
-const { version } = packageVers;
+import packageinfo from '../../package.json';
 
 const BASE_URL =
   'https://content-cloudresourcemanager.googleapis.com/v1/projects';
@@ -33,7 +31,7 @@ export class GcpClient implements GcpApi {
       headers: {
         Accept: '*/*',
         Authorization: `Bearer ${await this.getToken()}`,
-        'X-Goog-Api-Client': `backstage/gcpprojects/${version}`,
+        'X-Goog-Api-Client': `backstage/gcpprojects/${packageinfo.version}`,
       },
     });
 
@@ -52,7 +50,7 @@ export class GcpClient implements GcpApi {
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${await this.getToken()}`,
-        'X-Goog-Api-Client': `backstage/gcpprojects/${version}`,
+        'X-Goog-Api-Client': `backstage/gcpprojects/${packageinfo.version}`,
       },
     });
 
@@ -79,7 +77,7 @@ export class GcpClient implements GcpApi {
       headers: {
         Accept: '*/*',
         Authorization: `Bearer ${await this.getToken()}`,
-        'X-Goog-Api-Client': `backstage/gcpprojects/${version}`,
+        'X-Goog-Api-Client': `backstage/gcpprojects/${packageinfo.version}`,
       },
       body: JSON.stringify(newProject),
     });

@@ -34,7 +34,7 @@ describe('gcp-projects', () => {
     const response: any = {
       headers: {
         Accept: '*/*',
-        'X-Goog-Api-Client': `backstage/cloudbuild/${packageinfo.version}`,
+        'X-Goog-Api-Client': `backstage/gcpprojects/${packageinfo.version}`,
       },
     };
     jest.spyOn(sut, 'listProjects').mockImplementation((): any => {
@@ -44,7 +44,7 @@ describe('gcp-projects', () => {
     expect(response).toStrictEqual({
       headers: {
         Accept: '*/*',
-        'X-Goog-Api-Client': `backstage/cloudbuild/${packageinfo.version}`,
+        'X-Goog-Api-Client': `backstage/gcpprojects/${packageinfo.version}`,
       },
     });
   });
