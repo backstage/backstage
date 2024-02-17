@@ -48,6 +48,10 @@ describe('mockCredentials', () => {
     });
   });
 
+  it('creates unauthenticated tokens and headers', () => {
+    expect(mockCredentials.none.header()).toBe('Bearer mock-none-token');
+  });
+
   it('creates user tokens and headers', () => {
     expect(mockCredentials.user.token()).toBe('mock-user-token');
     expect(mockCredentials.user.token('user:default/other')).toBe(

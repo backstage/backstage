@@ -26,6 +26,7 @@ import {
   AuthService,
   DiscoveryService,
   HttpAuthService,
+  BackstageCredentials,
 } from '@backstage/backend-plugin-api';
 import {
   cacheServiceFactory,
@@ -47,6 +48,7 @@ import { MockIdentityService } from './MockIdentityService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockAuthService } from './MockAuthService';
 import { MockHttpAuthService } from './MockHttpAuthService';
+import { mockCredentials } from './mockCredentials';
 
 /** @internal */
 function simpleFactory<
@@ -203,15 +205,48 @@ export namespace mockServices {
     }));
   }
 
-  export function httpAuth(options?: { pluginId?: string }): HttpAuthService {
-    return new MockHttpAuthService(options?.pluginId ?? 'test');
+  /**
+   * Creates a mock implementation of the `HttpAuthService`.
+   *
+   * By default all requests without credentials are treated as requests from
+   * the default mock user principal. This behavior can be configured with the
+   * `defaultCredentials` option.
+   */
+  export function httpAuth(options?: {
+    pluginId?: string;
+    /**
+     * The default credentials to use if there are no credentials present in the
+     * incoming request.
+     *
+     * By default all requests without credentials are treated as authenticated
+     * as the default mock user as returned from `mockCredentials.user()`.
+     */
+    defaultCredentials?: BackstageCredentials;
+  }): HttpAuthService {
+    return new MockHttpAuthService(
+      options?.pluginId ?? 'test',
+      options?.defaultCredentials ?? mockCredentials.user(),
+    );
   }
   export namespace httpAuth {
-    export const factory = createServiceFactory({
-      service: coreServices.httpAuth,
-      deps: { plugin: coreServices.pluginMetadata },
-      factory: ({ plugin }) => new MockHttpAuthService(plugin.getId()),
-    });
+    /**
+     * Creates a mock service factory for the `HttpAuthService`.
+     *
+     * By default all requests without credentials are treated as requests from
+     * the default mock user principal. This behavior can be configured with the
+     * `defaultCredentials` option.
+     */
+    export const factory = createServiceFactory(
+      (options?: { defaultCredentials?: BackstageCredentials }) => ({
+        service: coreServices.httpAuth,
+        deps: { plugin: coreServices.pluginMetadata },
+        factory: ({ plugin }) =>
+          new MockHttpAuthService(
+            plugin.getId(),
+            options?.defaultCredentials ?? mockCredentials.user(),
+          ),
+      }),
+    );
     export const mock = simpleMock(coreServices.httpAuth, () => ({
       credentials: jest.fn(),
       issueUserCookie: jest.fn(),
