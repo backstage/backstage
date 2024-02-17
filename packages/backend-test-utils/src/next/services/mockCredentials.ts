@@ -24,6 +24,7 @@ import {
 export const DEFAULT_MOCK_USER_ENTITY_REF = 'user:default/mock';
 export const DEFAULT_MOCK_SERVICE_SUBJECT = 'external:test-service';
 
+export const MOCK_NONE_TOKEN = 'mock-none-token';
 export const MOCK_USER_TOKEN = 'mock-user-token';
 export const MOCK_USER_TOKEN_PREFIX = 'mock-user-token:';
 export const MOCK_INVALID_USER_TOKEN = 'mock-invalid-user-token';
@@ -51,6 +52,25 @@ export namespace mockCredentials {
       $$type: '@backstage/BackstageCredentials',
       principal: { type: 'none' },
     };
+  }
+
+  /**
+   * Utilities related to none credentials.
+   */
+  export namespace none {
+    /**
+     * Returns an authorization header that translates to unauthenticated
+     * credentials.
+     *
+     * This is useful when one wants to explicitly test unauthenticated requests
+     * while still using the default behavior of the mock HttpAuthService where
+     * it defaults to user credentials.
+     */
+    export function header(): string {
+      // NOTE: there is no .token() version of this because only the
+      //       HttpAuthService should know about and consume this token
+      return `Bearer ${MOCK_NONE_TOKEN}`;
+    }
   }
 
   /**

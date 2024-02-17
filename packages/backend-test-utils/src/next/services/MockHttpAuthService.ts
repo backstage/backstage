@@ -21,26 +21,34 @@ import {
   HttpAuthService,
 } from '@backstage/backend-plugin-api';
 import { Request, Response } from 'express';
-import { mockCredentials } from './mockCredentials';
 import { MockAuthService } from './MockAuthService';
 import { NotAllowedError, NotImplementedError } from '@backstage/errors';
+import { mockCredentials } from './mockCredentials';
 
 // TODO: support mock cookie auth?
 export class MockHttpAuthService implements HttpAuthService {
   #auth: AuthService;
+  #defaultCredentials: BackstageCredentials;
 
-  constructor(pluginId: string) {
+  constructor(pluginId: string, defaultCredentials: BackstageCredentials) {
     this.#auth = new MockAuthService(pluginId);
+    this.#defaultCredentials = defaultCredentials;
   }
 
   async #getCredentials(req: Request) {
     const header = req.headers.authorization;
+
+    if (header === mockCredentials.none.header()) {
+      return mockCredentials.none();
+    }
+
     const token =
       typeof header === 'string'
         ? header.match(/^Bearer[ ]+(\S+)$/i)?.[1]
         : undefined;
+
     if (!token) {
-      return mockCredentials.none();
+      return this.#defaultCredentials;
     }
 
     return await this.#auth.authenticate(token);
