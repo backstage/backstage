@@ -69,7 +69,7 @@ module.exports = {
     ],
   ],
   markdown: {
-    preprocessor({ filePath, fileContent }) {
+    preprocessor({ fileContent }) {
       // Replace all HTML comments with empty strings as these are not supported by MDXv2.
       return fileContent.replace(/<!--.*?-->/gs, '');
     },
