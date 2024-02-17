@@ -35,7 +35,7 @@
 
 
 
-FROM node:16-buster AS build
+FROM node:16-buster@sha256:f77a1aef2da8d83e45ec990f45df50f1a286c5fe8bbfb8c6e4246c6389705c0b AS build
 
 RUN mkdir /app
 COPY . /app
@@ -46,7 +46,7 @@ RUN yarn workspace app build
 
 
 
-FROM nginx:mainline
+FROM nginx:mainline@sha256:c26ae7472d624ba1fafd296e73cecc4f93f853088e6a9c13c0d52f6ca5865107
 
 RUN apt-get update && apt-get -y install jq && rm -rf /var/lib/apt/lists/*
 
