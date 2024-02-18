@@ -41,7 +41,11 @@ const getIdentity = async (identity: ProxiedSignInIdentity) => {
   }
 };
 
-const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => {
+const Component: ProviderComponent = ({
+  onSignInStarted,
+  onSignInSuccess,
+  onSignInFailure,
+}) => {
   const discoveryApi = useApi(discoveryApiRef);
   const [_, setUseLegacyGuestToken] = useLocalStorage('enableLegacyGuestToken');
 
@@ -65,6 +69,10 @@ const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => {
         onSignInSuccess(new GuestUserIdentity());
         return;
       }
+      onSignInFailure();
+      throw new Error(
+        `You cannot sign in as a guest, you must either enable the legacy guest token or configure the auth backend to support guest sign in.`,
+      );
     }
 
     onSignInSuccess(identity);
