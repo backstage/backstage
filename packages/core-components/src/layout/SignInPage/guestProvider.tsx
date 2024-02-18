@@ -22,28 +22,61 @@ import { GridItem } from './styles';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import { ProxiedSignInIdentity } from '../ProxiedSignInPage/ProxiedSignInIdentity';
 import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
+import { GuestUserIdentity } from './GuestUserIdentity';
+import useLocalStorage from 'react-use/lib/useLocalStorage';
+import { ResponseError } from '@backstage/errors';
+
+const getIdentity = async (identity: ProxiedSignInIdentity) => {
+  try {
+    const identityResponse = await identity.getBackstageIdentity();
+    return identityResponse;
+  } catch (error) {
+    if (
+      error instanceof ResponseError &&
+      error.cause.name === 'NotFoundError'
+    ) {
+      return undefined;
+    }
+    throw error;
+  }
+};
 
 const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => {
   const discoveryApi = useApi(discoveryApiRef);
+  const [_, setUseLegacyGuestToken] = useLocalStorage('enableLegacyGuestToken');
+
+  const handle = async () => {
+    onSignInStarted();
+
+    const identity = new ProxiedSignInIdentity({
+      provider: 'guest',
+      discoveryApi,
+    });
+
+    const identityResponse = await getIdentity(identity);
+
+    if (!identityResponse) {
+      // eslint-disable-next-line no-alert
+      const useLegacyGuestTokenResponse = confirm(
+        'Failed to sign in as a guest using the auth backend. Do you want to fallback to the legacy guest token?',
+      );
+      if (useLegacyGuestTokenResponse) {
+        setUseLegacyGuestToken(true);
+        onSignInSuccess(new GuestUserIdentity());
+        return;
+      }
+    }
+
+    onSignInSuccess(identity);
+  };
+
   return (
     <GridItem>
       <InfoCard
         title="Guest"
         variant="fullHeight"
         actions={
-          <Button
-            color="primary"
-            variant="outlined"
-            onClick={() => {
-              onSignInStarted();
-              onSignInSuccess(
-                new ProxiedSignInIdentity({
-                  provider: 'guest',
-                  discoveryApi,
-                }),
-              );
-            }}
-          >
+          <Button color="primary" variant="outlined" onClick={handle}>
             Enter
           </Button>
         }
@@ -55,17 +88,29 @@ const Component: ProviderComponent = ({ onSignInStarted, onSignInSuccess }) => {
 };
 
 const loader: ProviderLoader = async apis => {
+  const useLegacyGuestToken =
+    localStorage.getItem('enableLegacyGuestToken') === 'true';
+
   const identity = new ProxiedSignInIdentity({
     provider: 'guest',
     discoveryApi: apis.get(discoveryApiRef)!,
   });
+  const identityResponse = await getIdentity(identity);
 
-  await identity.start();
-
-  const identityResponse = await identity.getBackstageIdentity();
-
-  if (!identityResponse) {
+  if (!identityResponse && !useLegacyGuestToken) {
     return undefined;
+  } else if (identityResponse && useLegacyGuestToken) {
+    // eslint-disable-next-line no-alert
+    const switchToNewGuestToken = confirm(
+      'You are currently using the legacy guest token, but you have the new guest backend module installed. Do you want to use the new module?',
+    );
+    if (switchToNewGuestToken) {
+      localStorage.removeItem('enableLegacyGuestToken');
+    } else {
+      return new GuestUserIdentity();
+    }
+  } else if (useLegacyGuestToken) {
+    return new GuestUserIdentity();
   }
 
   return identity;
