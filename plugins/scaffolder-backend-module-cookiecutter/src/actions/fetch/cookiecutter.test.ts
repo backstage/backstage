@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  getVoidLogger,
-  UrlReader,
-  ContainerRunner,
-} from '@backstage/backend-common';
+import { UrlReader, ContainerRunner } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { PassThrough } from 'stream';
 import { createFetchCookiecutterAction } from './cookiecutter';
 import { join } from 'path';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/scaffolder-test-utils';
 
 const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
@@ -88,7 +84,7 @@ describe('fetch:cookiecutter', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    mockContext = {
+    mockContext = createMockActionContext({
       input: {
         url: 'https://google.com/cookie/cutter',
         targetPath: 'something',
@@ -96,16 +92,7 @@ describe('fetch:cookiecutter', () => {
           help: 'me',
         },
       },
-      templateInfo: {
-        entityRef: 'template:default/cookiecutter',
-        baseUrl: 'somebase',
-      },
-      workspacePath: mockTmpDir,
-      logger: getVoidLogger(),
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
-    };
+    });
     mockDir.setContent({ template: {} });
 
     commandExists.mockResolvedValue(null);

@@ -55,7 +55,7 @@ describe('publish:azure', () => {
   const action = createPublishAzureAction({ integrations, config });
 
   const mockContext = createMockActionContext({
-    repoUrl: 'dev.azure.com?repo=repo&owner=owner&organization=org',
+    input: { repoUrl: 'dev.azure.com?repo=repo&owner=owner&organization=org' },
   });
 
   const mockGitClient = {

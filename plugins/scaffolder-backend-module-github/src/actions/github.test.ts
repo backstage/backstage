@@ -34,15 +34,14 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { createMockActionContext } from '@backstage/scaffolder-test-utils';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
 import { when } from 'jest-when';
-import { PassThrough } from 'stream';
 import { createPublishGithubAction } from './github';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import {
@@ -103,19 +102,14 @@ describe('publish:github', () => {
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any>;
 
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
       description: 'description',
       repoVisibility: 'private' as const,
       access: 'owner/blam',
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     initRepoAndPushMocked.mockResolvedValue({

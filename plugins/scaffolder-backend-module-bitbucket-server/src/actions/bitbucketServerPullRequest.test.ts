@@ -62,12 +62,14 @@ describe('publish:bitbucketServer:pull-request', () => {
     config,
   });
   const mockContext = createMockActionContext({
-    repoUrl: 'hosted.bitbucket.com?project=project&repo=repo',
-    title: 'Add Scaffolder actions for Bitbucket Server',
-    description:
-      'I just made a Pull Request that Add Scaffolder actions for Bitbucket Server',
-    targetBranch: 'master',
-    sourceBranch: 'develop',
+    input: {
+      repoUrl: 'hosted.bitbucket.com?project=project&repo=repo',
+      title: 'Add Scaffolder actions for Bitbucket Server',
+      description:
+        'I just made a Pull Request that Add Scaffolder actions for Bitbucket Server',
+      targetBranch: 'master',
+      sourceBranch: 'develop',
+    },
   });
   const responseOfBranches = {
     size: 3,

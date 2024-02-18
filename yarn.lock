@@ -8311,6 +8311,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/scaffolder-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^11.0.0
@@ -8333,6 +8334,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/scaffolder-test-utils": "workspace:^"
     msw: ^1.0.0
     node-fetch: ^2.6.7
     yaml: ^2.0.0
@@ -8351,6 +8353,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/scaffolder-test-utils": "workspace:^"
     msw: ^1.0.0
     node-fetch: ^2.6.7
     yaml: ^2.0.0
@@ -8369,6 +8372,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/scaffolder-test-utils": "workspace:^"
     "@octokit/webhooks": ^10.0.0
     "@types/libsodium-wrappers": ^0.7.10
     fs-extra: ^11.2.0
@@ -9876,6 +9880,7 @@ __metadata:
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"

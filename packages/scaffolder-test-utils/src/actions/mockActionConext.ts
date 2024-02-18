@@ -20,32 +20,50 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import * as winston from 'winston';
+import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 
 /**
  * A utility method to create a mock action context for scaffolder actions.
  *
- * @param input - a schema for user input parameters
  *
- * @param workspacePath
- * @param logger
+ *
  * @public
+ * @param options
  */
 export const createMockActionContext = <
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
->(
-  input?: TActionInput,
-  workspacePath?: string,
-  logger?: winston.Logger,
-): ActionContext<TActionInput, TActionOutput> => {
-  return {
-    workspacePath: workspacePath
-      ? workspacePath
-      : createMockDirectory().resolve('workspace'),
-    logger: logger ? logger : getVoidLogger(),
+>(options?: {
+  input?: TActionInput;
+  workspacePath?: string;
+  logger?: winston.Logger;
+  templateInfo?: TemplateInfo;
+}): ActionContext<TActionInput, TActionOutput> => {
+  const defaultContext = {
+    logger: getVoidLogger(),
     logStream: new PassThrough(),
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
-    input: (input ? input : {}) as TActionInput,
+    input: {} as TActionInput,
+  };
+
+  const createDefaultWorkspace = () => ({
+    workspacePath: createMockDirectory().resolve('workspace'),
+  });
+
+  if (!options) {
+    return {
+      ...defaultContext,
+      ...createDefaultWorkspace(),
+    };
+  }
+
+  const { input, workspacePath, logger, templateInfo } = options;
+  return {
+    ...defaultContext,
+    ...(workspacePath ? { workspacePath } : createDefaultWorkspace()),
+    ...(logger && { logger }),
+    ...(input && { input }),
+    templateInfo,
   };
 };

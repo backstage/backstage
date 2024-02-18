@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -22,8 +21,8 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { PassThrough } from 'stream';
 import { createGithubAutolinksAction } from './githubAutolinks';
+import { createMockActionContext } from '@backstage/scaffolder-test-utils';
 import { examples } from './githubAutolinks.examples';
 import yaml from 'yaml';
 
@@ -70,14 +69,11 @@ describe('github:autolinks:create', () => {
         id: '1',
       },
     });
-    await action.handler({
-      input,
-      workspacePath: 'lol',
-      logger: getVoidLogger(),
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn(),
-    });
+    await action.handler(
+      createMockActionContext({
+        input,
+      }),
+    );
 
     expect(mockOctokit.rest.repos.createAutolink).toHaveBeenCalledWith({
       owner: 'owner',

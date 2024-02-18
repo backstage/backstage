@@ -71,11 +71,11 @@ describe('confluence:transform:markdown examples', () => {
       }),
       search: jest.fn(),
     };
-    mockContext = createMockActionContext(
-      yaml.parse(examples[0].example).steps[0].input,
+    mockContext = createMockActionContext({
+      input: yaml.parse(examples[0].example).steps[0].input,
       workspacePath,
       logger,
-    );
+    });
 
     mockDir.setContent({ 'workspace/mkdocs.yml': 'File contents' });
   });

@@ -33,9 +33,8 @@ import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/scaffolder-test-utils';
 
 describe('publish:gerrit', () => {
   const config = new ConfigReader({
@@ -53,18 +52,13 @@ describe('publish:gerrit', () => {
   const description = 'for the lols';
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createPublishGerritAction({ integrations, config });
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl:
         'gerrithost.org?owner=owner&workspace=parent&project=project&repo=repo',
       description,
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
   const server = setupServer();
   setupRequestMockHandlers(server);
 
