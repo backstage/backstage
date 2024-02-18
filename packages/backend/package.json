@@ -40,6 +40,7 @@
     "@backstage/plugin-azure-sites-common": "workspace:^",
     "@backstage/plugin-badges-backend": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-gitlab-org": "^0.0.0",
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^",
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
