@@ -26,7 +26,6 @@ import {
   createRoutableExtension,
   createComponentExtension,
   discoveryApiRef,
-  identityApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 
@@ -59,7 +58,6 @@ export const azureDevOpsPlugin = createPlugin({
       api: azureDevOpsApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
-        identityApi: identityApiRef,
         fetchApi: fetchApiRef,
       },
       factory: ({ discoveryApi, fetchApi }) =>
