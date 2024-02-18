@@ -110,14 +110,6 @@ export interface TaskContext {
   cancelSignal: AbortSignal;
   spec: TaskSpec;
   secrets?: TaskSecrets;
-  state?: {
-    [key: string]:
-      | { status: 'failed'; reason: string }
-      | {
-          status: 'success';
-          value: JsonValue;
-        };
-  };
   createdBy?: string;
   done: boolean;
   isDryRun?: boolean;

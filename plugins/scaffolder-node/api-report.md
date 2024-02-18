@@ -364,18 +364,6 @@ export interface TaskContext {
   // (undocumented)
   spec: TaskSpec;
   // (undocumented)
-  state?: {
-    [key: string]:
-      | {
-          status: 'failed';
-          reason: string;
-        }
-      | {
-          status: 'success';
-          value: JsonValue;
-        };
-  };
-  // (undocumented)
   updateCheckpoint?(
     options:
       | {
