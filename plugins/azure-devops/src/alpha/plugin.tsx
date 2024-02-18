@@ -22,7 +22,6 @@ import {
   createPlugin,
   discoveryApiRef,
   fetchApiRef,
-  identityApiRef,
 } from '@backstage/frontend-plugin-api';
 import { azureDevOpsApiRef, AzureDevOpsClient } from '../api';
 import {
@@ -41,11 +40,10 @@ export const azureDevOpsApi = createApiExtension({
     api: azureDevOpsApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
-      identityApi: identityApiRef,
       fetchApi: fetchApiRef,
     },
-    factory: ({ discoveryApi, identityApi, fetchApi }) =>
-      new AzureDevOpsClient({ discoveryApi, identityApi, fetchApi }),
+    factory: ({ discoveryApi, fetchApi }) =>
+      new AzureDevOpsClient({ discoveryApi, fetchApi }),
   }),
 });
 

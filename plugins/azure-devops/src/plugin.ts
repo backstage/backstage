@@ -62,8 +62,8 @@ export const azureDevOpsPlugin = createPlugin({
         identityApi: identityApiRef,
         fetchApi: fetchApiRef,
       },
-      factory: ({ discoveryApi, identityApi, fetchApi }) =>
-        new AzureDevOpsClient({ discoveryApi, identityApi, fetchApi }),
+      factory: ({ discoveryApi, fetchApi }) =>
+        new AzureDevOpsClient({ discoveryApi, fetchApi }),
     }),
   ],
 });

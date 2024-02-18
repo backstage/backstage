@@ -21,7 +21,6 @@ import {
   createPlugin,
   discoveryApiRef,
   fetchApiRef,
-  identityApiRef,
 } from '@backstage/frontend-plugin-api';
 
 import { LinguistClient, linguistApiRef } from '../api';
@@ -43,11 +42,10 @@ export const linguistApi = createApiExtension({
     api: linguistApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
-      identityApi: identityApiRef,
       fetchApi: fetchApiRef,
     },
-    factory: ({ discoveryApi, identityApi, fetchApi }) =>
-      new LinguistClient({ discoveryApi, identityApi, fetchApi }),
+    factory: ({ discoveryApi, fetchApi }) =>
+      new LinguistClient({ discoveryApi, fetchApi }),
   }),
 });
 

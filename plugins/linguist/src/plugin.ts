@@ -20,7 +20,6 @@ import {
   createPlugin,
   discoveryApiRef,
   fetchApiRef,
-  identityApiRef,
 } from '@backstage/core-plugin-api';
 import { linguistApiRef, LinguistClient } from './api';
 import { LINGUIST_ANNOTATION } from '@backstage/plugin-linguist-common';
@@ -38,11 +37,10 @@ export const linguistPlugin = createPlugin({
       api: linguistApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
-        identityApi: identityApiRef,
         fetchApi: fetchApiRef,
       },
-      factory: ({ discoveryApi, identityApi, fetchApi }) =>
-        new LinguistClient({ discoveryApi, identityApi, fetchApi }),
+      factory: ({ discoveryApi, fetchApi }) =>
+        new LinguistClient({ discoveryApi, fetchApi }),
     }),
   ],
 });

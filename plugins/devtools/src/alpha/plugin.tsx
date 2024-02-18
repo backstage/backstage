@@ -23,7 +23,6 @@ import {
   createPlugin,
   discoveryApiRef,
   fetchApiRef,
-  identityApiRef,
 } from '@backstage/frontend-plugin-api';
 
 import { devToolsApiRef, DevToolsClient } from '../api';
@@ -40,11 +39,10 @@ export const devToolsApi = createApiExtension({
     api: devToolsApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
-      identityApi: identityApiRef,
       fetchApi: fetchApiRef,
     },
-    factory: ({ discoveryApi, identityApi, fetchApi }) =>
-      new DevToolsClient({ discoveryApi, identityApi, fetchApi }),
+    factory: ({ discoveryApi, fetchApi }) =>
+      new DevToolsClient({ discoveryApi, fetchApi }),
   }),
 });
 
