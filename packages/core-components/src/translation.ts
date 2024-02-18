@@ -54,6 +54,8 @@ export const coreComponentsTranslationRef = createTranslationRef({
       subtitle: 'ERROR {{status}}: {{statusMessage}}',
       title: 'Looks like someone dropped the mic!',
       goBack: 'Go back',
+      showMoreDetails: 'Show more details',
+      showLessDetails: 'Show less details',
     },
     emptyState: {
       missingAnnotation: {

@@ -33,6 +33,8 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'errorPage.title': 'Looks like someone dropped the mic!';
     readonly 'errorPage.subtitle': 'ERROR {{status}}: {{statusMessage}}';
     readonly 'errorPage.goBack': 'Go back';
+    readonly 'errorPage.showMoreDetails': 'Show more details';
+    readonly 'errorPage.showLessDetails': 'Show less details';
     readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
     readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
     readonly 'emptyState.missingAnnotation.readMore': 'Read more';
