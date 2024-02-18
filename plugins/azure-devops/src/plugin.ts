@@ -27,6 +27,7 @@ import {
   createComponentExtension,
   discoveryApiRef,
   identityApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 import { AzureDevOpsClient } from './api/AzureDevOpsClient';
@@ -56,9 +57,13 @@ export const azureDevOpsPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: azureDevOpsApiRef,
-      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-      factory: ({ discoveryApi, identityApi }) =>
-        new AzureDevOpsClient({ discoveryApi, identityApi }),
+      deps: {
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ discoveryApi, identityApi, fetchApi }) =>
+        new AzureDevOpsClient({ discoveryApi, identityApi, fetchApi }),
     }),
   ],
 });

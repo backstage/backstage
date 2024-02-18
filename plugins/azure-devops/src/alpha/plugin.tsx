@@ -21,6 +21,7 @@ import {
   createPageExtension,
   createPlugin,
   discoveryApiRef,
+  fetchApiRef,
   identityApiRef,
 } from '@backstage/frontend-plugin-api';
 import { azureDevOpsApiRef, AzureDevOpsClient } from '../api';
@@ -38,9 +39,13 @@ import { azurePullRequestDashboardRouteRef } from '../routes';
 export const azureDevOpsApi = createApiExtension({
   factory: createApiFactory({
     api: azureDevOpsApiRef,
-    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-    factory: ({ discoveryApi, identityApi }) =>
-      new AzureDevOpsClient({ discoveryApi, identityApi }),
+    deps: {
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ discoveryApi, identityApi, fetchApi }) =>
+      new AzureDevOpsClient({ discoveryApi, identityApi, fetchApi }),
   }),
 });
 

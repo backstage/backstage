@@ -22,6 +22,7 @@ import {
   createPageExtension,
   createPlugin,
   discoveryApiRef,
+  fetchApiRef,
   identityApiRef,
 } from '@backstage/frontend-plugin-api';
 
@@ -37,9 +38,13 @@ import { rootRouteRef } from '../routes';
 export const devToolsApi = createApiExtension({
   factory: createApiFactory({
     api: devToolsApiRef,
-    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-    factory: ({ discoveryApi, identityApi }) =>
-      new DevToolsClient({ discoveryApi, identityApi }),
+    deps: {
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ discoveryApi, identityApi, fetchApi }) =>
+      new DevToolsClient({ discoveryApi, identityApi, fetchApi }),
   }),
 });
 

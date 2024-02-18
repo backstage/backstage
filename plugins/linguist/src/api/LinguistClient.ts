@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import {
+  DiscoveryApi,
+  FetchApi,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { Languages } from '@backstage/plugin-linguist-common';
 import { LinguistApi } from './LinguistApi';
@@ -22,13 +26,16 @@ import { LinguistApi } from './LinguistApi';
 export class LinguistClient implements LinguistApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
 
   public constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    fetchApi: FetchApi;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
   }
 
   public async getLanguages(entityRef: string): Promise<Languages> {
@@ -46,7 +53,7 @@ export class LinguistClient implements LinguistApi {
     const url = new URL(path, baseUrl);
 
     const { token } = await this.identityApi.getCredentials();
-    const response = await fetch(url.toString(), {
+    const response = await this.fetchApi.fetch(url.toString(), {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 

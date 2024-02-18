@@ -20,6 +20,7 @@ import {
   createApiFactory,
   createPlugin,
   discoveryApiRef,
+  fetchApiRef,
   identityApiRef,
 } from '@backstage/frontend-plugin-api';
 
@@ -40,9 +41,13 @@ export const entityLinguistCard = createEntityCardExtension({
 export const linguistApi = createApiExtension({
   factory: createApiFactory({
     api: linguistApiRef,
-    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-    factory: ({ discoveryApi, identityApi }) =>
-      new LinguistClient({ discoveryApi, identityApi }),
+    deps: {
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ discoveryApi, identityApi, fetchApi }) =>
+      new LinguistClient({ discoveryApi, identityApi, fetchApi }),
   }),
 });
 
