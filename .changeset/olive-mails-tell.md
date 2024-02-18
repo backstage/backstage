@@ -1,5 +1,4 @@
 ---
-'@backstage/plugin-azure-devops': patch
 '@backstage/plugin-devtools': patch
 '@backstage/plugin-linguist': patch
 ---
