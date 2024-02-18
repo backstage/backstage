@@ -387,7 +387,28 @@
       {
         "type": "category",
         "label": "Core Services",
-        "items": ["backend-system/core-services/index"]
+        "items": [
+          "backend-system/core-services/index",
+          "backend-system/core-services/auth",
+          "backend-system/core-services/cache",
+          "backend-system/core-services/database",
+          "backend-system/core-services/discovery",
+          "backend-system/core-services/http-auth",
+          "backend-system/core-services/http-router",
+          "backend-system/core-services/identity",
+          "backend-system/core-services/lifecycle",
+          "backend-system/core-services/logger",
+          "backend-system/core-services/permissions",
+          "backend-system/core-services/plugin-metadata",
+          "backend-system/core-services/root-config",
+          "backend-system/core-services/root-http-router",
+          "backend-system/core-services/root-lifecycle",
+          "backend-system/core-services/root-logger",
+          "backend-system/core-services/scheduler",
+          "backend-system/core-services/token-manager",
+          "backend-system/core-services/url-reader",
+          "backend-system/core-services/user-info"
+        ]
       }
     ],
     "New Frontend System": [
