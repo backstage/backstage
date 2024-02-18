@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  createBackendModule,
-  coreServices,
-} from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { GitlabDiscoveryEntityProvider } from '../providers';
 
 /**
@@ -27,6 +28,7 @@ import { GitlabDiscoveryEntityProvider } from '../providers';
  *
  * @alpha
  */
+
 export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'gitlab-discovery-entity-provider',
@@ -37,14 +39,16 @@ export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
         catalog: catalogProcessingExtensionPoint,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
+        events: eventsExtensionPoint,
       },
-      async init({ config, catalog, logger, scheduler }) {
-        catalog.addEntityProvider(
+      async init({ config, catalog, logger, scheduler, events }) {
+        const gitlabDiscoveryEntityProvider =
           GitlabDiscoveryEntityProvider.fromConfig(config, {
             logger: loggerToWinstonLogger(logger),
             scheduler,
-          }),
-        );
+          });
+        catalog.addEntityProvider(gitlabDiscoveryEntityProvider);
+        events.addSubscribers(gitlabDiscoveryEntityProvider);
       },
     });
   },
