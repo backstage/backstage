@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PassThrough } from 'stream';
 import { createConfluenceToMarkdownAction } from './confluenceToMarkdown';
 import { getVoidLogger } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
@@ -28,6 +27,7 @@ import { setupServer } from 'msw/node';
 import { examples } from './confluenceToMarkdown.examples';
 import yaml from 'yaml';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/scaffolder-test-utils';
 
 describe('confluence:transform:markdown examples', () => {
   const baseUrl = `https://confluence.example.com`;
@@ -71,14 +71,11 @@ describe('confluence:transform:markdown examples', () => {
       }),
       search: jest.fn(),
     };
-    mockContext = {
-      input: yaml.parse(examples[0].example).steps[0].input,
+    mockContext = createMockActionContext(
+      yaml.parse(examples[0].example).steps[0].input,
       workspacePath,
       logger,
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn(),
-    };
+    );
 
     mockDir.setContent({ 'workspace/mkdocs.yml': 'File contents' });
   });

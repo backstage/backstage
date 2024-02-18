@@ -19,12 +19,15 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
+import * as winston from 'winston';
 
 /**
  * A utility method to create a mock action context for scaffolder actions.
  *
  * @param input - a schema for user input parameters
  *
+ * @param workspacePath
+ * @param logger
  * @public
  */
 export const createMockActionContext = <
@@ -32,12 +35,14 @@ export const createMockActionContext = <
   TActionOutput extends JsonObject = JsonObject,
 >(
   input?: TActionInput,
+  workspacePath?: string,
+  logger?: winston.Logger,
 ): ActionContext<TActionInput, TActionOutput> => {
-  const mockDir = createMockDirectory();
-
   return {
-    workspacePath: mockDir.path,
-    logger: getVoidLogger(),
+    workspacePath: workspacePath
+      ? workspacePath
+      : createMockDirectory().resolve('workspace'),
+    logger: logger ? logger : getVoidLogger(),
     logStream: new PassThrough(),
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
