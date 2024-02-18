@@ -4,7 +4,8 @@ status: provisional
 authors:
   - 'bnechyporenko@bol.com'
   - 'benjaminl@spotify.com'
-owners:
+owners: 
+  - @backstage/scaffolder-maintainers
 project-areas:
   - scaffolder
 creation-date: 2024-01-31
@@ -153,7 +154,7 @@ export function createGithubRepoCreateAction(options: {
         username: owner,
       });
 
-      await ctx.checkpoint('v1.task.checkpoint.repo.creation', async () => {
+      await ctx.checkpoint('repo.creation', async () => {
         const repoCreationPromise =
           user.data.type === 'Organization'
             ? client.rest.repos.createInOrg({
@@ -168,19 +169,16 @@ export function createGithubRepoCreateAction(options: {
       });
 
       if (secrets) {
-        await ctx.checkpoint(
-          'v1.task.checkpoint.repo.create.variables',
-          async () => {
-            for (const [key, value] of Object.entries(repoVariables ?? {})) {
-              await client.rest.actions.createRepoVariable({
-                owner,
-                repo,
-                name: key,
-                value: value,
-              });
-            }
-          },
-        );
+        await ctx.checkpoint('repo.create.variables', async () => {
+          for (const [key, value] of Object.entries(repoVariables ?? {})) {
+            await client.rest.actions.createRepoVariable({
+              owner,
+              repo,
+              name: key,
+              value: value,
+            });
+          }
+        });
       }
 
       ctx.output('remoteUrl', newRepo.clone_url);
@@ -204,7 +202,7 @@ Checkpoints will allow action authors to create actions where code paths are ign
 This will be provided on a context object and action of author provide a key and a callback.
 
 ```typescript
-await ctx.checkpoint('v1.task.checkpoint.repo.creation', async () => {
+await ctx.checkpoint('repo.creation', async () => {
   const { repoUrl } = await client.rest.Repository.create({});
   return { repoUrl };
 });
@@ -215,10 +213,45 @@ It's going look like:
 
 ```json
 {
-  "v1.task.checkpoint.repo.creation": {
+  "repo.creation": {
     "status": "success",
     "result": {
       "repoUrl": "https://github.com/backstage/backstage.git"
+    }
+  }
+}
+```
+
+or a failed attempt as:
+
+```json
+{
+  "repo.creation": {
+    "status": "failed",
+    "reason": "Namespace is not valid"
+  }
+}
+```
+
+DatabaseTaskStore will provide two extra methods `saveTaskState` and `getTaskState`. The type of state in API will be
+represented as `JsonObject`.
+
+Task state will be stored in the extra column `state` in the table `tasks` with the next structure:
+
+```json
+{
+  "state": {
+    "repo.creation": {
+      "status": "success",
+      "result": {
+        "repoUrl": "https://github.com/backstage/backstage.git"
+      }
+    },
+    "repo.add.member": {
+      "status": "success",
+      "result": {
+        "id": "2345"
+      }
     }
   }
 }
