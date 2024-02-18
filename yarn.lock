@@ -8209,6 +8209,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/scaffolder-test-utils": "workspace:^"
     azure-devops-node-api: ^12.0.0
     yaml: ^2.0.0
   languageName: unknown
@@ -9861,6 +9862,23 @@ __metadata:
       optional: true
   bin:
     backstage-repo-tools: bin/backstage-repo-tools
+  languageName: unknown
+  linkType: soft
+
+"@backstage/scaffolder-test-utils@workspace:^, @backstage/scaffolder-test-utils@workspace:packages/scaffolder-test-utils":
+  version: 0.0.0-use.local
+  resolution: "@backstage/scaffolder-test-utils@workspace:packages/scaffolder-test-utils"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@testing-library/jest-dom": ^6.0.0
+    "@types/react": "*"
+  peerDependencies:
+    "@types/jest": "*"
   languageName: unknown
   linkType: soft
 

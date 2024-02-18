@@ -47,7 +47,8 @@
     "yaml": "^2.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@backstage/scaffolder-test-utils": "workspace:^"
   },
   "files": [
     "dist"
