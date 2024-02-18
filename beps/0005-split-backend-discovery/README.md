@@ -98,9 +98,19 @@ change are understandable. This may include API specs or even code snippets.
 If there's any ambiguity about HOW your proposal will be implemented, this is the place to discuss them.
 -->
 
+### Backend Requests
+
 ![](./discovery.png)
 
+### Registration Flow
+
 ![](./registrations.png)
+
+#### New `InstanceMetadataService`
+
+While we could attach the existing information to the `PluginMetadataService`, we propose a new service that handles instance-level information. The existing `PluginMetadataService` should reveal information about the plugin itself, its pluginId, dependencies or similar. The new `InstanceMetadataService` should give you information about the entire Backstage instance that you're interrogating. At launch, this should include the list of plugins installed _on your instance_ that can then be aggregated by the discovery API across the gateway nodes. One could imagine this service also having information about instance URLs, health or gateway status.
+
+### Frontend Requests
 
 ![](./frontend.png)
 
