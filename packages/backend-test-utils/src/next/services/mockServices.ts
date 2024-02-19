@@ -169,14 +169,33 @@ export namespace mockServices {
     }));
   }
 
-  export function auth(options?: { pluginId?: string }): AuthService {
-    return new MockAuthService(options?.pluginId ?? 'test');
+  export function auth(options?: {
+    pluginId?: string;
+    disableDefaultAuthPolicy?: boolean;
+  }): AuthService {
+    return new MockAuthService({
+      pluginId: options?.pluginId ?? 'test',
+      disableDefaultAuthPolicy: Boolean(options?.disableDefaultAuthPolicy),
+    });
   }
   export namespace auth {
     export const factory = createServiceFactory({
       service: coreServices.auth,
-      deps: { plugin: coreServices.pluginMetadata },
-      factory: ({ plugin }) => new MockAuthService(plugin.getId()),
+      deps: {
+        plugin: coreServices.pluginMetadata,
+        config: coreServices.rootConfig,
+      },
+      factory({ plugin, config }) {
+        const disableDefaultAuthPolicy = Boolean(
+          config.getOptionalBoolean(
+            'backend.auth.dangerouslyDisableDefaultAuthPolicy',
+          ),
+        );
+        return new MockAuthService({
+          pluginId: plugin.getId(),
+          disableDefaultAuthPolicy,
+        });
+      },
     });
     export const mock = simpleMock(coreServices.auth, () => ({
       authenticate: jest.fn(),

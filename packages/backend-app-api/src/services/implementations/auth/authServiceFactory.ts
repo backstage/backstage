@@ -111,6 +111,7 @@ class DefaultAuthService implements AuthService {
     private readonly tokenManager: TokenManager,
     private readonly identity: IdentityService,
     private readonly pluginId: string,
+    private readonly disableDefaultAuthPolicy: boolean,
   ) {}
 
   async authenticate(token: string): Promise<BackstageCredentials> {
@@ -171,6 +172,15 @@ class DefaultAuthService implements AuthService {
     const internalForward = toInternalBackstageCredentials(options.onBehalfOf);
     const { type } = internalForward.principal;
 
+    // Since disabling the default policy means we'll be allowing
+    // unauthenticated requests through, we might have unauthenticated
+    // credentials from service calls that reach this point. If that's the case,
+    // we'll want to keep "forwarding" the unauthenticated credentials, which we
+    // do by returning an empty token.
+    if (type === 'none' && this.disableDefaultAuthPolicy) {
+      return { token: '' };
+    }
+
     switch (type) {
       // TODO: Check whether the principal is ourselves
       case 'service':
@@ -200,8 +210,18 @@ export const authServiceFactory = createServiceFactory({
   createRootContext({ config, logger }) {
     return ServerTokenManager.fromConfig(config, { logger });
   },
-  async factory({ discovery, plugin }, tokenManager) {
+  async factory({ discovery, config, plugin }, tokenManager) {
     const identity = DefaultIdentityClient.create({ discovery });
-    return new DefaultAuthService(tokenManager, identity, plugin.getId());
+    const disableDefaultAuthPolicy = Boolean(
+      config.getOptionalBoolean(
+        'backend.auth.dangerouslyDisableDefaultAuthPolicy',
+      ),
+    );
+    return new DefaultAuthService(
+      tokenManager,
+      identity,
+      plugin.getId(),
+      disableDefaultAuthPolicy,
+    );
   },
 });

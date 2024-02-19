@@ -128,7 +128,10 @@ export interface MockDirectoryOptions {
 // @public (undocumented)
 export namespace mockServices {
   // (undocumented)
-  export function auth(options?: { pluginId?: string }): AuthService;
+  export function auth(options?: {
+    pluginId?: string;
+    disableDefaultAuthPolicy?: boolean;
+  }): AuthService;
   // (undocumented)
   export namespace auth {
     const // (undocumented)

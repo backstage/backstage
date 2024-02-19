@@ -17,6 +17,7 @@
 import {
   HttpAuthService,
   HttpRouterServiceAuthPolicy,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { pathToRegexp } from 'path-to-regexp';
@@ -37,11 +38,23 @@ export function createPathPolicyPredicate(policyPath: string) {
 
 export function createCredentialsBarrier(options: {
   httpAuth: HttpAuthService;
+  config: RootConfigService;
 }): {
   middleware: RequestHandler;
   addAuthPolicy: (policy: HttpRouterServiceAuthPolicy) => void;
 } {
-  const { httpAuth } = options;
+  const { httpAuth, config } = options;
+
+  const disableDefaultAuthPolicy = config.getOptionalBoolean(
+    'backend.auth.dangerouslyDisableDefaultAuthPolicy',
+  );
+
+  if (disableDefaultAuthPolicy) {
+    return {
+      middleware: (_req, _res, next) => next(),
+      addAuthPolicy: () => {},
+    };
+  }
 
   const unauthenticatedPredicates = new Array<(path: string) => boolean>();
   const cookiePredicates = new Array<(path: string) => boolean>();

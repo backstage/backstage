@@ -35,7 +35,10 @@ export class MockHttpAuthService implements HttpAuthService {
   #defaultCredentials: BackstageCredentials;
 
   constructor(pluginId: string, defaultCredentials: BackstageCredentials) {
-    this.#auth = new MockAuthService(pluginId);
+    this.#auth = new MockAuthService({
+      pluginId,
+      disableDefaultAuthPolicy: false,
+    });
     this.#defaultCredentials = defaultCredentials;
   }
 

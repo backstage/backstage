@@ -37,7 +37,16 @@ import {
 
 /** @internal */
 export class MockAuthService implements AuthService {
-  constructor(private readonly pluginId: string) {}
+  readonly pluginId: string;
+  readonly disableDefaultAuthPolicy: boolean;
+
+  constructor(options: {
+    pluginId: string;
+    disableDefaultAuthPolicy: boolean;
+  }) {
+    this.pluginId = options.pluginId;
+    this.disableDefaultAuthPolicy = options.disableDefaultAuthPolicy;
+  }
 
   async authenticate(token: string): Promise<BackstageCredentials> {
     switch (token) {
@@ -116,6 +125,10 @@ export class MockAuthService implements AuthService {
       | BackstageUserPrincipal
       | BackstageServicePrincipal
       | BackstageNonePrincipal;
+
+    if (principal.type === 'none' && this.disableDefaultAuthPolicy) {
+      return { token: '' };
+    }
 
     if (principal.type !== 'user' && principal.type !== 'service') {
       throw new AuthenticationError(

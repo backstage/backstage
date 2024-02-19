@@ -24,7 +24,10 @@ import {
 } from './mockCredentials';
 
 describe('MockAuthService', () => {
-  const auth = new MockAuthService('test');
+  const auth = new MockAuthService({
+    pluginId: 'test',
+    disableDefaultAuthPolicy: false,
+  });
 
   it('should reject invalid tokens', async () => {
     await expect(auth.authenticate('')).rejects.toThrow('Token is empty');
