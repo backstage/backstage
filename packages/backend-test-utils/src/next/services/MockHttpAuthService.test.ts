@@ -17,6 +17,7 @@
 import { Request } from 'express';
 import { MockHttpAuthService } from './MockHttpAuthService';
 import { mockCredentials } from './mockCredentials';
+import { AuthenticationError } from '@backstage/errors';
 
 describe('MockHttpAuthService', () => {
   const httpAuth = new MockHttpAuthService('test', mockCredentials.none());
@@ -36,7 +37,7 @@ describe('MockHttpAuthService', () => {
 
     await expect(
       httpAuth.credentials(makeAuthReq(), { allow: ['user'] }),
-    ).rejects.toThrow("This endpoint does not allow 'none' credentials");
+    ).rejects.toThrow(AuthenticationError);
 
     await expect(httpAuth.credentials(makeAuthReq())).resolves.toEqual(
       mockCredentials.none(),

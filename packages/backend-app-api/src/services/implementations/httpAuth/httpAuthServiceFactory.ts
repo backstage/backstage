@@ -124,6 +124,9 @@ class DefaultHttpAuthService implements HttpAuthService {
       allowedPrincipalTypes &&
       !allowedPrincipalTypes.includes(credentials.principal.type as TAllowed)
     ) {
+      if (credentials.authMethod === 'none') {
+        throw new AuthenticationError();
+      }
       throw new NotAllowedError(
         `This endpoint does not allow '${credentials.principal.type}' credentials`,
       );

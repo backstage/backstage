@@ -22,7 +22,11 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Request, Response } from 'express';
 import { MockAuthService } from './MockAuthService';
-import { NotAllowedError, NotImplementedError } from '@backstage/errors';
+import {
+  AuthenticationError,
+  NotAllowedError,
+  NotImplementedError,
+} from '@backstage/errors';
 import { mockCredentials } from './mockCredentials';
 
 // TODO: support mock cookie auth?
@@ -73,9 +77,7 @@ export class MockHttpAuthService implements HttpAuthService {
         return credentials as any;
       }
 
-      throw new NotAllowedError(
-        `This endpoint does not allow 'none' credentials`,
-      );
+      throw new AuthenticationError();
     } else if (this.#auth.isPrincipal(credentials, 'user')) {
       if (allowedPrincipalTypes.includes('user' as TAllowed)) {
         return credentials as any;
