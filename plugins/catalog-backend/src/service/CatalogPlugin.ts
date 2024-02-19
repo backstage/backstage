@@ -49,7 +49,6 @@ class CatalogProcessingExtensionPointImpl
     unprocessedEntity: Entity;
     errors: Error[];
   }) => Promise<void> | void;
-  #entityDataParser?: CatalogProcessorParser;
 
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
@@ -80,15 +79,6 @@ class CatalogProcessingExtensionPointImpl
     this.#onProcessingErrorHandler = handler;
   }
 
-  setEntityDataParser(parser: CatalogProcessorParser): void {
-    if (this.#entityDataParser) {
-      throw new Error(
-        'Attempted to install second EntityDataParser. Only one can be set.',
-      );
-    }
-    this.#entityDataParser = parser;
-  }
-
   get processors() {
     return this.#processors;
   }
@@ -103,10 +93,6 @@ class CatalogProcessingExtensionPointImpl
 
   get onProcessingErrorHandler() {
     return this.#onProcessingErrorHandler;
-  }
-
-  get entityDataParser() {
-    return this.#entityDataParser;
   }
 }
 
@@ -151,6 +137,21 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
 
   get fieldValidators() {
     return this.#fieldValidators;
+  }
+
+  #entityDataParser?: CatalogProcessorParser;
+
+  setEntityDataParser(parser: CatalogProcessorParser): void {
+    if (this.#entityDataParser) {
+      throw new Error(
+        'Attempted to install second EntityDataParser. Only one can be set.',
+      );
+    }
+    this.#entityDataParser = parser;
+  }
+
+  get entityDataParser() {
+    return this.#entityDataParser;
   }
 }
 
@@ -221,8 +222,8 @@ export const catalogPlugin = createBackendPlugin({
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);
 
-        if (processingExtensions.entityDataParser) {
-          builder.setEntityDataParser(processingExtensions.entityDataParser);
+        if (modelExtensions.entityDataParser) {
+          builder.setEntityDataParser(modelExtensions.entityDataParser);
         }
 
         Object.entries(processingExtensions.placeholderResolvers).forEach(

@@ -28,6 +28,7 @@ export const catalogAnalysisExtensionPoint: ExtensionPoint<CatalogAnalysisExtens
 
 // @alpha (undocumented)
 export interface CatalogModelExtensionPoint {
+  setEntityDataParser(parser: CatalogProcessorParser): void;
   setFieldValidators(validators: Partial<Validators>): void;
 }
 
@@ -71,8 +72,6 @@ export interface CatalogProcessingExtensionPoint {
       errors: Error[];
     }) => Promise<void> | void,
   ): void;
-  // (undocumented)
-  setEntityDataParser(parser: CatalogProcessorParser): void;
 }
 
 // @alpha (undocumented)

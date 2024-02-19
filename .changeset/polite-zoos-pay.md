@@ -3,4 +3,4 @@
 '@backstage/plugin-catalog-node': minor
 ---
 
-Allow setting EntityDataParser using CatalogProcessingExtensionPoint
+Allow setting EntityDataParser using CatalogModelExtensionPoint

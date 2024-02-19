@@ -38,7 +38,6 @@ export interface CatalogProcessingExtensionPoint {
     ...providers: Array<EntityProvider | Array<EntityProvider>>
   ): void;
   addPlaceholderResolver(key: string, resolver: PlaceholderResolver): void;
-  setEntityDataParser(parser: CatalogProcessorParser): void;
   setOnProcessingErrorHandler(
     handler: (event: {
       unprocessedEntity: Entity;
@@ -57,6 +56,12 @@ export interface CatalogModelExtensionPoint {
    * @param validators - The (subset of) validators to set
    */
   setFieldValidators(validators: Partial<Validators>): void;
+
+  /**
+   * Sets the entity data parser which is used to read raw data from locations
+   * @param parser - Parser which will used to extract entities from raw data
+   */
+  setEntityDataParser(parser: CatalogProcessorParser): void;
 }
 
 /**
