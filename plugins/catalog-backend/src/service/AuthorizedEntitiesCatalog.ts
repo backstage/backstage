@@ -38,7 +38,7 @@ import {
   QueryEntitiesRequest,
   QueryEntitiesResponse,
 } from '../catalog/types';
-import { basicEntityFilter } from './request/basicEntityFilter';
+import { basicEntityFilter } from './request';
 import { isQueryEntitiesCursorRequest } from './util';
 import { EntityFilter } from '@backstage/plugin-catalog-node';
 

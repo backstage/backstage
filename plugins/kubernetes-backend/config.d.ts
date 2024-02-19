@@ -43,16 +43,21 @@ export interface Config {
             url: string;
             /** @visibility frontend */
             name: string;
+            /** @visibility frontend */
+            title?: string;
             /** @visibility secret  */
             serviceAccountToken?: string;
             /** @visibility frontend */
-            authProvider:
+            authProvider?:
+              | 'aks'
               | 'aws'
-              | 'google'
-              | 'serviceAccount'
               | 'azure'
+              | 'google'
+              | 'googleServiceAccount'
               | 'oidc'
-              | 'googleServiceAccount';
+              | 'serviceAccount';
+            /** @visibility secret  */
+            authMetadata?: object;
             /** @visibility frontend */
             oidcTokenProvider?: string;
             /** @visibility frontend */
@@ -80,6 +85,8 @@ export interface Config {
           projectId: string;
           /** @visibility frontend */
           region?: string;
+          /** @visibility frontend */
+          authProvider?: string;
           /** @visibility frontend */
           skipTLSVerify?: boolean;
           /** @visibility frontend */

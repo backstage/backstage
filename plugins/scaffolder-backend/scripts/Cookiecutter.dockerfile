@@ -8,4 +8,4 @@ RUN apk add --update \
 	g++ && \
 	pip install cookiecutter && \
 	apk del g++ py-pip python-dev && \
-	rm -rf /var/cache/apk/* 
+	rm -rf /var/cache/apk/*

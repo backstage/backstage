@@ -15,7 +15,7 @@ Install the `@backstage/plugin-badges-backend` package in your backend package:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-badges-backend
+yarn --cwd packages/backend add @backstage/plugin-badges-backend
 ```
 
 Add the plugin using the following default setup for
@@ -84,12 +84,12 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { badgesPlugin } from '@backstage/plugin-badges-backend';
+
   const backend = createBackend();
 
   // ... other feature additions
 
-+ backend.add(badgesPlugin());
++ backend.add(import('@backstage/plugin-badges-backend'));
 
   backend.start();
 ```

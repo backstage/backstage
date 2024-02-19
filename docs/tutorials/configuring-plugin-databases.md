@@ -39,10 +39,10 @@ both of them.
 ```bash
 # From your Backstage root directory
 # install pg if you need PostgreSQL
-yarn add --cwd packages/backend pg
+yarn --cwd packages/backend add pg
 
 # install SQLite 3 if you intend to set it as the client
-yarn add --cwd packages/backend better-sqlite3
+yarn --cwd packages/backend add better-sqlite3
 ```
 
 From an operational perspective, you only need to install drivers for clients

@@ -32,7 +32,10 @@ import {
 } from '@backstage/frontend-plugin-api';
 import React, { Children, ReactNode, isValidElement } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { convertLegacyRouteRef } from './convertLegacyRouteRef';
+import {
+  convertLegacyRouteRef,
+  convertLegacyRouteRefs,
+} from './convertLegacyRouteRef';
 import { compatWrapper } from './compatWrapper';
 
 /*
@@ -172,10 +175,16 @@ export function collectLegacyRoutes(
     flatRoutesElement.props.children,
     (route: ReactNode) => {
       // TODO(freben): Handle feature flag and permissions framework wrapper elements
-      if (!React.isValidElement(route) || route.type !== Route) {
-        return;
+      if (!React.isValidElement(route)) {
+        throw new Error(
+          `Invalid element inside FlatRoutes, expected Route but found element of type ${typeof route}.`,
+        );
       }
-
+      if (route.type !== Route) {
+        throw new Error(
+          `Invalid element inside FlatRoutes, expected Route but found ${route.type}.`,
+        );
+      }
       const routeElement = route.props.element;
       const path: string | undefined = route.props.path;
       const plugin = getComponentData<LegacyBackstagePlugin>(
@@ -186,8 +195,16 @@ export function collectLegacyRoutes(
         routeElement,
         'core.mountPoint',
       );
-      if (!plugin || !path) {
-        return;
+      if (!plugin) {
+        throw new Error(
+          // TODO(vinzscam): add See <link-to-app-migration-docs> for more info
+          `Route with path ${path} has en element that can not be converted as it does not belong to a plugin. Make sure that the top-level React element of the element prop is an extension from a Backstage plugin, or remove the Route completely.`,
+        );
+      }
+      if (path === undefined) {
+        throw new Error(
+          `Route element inside FlatRoutes had no path prop value given`,
+        );
       }
 
       const extensions = getPluginExtensions(plugin);
@@ -244,6 +261,8 @@ export function collectLegacyRoutes(
           createApiExtension({ factory }),
         ),
       ],
+      routes: convertLegacyRouteRefs(plugin.routes ?? {}),
+      externalRoutes: convertLegacyRouteRefs(plugin.externalRoutes ?? {}),
     }),
   );
 }

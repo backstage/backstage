@@ -1,5 +1,35 @@
 # @backstage/plugin-gcalendar
 
+## 0.3.23-next.2
+
+### Patch Changes
+
+- 3631fb4: Updated dependency `dompurify` to `^3.0.0`.
+  Updated dependency `@types/dompurify` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+
+## 0.3.23-next.1
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+
+## 0.3.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/errors@1.2.3
+
 ## 0.3.22
 
 ### Patch Changes

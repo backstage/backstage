@@ -34,6 +34,7 @@ import {
 import {
   compatWrapper,
   convertLegacyRouteRef,
+  convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
 import {
   techdocsApiRef,
@@ -168,9 +169,9 @@ export default createPlugin({
     techDocsEntityContent,
     techDocsSearchResultListItemExtension,
   ],
-  routes: {
-    root: convertLegacyRouteRef(rootRouteRef),
-    docRoot: convertLegacyRouteRef(rootDocsRouteRef),
-    entityContent: convertLegacyRouteRef(rootCatalogDocsRouteRef),
-  },
+  routes: convertLegacyRouteRefs({
+    root: rootRouteRef,
+    docRoot: rootDocsRouteRef,
+    entityContent: rootCatalogDocsRouteRef,
+  }),
 });

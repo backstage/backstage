@@ -1,23 +1,48 @@
 app:
   experimental:
     packages: 'all' # ✨
+
   routes:
     bindings:
-      plugin.pages.externalRoutes.pageX: plugin.pages.routes.pageX
-      plugin.catalog.externalRoutes.viewTechDoc: plugin.techdocs.routes.docRoot
+      catalog.viewTechDoc: techdocs.docRoot
+      catalog.createComponent: catalog-import.importPage
+      org.catalogIndex: catalog.catalogIndex
 
   extensions:
     # - apis.plugin.graphiql.browse.gitlab: true
     - graphiql-endpoint:graphiql/gitlab: true
 
+    # Entity page cards
     - entity-card:catalog/about
     - entity-card:catalog/labels
     - entity-card:catalog/links:
         config:
           filter: kind:component has:links
     - entity-card:linguist/languages
+    - entity-card:catalog-graph/relations:
+        config:
+          height: 300
+    - entity-card:azure-devops/readme
+    - entity-card:api-docs/has-apis
+    - entity-card:api-docs/consumed-apis
+    - entity-card:api-docs/provided-apis
+    - entity-card:api-docs/providing-components
+    - entity-card:api-docs/consuming-components
+
+    # - entity-card:azure-devops/readme
     # Entity page content
+    - entity-content:api-docs/definition
+    - entity-content:api-docs/apis
     - entity-content:techdocs
+    # - entity-content:azure-devops/pipelines
+    # - entity-content:azure-devops/pull-requests
+    # - entity-content:azure-devops/git-tags
+
+    # Org Plugin
+    - entity-card:org/group-profile
+    - entity-card:org/members-list
+    - entity-card:org/ownership
+    - entity-card:org/user-profile
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

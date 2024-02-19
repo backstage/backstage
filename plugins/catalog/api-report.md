@@ -139,6 +139,8 @@ export interface CatalogSearchResultListItemProps {
   // (undocumented)
   icon?: ReactNode | ((result: IndexableDocument) => ReactNode);
   // (undocumented)
+  lineClamp?: number;
+  // (undocumented)
   rank?: number;
   // (undocumented)
   result?: IndexableDocument;
@@ -182,6 +184,7 @@ export const CatalogTable: {
     ): TableColumn<CatalogTableRow>;
     createNamespaceColumn(): TableColumn<CatalogTableRow>;
   }>;
+  defaultColumnsFunc: CatalogTableColumnsFunc;
 };
 
 // @public

@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import 'xterm';
+import 'xterm/css/xterm.css';
 
 import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
+import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
@@ -28,7 +30,7 @@ import { PodExecTerminalAttachAddon } from './PodExecTerminalAttachAddon';
  * @public
  */
 export interface PodExecTerminalProps {
-  clusterName: string;
+  cluster: ClusterAttributes;
   containerName: string;
   podName: string;
   podNamespace: string;
@@ -37,12 +39,23 @@ export interface PodExecTerminalProps {
 const hasSocketProtocol = (url: string | URL) =>
   /wss?:\/\//.test(url.toString());
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    podExecTerminal: {
+      width: '100%',
+      height: '100%',
+      '& .xterm-screen': { padding: theme.spacing(1) },
+    },
+  }),
+);
+
 /**
  * Executes a `/bin/sh` process in the given pod's container and opens a terminal connected to it
  *
  * @public
  */
 export const PodExecTerminal = (props: PodExecTerminalProps) => {
+  const classes = useStyles();
   const { containerName, podNamespace, podName } = props;
 
   const [baseUrl, setBaseUrl] = useState(window.location.host);
@@ -122,10 +135,7 @@ export const PodExecTerminal = (props: PodExecTerminalProps) => {
     <div
       data-testid="terminal"
       ref={terminalRef}
-      style={{
-        width: '100%',
-        height: '100%',
-      }}
+      className={classes.podExecTerminal}
     />
   );
 };

@@ -86,6 +86,7 @@ import { TypesToApiRefs } from '@backstage/core-plugin-api';
 import { useApi } from '@backstage/core-plugin-api';
 import { useApiHolder } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { vmwareCloudAuthApiRef } from '@backstage/core-plugin-api';
 import { withApis } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 import { ZodSchema } from 'zod';
@@ -573,6 +574,7 @@ export function createExternalRouteRef<
     ? (keyof TParams)[]
     : TParamKeys[];
   optional?: TOptional;
+  defaultTarget?: string;
 }): ExternalRouteRef<
   keyof TParams extends never
     ? undefined
@@ -976,6 +978,17 @@ export type IconComponent = ComponentType<
     }
 >;
 
+// @public
+export interface IconsApi {
+  // (undocumented)
+  getIcon(key: string): IconComponent | undefined;
+  // (undocumented)
+  listIconKeys(): string[];
+}
+
+// @public
+export const iconsApiRef: ApiRef<IconsApi>;
+
 export { IdentityApi };
 
 export { identityApiRef };
@@ -1068,6 +1081,26 @@ export interface RouteRef<
   readonly T: TParams;
 }
 
+// @public (undocumented)
+export interface RouteResolutionApi {
+  // (undocumented)
+  resolve<TParams extends AnyRouteRefParams>(
+    anyRouteRef:
+      | RouteRef<TParams>
+      | SubRouteRef<TParams>
+      | ExternalRouteRef<TParams, any>,
+    options?: RouteResolutionApiResolveOptions,
+  ): RouteFunc<TParams> | undefined;
+}
+
+// @public
+export const routeResolutionApiRef: ApiRef<RouteResolutionApi>;
+
+// @public (undocumented)
+export type RouteResolutionApiResolveOptions = {
+  sourcePath?: string;
+};
+
 export { SessionApi };
 
 export { SessionState };
@@ -1135,6 +1168,8 @@ export function useRouteRefParams<Params extends AnyRouteRefParams>(
 ): Params;
 
 export { useTranslationRef };
+
+export { vmwareCloudAuthApiRef };
 
 export { withApis };
 ```

@@ -8,6 +8,7 @@ import { AuthProviderFactory as AuthProviderFactory_2 } from '@backstage/plugin-
 import { AuthProviderRouteHandlers as AuthProviderRouteHandlers_2 } from '@backstage/plugin-auth-node';
 import { AuthResolverCatalogUserQuery as AuthResolverCatalogUserQuery_2 } from '@backstage/plugin-auth-node';
 import { AuthResolverContext as AuthResolverContext_2 } from '@backstage/plugin-auth-node';
+import { AwsAlbResult as AwsAlbResult_2 } from '@backstage/plugin-auth-backend-module-aws-alb-provider';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
 import { CacheService } from '@backstage/backend-plugin-api';
@@ -25,6 +26,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { OAuth2ProxyResult as OAuth2ProxyResult_2 } from '@backstage/plugin-auth-backend-module-oauth2-proxy-provider';
 import { OAuthEnvironmentHandler as OAuthEnvironmentHandler_2 } from '@backstage/plugin-auth-node';
 import { OAuthState as OAuthState_2 } from '@backstage/plugin-auth-node';
+import { OidcAuthResult as OidcAuthResult_2 } from '@backstage/plugin-auth-backend-module-oidc-provider';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { prepareBackstageIdentityResponse as prepareBackstageIdentityResponse_2 } from '@backstage/plugin-auth-node';
@@ -34,9 +36,7 @@ import { SignInInfo as SignInInfo_2 } from '@backstage/plugin-auth-node';
 import { SignInResolver as SignInResolver_2 } from '@backstage/plugin-auth-node';
 import { TokenManager } from '@backstage/backend-common';
 import { TokenParams as TokenParams_2 } from '@backstage/plugin-auth-node';
-import { TokenSet } from 'openid-client';
 import { UserEntity } from '@backstage/catalog-model';
-import { UserinfoResponse } from 'openid-client';
 import { WebMessageResponse as WebMessageResponse_2 } from '@backstage/plugin-auth-node';
 
 // @public @deprecated
@@ -72,12 +72,8 @@ export type AuthResolverContext = AuthResolverContext_2;
 // @public @deprecated (undocumented)
 export type AuthResponse<TProviderInfo> = ClientAuthResponse<TProviderInfo>;
 
-// @public (undocumented)
-export type AwsAlbResult = {
-  fullProfile: Profile;
-  expiresInSeconds?: number;
-  accessToken: string;
-};
+// @public @deprecated
+export type AwsAlbResult = AwsAlbResult_2;
 
 // @public (undocumented)
 export type BitbucketOAuthResult = {
@@ -340,11 +336,8 @@ export type OAuthStartResponse = {
 // @public @deprecated (undocumented)
 export type OAuthState = OAuthState_2;
 
-// @public
-export type OidcAuthResult = {
-  tokenset: TokenSet;
-  userinfo: UserinfoResponse;
-};
+// @public @deprecated (undocumented)
+export type OidcAuthResult = OidcAuthResult_2;
 
 // @public @deprecated (undocumented)
 export const postMessageResponse: (
@@ -400,9 +393,9 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<AwsAlbResult> | undefined;
+            authHandler?: AuthHandler<AwsAlbResult_2> | undefined;
             signIn: {
-              resolver: SignInResolver<AwsAlbResult>;
+              resolver: SignInResolver<AwsAlbResult_2>;
             };
           }
         | undefined,
@@ -531,9 +524,9 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory_2;
     resolvers: Readonly<{
-      emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
-      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
-      emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver_2<OAuthResult>;
+      emailLocalPartMatchingUserEntityName: () => SignInResolver_2<OAuthResult>;
+      emailMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
     }>;
   }>;
   oauth2: Readonly<{
@@ -564,10 +557,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OidcAuthResult> | undefined;
+            authHandler?: AuthHandler<OidcAuthResult_2> | undefined;
             signIn?:
               | {
-                  resolver: SignInResolver<OidcAuthResult>;
+                  resolver: SignInResolver<OidcAuthResult_2>;
                 }
               | undefined;
           }

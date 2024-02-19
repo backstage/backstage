@@ -61,6 +61,25 @@ spec:
   # ...
 ```
 
+#### Mono repos
+
+If you have multiple entities within a single repo, you will need to specify which pipelines belong to each entity.
+
+```yaml
+dev.azure.com/project-repo: <my-project>/<my-repo>
+dev.azure.com/build-definition: <build-definition-name>
+```
+
+#### Pipeline in different project to repo
+
+If your pipeline is in a different project to the source code, you will need to specify this in the project annotation.
+
+```yaml
+dev.azure.com/project-repo: <project-with-source-code>/<my-repo>
+dev.azure.com/build-definition: <build-definition-name>
+dev.azure.com/project: <project-with-build-code>
+```
+
 #### Azure Pipelines Only
 
 If you are only using Azure Pipelines along with a different SCM tool then you can use the following two annotations to see Builds:
@@ -127,7 +146,7 @@ To get the Azure Pipelines component working you'll need to do the following two
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzurePipelinesContent` extension to the entity page in your app. How to do this will depend on which annotation you are using in your entities:
@@ -185,7 +204,7 @@ To get the Azure Repos component working you'll need to do the following two ste
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzurePullRequestsContent` extension to the entity page in your app:
@@ -222,7 +241,7 @@ To get the Git Tags component working you'll need to do the following two steps:
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzureGitTagsContent` extension to the entity page in your app:
@@ -258,7 +277,7 @@ To get the README component working you'll need to do the following two steps:
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzureReadmeCard` extension to the entity page in your app:

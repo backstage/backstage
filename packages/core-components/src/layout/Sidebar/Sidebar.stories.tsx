@@ -34,7 +34,6 @@ import {
   SidebarSearchField,
   SidebarSpace,
 } from './Items';
-import { SidebarIntro } from './Intro';
 import { SidebarSubmenu } from './SidebarSubmenu';
 import { SidebarSubmenuItem } from './SidebarSubmenuItem';
 
@@ -65,7 +64,6 @@ export const SampleSidebar = () => (
         <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
         <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
         <SidebarDivider />
-        <SidebarIntro />
         <SidebarSpace />
       </SidebarGroup>
     </Sidebar>
@@ -104,7 +102,6 @@ export const SampleScalableSidebar = () => (
         <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
       </SidebarGroup>
       <SidebarDivider />
-      <SidebarIntro />
       <SidebarSpace />
       <SidebarExpandButton />
     </Sidebar>

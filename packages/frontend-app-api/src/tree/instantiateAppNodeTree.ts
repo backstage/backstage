@@ -37,8 +37,17 @@ function resolveInputData(
   return mapValues(dataMap, ref => {
     const value = attachment.instance?.getData(ref);
     if (value === undefined && !ref.config.optional) {
+      const expected = Object.values(dataMap)
+        .filter(r => !r.config.optional)
+        .map(r => `'${r.id}'`)
+        .join(', ');
+
+      const provided = [...(attachment.instance?.getDataRefs() ?? [])]
+        .map(r => `'${r.id}'`)
+        .join(', ');
+
       throw new Error(
-        `input '${inputName}' did not receive required extension data '${ref.id}' from extension '${attachment.spec.id}'`,
+        `extension '${attachment.spec.id}' could not be attached because its output data (${provided}) does not match what the input '${inputName}' requires (${expected})`,
       );
     }
     return value;

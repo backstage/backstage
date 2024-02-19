@@ -22,10 +22,10 @@ Backstage 는 모든 인프라 도구, 서비스 및 문서를 통합하여 처�
 
 ![software-catalog](docs/assets/header.png)
 
-Backstage 다음을 포함합니다:
+Backstage는 다음을 포함합니다:
 
 - [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/) 마이크로 서비스, 라이브러리, 데이터 파이프라인, 웹 사이트, ML 모델 등 모든 소프트웨어 관리
-- [Backstage Software Templates](https://backstage.io/docs/features/software-templates/) 새로운 프로젝트를 신속하게 시작하고 조직의 모밤 사례에따라 도구를 표준화
+- [Backstage Software Templates](https://backstage.io/docs/features/software-templates/) 새로운 프로젝트를 신속하게 시작하고 조직의 모범 사례에따라 도구를 표준화
 - [Backstage TechDocs](https://backstage.io/docs/features/techdocs/) "docs like code" 접근 방식을 사용하여 기술 문서를 쉽게 작성, 유지 관리, 검색 및 사용
 - [open source plugins](https://github.com/backstage/backstage/tree/master/plugins) Backstage의 사용자 정의 가능성과 기능을 확장
 
@@ -66,7 +66,7 @@ Backstage의 문서는 다음을 포함합니다:
 
 ## License
 
-Copyright 2020-2023 © The Backstage Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
+Copyright 2020-2024 © The Backstage Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage
 
 Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
 

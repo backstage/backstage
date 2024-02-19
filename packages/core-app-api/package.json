@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-app-api",
   "description": "Core app API used by Backstage apps",
-  "version": "1.11.3",
+  "version": "1.12.0-next.1",
   "publishConfig": {
     "access": "public"
   },
@@ -47,7 +47,7 @@
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@types/prop-types": "^15.7.3",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "history": "^5.0.0",
     "i18next": "^22.4.15",
     "lodash": "^4.17.21",

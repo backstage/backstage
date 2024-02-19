@@ -20,7 +20,7 @@ plugin, if you previously removed it.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-catalog
+yarn --cwd packages/app add @backstage/plugin-catalog
 ```
 
 ### Add the plugin to your `packages/app`

@@ -67,6 +67,22 @@ export interface Config {
           };
         };
 
+    /**
+     * An absolute path to a directory that can be used as a working dir, for
+     * example as scratch space for large operations.
+     *
+     * @remarks
+     *
+     * Note that this must be an absolute path.
+     *
+     * If not set, the operating system's designated temporary directory is
+     * commonly used, but that is implementation defined per plugin.
+     *
+     * Plugins are encouraged to heed this config setting if present, to allow
+     * deployment in severely locked-down or limited environments.
+     */
+    workingDirectory?: string;
+
     /** Database connection configuration, select base database type using the `client` field */
     database: {
       /** Default database client to use */

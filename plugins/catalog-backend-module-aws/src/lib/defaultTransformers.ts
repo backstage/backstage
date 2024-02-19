@@ -18,6 +18,7 @@ import {
   ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_KUBERNETES_API_SERVER_CA,
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  ANNOTATION_KUBERNETES_AWS_CLUSTER_ID,
 } from '@backstage/plugin-kubernetes-common';
 import type { EksClusterEntityTransformer } from '../processors/types';
 import { ANNOTATION_AWS_ACCOUNT_ID, ANNOTATION_AWS_ARN } from '../constants';
@@ -29,6 +30,7 @@ import { ANNOTATION_AWS_ACCOUNT_ID, ANNOTATION_AWS_ARN } from '../constants';
 export const defaultEksClusterEntityTransformer: EksClusterEntityTransformer =
   async (cluster: Cluster, accountId: string) => {
     const { arn, endpoint, certificateAuthority, name } = cluster;
+    const normalizedName = normalizeName(name as string);
     return {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Resource',
@@ -40,8 +42,9 @@ export const defaultEksClusterEntityTransformer: EksClusterEntityTransformer =
           [ANNOTATION_KUBERNETES_API_SERVER_CA]:
             certificateAuthority?.data || '',
           [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'aws',
+          [ANNOTATION_KUBERNETES_AWS_CLUSTER_ID]: normalizedName,
         },
-        name: normalizeName(name as string),
+        name: normalizedName,
         namespace: 'default',
       },
       spec: {

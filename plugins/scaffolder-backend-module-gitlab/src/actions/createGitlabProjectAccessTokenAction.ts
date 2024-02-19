@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import commonGitlabConfig from '../commonGitlabConfig';
-import { getToken } from '../util';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import { AccessTokenScopes, Gitlab } from '@gitbeaker/rest';
+import { DateTime } from 'luxon';
 import { z } from 'zod';
+import { getToken } from '../util';
 import { examples } from './createGitlabProjectAccessTokenAction.examples';
 
 /**
@@ -27,6 +29,7 @@ import { examples } from './createGitlabProjectAccessTokenAction.examples';
  * @param options - Templating configuration.
  * @public
  */
+
 export const createGitlabProjectAccessTokenAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
@@ -35,46 +38,88 @@ export const createGitlabProjectAccessTokenAction = (options: {
     id: 'gitlab:projectAccessToken:create',
     examples,
     schema: {
-      input: commonGitlabConfig.merge(
-        z.object({
-          projectId: z.union([z.number(), z.string()], {
-            description: 'Project ID',
-          }),
-          name: z.string({ description: 'Deploy Token Name' }).optional(),
-          accessLevel: z
-            .number({ description: 'Access Level of the Token' })
-            .optional(),
-          scopes: z.array(z.string(), { description: 'Scopes' }).optional(),
+      input: z.object({
+        projectId: z.union([z.number(), z.string()], {
+          description: 'Project ID/Name(slug) of the Gitlab Project',
         }),
-      ),
+        token: z
+          .string({
+            description: 'The token to use for authorization to GitLab',
+          })
+          .optional(),
+        name: z.string({ description: 'Name of Access Key' }).optional(),
+        repoUrl: z.string({ description: 'URL to gitlab instance' }),
+        accessLevel: z
+          .number({
+            description:
+              'Access Level of the Token, 10 (Guest), 20 (Reporter), 30 (Developer), 40 (Maintainer), and 50 (Owner)',
+          })
+          .optional(),
+        scopes: z
+          .string({
+            description: 'Scopes for a project access token',
+          })
+          .array()
+          .optional(),
+        expiresAt: z
+          .string({
+            description:
+              'Expiration date of the access token in ISO format (YYYY-MM-DD). If Empty, it will set to the maximum of 365 days.',
+          })
+          .optional(),
+      }),
       output: z.object({
         access_token: z.string({ description: 'Access Token' }),
       }),
     },
     async handler(ctx) {
       ctx.logger.info(`Creating Token for Project "${ctx.input.projectId}"`);
-      const { projectId, name, accessLevel, scopes } = ctx.input;
+      const {
+        projectId,
+        name = 'tokenname',
+        accessLevel = 40,
+        scopes = ['read_repository'],
+        expiresAt,
+      } = ctx.input;
+
       const { token, integrationConfig } = getToken(ctx.input, integrations);
 
-      const response = await fetch(
-        `${integrationConfig.config.baseUrl}/api/v4/projects/${projectId}/access_tokens`,
+      if (!integrationConfig.config.token && token) {
+        throw new InputError(
+          `No token available for host ${integrationConfig.config.baseUrl}`,
+        );
+      }
+
+      let api;
+
+      if (!ctx.input.token) {
+        api = new Gitlab({
+          host: integrationConfig.config.baseUrl,
+          token: token,
+        });
+      } else {
+        api = new Gitlab({
+          host: integrationConfig.config.baseUrl,
+          oauthToken: token,
+        });
+      }
+
+      const response = await api.ProjectAccessTokens.create(
+        projectId,
+        name,
+        scopes as AccessTokenScopes[],
         {
-          method: 'POST', // *GET, POST, PUT, DELETE, etc.
-          headers: {
-            'PRIVATE-TOKEN': token,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: name,
-            scopes: scopes,
-            access_level: accessLevel,
-          }),
+          expiresAt:
+            expiresAt || DateTime.now().plus({ days: 365 }).toISODate()!,
+          accessLevel,
         },
       );
 
-      const result = await response.json();
+      if (!response.token) {
+        throw new Error('Could not create project access token');
+      }
 
-      ctx.output('access_token', result.token);
+      ctx.output('access_token', response.token);
     },
   });
 };

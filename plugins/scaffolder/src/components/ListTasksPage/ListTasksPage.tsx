@@ -18,7 +18,6 @@ import {
   EmptyState,
   ErrorPanel,
   Header,
-  Lifecycle,
   Link,
   Page,
   Progress,
@@ -39,7 +38,9 @@ import {
   TaskStatusColumn,
   TemplateTitleColumn,
 } from './columns';
-import { rootRouteRef } from '../../routes';
+import { actionsRouteRef, editRouteRef, rootRouteRef } from '../../routes';
+import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
+import { useNavigate } from 'react-router-dom';
 
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';
@@ -135,17 +136,26 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
 };
 
 export const ListTasksPage = (props: MyTaskPageProps) => {
+  const navigate = useNavigate();
+  const editorLink = useRouteRef(editRouteRef);
+  const actionsLink = useRouteRef(actionsRouteRef);
+  const createLink = useRouteRef(rootRouteRef);
+
+  const scaffolderPageContextMenuProps = {
+    onEditorClicked: () => navigate(editorLink()),
+    onActionsClicked: () => navigate(actionsLink()),
+    onTasksClicked: undefined,
+    onCreateClicked: () => navigate(createLink()),
+  };
   return (
     <Page themeId="home">
       <Header
         pageTitleOverride="Templates Tasks"
-        title={
-          <>
-            List template tasks <Lifecycle shorthand alpha />
-          </>
-        }
+        title="List template tasks"
         subtitle="All tasks that have been started"
-      />
+      >
+        <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
+      </Header>
       <Content>
         <ListTaskPageContent {...props} />
       </Content>

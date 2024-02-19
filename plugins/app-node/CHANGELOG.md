@@ -1,5 +1,36 @@
 # @backstage/plugin-app-node
 
+## 0.1.10-next.3
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- 54ad8e1: Allow the `app-backend` plugin to use a global configuration schema provided externally through an extension.
+- Updated dependencies
+  - @backstage/config-loader@1.6.2-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.3
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.2
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.0
+
 ## 0.1.9
 
 ### Patch Changes

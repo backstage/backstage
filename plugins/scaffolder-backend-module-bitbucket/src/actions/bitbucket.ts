@@ -202,7 +202,7 @@ const performEnableLFS = async (opts: {
  * Creates a new action that initializes a git repository of the content in the workspace
  * and publishes it to Bitbucket.
  * @public
- * @deprecated in favor of createPublishBitbucketCloudAction and createPublishBitbucketServerAction
+ * @deprecated in favor of "createPublishBitbucketCloudAction" by \@backstage/plugin-scaffolder-backend-module-bitbucket-cloud and "createPublishBitbucketServerAction" by \@backstage/plugin-scaffolder-backend-module-bitbucket-server
  */
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;

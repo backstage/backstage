@@ -15,5 +15,11 @@
  */
 export * from './compatWrapper';
 
+export * from './apis';
+
 export { convertLegacyApp } from './convertLegacyApp';
-export { convertLegacyRouteRef } from './convertLegacyRouteRef';
+export {
+  convertLegacyRouteRef,
+  convertLegacyRouteRefs,
+  type ToNewRouteRef,
+} from './convertLegacyRouteRef';

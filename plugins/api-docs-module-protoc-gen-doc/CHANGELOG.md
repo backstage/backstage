@@ -1,5 +1,12 @@
 # @backstage/plugin-api-docs-module-protoc-gen-doc
 
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+
 ## 0.1.5
 
 ### Patch Changes

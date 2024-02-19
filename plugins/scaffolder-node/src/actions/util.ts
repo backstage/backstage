@@ -92,6 +92,10 @@ export const parseRepoUrl = (
       }
       break;
     }
+    case 'gitea': {
+      checkRequiredParams(parsed, 'repo');
+      break;
+    }
     case 'gerrit': {
       checkRequiredParams(parsed, 'repo');
       break;

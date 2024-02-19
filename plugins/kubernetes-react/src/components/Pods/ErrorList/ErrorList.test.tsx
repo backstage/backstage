@@ -26,7 +26,7 @@ describe('ErrorList', () => {
       <ErrorList
         podAndErrors={[
           {
-            clusterName: 'some-cluster',
+            cluster: { name: 'some-cluster' },
             pod: {
               metadata: {
                 name: 'some-pod',

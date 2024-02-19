@@ -23,6 +23,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { AnyJWK, KeyStore, TokenIssuer, TokenParams } from './types';
 
 const MS_IN_S = 1000;
+const MAX_TOKEN_LENGTH = 32768; // At 64 bytes per entity ref this still leaves room for about 500 entities
 
 type Options = {
   logger: LoggerService;
@@ -97,7 +98,8 @@ export class TokenFactory implements TokenIssuer {
       throw new AuthenticationError('No algorithm was provided in the key');
     }
 
-    return new SignJWT({ ...additionalClaims, iss, sub, ent, aud, iat, exp })
+    const claims = { ...additionalClaims, iss, sub, ent, aud, iat, exp };
+    const token = await new SignJWT(claims)
       .setProtectedHeader({ alg: key.alg, kid: key.kid })
       .setIssuer(iss)
       .setAudience(aud)
@@ -105,6 +107,16 @@ export class TokenFactory implements TokenIssuer {
       .setIssuedAt(iat)
       .setExpirationTime(exp)
       .sign(await importJWK(key));
+
+    if (token.length > MAX_TOKEN_LENGTH) {
+      throw new Error(
+        `Failed to issue a new user token. The resulting token is excessively large, with either too many ownership claims or too large custom claims. You likely have a bug either in the sign-in resolver or catalog data. The following claims were requested: '${JSON.stringify(
+          claims,
+        )}'`,
+      );
+    }
+
+    return token;
   }
 
   // This will be called by other services that want to verify ID tokens.

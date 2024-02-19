@@ -1,0 +1,10 @@
+---
+title: TimeSaver
+author: tduniec
+authorUrl: https://github.com/tduniec
+category: Discovery
+description: Visualise your time saved using Backstage Scaffolder templates
+documentation: https://github.com/tduniec/backstage-timesaver-plugin/blob/main/README.md
+iconUrl: https://raw.githubusercontent.com/tduniec/backstage-timesaver-plugin/main/img/tsLogo.png
+npmPackageName: '@tduniec/backstage-plugin-time-saver'
+addedDate: 2024-01-30

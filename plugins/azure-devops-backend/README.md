@@ -23,9 +23,9 @@ Configuration Details:
 - `AZURE_TOKEN` environment variable must be set to a [Personal Access Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page) with read access to both Code and Build
 - `organization` is your Azure DevOps Services (cloud) Organization name or for Azure DevOps Server (on-premise) this will be your Collection name
 
-#### Multi Organization
+#### Multi Organization & Service Principals
 
-To support cases where you have multiple Azure DevOps organizations you will want to make sure to configure them in the `integrations.azure` section of your `app-config.yaml` as detailed in the [Azure DevOps Locations](https://backstage.io/docs/integrations/azure/locations) documentation.
+To support cases where you have multiple Azure DevOps organizations and/or you want to use a Service Principal you will want to make sure to configure them in the `integrations.azure` section of your `app-config.yaml` as detailed in the [Azure DevOps Locations](https://backstage.io/docs/integrations/azure/locations) documentation.
 
 **Note:** You will still need to define the [configuration above](#configuration).
 
@@ -37,7 +37,7 @@ Here's how to get the backend up and running:
 
    ```sh
    # From your Backstage root directory
-   yarn add --cwd packages/backend @backstage/plugin-azure-devops-backend
+   yarn --cwd packages/backend add @backstage/plugin-azure-devops-backend
    ```
 
 2. Then we will create a new file named `packages/backend/src/plugins/azure-devops.ts`, and add the
@@ -84,13 +84,12 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend';
 
   const backend = createBackend();
 
   // ... other feature additions
 
-+ backend.add(azureDevOpsPlugin());
++ backend.add(import('@backstage/plugin-azure-devops-backend'));
 
   backend.start();
 ```

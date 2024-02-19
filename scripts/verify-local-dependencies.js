@@ -90,6 +90,7 @@ const roleRules = [
       '@backstage/backend-common',
       '@backstage/backend-defaults',
       '@backstage/backend-test-utils',
+      '@backstage/backend-dynamic-feature-service',
     ],
     message: `Plugin package SOURCE_NAME with role SOURCE_ROLE has a runtime dependency on package TARGET_NAME, which is not permitted. If you are using this dependency for dev server purposes, you can move it to devDependencies instead.`,
   },

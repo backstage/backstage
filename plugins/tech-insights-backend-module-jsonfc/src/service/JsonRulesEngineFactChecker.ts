@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { JsonRuleBooleanCheckResult, TechInsightJsonRuleCheck } from '../types';
+import { Config } from '@backstage/config';
+import { isError } from '@backstage/errors';
+import { FactResponse } from '@backstage/plugin-tech-insights-common';
 import {
   FactChecker,
   TechInsightCheckRegistry,
@@ -22,20 +24,20 @@ import {
   TechInsightsStore,
   CheckValidationResponse,
 } from '@backstage/plugin-tech-insights-node';
-import { FactResponse } from '@backstage/plugin-tech-insights-common';
+import Ajv, { SchemaObject } from 'ajv';
 import {
   Engine,
   EngineResult,
   Operator,
   TopLevelCondition,
 } from 'json-rules-engine';
-import { DefaultCheckRegistry } from './CheckRegistry';
-import { Logger } from 'winston';
 import { pick } from 'lodash';
-import Ajv, { SchemaObject } from 'ajv';
-import * as validationSchema from './validation-schema.json';
+import { Logger } from 'winston';
 import { JSON_RULE_ENGINE_CHECK_TYPE } from '../constants';
-import { isError } from '@backstage/errors';
+import { JsonRuleBooleanCheckResult, TechInsightJsonRuleCheck } from '../types';
+import { DefaultCheckRegistry } from './CheckRegistry';
+import { readChecksFromConfig } from './config';
+import * as validationSchema from './validation-schema.json';
 
 const noopEvent = {
   type: 'noop',
@@ -340,7 +342,7 @@ export class JsonRulesEngineFactChecker
  *
  * Implementation of checkRegistry is optional.
  * If there is a need to use persistent storage for checks, it is recommended to inject a storage implementation here.
- * Otherwise an in-memory option is instantiated and used.
+ * Otherwise, an in-memory option is instantiated and used.
  */
 export type JsonRulesEngineFactCheckerFactoryOptions = {
   checks: TechInsightJsonRuleCheck[];
@@ -354,13 +356,25 @@ export type JsonRulesEngineFactCheckerFactoryOptions = {
  *
  * Factory to construct JsonRulesEngineFactChecker
  * Can be constructed with optional implementation of CheckInsightCheckRegistry if needed.
- * Otherwise defaults to using in-memory CheckRegistry
+ * Otherwise, defaults to using in-memory CheckRegistry.
  */
 export class JsonRulesEngineFactCheckerFactory {
   private readonly checks: TechInsightJsonRuleCheck[];
   private readonly logger: Logger;
   private readonly checkRegistry?: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
   private readonly operators?: Operator[];
+
+  static fromConfig(
+    config: Config,
+    options: Omit<JsonRulesEngineFactCheckerFactoryOptions, 'checks'>,
+  ): JsonRulesEngineFactCheckerFactory {
+    const checks = readChecksFromConfig(config);
+
+    return new JsonRulesEngineFactCheckerFactory({
+      ...options,
+      checks,
+    });
+  }
 
   constructor(options: JsonRulesEngineFactCheckerFactoryOptions) {
     this.logger = options.logger;

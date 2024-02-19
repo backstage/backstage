@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
@@ -149,22 +151,6 @@ export interface Config {
         };
       };
       /** @visibility frontend */
-      oidc?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          callbackUrl?: string;
-          metadataUrl: string;
-          tokenEndpointAuthMethod?: string;
-          tokenSignedResponseAlg?: string;
-          scope?: string;
-          prompt?: string;
-        };
-      };
-      /** @visibility frontend */
       auth0?: {
         [authEnv: string]: {
           clientId: string;
@@ -177,18 +163,6 @@ export interface Config {
           audience?: string;
           connection?: string;
           connectionScope?: string;
-        };
-      };
-      /** @visibility frontend */
-      microsoft?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          tenantId: string;
-          callbackUrl?: string;
         };
       };
       /** @visibility frontend */
@@ -212,6 +186,14 @@ export interface Config {
       cfaccess?: {
         teamName: string;
       };
+      /**
+       * The backstage token expiration.
+       */
+      backstageTokenExpiration?: HumanDuration;
     };
+    /**
+     * Additional app origins to allow for authenticating
+     */
+    experimentalExtraAllowedOrigins?: string[];
   };
 }

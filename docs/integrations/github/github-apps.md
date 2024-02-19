@@ -139,3 +139,13 @@ integration:
   - `Variables`: `Read & write` (if templates include GitHub Action Repository Variables)
   - `Secrets`: `Read & write` (if templates include GitHub Action Repository Secrets)
   - `Environments`: `Read & write` (if templates include GitHub Environments)
+
+### Troubleshooting
+
+`HttpError: This endpoint requires you to be authenticated.`
+
+This message tends to wrap a `NotFoundError: No app installation found` under the hood, which
+is the result of not installing the app in your organization. Even if created via the `backstage-cli`
+as a member and app manager of your organization, the app will not automatically install. You
+must possess the `Owner` role in the organization to see the `Install` menu under your
+app settings, then manually press `Install` to authorize the application.

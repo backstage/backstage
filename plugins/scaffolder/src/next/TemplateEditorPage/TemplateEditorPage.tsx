@@ -27,6 +27,14 @@ import {
   type LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorIntro } from './TemplateEditorIntro';
+import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
+import { useNavigate } from 'react-router-dom';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import {
+  actionsRouteRef,
+  rootRouteRef,
+  scaffolderListTaskRouteRef,
+} from '../../routes';
 
 type Selection =
   | {
@@ -48,6 +56,17 @@ interface TemplateEditorPageProps {
 
 export function TemplateEditorPage(props: TemplateEditorPageProps) {
   const [selection, setSelection] = useState<Selection>();
+  const navigate = useNavigate();
+  const actionsLink = useRouteRef(actionsRouteRef);
+  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
+  const createLink = useRouteRef(rootRouteRef);
+
+  const scaffolderPageContextMenuProps = {
+    onEditorClicked: undefined,
+    onActionsClicked: () => navigate(actionsLink()),
+    onTasksClicked: () => navigate(tasksLink()),
+    onCreateClicked: () => navigate(createLink()),
+  };
 
   let content: JSX.Element | null = null;
   if (selection?.type === 'local') {
@@ -100,7 +119,9 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
       <Header
         title="Template Editor"
         subtitle="Edit, preview, and try out templates and template forms"
-      />
+      >
+        <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
+      </Header>
       {content}
     </Page>
   );

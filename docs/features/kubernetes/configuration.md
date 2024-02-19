@@ -38,6 +38,7 @@ kubernetes:
               plural: 'rollouts'
         - url: http://127.0.0.2:9999
           name: aws-cluster-1
+          title: 'My AWS Cluster Number One'
           authProvider: 'aws'
     - type: 'gke'
       projectId: 'gke-clusters'
@@ -150,6 +151,11 @@ The base URL to the Kubernetes control plane. Can be found by using the
 
 A name to represent this cluster, this must be unique within the `clusters`
 array. Users will see this value in the Software Catalog Kubernetes plugin.
+
+##### `clusters.\*.title`
+
+A human-readable name for the cluster. This value will override the `name` field
+for the purposes of display in the catalog.
 
 ##### `clusters.\*.authProvider`
 
@@ -393,6 +399,7 @@ For example:
 - type: 'gke'
   projectId: 'gke-clusters'
   region: 'europe-west1' # optional
+  authProvider: 'google' # optional
   skipTLSVerify: false # optional
   skipMetricsLookup: false # optional
   exposeDashboard: false # optional
@@ -416,6 +423,18 @@ The Google Cloud project to look for Kubernetes clusters in.
 
 The Google Cloud region to look for Kubernetes clusters in. Defaults to all
 regions.
+
+##### `authProvider` (optional)
+
+Set the authentication method for discovering clusters and gathering information
+about resources.
+
+Defaults to `google` which leverages the logged in user's Google OAuth credentials.
+
+Set to `googleServiceAccount` to leverage
+Application Default Credentials (https://cloud.google.com/docs/authentication/application-default-credentials).
+To use a service account JSON key (not recommended), set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable
+on the Backstage backend to the path of the service account key file.
 
 ##### `skipTLSVerify` (optional)
 
@@ -651,7 +670,7 @@ SingleTenant Cluster:
 
 In the example above, we configured the "backstage.io/kubernetes-cluster" annotation on the entity `catalog-info.yaml` file to specify that the current component is running in a single cluster called "dice-cluster", so this cluster must have been specified in the `app-config.yaml`, under the Kubernetes clusters configuration (for more details, see [`Configuring Kubernetes clusters`](#configuring-kubernetes-clusters)).
 
-If you do not specify the annotation by `default Backstage fetches all` defined Kubernetes cluster.
+If you do not specify the annotation, by default Backstage fetches from all defined Kubernetes clusters.
 
 [1]: https://cloud.google.com/kubernetes-engine
 [2]: https://cloud.google.com/docs/authentication/production#linux-or-macos

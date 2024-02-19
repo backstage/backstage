@@ -86,7 +86,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Create a GitLab project access token using specific GitLab integrations.',
+      'Create a GitLab project access token with a specified expired Date.',
     example: yaml.stringify({
       steps: [
         {
@@ -96,6 +96,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '123',
+            expiresAt: '2024-06-25',
           },
         },
       ],

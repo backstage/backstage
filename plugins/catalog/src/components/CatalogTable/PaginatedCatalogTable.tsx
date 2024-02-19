@@ -18,6 +18,10 @@ import React from 'react';
 
 import { Table, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
+import {
+  EntityTextFilter,
+  useEntityList,
+} from '@backstage/plugin-catalog-react';
 
 type PaginatedCatalogTableProps = {
   prev?(): void;
@@ -29,6 +33,7 @@ type PaginatedCatalogTableProps = {
  */
 export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
   const { columns, data, next, prev } = props;
+  const { updateFilters } = useEntityList();
 
   return (
     <Table
@@ -41,6 +46,11 @@ export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
         pageSize: Number.MAX_SAFE_INTEGER,
         emptyRowsWhenPaging: false,
       }}
+      onSearchChange={(searchText: string) =>
+        updateFilters({
+          text: searchText ? new EntityTextFilter(searchText) : undefined,
+        })
+      }
       onPageChange={page => {
         if (page > 0) {
           next?.();

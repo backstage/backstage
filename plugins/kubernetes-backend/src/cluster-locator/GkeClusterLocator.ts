@@ -21,6 +21,7 @@ import * as container from '@google-cloud/container';
 import { Duration } from 'luxon';
 import { runPeriodically } from '../service/runPeriodically';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import packageinfo from '../../package.json';
 
 interface MatchResourceLabelEntry {
   key: string;
@@ -29,6 +30,7 @@ interface MatchResourceLabelEntry {
 
 type GkeClusterLocatorOptions = {
   projectId: string;
+  authProvider: string;
   region?: string;
   skipTLSVerify?: boolean;
   skipMetricsLookup?: boolean;
@@ -54,8 +56,14 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
         return { key: mrl.getString('key'), value: mrl.getString('value') };
       }) ?? [];
 
+    const storeAuthProviderString =
+      config.getOptionalString('authProvider') === 'googleServiceAccount'
+        ? 'googleServiceAccount'
+        : 'google';
+
     const options = {
       projectId: config.getString('projectId'),
+      authProvider: storeAuthProviderString,
       region: config.getOptionalString('region') ?? '-',
       skipTLSVerify: config.getOptionalBoolean('skipTLSVerify') ?? false,
       skipMetricsLookup:
@@ -73,13 +81,17 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
     return gkeClusterLocator;
   }
 
+  // Added an `x-goog-api-client` header to API requests made by the GKE cluster locator to clearly identify API requests from this plugin.
   static fromConfig(
     config: Config,
     refreshInterval: Duration | undefined = undefined,
   ): GkeClusterLocator {
     return GkeClusterLocator.fromConfigWithClient(
       config,
-      new container.v1.ClusterManagerClient(),
+      new container.v1.ClusterManagerClient({
+        libName: `backstage/kubernetes-backend.GkeClusterLocator`,
+        libVersion: packageinfo.version,
+      }),
       refreshInterval,
     );
   }
@@ -97,6 +109,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
     const {
       projectId,
       region,
+      authProvider,
       skipTLSVerify,
       skipMetricsLookup,
       exposeDashboard,
@@ -121,7 +134,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
           // TODO filter out clusters which don't have name or endpoint
           name: r.name ?? 'unknown',
           url: `https://${r.endpoint ?? ''}`,
-          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: authProvider },
           skipTLSVerify,
           skipMetricsLookup,
           ...(exposeDashboard

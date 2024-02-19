@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { Config, ConfigReader } from '@backstage/config';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
@@ -53,12 +54,14 @@ describe('getCombinedClusterSupplier', () => {
     const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
       getCredential: jest.fn(),
       validateCluster: jest.fn().mockReturnValue([]),
+      presentAuthMetadata: jest.fn(),
     };
 
     const clusterSupplier = getCombinedClusterSupplier(
       config,
       catalogApi,
       mockStrategy,
+      getVoidLogger(),
     );
     const result = await clusterSupplier.getClusters();
 
@@ -98,9 +101,64 @@ describe('getCombinedClusterSupplier', () => {
         config,
         catalogApi,
         new DispatchStrategy({ authStrategyMap: {} }),
+        getVoidLogger(),
       ),
     ).toThrow(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
     );
+  });
+
+  it('logs a warning when two clusters have the same name', async () => {
+    const logger = getVoidLogger();
+    const warn = jest.spyOn(logger, 'warn');
+    const config: Config = new ConfigReader(
+      {
+        kubernetes: {
+          clusterLocatorMethods: [
+            {
+              type: 'config',
+              clusters: [
+                { name: 'cluster', url: 'url', authProvider: 'authProvider' },
+              ],
+            },
+            { type: 'catalog' },
+          ],
+        },
+      },
+      'ctx',
+    );
+    const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
+      getCredential: jest.fn(),
+      validateCluster: jest.fn().mockReturnValue([]),
+      presentAuthMetadata: jest.fn(),
+    };
+    catalogApi = {
+      getEntities: jest.fn().mockResolvedValue({
+        items: [{ metadata: { annotations: {}, name: 'cluster' } }],
+      }),
+      getEntitiesByRefs: jest.fn(),
+      queryEntities: jest.fn(),
+      getEntityAncestors: jest.fn(),
+      getEntityByRef: jest.fn(),
+      removeEntityByUid: jest.fn(),
+      refreshEntity: jest.fn(),
+      getEntityFacets: jest.fn(),
+      getLocationById: jest.fn(),
+      getLocationByRef: jest.fn(),
+      addLocation: jest.fn(),
+      removeLocationById: jest.fn(),
+      getLocationByEntity: jest.fn(),
+      validateEntity: jest.fn(),
+    };
+
+    const clusterSupplier = getCombinedClusterSupplier(
+      config,
+      catalogApi,
+      mockStrategy,
+      logger,
+    );
+    await clusterSupplier.getClusters();
+
+    expect(warn).toHaveBeenCalledWith(`Duplicate cluster name 'cluster'`);
   });
 });

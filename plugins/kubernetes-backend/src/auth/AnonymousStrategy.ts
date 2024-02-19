@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { AuthenticationStrategy, KubernetesCredential } from './types';
+import {
+  AuthMetadata,
+  AuthenticationStrategy,
+  KubernetesCredential,
+} from '@backstage/plugin-kubernetes-node';
 
 /**
  *
@@ -27,5 +31,9 @@ export class AnonymousStrategy implements AuthenticationStrategy {
 
   public validateCluster(): Error[] {
     return [];
+  }
+
+  public presentAuthMetadata(_authMetadata: AuthMetadata): AuthMetadata {
+    return {};
   }
 }

@@ -41,7 +41,7 @@ import classNames from 'classnames';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   CodeSnippet,
   Content,
@@ -52,6 +52,13 @@ import {
   Progress,
 } from '@backstage/core-components';
 import Chip from '@material-ui/core/Chip';
+import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
+import { useNavigate } from 'react-router-dom';
+import {
+  editRouteRef,
+  rootRouteRef,
+  scaffolderListTaskRouteRef,
+} from '../../routes';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -109,6 +116,17 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
 
 export const ActionsPage = () => {
   const api = useApi(scaffolderApiRef);
+  const navigate = useNavigate();
+  const editorLink = useRouteRef(editRouteRef);
+  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
+  const createLink = useRouteRef(rootRouteRef);
+
+  const scaffolderPageContextMenuProps = {
+    onEditorClicked: () => navigate(editorLink()),
+    onActionsClicked: undefined,
+    onTasksClicked: () => navigate(tasksLink()),
+    onCreateClicked: () => navigate(createLink()),
+  };
   const classes = useStyles();
   const { loading, value, error } = useAsync(async () => {
     return api.listActions();
@@ -124,6 +142,7 @@ export const ActionsPage = () => {
       <ErrorPage
         statusMessage="Failed to load installed actions"
         status="500"
+        stack={error.stack}
       />
     );
   }
@@ -326,7 +345,9 @@ export const ActionsPage = () => {
         pageTitleOverride="Create a New Component"
         title="Installed actions"
         subtitle="This is the collection of all installed actions"
-      />
+      >
+        <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
+      </Header>
       <Content>{items}</Content>
     </Page>
   );

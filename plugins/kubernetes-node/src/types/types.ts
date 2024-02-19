@@ -67,9 +67,13 @@ export type AuthMetadata = Record<string, string>;
  */
 export interface ClusterDetails {
   /**
-   * Specifies the name of the Kubernetes cluster.
+   * Name of the Kubernetes cluster; used as an internal identifier.
    */
   name: string;
+  /**
+   * Human-readable name for the cluster, to be dispayed in UIs.
+   */
+  title?: string;
   url: string;
   authMetadata: AuthMetadata;
   skipTLSVerify?: boolean;
@@ -139,6 +143,7 @@ export interface KubernetesClustersSupplier {
  */
 export type KubernetesCredential =
   | { type: 'bearer token'; token: string }
+  | { type: 'x509 client certificate'; cert: string; key: string }
   | { type: 'anonymous' };
 
 /**
@@ -151,6 +156,7 @@ export interface AuthenticationStrategy {
     authConfig: KubernetesRequestAuth,
   ): Promise<KubernetesCredential>;
   validateCluster(authMetadata: AuthMetadata): Error[];
+  presentAuthMetadata(authMetadata: AuthMetadata): AuthMetadata;
 }
 
 /**
@@ -180,7 +186,7 @@ export type KubernetesObjectTypes =
  * @public
  */
 export interface ObjectToFetch {
-  objectType: KubernetesObjectTypes; // TODO - Review
+  objectType: KubernetesObjectTypes;
   group: string;
   apiVersion: string;
   plural: string;

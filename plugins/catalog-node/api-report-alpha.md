@@ -15,6 +15,7 @@ import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PlaceholderResolver } from '@backstage/plugin-catalog-node';
 import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+import { Validators } from '@backstage/catalog-model';
 
 // @alpha (undocumented)
 export interface CatalogAnalysisExtensionPoint {
@@ -24,6 +25,14 @@ export interface CatalogAnalysisExtensionPoint {
 
 // @alpha (undocumented)
 export const catalogAnalysisExtensionPoint: ExtensionPoint<CatalogAnalysisExtensionPoint>;
+
+// @alpha (undocumented)
+export interface CatalogModelExtensionPoint {
+  setFieldValidators(validators: Partial<Validators>): void;
+}
+
+// @alpha (undocumented)
+export const catalogModelExtensionPoint: ExtensionPoint<CatalogModelExtensionPoint>;
 
 // @alpha (undocumented)
 export interface CatalogPermissionExtensionPoint {
@@ -54,6 +63,13 @@ export interface CatalogProcessingExtensionPoint {
   // (undocumented)
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
+  ): void;
+  // (undocumented)
+  setOnProcessingErrorHandler(
+    handler: (event: {
+      unprocessedEntity: Entity;
+      errors: Error[];
+    }) => Promise<void> | void,
   ): void;
   // (undocumented)
   setEntityDataParser(parser: CatalogProcessorParser): void;

@@ -18,7 +18,6 @@ nav:
       - Release & Versioning Policy: 'overview/versioning-policy.md'
       - Backstage Threat Model: 'overview/threat-model.md'
       - Support and community: 'overview/support.md'
-      - Glossary: 'overview/glossary.md'
       - Logo assets: 'overview/logos.md'
   - Getting Started:
       - Getting Started: 'getting-started/index.md'
@@ -171,7 +170,6 @@ nav:
       - Contributing New Providers: 'auth/add-auth-provider.md'
       - Service to Service Auth: 'auth/service-to-service-auth.md'
       - Troubleshooting Auth: 'auth/troubleshooting.md'
-      - Glossary: 'auth/glossary.md'
   - Deployment:
       - Deploying Backstage: 'deployment/index.md'
       - Scaling: 'deployment/scaling.md'
@@ -214,4 +212,9 @@ nav:
       - ADR011 - Plugin Package Structure: 'architecture-decisions/adr011-plugin-package-structure.md'
       - ADR012 - Plugin Package Structure: 'architecture-decisions/adr012-use-luxon-locale-and-date-presets.md'
       - ADR013 - Plugin Package Structure: 'architecture-decisions/adr013-use-node-fetch.md'
-  - FAQ: FAQ.md
+  - FAQ:
+      - Overview: 'faq/index.md'
+      - Product FAQ: 'faq/product.md'
+      - Technical FAQ: 'faq/technical.md'
+  - References:
+      - Glossary: 'references/glossary.md'

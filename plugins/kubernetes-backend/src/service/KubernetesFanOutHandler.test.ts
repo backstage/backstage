@@ -29,6 +29,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import {
+  FetchResponse,
   KubernetesRequestAuth,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
@@ -104,7 +105,7 @@ describe('KubernetesFanOutHandler', () => {
     ],
   };
 
-  const mockClusterResourceMap = {
+  const mockClusterResourceMap: Record<string, FetchResponse[]> = {
     'test-cluster': [
       {
         resources: [
@@ -196,6 +197,7 @@ describe('KubernetesFanOutHandler', () => {
           >()
           .mockResolvedValue({ type: 'anonymous' }),
         validateCluster: jest.fn().mockReturnValue([]),
+        presentAuthMetadata: jest.fn(),
       },
       config,
     });
@@ -357,17 +359,16 @@ describe('KubernetesFanOutHandler', () => {
 
   describe('getKubernetesObjectsByEntity', () => {
     it('retrieve objects for one cluster', async () => {
-      getClustersByEntity.mockImplementation(() =>
-        Promise.resolve({
-          clusters: [
-            {
-              name: 'test-cluster',
-              url: '',
-              authMetadata: {},
-            },
-          ],
-        }),
-      );
+      getClustersByEntity.mockResolvedValue({
+        clusters: [
+          {
+            name: 'test-cluster',
+            title: 'cluster-title',
+            url: '',
+            authMetadata: {},
+          },
+        ],
+      });
 
       sut = getKubernetesFanOutHandler([]);
 
@@ -385,11 +386,12 @@ describe('KubernetesFanOutHandler', () => {
         new Set(['ns-test-component-test-cluster']),
         expect.anything(),
       );
-      expect(result).toStrictEqual({
+      expect(result).toStrictEqual<ObjectsByEntityResponse>({
         items: [
           {
             cluster: {
               name: 'test-cluster',
+              title: 'cluster-title',
             },
             errors: [],
             podMetrics: [POD_METRICS_FIXTURE],
@@ -1147,6 +1149,7 @@ describe('KubernetesFanOutHandler', () => {
               >()
               .mockResolvedValue({ type: 'bearer token', token: 'token' }),
             validateCluster: jest.fn().mockReturnValue([]),
+            presentAuthMetadata: jest.fn(),
           },
           config,
         });

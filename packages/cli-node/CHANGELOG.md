@@ -1,5 +1,15 @@
 # @backstage/cli-node
 
+## 0.2.3-next.0
+
+### Patch Changes
+
+- d557d47: Added `repository` field to `BackstagePackageJson` type.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.2.2
 
 ### Patch Changes

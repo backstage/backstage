@@ -43,6 +43,7 @@ const mockCatalogApi = {
             'kubernetes.io/dashboard-app': 'my-app',
           },
           name: 'owned',
+          title: 'title',
           namespace: 'default',
         },
       },

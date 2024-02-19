@@ -1,0 +1,38 @@
+{{! Sourced from https://github.com/OpenAPITools/openapi-generator/blob/7347daec61b2cb8d3d28e1ed06fe8b5e682090f8/modules/openapi-generator/src/main/resources/typescript-angular/modelGeneric.mustache }}
+
+{{#models}}
+{{#model}}
+
+{{#description}}
+/**
+* {{{.}}}
+*/
+{{/description}}
+{{^isEnum}}
+export interface {{classname}} {
+{{>modelGenericAdditionalProperties}}
+{{#vars}}
+{{#description}}
+    /**
+    * {{{.}}}
+    */
+{{/description}}
+    '{{name}}'{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isNullable}} | null{{/isNullable}};
+{{/vars}}
+}
+
+{{#hasEnums}}
+
+{{#vars}}
+{{#isEnum}}
+export type {{classname}}{{enumName}} ={{#allowableValues}}{{#values}} "{{.}}" {{^-last}}|{{/-last}}{{/values}}{{/allowableValues}};
+{{/isEnum}}
+{{/vars}}
+
+{{/hasEnums}}
+{{/isEnum}}
+{{#isEnum}}
+export type {{classname}} ={{#allowableValues}}{{#values}} "{{.}}" {{^-last}}|{{/-last}}{{/values}}{{/allowableValues}};
+{{/isEnum}}
+{{/model}}
+{{/models}}

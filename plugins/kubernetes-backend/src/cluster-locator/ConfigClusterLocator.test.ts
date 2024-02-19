@@ -21,8 +21,8 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
 } from '@backstage/plugin-kubernetes-common';
+import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
-import { ClusterDetails } from '../types/types';
 import { AuthenticationStrategy } from '../auth';
 
 describe('ConfigClusterLocator', () => {
@@ -32,6 +32,7 @@ describe('ConfigClusterLocator', () => {
     authStrategy = {
       getCredential: jest.fn(),
       validateCluster: jest.fn().mockReturnValue([]),
+      presentAuthMetadata: jest.fn(),
     };
   });
 
@@ -74,6 +75,28 @@ describe('ConfigClusterLocator', () => {
         caData: undefined,
         caFile: undefined,
       },
+    ]);
+  });
+
+  it('reads `title` property', async () => {
+    const sut = ConfigClusterLocator.fromConfig(
+      new ConfigReader({
+        clusters: [
+          {
+            name: 'cluster-name',
+            title: 'cluster-title',
+            url: 'url',
+            authMetadata: { 'kubernetes.io/auth-provider': 'serviceAccount' },
+          },
+        ],
+      }),
+      authStrategy,
+    );
+
+    const result = await sut.getClusters();
+
+    expect(result).toEqual([
+      expect.objectContaining({ title: 'cluster-title' }),
     ]);
   });
 
@@ -175,6 +198,97 @@ describe('ConfigClusterLocator', () => {
         }),
       },
     ]);
+  });
+
+  it('reads custom authMetadata', async () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster',
+          url: 'http://url',
+          authProvider: 'authProvider',
+          authMetadata: { 'custom-key': 'custom-value' },
+        },
+      ],
+    });
+
+    const result = await ConfigClusterLocator.fromConfig(
+      config,
+      authStrategy,
+    ).getClusters();
+
+    expect(result).toMatchObject([
+      {
+        authMetadata: expect.objectContaining({ 'custom-key': 'custom-value' }),
+      },
+    ]);
+  });
+
+  it('reads authProvider from metadata block', async () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster',
+          url: 'http://url',
+          authMetadata: {
+            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+          },
+        },
+      ],
+    });
+
+    const result = await ConfigClusterLocator.fromConfig(
+      config,
+      authStrategy,
+    ).getClusters();
+
+    expect(result).toMatchObject([
+      {
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+        },
+      },
+    ]);
+  });
+
+  it('prefers authMetadata block to top-level keys', async () => {
+    const sut = ConfigClusterLocator.fromConfig(
+      new ConfigReader({
+        clusters: [
+          {
+            name: 'cluster',
+            url: 'http://url',
+            authProvider: 'aws',
+            authMetadata: {
+              [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+            },
+          },
+        ],
+      }),
+      authStrategy,
+    );
+
+    const result = await sut.getClusters();
+
+    expect(result).toMatchObject([
+      {
+        authMetadata: {
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+        },
+      },
+    ]);
+  });
+
+  it('forbids cluster without auth provider', () => {
+    const config: Config = new ConfigReader({
+      clusters: [{ name: 'cluster', url: 'http://url' }],
+    });
+
+    expect(() => ConfigClusterLocator.fromConfig(config, authStrategy)).toThrow(
+      `cluster 'cluster' has no auth provider configured; this must be specified` +
+        ` via the 'authProvider' or ` +
+        `'authMetadata.${ANNOTATION_KUBERNETES_AUTH_PROVIDER}' parameter`,
+    );
   });
 
   it('one cluster with dashboardParameters', async () => {
@@ -311,6 +425,27 @@ describe('ConfigClusterLocator', () => {
 
     expect(() => ConfigClusterLocator.fromConfig(config, authStrategy)).toThrow(
       `Invalid cluster 'cluster1': mock error`,
+    );
+  });
+
+  it('fails on duplicate cluster names', () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster',
+          url: 'url',
+          authProvider: 'authProvider',
+        },
+        {
+          name: 'cluster',
+          url: 'url',
+          authProvider: 'authProvider',
+        },
+      ],
+    });
+
+    expect(() => ConfigClusterLocator.fromConfig(config, authStrategy)).toThrow(
+      `Duplicate cluster name 'cluster'`,
     );
   });
 });

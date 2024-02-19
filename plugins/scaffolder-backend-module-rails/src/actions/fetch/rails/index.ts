@@ -40,7 +40,7 @@ import { RailsNewRunner } from './railsNewRunner';
 export function createFetchRailsAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-  containerRunner: ContainerRunner;
+  containerRunner?: ContainerRunner;
   /** A list of image names that are allowed to be passed as imageName input */
   allowedImageNames?: string[];
 }) {

@@ -32,6 +32,7 @@
       position: absolute;
       text-align: center;
       font-weight: bold;
+      color: black;
 
       transform: translateY(var(--translateY)) translateX(var(--translateX))
         rotate(var(--rotation));
@@ -78,6 +79,8 @@
   :global(.dropdown) {
     float: right;
     margin-bottom: 1rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   :global(.button--info) {

@@ -22,14 +22,17 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  TemplateAction,
+  TemplateFilter,
+  TemplateGlobal,
+} from '@backstage/plugin-scaffolder-node';
 import {
   createCatalogRegisterAction,
   createCatalogWriteAction,
   createFetchCatalogEntityAction,
 } from './catalog';
 
-import { TemplateFilter, TemplateGlobal } from '../../../lib';
 import { createDebugLogAction, createWaitAction } from './debug';
 import {
   createFetchPlainAction,
@@ -55,13 +58,17 @@ import {
 
 import { createPublishAzureAction } from '@backstage/plugin-scaffolder-backend-module-azure';
 
+import { createPublishBitbucketAction } from '@backstage/plugin-scaffolder-backend-module-bitbucket';
+
 import {
-  createPublishBitbucketAction,
   createPublishBitbucketCloudAction,
+  createBitbucketPipelinesRunAction,
+} from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
+
+import {
   createPublishBitbucketServerAction,
   createPublishBitbucketServerPullRequestAction,
-  createBitbucketPipelinesRunAction,
-} from '@backstage/plugin-scaffolder-backend-module-bitbucket';
+} from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 
 import {
   createPublishGerritAction,
@@ -73,6 +80,8 @@ import {
   createGitlabRepoPushAction,
   createPublishGitlabMergeRequestAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
+
+import { createPublishGiteaAction } from '@backstage/plugin-scaffolder-backend-module-gitea';
 
 /**
  * The options passed to {@link createBuiltinActions}
@@ -148,6 +157,10 @@ export const createBuiltinActions = (
       config,
     }),
     createPublishGerritReviewAction({
+      integrations,
+      config,
+    }),
+    createPublishGiteaAction({
       integrations,
       config,
     }),

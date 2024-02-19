@@ -21,3 +21,4 @@
  */
 
 export * from './actions';
+export { gitlabModule as default } from './module';

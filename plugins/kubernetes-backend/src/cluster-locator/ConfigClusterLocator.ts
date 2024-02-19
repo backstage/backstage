@@ -35,11 +35,31 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
     config: Config,
     authStrategy: AuthenticationStrategy,
   ): ConfigClusterLocator {
+    const clusterNames = new Set();
     return new ConfigClusterLocator(
       config.getConfigArray('clusters').map(c => {
-        const authProvider = c.getString('authProvider');
+        const authMetadataBlock = c.getOptional<{
+          [ANNOTATION_KUBERNETES_AUTH_PROVIDER]?: string;
+        }>('authMetadata');
+        const name = c.getString('name');
+        if (clusterNames.has(name)) {
+          throw new Error(`Duplicate cluster name '${name}'`);
+        }
+        clusterNames.add(name);
+        const authProvider =
+          authMetadataBlock?.[ANNOTATION_KUBERNETES_AUTH_PROVIDER] ??
+          c.getOptionalString('authProvider');
+        if (!authProvider) {
+          throw new Error(
+            `cluster '${name}' has no auth provider configured; this must be ` +
+              `specified via the 'authProvider' or ` +
+              `'authMetadata.${ANNOTATION_KUBERNETES_AUTH_PROVIDER}' parameter`,
+          );
+        }
+        const title = c.getOptionalString('title');
         const clusterDetails: ClusterDetails = {
-          name: c.getString('name'),
+          name,
+          ...(title && { title }),
           url: c.getString('url'),
           skipTLSVerify: c.getOptionalBoolean('skipTLSVerify') ?? false,
           skipMetricsLookup: c.getOptionalBoolean('skipMetricsLookup') ?? false,
@@ -48,6 +68,7 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           authMetadata: {
             [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: authProvider,
             ...ConfigClusterLocator.parseAuthMetadata(c),
+            ...authMetadataBlock,
           },
         };
 

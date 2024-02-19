@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { fireEvent, render } from '@testing-library/react';
 import { PaginatedCatalogTable } from './PaginatedCatalogTable';
 import { screen } from '@testing-library/react';
 import { CatalogTableRow } from './types';
+import {
+  DefaultEntityFilters,
+  EntityListContextProps,
+  MockEntityListContextProvider,
+} from '@backstage/plugin-catalog-react';
 
 describe('PaginatedCatalogTable', () => {
   const data = new Array(100).fill(0).map((_, index) => {
@@ -45,8 +50,21 @@ describe('PaginatedCatalogTable', () => {
     },
   ];
 
+  const wrapInContext = (
+    node: ReactNode,
+    value?: Partial<EntityListContextProps<DefaultEntityFilters>>,
+  ) => {
+    return (
+      <MockEntityListContextProvider value={value}>
+        {node}
+      </MockEntityListContextProvider>
+    );
+  };
+
   it('should display all the items', () => {
-    render(<PaginatedCatalogTable data={data} columns={columns} />);
+    render(
+      wrapInContext(<PaginatedCatalogTable data={data} columns={columns} />),
+    );
 
     for (const item of data) {
       expect(screen.queryByText(item.resolved.name)).toBeInTheDocument();
@@ -55,7 +73,13 @@ describe('PaginatedCatalogTable', () => {
 
   it('should display and invoke the next button', async () => {
     const { rerender } = render(
-      <PaginatedCatalogTable data={data} columns={columns} next={undefined} />,
+      wrapInContext(
+        <PaginatedCatalogTable
+          data={data}
+          columns={columns}
+          next={undefined}
+        />,
+      ),
     );
 
     expect(
@@ -64,7 +88,11 @@ describe('PaginatedCatalogTable', () => {
 
     const fn = jest.fn();
 
-    rerender(<PaginatedCatalogTable data={data} columns={columns} next={fn} />);
+    rerender(
+      wrapInContext(
+        <PaginatedCatalogTable data={data} columns={columns} next={fn} />,
+      ),
+    );
 
     const nextButton = screen.queryAllByRole('button', {
       name: 'Next Page',
@@ -77,7 +105,13 @@ describe('PaginatedCatalogTable', () => {
 
   it('should display and invoke the prev button', async () => {
     const { rerender } = render(
-      <PaginatedCatalogTable data={data} columns={columns} prev={undefined} />,
+      wrapInContext(
+        <PaginatedCatalogTable
+          data={data}
+          columns={columns}
+          prev={undefined}
+        />,
+      ),
     );
 
     expect(
@@ -86,7 +120,11 @@ describe('PaginatedCatalogTable', () => {
 
     const fn = jest.fn();
 
-    rerender(<PaginatedCatalogTable data={data} columns={columns} prev={fn} />);
+    rerender(
+      wrapInContext(
+        <PaginatedCatalogTable data={data} columns={columns} prev={fn} />,
+      ),
+    );
 
     const prevButton = screen.queryAllByRole('button', {
       name: 'Previous Page',

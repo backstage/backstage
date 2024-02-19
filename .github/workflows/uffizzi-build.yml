@@ -7,6 +7,7 @@ on:
       - 'contrib/**'
       - 'docs/**'
       - 'microsite/**'
+      - 'beps/**'
       - 'scripts/**'
       - 'storybook/**'
       - '**/*.test.*'
@@ -25,21 +26,21 @@ jobs:
       tags: ${{ steps.meta.outputs.tags }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
         with:
           egress-policy: audit
 
       - name: checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: setup-node
-        uses: actions/setup-node@v4.0.1
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: 18.x
           registry-url: https://registry.npmjs.org/
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.5
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
         with:
           cache-prefix: linux-v18
 
@@ -60,7 +61,7 @@ jobs:
 
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@e6428a5c4e294a61438ed7f43155db912025b6b3 # v5.2.0
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
         with:
           images: registry.uffizzi.com/${{ env.UUID_TAG_APP }}
           tags: type=raw,value=60d
@@ -83,12 +84,12 @@ jobs:
       - build-backstage
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
         with:
           egress-policy: audit
 
       - name: Checkout git repo
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Render Compose File
         run: |
           # update image after the build above
@@ -97,13 +98,13 @@ jobs:
           kustomize build . > manifests.rendered.yml
           cat manifests.rendered.yml
       - name: Upload Rendered Manifests File as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
         with:
           name: preview-spec
           path: ./.github/uffizzi/k8s/manifests/manifests.rendered.yml
           retention-days: 2
       - name: Upload PR Event as Artifact
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
         with:
           name: preview-spec
           path: ${{ github.event_path }}
@@ -115,13 +116,13 @@ jobs:
     if: ${{ github.event.action == 'closed' }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
         with:
           egress-policy: audit
 
       # If this PR is closing, we will not render a compose file nor pass it to the next workflow.
       - name: Upload PR Event as Artifact
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
         with:
           name: preview-spec
           path: ${{ github.event_path }}

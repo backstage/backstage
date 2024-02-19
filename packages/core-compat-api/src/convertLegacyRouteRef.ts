@@ -41,6 +41,43 @@ import { toInternalSubRouteRef } from '../../frontend-plugin-api/src/routing/Sub
 import { toInternalExternalRouteRef } from '../../frontend-plugin-api/src/routing/ExternalRouteRef';
 
 /**
+ * Converts a legacy route ref type to the new system.
+ *
+ * @public
+ */
+export type ToNewRouteRef<
+  T extends LegacyRouteRef | LegacySubRouteRef | LegacyExternalRouteRef,
+> = T extends LegacyRouteRef<infer IParams>
+  ? RouteRef<IParams>
+  : T extends LegacySubRouteRef<infer IParams>
+  ? SubRouteRef<IParams>
+  : T extends LegacyExternalRouteRef<infer IParams, infer IOptional>
+  ? ExternalRouteRef<IParams, IOptional>
+  : never;
+
+/**
+ * Converts a collection of legacy route refs to the new system.
+ * This is particularly useful when defining plugin `routes` and `externalRoutes`.
+ *
+ * @public
+ */
+export function convertLegacyRouteRefs<
+  TRefs extends {
+    [name in string]:
+      | LegacyRouteRef
+      | LegacySubRouteRef
+      | LegacyExternalRouteRef;
+  },
+>(refs: TRefs): { [KName in keyof TRefs]: ToNewRouteRef<TRefs[KName]> } {
+  return Object.fromEntries(
+    Object.entries(refs).map(([name, ref]) => [
+      name,
+      convertLegacyRouteRef(ref as LegacyRouteRef),
+    ]),
+  ) as { [KName in keyof TRefs]: ToNewRouteRef<TRefs[KName]> };
+}
+
+/**
  * A temporary helper to convert a legacy route ref to the new system.
  *
  * @public
@@ -161,6 +198,10 @@ export function convertLegacyRouteRef(
       },
       getDescription() {
         return legacyRefStr;
+      },
+      getDefaultTarget() {
+        // TODO(freben): These are not yet supported in the old system; just returning undefined for now
+        return undefined;
       },
       setId(id: string) {
         newRef.setId(id);

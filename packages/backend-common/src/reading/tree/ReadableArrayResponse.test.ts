@@ -19,6 +19,7 @@ import path from 'path';
 import { FromReadableArrayOptions } from '../types';
 import { ReadableArrayResponse } from './ReadableArrayResponse';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { relative } from 'path/posix';
 
 const name1 = 'file1.yaml';
 const file1 = fs.readFileSync(
@@ -74,9 +75,12 @@ describe('ReadableArrayResponse', () => {
   });
 
   it('should extract entire archive into directory', async () => {
+    const relativePath1 = relative(sourceDir.path, path1);
+    const relativePath2 = relative(sourceDir.path, path2);
+
     const arr: FromReadableArrayOptions = [
-      { data: createReadStream(path1), path: path1 },
-      { data: createReadStream(path2), path: path2 },
+      { data: createReadStream(path1), path: relativePath1 },
+      { data: createReadStream(path2), path: relativePath2 },
     ];
 
     const res = new ReadableArrayResponse(arr, targetDir.path, 'etag');

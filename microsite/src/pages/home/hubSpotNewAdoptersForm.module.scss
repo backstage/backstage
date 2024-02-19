@@ -1,9 +1,13 @@
+$page-header-height: 44px;
+
 .hubSpotNewAdopterFormContainer {
   top: 50%;
   right: 0;
   display: flex;
   position: fixed;
   transform: translateY(-50%);
+  margin-top: $page-header-height;
+  max-height: calc(100% - $page-header-height);
 
   transition: all 250ms ease-in-out;
 
@@ -22,9 +26,7 @@
 }
 
 .hubSpotNewAdopterFormContent {
-  height: 600px;
   max-width: 500px;
-  overflow-y: hidden;
   border-radius: 8px 0 0 8px;
   background-color: var(--ifm-color-white);
 
@@ -34,5 +36,11 @@
     overflow-y: auto;
 
     padding-right: 2rem;
+  }
+  select[class*='hs-input'] {
+    color: black;
+  }
+  input[class*='hs-button'] {
+    color: black;
   }
 }

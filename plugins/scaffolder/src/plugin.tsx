@@ -33,6 +33,11 @@ import {
   OwnerPicker,
   OwnerPickerSchema,
 } from './components/fields/OwnerPicker/OwnerPicker';
+import {
+  MultiEntityPicker,
+  MultiEntityPickerSchema,
+  validateMultiEntityPickerValidation,
+} from './components/fields/MultiEntityPicker/MultiEntityPicker';
 import { repoPickerValidation } from './components/fields/RepoUrlPicker';
 import {
   RepoUrlPicker,
@@ -135,6 +140,20 @@ export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
 );
 
 /**
+ * A field extension for selecting multiple entities that exists in the Catalog.
+ *
+ * @public
+ */
+export const MultiEntityPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: MultiEntityPicker,
+    name: 'MultiEntityPicker',
+    schema: MultiEntityPickerSchema,
+    validation: validateMultiEntityPickerValidation,
+  }),
+);
+
+/**
  * The field extension which provides the ability to select a RepositoryUrl.
  * Currently, this is an encoded URL that looks something like the following `github.com?repo=myRepoName&owner=backstage`.
  *
@@ -210,17 +229,5 @@ export const EntityTagsPickerFieldExtension = scaffolderPlugin.provide(
     component: EntityTagsPicker,
     name: 'EntityTagsPicker',
     schema: EntityTagsPickerSchema,
-  }),
-);
-
-/**
- * @alpha
- * The Router and main entrypoint to the Alpha Scaffolder plugin.
- */
-export const LegacyScaffolderPage = scaffolderPlugin.provide(
-  createRoutableExtension({
-    name: 'LegacyScaffolderPage',
-    component: () => import('./legacy/Router').then(m => m.LegacyRouter),
-    mountPoint: rootRouteRef,
   }),
 );

@@ -8,7 +8,7 @@ Lighthouse Backend allows you to run scheduled lighthouse Tests for each Website
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-lighthouse-backend
+yarn --cwd packages/backend add @backstage/plugin-lighthouse-backend
 ```
 
 2. Create a `lighthouse.ts` file inside `packages/backend/src/plugins/`:
@@ -72,10 +72,13 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { lighthousePlugin } from '@backstage/plugin-lighthouse-backend';
+
   const backend = createBackend();
+
   // ... other feature additions
-+ backend.add(lighthousePlugin());
+
++ backend.add(import('@backstage/plugin-lighthouse-backend'));
+
   backend.start();
 ```
 

@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-export * from './service/router';
-export type { RouterOptions } from './service/router';
-
-export { buildTechInsightsContext } from './service/techInsightsContextBuilder';
-export { initializePersistenceContext } from './service/persistence/persistenceContext';
-export type {
-  TechInsightsOptions,
-  TechInsightsContext,
-} from './service/techInsightsContextBuilder';
-export type { FactRetrieverEngine } from './service/fact/FactRetrieverEngine';
-export type {
-  PersistenceContext,
-  PersistenceContextOptions,
-} from './service/persistence/persistenceContext';
-export { createFactRetrieverRegistration } from './service/fact/createFactRetriever';
-export type { FactRetrieverRegistry } from './service/fact/FactRetrieverRegistry';
-export type { FactRetrieverRegistrationOptions } from './service/fact/createFactRetriever';
-export * from './service/fact/factRetrievers';
+export { techInsightsPlugin as default } from './plugin';
+export * from './deprecated';
+export * from './service';

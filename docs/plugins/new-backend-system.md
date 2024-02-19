@@ -26,7 +26,7 @@ const backend = createBackend();
 backend.add(import('@backstage/plugin-catalog-backend'));
 
 // Start up the backend
-await backend.start();
+backend.start();
 ```
 
 One notable change that helped achieve this much slimmer backend setup is the introduction of a system for dependency injection, which is very similar to the one in the Backstage frontend.

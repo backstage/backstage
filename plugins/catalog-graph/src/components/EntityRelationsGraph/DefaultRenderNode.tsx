@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { DependencyGraphTypes } from '@backstage/core-components';
+import { useApp } from '@backstage/core-plugin-api';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
@@ -63,6 +64,7 @@ export function DefaultRenderNode({
   const classes = useStyles();
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
+  const app = useApp();
   const idRef = useRef<SVGTextElement | null>(null);
 
   useLayoutEffect(() => {
@@ -85,9 +87,12 @@ export function DefaultRenderNode({
     metadata: { name, namespace = DEFAULT_NAMESPACE, title },
   } = entity;
 
+  const hasKindIcon = app.getSystemIcon(
+    `kind:${kind.toLocaleLowerCase('en-US')}`,
+  );
   const padding = 10;
   const iconSize = height;
-  const paddedIconWidth = kind ? iconSize + padding : 0;
+  const paddedIconWidth = hasKindIcon ? iconSize + padding : 0;
   const paddedWidth = paddedIconWidth + width + padding * 2;
   const paddedHeight = height + padding * 2;
 
@@ -109,7 +114,7 @@ export function DefaultRenderNode({
         height={paddedHeight}
         rx={10}
       />
-      {kind && (
+      {hasKindIcon && (
         <EntityKindIcon
           kind={kind}
           y={padding}

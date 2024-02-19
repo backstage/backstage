@@ -57,7 +57,7 @@ Backstage 的文档包括：
 - [参与贡献 Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - 如果您想做出贡献，请从这里开始
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - 帮助制定技术方向
 - [FAQ](https://backstage.io/docs/FAQ) - n.: 常问问题
-- [行为准则](CODE_OF_CONDUCT.md) - 这是我们的刑事方式
+- [行为准则](CODE_OF_CONDUCT.md) - 这是我们的行事方式
 - [采纳者](ADOPTERS.md) - 已经在使用 Backstage 的公司
 - [博客](https://backstage.io/blog/) - 公告和更新
 - [通讯](https://spoti.fi/backstagenewsletter) - 订阅我们的电子邮件通讯
@@ -66,7 +66,7 @@ Backstage 的文档包括：
 
 ## 许可
 
-版权所有 2020-2023 © Backstage 作者。版权所有。Linux 基金会已注册商标并使用商标。有关 Linux 基金会的商标列表，请参阅我们的商标使用页面：https://www.linuxfoundation.org/trademark-usage
+版权所有 2020-2024 © Backstage 作者。版权所有。Linux 基金会已注册商标并使用商标。有关 Linux 基金会的商标列表，请参阅我们的商标使用页面：https://www.linuxfoundation.org/trademark-usage
 
 采用 Apache v2.0 许可：http://www.apache.org/licenses/LICENSE-2.0
 

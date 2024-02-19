@@ -22,7 +22,7 @@ First install the plugin into your app:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-bazaar
+yarn --cwd packages/app add @backstage/plugin-bazaar
 ```
 
 Modify your app routes in `packages/app/src/App.tsx` to include the `Bazaar` component exported from the plugin, for example:

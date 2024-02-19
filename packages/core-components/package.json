@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.13.10",
+  "version": "0.14.0-next.2",
   "publishConfig": {
     "access": "public"
   },
@@ -56,8 +56,8 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
-    "@react-hookz/web": "^23.0.0",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@react-hookz/web": "^24.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "@types/react-sparklines": "^1.7.0",
     "@types/react-text-truncate": "^0.14.0",
     "ansi-regex": "^6.0.1",
@@ -92,6 +92,7 @@
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
+    "@backstage/app-defaults": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/test-utils": "workspace:^",
