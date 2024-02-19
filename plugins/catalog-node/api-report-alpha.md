@@ -14,6 +14,7 @@ import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PlaceholderResolver } from '@backstage/plugin-catalog-node';
 import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+import { Validators } from '@backstage/catalog-model';
 
 // @alpha (undocumented)
 export interface CatalogAnalysisExtensionPoint {
@@ -23,6 +24,14 @@ export interface CatalogAnalysisExtensionPoint {
 
 // @alpha (undocumented)
 export const catalogAnalysisExtensionPoint: ExtensionPoint<CatalogAnalysisExtensionPoint>;
+
+// @alpha (undocumented)
+export interface CatalogModelExtensionPoint {
+  setFieldValidators(validators: Partial<Validators>): void;
+}
+
+// @alpha (undocumented)
+export const catalogModelExtensionPoint: ExtensionPoint<CatalogModelExtensionPoint>;
 
 // @alpha (undocumented)
 export interface CatalogPermissionExtensionPoint {
