@@ -2,4 +2,5 @@
 '@backstage/plugin-scaffolder-backend-module-gitea': patch
 ---
 
-Add missing break within the while statement to exit from the while maxDuration statement when the gitea repository has been created and exists
+Fix issue for infinite loop when repository already exists
+Log the root cause of error reported by checkGiteaOrg
