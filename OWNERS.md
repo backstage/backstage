@@ -112,7 +112,7 @@ These incubating project areas have shared ownership with @backstage/maintainers
 
 Team: @backstage/community-plugins-maintainers
 
-Scope: Tooling related to the Backstage [Community Plugins repository](https://github.com/backstage/community-plugins)
+Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugins repository](https://github.com/backstage/community-plugins)
 
 | Name                 | Organization | GitHub                                      | Discord      |
 | -------------------- | ------------ | ------------------------------------------- | ------------ |
