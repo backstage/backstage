@@ -178,6 +178,9 @@ async function checkAvailabilityGiteaRepository(
     if (response.status !== 200) {
       // Repository is not yet available/accessible ...
       await sleep(1000);
+    } else {
+      // Gitea repository exists !
+      break;
     }
   }
 }
