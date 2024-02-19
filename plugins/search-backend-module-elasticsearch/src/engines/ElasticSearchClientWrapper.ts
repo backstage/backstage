@@ -107,6 +107,7 @@ export class ElasticSearchClientWrapper {
       return this.elasticSearchClient.search({
         ...options,
         ...searchOptions,
+        track_total_hits: true,
       });
     }
 

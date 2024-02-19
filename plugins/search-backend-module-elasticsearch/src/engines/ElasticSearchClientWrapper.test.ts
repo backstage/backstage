@@ -118,6 +118,7 @@ describe('ElasticSearchClientWrapper', () => {
         body: { eg: 'etc' },
         ignore_unavailable: true,
         allow_no_indices: true,
+        track_total_hits: true,
       };
       const result = (await wrapper.search(searchInput)) as any;
 
