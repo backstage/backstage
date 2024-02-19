@@ -199,9 +199,11 @@ describe('DatabaseTaskStore', () => {
     await store.saveTaskState({
       taskId,
       state: {
-        'repo.create': {
-          status: 'success',
-          value: { repoUrl: 'https://github.com/backstage/backstage.git' },
+        checkpoints: {
+          'repo.create': {
+            status: 'success',
+            value: { repoUrl: 'https://github.com/backstage/backstage.git' },
+          },
         },
       },
     });
@@ -210,9 +212,11 @@ describe('DatabaseTaskStore', () => {
 
     expect(state).toStrictEqual({
       state: {
-        'repo.create': {
-          status: 'success',
-          value: { repoUrl: 'https://github.com/backstage/backstage.git' },
+        checkpoints: {
+          'repo.create': {
+            status: 'success',
+            value: { repoUrl: 'https://github.com/backstage/backstage.git' },
+          },
         },
       },
     });

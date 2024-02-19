@@ -31,6 +31,19 @@ import {
 import { TaskStore } from './types';
 import { readDuration } from './helper';
 
+type TaskState = {
+  checkpoints: {
+    [key: string]:
+      | {
+          status: 'failed';
+          reason: string;
+        }
+      | {
+          status: 'success';
+          value: JsonValue;
+        };
+  };
+};
 /**
  * TaskManager
  *
@@ -115,9 +128,9 @@ export class TaskManager implements TaskContext {
   ): Promise<void> {
     const { key, ...value } = options;
     if (this.task.state) {
-      this.task.state[key] = value;
+      (this.task.state as TaskState).checkpoints[key] = value;
     } else {
-      this.task.state = { [key]: value };
+      this.task.state = { checkpoints: { [key]: value } };
     }
     await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
