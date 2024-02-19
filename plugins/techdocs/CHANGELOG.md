@@ -48,7 +48,7 @@
 
 ### Minor Changes
 
-- af4d147: Updated the styling for <code> tags to avoid word break.
+- af4d147: Updated the styling for `<code>` tags to avoid word break.
 
 ### Patch Changes
 
