@@ -251,7 +251,7 @@ describe('azure', () => {
             $skip: 0,
             $top: 1000,
             filters: {
-              Branch: ['development'],
+              Branch: ['topic/catalog-info'],
             },
           });
           return res(ctx.json(response));
@@ -272,7 +272,7 @@ describe('azure', () => {
         'engineering',
         'backstage',
         '/catalog-info.yaml',
-        'development',
+        'topic/catalog-info',
       ),
     ).resolves.toEqual(response.results);
   });

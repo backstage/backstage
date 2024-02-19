@@ -66,7 +66,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
 
       expect(
         parseUrl(
-          'https://azuredevops.mycompany.com/spotify/engineering/_git/backstage?path=/src/*/catalog.yaml&version=GBdevelopment',
+          'https://azuredevops.mycompany.com/spotify/engineering/_git/backstage?path=/src/*/catalog.yaml&version=GBtopic/catalog-info',
         ),
       ).toEqual({
         baseUrl: 'https://azuredevops.mycompany.com',
@@ -74,7 +74,20 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
         project: 'engineering',
         repo: 'backstage',
         catalogPath: '/src/*/catalog.yaml',
-        branch: 'development',
+        branch: 'topic/catalog-info',
+      });
+
+      expect(
+        parseUrl(
+          'https://azuredevops.mycompany.com/spotify/engineering/_git/backstage?path=/src/*/catalog.yaml&version=GBtopic%2Fcatalog-info',
+        ),
+      ).toEqual({
+        baseUrl: 'https://azuredevops.mycompany.com',
+        org: 'spotify',
+        project: 'engineering',
+        repo: 'backstage',
+        catalogPath: '/src/*/catalog.yaml',
+        branch: 'topic/catalog-info',
       });
     });
 
@@ -249,7 +262,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
       const location: LocationSpec = {
         type: 'azure-discovery',
         target:
-          'https://dev.azure.com/shopify/engineering/_git/backstage?path=/catalog-info.yaml&version=GBdevelopment',
+          'https://dev.azure.com/shopify/engineering/_git/backstage?path=/catalog-info.yaml&version=GBtopic/catalog-info',
       };
       mockCodeSearch.mockResolvedValueOnce([
         {
@@ -274,7 +287,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
         'engineering',
         'backstage',
         '/catalog-info.yaml',
-        'development',
+        'topic/catalog-info',
       );
       expect(emitter).toHaveBeenCalledTimes(1);
       expect(emitter).toHaveBeenCalledWith({
@@ -282,7 +295,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
         location: {
           type: 'url',
           target:
-            'https://dev.azure.com/shopify/engineering/_git/backstage?path=/catalog-info.yaml&version=GBdevelopment',
+            'https://dev.azure.com/shopify/engineering/_git/backstage?path=/catalog-info.yaml&version=GBtopic/catalog-info',
           presence: 'optional',
         },
       });
