@@ -241,16 +241,18 @@ Task state will be stored in the extra column `state` in the table `tasks` with 
 ```json
 {
   "state": {
-    "repo.creation": {
-      "status": "success",
-      "result": {
-        "repoUrl": "https://github.com/backstage/backstage.git"
-      }
-    },
-    "repo.add.member": {
-      "status": "success",
-      "result": {
-        "id": "2345"
+    "checkpoints": {
+      "repo.creation": {
+        "status": "success",
+        "result": {
+          "repoUrl": "https://github.com/backstage/backstage.git"
+        }
+      },
+      "repo.add.member": {
+        "status": "success",
+        "result": {
+          "id": "2345"
+        }
       }
     }
   }
