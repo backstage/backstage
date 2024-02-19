@@ -39,6 +39,7 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
+    "@backstage/scaffolder-test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
     "winston": "^3.2.1",
     "yeoman-environment": "^3.9.1"

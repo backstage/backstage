@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/scaffolder-test-utils';
 import { Writable } from 'stream';
 import { createDebugLogAction } from './log';
 import { join } from 'path';
@@ -30,15 +30,10 @@ describe('debug:log examples', () => {
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
 
-  const mockContext = {
-    input: {},
-    baseUrl: 'somebase',
-    workspacePath,
-    logger: getVoidLogger(),
+  const mockContext = createMockActionContext({
     logStream,
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+    workspacePath,
+  });
 
   const action = createDebugLogAction();
 
@@ -51,12 +46,10 @@ describe('debug:log examples', () => {
   });
 
   it('should log message', async () => {
-    const context = {
+    await action.handler({
       ...mockContext,
       input: yaml.parse(examples[0].example).steps[0].input,
-    };
-
-    await action.handler(context);
+    });
 
     expect(logStream.write).toHaveBeenCalledTimes(1);
     expect(logStream.write).toHaveBeenCalledWith(
@@ -65,12 +58,10 @@ describe('debug:log examples', () => {
   });
 
   it('should log the workspace content, if active', async () => {
-    const context = {
+    await action.handler({
       ...mockContext,
       input: yaml.parse(examples[1].example).steps[0].input,
-    };
-
-    await action.handler(context);
+    });
 
     expect(logStream.write).toHaveBeenCalledTimes(1);
     expect(logStream.write).toHaveBeenCalledWith(

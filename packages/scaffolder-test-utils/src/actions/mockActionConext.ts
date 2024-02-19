@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
+import { PassThrough, Writable } from 'stream';
 import { getVoidLogger } from '@backstage/backend-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
-import { ActionContext } from '@backstage/plugin-scaffolder-node';
+import { ActionContext, TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import * as winston from 'winston';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 
 /**
  * A utility method to create a mock action context for scaffolder actions.
  *
- *
- *
  * @public
- * @param options
+ * @param options - optional parameters to override default mock context
  */
 export const createMockActionContext = <
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
 >(options?: {
   input?: TActionInput;
-  workspacePath?: string;
   logger?: winston.Logger;
+  logStream?: Writable;
+  secrets?: TaskSecrets;
   templateInfo?: TemplateInfo;
+  workspacePath?: string;
 }): ActionContext<TActionInput, TActionOutput> => {
   const defaultContext = {
     logger: getVoidLogger(),
@@ -58,12 +58,19 @@ export const createMockActionContext = <
     };
   }
 
-  const { input, workspacePath, logger, templateInfo } = options;
+  const { input, logger, logStream, secrets, templateInfo, workspacePath } =
+    options;
+
   return {
     ...defaultContext,
     ...(workspacePath ? { workspacePath } : createDefaultWorkspace()),
+    ...(workspacePath && {
+      createTemporaryDirectory: jest.fn().mockResolvedValue(workspacePath),
+    }),
     ...(logger && { logger }),
+    ...(logStream && { logStream }),
     ...(input && { input }),
+    ...(secrets && { secrets }),
     templateInfo,
   };
 };

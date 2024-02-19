@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
-import os from 'os';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/scaffolder-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { createFetchCatalogEntityAction } from './fetch';
@@ -34,14 +32,10 @@ describe('catalog:fetch', () => {
     catalogClient: catalogClient as unknown as CatalogApi,
   });
 
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
+  const mockContext = createMockActionContext({
     secrets: { backstageToken: 'secret' },
-  };
+  });
+
   beforeEach(() => {
     jest.resetAllMocks();
   });

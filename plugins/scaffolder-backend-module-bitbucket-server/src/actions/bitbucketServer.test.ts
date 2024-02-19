@@ -60,8 +60,10 @@ describe('publish:bitbucketServer', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createPublishBitbucketServerAction({ integrations, config });
   const mockContext = createMockActionContext({
-    repoUrl: 'hosted.bitbucket.com?project=project&repo=repo',
-    repoVisibility: 'private' as const,
+    input: {
+      repoUrl: 'hosted.bitbucket.com?project=project&repo=repo',
+      repoVisibility: 'private' as const,
+    },
   });
   const server = setupServer();
   setupRequestMockHandlers(server);

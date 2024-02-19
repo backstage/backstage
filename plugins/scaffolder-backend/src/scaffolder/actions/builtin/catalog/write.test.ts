@@ -20,9 +20,8 @@ jest.mock('fs-extra');
 
 const fsMock = fs as jest.Mocked<typeof fs>;
 
-import { PassThrough } from 'stream';
 import os from 'os';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/scaffolder-test-utils';
 import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { createCatalogWriteAction } from './write';
 import { resolve as resolvePath } from 'path';
@@ -31,16 +30,12 @@ import * as yaml from 'yaml';
 describe('catalog:write', () => {
   const action = createCatalogWriteAction();
 
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
-
   beforeEach(() => {
     jest.resetAllMocks();
+  });
+
+  const mockContext = createMockActionContext({
+    workspacePath: os.tmpdir(),
   });
 
   it('should write the catalog-info.yml in the workspace', async () => {

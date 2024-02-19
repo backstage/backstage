@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/scaffolder-test-utils';
 import { createGitlabIssueAction, IssueType } from './createGitlabIssueAction';
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
@@ -60,18 +59,14 @@ describe('gitlab:issues:create', () => {
   const action = createGitlabIssueAction({ integrations });
 
   it('should return a Gitlab issue when called with minimal input params', async () => {
-    const mockContext = {
+    const mockContext = createMockActionContext({
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         projectId: 123,
         title: 'Computer banks to rule the world',
       },
       workspacePath: 'seen2much',
-      logger: getVoidLogger(),
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn(),
-    };
+    });
 
     mockGitlabClient.Issues.create.mockResolvedValue({
       id: 42,
@@ -109,7 +104,7 @@ describe('gitlab:issues:create', () => {
   });
 
   it('should return a Gitlab issue when called with oAuth Token', async () => {
-    const mockContext = {
+    const mockContext = createMockActionContext({
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         projectId: 123,
@@ -117,11 +112,7 @@ describe('gitlab:issues:create', () => {
         token: 'myAwesomeToken',
       },
       workspacePath: 'seen2much',
-      logger: getVoidLogger(),
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn(),
-    };
+    });
 
     mockGitlabClient.Issues.create.mockResolvedValue({
       id: 42,
@@ -159,7 +150,7 @@ describe('gitlab:issues:create', () => {
   });
 
   it('should return a Gitlab issue when called with several input params', async () => {
-    const mockContext = {
+    const mockContext = createMockActionContext({
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         projectId: 123,
@@ -173,11 +164,7 @@ describe('gitlab:issues:create', () => {
         labels: 'operation:mindcrime',
       },
       workspacePath: 'seen2much',
-      logger: getVoidLogger(),
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn(),
-    };
+    });
 
     mockGitlabClient.Issues.create.mockResolvedValue({
       id: 42,

@@ -19,14 +19,13 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
   return { ...actual, fetchContents: jest.fn() };
 });
 
-import os from 'os';
 import { resolve as resolvePath } from 'path';
-import { getVoidLogger, UrlReader } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
 import { createFetchPlainAction } from './plain';
-import { PassThrough } from 'stream';
 
 describe('fetch:plain', () => {
   const integrations = ScmIntegrations.fromConfig(
@@ -47,13 +46,7 @@ describe('fetch:plain', () => {
   });
 
   const action = createFetchPlainAction({ integrations, reader });
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext();
 
   it('should disallow a target path outside working directory', async () => {
     await expect(
