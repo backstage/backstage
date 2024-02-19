@@ -16,7 +16,6 @@
 
 import {
   createOAuthAuthenticator,
-  OAuthAuthenticatorResult,
   PassportOAuthAuthenticatorHelper,
   PassportOAuthDoneCallback,
   PassportProfile,
