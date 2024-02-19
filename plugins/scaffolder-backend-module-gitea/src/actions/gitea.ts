@@ -80,7 +80,9 @@ const checkGiteaOrg = async (
       getOptions,
     );
   } catch (e) {
-    throw new Error(`Unable to get the Organization: ${owner}, ${e}`);
+    throw new Error(
+      `Unable to get the Organization: ${owner}; Error cause: ${e.cause.message}`,
+    );
   }
   if (response.status !== 200) {
     throw new Error(
@@ -178,6 +180,9 @@ async function checkAvailabilityGiteaRepository(
     if (response.status !== 200) {
       // Repository is not yet available/accessible ...
       await sleep(1000);
+    } else {
+      // Gitea repository exists !
+      break;
     }
   }
 }
