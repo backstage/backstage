@@ -26,16 +26,8 @@ import { union } from 'lodash';
 
 /** @public */
 export const microsoftAuthenticator = createOAuthAuthenticator({
-  defaultProfileTransform: (
-    result: OAuthAuthenticatorResult<PassportProfile>,
-    context,
-  ) => {
-    result.fullProfile = result.fullProfile ?? {};
-    return PassportOAuthAuthenticatorHelper.defaultProfileTransform(
-      result,
-      context,
-    );
-  },
+  defaultProfileTransform:
+    PassportOAuthAuthenticatorHelper.defaultProfileTransform,
   initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
