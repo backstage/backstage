@@ -192,6 +192,36 @@ describe('MiddlewareFactory', () => {
       );
     });
 
+    it('should filter out internal errors', async () => {
+      const app = express();
+
+      class DatabaseError extends Error {}
+      const thrownError = new DatabaseError('some error');
+
+      app.use('/breaks', () => {
+        throw thrownError;
+      });
+      app.use(middleware.error());
+
+      await request(app).get('/breaks');
+
+      expect(childLogger.error).toHaveBeenCalledTimes(2);
+      expect(childLogger.error).toHaveBeenCalledWith(
+        'Request failed with status 500',
+        expect.objectContaining({
+          message: expect.stringMatching(
+            /^An internal error occurred logId=[0-9a-f]+$/,
+          ),
+        }),
+      );
+      expect(childLogger.error).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /^Filtered internal error with logId=[0-9a-f]+ from response$/,
+        ),
+        thrownError,
+      );
+    });
+
     it('does not log 400 errors', async () => {
       const app = express();
 
