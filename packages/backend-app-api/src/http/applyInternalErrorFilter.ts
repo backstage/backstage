@@ -20,10 +20,9 @@ import { randomBytes } from 'crypto';
 
 function handleBadError(error: Error, logger: LoggerService) {
   const logId = randomBytes(10).toString('hex');
-  logger.error(
-    `Filtered internal error with logId=${logId} from response`,
-    error,
-  );
+  logger
+    .child({ logId })
+    .error(`Filtered internal error with logId=${logId} from response`, error);
   const newError = new Error(`An internal error occurred logId=${logId}`);
   delete newError.stack; // Trim the stack since it's not particularly useful
   return newError;

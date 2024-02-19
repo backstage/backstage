@@ -195,6 +195,11 @@ describe('MiddlewareFactory', () => {
     it('should filter out internal errors', async () => {
       const app = express();
 
+      const grandChildLogger = {
+        error: jest.fn(),
+      };
+      childLogger.child.mockReturnValue(grandChildLogger);
+
       class DatabaseError extends Error {}
       const thrownError = new DatabaseError('some error');
 
@@ -205,18 +210,20 @@ describe('MiddlewareFactory', () => {
 
       await request(app).get('/breaks');
 
-      expect(childLogger.error).toHaveBeenCalledTimes(2);
+      const [{ logId }] = childLogger.child.mock.calls[0];
+
+      expect(logId).toMatch(/^[0-9a-f]+$/);
       expect(childLogger.error).toHaveBeenCalledWith(
         'Request failed with status 500',
         expect.objectContaining({
           message: expect.stringMatching(
-            /^An internal error occurred logId=[0-9a-f]+$/,
+            `An internal error occurred logId=${logId}`,
           ),
         }),
       );
-      expect(childLogger.error).toHaveBeenCalledWith(
+      expect(grandChildLogger.error).toHaveBeenCalledWith(
         expect.stringMatching(
-          /^Filtered internal error with logId=[0-9a-f]+ from response$/,
+          `Filtered internal error with logId=${logId} from response`,
         ),
         thrownError,
       );
