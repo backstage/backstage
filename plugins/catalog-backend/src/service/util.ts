@@ -50,7 +50,7 @@ export async function requireRequestBody(req: Request): Promise<unknown> {
 export const locationInput = z
   .object({
     type: z.string(),
-    target: z.string(),
+    target: z.string().url(),
     presence: z.literal('required').or(z.literal('optional')).optional(),
   })
   .strict(); // no unknown keys;

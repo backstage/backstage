@@ -298,7 +298,8 @@ export async function createRouter(
         location: locationInput,
         catalogFilename: z.string().optional(),
       });
-      const output = await locationAnalyzer.analyzeLocation(schema.parse(body));
+      const parsedBody = schema.parse(body);
+      const output = await locationAnalyzer.analyzeLocation(parsedBody);
       res.status(200).json(output);
     });
   }
