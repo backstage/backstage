@@ -58,8 +58,10 @@ async function fuzz(opts: OptionValues) {
   args.push('--workers', opts.workers);
 
   if (opts.useGuest) {
+    // TODO: @sennyeya This should leverage the `guest-provider` if available.
     args.push('--header', `Authorization: Basic guest`);
   } else {
+    // This is just here to prevent any "Invalid JWT" errors during execution.
     args.push('--header', `Authorization: Basic test`);
   }
 
