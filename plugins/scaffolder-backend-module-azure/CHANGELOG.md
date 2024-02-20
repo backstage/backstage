@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-azure
 
+## 0.1.2
+
+### Patch Changes
+
+- e9a5228: Exporting a default module for the new Backend System
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/integration@1.9.0
+  - @backstage/plugin-scaffolder-node@0.3.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.2-next.3
 
 ### Patch Changes

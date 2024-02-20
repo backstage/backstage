@@ -1,5 +1,24 @@
 # @backstage/plugin-explore
 
+## 0.4.16
+
+### Patch Changes
+
+- 07e7d12: Fix wording in API reference
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 796d427: Use the EntityDisplayName component for rendering Group nodes
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/plugin-search-react@1.7.6
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-explore-react@0.0.36
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.4.16-next.3
 
 ### Patch Changes

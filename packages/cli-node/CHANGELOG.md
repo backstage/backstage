@@ -1,5 +1,17 @@
 # @backstage/cli-node
 
+## 0.2.3
+
+### Patch Changes
+
+- d557d47: Added `repository` field to `BackstagePackageJson` type.
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.2.3-next.0
 
 ### Patch Changes

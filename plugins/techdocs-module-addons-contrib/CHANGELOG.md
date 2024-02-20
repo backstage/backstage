@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.5
+
+### Patch Changes
+
+- ab9c9eb: Fixed the value label text color in dark mode for the TextSize addon.
+- 09cedb9: Updated dependency `@react-hookz/web` to `^24.0.0`.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- 131ffdc: Fix position of the ReportIssue component when is displaying at the top of the container.
+- Updated dependencies
+  - @backstage/core-components@0.14.0
+  - @backstage/plugin-techdocs-react@1.1.16
+  - @backstage/integration@1.9.0
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/integration-react@1.1.24
+
 ## 1.1.5-next.3
 
 ### Patch Changes

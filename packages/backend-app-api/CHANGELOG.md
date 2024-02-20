@@ -1,5 +1,28 @@
 # @backstage/backend-app-api
 
+## 0.5.11
+
+### Patch Changes
+
+- e0c18ef: Include the extension point ID and the module ID in the backend init error message.
+- 7ae5704: Updated the default error handling middleware to filter out certain known error types that should never be returned in responses. The errors are instead logged along with a correlation ID, which is also returned in the response. Initially only PostgreSQL protocol errors from the `pg-protocol` package are filtered out.
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 54ad8e1: Allow the `createConfigSecretEnumerator` to take an optional `schema` argument with an already-loaded global configuration schema.
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/cli-node@0.2.3
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/backend-tasks@0.5.15
+  - @backstage/config-loader@1.6.2
+  - @backstage/plugin-permission-node@0.7.21
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.5.11-next.3
 
 ### Patch Changes

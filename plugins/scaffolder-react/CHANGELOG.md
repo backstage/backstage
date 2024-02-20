@@ -1,5 +1,42 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.8.0
+
+### Minor Changes
+
+- c56f1a2: Remove the old legacy exports from `/alpha`
+- 11b9a08: Introduced the first version of recoverable tasks.
+- b07ec70: Use more distinguishable icons for link (`Link`) and text output (`Description`).
+
+### Patch Changes
+
+- 3f60ad5: fix for: converting circular structure to JSON error
+- 0b0c6b6: Allow defining default output text to be shown
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 31f0a0a: Added `ScaffolderPageContextMenu` to `ActionsPage`, `ListTaskPage`, and `TemplateEditorPage` so that you can more easily navigate between these pages
+- 09cedb9: Updated dependency `@react-hookz/web` to `^24.0.0`.
+- e6f0831: Updated dependency `@rjsf/utils` to `5.17.0`.
+  Updated dependency `@rjsf/core` to `5.17.0`.
+  Updated dependency `@rjsf/material-ui` to `5.17.0`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.17.0`.
+- 6a74ffd: Updated dependency `@rjsf/utils` to `5.16.1`.
+  Updated dependency `@rjsf/core` to `5.16.1`.
+  Updated dependency `@rjsf/material-ui` to `5.16.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.16.1`.
+- 3dff4b0: Remove unused deps
+- 82affc7: Fix issue where `ui:schema` was replaced with an empty object if `dependencies` is defined
+- 2985186: Fix bug that erroneously caused a separator or a 0 to render in the TemplateCard for Templates with empty links
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/theme@0.5.1
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-scaffolder-common@1.5.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 1.8.0-next.3
 
 ### Patch Changes
