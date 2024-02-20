@@ -1,5 +1,24 @@
 # @backstage/backend-test-utils
 
+## 0.3.0
+
+### Minor Changes
+
+- e85aa98: drop databases after unit tests if the database instance is not running in docker
+
+### Patch Changes
+
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/backend-app-api@0.5.11
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.3.0-next.3
 
 ### Patch Changes

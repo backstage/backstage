@@ -1,5 +1,25 @@
 # @backstage/test-utils
 
+## 1.5.0
+
+### Minor Changes
+
+- bb40898: Added `components` option to `TestAppOptions`, which will be forwarded as the `components` option to `createApp`.
+
+### Patch Changes
+
+- 07e7d12: Fix wording in API reference
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 7da67ce: Change `defaultScopes` for Bitbucket auth from invalid `team` to `account`.
+- Updated dependencies
+  - @backstage/core-app-api@1.12.0
+  - @backstage/theme@0.5.1
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/plugin-permission-react@0.4.20
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 1.5.0-next.3
 
 ### Patch Changes

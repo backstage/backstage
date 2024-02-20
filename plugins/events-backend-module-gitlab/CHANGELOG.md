@@ -1,5 +1,15 @@
 # @backstage/plugin-events-backend-module-gitlab
 
+## 0.1.20
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/config@1.1.1
+  - @backstage/plugin-events-node@0.2.19
+
 ## 0.1.20-next.3
 
 ### Patch Changes

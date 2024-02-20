@@ -1,5 +1,18 @@
 # @backstage/plugin-dynatrace
 
+## 9.0.0
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 0930c9e: Fixed Dynatrace plugin proxy configuration
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/core-plugin-api@1.9.0
+
 ## 9.0.0-next.3
 
 ### Patch Changes
