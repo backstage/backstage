@@ -38,10 +38,6 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
     readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
     readonly 'emptyState.missingAnnotation.readMore': 'Read more';
-    readonly 'emptyState.missingAnnotation.descriptionPrefix_one': 'The annotation ';
-    readonly 'emptyState.missingAnnotation.descriptionPrefix_other': 'The annotations ';
-    readonly 'emptyState.missingAnnotation.descriptionSuffix_one': ' is missing. You need to add the annotation to your component if you want to enable this tool.';
-    readonly 'emptyState.missingAnnotation.descriptionSuffix_other': ' are missing. You need to add the annotations to your component if you want to enable this tool.';
     readonly 'supportConfig.default.title': 'Support Not Configured';
     readonly 'supportConfig.default.linkTitle': 'Add `app.support` config key';
     readonly 'errorBoundary.title': 'Please contact {{slackChannel}} for help.';
@@ -54,10 +50,6 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'alertDisplay.message_one': '({{ count }} older message)';
     readonly 'alertDisplay.message_other': '({{ count }} older messages)';
     readonly 'autoLogout.stillTherePrompt.title': 'Logging out due to inactivity';
-    readonly 'autoLogout.stillTherePrompt.description': 'You are about to be disconnected in';
-    readonly 'autoLogout.stillTherePrompt.second_one': 'second';
-    readonly 'autoLogout.stillTherePrompt.second_other': 'seconds';
-    readonly 'autoLogout.stillTherePrompt.descriptionSuffix': 'Are you still there?';
     readonly 'autoLogout.stillTherePrompt.buttonText': "Yes! Don't log me out";
     readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';
   }

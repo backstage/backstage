@@ -64,18 +64,18 @@ export const StillTherePrompt = (props: StillTherePromptProps) => {
     remainingTime - promptTimeoutMillis / 1000,
     0,
   );
+  const seconds = timeTillPrompt > 1 ? 'seconds' : 'second';
 
   return (
     <Dialog open={open} data-testid="inactivity-prompt-dialog">
       <DialogTitle>{t('autoLogout.stillTherePrompt.title')}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {t('autoLogout.stillTherePrompt.description')}{' '}
+          You are about to be disconnected in{' '}
           <b>
-            {Math.ceil(remainingTime / 1000)}{' '}
-            {t('autoLogout.stillTherePrompt.second', { count: timeTillPrompt })}
+            {Math.ceil(remainingTime / 1000)} {seconds}
           </b>
-          . {t('autoLogout.stillTherePrompt.descriptionSuffix')}
+          . Are you still there?
         </DialogContentText>
       </DialogContent>
       <DialogActions>

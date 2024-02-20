@@ -63,12 +63,6 @@ export const coreComponentsTranslationRef = createTranslationRef({
         actionTitle:
           'Add the annotation to your component YAML as shown in the highlighted example below:',
         readMore: 'Read more',
-        descriptionPrefix_one: 'The annotation ',
-        descriptionPrefix_other: 'The annotations ',
-        descriptionSuffix_one:
-          ' is missing. You need to add the annotation to your component if you want to enable this tool.',
-        descriptionSuffix_other:
-          ' are missing. You need to add the annotations to your component if you want to enable this tool.',
       },
     },
     supportConfig: {
@@ -106,10 +100,6 @@ export const coreComponentsTranslationRef = createTranslationRef({
     autoLogout: {
       stillTherePrompt: {
         title: 'Logging out due to inactivity',
-        description: 'You are about to be disconnected in',
-        second_one: 'second',
-        second_other: 'seconds',
-        descriptionSuffix: 'Are you still there?',
         buttonText: "Yes! Don't log me out",
       },
     },

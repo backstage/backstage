@@ -79,12 +79,10 @@ function generateComponentYaml(annotations: string[]) {
 }
 
 function useGenerateDescription(annotations: string[]) {
-  const { t } = useTranslationRef(coreComponentsTranslationRef);
+  const isSingular = annotations.length <= 1;
   return (
     <>
-      {t('emptyState.missingAnnotation.descriptionPrefix', {
-        count: annotations.length,
-      })}
+      The {isSingular ? 'annotation' : 'annotations'}{' '}
       {annotations
         .map(ann => <code>{ann}</code>)
         .reduce((prev, curr) => (
@@ -92,9 +90,9 @@ function useGenerateDescription(annotations: string[]) {
             {prev}, {curr}
           </>
         ))}{' '}
-      {t('emptyState.missingAnnotation.descriptionSuffix', {
-        count: annotations.length,
-      })}
+      {isSingular ? 'is' : 'are'} missing. You need to add the{' '}
+      {isSingular ? 'annotation' : 'annotations'} to your component if you want
+      to enable this tool.
     </>
   );
 }
