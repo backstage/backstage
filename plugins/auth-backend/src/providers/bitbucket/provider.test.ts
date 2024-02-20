@@ -16,7 +16,7 @@
 
 import { BitbucketAuthProvider, BitbucketOAuthResult } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
-import { AuthResolverContext } from '../types';
+import { AuthResolverContext } from '@backstage/plugin-auth-node';
 
 const mockFrameHandler = jest.spyOn(
   helpers,

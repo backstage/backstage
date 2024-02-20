@@ -18,10 +18,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import {
-  defaultAuthProviderFactories,
-  AuthProviderFactory,
-} from '../providers';
+import { defaultAuthProviderFactories } from '../providers';
 import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
@@ -41,6 +38,7 @@ import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { Config } from '@backstage/config';
+import { AuthProviderFactory } from '@backstage/plugin-auth-node';
 
 /** @public */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };

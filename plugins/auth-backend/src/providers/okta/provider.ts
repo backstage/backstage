@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import { AuthHandler, SignInResolver } from '../types';
+import { AuthHandler } from '../types';
 import { OAuthResult } from '../../lib/oauth';
 
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { createOAuthProviderFactory } from '@backstage/plugin-auth-node';
+import {
+  SignInResolver,
+  createOAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
 import {
   adaptLegacyOAuthHandler,
   adaptLegacyOAuthSignInResolver,
