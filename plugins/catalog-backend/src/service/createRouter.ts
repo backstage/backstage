@@ -23,7 +23,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError, serializeError } from '@backstage/errors';
+import { InputError, NotFoundError, serializeError } from '@backstage/errors';
 import express from 'express';
 import { Logger } from 'winston';
 import yn from 'yn';
@@ -299,8 +299,19 @@ export async function createRouter(
         catalogFilename: z.string().optional(),
       });
       const parsedBody = schema.parse(body);
-      const output = await locationAnalyzer.analyzeLocation(parsedBody);
-      res.status(200).json(output);
+      try {
+        const output = await locationAnalyzer.analyzeLocation(parsedBody);
+        res.status(200).json(output);
+      } catch (err) {
+        if (
+          // Catch errors from parse-url library.
+          err.name === 'Error' &&
+          'subject_url' in err
+        ) {
+          throw new InputError('The given location.target is not a URL');
+        }
+        throw err;
+      }
     });
   }
 
