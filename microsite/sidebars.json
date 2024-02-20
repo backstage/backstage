@@ -490,6 +490,7 @@
       "tutorials/using-backstage-proxy-within-plugin",
       "tutorials/yarn-migration",
       "tutorials/migrate-to-mui5",
+      "tutorials/auth-service-migration",
       "tutorials/setup-opentelemetry"
     ],
     "Architecture Decision Records (ADRs)": [
