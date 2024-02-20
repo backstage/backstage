@@ -40,7 +40,6 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
     "winston": "^3.2.1"
   },

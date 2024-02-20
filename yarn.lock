@@ -9887,7 +9887,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@testing-library/jest-dom": ^6.0.0
     "@types/react": "*"
