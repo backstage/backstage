@@ -57,6 +57,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     engine: indexBuilder.getSearchEngine(),
     types: indexBuilder.getDocumentTypes(),
+    discovery,
     permissions,
     config,
     logger,

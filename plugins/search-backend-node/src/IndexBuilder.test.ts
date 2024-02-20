@@ -19,11 +19,10 @@ import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
 import {
   DocumentCollatorFactory,
   DocumentDecoratorFactory,
-  SearchEngine,
 } from '@backstage/plugin-search-common';
 import { Readable, Transform } from 'stream';
 import { IndexBuilder } from './IndexBuilder';
-import { LunrSearchEngine } from './index';
+import { LunrSearchEngine, SearchEngine } from './index';
 
 class TestDocumentCollatorFactory implements DocumentCollatorFactory {
   readonly type: string = 'anything';

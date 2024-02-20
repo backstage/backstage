@@ -42,12 +42,12 @@ export type IndexableResult = Result<IndexableDocument>;
 // @public (undocumented)
 export type IndexableResultSet = ResultSet<IndexableDocument>;
 
-// @public
+// @public @deprecated
 export type QueryRequestOptions = {
   token?: string;
 };
 
-// @public
+// @public @deprecated
 export type QueryTranslator = (query: SearchQuery) => unknown;
 
 // @public (undocumented)
@@ -87,7 +87,7 @@ export interface SearchDocument {
   title: string;
 }
 
-// @public
+// @public @deprecated
 export interface SearchEngine {
   getIndexer(type: string): Promise<Writable>;
   query(

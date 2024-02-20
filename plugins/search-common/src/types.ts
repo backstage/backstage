@@ -16,7 +16,7 @@
 
 import { Permission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
-import { Readable, Transform, Writable } from 'stream';
+import { Readable, Transform } from 'stream';
 
 /**
  * @public
@@ -205,51 +205,4 @@ export interface DocumentDecoratorFactory {
    * Instantiates and resolves a document decorator.
    */
   getDecorator(): Promise<Transform>;
-}
-
-/**
- * A type of function responsible for translating an abstract search query into
- * a concrete query relevant to a particular search engine.
- * @public
- */
-export type QueryTranslator = (query: SearchQuery) => unknown;
-
-/**
- * Options when querying a search engine.
- * @public
- */
-export type QueryRequestOptions = {
-  token?: string;
-};
-
-/**
- * Interface that must be implemented by specific search engines, responsible
- * for performing indexing and querying and translating abstract queries into
- * concrete, search engine-specific queries.
- * @public
- */
-export interface SearchEngine {
-  /**
-   * Override the default translator provided by the SearchEngine.
-   */
-  setTranslator(translator: QueryTranslator): void;
-
-  /**
-   * Factory method for getting a search engine indexer for a given document
-   * type.
-   *
-   * @param type - The type or name of the document set for which an indexer
-   *   should be retrieved. This corresponds to the `type` property on the
-   *   document collator/decorator factories and will most often be used to
-   *   identify an index or group to which documents should be written.
-   */
-  getIndexer(type: string): Promise<Writable>;
-
-  /**
-   * Perform a search query against the SearchEngine.
-   */
-  query(
-    query: SearchQuery,
-    options?: QueryRequestOptions,
-  ): Promise<IndexableResultSet>;
 }

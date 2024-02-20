@@ -60,6 +60,7 @@ export default async function createPlugin(
     engine: indexBuilder.getSearchEngine(),
     types: indexBuilder.getDocumentTypes(),
     permissions: env.permissions,
+    discovery: env.discovery,
     config: env.config,
     logger: env.logger,
   });
