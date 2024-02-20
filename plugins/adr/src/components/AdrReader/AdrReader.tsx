@@ -44,22 +44,11 @@ export const AdrReader = (props: {
   const { entity } = useEntity();
   const scmIntegrations = useApi(scmIntegrationsApiRef);
   const adrApi = useApi(adrApiRef);
-  const adrLocationUrl = getAdrLocationUrl(entity, scmIntegrations);
-  let url = `${adrLocationUrl.replace(/\/$/, '')}`;
-  const adrUrlPath = url.match(/path=\/.*\&/);
-  if (adrUrlPath) {
-    // Azure DevOps SCM handle the path in URL Params
-    const adrPath = adrUrlPath![0].replace(/\&$/, '');
-    const regex = new RegExp(`${adrPath}`);
-    url = url.replace(regex, `${adrPath}/${adr}}`);
-  } else {
-    // Other SCM tools
-    url = `${url}/${adr}`;
-  }
+  const adrLocationUrl = getAdrLocationUrl(entity, scmIntegrations, adr);
 
   const { value, loading, error } = useAsync(
-    async () => adrApi.readAdr(url),
-    [url],
+    async () => adrApi.readAdr(adrLocationUrl),
+    [adrLocationUrl],
   );
 
   const adrContent = useMemo(() => {

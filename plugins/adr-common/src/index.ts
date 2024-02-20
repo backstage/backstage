@@ -57,9 +57,17 @@ export const isAdrAvailable = (entity: Entity) =>
 export const getAdrLocationUrl = (
   entity: Entity,
   scmIntegration: ScmIntegrationRegistry,
+  adrFilePath?: String,
 ) => {
   if (!isAdrAvailable(entity)) {
     throw new Error(`Missing ADR annotation: ${ANNOTATION_ADR_LOCATION}`);
+  }
+
+  if (adrFilePath) {
+    return scmIntegration.resolveUrl({
+      url: `${getAdrLocationDir(entity)!.replace(/\/$/, '')}/${adrFilePath}`,
+      base: getEntitySourceLocation(entity).target,
+    });
   }
 
   return scmIntegration.resolveUrl({
