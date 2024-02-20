@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  EntityKindPicker,
-  EntityTypePicker,
-  UserListPicker,
-  EntityOwnerPicker,
-  EntityLifecyclePicker,
-  EntityTagPicker,
-  EntityProcessingStatusPicker,
-  EntityNamespacePicker,
-  UserListFilterKind,
-  EntityOwnerPickerProps,
-} from '@backstage/plugin-catalog-react';
 import React from 'react';
+import { UserListFilterKind } from '../../types';
+import { EntityKindPicker } from '../EntityKindPicker';
+import { EntityLifecyclePicker } from '../EntityLifecyclePicker';
+import { EntityNamespacePicker } from '../EntityNamespacePicker';
+import {
+  EntityOwnerPickerProps,
+  EntityOwnerPicker,
+} from '../EntityOwnerPicker';
+import { EntityProcessingStatusPicker } from '../EntityProcessingStatusPicker';
+import { EntityTagPicker } from '../EntityTagPicker';
+import { EntityTypePicker } from '../EntityTypePicker';
+import { UserListPicker } from '../UserListPicker';
 
 /**
  * Props for default filters.
