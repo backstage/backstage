@@ -48,7 +48,7 @@ async function fuzz(opts: OptionValues) {
   if (opts.debug) {
     args.push(
       '--cassette-path',
-      cliPaths.resolveTargetRoot(join('.cassettes', `${pluginId}`)),
+      cliPaths.resolveTargetRoot(join('.cassettes', `${pluginId}.yml`)),
     );
   }
 
@@ -75,13 +75,11 @@ async function fuzz(opts: OptionValues) {
       'run',
       '--checks',
       'all',
-      '--data-generation-method',
-      'all',
       ...args,
       `${config.getString('backend.baseUrl')}/api/${pluginId}/openapi.json`,
     ],
     {
-      stdio: ['ignore', 'inherit', 'inherit'],
+      stdio: ['ignore', 'inherit', 'ignore'],
     },
   );
 }

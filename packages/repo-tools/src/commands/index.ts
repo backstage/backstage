@@ -67,7 +67,10 @@ function registerPackageCommand(program: Command) {
     )
     .option('--count <count>', 'Number of requests to send')
     .option('--workers <workers>', 'Number of workers to use', '2')
-    .option('--debug', 'Enable debug mode')
+    .option(
+      '--debug',
+      `Enable debug mode, which will save cassettes to '.cassettes/{pluginId}.yml'`,
+    )
     .option(
       '--exclude-checks <excludeChecks>',
       'Exclude checks from schemathesis run',
