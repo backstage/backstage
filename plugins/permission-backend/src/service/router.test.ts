@@ -26,6 +26,7 @@ import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
+import { CacheService } from '@backstage/backend-plugin-api';
 
 const mockApplyConditions: jest.MockedFunction<
   InstanceType<typeof PermissionIntegrationClient>['applyConditions']
@@ -803,6 +804,147 @@ describe('createRouter', () => {
           }),
         }),
       );
+    });
+  });
+});
+
+describe('createRouter with cache', () => {
+  let app: express.Express;
+
+  const mockCacheGet = jest.fn();
+  const mockCacheSet = jest.fn();
+
+  const mockCacheService = {
+    get: mockCacheGet,
+    set: mockCacheSet,
+  };
+
+  beforeAll(async () => {
+    const router = await createRouter({
+      config: new ConfigReader({
+        permission: { enabled: true, cache: { enabled: true, ttl: 10000 } },
+      }),
+      logger: getVoidLogger(),
+      cache: mockCacheService as unknown as CacheService,
+      discovery: {
+        getBaseUrl: jest.fn(),
+        getExternalBaseUrl: jest.fn(),
+      },
+      identity: {
+        getIdentity: jest.fn(() => {
+          return Promise.resolve({
+            identity: {
+              type: 'user',
+              userEntityRef: 'test-user',
+              ownershipEntityRefs: ['blah'],
+            },
+            token: '1234',
+          });
+        }),
+      },
+      policy,
+    });
+
+    app = express().use(router);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('stores the permission result', async () => {
+    mockCacheGet.mockResolvedValue(undefined);
+    policy.handle.mockResolvedValueOnce({
+      result: AuthorizeResult.CONDITIONAL,
+      pluginId: 'test-plugin',
+      resourceType: 'test-resource-1',
+      conditions: { rule: 'test-rule', params: ['abc'] },
+    });
+
+    const response = await request(app)
+      .post('/authorize')
+      .send({
+        items: [
+          {
+            id: '123',
+            permission: {
+              type: 'resource',
+              name: 'test.permission',
+              resourceType: 'test-resource-1',
+              attributes: {},
+            },
+          },
+        ],
+      });
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toEqual({
+      items: [
+        {
+          id: '123',
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'test-plugin',
+          resourceType: 'test-resource-1',
+          conditions: { rule: 'test-rule', params: ['abc'] },
+        },
+      ],
+    });
+
+    expect(mockCacheSet).toHaveBeenCalledWith(
+      'test-user-eyJwZXJtaXNzaW9uIjp7InR5cGUiOiJyZXNvdXJjZSIsIm5hbWUiOiJ0ZXN0LnBlcm1pc3Npb24iLCJhdHRyaWJ1dGVzIjp7fSwicmVzb3VyY2VUeXBlIjoidGVzdC1yZXNvdXJjZS0xIn19',
+      JSON.stringify({
+        id: '123',
+        result: AuthorizeResult.CONDITIONAL,
+        pluginId: 'test-plugin',
+        resourceType: 'test-resource-1',
+        conditions: { rule: 'test-rule', params: ['abc'] },
+      }),
+      { ttl: 10000 },
+    );
+  });
+
+  it('uses cached permission result', async () => {
+    mockCacheGet.mockResolvedValue(
+      JSON.stringify({
+        id: '123',
+        result: AuthorizeResult.CONDITIONAL,
+        pluginId: 'test-plugin',
+        resourceType: 'test-resource-1',
+        conditions: { rule: 'test-rule', params: ['abc'] },
+      }),
+    );
+
+    const response = await request(app)
+      .post('/authorize')
+      .send({
+        items: [
+          {
+            id: '123',
+            permission: {
+              type: 'resource',
+              name: 'test.permission',
+              resourceType: 'test-resource-1',
+              attributes: {},
+            },
+          },
+        ],
+      });
+
+    expect(response.status).toEqual(200);
+    expect(policy.handle).not.toHaveBeenCalled();
+    expect(mockCacheGet).toHaveBeenCalledWith(
+      'test-user-eyJwZXJtaXNzaW9uIjp7InR5cGUiOiJyZXNvdXJjZSIsIm5hbWUiOiJ0ZXN0LnBlcm1pc3Npb24iLCJhdHRyaWJ1dGVzIjp7fSwicmVzb3VyY2VUeXBlIjoidGVzdC1yZXNvdXJjZS0xIn19',
+    );
+    expect(response.body).toEqual({
+      items: [
+        {
+          id: '123',
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'test-plugin',
+          resourceType: 'test-resource-1',
+          conditions: { rule: 'test-rule', params: ['abc'] },
+        },
+      ],
     });
   });
 });

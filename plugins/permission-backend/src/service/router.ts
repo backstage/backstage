@@ -29,13 +29,14 @@ import {
 } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
-  EvaluatePermissionResponse,
   EvaluatePermissionRequest,
-  IdentifiedPermissionMessage,
   EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponse,
   EvaluatePermissionResponseBatch,
+  IdentifiedPermissionMessage,
   isResourcePermission,
   PermissionAttributes,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -46,6 +47,7 @@ import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 import { memoize } from 'lodash';
 import DataLoader from 'dataloader';
 import { Config } from '@backstage/config';
+import { CacheService } from '@backstage/backend-plugin-api';
 
 const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
   action: z
@@ -97,15 +99,72 @@ export interface RouterOptions {
   policy: PermissionPolicy;
   identity: IdentityApi;
   config: Config;
+  cache?: CacheService;
 }
 
-const handleRequest = async (
-  requests: IdentifiedPermissionMessage<EvaluatePermissionRequest>[],
-  user: BackstageIdentityResponse | undefined,
-  policy: PermissionPolicy,
-  permissionIntegrationClient: PermissionIntegrationClient,
-  authHeader?: string,
-): Promise<IdentifiedPermissionMessage<EvaluatePermissionResponse>[]> => {
+const convertDecision = (options: {
+  id: string;
+  request: EvaluatePermissionRequest;
+  decision: PolicyDecision;
+  applyConditionsLoaderFor: Function;
+  resourceRef?: string;
+}): IdentifiedPermissionMessage<EvaluatePermissionResponse> => {
+  const { id, request, decision, applyConditionsLoaderFor, resourceRef } =
+    options;
+  if (decision.result !== AuthorizeResult.CONDITIONAL) {
+    return {
+      id,
+      ...decision,
+    };
+  }
+
+  if (!isResourcePermission(request.permission)) {
+    throw new Error(
+      `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
+    );
+  }
+
+  if (decision.resourceType !== request.permission.resourceType) {
+    throw new Error(
+      `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
+    );
+  }
+
+  if (!resourceRef) {
+    return {
+      id,
+      ...decision,
+    };
+  }
+
+  return applyConditionsLoaderFor(decision.pluginId).load({
+    id,
+    resourceRef,
+    ...decision,
+  });
+};
+
+const handleRequest = async (options: {
+  requests: IdentifiedPermissionMessage<EvaluatePermissionRequest>[];
+  user: BackstageIdentityResponse | undefined;
+  policy: PermissionPolicy;
+  permissionIntegrationClient: PermissionIntegrationClient;
+  cacheEnabled?: boolean;
+  cacheTtl: number;
+  cache?: CacheService;
+  authHeader?: string;
+}): Promise<IdentifiedPermissionMessage<EvaluatePermissionResponse>[]> => {
+  const {
+    requests,
+    user,
+    policy,
+    permissionIntegrationClient,
+    cacheEnabled,
+    cacheTtl,
+    cache,
+    authHeader,
+  } = options;
+
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
       ApplyConditionsRequestEntry,
@@ -116,41 +175,41 @@ const handleRequest = async (
   });
 
   return Promise.all(
-    requests.map(({ id, resourceRef, ...request }) =>
-      policy.handle(request, user).then(decision => {
-        if (decision.result !== AuthorizeResult.CONDITIONAL) {
-          return {
-            id,
-            ...decision,
-          };
-        }
+    requests.map(async ({ id, resourceRef, ...request }) => {
+      const cacheKey = cacheEnabled
+        ? `${user?.identity.userEntityRef}-${Buffer.from(
+            JSON.stringify(request),
+          ).toString('base64')}`
+        : '';
 
-        if (!isResourcePermission(request.permission)) {
-          throw new Error(
-            `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
-          );
+      if (cacheEnabled && cache) {
+        const cachedResponse = await cache.get<string>(cacheKey);
+        if (cachedResponse) {
+          return JSON.parse(cachedResponse);
         }
+      }
 
-        if (decision.resourceType !== request.permission.resourceType) {
-          throw new Error(
-            `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
-          );
-        }
+      const decision = await policy.handle(request, user);
+      const resp = convertDecision({
+        id,
+        request,
+        decision,
+        applyConditionsLoaderFor,
+        resourceRef,
+      });
 
-        if (!resourceRef) {
-          return {
-            id,
-            ...decision,
-          };
-        }
-
-        return applyConditionsLoaderFor(decision.pluginId).load({
-          id,
-          resourceRef,
-          ...decision,
+      if (cacheEnabled && cache) {
+        const ttl =
+          user?.expiresInSeconds !== undefined
+            ? user.expiresInSeconds * 1000
+            : cacheTtl;
+        await cache.set(cacheKey, JSON.stringify(resp), {
+          ttl: Math.min(ttl, cacheTtl),
         });
-      }),
-    ),
+      }
+
+      return resp;
+    }),
   );
 };
 
@@ -163,7 +222,12 @@ const handleRequest = async (
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { policy, discovery, identity, config, logger } = options;
+  const { policy, discovery, identity, config, logger, cache } = options;
+
+  const cacheEnabled =
+    (config.getOptionalBoolean('permission.cache.enabled') ?? false) &&
+    cache !== undefined;
+  const cacheTtl = config.getOptionalNumber('permission.cache.ttl') ?? 60000;
 
   if (!config.getOptionalBoolean('permission.enabled')) {
     logger.warn(
@@ -189,7 +253,6 @@ export async function createRouter(
       res: Response<EvaluatePermissionResponseBatch>,
     ) => {
       const user = await identity.getIdentity({ request: req });
-
       const parseResult = evaluatePermissionRequestBatchSchema.safeParse(
         req.body,
       );
@@ -201,13 +264,16 @@ export async function createRouter(
       const body = parseResult.data;
 
       res.json({
-        items: await handleRequest(
-          body.items,
+        items: await handleRequest({
+          requests: body.items,
           user,
           policy,
           permissionIntegrationClient,
-          req.header('authorization'),
-        ),
+          cacheEnabled,
+          cacheTtl,
+          cache,
+          authHeader: req.header('authorization'),
+        }),
       });
     },
   );

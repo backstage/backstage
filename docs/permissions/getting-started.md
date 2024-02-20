@@ -160,3 +160,34 @@ Now that the permission backend is running, it’s time to enable the permission
 ![Entity detail page showing disabled unregister entity context menu entry](../assets/permissions/disabled-unregister-entity.png)
 
 Now that the framework is fully configured, you can craft a permission policy that works best for your organization by utilizing a provided authorization method or by [writing your own policy](./writing-a-policy.md)!
+
+### 3. Optionally enable caching
+
+The permission framework supports caching of authorization decisions. This can be useful to reduce the load on the policy when the same authorization decision is requested multiple times in a short period of time.
+
+To enable authorization cache, add the following to `app-config.yaml`:
+
+```yaml title="app-config.yaml"
+permission:
+  enabled: true
+  cache:
+    enabled: true
+    ttl: 60000
+```
+
+Then, add the cache service as part of the router:
+
+```typescript title="packages/backend/src/plugins/permission.ts"
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    config: env.config,
+    logger: env.logger,
+    discovery: env.discovery,
+    policy: new TestPermissionPolicy(),
+    identity: env.identity,
+    cache: env.cache,
+  });
+}
+```

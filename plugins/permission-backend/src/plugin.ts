@@ -56,8 +56,9 @@ export const permissionPlugin = createBackendPlugin({
         logger: coreServices.logger,
         discovery: coreServices.discovery,
         identity: coreServices.identity,
+        cache: coreServices.cache,
       },
-      async init({ http, config, logger, discovery, identity }) {
+      async init({ http, config, logger, discovery, identity, cache }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         if (!policies.policy) {
           throw new Error(
@@ -72,6 +73,7 @@ export const permissionPlugin = createBackendPlugin({
             identity,
             logger: winstonLogger,
             policy: policies.policy,
+            cache,
           }),
         );
       },

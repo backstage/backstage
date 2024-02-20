@@ -23,5 +23,20 @@ export interface Config {
      * @visibility frontend
      */
     enabled?: boolean;
+    /**
+     * Authorization cache configuration. Defaults to disabled.
+     */
+    cache?: {
+      /**
+       * Whether to enable the authorization cache. Defaults to false. Enabling also requires
+       * that the CacheService is available for the router.
+       */
+      enabled?: boolean;
+      /**
+       * Maximum time to live for authorization cache items in milliseconds. Defaults to 10 minutes or
+       * the amount of user's session time left, whichever is shorter.
+       */
+      ttl?: number;
+    };
   };
 }
