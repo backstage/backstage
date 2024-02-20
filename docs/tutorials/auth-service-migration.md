@@ -6,7 +6,7 @@ description: A guide for how to migrate Backstage backend plugins and modules to
 
 The auth services for the Backstage backend system have been reworked in the 1.24 release. Among other improvements, this brings protection by default for Backstage backends, replacing the [authenticate-api-requests.md](https://github.com/backstage/backstage/blob/9aac2b0d36bdb8095ea747fe5e5490cfea1c9f16/contrib/docs/tutorials/authenticate-api-requests.md) guide in contrib. This guide will help you migrate your existing backend setup as well as backend _plugins and modules_ to use the new auth services.
 
-The change with the most impact that accompany the new auth services is the default behavior of all plugins running in the new backend system to block all requests that are not authenticated as a user or service, also known as the _default auth policy_. This is the only breaking production change introduces as part of this update, and may require action from both backend installations and plugins. More on that in the individual sections below.
+The change with the most impact that accompanies the new auth services is the default behavior of all plugins running in the new backend system to block all requests that are not authenticated as a user or service, also known as the _default auth policy_. This is the only breaking production change introduced as part of this update, and may require action to be taken on both backend installations and plugins. More on that in the individual sections below.
 
 ## Backend migration
 
