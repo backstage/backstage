@@ -54,9 +54,12 @@ describe('github:autolinks:create', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any, any>;
+  const input = yaml.parse(examples[0].example).steps[0].input;
+  const mockContext = createMockActionContext({
+    input,
+  });
 
   it('should call the githubApis for creating autolink reference', async () => {
-    const input = yaml.parse(examples[0].example).steps[0].input;
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubAutolinksAction({
@@ -69,11 +72,7 @@ describe('github:autolinks:create', () => {
         id: '1',
       },
     });
-    await action.handler(
-      createMockActionContext({
-        input,
-      }),
-    );
+    await action.handler(mockContext);
 
     expect(mockOctokit.rest.repos.createAutolink).toHaveBeenCalledWith({
       owner: 'owner',

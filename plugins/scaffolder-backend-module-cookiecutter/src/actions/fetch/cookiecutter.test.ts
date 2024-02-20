@@ -92,6 +92,11 @@ describe('fetch:cookiecutter', () => {
           help: 'me',
         },
       },
+      templateInfo: {
+        entityRef: 'template:default/cookiecutter',
+        baseUrl: 'somebase',
+      },
+      workspacePath: mockTmpDir,
     });
     mockDir.setContent({ template: {} });
 
