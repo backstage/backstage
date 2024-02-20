@@ -67,7 +67,7 @@ The `org` plugin can be automatically discovered, and it is also possible to ena
 
 ## Routes
 
-The `org` plugin exposes a external route that can be used to configure route bindings.
+The `org` plugin exposes an external route ref that can be used to configure route bindings.
 
 | Key            | Type           | Description                        |
 | -------------- | -------------- | ---------------------------------- |
