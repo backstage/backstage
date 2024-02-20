@@ -6,6 +6,7 @@
 import { AzureSiteListRequest } from '@backstage/plugin-azure-sites-common';
 import { AzureSiteListResponse } from '@backstage/plugin-azure-sites-common';
 import { AzureSiteStartStopRequest } from '@backstage/plugin-azure-sites-common';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import express from 'express';
@@ -49,6 +50,9 @@ export class AzureSitesConfig {
   // (undocumented)
   readonly tenantId: string;
 }
+
+// @public
+export const azureSitesPlugin: () => BackendFeature;
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;

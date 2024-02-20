@@ -33,6 +33,8 @@ Configuration Details:
 
 Here's how to get the backend plugin up and running:
 
+#### Legacy Backend System
+
 1. First we need to add the `@backstage/plugin-azure-sites-backend` package to your backend:
 
    ```sh
@@ -105,6 +107,29 @@ Here's how to get the backend plugin up and running:
       }
    ```
 
-5. Now run `yarn start-backend` from the repo root.
+#### New Backend System
 
-6. Finally, open `http://localhost:7007/api/azure/health` in a browser, it should return `{"status":"ok"}`.
+The Azure Sites backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
++ import { azureSitesPlugin } from '@backstage/plugin-azure-sites-backend;
+
+  const backend = createBackend();
+
+  // ... other feature additions
+
++ backend.add(azureSitesPlugin);
+
+  // ...
+
+  backend.start();
+```
+
+#### Start Backed & Test
+
+1. Now run `yarn start-backend` from the repo root.
+
+2. Finally, open `http://localhost:7007/api/azure/health` in a browser, it should return `{"status":"ok"}`.
