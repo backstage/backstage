@@ -43,7 +43,7 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "fuzz": "backstage-repo-tools package schema openapi fuzz --exclude-checks content_type_conformance,response_schema_conformance",
+    "fuzz": "backstage-repo-tools package schema openapi fuzz --exclude-checks response_schema_conformance",
     "generate": "backstage-repo-tools package schema openapi generate --server --client-package packages/catalog-client",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
