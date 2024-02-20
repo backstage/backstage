@@ -25,7 +25,6 @@ export const VisitedByType = () => {
   return (
     <VisitList
       visits={visits}
-      title={kind === 'top' ? 'Top Visited' : 'Recently Visited'}
       detailType={kind === 'top' ? 'hits' : 'time-ago'}
       collapsed={collapsed}
       numVisitsOpen={numVisitsOpen}

@@ -20,16 +20,9 @@ import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 describe('<VisitList/>', () => {
-  it('renders with mandatory parameters', async () => {
-    const { getByText } = await render(
-      <VisitList title="My title" detailType="time-ago" />,
-    );
-    expect(getByText('My title')).toBeInTheDocument();
-  });
-
   it('renders skeleton when loading is true', async () => {
     const { container } = await render(
-      <VisitList title="My title" detailType="time-ago" loading />,
+      <VisitList detailType="time-ago" loading />,
     );
     expect(container.querySelectorAll('li')).toHaveLength(8);
     expect(container.querySelectorAll('.MuiSkeleton-root')).toHaveLength(16);
@@ -38,7 +31,6 @@ describe('<VisitList/>', () => {
   it('renders specified amount of items', async () => {
     const { container } = await render(
       <VisitList
-        title="My title"
         detailType="time-ago"
         loading
         numVisitsOpen={1}
@@ -51,7 +43,6 @@ describe('<VisitList/>', () => {
   it('renders some items hidden', async () => {
     const { container } = await render(
       <VisitList
-        title="My title"
         detailType="time-ago"
         loading
         numVisitsOpen={1}
@@ -65,7 +56,6 @@ describe('<VisitList/>', () => {
   it('renders all items when not collapsed', async () => {
     const { container } = await render(
       <VisitList
-        title="My title"
         detailType="time-ago"
         loading
         collapsed={false}
@@ -81,7 +71,6 @@ describe('<VisitList/>', () => {
     const { container, getByText } = await render(
       <BrowserRouter>
         <VisitList
-          title="My title"
           detailType="time-ago"
           visits={[
             {
@@ -105,7 +94,6 @@ describe('<VisitList/>', () => {
     const { container, getByText } = await render(
       <BrowserRouter>
         <VisitList
-          title="My title"
           detailType="hits"
           visits={[
             {
@@ -129,7 +117,6 @@ describe('<VisitList/>', () => {
     const { getByText } = await render(
       <BrowserRouter>
         <VisitList
-          title="My title"
           detailType="hits"
           visits={[
             {
@@ -152,7 +139,7 @@ describe('<VisitList/>', () => {
   it('renders text warning about no items', async () => {
     const { getByText } = await render(
       <BrowserRouter>
-        <VisitList title="My title" detailType="hits" visits={[]} />,
+        <VisitList detailType="hits" visits={[]} />,
       </BrowserRouter>,
     );
     expect(getByText('There are no visits to show yet.')).toBeInTheDocument();
