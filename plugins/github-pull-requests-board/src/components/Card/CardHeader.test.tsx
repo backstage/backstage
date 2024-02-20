@@ -69,7 +69,12 @@ describe('<CardHeader/>', () => {
   });
 
   it('does not find commit status in PR Card Header when PR does not include status', async () => {
-    await renderInTestApp(<CardHeader {...props} />);
+    const propsWithNoStatus = {
+      ...props,
+      status: undefined,
+    };
+    await renderInTestApp(<CardHeader {...propsWithNoStatus} />);
     expect(CardHeader.defaultProps?.status).toBeUndefined();
+    expect(screen.queryByText('Commit Status:')).not.toBeInTheDocument();
   });
 });
