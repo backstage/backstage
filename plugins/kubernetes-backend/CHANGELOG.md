@@ -1,5 +1,112 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.15.0
+
+### Minor Changes
+
+- 666eff5: **BREAKING** The backend will fail to start if two clusters in the app-config
+  have the same name. The requirement for unique names has been declared in the
+  docs for some time, but is now enforced.
+
+### Patch Changes
+
+- 7233f57: Fixed an issue where a misleading error message would be logged when an
+  unsupported service locator method was specified.
+- afe9473: The `/clusters` API now surfaces cluster titles.
+- a775596: Enabled a way to include custom auth metadata info on the clusters endpoint. If you want to implement a Kubernetes auth strategy which requires surfacing custom auth metadata to the frontend, use the new presentAuthMetadata method on the AuthenticationStrategy interface.
+- 7278d80: The purpose of this patch is to add a new login method which is `googleServiceAccount` configuring the kubernetes properties in the app-config.yaml file with authProvider key
+- 2a50cbf: adds a x-goog-api-client header to existing API requests in this plugin to clearly identify API requests from this GKE plugin. headers are formatted as follows where `libVersion` represents the current dotted version number of the Backstage GKE plugin and `libName` represent the current Google API used at backstage.
+- 3b3d549: Responses from the `/api/kubernetes/services/:serviceId` endpoint now include the cluster title.
+- a2e7fc6: Organized imports in plugin.ts
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- daad576: Clusters configured with the `aws` authentication strategy can now customize the
+  `x-k8s-aws-id` header value used to generate tokens. This value can be specified
+  specified via the `kubernetes.io/x-k8s-aws-id` parameter (in
+  `metadata.annotations` for clusters in the catalog, or the `authMetadata` block
+  on clusters in the app-config). This is particularly helpful when a Backstage
+  instance contains multiple AWS clusters with the same name in different regions
+  -- using this new parameter, the clusters can be given different logical names
+  to distinguish them but still use the same ID for the purposes of generating
+  tokens.
+- f180cba: Enabling authentication to kubernetes clusters with mTLS x509 client certs
+- 7f6ff25: Custom per-cluster auth metadata (mainly for use with custom `AuthenticationStrategy` implementations) can now be specified in the `authMetadata` property of clusters in the app-config.
+- 6009d2a: Clusters in the catalog can now specify a human-readable title via `metadata.title`.
+- 7ee5b30: Clusters in the app-config can now specify a `title` property for human readability.
+- 1c3cb3b: Backstage will log a warning whenever duplicate cluster names are detected --
+  even if clusters sharing the same name come from separate locators.
+- ceda378: On LocalKubectlProxyClusterLocator, when resolving localhost, IPv4 address is placed before IPv6 address, ignoring the order from the DNS resolver. This change is necessary since by default kubectl proxy listen on IPv4
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/plugin-kubernetes-common@0.7.4
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration-aws-node@0.1.9
+  - @backstage/plugin-kubernetes-node@0.1.4
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/plugin-permission-node@0.7.21
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
+## 0.15.0-next.3
+
+### Patch Changes
+
+- afe9473: The `/clusters` API now surfaces cluster titles.
+- 2a50cbf: adds a x-goog-api-client header to existing API requests in this plugin to clearly identify API requests from this GKE plugin. headers are formatted as follows where `libVersion` represents the current dotted version number of the Backstage GKE plugin and `libName` represent the current Google API used at backstage.
+- 3b3d549: Responses from the `/api/kubernetes/services/:serviceId` endpoint now include the cluster title.
+- a2e7fc6: Organized imports in plugin.ts
+- 6009d2a: Clusters in the catalog can now specify a human-readable title via `metadata.title`.
+- 7ee5b30: Clusters in the app-config can now specify a `title` property for human readability.
+- ceda378: On LocalKubectlProxyClusterLocator, when resolving localhost, IPv4 address is placed before IPv6 address, ignoring the order from the DNS resolver. This change is necessary since by default kubectl proxy listen on IPv4
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/plugin-kubernetes-common@0.7.4-next.2
+  - @backstage/integration-aws-node@0.1.9-next.0
+  - @backstage/plugin-kubernetes-node@0.1.4-next.3
+  - @backstage/plugin-catalog-node@1.6.2-next.3
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/plugin-permission-node@0.7.21-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
+## 0.15.0-next.2
+
+### Minor Changes
+
+- 666eff5: **BREAKING** The backend will fail to start if two clusters in the app-config
+  have the same name. The requirement for unique names has been declared in the
+  docs for some time, but is now enforced.
+
+### Patch Changes
+
+- 1c3cb3b: Backstage will log a warning whenever duplicate cluster names are detected --
+  even if clusters sharing the same name come from separate locators.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/plugin-kubernetes-node@0.1.4-next.2
+  - @backstage/plugin-permission-node@0.7.21-next.2
+  - @backstage/plugin-catalog-node@1.6.2-next.2
+  - @backstage/config@1.1.1
+  - @backstage/integration-aws-node@0.1.8
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.4-next.1
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 0.14.2-next.1
 
 ### Patch Changes

@@ -24,7 +24,7 @@ import {
 } from '@backstage/backend-common';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { AuthenticationError, NotFoundError } from '@backstage/errors';
+import { NotFoundError } from '@backstage/errors';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
 import { BadgeContext, BadgeFactories } from '../types';
 import { isNil } from 'lodash';
@@ -60,7 +60,7 @@ export async function createRouter(
     );
   const router = Router();
 
-  const { config, logger, tokenManager, discovery, identity } = options;
+  const { config, logger, tokenManager, discovery } = options;
   const baseUrl = await discovery.getExternalBaseUrl('badges');
 
   if (config.getOptionalBoolean('app.badges.obfuscate')) {
@@ -72,7 +72,6 @@ export async function createRouter(
       logger,
       options,
       config,
-      identity,
       baseUrl,
     );
   }
@@ -94,7 +93,6 @@ async function obfuscatedRoute(
   logger: Logger,
   options: RouterOptions,
   config: Config,
-  identity: IdentityApi,
   baseUrl: string,
 ) {
   logger.info('Badges obfuscation is enabled');
@@ -130,6 +128,7 @@ async function obfuscatedRoute(
       },
       token,
     );
+
     if (isNil(entity)) {
       throw new NotFoundError(
         `No ${kind} entity in ${namespace} named "${name}"`,
@@ -217,21 +216,30 @@ async function obfuscatedRoute(
 
   router.get(
     '/entity/:namespace/:kind/:name/obfuscated',
-    function authenticate(req, _res, next) {
-      const token =
-        getBearerTokenFromAuthorizationHeader(req.headers.authorization) ||
-        (req.cookies?.token as string | undefined);
+    async function authenticate(req, _res, next) {
+      const token = getBearerTokenFromAuthorizationHeader(
+        req.headers.authorization,
+      );
 
-      if (!token) {
-        throw new AuthenticationError('Unauthorized');
-      }
+      const { kind, namespace, name } = req.params;
 
-      try {
-        req.user = identity.getIdentity({ request: req });
+      // check that the user has the correct permissions
+      // to view the catalog entity by forwarding the token
+      const entity = await catalog.getEntityByRef(
+        {
+          kind,
+          namespace,
+          name,
+        },
+        { token },
+      );
+
+      if (!entity) {
+        throw new NotFoundError(
+          `No ${kind} entity in ${namespace} named "${name}"`,
+        );
+      } else {
         next();
-      } catch (error) {
-        tokenManager.authenticate(token.toString());
-        next(error);
       }
     },
     async (req, res) => {

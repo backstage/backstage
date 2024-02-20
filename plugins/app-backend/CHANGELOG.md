@@ -1,5 +1,50 @@
 # @backstage/plugin-app-backend
 
+## 0.3.58
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 998ccf6: Support injecting config multiple times in a single bundle
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- 54ad8e1: Allow the `app-backend` plugin to use a global configuration schema provided externally through an extension.
+- 9dfd57d: Do not force caching of the Javascript asset that contains the injected config.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/config-loader@1.6.2
+  - @backstage/plugin-app-node@0.1.10
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.3.58-next.3
+
+### Patch Changes
+
+- 54ad8e1: Allow the `app-backend` plugin to use a global configuration schema provided externally through an extension.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/config-loader@1.6.2-next.0
+  - @backstage/plugin-app-node@0.1.10-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.3.58-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 998ccf6: Support injecting config multiple times in a single bundle
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-app-node@0.1.10-next.2
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.1
+  - @backstage/types@1.1.1
+
 ## 0.3.58-next.1
 
 ### Patch Changes

@@ -541,6 +541,11 @@ export class EntityTextFilter implements EntityFilter {
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
+  getFullTextFilters(): {
+    term: string;
+    fields: string[];
+  };
+  // (undocumented)
   readonly value: string;
 }
 

@@ -1,5 +1,99 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.2.0
+
+### Minor Changes
+
+- d7adbbf: Implement the discovery of additional individual configuration schemas for dynamic plugins, and provide:
+
+  - an alternate implementation of the root logger service that takes them into account,
+  - an extension to the App backend plugin to set a global configuration schema that takes them into account.
+
+### Patch Changes
+
+- 8723c5a: Fix wrong `alpha` support in dynamic plugins support: the `alpha` sub-package should not be required for the dynamic plugins to be loaded under the new backend system.
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/cli-node@0.2.3
+  - @backstage/backend-app-api@0.5.11
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/plugin-catalog-backend@1.17.0
+  - @backstage/backend-tasks@0.5.15
+  - @backstage/plugin-events-backend@0.2.19
+  - @backstage/config-loader@1.6.2
+  - @backstage/plugin-scaffolder-node@0.3.0
+  - @backstage/plugin-app-node@0.1.10
+  - @backstage/plugin-permission-node@0.7.21
+  - @backstage/plugin-search-backend-node@1.2.14
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.2.19
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.2.0-next.3
+
+### Minor Changes
+
+- d7adbbf: Implement the discovery of additional individual configuration schemas for dynamic plugins, and provide:
+
+  - an alternate implementation of the root logger service that takes them into account,
+  - an extension to the App backend plugin to set a global configuration schema that takes them into account.
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/cli-node@0.2.3-next.0
+  - @backstage/backend-app-api@0.5.11-next.3
+  - @backstage/backend-tasks@0.5.15-next.3
+  - @backstage/config-loader@1.6.2-next.0
+  - @backstage/plugin-app-node@0.1.10-next.3
+  - @backstage/plugin-catalog-backend@1.17.0-next.3
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/plugin-events-backend@0.2.19-next.3
+  - @backstage/plugin-permission-node@0.7.21-next.3
+  - @backstage/plugin-scaffolder-node@0.3.0-next.3
+  - @backstage/plugin-search-backend-node@1.2.14-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.2.19-next.3
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-catalog-backend@1.17.0-next.2
+  - @backstage/backend-tasks@0.5.15-next.2
+  - @backstage/plugin-events-backend@0.2.19-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/plugin-permission-node@0.7.21-next.2
+  - @backstage/plugin-scaffolder-node@0.3.0-next.2
+  - @backstage/plugin-search-backend-node@1.2.14-next.2
+  - @backstage/plugin-events-node@0.2.19-next.2
+  - @backstage/config@1.1.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.2
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.1.1-next.1
 
 ### Patch Changes

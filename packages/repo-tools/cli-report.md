@@ -15,6 +15,7 @@ Commands:
   api-reports [options] [paths...]
   type-deps
   generate-catalog-info [options]
+  knip-reports [options] [paths...]
   package [command]
   repo [command]
   help [command]
@@ -45,6 +46,16 @@ Usage: backstage-repo-tools generate-catalog-info [options]
 
 Options:
   --dry-run
+  --ci
+  -h, --help
+```
+
+### `backstage-repo-tools knip-reports`
+
+```
+Usage: backstage-repo-tools knip-reports [options] [paths...]
+
+Options:
   --ci
   -h, --help
 ```

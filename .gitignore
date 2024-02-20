@@ -163,6 +163,6 @@ e2e-test-report/
 
 # Scripts
 plugins-report.csv
-github-matt-credentails.yaml
-app-config-local.yaml
-packages/app/src/cookieAuth.ts
+
+# Temporary knip configs
+knip.json

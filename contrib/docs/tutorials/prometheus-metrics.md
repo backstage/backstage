@@ -11,8 +11,8 @@ This is a small tutorial that goes over how to setup your Backstage instance to 
    ```diff
    // packages/backend/package.json
        "dependencies": {
-   +   "express-prom-bundle": "^6.3.6",
-   +   "prom-client": "^14.0.1",
+   +   "express-prom-bundle": "^7.0.0",
+   +   "prom-client": "^15.0.0",
    ```
 
 2. Now we want to run `yarn install` from the root of the project to get those dependencies in place

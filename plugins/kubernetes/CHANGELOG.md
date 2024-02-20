@@ -1,5 +1,47 @@
 # @backstage/plugin-kubernetes
 
+## 0.11.5
+
+### Patch Changes
+
+- b01c86c: The `ErrorReporting` component's cluster column now displays cluster titles when
+  specified.
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/plugin-kubernetes-react@0.3.0
+  - @backstage/core-components@0.14.0
+  - @backstage/plugin-kubernetes-common@0.7.4
+  - @backstage/catalog-model@1.4.4
+  - @backstage/core-plugin-api@1.9.0
+
+## 0.11.5-next.3
+
+### Patch Changes
+
+- b01c86c: The `ErrorReporting` component's cluster column now displays cluster titles when
+  specified.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.3.0-next.3
+  - @backstage/plugin-kubernetes-common@0.7.4-next.2
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.9.0-next.1
+
+## 0.11.5-next.2
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/plugin-kubernetes-react@0.3.0-next.2
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/plugin-kubernetes-common@0.7.4-next.1
+
 ## 0.11.5-next.1
 
 ### Patch Changes

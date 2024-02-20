@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-app-api",
   "description": "Core API used by Backstage backend apps",
-  "version": "0.5.11-next.1",
+  "version": "0.5.11",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -63,7 +63,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "fs-extra": "10.1.0",
+    "fs-extra": "^11.2.0",
     "helmet": "^6.0.0",
     "lodash": "^4.17.21",
     "logform": "^2.3.2",
@@ -80,7 +80,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/compression": "^1.7.0",
-    "@types/fs-extra": "^9.0.3",
+    "@types/fs-extra": "^11.0.0",
     "@types/http-errors": "^2.0.0",
     "@types/minimist": "^1.2.0",
     "@types/morgan": "^1.9.0",

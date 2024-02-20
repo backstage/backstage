@@ -1,5 +1,80 @@
 # @backstage/cli
 
+## 0.25.2
+
+### Patch Changes
+
+- d557d47: Added check for the `repository` field in the `repo fix` command.
+- b58673e: Upgrade jest
+- c624938: Add experimental support for an optional `public` app entry point that lets users sign-in before being able to access the full app.
+- c52e7d5: Make `http://localhost:3000` the default base URL for serving locally, and `/` the default public path for built apps. The app build no longer requires any configuration values to be present.
+- 9a96ef2: Updated dependency `vite-plugin-node-polyfills` to `^0.21.0`.
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- 2f1f8fd: Updated dependency `esbuild-loader` to `^4.0.0`.
+- fd20d5b: Updated dependency `eslint-config-prettier` to `^9.0.0`.
+- acd2860: Updated dependency `vite-plugin-node-polyfills` to `^0.19.0`.
+- 40c27f3: Updated dependency `eslint-webpack-plugin` to `^4.0.0`.
+- 6ba64c4: Updated dependency `commander` to `^12.0.0`.
+- ba56063: Updated dependency `fork-ts-checker-webpack-plugin` to `^9.0.0`.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- 52ae6b9: Updated dependency `esbuild` to `^0.20.0`.
+- 404e82b: Updated dependency `eslint-plugin-deprecation` to `^2.0.0`.
+- 5c05f8a: Harmonize the package naming and allow custom prefix
+- 35725e2: Updated dependencies in frontend plugin templates
+- c7259dc: Updated the backend module template to make the module instance the package default export.
+- 08804c3: Fixed an issue that would cause an invalid `__backstage-autodetected-plugins__.js` to be written when using experimental module discovery.
+- Updated dependencies
+  - @backstage/cli-node@0.2.3
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration@1.9.0
+  - @backstage/config-loader@1.6.2
+  - @backstage/eslint-plugin@0.1.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.25.2-next.3
+
+### Patch Changes
+
+- d557d47: Added check for the `repository` field in the `repo fix` command.
+- c52e7d5: Make `http://localhost:3000` the default base URL for serving locally, and `/` the default public path for built apps. The app build no longer requires any configuration values to be present.
+- ba56063: Updated dependency `fork-ts-checker-webpack-plugin` to `^9.0.0`.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- 404e82b: Updated dependency `eslint-plugin-deprecation` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.2.3-next.0
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/config-loader@1.6.2-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/eslint-plugin@0.1.5-next.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.25.2-next.2
+
+### Patch Changes
+
+- 52ae6b9: Updated dependency `esbuild` to `^0.20.0`.
+- 5c05f8a: Harmonize the package naming and allow custom prefix
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/release-manifests@0.0.11
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.2
+  - @backstage/config-loader@1.6.1
+  - @backstage/errors@1.2.3
+  - @backstage/eslint-plugin@0.1.5-next.0
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/types@1.1.1
+
 ## 0.25.2-next.1
 
 ### Patch Changes

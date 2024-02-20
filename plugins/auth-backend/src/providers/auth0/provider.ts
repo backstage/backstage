@@ -36,14 +36,13 @@ import {
   makeProfileInfo,
   PassportDoneCallback,
 } from '../../lib/passport';
-import {
-  OAuthStartResponse,
-  AuthHandler,
-  SignInResolver,
-  AuthResolverContext,
-} from '../types';
+import { OAuthStartResponse, AuthHandler } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { StateStore } from 'passport-oauth2';
+import {
+  AuthResolverContext,
+  SignInResolver,
+} from '@backstage/plugin-auth-node';
 
 type PrivateInfo = {
   refreshToken: string;

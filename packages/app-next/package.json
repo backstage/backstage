@@ -1,7 +1,12 @@
 {
   "name": "example-app-next",
-  "version": "0.0.6-next.1",
+  "version": "0.0.6",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/app-next"
+  },
   "backstage": {
     "role": "frontend"
   },

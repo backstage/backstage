@@ -89,6 +89,7 @@ describe('azure', () => {
           'engineering',
           '',
           '/catalog-info.yaml',
+          '',
         ),
       ).resolves.toEqual([]);
     });
@@ -154,6 +155,7 @@ describe('azure', () => {
         'engineering',
         '',
         '/catalog-info.yaml',
+        '',
       ),
     ).resolves.toEqual(response.results);
   });
@@ -210,6 +212,67 @@ describe('azure', () => {
         'engineering',
         'backstage',
         '/catalog-info.yaml',
+        '',
+      ),
+    ).resolves.toEqual(response.results);
+  });
+
+  it('searches in specific branch if parameter is set', async () => {
+    const response: CodeSearchResponse = {
+      count: 1,
+      results: [
+        {
+          fileName: 'catalog-info.yaml',
+          path: '/catalog-info.yaml',
+          project: {
+            name: '*',
+          },
+          repository: {
+            name: 'backstage',
+          },
+        },
+      ],
+    };
+
+    server.use(
+      rest.post(
+        `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          expect(req.body).toEqual({
+            searchText:
+              'path:/catalog-info.yaml repo:backstage proj:engineering',
+            $orderBy: [
+              {
+                field: 'path',
+                sortOrder: 'ASC',
+              },
+            ],
+            $skip: 0,
+            $top: 1000,
+            filters: {
+              Branch: ['topic/catalog-info'],
+            },
+          });
+          return res(ctx.json(response));
+        },
+      ),
+    );
+
+    const { credentialsProvider, azureConfig } = createFixture(
+      'dev.azure.com',
+      'ABC',
+    );
+
+    await expect(
+      codeSearch(
+        credentialsProvider,
+        azureConfig,
+        'shopify',
+        'engineering',
+        'backstage',
+        '/catalog-info.yaml',
+        'topic/catalog-info',
       ),
     ).resolves.toEqual(response.results);
   });
@@ -265,6 +328,7 @@ describe('azure', () => {
         'engineering',
         '',
         '/catalog-info.yaml',
+        '',
       ),
     ).resolves.toEqual(response.results);
   });
@@ -324,6 +388,7 @@ describe('azure', () => {
         'engineering',
         'backstage',
         '/catalog-info.yaml',
+        '',
       ),
     ).resolves.toHaveLength(totalCount);
   });

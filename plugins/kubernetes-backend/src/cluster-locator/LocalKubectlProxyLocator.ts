@@ -15,18 +15,25 @@
  */
 
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import {
+  ClusterDetails,
+  KubernetesClustersSupplier,
+} from '@backstage/plugin-kubernetes-node';
+import dns from 'node:dns';
 
 export class LocalKubectlProxyClusterLocator
   implements KubernetesClustersSupplier
 {
   private readonly clusterDetails: ClusterDetails[];
+  // verbatim: when false, IPv4 addresses are placed before IPv6 addresses, ignoring the order from the DNS resolver
+  // By default kubectl proxy listens on 127.0.0.1 instead of [::1]
+  private lookupPromise = dns.promises.lookup('localhost', { verbatim: false });
 
   public constructor() {
     this.clusterDetails = [
       {
         name: 'local',
-        url: 'http:/localhost:8001',
+        url: 'http://localhost:8001',
         authMetadata: {
           [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'localKubectlProxy',
         },
@@ -36,6 +43,8 @@ export class LocalKubectlProxyClusterLocator
   }
 
   async getClusters(): Promise<ClusterDetails[]> {
+    const lookupResolution = await this.lookupPromise;
+    this.clusterDetails[0].url = `http://${lookupResolution.address}:8001`;
     return this.clusterDetails;
   }
 }

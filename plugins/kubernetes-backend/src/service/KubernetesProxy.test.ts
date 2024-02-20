@@ -646,7 +646,7 @@ describe('KubernetesProxy', () => {
     });
 
     worker.use(
-      rest.get('http://localhost:8001/api/v1/namespaces', (req, res, ctx) => {
+      rest.get('http://127.0.0.1:8001/api/v1/namespaces', (req, res, ctx) => {
         return req.headers.get('Authorization')
           ? res(ctx.status(401))
           : res(

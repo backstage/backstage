@@ -74,6 +74,20 @@ describe('NotificationsClient', () => {
       expect(response).toEqual(expectedResp);
     });
 
+    it('should fetch single notification', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/:id`, (req, res, ctx) => {
+          expect(req.params.id).toBe('acdaa8ca-262b-43c1-b74b-de06e5f3b3c7');
+          return res(ctx.json(testNotification));
+        }),
+      );
+
+      const response = await client.getNotification(
+        'acdaa8ca-262b-43c1-b74b-de06e5f3b3c7',
+      );
+      expect(response).toEqual(testNotification);
+    });
+
     it('should fetch status from correct endpoint', async () => {
       server.use(
         rest.get(`${mockBaseUrl}/status`, (_, res, ctx) =>

@@ -1,5 +1,73 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.3.0
+
+### Minor Changes
+
+- 0dfc185: **BREAKING** The `PodScope`, `PodAndErrors`, and `PodExecTerminalProps` types no
+  longer have a `clusterName` field; instead they now have the field `cluster`
+  which contains the full `ClusterAttributes`.
+- 0d526c8: **BREAKING** The pod exec terminal is now disabled by default since there are several scenarios where it is known not to work. It can be re-enabled at your own risk by setting the config parameter `kubernetes.podExecTerminal.enabled` to `true`.
+
+### Patch Changes
+
+- 5bf0c17: Pod dialogs display cluster title when specified.
+- 74770c8: The `ErrorPanel` component will display the `title` field (when specified) for
+  clusters with errors.
+- 536f67d: Fix broken XtermJS CSS import
+- b01c86c: The `ErrorReporting` component's cluster column now displays cluster titles when
+  specified.
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- 2b305eb: The `Cluster` component now renders the cluster's title, if specified.
+- 3c184af: Extracted common dialog component.
+- db1054b: Fixed a bug where the logs dialog and any other functionality depending on the proxy endpoint would fail for clusters configured with the OIDC auth provider.
+- Updated dependencies
+  - @backstage/core-components@0.14.0
+  - @backstage/plugin-kubernetes-common@0.7.4
+  - @backstage/catalog-model@1.4.4
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.3.0-next.3
+
+### Minor Changes
+
+- 0dfc185: **BREAKING** The `PodScope`, `PodAndErrors`, and `PodExecTerminalProps` types no
+  longer have a `clusterName` field; instead they now have the field `cluster`
+  which contains the full `ClusterAttributes`.
+
+### Patch Changes
+
+- 5bf0c17: Pod dialogs display cluster title when specified.
+- 74770c8: The `ErrorPanel` component will display the `title` field (when specified) for
+  clusters with errors.
+- b01c86c: The `ErrorReporting` component's cluster column now displays cluster titles when
+  specified.
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- 2b305eb: The `Cluster` component now renders the cluster's title, if specified.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.7.4-next.2
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.3.0-next.2
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.4-next.1
+
 ## 0.3.0-next.1
 
 ### Patch Changes

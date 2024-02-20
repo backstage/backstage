@@ -1,5 +1,37 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.3.8
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/config@1.1.1
+
+## 0.3.8-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/config@1.1.1
+
+## 0.3.8-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/config@1.1.1
+
 ## 0.3.8-next.1
 
 ### Patch Changes

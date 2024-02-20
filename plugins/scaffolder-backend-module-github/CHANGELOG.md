@@ -1,5 +1,51 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.2.0
+
+### Minor Changes
+
+- fd5eb1c: Allow to force the creation of a pull request from a forked repository
+- 3d5c668: support oidc customization
+
+### Patch Changes
+
+- e9a5228: Exporting a default module for the new Backend System
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/integration@1.9.0
+  - @backstage/plugin-scaffolder-node@0.3.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.2.0-next.3
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/plugin-scaffolder-node@0.3.0-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-scaffolder-node@0.3.0-next.2
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration@1.9.0-next.0
+
 ## 0.2.0-next.1
 
 ### Minor Changes

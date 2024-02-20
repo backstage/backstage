@@ -50,6 +50,8 @@ export const KubernetesContent = ({
     refreshIntervalMs,
   );
 
+  const clusters = kubernetesObjects?.items.map(item => item.cluster) ?? [];
+
   const clustersWithErrors =
     kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];
 
@@ -93,7 +95,10 @@ export const KubernetesContent = ({
           {kubernetesObjects && (
             <Grid container spacing={3} direction="column">
               <Grid item>
-                <ErrorReporting detectedErrors={detectedErrors} />
+                <ErrorReporting
+                  detectedErrors={detectedErrors}
+                  clusters={clusters}
+                />
               </Grid>
               <Grid item>
                 <Typography variant="h3">Your Clusters</Typography>

@@ -58,6 +58,7 @@ const mockOctokit = {
       getRepoPublicKey: jest.fn(),
     },
   },
+  request: jest.fn(),
 };
 jest.mock('octokit', () => ({
   Octokit: class {
@@ -650,6 +651,40 @@ describe('github:repo:create', () => {
       key_id: 'keyid',
       encrypted_value: expect.any(String),
     });
+  });
+
+  it('should configure oidc customizations when provided', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        oidcCustomization: {
+          useDefault: false,
+          includeClaimKeys: ['foo', 'bar'],
+        },
+      },
+    });
+
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'PUT /repos/{owner}/{repo}/actions/oidc/customization/sub',
+      {
+        include_claim_keys: ['foo', 'bar'],
+        owner: 'owner',
+        repo: 'repo',
+        use_default: false,
+      },
+    );
   });
 
   it('should call output with the remoteUrl', async () => {

@@ -23,6 +23,7 @@ import {
   loadConfig,
   ConfigTarget,
   LoadConfigOptionsRemote,
+  ConfigSchema,
 } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import type { Config, AppConfig } from '@backstage/config';
@@ -34,12 +35,15 @@ import { isValidUrl } from '../lib/urls';
 export async function createConfigSecretEnumerator(options: {
   logger: LoggerService;
   dir?: string;
+  schema?: ConfigSchema;
 }): Promise<(config: Config) => Iterable<string>> {
   const { logger, dir = process.cwd() } = options;
   const { packages } = await getPackages(dir);
-  const schema = await loadConfigSchema({
-    dependencies: packages.map(p => p.packageJson.name),
-  });
+  const schema =
+    options.schema ??
+    (await loadConfigSchema({
+      dependencies: packages.map(p => p.packageJson.name).filter(() => false),
+    }));
 
   return (config: Config) => {
     const [secretsData] = schema.process(

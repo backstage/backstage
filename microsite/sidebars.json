@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.23.0",
       "releases/v1.22.0",
       "releases/v1.21.0",
       "releases/v1.20.0",
@@ -387,7 +388,28 @@
       {
         "type": "category",
         "label": "Core Services",
-        "items": ["backend-system/core-services/index"]
+        "items": [
+          "backend-system/core-services/index",
+          "backend-system/core-services/auth",
+          "backend-system/core-services/cache",
+          "backend-system/core-services/database",
+          "backend-system/core-services/discovery",
+          "backend-system/core-services/http-auth",
+          "backend-system/core-services/http-router",
+          "backend-system/core-services/identity",
+          "backend-system/core-services/lifecycle",
+          "backend-system/core-services/logger",
+          "backend-system/core-services/permissions",
+          "backend-system/core-services/plugin-metadata",
+          "backend-system/core-services/root-config",
+          "backend-system/core-services/root-http-router",
+          "backend-system/core-services/root-lifecycle",
+          "backend-system/core-services/root-logger",
+          "backend-system/core-services/scheduler",
+          "backend-system/core-services/token-manager",
+          "backend-system/core-services/url-reader",
+          "backend-system/core-services/user-info"
+        ]
       }
     ],
     "New Frontend System": [
@@ -413,7 +435,17 @@
         "items": [
           "frontend-system/building-plugins/index",
           "frontend-system/building-plugins/testing",
-          "frontend-system/building-plugins/extension-types"
+          "frontend-system/building-plugins/extension-types",
+          "frontend-system/building-plugins/built-in-data-refs",
+          "frontend-system/building-plugins/migrating"
+        ]
+      },
+      {
+        "type": "category",
+        "label": "Building Apps",
+        "items": [
+          "frontend-system/building-apps/index",
+          "frontend-system/building-apps/built-in-extensions"
         ]
       },
       {
@@ -423,8 +455,7 @@
           "frontend-system/utility-apis/index",
           "frontend-system/utility-apis/creating",
           "frontend-system/utility-apis/consuming",
-          "frontend-system/utility-apis/configuring",
-          "frontend-system/utility-apis/migrating"
+          "frontend-system/utility-apis/configuring"
         ]
       }
     ],
@@ -459,6 +490,7 @@
       "tutorials/using-backstage-proxy-within-plugin",
       "tutorials/yarn-migration",
       "tutorials/migrate-to-mui5",
+      "tutorials/auth-service-migration",
       "tutorials/setup-opentelemetry"
     ],
     "Architecture Decision Records (ADRs)": [

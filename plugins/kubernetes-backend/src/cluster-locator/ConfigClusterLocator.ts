@@ -56,8 +56,10 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
               `'authMetadata.${ANNOTATION_KUBERNETES_AUTH_PROVIDER}' parameter`,
           );
         }
+        const title = c.getOptionalString('title');
         const clusterDetails: ClusterDetails = {
           name,
+          ...(title && { title }),
           url: c.getString('url'),
           skipTLSVerify: c.getOptionalBoolean('skipTLSVerify') ?? false,
           skipMetricsLookup: c.getOptionalBoolean('skipMetricsLookup') ?? false,

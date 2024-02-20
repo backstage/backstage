@@ -1,7 +1,7 @@
 {
   "name": "e2e-test",
   "description": "E2E test for verifying Backstage packages",
-  "version": "0.2.12-next.1",
+  "version": "0.2.12",
   "private": true,
   "backstage": {
     "role": "cli"
@@ -31,9 +31,9 @@
     "@backstage/create-app": "workspace:^",
     "@backstage/errors": "workspace:^",
     "chalk": "^4.0.0",
-    "commander": "^9.1.0",
+    "commander": "^12.0.0",
     "cross-fetch": "^4.0.0",
-    "fs-extra": "10.1.0",
+    "fs-extra": "^11.2.0",
     "handlebars": "^4.7.3",
     "mysql2": "^2.2.5",
     "pgtools": "^1.0.0",
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@types/fs-extra": "^9.0.1",
+    "@types/fs-extra": "^11.0.0",
     "@types/node": "^18.17.8",
     "@types/puppeteer": "^5.4.4",
     "nodemon": "^3.0.1",

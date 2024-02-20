@@ -70,7 +70,7 @@ describe('readAzureIntegrationConfig', () => {
         credentials: [
           {
             organizations: ['org1'],
-            personalAccessToken: 't',
+            personalAccessToken: 't      ',
           },
         ],
       }),
@@ -119,7 +119,7 @@ describe('readAzureIntegrationConfig', () => {
           {
             organizations: ['org1', 'org2'],
             clientId: 'id',
-            clientSecret: 'secret',
+            clientSecret: 'secret\n\n\n',
             tenantId: 'tenant',
           },
         ],

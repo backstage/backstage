@@ -168,6 +168,17 @@ export function registerCommands(program: Command) {
         ),
       ),
     );
+
+  program
+    .command('knip-reports [paths...]')
+    .option('--ci', 'CI run checks that there is no changes on knip reports')
+    .description('Generate a knip report for selected packages')
+    .action(
+      lazy(() =>
+        import('./knip-reports/knip-reports').then(m => m.buildKnipReports),
+      ),
+    );
+
   registerPackageCommand(program);
   registerRepoCommand(program);
 }

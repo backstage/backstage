@@ -16,19 +16,19 @@
 
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
-import { JsonObject, Observable } from '@backstage/types';
-import { Logger } from 'winston';
-import ObservableImpl from 'zen-observable';
 import {
+  TaskSecrets,
   SerializedTask,
   SerializedTaskEvent,
   TaskBroker,
   TaskBrokerDispatchOptions,
   TaskCompletionState,
   TaskContext,
-  TaskStore,
-} from './types';
+} from '@backstage/plugin-scaffolder-node';
+import { JsonObject, Observable } from '@backstage/types';
+import { Logger } from 'winston';
+import ObservableImpl from 'zen-observable';
+import { TaskStore } from './types';
 import { readDuration } from './helper';
 
 /**

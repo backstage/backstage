@@ -37,7 +37,7 @@ jobs:
           fetch-depth: 0 # Required to retrieve git history
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -51,7 +51,7 @@ jobs:
 
       - run: yarn build-storybook
 
-      - uses: chromaui/action@05a82adb1e6919df177f54777e81a2ef3e312323 # v10
+      - uses: chromaui/action@c9067691aca4a28d6fbb40d9eea6e144369fbcae # v10
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks

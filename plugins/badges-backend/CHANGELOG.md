@@ -1,5 +1,49 @@
 # @backstage/plugin-badges-backend
 
+## 0.3.7
+
+### Patch Changes
+
+- 6991e5f: Updating the `authorization` middleware to call the Catalog to check that the requesting user has permission to see the Entity before generating the UUID.
+- b64ce5a: Updated New Backend System instructions to use default import
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/catalog-client@1.6.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.3.7-next.3
+
+### Patch Changes
+
+- 6991e5f: Updating the `authorization` middleware to call the Catalog to check that the requesting user has permission to see the Entity before generating the UUID.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
+## 0.3.7-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-auth-node@0.4.4-next.2
+  - @backstage/config@1.1.1
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/errors@1.2.3
+
 ## 0.3.7-next.1
 
 ### Patch Changes

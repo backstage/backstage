@@ -1,5 +1,38 @@
 # @backstage/frontend-test-utils
 
+## 0.1.2
+
+### Patch Changes
+
+- bc621aa: Updates to use the new `RouteResolutionsApi`.
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/frontend-app-api@0.6.0
+  - @backstage/test-utils@1.5.0
+  - @backstage/types@1.1.1
+
+## 0.1.2-next.3
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.0-next.3
+  - @backstage/frontend-plugin-api@0.6.0-next.3
+  - @backstage/test-utils@1.5.0-next.3
+  - @backstage/types@1.1.1
+
+## 0.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/frontend-app-api@0.6.0-next.2
+  - @backstage/test-utils@1.5.0-next.2
+  - @backstage/types@1.1.1
+
 ## 0.1.2-next.1
 
 ### Patch Changes

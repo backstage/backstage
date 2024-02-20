@@ -23,7 +23,6 @@ import {
 import { Knex } from 'knex';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 
 /**
  * Module providing Unprocessed Entities API endpoints
@@ -35,7 +34,7 @@ export class UnprocessedEntitiesModule {
 
   constructor(
     private readonly database: Knex,
-    private readonly router: HttpRouterService,
+    private readonly router: Pick<HttpRouterService, 'use'>,
   ) {
     this.moduleRouter = Router();
     this.router.use(this.moduleRouter);
@@ -111,9 +110,6 @@ export class UnprocessedEntitiesModule {
           await this.unprocessed({
             reason: 'failed',
             owner: req.query.owner as string,
-            authorizationToken: getBearerTokenFromAuthorizationHeader(
-              req.header('authorization'),
-            ),
           }),
         );
       })
@@ -122,9 +118,6 @@ export class UnprocessedEntitiesModule {
           await this.unprocessed({
             reason: 'pending',
             owner: req.query.owner as string,
-            authorizationToken: getBearerTokenFromAuthorizationHeader(
-              req.header('authorization'),
-            ),
           }),
         );
       });

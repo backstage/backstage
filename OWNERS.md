@@ -37,14 +37,13 @@ Team: @backstage/discoverability-maintainers
 
 Scope: Discoverability within Backstage, including the home page, information architecture, and search
 
-| Name                     | Organization | Team | GitHub                                   | Discord            |
-| ------------------------ | ------------ | ---- | ---------------------------------------- | ------------------ |
-| Avantika Iyer            | Spotify      | BUX  | [tikabom](http://github.com/tikabom)     | -                  |
-| Camila Belo              | Spotify      | BUX  | [camilaibs](http://github.com/camilaibs) | Camila Loiola#0226 |
-| Emma Indal               | Spotify      | BUX  | [emmaindal](http://github.com/emmaindal) | emmaindal#7503     |
-| Raghunandan Balachandran | Spotify      | BUX  | [soapraj](http://github.com/soapraj)     | raghunandanb#1114  |
-| Renan Mendes Carvalho    | Spotify      | BUX  | [aitherios](http://github.com/aitherios) | aitherios#0593     |
-| Bailey Brooks            | Spotify      | BUX  | [bailey](http://github.com/bailey)       | \_bailey4          |
+| Name                     | Organization | Team           | GitHub                                   | Discord           |
+| ------------------------ | ------------ | -------------- | ---------------------------------------- | ----------------- |
+| Avantika Iyer            | Spotify      | Infinite Buck$ | [tikabom](http://github.com/tikabom)     | -                 |
+| Emma Indal               | Spotify      | Infinite Buck$ | [emmaindal](http://github.com/emmaindal) | emmaindal#7503    |
+| Djamaile Rahamat         | Spotify      | Infinite Buck$ | [djamaile](http://github.com/djamaile)   | dyoqi             |
+| Raghunandan Balachandran | Spotify      | Infinite Buck$ | [soapraj](http://github.com/soapraj)     | raghunandanb#1114 |
+| Bailey Brooks            | Spotify      | Infinite Buck$ | [bailey](http://github.com/bailey)       | \_bailey4         |
 
 ### Helm Charts
 
@@ -64,10 +63,9 @@ Team: @backstage/kubernetes-maintainers
 
 Scope: The Kubernetes plugin and the base it provides for other plugins to build upon.
 
-| Name           | Organization | Team | GitHub                                         | Discord           |
-| -------------- | ------------ | ---- | ---------------------------------------------- | ----------------- |
-| Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47)       | mclarke#0725      |
-| Jamie Klassen  | VMware       |      | [jamieklassen](http://github.com/jamieklassen) | jamieklassen#3047 |
+| Name           | Organization | Team | GitHub                                   | Discord      |
+| -------------- | ------------ | ---- | ---------------------------------------- | ------------ |
+| Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47) | mclarke#0725 |
 
 ### Permission Framework
 
@@ -149,9 +147,9 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
 | David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |
+| Deepankumar Loganathan         |                           | [deepan10](https://github.com/deepan10)               | `deepan10`                     |
 | Himanshu Mishra                | Harness.io                | [OrkoHunter](https://github.com/OrkoHunter)           | `OrkoHunter#1520`              |
 | Irma Solakovic                 | Roadie.io                 | [Irma12](https://github.com/Irma12)                   | `Irma#7629`                    |
-| Jamie Klassen                  | VMware                    | [jamieklassen](https://github.com/jamieklassen)       | `jamieklassen#3047`            |
 | Jorge Lainfiesta               | Roadie.io                 | [jorgelainfiesta](https://github.com/jorgelainfiesta) | `jorgel#8733`                  |
 | Jussi Hallila                  | Roadie.io                 | [Xantier](https://github.com/Xantier)                 | `Xantier#0086`                 |
 | Mark Avery                     | Cvent                     | [webark](https://github.com/webark)                   | `webark#8471`                  |
@@ -174,6 +172,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 
 ## Emeritus Project Area Maintainers
 
-| Maintainer | Organization   | GitHub                              | Discord  |
-| ---------- | -------------- | ----------------------------------- | -------- |
-| Paul Cowan | frontendrescue | [dagda1](https://github.com/dagda1) | `dagda1` |
+| Maintainer    | Organization   | GitHub                                          | Discord             |
+| ------------- | -------------- | ----------------------------------------------- | ------------------- |
+| Paul Cowan    | frontendrescue | [dagda1](https://github.com/dagda1)             | `dagda1`            |
+| Jamie Klassen | VMware         | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047` |

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-auth-backend",
   "description": "A Backstage backend plugin that handles authentication",
-  "version": "0.20.4-next.1",
+  "version": "0.21.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -53,6 +53,7 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@google-cloud/firestore": "^7.0.0",
+    "@node-saml/passport-saml": "^4.0.4",
     "@types/express": "^4.17.6",
     "@types/passport": "^1.0.3",
     "compression": "^1.7.4",
@@ -62,7 +63,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "express-session": "^1.17.1",
-    "fs-extra": "10.1.0",
+    "fs-extra": "^11.2.0",
     "google-auth-library": "^8.0.0",
     "jose": "^4.6.0",
     "knex": "^3.0.0",
@@ -81,7 +82,6 @@
     "passport-microsoft": "^1.0.0",
     "passport-oauth2": "^1.6.1",
     "passport-onelogin-oauth": "^0.0.1",
-    "passport-saml": "^3.1.2",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"

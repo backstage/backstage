@@ -36,7 +36,7 @@ describe('ContainerCard', () => {
           podScope: {
             name: 'some-name',
             namespace: 'some-namespace',
-            clusterName: 'some-cluster',
+            cluster: { name: 'some-cluster' },
           },
           containerSpec: {
             readinessProbe: {},
@@ -71,7 +71,7 @@ describe('ContainerCard', () => {
           podScope: {
             podName: 'some-name',
             podNamespace: 'some-namespace',
-            clusterName: 'some-cluster',
+            cluster: { name: 'some-cluster' },
           },
           containerSpec: {},
           containerStatus: {
@@ -100,7 +100,7 @@ describe('ContainerCard', () => {
           podScope: {
             podName: 'some-name',
             podNamespace: 'some-namespace',
-            clusterName: 'some-cluster',
+            cluster: { name: 'some-cluster' },
           },
           containerSpec: {},
           containerStatus: {

@@ -55,6 +55,14 @@ export interface BackstagePackageJson {
     registry?: string;
   };
   // (undocumented)
+  repository?:
+    | string
+    | {
+        type: string;
+        url: string;
+        directory: string;
+      };
+  // (undocumented)
   scripts?: {
     [key: string]: string;
   };

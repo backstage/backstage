@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
-import {
-  coreServices,
-  createBackendModule,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
+import { createBackendModule } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import {
   TestEventBroker,
   TestEventPublisher,
   TestEventSubscriber,
 } from '@backstage/plugin-events-backend-test-utils';
-import express from 'express';
-import Router from 'express-promise-router';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import request from 'supertest';
 import { eventsPlugin } from './EventsPlugin';
 
@@ -37,11 +30,6 @@ describe('eventPlugin', () => {
     const eventBroker = new TestEventBroker();
     const publisher = new TestEventPublisher();
     const subscriber = new TestEventSubscriber('sub', ['fake']);
-
-    const httpRouter = Router();
-    httpRouter.use(express.json());
-    httpRouter.use(errorHandler());
-    const app = express().use(httpRouter);
 
     const testModule = createBackendModule({
       pluginId: 'events',
@@ -60,7 +48,7 @@ describe('eventPlugin', () => {
       },
     });
 
-    await startTestBackend({
+    const { server } = await startTestBackend({
       extensionPoints: [],
       features: [
         eventsPlugin(),
@@ -75,11 +63,6 @@ describe('eventPlugin', () => {
             },
           },
         }),
-        createServiceFactory({
-          service: coreServices.httpRouter,
-          deps: {},
-          factory: async () => httpRouter,
-        }),
       ],
     });
 
@@ -87,8 +70,8 @@ describe('eventPlugin', () => {
     expect(eventBroker.subscribed.length).toEqual(1);
     expect(eventBroker.subscribed[0]).toBe(subscriber);
 
-    const response = await request(app)
-      .post('/http/fake')
+    const response = await request(server)
+      .post('/api/events/http/fake')
       .timeout(1000)
       .send({ test: 'fake' });
     expect(response.status).toBe(202);

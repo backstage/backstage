@@ -277,6 +277,28 @@ const secrets = {
   type: 'object',
 };
 
+const oidcCustomization = {
+  title: 'Repository OIDC customization template',
+  description: `OIDC customization template attached to the repository.`,
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    useDefault: {
+      title: 'Use Default',
+      type: 'boolean',
+      description: `Whether to use the default OIDC template or not.`,
+    },
+    includeClaimKeys: {
+      title: 'Include claim keys',
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+      description: `Array of unique strings. Each claim key can only contain alphanumeric characters and underscores.`,
+    },
+  },
+};
+
 export { access };
 export { allowMergeCommit };
 export { allowRebaseMerge };
@@ -313,3 +335,4 @@ export { topics };
 export { requiredCommitSigning };
 export { repoVariables };
 export { secrets };
+export { oidcCustomization };
