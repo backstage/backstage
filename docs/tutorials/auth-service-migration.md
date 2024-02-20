@@ -24,7 +24,7 @@ backend:
     dangerouslyDisableDefaultAuthPolicy: true
 ```
 
-In short, this will allows requests through to plugins in your backend, even if they do not include any credentials. The requests will still be treated as unauthenticated however, which not all plugin endpoints may accept. For more information on the impact of this configuration, see the [auth service documentation](../backend-system/core-services/auth.md).
+In short, this will allow requests through to plugins in your backend, even if they do not include any credentials. The requests will still be treated as unauthenticated however, which not all plugin endpoints may accept. For more information on the impact of this configuration, see the [auth service documentation](../backend-system/core-services/auth.md).
 
 ### Migrating the backend
 
