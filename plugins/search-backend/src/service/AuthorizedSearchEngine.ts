@@ -170,6 +170,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
     let filteredResults: IndexableResult[] = [];
     let nextPageCursor: string | undefined;
     let latencyBudgetExhausted = false;
+    let numberOfResults: number | undefined;
 
     do {
       const nextPage = await this.searchEngine.query(
@@ -177,9 +178,20 @@ export class AuthorizedSearchEngine implements SearchEngine {
         options,
       );
 
+      if (numberOfResults === undefined) {
+        numberOfResults =
+          nextPage.numberOfResults ?? nextPage.approximateNumberOfResults;
+      }
+
       filteredResults = filteredResults.concat(
         await this.filterResults(nextPage.results, typeDecisions, authorizer),
       );
+
+      if (numberOfResults !== undefined) {
+        numberOfResults =
+          numberOfResults -
+          Math.max(nextPage.results.length - filteredResults.length, 0);
+      }
 
       nextPageCursor = nextPage.nextPageCursor;
       latencyBudgetExhausted =
@@ -189,6 +201,14 @@ export class AuthorizedSearchEngine implements SearchEngine {
       filteredResults.length < targetResults &&
       !latencyBudgetExhausted
     );
+
+    const encodedNextPageCursor =
+      !latencyBudgetExhausted &&
+      (nextPageCursor || filteredResults.length > targetResults)
+        ? encodePageCursor({ page: page + 1 })
+        : undefined;
+    const encodedPreviousPageCursor =
+      page === 0 ? undefined : encodePageCursor({ page: page - 1 });
 
     return {
       results: filteredResults
@@ -200,14 +220,10 @@ export class AuthorizedSearchEngine implements SearchEngine {
             rank: page * pageSize + index + 1,
           };
         }),
-      previousPageCursor:
-        page === 0 ? undefined : encodePageCursor({ page: page - 1 }),
-      nextPageCursor:
-        !latencyBudgetExhausted &&
-        (nextPageCursor || filteredResults.length > targetResults)
-          ? encodePageCursor({ page: page + 1 })
-          : undefined,
-      numberOfResults: undefined,
+      previousPageCursor: encodedPreviousPageCursor,
+      nextPageCursor: encodedNextPageCursor,
+      // This is always approximate as we can't know which of the next page hits will be filtered out
+      approximateNumberOfResults: numberOfResults,
     };
   }
 

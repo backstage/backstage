@@ -16,11 +16,11 @@
 
 import { ConfigReader } from '@backstage/config';
 import {
-  EvaluatePermissionResponse,
   AuthorizeResult,
   createPermission,
-  PolicyDecision,
+  EvaluatePermissionResponse,
   PermissionEvaluator,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
@@ -28,9 +28,9 @@ import {
 } from '@backstage/plugin-search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import {
-  encodePageCursor,
-  decodePageCursor,
   AuthorizedSearchEngine,
+  decodePageCursor,
+  encodePageCursor,
 } from './AuthorizedSearchEngine';
 
 describe('AuthorizedSearchEngine', () => {
@@ -232,6 +232,7 @@ describe('AuthorizedSearchEngine', () => {
 
     mockedQuery.mockImplementation(async () => ({
       results: resultsWithAuth,
+      numberOfResults: resultsWithAuth.length,
     }));
 
     mockedPermissionQuery.mockImplementation(async queries =>
@@ -266,7 +267,10 @@ describe('AuthorizedSearchEngine', () => {
 
     await expect(
       authorizedSearchEngine.query({ term: '' }, options),
-    ).resolves.toEqual({ results: [expectedResult] });
+    ).resolves.toEqual({
+      results: [expectedResult],
+      approximateNumberOfResults: 1,
+    });
 
     expect(mockedQuery).toHaveBeenCalledWith(
       { term: '', types: ['users'] },

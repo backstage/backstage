@@ -20,8 +20,8 @@ import { errors } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import {
-  ElasticSearchConcreteQuery,
   decodePageCursor,
+  ElasticSearchConcreteQuery,
   ElasticSearchSearchEngine,
   encodePageCursor,
 } from './ElasticSearchSearchEngine';
@@ -632,6 +632,40 @@ describe('ElasticSearchSearchEngine', () => {
             .slice(25),
         ),
         previousPageCursor: 'MA==',
+        numberOfResults: 30,
+      });
+    });
+
+    it('should give approximation of results', async () => {
+      mock.clear({
+        method: 'POST',
+        path: '/*__search/_search',
+      });
+      mock.add(
+        {
+          method: 'POST',
+          path: '/*__search/_search',
+        },
+        () => {
+          return {
+            hits: {
+              total: { value: 30, relation: 'gte' },
+              hits: [],
+            },
+          };
+        },
+      );
+
+      const mockedSearchResult = await testSearchEngine.query({
+        term: 'testTerm',
+        filters: {},
+        pageCursor: 'MQ==',
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: [],
+        previousPageCursor: 'MA==',
+        approximateNumberOfResults: 30,
       });
     });
 

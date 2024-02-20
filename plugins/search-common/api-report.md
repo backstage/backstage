@@ -71,6 +71,8 @@ export interface ResultHighlight {
 // @public (undocumented)
 export interface ResultSet<TDocument extends SearchDocument> {
   // (undocumented)
+  approximateNumberOfResults?: number;
+  // (undocumented)
   nextPageCursor?: string;
   // (undocumented)
   numberOfResults?: number;

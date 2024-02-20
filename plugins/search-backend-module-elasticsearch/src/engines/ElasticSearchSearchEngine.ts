@@ -20,8 +20,11 @@ import {
   IndexableResultSet,
   SearchQuery,
 } from '@backstage/plugin-search-common';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
-import { isEmpty, isNumber, isNaN as nan } from 'lodash';
+import {
+  MissingIndexError,
+  SearchEngine,
+} from '@backstage/plugin-search-backend-node';
+import { isEmpty, isNaN as nan, isNumber } from 'lodash';
 
 import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';
 import { RequestSigner } from 'aws4';
@@ -34,7 +37,6 @@ import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchCustomIndexTemplate } from './types';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 import { Logger } from 'winston';
-import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
 import { v4 as uuid } from 'uuid';
 import {
@@ -411,7 +413,14 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         ),
         nextPageCursor,
         previousPageCursor,
-        numberOfResults: result.body.hits.total.value,
+        numberOfResults:
+          result.body.hits.total.relation === 'eq'
+            ? result.body.hits.total.value
+            : undefined,
+        approximateNumberOfResults:
+          result.body.hits.total.relation !== 'eq'
+            ? result.body.hits.total.value
+            : undefined,
       };
     } catch (error) {
       if (error.meta?.body?.error?.type === 'index_not_found_exception') {
