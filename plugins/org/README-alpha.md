@@ -33,7 +33,7 @@ And below is an example of how a user page looks with the user profile and owner
 
 ## Installation
 
-1. Install the `org` plugin in you Backstage app:
+1. Install the `org` plugin in your Backstage app:
 
    ```bash
    # From your Backstage root directory
