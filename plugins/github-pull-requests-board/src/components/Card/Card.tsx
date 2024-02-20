@@ -29,7 +29,7 @@ type Props = {
   isDraft: boolean;
   repositoryIsArchived: boolean;
   labels?: Label[];
-  status: Status;
+  status?: Status;
 };
 
 const Card: FunctionComponent<PropsWithChildren<Props>> = (

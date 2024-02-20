@@ -30,7 +30,7 @@ type Props = {
   author: Author;
   url: string;
   reviews: Reviews;
-  status: Status;
+  status?: Status;
   repositoryName: string;
   repositoryIsArchived: boolean;
   isDraft: boolean;
