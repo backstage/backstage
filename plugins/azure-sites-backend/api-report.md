@@ -52,7 +52,8 @@ export class AzureSitesConfig {
 }
 
 // @public
-export const azureSitesPlugin: () => BackendFeature;
+const azureSitesPlugin: () => BackendFeature;
+export default azureSitesPlugin;
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
