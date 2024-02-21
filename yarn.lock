@@ -11300,14 +11300,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/core@npm:^39.34.2":
-  version: 39.34.2
-  resolution: "@gitbeaker/core@npm:39.34.2"
+"@gitbeaker/core@npm:^39.34.3":
+  version: 39.34.3
+  resolution: "@gitbeaker/core@npm:39.34.3"
   dependencies:
-    "@gitbeaker/requester-utils": ^39.34.2
+    "@gitbeaker/requester-utils": ^39.34.3
     qs: ^6.11.2
     xcase: ^2.0.1
-  checksum: 3c1db0ed169d83c2f6631d34a3dd5b4dde597480e47b1f212fab00e2eb31ff2759e3f983475a4dc368df8811642c0c2822039d87461dcee7ac4b5bd2fa04adab
+  checksum: 2b0ccd6137ee717b6f51c51c8f7063b84beeebfdb044574f2257f282864411c4f0932f2619893385f2a86bb4fa342b75be972fd1868640ab4e260f2280cc52b3
   languageName: node
   linkType: hard
 
@@ -11335,25 +11335,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/requester-utils@npm:^39.34.2":
-  version: 39.34.2
-  resolution: "@gitbeaker/requester-utils@npm:39.34.2"
+"@gitbeaker/requester-utils@npm:^39.34.3":
+  version: 39.34.3
+  resolution: "@gitbeaker/requester-utils@npm:39.34.3"
   dependencies:
     picomatch-browser: ^2.2.6
     qs: ^6.11.2
     rate-limiter-flexible: ^4.0.0
     xcase: ^2.0.1
-  checksum: ae70d558ce13af56e2b0b31330b76f2b528a503a27e9f152d4224d1c165f08f20109fff6dabea5ac4679a6c07e49f9025149a3fab4aabe3cd03754d8b138b5f9
+  checksum: 55881864f42e243d9cd73840ea44c9eee13be7974fa13fde241f19bc47915712532d5f7339a598cdd258c32193a37375719984d2630620ab8d962d6d7724cbeb
   languageName: node
   linkType: hard
 
 "@gitbeaker/rest@npm:^39.25.0":
-  version: 39.34.2
-  resolution: "@gitbeaker/rest@npm:39.34.2"
+  version: 39.34.3
+  resolution: "@gitbeaker/rest@npm:39.34.3"
   dependencies:
-    "@gitbeaker/core": ^39.34.2
-    "@gitbeaker/requester-utils": ^39.34.2
-  checksum: e224214b816b9a9e38c77b0eb604aa456793ea7610e7f426899579ab738abe4b8aeafb0f6b9e94ccde9d5fd82cc4d6af0d51cc50174173184df2e7a8be18af5b
+    "@gitbeaker/core": ^39.34.3
+    "@gitbeaker/requester-utils": ^39.34.3
+  checksum: e2a484891b12c71d4218168ab3884af14d036fb16a710ea023556a3d57dd220b13feaebd1f4aa3f61d0180c9f17b66f283650cd543416bb402d3bed8b6eaa465
   languageName: node
   linkType: hard
 
