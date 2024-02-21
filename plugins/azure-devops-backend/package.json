@@ -32,6 +32,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-azure-devops-common": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",

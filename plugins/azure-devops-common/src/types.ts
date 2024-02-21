@@ -212,6 +212,7 @@ export interface ReadmeConfig {
   repo: string;
   host?: string;
   org?: string;
+  path?: string;
 }
 
 /** @public */
