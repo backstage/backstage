@@ -87,7 +87,7 @@
     "git-url-parse": "^14.0.0",
     "helmet": "^6.0.0",
     "isomorphic-git": "^1.23.0",
-    "jose": "^4.6.0",
+    "jose": "^5.0.0",
     "keyv": "^4.5.2",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",

@@ -32,7 +32,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@types/passport-oauth2": "^1.4.15",
-    "jose": "^4.6.0",
+    "jose": "^5.0.0",
     "passport-oauth2": "^1.6.1"
   },
   "devDependencies": {

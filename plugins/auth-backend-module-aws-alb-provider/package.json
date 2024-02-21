@@ -37,7 +37,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
-    "jose": "^4.6.0",
+    "jose": "^5.0.0",
     "node-cache": "^5.1.2",
     "node-fetch": "^2.6.7"
   },
