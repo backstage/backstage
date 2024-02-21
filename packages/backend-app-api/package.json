@@ -66,7 +66,7 @@
     "express-promise-router": "^4.1.0",
     "fs-extra": "^11.2.0",
     "helmet": "^6.0.0",
-    "jose": "^4.6.0",
+    "jose": "^5.0.0",
     "lodash": "^4.17.21",
     "logform": "^2.3.2",
     "minimatch": "^5.0.0",
