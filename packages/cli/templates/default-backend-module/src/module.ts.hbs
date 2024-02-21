@@ -1,4 +1,7 @@
-import { coreServices, createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
 
 export const {{moduleVar}} = createBackendModule({
   pluginId: '{{pluginId}}',
@@ -7,7 +10,7 @@ export const {{moduleVar}} = createBackendModule({
     reg.registerInit({
       deps: { logger: coreServices.logger },
       async init({ logger }) {
-        logger.info('Hello World!')
+        logger.info('Hello World!');
       },
     });
   },
