@@ -1050,8 +1050,8 @@ and that a browser could fetch and render on a profile page or similar.
 
 The fields of a profile are:
 
-| Field                    | Type   | Description                                                    |
-| ------------------------ | ------ | -------------------------------------------------------------- |
+| Field                    | Type   | Description                                                   |
+| ------------------------ | ------ | ------------------------------------------------------------- |
 | `displayName` (optional) | String | A human-readable name for the user.                           |
 | `email` (optional)       | String | An email the user may wish to be used for contacting them.    |
 | `picture` (optional)     | String | A URL pointing to an image that's representative of the user. |
