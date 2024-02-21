@@ -25659,7 +25659,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:=3.0.8, dompurify@npm:^3.0.0":
+"dompurify@npm:=3.0.8":
   version: 3.0.8
   resolution: "dompurify@npm:3.0.8"
   checksum: cac660ccae15a9603f06a85344da868a4c3732d8b57f7998de0f421eb4b9e67d916be52e9bb2a57b2f95b49e994cc50bcd06bb87f2cb2849cf058bdf15266237
@@ -25670,6 +25670,13 @@ __metadata:
   version: 2.4.7
   resolution: "dompurify@npm:2.4.7"
   checksum: 13c047e772a1998348191554dda403950d45ef2ec75fa0b9915cc179ccea0a39ef780d283109bd72cf83a2a085af6c77664281d4d0106a737bc5f39906364efe
+  languageName: node
+  linkType: hard
+
+"dompurify@npm:^3.0.0":
+  version: 3.0.9
+  resolution: "dompurify@npm:3.0.9"
+  checksum: 09794f2e40a0003d36e3cd70be1036f83de39d9d4a0f199c45e0b9962ce8ae5f9fe424d7edc4c8ff9ec615be9744a140d66788f0925913ac482d4628b283cae5
   languageName: node
   linkType: hard
 
