@@ -6055,7 +6055,7 @@ __metadata:
     "@types/highlightjs": ^10.1.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/recharts": ^1.8.15
-    highlight.js: ^10.6.0
+    highlight.js: ^11.0.0
     luxon: ^3.0.0
     react-use: ^17.2.4
     recharts: ^2.5.0
@@ -29689,10 +29689,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"highlight.js@npm:^10.1.0, highlight.js@npm:^10.4.1, highlight.js@npm:^10.6.0, highlight.js@npm:^10.7.2, highlight.js@npm:~10.7.0":
+"highlight.js@npm:^10.1.0, highlight.js@npm:^10.4.1, highlight.js@npm:^10.7.2, highlight.js@npm:~10.7.0":
   version: 10.7.3
   resolution: "highlight.js@npm:10.7.3"
   checksum: defeafcd546b535d710d8efb8e650af9e3b369ef53e28c3dc7893eacfe263200bba4c5fcf43524ae66d5c0c296b1af0870523ceae3e3104d24b7abf6374a4fea
+  languageName: node
+  linkType: hard
+
+"highlight.js@npm:^11.0.0":
+  version: 11.9.0
+  resolution: "highlight.js@npm:11.9.0"
+  checksum: 4043d31c5de9d27d13387d9a9e5e1939557254b7b85f0fab85d9cae0e420e131a3456ebf6148552020a1d8a216d671d583f2433d6c4de6179b8a66487a8325cb
   languageName: node
   linkType: hard
 
