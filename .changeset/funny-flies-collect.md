@@ -9,4 +9,4 @@
 '@backstage/cli': patch
 ---
 
-Bump dependency `minimatch` to v5
+Bump dependency `minimatch` to v9
