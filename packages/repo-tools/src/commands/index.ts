@@ -65,7 +65,7 @@ function registerPackageCommand(program: Command) {
     .description(
       'Fuzz an OpenAPI schema by generating random data and sending it to the server.',
     )
-    .option('--count <count>', 'Number of requests to send')
+    .option('--limit <limit>', 'Maximum number of requests to send.')
     .option('--workers <workers>', 'Number of workers to use', '2')
     .option(
       '--debug',

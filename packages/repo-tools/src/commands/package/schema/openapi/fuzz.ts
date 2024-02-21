@@ -52,8 +52,8 @@ async function fuzz(opts: OptionValues) {
     );
   }
 
-  if (opts.count) {
-    args.push('--hypothesis-max-examples', opts.count);
+  if (opts.limit) {
+    args.push('--hypothesis-max-examples', opts.limit);
   }
   args.push('--workers', opts.workers);
 
