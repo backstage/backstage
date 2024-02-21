@@ -15,7 +15,7 @@
  */
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, Validators } from '@backstage/catalog-model';
 import {
   CatalogProcessor,
   EntitiesSearchFilter,
@@ -45,6 +45,18 @@ export interface CatalogProcessingExtensionPoint {
   ): void;
 }
 
+/** @alpha */
+export interface CatalogModelExtensionPoint {
+  /**
+   * Sets the validator function to use for one or more special fields of an
+   * entity. This is useful if the default rules for formatting of fields are
+   * not sufficient.
+   *
+   * @param validators - The (subset of) validators to set
+   */
+  setFieldValidators(validators: Partial<Validators>): void;
+}
+
 /**
  * @alpha
  */
@@ -66,6 +78,12 @@ export interface CatalogAnalysisExtensionPoint {
 export const catalogAnalysisExtensionPoint =
   createExtensionPoint<CatalogAnalysisExtensionPoint>({
     id: 'catalog.analysis',
+  });
+
+/** @alpha */
+export const catalogModelExtensionPoint =
+  createExtensionPoint<CatalogModelExtensionPoint>({
+    id: 'catalog.model',
   });
 
 /**

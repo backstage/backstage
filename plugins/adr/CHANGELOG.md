@@ -1,5 +1,23 @@
 # @backstage/plugin-adr
 
+## 0.6.13
+
+### Patch Changes
+
+- 0b03962: Updated README
+- 987f565: Fix alignment of text in `AdrSearchResultListItem`. Update size and font to match other `SearchResultListItem`.
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/plugin-search-react@1.7.6
+  - @backstage/integration-react@1.1.24
+  - @backstage/plugin-adr-common@0.2.20
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.6.13-next.3
 
 ### Patch Changes

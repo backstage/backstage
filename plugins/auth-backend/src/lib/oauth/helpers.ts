@@ -15,9 +15,9 @@
  */
 
 import express from 'express';
-import { OAuthState } from './types';
-import { CookieConfigurer } from '../../providers/types';
 import {
+  CookieConfigurer,
+  OAuthState,
   decodeOAuthState,
   encodeOAuthState,
 } from '@backstage/plugin-auth-node';

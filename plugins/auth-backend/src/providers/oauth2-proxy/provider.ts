@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { createProxyAuthProviderFactory } from '@backstage/plugin-auth-node';
-import { AuthHandler, SignInResolver } from '../types';
+import {
+  SignInResolver,
+  createProxyAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
+import { AuthHandler } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import {
   type OAuth2ProxyResult,

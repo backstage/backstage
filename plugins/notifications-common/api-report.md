@@ -4,6 +4,12 @@
 
 ```ts
 // @public (undocumented)
+export type NewNotificationSignal = {
+  action: 'new_notification';
+  notification_id: string;
+};
+
+// @public (undocumented)
 type Notification_2 = {
   id: string;
   user: string;
@@ -29,7 +35,16 @@ export type NotificationPayload = {
 };
 
 // @public (undocumented)
+export type NotificationReadSignal = {
+  action: 'notification_read' | 'notification_unread';
+  notification_ids: string[];
+};
+
+// @public (undocumented)
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
+
+// @public (undocumented)
+export type NotificationSignal = NewNotificationSignal | NotificationReadSignal;
 
 // @public (undocumented)
 export type NotificationStatus = {

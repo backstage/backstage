@@ -1,5 +1,23 @@
 # @backstage/plugin-todo-backend
 
+## 0.3.8
+
+### Patch Changes
+
+- 126c2f9: Updates the OpenAPI spec to use plugin as `info.title` instead of package name.
+- 04907c3: Updates the OpenAPI specification title to plugin ID instead of package name.
+- Updated dependencies
+  - @backstage/repo-tools@0.6.0
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/backend-openapi-utils@0.1.3
+  - @backstage/integration@1.9.0
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.3.8-next.3
 
 ### Patch Changes

@@ -84,13 +84,12 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend';
 
   const backend = createBackend();
 
   // ... other feature additions
 
-+ backend.add(azureDevOpsPlugin());
++ backend.add(import('@backstage/plugin-azure-devops-backend'));
 
   backend.start();
 ```

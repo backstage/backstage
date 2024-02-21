@@ -482,7 +482,7 @@ describe('createRouter', () => {
   });
 
   describe('GET /readme/:projectName/:repoName', () => {
-    it('fetches readme file', async () => {
+    it('fetches default default readme file', async () => {
       const content = getReadmeMock();
       const url = `https://host.com/myOrg/myProject/_git/myRepo?path=README.md`;
 
@@ -491,20 +491,93 @@ describe('createRouter', () => {
         url,
       });
 
-      const response = await request(app).get(
-        '/readme/myProject/myRepo?path=README.md',
-      );
+      const response = await request(app).get('/readme/myProject/myRepo');
       expect(azureDevOpsApi.getReadme).toHaveBeenCalledWith(
         'host.com',
         'myOrg',
         'myProject',
         'myRepo',
+        'README.md',
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         content,
         url,
       });
+    });
+  });
+
+  describe('GET /readme/:projectName/:repoName with readme filename', () => {
+    it('fetches specified readme file', async () => {
+      const content = getReadmeMock();
+      const url = `https://host.com/myOrg/myProject/_git/myRepo?path=README_NOT_DEFAULT.md`;
+
+      azureDevOpsApi.getReadme.mockResolvedValueOnce({
+        content,
+        url,
+      });
+
+      const response = await request(app).get(
+        '/readme/myProject/myRepo?path=README_NOT_DEFAULT.md',
+      );
+      expect(azureDevOpsApi.getReadme).toHaveBeenCalledWith(
+        'host.com',
+        'myOrg',
+        'myProject',
+        'myRepo',
+        'README_NOT_DEFAULT.md',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        content,
+        url,
+      });
+    });
+  });
+
+  describe('GET /readme/:projectName/:repoName with readme path', () => {
+    it('fetches specified readme file from subfolder', async () => {
+      const content = getReadmeMock();
+      const url = `https://host.com/myOrg/myProject/_git/myRepo?path=/my-path/README.md`;
+
+      azureDevOpsApi.getReadme.mockResolvedValueOnce({
+        content,
+        url,
+      });
+
+      const response = await request(app).get(
+        '/readme/myProject/myRepo?path=/my-path/README.md',
+      );
+      expect(azureDevOpsApi.getReadme).toHaveBeenCalledWith(
+        'host.com',
+        'myOrg',
+        'myProject',
+        'myRepo',
+        '/my-path/README.md',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        content,
+        url,
+      });
+    });
+  });
+
+  describe('GET /readme/:projectName/:repoName with a bad readme path (multiple values)', () => {
+    it('throws InputError', async () => {
+      const response = await request(app).get(
+        '/readme/myProject/myRepo?path=1&path=2',
+      );
+      expect(azureDevOpsApi.getReadme).not.toHaveBeenCalled();
+      expect(response.status).toEqual(400);
+    });
+  });
+
+  describe('GET /readme/:projectName/:repoName with a bad readme path (empty string)', () => {
+    it('throws InputError', async () => {
+      const response = await request(app).get('/readme/myProject/myRepo?path=');
+      expect(azureDevOpsApi.getReadme).not.toHaveBeenCalled();
+      expect(response.status).toEqual(400);
     });
   });
 });

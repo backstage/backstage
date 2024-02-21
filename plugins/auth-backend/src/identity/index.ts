@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { createOidcRouter } from './router';
+export { bindOidcRouter } from './router';
 export { TokenFactory } from './TokenFactory';
 export { DatabaseKeyStore } from './DatabaseKeyStore';
 export { MemoryKeyStore } from './MemoryKeyStore';

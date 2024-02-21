@@ -60,6 +60,10 @@ export class NotificationsClient implements NotificationsApi {
     return await this.request<Notification[]>(urlSegment);
   }
 
+  async getNotification(id: string): Promise<Notification> {
+    return await this.request<Notification>(`${id}`);
+  }
+
   async getStatus(): Promise<NotificationStatus> {
     return await this.request<NotificationStatus>('status');
   }

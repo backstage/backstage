@@ -18,32 +18,25 @@ import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import {
-  defaultAuthProviderFactories,
-  AuthProviderFactory,
-} from '../providers';
+import { defaultAuthProviderFactories } from '../providers';
 import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import { assertError, NotFoundError } from '@backstage/errors';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
+import { NotFoundError } from '@backstage/errors';
+import { CatalogApi } from '@backstage/catalog-client';
+import { bindOidcRouter, TokenFactory, KeyStores } from '../identity';
 import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
-import { Minimatch } from 'minimatch';
-import { CatalogAuthResolverContext } from '../lib/resolvers';
 import { AuthDatabase } from '../database/AuthDatabase';
 import { readBackstageTokenExpiration } from './readBackstageTokenExpiration';
 import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { Config } from '@backstage/config';
-
-/** @public */
-export type ProviderFactories = { [s: string]: AuthProviderFactory };
+import { ProviderFactories, bindProviderRouters } from '../providers/router';
 
 /** @public */
 export interface RouterOptions {
@@ -67,10 +60,8 @@ export async function createRouter(
     config,
     discovery,
     database,
-    tokenManager,
     tokenFactoryAlgorithm,
     providerFactories = {},
-    catalogApi,
   } = options;
   const router = Router();
 
@@ -105,6 +96,7 @@ export async function createRouter(
         config.getOptionalString('auth.identityTokenAlgorithm'),
     });
   }
+
   const secret = config.getOptionalString('auth.session.secret');
   if (secret) {
     router.use(cookieParser(secret));
@@ -127,124 +119,35 @@ export async function createRouter(
   } else {
     router.use(cookieParser());
   }
+
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
-  const allProviderFactories = options.disableDefaultProviderFactories
+  const providers = options.disableDefaultProviderFactories
     ? providerFactories
     : {
         ...defaultAuthProviderFactories,
         ...providerFactories,
       };
 
-  const providersConfig = config.getOptionalConfig('auth.providers');
+  bindProviderRouters(router, {
+    providers,
+    appUrl,
+    baseUrl: authUrl,
+    tokenIssuer,
+    ...options,
+  });
 
-  const isOriginAllowed = createOriginFilter(config);
+  bindOidcRouter(router, {
+    tokenIssuer,
+    baseUrl: authUrl,
+  });
 
-  for (const [providerId, providerFactory] of Object.entries(
-    allProviderFactories,
-  )) {
-    if (providersConfig?.has(providerId)) {
-      logger.info(`Configuring auth provider: ${providerId}`);
-      try {
-        const provider = providerFactory({
-          providerId,
-          appUrl,
-          baseUrl: authUrl,
-          isOriginAllowed,
-          globalConfig: {
-            baseUrl: authUrl,
-            appUrl,
-            isOriginAllowed,
-          },
-          config: providersConfig.getConfig(providerId),
-          logger,
-          resolverContext: CatalogAuthResolverContext.create({
-            logger,
-            catalogApi:
-              catalogApi ?? new CatalogClient({ discoveryApi: discovery }),
-            tokenIssuer,
-            tokenManager,
-          }),
-        });
-
-        const r = Router();
-
-        r.get('/start', provider.start.bind(provider));
-        r.get('/handler/frame', provider.frameHandler.bind(provider));
-        r.post('/handler/frame', provider.frameHandler.bind(provider));
-        if (provider.logout) {
-          r.post('/logout', provider.logout.bind(provider));
-        }
-        if (provider.refresh) {
-          r.get('/refresh', provider.refresh.bind(provider));
-          r.post('/refresh', provider.refresh.bind(provider));
-        }
-
-        router.use(`/${providerId}`, r);
-      } catch (e) {
-        assertError(e);
-        if (process.env.NODE_ENV !== 'development') {
-          throw new Error(
-            `Failed to initialize ${providerId} auth provider, ${e.message}`,
-          );
-        }
-
-        logger.warn(`Skipping ${providerId} auth provider, ${e.message}`);
-
-        router.use(`/${providerId}`, () => {
-          // If the user added the provider under auth.providers but the clientId and clientSecret etc. were not found.
-          throw new NotFoundError(
-            `Auth provider registered for '${providerId}' is misconfigured. This could mean the configs under ` +
-              `auth.providers.${providerId} are missing or the environment variables used are not defined. ` +
-              `Check the auth backend plugin logs when the backend starts to see more details.`,
-          );
-        });
-      }
-    } else {
-      router.use(`/${providerId}`, () => {
-        throw new NotFoundError(
-          `No auth provider registered for '${providerId}'`,
-        );
-      });
-    }
-  }
-
-  router.use(
-    createOidcRouter({
-      tokenIssuer,
-      baseUrl: authUrl,
-    }),
-  );
-
+  // Gives a more helpful error message than a plain 404
   router.use('/:provider/', req => {
     const { provider } = req.params;
     throw new NotFoundError(`Unknown auth provider '${provider}'`);
   });
 
   return router;
-}
-
-/** @public */
-export function createOriginFilter(
-  config: Config,
-): (origin: string) => boolean {
-  const appUrl = config.getString('app.baseUrl');
-  const { origin: appOrigin } = new URL(appUrl);
-
-  const allowedOrigins = config.getOptionalStringArray(
-    'auth.experimentalExtraAllowedOrigins',
-  );
-
-  const allowedOriginPatterns =
-    allowedOrigins?.map(
-      pattern => new Minimatch(pattern, { nocase: true, noglobstar: true }),
-    ) ?? [];
-
-  return origin => {
-    if (origin === appOrigin) {
-      return true;
-    }
-    return allowedOriginPatterns.some(pattern => pattern.match(origin));
-  };
 }

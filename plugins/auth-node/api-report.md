@@ -173,13 +173,13 @@ export function createOAuthRouteHandlers<TProfile>(
 ): AuthProviderRouteHandlers;
 
 // @public (undocumented)
-export function createProxyAuthenticator<TContext, TResult>(
-  authenticator: ProxyAuthenticator<TContext, TResult>,
-): ProxyAuthenticator<TContext, TResult>;
+export function createProxyAuthenticator<TContext, TResult, TProviderInfo>(
+  authenticator: ProxyAuthenticator<TContext, TResult, TProviderInfo>,
+): ProxyAuthenticator<TContext, TResult, TProviderInfo>;
 
 // @public (undocumented)
 export function createProxyAuthProviderFactory<TResult>(options: {
-  authenticator: ProxyAuthenticator<unknown, TResult>;
+  authenticator: ProxyAuthenticator<unknown, TResult, unknown>;
   profileTransform?: ProfileTransform<TResult>;
   signInResolver?: SignInResolver<TResult>;
   signInResolverFactories?: Record<
@@ -538,7 +538,11 @@ export type ProfileTransform<TResult> = (
 }>;
 
 // @public (undocumented)
-export interface ProxyAuthenticator<TContext, TResult> {
+export interface ProxyAuthenticator<
+  TContext,
+  TResult,
+  TProviderInfo = undefined,
+> {
   // (undocumented)
   authenticate(
     options: {
@@ -547,6 +551,7 @@ export interface ProxyAuthenticator<TContext, TResult> {
     ctx: TContext,
   ): Promise<{
     result: TResult;
+    providerInfo?: TProviderInfo;
   }>;
   // (undocumented)
   defaultProfileTransform: ProfileTransform<TResult>;
@@ -557,7 +562,7 @@ export interface ProxyAuthenticator<TContext, TResult> {
 // @public (undocumented)
 export interface ProxyAuthRouteHandlersOptions<TResult> {
   // (undocumented)
-  authenticator: ProxyAuthenticator<any, TResult>;
+  authenticator: ProxyAuthenticator<any, TResult, unknown>;
   // (undocumented)
   config: Config;
   // (undocumented)

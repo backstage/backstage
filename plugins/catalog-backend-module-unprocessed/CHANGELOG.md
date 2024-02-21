@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.3.7
+
+### Patch Changes
+
+- d3dd64a: Explicitly only depend on the `use` method from the `HttpRouterService`.
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+
 ## 0.3.7-next.3
 
 ### Patch Changes

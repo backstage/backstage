@@ -1,5 +1,23 @@
 # @backstage/plugin-user-settings
 
+## 0.8.1
+
+### Patch Changes
+
+- 912ca7b: Use `convertLegacyRouteRefs` to define routes in `/alpha` export plugin.
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- d5b14a0: conditionally rendering the user name and email in user settings page
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/core-compat-api@0.2.0
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/core-app-api@1.12.0
+  - @backstage/theme@0.5.1
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.8.1-next.3
 
 ### Patch Changes

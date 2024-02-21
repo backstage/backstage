@@ -1,5 +1,14 @@
 # @backstage/plugin-apache-airflow
 
+## 0.2.20
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0
+  - @backstage/core-plugin-api@1.9.0
+
 ## 0.2.20-next.2
 
 ### Patch Changes

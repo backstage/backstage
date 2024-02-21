@@ -45,6 +45,8 @@ export type UpdateNotificationsOptions = {
 export interface NotificationsApi {
   getNotifications(options?: GetNotificationsOptions): Promise<Notification[]>;
 
+  getNotification(id: string): Promise<Notification>;
+
   getStatus(): Promise<NotificationStatus>;
 
   updateNotifications(
