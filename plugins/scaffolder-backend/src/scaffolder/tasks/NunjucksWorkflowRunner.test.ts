@@ -18,7 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
-import { JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
@@ -580,26 +580,21 @@ describe('NunjucksWorkflowRunner', () => {
         }),
         getTaskState: (): Promise<
           | {
-              state: {
-                [key: string]:
-                  | { status: 'failed'; reason: string }
-                  | {
-                      status: 'success';
-                      value: JsonValue;
-                    };
-              };
+              state: JsonObject;
             }
           | undefined
         > => {
           return Promise.resolve({
             state: {
-              ['v1.task.checkpoint.key1']: {
-                status: 'success',
-                value: 'initial',
-              },
-              ['v1.task.checkpoint.key2']: {
-                status: 'failed',
-                reason: 'fatal error',
+              checkpoints: {
+                ['v1.task.checkpoint.key1']: {
+                  status: 'success',
+                  value: 'initial',
+                },
+                ['v1.task.checkpoint.key2']: {
+                  status: 'failed',
+                  reason: 'fatal error',
+                },
               },
             },
           });

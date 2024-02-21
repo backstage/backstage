@@ -368,7 +368,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             try {
               let prevValue: U | undefined;
               if (prevTaskState) {
-                const prevState = (prevTaskState.state as TaskState)?.[key];
+                const prevState = (
+                  prevTaskState.state?.checkpoints as TaskState
+                )?.[key];
                 if (prevState && prevState.status === 'success') {
                   prevValue = prevState.value as U;
                 }
