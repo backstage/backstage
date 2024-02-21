@@ -26,8 +26,7 @@ A Kubernetes authentication flow could require splitting the authentication proc
 
 ## AuthenticationStrategy interface
 
-This is how the [`AuthenticationStrategy`][2] interface has been defined to state the signature that the Kubernetes AuthStrategy
-instances should implement, it defines the authentication steps executed on the **server side** to authenticate against a Kubernetes Cluster. It is similar to [KubernetesAuthProvider](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-react/src/kubernetes-auth-provider/types.ts#L21) interface who defines the authentication steps on the **client side**.
+The [`AuthenticationStrategy`][2] interface defines the steps executed on the **server side** to authenticate against a Kubernetes cluster. It is similar to the [`KubernetesAuthProvider`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-react/src/kubernetes-auth-provider/types.ts#L21) interface, which defines corresponding steps on the **client side**.
 
 ```ts title="plugins/kubernetes-node/src/types/types.ts"
 export interface AuthenticationStrategy {
