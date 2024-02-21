@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
+import express from 'express';
 import Router from 'express-promise-router';
 import { TokenIssuer } from './types';
 
-export type Options = {
-  baseUrl: string;
-  tokenIssuer: TokenIssuer;
-};
-
-export function createOidcRouter(options: Options) {
+export function bindOidcRouter(
+  targetRouter: express.Router,
+  options: {
+    baseUrl: string;
+    tokenIssuer: TokenIssuer;
+  },
+) {
   const { baseUrl, tokenIssuer } = options;
 
   const router = Router();
+  targetRouter.use(router);
 
   const config = {
     issuer: baseUrl,
@@ -68,6 +71,4 @@ export function createOidcRouter(options: Options) {
   router.get('/v1/userinfo', (_req, res) => {
     res.status(501).send('Not Implemented');
   });
-
-  return router;
 }
