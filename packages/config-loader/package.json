@@ -1,7 +1,7 @@
 {
   "name": "@backstage/config-loader",
   "description": "Config loading functionality used by Backstage backend, and CLI",
-  "version": "1.6.2-next.0",
+  "version": "1.6.2",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -47,7 +47,7 @@
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "node-fetch": "^2.6.7",
-    "typescript-json-schema": "^0.62.0",
+    "typescript-json-schema": "^0.63.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {

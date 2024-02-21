@@ -28,7 +28,7 @@ import { ProxyAuthenticator } from './types';
 
 /** @public */
 export function createProxyAuthProviderFactory<TResult>(options: {
-  authenticator: ProxyAuthenticator<unknown, TResult>;
+  authenticator: ProxyAuthenticator<unknown, TResult, unknown>;
   profileTransform?: ProfileTransform<TResult>;
   signInResolver?: SignInResolver<TResult>;
   signInResolverFactories?: Record<

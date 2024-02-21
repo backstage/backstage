@@ -51,3 +51,18 @@ export type NotificationStatus = {
   unread: number;
   read: number;
 };
+
+/** @public */
+export type NewNotificationSignal = {
+  action: 'new_notification';
+  notification_id: string;
+};
+
+/** @public */
+export type NotificationReadSignal = {
+  action: 'notification_read' | 'notification_unread';
+  notification_ids: string[];
+};
+
+/** @public */
+export type NotificationSignal = NewNotificationSignal | NotificationReadSignal;

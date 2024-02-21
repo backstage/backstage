@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.6
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/plugin-kubernetes-react@0.3.0
+  - @backstage/core-components@0.14.0
+  - @backstage/plugin-kubernetes-common@0.7.4
+  - @backstage/catalog-model@1.4.4
+  - @backstage/core-plugin-api@1.9.0
+
 ## 0.0.6-next.3
 
 ### Patch Changes

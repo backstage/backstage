@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-scaffolder-entity-model
 
+## 0.1.7
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/plugin-scaffolder-common@1.5.0
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/plugin-catalog-common@1.0.21
+
 ## 0.1.7-next.3
 
 ### Patch Changes

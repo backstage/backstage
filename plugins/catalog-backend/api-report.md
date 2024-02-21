@@ -450,6 +450,11 @@ export const processingResult: Readonly<{
 // @public @deprecated (undocumented)
 export type ScmLocationAnalyzer = ScmLocationAnalyzer_2;
 
+// @public
+export function transformLegacyPolicyToProcessor(
+  policy: EntityPolicy,
+): CatalogProcessor_2;
+
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor_2 {
   constructor(options: { reader: UrlReader; logger: Logger });

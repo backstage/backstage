@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-vmware-cloud-provider
 
+## 0.1.2
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+
 ## 0.1.2-next.3
 
 ### Patch Changes

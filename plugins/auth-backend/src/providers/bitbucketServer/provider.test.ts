@@ -16,7 +16,6 @@
 
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { makeProfileInfo } from '../../lib/passport';
-import { AuthResolverContext } from '../types';
 import {
   bitbucketServer,
   BitbucketServerAuthProvider,
@@ -25,6 +24,7 @@ import {
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
+import { AuthResolverContext } from '@backstage/plugin-auth-node';
 
 jest.mock('../../lib/passport/PassportStrategyHelper', () => {
   return {

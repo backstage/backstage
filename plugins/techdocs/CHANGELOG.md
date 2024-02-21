@@ -1,5 +1,34 @@
 # @backstage/plugin-techdocs
 
+## 1.10.0
+
+### Minor Changes
+
+- af4d147: Updated the styling for `<code>` tags to avoid word break.
+
+### Patch Changes
+
+- 912ca7b: Use `convertLegacyRouteRefs` to define routes in `/alpha` export plugin.
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 3631fb4: Updated dependency `dompurify` to `^3.0.0`.
+  Updated dependency `@types/dompurify` to `^3.0.0`.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/core-compat-api@0.2.0
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/plugin-techdocs-react@1.1.16
+  - @backstage/catalog-model@1.4.4
+  - @backstage/theme@0.5.1
+  - @backstage/integration@1.9.0
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/plugin-search-react@1.7.6
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-react@1.1.24
+  - @backstage/plugin-search-common@1.2.10
+
 ## 1.10.0-next.3
 
 ### Patch Changes
@@ -48,7 +77,7 @@
 
 ### Minor Changes
 
-- af4d147: Updated the styling for <code> tags to avoid word break.
+- af4d147: Updated the styling for `<code>` tags to avoid word break.
 
 ### Patch Changes
 

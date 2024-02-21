@@ -1,5 +1,20 @@
 # @backstage/integration
 
+## 1.9.0
+
+### Minor Changes
+
+- e27b7f3: Fix rate limit detection by looking for HTTP status code 429 and updating the header `x-ratelimit-remaining` to look for in case of a 403 code is returned
+
+### Patch Changes
+
+- 6d898f7: All single-line secrets read from config will now have both leading and trailing whitespace trimmed. This is done to ensure that the secrets are always valid HTTP header values, since many fetch implementations will include the header value itself when an error is thrown due to invalid header values.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- 2d0e7cd: Validate if the `baseUrl` is a valid URL
+- Updated dependencies
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 1.9.0-next.1
 
 ### Patch Changes

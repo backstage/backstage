@@ -22,7 +22,6 @@ app:
     - entity-card:catalog-graph/relations:
         config:
           height: 300
-    - entity-card:azure-devops/readme
     - entity-card:api-docs/has-apis
     - entity-card:api-docs/consumed-apis
     - entity-card:api-docs/provided-apis

@@ -27,6 +27,8 @@ export type GetNotificationsOptions = {
 // @public (undocumented)
 export interface NotificationsApi {
   // (undocumented)
+  getNotification(id: string): Promise<Notification_2>;
+  // (undocumented)
   getNotifications(
     options?: GetNotificationsOptions,
   ): Promise<Notification_2[]>;
@@ -44,6 +46,8 @@ export const notificationsApiRef: ApiRef<NotificationsApi>;
 // @public (undocumented)
 export class NotificationsClient implements NotificationsApi {
   constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi });
+  // (undocumented)
+  getNotification(id: string): Promise<Notification_2>;
   // (undocumented)
   getNotifications(
     options?: GetNotificationsOptions,
@@ -128,6 +132,7 @@ export function useWebNotifications(): {
   sendWebNotification: (options: {
     title: string;
     description: string;
+    link?: string;
   }) => Notification | null;
 };
 

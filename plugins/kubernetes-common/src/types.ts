@@ -294,4 +294,5 @@ export interface GroupedResponses extends DeploymentResources {
   cronJobs: V1CronJob[];
   customResources: any[];
   statefulsets: V1StatefulSet[];
+  daemonSets: V1DaemonSet[];
 }

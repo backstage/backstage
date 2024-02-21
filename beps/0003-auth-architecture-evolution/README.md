@@ -1,6 +1,6 @@
 ---
 title: Auth Architecture Evolution
-status: provisional
+status: implementable
 authors:
   - '@Rugvip'
 owners:
@@ -60,6 +60,7 @@ The following goals are the primary focus of this BEP:
 
 - No advanced rate limiting or other protection against DDoS attacks. If this is a concern then adopters should still use other external technologies to protect access to their Backstage instance.
 - As part of the immediate work we will only add as much support for service-to-service auth as is needed for a stable API, and not necessarily make it very capable from the start.
+- We will not aim to provide an abstraction that makes it possible to switch out the `Authorization` header for service-to-service communication.
 
 ## Proposal
 
@@ -126,11 +127,13 @@ export interface AuthService {
     type: TType,
   ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
 
-  getOwnCredentials(): Promise<BackstageCredentials<BackstageServicePrincipal>>;
+  getOwnServiceCredentials(): Promise<
+    BackstageCredentials<BackstageServicePrincipal>
+  >;
 
-  // TODO: should the caller provide the target plugin ID? if not - probably skip the object form
-  issueServiceToken(options: {
-    forward: BackstageCredentials;
+  getPluginRequestToken(options: {
+    onBehalfOf: BackstageCredentials;
+    targetPluginId: string;
   }): Promise<{ token: string }>;
 }
 ```
@@ -257,7 +260,6 @@ The new `HttpAuthService` interface is defined as follows:
 ```ts
 type BackstageHttpAccessToPrincipalTypesMapping = {
   user: BackstageUserPrincipal;
-  'user-cookie': BackstageUserPrincipal;
   service: BackstageServicePrincipal;
   unauthenticated: BackstageNonePrincipal;
   unknown: unknown;
@@ -270,17 +272,16 @@ export interface HttpAuthService {
       | keyof BackstageHttpAccessToPrincipalTypesMapping = 'unknown',
   >(
     req: Request,
-    options?: { allow: Array<TAllowed> },
+    options?: {
+      allow?: Array<TAllowed>;
+      allowedAuthMethods?: Array<'token' | 'cookie'>;
+    },
   ): Promise<
     BackstageCredentials<BackstageHttpAccessToPrincipalTypesMapping[TAllowed]>
   >;
 
-  requestHeaders(options: {
-    forward: BackstageCredentials;
-  }): Promise<Record<string, string>>;
-
   // The cookie issued by this method must be consumable by the `credentials` method, which in turn
-  // should create a credentials object that can be passed to the `issueServiceToken` method.
+  // should create a credentials object that can be passed to the `getPluginRequestToken` method.
   // The issued token must then in turn be a valid token for a user principal with full access.
   issueUserCookie(res: Response): Promise<void>;
 }
@@ -304,6 +305,25 @@ router.get('/read-data', (req, res) => {
 });
 ```
 
+#### Issue a service token for a backend-to-backend request
+
+NOTE: This is not what we want this kind of request to look like in practice. The goal is to forward credential objects as far as possible, keeping the `auth.getPluginRequestToken(...)` in API client code rather than plugin app code.
+
+```ts
+const { token } = await auth.getPluginRequestToken({
+  onBehalfOf: await auth.getOwnServiceCredentials(),
+  targetPluginId: 'example',
+});
+
+const baseUrl = await discovery.getBaseUrl('example');
+const res = await fetch(`${baseUrl}/some-resource`, {
+  headers: {
+    // A utility may be provided for this in the future if needed, this is currently fairly rare
+    Authorization: `Bearer ${token}`,
+  },
+});
+```
+
 #### Forward the user credentials from an incoming requests to upstream plugin backend
 
 ```ts
@@ -315,8 +335,9 @@ class CatalogIntegration {
     },
   ) {
     return catalogClient.getEntityByRef(req.params.entityRef, {
-      token: await auth.issueServiceToken({
-        forward: options.credentials,
+      token: await auth.getPluginRequestToken({
+        onBehalfOf: options.credentials,
+        targetPluginId: 'catalog',
       }),
     });
   }
@@ -402,27 +423,30 @@ backend:
   dangerouslyDisableServiceAuth: true
 ```
 
-The exact impact that this has is that it disables the check in the `HttpRouterService` implementation, effectively applying the `unauthenticated` access level to all routes. Furthermore, it will also change `AuthService` so that the `issueServiceToken()` method will now issue an empty token for a `'none'` principal, rather than throwing.
+The exact impact that this has is that it disables the check in the `HttpRouterService` implementation, effectively applying the `unauthenticated` access level to all routes. Furthermore, it will also change `AuthService` so that the `getPluginRequestToken()` method will now issue an empty token for a `'none'` principal, rather than throwing.
 
 ## Release Plan
 
 The existing `IdentityService` and `TokenManagerService` will be deprecated and instead implemented in terms of the new `AuthService`.
 
-The release plan for the `HttpAuthService` is TBD, but is likely to be shipped as a no-op for plugins using the old backend system. The goal is for all plugins using the new backend system to have endpoint security be opt-out, which will be a breaking change.
+The new `AuthService` and `HttpAuthService` will need backwards compatible implementations for the old backend system. The plan is to not apply any access restrictions for the old Backend system, only implementing that in the new system. The backwards compatibility helpers will use the provided `identity` and `tokenManager` services if available, and plugins should provide fallbacks in the same way as they currently do. If these are not provided, the `identity` client will fall back to `DefaultIdentityClient`, and `tokenManager` will fall back to `ServicerTokenManager.noop()`.
 
-### Implementation Tasks
+The backwards compatibility helpers will have the following behavior for each individual service call:
 
-- [ ] Implement `AuthService`
-- [ ] Implement `HttpAuthService` - leave cookie auth as unimplemented for now
-- [ ] Add `addAuthPolicy()` for `HttpRouterService`, using `HttpAuthService`
-- [ ] Implement a compatibility wrapper in `backend-common` that accepts `AuthService`, `HttpAuthService`, `IdentityService`, and `TokenManagerService` (all optional), and returns implementations for `AuthService` and `HttpAuthService`, such hat existing plugins can use a single `createRouter` implementation for both the old and new backend systems.
-- [ ] Implement `UserInfoService` in `@backstage/auth-node` - for now it will just extract the ownership entity refs from the token stored in the credentials
-- [ ] Implement cookie auth in `HttpAuthService` - just put the user token in the cookie for now
-- [ ] Deprecate `IdentityService` and `TokenManagerService`, switch to using default factories that depend on the `AuthService` and `HttpAuthService`. Stop supplying implementations for these in `backend-defaults` and `backend-test-utils`
-- [ ] Migrate plugins:
-  - [ ] Permission backend
-  - [ ] TechDocs backend
-  - [ ] App backend
+- `auth.authenticate(token)`: If the decoded token has the `backstage` audience, authenticate the token for a user principal using `identity.getIdentity(...)`, otherwise authenticate it using `tokenManager.authenticate(...)` and return a service principal with the subject `external:backstage-plugin`. If a no-op token manager is used then anything but a user token will be treated as a valid service token, which is consistent with existing behavior.
+- `auth.getOwnServiceCredentials()`: Use original implementation.
+- `auth.isPrincipal()`: Use original implementation.
+- `auth.getPluginRequestToken(options)`: Same behavior as the original implementation, using the `tokenManager` to issue service tokens, with the exception that a `none` principal will translate to an empty token rather than an error in order to properly forward calls with a no-op token manager.
+- `httpAuth.credentials(...)`: Use original implementation.
+- `httpAuth.issueUserCookie(...)`: This is a no-op as we do not need to support cookie auth in the legacy adapter.
+
+With this compatibility layer in place all plugins will be refactored to always use the new `AuthService` and `HttpAuthService` internally. The old deprecated services are only accepted at the public API boundaries, i.e. `createRouter` and similar. All plugin code beyond that point uses the new services.
+
+We do not roll out support for the new auth services for the old backend system, the full implementation is only supported in the new backend system. In particular this means that the new default protection in the `HttpRouterService` only apply to the new backend system.
+
+Users of the old backend system may already have their own protection set up, which we need to take into account, ensuring that we do not break these existing implementations.
+
+Several API clients will be updated to support passing `BackstageCredentials` instead of a token, although it is not a requirement to update all clients. In particular we will hold off on migrating isomorphic clients, leaving them to keep consuming tokens where possible. Adding support for credentials to be passed to these clients is a separate future improvement.
 
 ## Dependencies
 

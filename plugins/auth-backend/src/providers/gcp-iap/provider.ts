@@ -15,9 +15,12 @@
  */
 
 import { gcpIapAuthenticator } from '@backstage/plugin-auth-backend-module-gcp-iap-provider';
-import { createProxyAuthProviderFactory } from '@backstage/plugin-auth-node';
+import {
+  SignInResolver,
+  createProxyAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { AuthHandler, SignInResolver } from '../types';
+import { AuthHandler } from '../types';
 import { GcpIapResult } from './types';
 
 /**

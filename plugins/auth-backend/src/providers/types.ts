@@ -110,7 +110,7 @@ export type SignInResolver<TAuthResult> = _SignInResolver<TAuthResult>;
  * @public
  * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
  */
-export type AuthHandlerResult = { profile: ProfileInfo };
+export type AuthHandlerResult = { profile: _ProfileInfo };
 
 /**
  * The AuthHandler function is called every time the user authenticates using
@@ -128,7 +128,7 @@ export type AuthHandlerResult = { profile: ProfileInfo };
  */
 export type AuthHandler<TAuthResult> = (
   input: TAuthResult,
-  context: AuthResolverContext,
+  context: _AuthResolverContext,
 ) => Promise<AuthHandlerResult>;
 
 /**

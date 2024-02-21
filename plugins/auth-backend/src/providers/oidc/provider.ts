@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AuthHandler, SignInResolver } from '../types';
+import { AuthHandler } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import {
   createOAuthProviderFactory,
@@ -22,6 +22,7 @@ import {
   BackstageSignInResult,
   OAuthAuthenticatorResult,
   SignInInfo,
+  SignInResolver,
 } from '@backstage/plugin-auth-node';
 import {
   oidcAuthenticator,
