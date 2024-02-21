@@ -7,7 +7,7 @@ description: Authentication Strategies in Kubernetes plugin
 # Kubernetes Auth Strategies
 
 A Kubernetes Auth Strategy specifies the authentication steps executed on the **server side** to authenticate against a Kubernetes cluster,
-it also defines what authentication metadata info of a kubernetes cluster configuration could be returned to the front-end in case a
+it also defines what authentication metadata about a Kubernetes cluster is returned to the front-end in case a
 **client side auth provider** requires it.
 
 ## Context
