@@ -54,7 +54,7 @@ Something to highlight is that the `getCredential` method on an `AuthenticationS
 
 - A bearer token
 - A x509 client certificate and key
-- It could be an anonymous authentication
+- Anonymous authentication
 
 ```ts title="plugins/kubernetes-node/src/types/types.ts"
 export type KubernetesCredential =
