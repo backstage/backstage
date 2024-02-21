@@ -8353,7 +8353,7 @@ __metadata:
     jsonschema: ^1.2.6
     libsodium-wrappers: ^0.7.11
     octokit: ^3.0.0
-    octokit-plugin-create-pull-request: ^3.10.0
+    octokit-plugin-create-pull-request: ^5.0.0
     winston: ^3.2.1
     yaml: ^2.0.0
   languageName: unknown
@@ -14083,6 +14083,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/openapi-types@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "@octokit/openapi-types@npm:14.0.0"
+  checksum: 0a1f8f3be998cd82c5a640e9166d43fd183b33d5d36f5e1a9b81608e94d0da87c01ec46c9988f69cd26585d4e2ffc4d3ec99ee4f75e5fe997fc86dad0aa8293c
+  languageName: node
+  linkType: hard
+
 "@octokit/openapi-types@npm:^17.2.0":
   version: 17.2.0
   resolution: "@octokit/openapi-types@npm:17.2.0"
@@ -14287,7 +14294,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/types@npm:^6.0.3, @octokit/types@npm:^6.10.0, @octokit/types@npm:^6.12.2, @octokit/types@npm:^6.16.1, @octokit/types@npm:^6.8.2":
+"@octokit/types@npm:^6.0.3, @octokit/types@npm:^6.10.0, @octokit/types@npm:^6.12.2, @octokit/types@npm:^6.16.1":
   version: 6.41.0
   resolution: "@octokit/types@npm:6.41.0"
   dependencies:
@@ -14302,6 +14309,15 @@ __metadata:
   dependencies:
     "@octokit/openapi-types": ^13.0.0
   checksum: 54d714c1e8296da7ff68eec6a72061313a3f4836793fe844a120aa8604336e03423c631d6316fa2ab00c34aae7a4be0ecb6aed192d04f891084e00674d176fcb
+  languageName: node
+  linkType: hard
+
+"@octokit/types@npm:^8.0.0":
+  version: 8.2.1
+  resolution: "@octokit/types@npm:8.2.1"
+  dependencies:
+    "@octokit/openapi-types": ^14.0.0
+  checksum: 92f2fe5ea8c4c6ddbb2363c74cd865c64e5753eaa4895bc925b5064390890b1441c5406015d8a92285f386cc7e6fe714c47fe4beda370fcda9177153299c9e37
   languageName: node
   linkType: hard
 
@@ -36511,12 +36527,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"octokit-plugin-create-pull-request@npm:^3.10.0":
-  version: 3.13.1
-  resolution: "octokit-plugin-create-pull-request@npm:3.13.1"
+"octokit-plugin-create-pull-request@npm:^5.0.0":
+  version: 5.1.1
+  resolution: "octokit-plugin-create-pull-request@npm:5.1.1"
   dependencies:
-    "@octokit/types": ^6.8.2
-  checksum: 169e393046cecc51b9c9be23321086fc60681bfdfe2bcec5477d0916e5b8e3b64b54588f631f61d98677a0561f5d44fa85589abd75ff851122c798795921292b
+    "@octokit/types": ^8.0.0
+  checksum: bed96700c795868d1fc6a95d41c87b98c370d84421125b561c6b8632bb85bbb399a9fa6d35abb2c3d342e42f8b10032afb195470cac9b640161064b68d276d9e
   languageName: node
   linkType: hard
 
