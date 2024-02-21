@@ -19,6 +19,7 @@ import {
   notFoundHandler,
   requestLoggingHandler,
   HostDiscovery,
+  ServerTokenManager,
 } from '@backstage/backend-common';
 import compression from 'compression';
 import cors from 'cors';
@@ -48,6 +49,10 @@ export async function createStandaloneApplication(
     discoveryApi: HostDiscovery.fromConfig(config),
   });
 
+  const tokenManager = ServerTokenManager.fromConfig(config, {
+    logger: logger,
+  });
+
   const permissions = {} as PermissionEvaluator;
 
   app.use(helmet());
@@ -59,7 +64,14 @@ export async function createStandaloneApplication(
   app.use(requestLoggingHandler());
   app.use(
     '/',
-    await createRouter({ logger, config, discovery, catalogApi, permissions }),
+    await createRouter({
+      logger,
+      config,
+      discovery,
+      catalogApi,
+      tokenManager,
+      permissions,
+    }),
   );
   app.use(notFoundHandler());
   app.use(errorHandler());

@@ -24,6 +24,7 @@ import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { LocalKubectlProxyClusterLocator } from './LocalKubectlProxyLocator';
+import { TokenManager } from '@backstage/backend-common';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
   constructor(
@@ -64,6 +65,7 @@ class CombinedClustersSupplier implements KubernetesClustersSupplier {
 export const getCombinedClusterSupplier = (
   rootConfig: Config,
   catalogClient: CatalogApi,
+  tokenManager: TokenManager,
   authStrategy: AuthenticationStrategy,
   logger: Logger,
   refreshInterval: Duration | undefined = undefined,
@@ -74,7 +76,7 @@ export const getCombinedClusterSupplier = (
       const type = clusterLocatorMethod.getString('type');
       switch (type) {
         case 'catalog':
-          return CatalogClusterLocator.fromConfig(catalogClient);
+          return CatalogClusterLocator.fromConfig(catalogClient, tokenManager);
         case 'localKubectlProxy':
           return new LocalKubectlProxyClusterLocator();
         case 'config':

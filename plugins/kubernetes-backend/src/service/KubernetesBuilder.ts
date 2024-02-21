@@ -64,6 +64,7 @@ import {
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesProxy } from './KubernetesProxy';
+import { TokenManager } from '@backstage/backend-common';
 
 /**
  *
@@ -74,6 +75,7 @@ export interface KubernetesEnvironment {
   config: Config;
   catalogApi: CatalogApi;
   permissions: PermissionEvaluator;
+  tokenManager: TokenManager;
 }
 
 /**
@@ -242,6 +244,7 @@ export class KubernetesBuilder {
     this.clusterSupplier = getCombinedClusterSupplier(
       config,
       this.env.catalogApi,
+      this.env.tokenManager,
       new DispatchStrategy({ authStrategyMap: this.getAuthStrategyMap() }),
       this.env.logger,
       refreshInterval,

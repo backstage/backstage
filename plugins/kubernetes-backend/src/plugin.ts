@@ -179,15 +179,24 @@ export const kubernetesPlugin = createBackendPlugin({
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         catalogApi: catalogServiceRef,
+        tokenManager: coreServices.tokenManager,
         permissions: coreServices.permissions,
       },
-      async init({ http, logger, config, catalogApi, permissions }) {
+      async init({
+        http,
+        logger,
+        config,
+        catalogApi,
+        tokenManager,
+        permissions,
+      }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         // TODO: expose all of the customization & extension points of the builder here
         const builder: KubernetesBuilder = KubernetesBuilder.createBuilder({
           logger: winstonLogger,
           config,
           catalogApi,
+          tokenManager,
           permissions,
         })
           .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())

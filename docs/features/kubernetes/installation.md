@@ -75,6 +75,7 @@ export default async function createPlugin(
     logger: env.logger,
     config: env.config,
     catalogApi,
+    tokenManager: env.tokenManager,
     permissions: env.permissions,
   }).build();
   return router;

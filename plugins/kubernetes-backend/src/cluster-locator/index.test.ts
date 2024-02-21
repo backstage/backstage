@@ -21,6 +21,7 @@ import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernete
 import { getCombinedClusterSupplier } from './index';
 import { ClusterDetails } from '../types/types';
 import { AuthenticationStrategy, DispatchStrategy } from '../auth';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('getCombinedClusterSupplier', () => {
   let catalogApi: CatalogApi;
@@ -60,6 +61,7 @@ describe('getCombinedClusterSupplier', () => {
     const clusterSupplier = getCombinedClusterSupplier(
       config,
       catalogApi,
+      mockServices.tokenManager(),
       mockStrategy,
       getVoidLogger(),
     );
@@ -100,6 +102,7 @@ describe('getCombinedClusterSupplier', () => {
       getCombinedClusterSupplier(
         config,
         catalogApi,
+        mockServices.tokenManager(),
         new DispatchStrategy({ authStrategyMap: {} }),
         getVoidLogger(),
       ),
@@ -154,6 +157,7 @@ describe('getCombinedClusterSupplier', () => {
     const clusterSupplier = getCombinedClusterSupplier(
       config,
       catalogApi,
+      mockServices.tokenManager(),
       mockStrategy,
       logger,
     );

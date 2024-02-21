@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TokenManager } from '@backstage/backend-common';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
 import {
@@ -34,13 +35,18 @@ function isObject(obj: unknown): obj is JsonObject {
 
 export class CatalogClusterLocator implements KubernetesClustersSupplier {
   private catalogClient: CatalogApi;
+  private tokenManager: TokenManager;
 
-  constructor(catalogClient: CatalogApi) {
+  constructor(catalogClient: CatalogApi, tokenManager: TokenManager) {
     this.catalogClient = catalogClient;
+    this.tokenManager = tokenManager;
   }
 
-  static fromConfig(catalogApi: CatalogApi): CatalogClusterLocator {
-    return new CatalogClusterLocator(catalogApi);
+  static fromConfig(
+    catalogApi: CatalogApi,
+    tokenManager: TokenManager,
+  ): CatalogClusterLocator {
+    return new CatalogClusterLocator(catalogApi, tokenManager);
   }
 
   async getClusters(): Promise<ClusterDetails[]> {
@@ -56,9 +62,15 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
       [authProviderKey]: CATALOG_FILTER_EXISTS,
     };
 
-    const clusters = await this.catalogClient.getEntities({
-      filter: [filter],
-    });
+    const { token } = await this.tokenManager.getToken();
+    const clusters = await this.catalogClient.getEntities(
+      {
+        filter: [filter],
+      },
+      {
+        token,
+      },
+    );
     return clusters.items.map(entity => {
       const annotations = entity.metadata.annotations!;
       const clusterDetails: ClusterDetails = {

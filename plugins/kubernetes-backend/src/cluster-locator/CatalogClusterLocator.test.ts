@@ -23,6 +23,7 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { CatalogApi } from '@backstage/catalog-client';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mockCatalogApi = {
   getEntityByRef: jest.fn(),
@@ -78,8 +79,10 @@ describe('CatalogClusterLocator', () => {
       }),
     } as Partial<CatalogApi> as CatalogApi;
 
-    const clusterSupplier =
-      CatalogClusterLocator.fromConfig(emptyMockCatalogApi);
+    const clusterSupplier = CatalogClusterLocator.fromConfig(
+      emptyMockCatalogApi,
+      mockServices.tokenManager(),
+    );
 
     const result = await clusterSupplier.getClusters();
 
@@ -88,7 +91,10 @@ describe('CatalogClusterLocator', () => {
   });
 
   it('returns the cluster details provided by annotations', async () => {
-    const clusterSupplier = CatalogClusterLocator.fromConfig(mockCatalogApi);
+    const clusterSupplier = CatalogClusterLocator.fromConfig(
+      mockCatalogApi,
+      mockServices.tokenManager(),
+    );
 
     const result = await clusterSupplier.getClusters();
 
@@ -97,7 +103,10 @@ describe('CatalogClusterLocator', () => {
   });
 
   it('returns the aws cluster details provided by annotations', async () => {
-    const clusterSupplier = CatalogClusterLocator.fromConfig(mockCatalogApi);
+    const clusterSupplier = CatalogClusterLocator.fromConfig(
+      mockCatalogApi,
+      mockServices.tokenManager(),
+    );
 
     const result = await clusterSupplier.getClusters();
 
