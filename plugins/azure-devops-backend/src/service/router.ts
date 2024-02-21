@@ -26,7 +26,6 @@ import { Logger } from 'winston';
 import { PullRequestsDashboardProvider } from '../api/PullRequestsDashboardProvider';
 import Router from 'express-promise-router';
 import { errorHandler, UrlReader } from '@backstage/backend-common';
-import { InputError } from '@backstage/errors';
 import express from 'express';
 import { InputError, NotAllowedError } from '@backstage/errors';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';

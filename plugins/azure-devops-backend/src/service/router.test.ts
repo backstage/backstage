@@ -559,10 +559,13 @@ describe('createRouter', () => {
         content,
         url,
       });
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
 
-      const response = await request(app).get(
-        '/readme/myProject/myRepo?path=README_NOT_DEFAULT.md',
-      );
+      const response = await request(app)
+        .get('/readme/myProject/myRepo?path=README_NOT_DEFAULT.md')
+        .query({ entityRef: 'component:default/mycomponent' });
       expect(azureDevOpsApi.getReadme).toHaveBeenCalledWith(
         'host.com',
         'myOrg',
@@ -587,10 +590,13 @@ describe('createRouter', () => {
         content,
         url,
       });
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
 
-      const response = await request(app).get(
-        '/readme/myProject/myRepo?path=/my-path/README.md',
-      );
+      const response = await request(app)
+        .get('/readme/myProject/myRepo?path=/my-path/README.md')
+        .query({ entityRef: 'component:default/mycomponent' });
       expect(azureDevOpsApi.getReadme).toHaveBeenCalledWith(
         'host.com',
         'myOrg',
