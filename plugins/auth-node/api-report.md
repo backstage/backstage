@@ -538,7 +538,11 @@ export type ProfileTransform<TResult> = (
 }>;
 
 // @public (undocumented)
-export interface ProxyAuthenticator<TContext, TResult, TProviderInfo> {
+export interface ProxyAuthenticator<
+  TContext,
+  TResult,
+  TProviderInfo = undefined,
+> {
   // (undocumented)
   authenticate(
     options: {

@@ -19,7 +19,11 @@ import { Request } from 'express';
 import { ProfileTransform } from '../types';
 
 /** @public */
-export interface ProxyAuthenticator<TContext, TResult, TProviderInfo> {
+export interface ProxyAuthenticator<
+  TContext,
+  TResult,
+  TProviderInfo = undefined,
+> {
   defaultProfileTransform: ProfileTransform<TResult>;
   initialize(ctx: { config: Config }): TContext;
   authenticate(
