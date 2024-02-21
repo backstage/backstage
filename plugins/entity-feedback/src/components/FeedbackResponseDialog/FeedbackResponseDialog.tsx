@@ -16,12 +16,7 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Progress } from '@backstage/core-components';
-import {
-  ErrorApiError,
-  errorApiRef,
-  useApi,
-  alertApiRef,
-} from '@backstage/core-plugin-api';
+import { ErrorApiError, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   Button,
   Checkbox,
@@ -50,13 +45,12 @@ import { entityFeedbackApiRef } from '../../api';
 export interface EntityFeedbackResponse {
   id: string;
   label: string;
-  mustComment?: boolean;
 }
 
 const defaultFeedbackResponses: EntityFeedbackResponse[] = [
   { id: 'incorrect', label: 'Incorrect info' },
   { id: 'missing', label: 'Missing info' },
-  { id: 'other', label: 'Other (please specify below)', mustComment: true },
+  { id: 'other', label: 'Other (please specify below)' },
 ];
 
 /**
@@ -87,41 +81,13 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
   const classes = useStyles();
   const errorApi = useApi(errorApiRef);
   const feedbackApi = useApi(entityFeedbackApiRef);
-  const alertApi = useApi(alertApiRef);
   const [responseSelections, setResponseSelections] = useState(
     Object.fromEntries(feedbackDialogResponses.map(r => [r.id, false])),
   );
   const [comments, setComments] = useState('');
   const [consent, setConsent] = useState(true);
-  const requireComments = feedbackDialogResponses
-    .filter(r => r.mustComment)
-    .map(r => r.id);
-
-  const isLinkedBoxChecked = () => {
-    const checkedBoxes = Object.keys(responseSelections).filter(
-      id => responseSelections[id],
-    );
-    return checkedBoxes.some(id => requireComments.includes(id));
-  };
 
   const [{ loading: saving }, saveResponse] = useAsyncFn(async () => {
-    if (requireComments.length > 0) {
-      if (comments.length === 0 && isLinkedBoxChecked()) {
-        alertApi.post({
-          message:
-            'The selected option(s) require a comment. Please provide a comment.',
-          severity: 'info',
-        });
-        return;
-      }
-      if (comments.length > 0 && !isLinkedBoxChecked()) {
-        alertApi.post({
-          message: 'Please select the option(s) that require a comment.',
-          severity: 'info',
-        });
-        return;
-      }
-    }
     try {
       await feedbackApi.recordResponse(stringifyEntityRef(entity), {
         comments,
@@ -135,22 +101,6 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
       errorApi.post(e as ErrorApiError);
     }
   }, [comments, consent, entity, feedbackApi, onClose, responseSelections]);
-
-  const selectLinkedBox = (res: boolean) => {
-    const newResponseSelections = { ...responseSelections };
-    requireComments.forEach(id => newResponseSelections[id] === res);
-    setResponseSelections(newResponseSelections);
-  };
-
-  const verifyComments = (e: any) => {
-    setComments(e.target.value);
-    if (requireComments.length > 0) {
-      selectLinkedBox(true);
-      if (e.target.value.length === 0) {
-        selectLinkedBox(false);
-      }
-    }
-  };
 
   return (
     <Dialog open={open} onClose={() => !saving && onClose()}>
@@ -188,7 +138,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
             label="Additional comments"
             multiline
             minRows={2}
-            onChange={e => verifyComments(e)}
+            onChange={e => setComments(e.target.value)}
             variant="outlined"
             value={comments}
           />

@@ -80,12 +80,10 @@ export const FeedbackResponseTable = (props: FeedbackResponseTableProps) => {
       width: '35%',
       render: (response: ResponseRow) => (
         <>
-          {response.response?.length !== undefined &&
-          response.response?.length > 0
-            ? response.response
-                ?.split(',')
-                .map(res => <Chip key={res} size="small" label={res} />)
-            : ''}
+          {response.response?.length &&
+            response.response
+              ?.split(',')
+              .map(res => <Chip key={res} size="small" label={res} />)}
         </>
       ),
     },
