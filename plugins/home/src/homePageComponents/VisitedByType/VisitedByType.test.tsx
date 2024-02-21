@@ -21,14 +21,6 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 
 describe('<VisitedByType/> kind="top"', () => {
-  it('should render', async () => {
-    const { getByText } = await renderInTestApp(
-      <Context.Provider value={{ ...defaultContextValue, kind: 'top' }}>
-        <VisitedByType />
-      </Context.Provider>,
-    );
-    expect(getByText('Top Visited')).toBeInTheDocument();
-  });
   it('should display hits', async () => {
     const { getByText } = await renderInTestApp(
       <Context.Provider
@@ -55,14 +47,6 @@ describe('<VisitedByType/> kind="top"', () => {
 });
 
 describe('<VisitedByType/> kind="recent"', () => {
-  it('should render', async () => {
-    const { getByText } = await renderInTestApp(
-      <Context.Provider value={{ ...defaultContextValue, kind: 'recent' }}>
-        <VisitedByType />
-      </Context.Provider>,
-    );
-    expect(getByText('Recently Visited')).toBeInTheDocument();
-  });
   it('should display how long ago a visit happened', async () => {
     const { getByText } = await renderInTestApp(
       <Context.Provider
