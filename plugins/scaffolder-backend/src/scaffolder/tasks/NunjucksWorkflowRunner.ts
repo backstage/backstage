@@ -79,7 +79,7 @@ type TemplateContext = {
   each?: JsonValue;
 };
 
-type TaskState = {
+type CheckpointsState = {
   [key: string]:
     | {
         status: 'failed';
@@ -369,7 +369,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               let prevValue: U | undefined;
               if (prevTaskState) {
                 const prevState = (
-                  prevTaskState.state?.checkpoints as TaskState
+                  prevTaskState.state?.checkpoints as CheckpointsState
                 )?.[key];
                 if (prevState && prevState.status === 'success') {
                   prevValue = prevState.value as U;
