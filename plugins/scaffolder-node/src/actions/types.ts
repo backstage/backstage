@@ -21,6 +21,7 @@ import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
 import { Schema } from 'jsonschema';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**
  * ActionContext is passed into scaffolder actions.
@@ -80,6 +81,11 @@ export type ActionContext<
    * Optional value of each invocation
    */
   each?: JsonObject;
+
+  /**
+   * Get the credentials for the current request
+   */
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
 };
 
 /** @public */

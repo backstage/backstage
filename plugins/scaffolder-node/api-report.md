@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
@@ -47,6 +48,7 @@ export type ActionContext<
   };
   signal?: AbortSignal;
   each?: JsonObject;
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
 };
 
 // @public (undocumented)
@@ -356,6 +358,8 @@ export interface TaskContext {
     | undefined
   >;
   // (undocumented)
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
+  // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
   isDryRun?: boolean;
@@ -385,6 +389,7 @@ export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 // @public
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
+  initiatorCredentials?: string;
 };
 
 // @public

@@ -35,11 +35,13 @@ import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import fs from 'fs-extra';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 interface DryRunInput {
   spec: TaskSpec;
   secrets?: TaskSecrets;
   directoryContents: SerializedFile[];
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
 }
 
 interface DryRunResult {
@@ -116,6 +118,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
           },
         },
         secrets: input.secrets,
+        getInitiatorCredentials: input.getInitiatorCredentials,
         // No need to update this at the end of the run, so just hard-code it
         done: false,
         isDryRun: true,

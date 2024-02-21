@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, JsonValue, Observable } from '@backstage/types';
 
@@ -23,7 +24,11 @@ import { JsonObject, JsonValue, Observable } from '@backstage/types';
  * @public
  */
 export type TaskSecrets = Record<string, string> & {
+  /**
+   * @deprecated use "initiatorCredentials" instead
+   */
   backstageToken?: string;
+  initiatorCredentials?: string;
 };
 
 /**
@@ -140,6 +145,8 @@ export interface TaskContext {
   ): Promise<void>;
 
   getWorkspaceName(): Promise<string>;
+
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
 }
 
 /**

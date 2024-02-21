@@ -30,6 +30,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { TaskStore } from './types';
 import { readDuration } from './helper';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 type TaskState = {
   checkpoints: {
@@ -72,6 +73,7 @@ export class TaskManager implements TaskContext {
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
   ) {}
+  isDryRun?: boolean | undefined;
 
   get spec() {
     return this.task.spec;
@@ -170,6 +172,10 @@ export class TaskManager implements TaskContext {
         );
       }
     }, 1000);
+  }
+
+  getInitiatorCredentials(): Promise<BackstageCredentials> {
+    return JSON.parse(this.task.secrets!.initiatorCredentials!);
   }
 }
 
