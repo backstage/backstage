@@ -68,6 +68,8 @@ export const GraphiQLBrowser = (props: GraphiQLBrowserProps) => {
           classes={{ root: classes.tabs }}
           value={tabIndex}
           onChange={(_, value) => setTabIndex(value)}
+          variant="scrollable"
+          scrollButtons="auto"
           indicatorColor="primary"
         >
           {endpoints.map(({ title }, index) => (
