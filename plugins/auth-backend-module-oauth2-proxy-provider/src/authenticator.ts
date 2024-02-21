@@ -31,11 +31,7 @@ import { OAuth2ProxyResult } from './types';
 export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
 
 /** @public */
-export const oauth2ProxyAuthenticator = createProxyAuthenticator<
-  unknown,
-  OAuth2ProxyResult,
-  { accessToken: string }
->({
+export const oauth2ProxyAuthenticator = createProxyAuthenticator({
   defaultProfileTransform: async (result: OAuth2ProxyResult) => {
     return {
       profile: {
