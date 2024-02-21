@@ -28741,19 +28741,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gaxios@npm:^6.0.0, gaxios@npm:^6.0.2":
-  version: 6.1.1
-  resolution: "gaxios@npm:6.1.1"
+"gaxios@npm:^6.0.0, gaxios@npm:^6.0.2, gaxios@npm:^6.1.1":
+  version: 6.3.0
+  resolution: "gaxios@npm:6.3.0"
   dependencies:
     extend: ^3.0.2
     https-proxy-agent: ^7.0.1
     is-stream: ^2.0.0
     node-fetch: ^2.6.9
-  checksum: bb4a4e6c81847b690ee29e01294d2093eb9bb4f9e60bbf81fcc6cd3b274f3c551c50a9bc134e7e7019a9b116eac9d9df6af9f2519c695da7ddd785f36564da72
+  checksum: 4d4a8db32d833f8012435e2016cb0c919cac288e821bf81f877504e4284ef12b444cd903448e738c4031cd5219adf1e8d68e7df2b3dba774db9fde27f71109d4
   languageName: node
   linkType: hard
 
-"gcp-metadata@npm:^6.0.0":
+"gcp-metadata@npm:^6.1.0":
   version: 6.1.0
   resolution: "gcp-metadata@npm:6.1.0"
   dependencies:
@@ -29138,16 +29138,16 @@ __metadata:
   linkType: hard
 
 "google-auth-library@npm:^9.0.0":
-  version: 9.2.0
-  resolution: "google-auth-library@npm:9.2.0"
+  version: 9.6.3
+  resolution: "google-auth-library@npm:9.6.3"
   dependencies:
     base64-js: ^1.3.0
     ecdsa-sig-formatter: ^1.0.11
-    gaxios: ^6.0.0
-    gcp-metadata: ^6.0.0
+    gaxios: ^6.1.1
+    gcp-metadata: ^6.1.0
     gtoken: ^7.0.0
     jws: ^4.0.0
-  checksum: 0da686964a769c79b5a1f7e518cb885f7c433edd50c8adf5cc310bfce607235184ebe6f9bc5290618d760c25e4ce1e273d444c9914c815353faa9d9dea37d1b3
+  checksum: 46174191de15ec56110ac0394ae9d1c56fb6aa293809d45170b2ff570130d7e3f3e82fa78d413908862a2d0da3fa946b72f1074000f4d52579eb17367e49e44d
   languageName: node
   linkType: hard
 
