@@ -20,9 +20,9 @@ kubernetes clusters, it includes:
 - `Client Side Providers` like `aks` or `oidc` where the user is authenticated with the cluster, getting only the
   kubernetes permissions granted to that specific user.
 
-Although there are `Server Side Providers` and `Client Side Providers`, an auth provider requires to have code on both sides, perhaps one of them doing
-most of the authentication job, but notice that not all steps to authenticate against a Kubernetes Cluster are always executed exclusively on the server side or client side.
-A Kubernetes authentication flow could require to split the authentication process among steps on the client side **and** steps on the server side.
+Although there are `Server Side Providers` and `Client Side Providers`, authenticating with a cluster requires code on both sides. Perhaps one of them does
+most of the job, but in general not all steps to authenticate against a Kubernetes cluster are always executed exclusively on the server side or client side.
+A Kubernetes authentication flow could require splitting the authentication process among steps on the client side **and** steps on the server side.
 
 ## AuthenticationStrategy interface
 
