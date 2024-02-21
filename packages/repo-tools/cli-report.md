@@ -107,7 +107,7 @@ Commands:
 Usage: backstage-repo-tools package schema openapi fuzz [options]
 
 Options:
-  --count <count>
+  --limit <limit>
   --workers <workers>
   --debug
   --exclude-checks <excludeChecks>
