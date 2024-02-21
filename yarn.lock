@@ -7444,7 +7444,7 @@ __metadata:
     js-yaml: ^4.1.0
     knex: ^3.0.0
     linguist-js: ^2.5.3
-    luxon: ^2.0.2
+    luxon: ^3.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
     uuid: ^8.3.2
@@ -7481,7 +7481,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
-    luxon: ^2.0.2
+    luxon: ^3.0.0
     react-use: ^17.2.4
     slugify: ^1.6.4
   peerDependencies:
@@ -33884,13 +33884,6 @@ __metadata:
   version: 2.3.9
   resolution: "lunr@npm:2.3.9"
   checksum: 176719e24fcce7d3cf1baccce9dd5633cd8bdc1f41ebe6a180112e5ee99d80373fe2454f5d4624d437e5a8319698ca6837b9950566e15d2cae5f2a543a3db4b8
-  languageName: node
-  linkType: hard
-
-"luxon@npm:^2.0.2":
-  version: 2.5.2
-  resolution: "luxon@npm:2.5.2"
-  checksum: d8b671ffd2ff0b438af862ac11082a81b3aedd9f8b6a4ca636f944224f8dd381125cd4d274ca0a8aedcaf2cfca0fc2ca96fe4cc1b16a28b7af701afb95c0bff8
   languageName: node
   linkType: hard
 
