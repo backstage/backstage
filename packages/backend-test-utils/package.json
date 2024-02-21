@@ -54,7 +54,7 @@
     "fs-extra": "^11.0.0",
     "knex": "^3.0.0",
     "msw": "^1.0.0",
-    "mysql2": "^2.2.5",
+    "mysql2": "^3.0.0",
     "pg": "^8.11.3",
     "testcontainers": "^8.1.2",
     "textextensions": "^5.16.0",

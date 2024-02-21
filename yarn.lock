@@ -3329,7 +3329,7 @@ __metadata:
     luxon: ^3.0.0
     minimatch: ^5.0.0
     msw: ^1.0.0
-    mysql2: ^2.2.5
+    mysql2: ^3.0.0
     node-fetch: ^2.6.7
     p-limit: ^3.1.0
     pg: ^8.11.3
@@ -3483,7 +3483,7 @@ __metadata:
     fs-extra: ^11.0.0
     knex: ^3.0.0
     msw: ^1.0.0
-    mysql2: ^2.2.5
+    mysql2: ^3.0.0
     pg: ^8.11.3
     supertest: ^6.1.3
     testcontainers: ^8.1.2
@@ -25246,7 +25246,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"denque@npm:^2.0.1, denque@npm:^2.1.0":
+"denque@npm:^2.1.0":
   version: 2.1.0
   resolution: "denque@npm:2.1.0"
   checksum: 1d4ae1d05e59ac3a3481e7b478293f4b4c813819342273f3d5b826c7ffa9753c520919ba264f377e09108d24ec6cf0ec0ac729a5686cbb8f32d797126c5dae74
@@ -25800,7 +25800,7 @@ __metadata:
     cross-fetch: ^4.0.0
     fs-extra: ^11.2.0
     handlebars: ^4.7.3
-    mysql2: ^2.2.5
+    mysql2: ^3.0.0
     nodemon: ^3.0.1
     pgtools: ^1.0.0
     tree-kill: ^1.2.2
@@ -27464,7 +27464,7 @@ __metadata:
     express-prom-bundle: ^7.0.0
     express-promise-router: ^4.1.0
     luxon: ^3.0.0
-    mysql2: ^2.2.5
+    mysql2: ^3.0.0
     pg: ^8.11.3
     pg-connection-string: ^2.3.0
     prom-client: ^15.0.0
@@ -33750,17 +33750,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"long@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "long@npm:4.0.0"
-  checksum: 16afbe8f749c7c849db1f4de4e2e6a31ac6e617cead3bdc4f9605cb703cd20e1e9fc1a7baba674ffcca57d660a6e5b53a9e236d7b25a295d3855cca79cc06744
-  languageName: node
-  linkType: hard
-
-"long@npm:^5.0.0":
-  version: 5.2.0
-  resolution: "long@npm:5.2.0"
-  checksum: 37aa4e67b9c3eebc6d9d675adcc9d06f06059ca268922a71273de389746bf07f0ff282f9e604d17fdf84c4149099b44e936ea2b621a6c4759a216621afa97efd
+"long@npm:^5.0.0, long@npm:^5.2.1":
+  version: 5.2.3
+  resolution: "long@npm:5.2.3"
+  checksum: 885ede7c3de4facccbd2cacc6168bae3a02c3e836159ea4252c87b6e34d40af819824b2d4edce330bfb5c4d6e8ce3ec5864bdcf9473fa1f53a4f8225860e5897
   languageName: node
   linkType: hard
 
@@ -33822,7 +33815,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^4.0.1, lru-cache@npm:^4.1.3":
+"lru-cache@npm:^4.0.1":
   version: 4.1.5
   resolution: "lru-cache@npm:4.1.5"
   dependencies:
@@ -33850,10 +33843,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^7.14.0, lru-cache@npm:^7.7.1":
+"lru-cache@npm:^7.14.0, lru-cache@npm:^7.14.1, lru-cache@npm:^7.7.1":
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^8.0.0":
+  version: 8.0.5
+  resolution: "lru-cache@npm:8.0.5"
+  checksum: 87d72196d8f46e8299c4ab576ed2ec8a07e3cbef517dc9874399c0b2470bd9bf62aacec3b67f84ed6d74aaa1ef31636d048edf996f76248fd17db72bfb631609
   languageName: node
   linkType: hard
 
@@ -35522,19 +35522,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mysql2@npm:^2.2.5":
-  version: 2.3.3
-  resolution: "mysql2@npm:2.3.3"
+"mysql2@npm:^3.0.0":
+  version: 3.9.1
+  resolution: "mysql2@npm:3.9.1"
   dependencies:
-    denque: ^2.0.1
+    denque: ^2.1.0
     generate-function: ^2.3.1
     iconv-lite: ^0.6.3
-    long: ^4.0.0
-    lru-cache: ^6.0.0
-    named-placeholders: ^1.1.2
+    long: ^5.2.1
+    lru-cache: ^8.0.0
+    named-placeholders: ^1.1.3
     seq-queue: ^0.0.5
     sqlstring: ^2.3.2
-  checksum: 45e479d0cbdb24ceb9d1846a1708ae2c33aa64f603f7899279b33560b1eec441f1b7a596075896f1305f701cfbc083bceb88bc72ba5d2f3656a3d6102611286a
+  checksum: 067353f8735d3e91654ecc01f562729c87f4fa141e870d524af06c5db98ac3341d91f3130357fead247833f41b1b93d1c6dd6e1f1b98687d28998bd9673b9ce7
   languageName: node
   linkType: hard
 
@@ -35549,12 +35549,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"named-placeholders@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "named-placeholders@npm:1.1.2"
+"named-placeholders@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "named-placeholders@npm:1.1.3"
   dependencies:
-    lru-cache: ^4.1.3
-  checksum: c9317d1b479d6733b3baedfde209c6c866cf387c2d625837f93355fdb6a9055b1e8180b883fe00bcb20edb3ba4dd21128ec2f1ed8cb884385cef7698cbcadcc4
+    lru-cache: ^7.14.1
+  checksum: 7834adc91e92ae1b9c4413384e3ccd297de5168bb44017ff0536705ddc4db421723bd964607849265feb3f6ded390f84cf138e5925f22f7c13324f87a803dc73
   languageName: node
   linkType: hard
 
