@@ -34,7 +34,7 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
-    "google-auth-library": "^8.0.0",
+    "google-auth-library": "^9.0.0",
     "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
