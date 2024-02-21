@@ -19,7 +19,10 @@ export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
 // @public (undocumented)
 export const oauth2ProxyAuthenticator: ProxyAuthenticator<
   unknown,
-  OAuth2ProxyResult
+  OAuth2ProxyResult,
+  {
+    accessToken: string;
+  }
 >;
 
 // @public

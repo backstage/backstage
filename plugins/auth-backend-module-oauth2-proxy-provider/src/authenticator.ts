@@ -33,7 +33,8 @@ export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
 /** @public */
 export const oauth2ProxyAuthenticator = createProxyAuthenticator<
   unknown,
-  OAuth2ProxyResult
+  OAuth2ProxyResult,
+  { accessToken: string }
 >({
   defaultProfileTransform: async (result: OAuth2ProxyResult) => {
     return {
@@ -63,7 +64,13 @@ export const oauth2ProxyAuthenticator = createProxyAuthenticator<
           return req.get(name);
         },
       };
-      return { result };
+
+      return {
+        result,
+        providerInfo: {
+          accessToken: result.accessToken,
+        },
+      };
     } catch (e) {
       throw new AuthenticationError('Authentication failed', e);
     }

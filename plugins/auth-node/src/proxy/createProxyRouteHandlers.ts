@@ -29,7 +29,7 @@ import { NotImplementedError } from '@backstage/errors';
 
 /** @public */
 export interface ProxyAuthRouteHandlersOptions<TResult> {
-  authenticator: ProxyAuthenticator<any, TResult>;
+  authenticator: ProxyAuthenticator<any, TResult, unknown>;
   config: Config;
   resolverContext: AuthResolverContext;
   signInResolver: SignInResolver<TResult>;
@@ -56,7 +56,7 @@ export function createProxyAuthRouteHandlers<TResult>(
     },
 
     async refresh(this: never, req: Request, res: Response): Promise<void> {
-      const { result } = await authenticator.authenticate(
+      const { result, providerInfo } = await authenticator.authenticate(
         { req },
         authenticatorCtx,
       );
@@ -68,9 +68,9 @@ export function createProxyAuthRouteHandlers<TResult>(
         resolverContext,
       );
 
-      const response: ClientAuthResponse<{}> = {
+      const response: ClientAuthResponse<unknown> = {
         profile,
-        providerInfo: {},
+        providerInfo,
         backstageIdentity: prepareBackstageIdentityResponse(identity),
       };
 

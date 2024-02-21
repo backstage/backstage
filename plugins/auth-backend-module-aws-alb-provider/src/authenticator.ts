@@ -81,8 +81,12 @@ export const awsAlbAuthenticator = createProxyAuthenticator({
       return {
         result: {
           fullProfile,
+          accessToken: accessToken,
           expiresInSeconds: claims.exp,
-          accessToken,
+        },
+        providerInfo: {
+          accessToken: accessToken,
+          expiresInSeconds: claims.exp,
         },
       };
     } catch (e) {
