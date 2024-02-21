@@ -43,7 +43,7 @@
     "express-promise-router": "^4.1.0",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.27",
-    "p-limit": "^3.1.0",
+    "p-limit": "^5.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },

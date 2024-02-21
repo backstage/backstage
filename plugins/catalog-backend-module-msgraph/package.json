@@ -57,7 +57,7 @@
     "@types/node-fetch": "^2.5.12",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
-    "p-limit": "^3.0.2",
+    "p-limit": "^5.0.0",
     "qs": "^6.9.4",
     "uuid": "^8.0.0",
     "winston": "^3.2.1"

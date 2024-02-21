@@ -40,7 +40,7 @@
     "@gitbeaker/browser": "^35.6.0",
     "@gitbeaker/core": "^35.6.0",
     "luxon": "^3.0.0",
-    "p-limit": "^4.0.0"
+    "p-limit": "^5.0.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",

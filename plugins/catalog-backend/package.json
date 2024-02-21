@@ -78,7 +78,7 @@
     "luxon": "^3.0.0",
     "minimatch": "^9.0.0",
     "node-fetch": "^2.6.7",
-    "p-limit": "^3.0.2",
+    "p-limit": "^5.0.0",
     "prom-client": "^15.0.0",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
