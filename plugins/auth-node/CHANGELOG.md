@@ -1,5 +1,11 @@
 # @backstage/plugin-auth-node
 
+## 0.4.5
+
+### Patch Changes
+
+- 65f76be: Fix issue with `providerInfo` not being set properly for some proxy providers, by making `providerInfo` an explicit optional return from `authenticate`
+
 ## 0.4.4
 
 ### Patch Changes
