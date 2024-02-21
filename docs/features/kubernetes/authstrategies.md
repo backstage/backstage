@@ -50,7 +50,7 @@ The `AuthenticationStrategy` interface defines the following signature:
 
 ### KubernetesCredential type
 
-Something to highlight is that `AuthenticationStrategies` will return a [`KubernetesCredential`](https://github.com/backstage/backstage/blob/0226d424f5a3104239eb9e1eaa9f0cbf29cc1f1c/plugins/kubernetes-node/src/types/types.ts#L140) object from the `getCredential` method with the authentication data to consume a kubernetes cluster, it could be:
+Something to highlight is that the `getCredential` method on an `AuthenticationStrategy` will return a [`KubernetesCredential`](https://github.com/backstage/backstage/blob/0226d424f5a3104239eb9e1eaa9f0cbf29cc1f1c/plugins/kubernetes-node/src/types/types.ts#L140) object representing a single method of authenticating with a Kubernetes cluster. This value can be:
 
 - A bearer token
 - A x509 client certificate and key
