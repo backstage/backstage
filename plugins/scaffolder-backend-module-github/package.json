@@ -46,7 +46,7 @@
     "@octokit/webhooks": "^10.0.0",
     "libsodium-wrappers": "^0.7.11",
     "octokit": "^3.0.0",
-    "octokit-plugin-create-pull-request": "^3.10.0",
+    "octokit-plugin-create-pull-request": "^5.0.0",
     "winston": "^3.2.1",
     "yaml": "^2.0.0"
   },
