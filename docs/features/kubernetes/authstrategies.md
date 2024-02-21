@@ -67,7 +67,7 @@ export type KubernetesCredential =
 ### AksStrategy
 
 Some kubernetes Authentication Strategies are pretty simple, since the Authentication process was executed on the client side by the `KubernetesAuthProvider`,
-So Authentication Strategies like [AksStrategy](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-backend/src/auth/AksStrategy.ts#L28) or [googleStrategy](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-backend/src/auth/GoogleStrategy.ts#L29C14-L29C28) are only mapping the info that the respective `KubernetesAuthProvider` was able to get in the client side authentication flow.
+So Authentication Strategies like [`AksStrategy`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-backend/src/auth/AksStrategy.ts#L28) or [`GoogleStrategy`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-backend/src/auth/GoogleStrategy.ts#L29C14-L29C28) only map the info that the corresponding `KubernetesAuthProvider` returned on the client side.
 
 ```ts title="plugins/kubernetes-backend/src/auth/AksStrategy.ts"
 export class AksStrategy implements AuthenticationStrategy {
