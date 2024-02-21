@@ -63,15 +63,14 @@ export const getAdrLocationUrl = (
     throw new Error(`Missing ADR annotation: ${ANNOTATION_ADR_LOCATION}`);
   }
 
+  let url = getAdrLocationDir(entity)!.replace(/\/$/, '');
+
   if (adrFilePath) {
-    return scmIntegration.resolveUrl({
-      url: `${getAdrLocationDir(entity)!.replace(/\/$/, '')}/${adrFilePath}`,
-      base: getEntitySourceLocation(entity).target,
-    });
+    url = `${url}/${adrFilePath}`;
   }
 
   return scmIntegration.resolveUrl({
-    url: getAdrLocationDir(entity)!,
+    url,
     base: getEntitySourceLocation(entity).target,
   });
 };
