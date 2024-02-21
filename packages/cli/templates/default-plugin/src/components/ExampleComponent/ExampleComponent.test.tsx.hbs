@@ -23,7 +23,7 @@ describe('ExampleComponent', () => {
   it('should render', async () => {
     await renderInTestApp(<ExampleComponent />);
     expect(
-      screen.getByText('Welcome to example-frontend!'),
+      screen.getByText('Welcome to {{ id }}!'),
     ).toBeInTheDocument();
   });
 });
