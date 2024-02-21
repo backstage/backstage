@@ -68,9 +68,9 @@ export function createProxyAuthRouteHandlers<TResult>(
         resolverContext,
       );
 
-      const response: ClientAuthResponse<{}> = {
+      const response: ClientAuthResponse<TResult> = {
         profile,
-        providerInfo: {},
+        providerInfo: result,
         backstageIdentity: prepareBackstageIdentityResponse(identity),
       };
 
