@@ -3252,7 +3252,7 @@ __metadata:
     http-errors: ^2.0.0
     lodash: ^4.17.21
     logform: ^2.3.2
-    minimatch: ^5.0.0
+    minimatch: ^9.0.0
     minimist: ^1.2.5
     morgan: ^1.10.0
     node-forge: ^1.3.1
@@ -3327,7 +3327,7 @@ __metadata:
     lodash: ^4.17.21
     logform: ^2.3.2
     luxon: ^3.0.0
-    minimatch: ^5.0.0
+    minimatch: ^9.0.0
     msw: ^1.0.0
     mysql2: ^3.0.0
     node-fetch: ^2.6.7
@@ -3656,7 +3656,7 @@ __metadata:
     json-schema: ^0.4.0
     lodash: ^4.17.21
     mini-css-extract-plugin: ^2.4.2
-    minimatch: ^5.1.1
+    minimatch: ^9.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     node-libs-browser: ^2.2.1
@@ -4070,7 +4070,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@manypkg/get-packages": ^1.1.3
     eslint: ^8.33.0
-    minimatch: ^5.1.2
+    minimatch: ^9.0.0
   languageName: unknown
   linkType: soft
 
@@ -4872,7 +4872,7 @@ __metadata:
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    minimatch: ^5.0.0
+    minimatch: ^9.0.0
     morgan: ^1.10.0
     msw: ^1.0.0
     node-cache: ^5.1.2
@@ -5413,7 +5413,7 @@ __metadata:
     git-url-parse: ^14.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    minimatch: ^5.1.2
+    minimatch: ^9.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^8.0.0
@@ -5623,7 +5623,6 @@ __metadata:
     "@types/core-js": ^2.5.4
     "@types/express": ^4.17.6
     "@types/git-url-parse": ^9.0.0
-    "@types/glob": ^8.0.0
     "@types/lodash": ^4.14.151
     "@types/supertest": ^2.0.8
     "@types/uuid": ^8.0.0
@@ -5634,11 +5633,11 @@ __metadata:
     fast-json-stable-stringify: ^2.1.0
     fs-extra: ^11.2.0
     git-url-parse: ^14.0.0
-    glob: ^7.1.6
+    glob: ^10.0.0
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    minimatch: ^5.0.0
+    minimatch: ^9.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     p-limit: ^3.0.2
@@ -9826,7 +9825,7 @@ __metadata:
     is-glob: ^4.0.3
     js-yaml: ^4.1.0
     lodash: ^4.17.21
-    minimatch: ^5.1.1
+    minimatch: ^9.0.0
     p-limit: ^3.0.2
     portfinder: ^1.0.32
     ts-node: ^10.0.0
@@ -18543,16 +18542,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/glob@npm:^8.0.0":
-  version: 8.1.0
-  resolution: "@types/glob@npm:8.1.0"
-  dependencies:
-    "@types/minimatch": ^5.1.2
-    "@types/node": "*"
-  checksum: 9101f3a9061e40137190f70626aa0e202369b5ec4012c3fabe6f5d229cce04772db9a94fa5a0eb39655e2e4ad105c38afbb4af56a56c0996a8c7d4fc72350e3d
-  languageName: node
-  linkType: hard
-
 "@types/google-protobuf@npm:^3.7.2":
   version: 3.15.12
   resolution: "@types/google-protobuf@npm:3.15.12"
@@ -18925,7 +18914,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/minimatch@npm:^5.0.0, @types/minimatch@npm:^5.1.2":
+"@types/minimatch@npm:^5.0.0":
   version: 5.1.2
   resolution: "@types/minimatch@npm:5.1.2"
   checksum: 0391a282860c7cb6fe262c12b99564732401bdaa5e395bee9ca323c312c1a0f45efbf34dce974682036e857db59a5c9b1da522f3d6055aeead7097264c8705a8
@@ -28982,7 +28971,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.2.2, glob@npm:^10.3.10":
+"glob@npm:^10.0.0, glob@npm:^10.2.2, glob@npm:^10.3.10":
   version: 10.3.10
   resolution: "glob@npm:10.3.10"
   dependencies:
@@ -35045,7 +35034,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^5.0.0, minimatch@npm:^5.0.1, minimatch@npm:^5.1.0, minimatch@npm:^5.1.1, minimatch@npm:^5.1.2":
+"minimatch@npm:^5.0.1, minimatch@npm:^5.1.0":
   version: 5.1.6
   resolution: "minimatch@npm:5.1.6"
   dependencies:
