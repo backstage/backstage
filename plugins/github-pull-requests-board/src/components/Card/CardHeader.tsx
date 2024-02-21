@@ -19,7 +19,7 @@ import { getElapsedTime } from '../../utils/functions';
 import { UserHeader } from '../UserHeader';
 import { DraftPrIcon } from '../icons/DraftPr';
 import UnarchiveIcon from '@material-ui/icons/Unarchive';
-import { Label } from '../../utils/types';
+import { Label, Status } from '../../utils/types';
 import { useFormClasses } from './styles';
 
 type Props = {
@@ -32,6 +32,7 @@ type Props = {
   isDraft: boolean;
   repositoryIsArchived: boolean;
   labels?: Label[];
+  status?: Status;
 };
 
 const CardHeader: FunctionComponent<Props> = (props: Props) => {
@@ -47,6 +48,7 @@ const CardHeader: FunctionComponent<Props> = (props: Props) => {
     isDraft,
     repositoryIsArchived,
     labels,
+    status,
   } = props;
 
   return (
@@ -86,6 +88,14 @@ const CardHeader: FunctionComponent<Props> = (props: Props) => {
           </Typography>
         )}
       </Box>
+      {status && (
+        <Box display="flex" alignItems="center" flexWrap="wrap" paddingTop={1}>
+          <Typography variant="body2" component="p">
+            Commit Status:{' '}
+            <strong>{status.commit.statusCheckRollup.state}</strong>
+          </Typography>
+        </Box>
+      )}
       {labels && (
         <Box display="flex" alignItems="center" flexWrap="wrap" paddingTop={1}>
           {labels.map(data => {

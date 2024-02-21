@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.5.0
+
+### Minor Changes
+
+- 11b9a08: Introduced the first version of recoverable tasks.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 1.5.0-next.1
 
 ### Patch Changes

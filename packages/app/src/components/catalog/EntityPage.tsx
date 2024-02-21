@@ -185,6 +185,7 @@ import {
   isLinguistAvailable,
   EntityLinguistCard,
 } from '@backstage/plugin-linguist';
+import { EntityTeamPullRequestsContent } from '@backstage/plugin-github-pull-requests-board';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -808,6 +809,9 @@ const groupPage = (
           <EntityLikeDislikeRatingsCard />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/pull-requests" title="Pull Requests">
+      <EntityTeamPullRequestsContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );

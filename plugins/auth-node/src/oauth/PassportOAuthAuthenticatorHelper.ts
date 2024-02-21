@@ -57,7 +57,7 @@ export class PassportOAuthAuthenticatorHelper {
     OAuthAuthenticatorResult<PassportProfile>
   > = async input => ({
     profile: PassportHelpers.transformProfile(
-      input.fullProfile,
+      input.fullProfile ?? {},
       input.session.idToken,
     ),
   });

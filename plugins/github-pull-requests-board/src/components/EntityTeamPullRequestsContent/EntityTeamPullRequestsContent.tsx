@@ -103,6 +103,7 @@ const EntityTeamPullRequestsContent = (
                     author,
                     url,
                     latestReviews,
+                    commits,
                     repository,
                     isDraft,
                     labels,
@@ -125,6 +126,7 @@ const EntityTeamPullRequestsContent = (
                       author={author}
                       url={url}
                       reviews={latestReviews.nodes}
+                      status={commits.nodes}
                       repositoryName={repository.name}
                       repositoryIsArchived={repository.isArchived}
                       isDraft={isDraft}

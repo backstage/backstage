@@ -1,5 +1,55 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.24
+
+### Patch Changes
+
+- 7201af3: Add support for the new backend system.
+
+  A new backend plugin for the tech-insights backend
+  was added and exported as `default`.
+
+  You can use it with the new backend system like
+
+  ```ts title="packages/backend/src/index.ts"
+  backend.add(import('@backstage/plugin-tech-insights-backend'));
+  ```
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 341c2a2: Move `FactRetrieverRegistry` and `PersistenceContext` to `@backstage/plugin-tech-insights-node`.
+
+  Original exports are marked as deprecated and re-export the moved types.
+
+  Please replace uses like
+
+  ```ts
+  import {
+    FactRetrieverRegistry,
+    PersistenceContext,
+  } from '@backstage/plugin-tech-insights-backend';
+  ```
+
+  with
+
+  ```ts
+  import {
+    FactRetrieverRegistry,
+    PersistenceContext,
+  } from '@backstage/plugin-tech-insights-node';
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-tech-insights-node@0.4.16
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/backend-tasks@0.5.15
+  - @backstage/catalog-model@1.4.4
+  - @backstage/catalog-client@1.6.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
 ## 0.5.24-next.3
 
 ### Patch Changes

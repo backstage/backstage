@@ -1,5 +1,25 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.9.3
+
+### Patch Changes
+
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- d2e3ab9: Updated dependency `dockerode` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.14
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration@1.9.0
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-techdocs-node@1.11.2
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.21
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 1.9.3-next.3
 
 ### Patch Changes

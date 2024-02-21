@@ -1,5 +1,15 @@
 # @backstage/plugin-app-visualizer
 
+## 0.1.1
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/core-components@0.14.0
+  - @backstage/core-plugin-api@1.9.0
+
 ## 0.1.1-next.3
 
 ### Patch Changes

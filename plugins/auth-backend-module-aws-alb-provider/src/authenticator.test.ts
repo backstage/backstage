@@ -107,6 +107,10 @@ describe('AwsAlbProvider', () => {
           expiresInSeconds: mockClaims.exp,
           accessToken: mockAccessToken,
         },
+        providerInfo: {
+          accessToken: mockAccessToken,
+          expiresInSeconds: mockClaims.exp,
+        },
       });
     });
   });
