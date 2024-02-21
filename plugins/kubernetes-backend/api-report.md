@@ -25,6 +25,7 @@ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RequestHandler } from 'http-proxy-middleware';
 import { TokenCredential } from '@azure/identity';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public (undocumented)
 export class AksStrategy implements AuthenticationStrategy_2 {
@@ -280,6 +281,8 @@ export interface KubernetesEnvironment {
   logger: Logger;
   // (undocumented)
   permissions: PermissionEvaluator;
+  // (undocumented)
+  tokenManager: TokenManager;
 }
 
 // @public @deprecated (undocumented)
@@ -367,6 +370,8 @@ export interface RouterOptions {
   logger: Logger;
   // (undocumented)
   permissions: PermissionEvaluator;
+  // (undocumented)
+  tokenManager: TokenManager;
 }
 
 // @public (undocumented)
