@@ -93,7 +93,7 @@
     "lodash": "^4.17.21",
     "logform": "^2.3.2",
     "luxon": "^3.0.0",
-    "minimatch": "^5.0.0",
+    "minimatch": "^9.0.0",
     "mysql2": "^3.0.0",
     "node-fetch": "^2.6.7",
     "p-limit": "^3.1.0",
