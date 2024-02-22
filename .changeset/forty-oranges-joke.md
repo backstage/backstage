@@ -2,4 +2,4 @@
 '@backstage/integration-react': minor
 ---
 
-Updated `microsoftAuthApi` scopes to for Azure DevOps to be fully qualified.
+Updated `microsoftAuthApi` scopes for Azure DevOps to be fully qualified.
