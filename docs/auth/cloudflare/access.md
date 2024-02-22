@@ -26,10 +26,13 @@ auth:
     cfaccess:
       teamName: <Team Name>
       serviceTokens:
-        '1uh2fh19efvfh129f1f919u21f2f19jf2.access': 'bot-user@your-company.com'
+        - token: '1uh2fh19efvfh129f1f919u21f2f19jf2.access'
+          subject: 'bot-user@your-company.com'
 ```
 
-You can find the team name in the Cloudflare Zero Trust dashboard.
+You can find the team name in the Cloudflare Zero Trust dashboard. The Service
+Tokens section is optional -- you only need it if you have some Cloudflare
+Service Tokens that you want to be able to log in to your Backstage instance.
 
 This config section must be in place for the provider to load at all. Now let's
 add the provider itself.
