@@ -17,6 +17,7 @@ import {
   createServiceBuilder,
   HostDiscovery,
   loadBackendConfig,
+  ServerTokenManager,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -33,6 +34,7 @@ import {
   BackstageUserInfo,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 export interface ServerOptions {
   port: number;
@@ -62,6 +64,14 @@ export async function startStandaloneServer(
       mockSubscribers.push(subscription);
     },
   };
+  const tokenManager = ServerTokenManager.fromConfig(config, {
+    logger,
+  });
+
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    tokenManager,
+  });
 
   const signals = DefaultSignalsService.create({
     events,
@@ -82,6 +92,7 @@ export async function startStandaloneServer(
     events,
     discovery,
     userInfo,
+    permissions,
   });
 
   let service = createServiceBuilder(module)

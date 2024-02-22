@@ -17,6 +17,13 @@ import { WebSocket } from 'ws';
 import { EventsServiceSubscribeOptions } from '@backstage/plugin-events-node';
 import { SignalManager } from './SignalManager';
 import { getVoidLogger } from '@backstage/backend-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  BackstageCredentials,
+  BackstageUserPrincipal,
+  PermissionsService,
+  PermissionsServiceRequestOptions,
+} from '@backstage/backend-plugin-api';
 
 class MockWebSocket {
   closed: boolean = false;
@@ -56,6 +63,17 @@ class MockWebSocket {
 describe('SignalManager', () => {
   let onEvent: Function;
 
+  const mockedAuthorize: jest.MockedFunction<PermissionsService['authorize']> =
+    jest.fn();
+  const mockedPermissionQuery: jest.MockedFunction<
+    PermissionsService['authorizeConditional']
+  > = jest.fn();
+
+  const permissionsMock: PermissionsService = {
+    authorize: mockedAuthorize,
+    authorizeConditional: mockedPermissionQuery,
+  };
+
   const mockEvents = {
     publish: async () => {},
     subscribe: async (subscriber: EventsServiceSubscribeOptions) => {
@@ -66,6 +84,7 @@ describe('SignalManager', () => {
   const manager = SignalManager.create({
     events: mockEvents,
     logger: getVoidLogger(),
+    permissions: permissionsMock,
   });
 
   it('should close connection on error', () => {
@@ -160,6 +179,76 @@ describe('SignalManager', () => {
 
     expect(ws1.data.length).toEqual(0);
     expect(ws3.data.length).toEqual(0);
+    expect(ws2.data.length).toEqual(1);
+    expect(ws2.data[0]).toEqual(
+      JSON.stringify({ channel: 'test', message: { msg: 'test' } }),
+    );
+  });
+
+  it('should only send to users that have necessary permissions', async () => {
+    const ws1 = new MockWebSocket();
+    manager.addConnection(
+      ws1 as unknown as WebSocket,
+      {
+        ownershipEntityRefs: ['user:default/john.doe'],
+        userEntityRef: 'user:default/john.doe',
+      },
+      {
+        expiresAt: new Date(),
+        principal: { userEntityRef: 'user:default/john.doe' },
+      } as BackstageCredentials,
+    );
+
+    const ws2 = new MockWebSocket();
+    manager.addConnection(
+      ws2 as unknown as WebSocket,
+      {
+        ownershipEntityRefs: ['user:default/jane.doe'],
+        userEntityRef: 'user:default/jane.doe',
+      },
+      {
+        expiresAt: new Date(),
+        principal: { userEntityRef: 'user:default/jane.doe' },
+      } as BackstageCredentials,
+    );
+
+    ws1.trigger(
+      'message',
+      JSON.stringify({ action: 'subscribe', channel: 'test' }),
+      false,
+    );
+
+    ws2.trigger(
+      'message',
+      JSON.stringify({ action: 'subscribe', channel: 'test' }),
+      false,
+    );
+
+    mockedAuthorize.mockImplementation(
+      async (_permissions, options?: PermissionsServiceRequestOptions) => {
+        if (options && 'credentials' in options) {
+          if (
+            (options.credentials.principal as unknown as BackstageUserPrincipal)
+              .userEntityRef === 'user:default/jane.doe'
+          ) {
+            return [{ result: AuthorizeResult.ALLOW }];
+          }
+        }
+        return [{ result: AuthorizeResult.DENY }];
+      },
+    );
+
+    await onEvent({
+      topic: 'signals',
+      eventPayload: {
+        recipients: { type: 'broadcast' },
+        channel: 'test',
+        message: { msg: 'test' },
+        permissions: [{ permission: 'testPermission' }],
+      },
+    });
+
+    expect(ws1.data.length).toEqual(0);
     expect(ws2.data.length).toEqual(1);
     expect(ws2.data[0]).toEqual(
       JSON.stringify({ channel: 'test', message: { msg: 'test' } }),
