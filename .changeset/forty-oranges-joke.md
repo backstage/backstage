@@ -1,5 +1,5 @@
 ---
-'@backstage/integration-react': patch
+'@backstage/integration-react': minor
 ---
 
-Updated azure devops scopes to include the clientid for Azure Dev Ops OAuth.
+Updated `microsoftAuthApi` scopes to for Azure DevOps to be fully qualified. Also added `openid`, `profile` and `email` scopes
