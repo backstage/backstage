@@ -25,7 +25,7 @@ describe('SystemIcon', () => {
     expect(container.querySelector('svg')).toBeDefined();
   });
 
-  it('should render the first found ico when multiple keys are provided', async () => {
+  it('should render the first found icon when multiple keys are provided', async () => {
     const { container } = await renderInTestApp(
       <SystemIcon keys={['unknown', 'kind:api']} />,
     );
