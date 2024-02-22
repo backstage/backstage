@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { UrlReader, resolveSafeChildPath } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { examples } from './plain.examples';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 
 import {
   createTemplateAction,
@@ -77,7 +78,10 @@ export function createFetchPlainAction(options: {
 
       // Finally move the template result into the task workspace
       const targetPath = ctx.input.targetPath ?? './';
-      const outputPath = resolveSafeChildPath(ctx.workspacePath, targetPath);
+      const outputPath = await resolveSafeChildPath(
+        ctx.workspacePath,
+        targetPath,
+      );
 
       await fetchContents({
         reader,

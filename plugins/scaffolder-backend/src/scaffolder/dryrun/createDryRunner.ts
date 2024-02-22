@@ -33,7 +33,7 @@ import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import fs from 'fs-extra';
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 interface DryRunInput {
@@ -87,7 +87,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
 
     const dryRunId = uuid();
     const log = new Array<{ body: JsonObject }>();
-    const contentsPath = resolveSafeChildPath(
+    const contentsPath = await resolveSafeChildPath(
       options.workingDirectory,
       `dry-run-content-${dryRunId}`,
     );
@@ -111,7 +111,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
           templateInfo: {
             entityRef: 'template:default/dry-run',
             baseUrl: pathToFileURL(
-              resolveSafeChildPath(contentsPath, 'template.yaml'),
+              await resolveSafeChildPath(contentsPath, 'template.yaml'),
             ).toString(),
           },
         },

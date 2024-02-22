@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import * as yaml from 'yaml';
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { z } from 'zod';
 import { examples } from './write.examples';
 
@@ -54,7 +54,7 @@ export function createCatalogWriteAction() {
       const path = filePath ?? 'catalog-info.yaml';
 
       await fs.writeFile(
-        resolveSafeChildPath(ctx.workspacePath, path),
+        await resolveSafeChildPath(ctx.workspacePath, path),
         yaml.stringify(entity),
       );
     },

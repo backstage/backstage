@@ -15,7 +15,8 @@
  */
 
 import { extname } from 'path';
-import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -147,10 +148,13 @@ export function createFetchTemplateAction(options: {
       ctx.logger.info('Fetching template content from remote URL');
 
       const workDir = await ctx.createTemporaryDirectory();
-      const templateDir = resolveSafeChildPath(workDir, 'template');
+      const templateDir = await resolveSafeChildPath(workDir, 'template');
 
       const targetPath = ctx.input.targetPath ?? './';
-      const outputDir = resolveSafeChildPath(ctx.workspacePath, targetPath);
+      const outputDir = await resolveSafeChildPath(
+        ctx.workspacePath,
+        targetPath,
+      );
       if (ctx.input.copyWithoutRender && ctx.input.copyWithoutTemplating) {
         throw new InputError(
           'Fetch action input copyWithoutRender and copyWithoutTemplating can not be used at the same time',
@@ -283,7 +287,10 @@ export function createFetchTemplateAction(options: {
           continue;
         }
 
-        const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
+        const outputPath = await resolveSafeChildPath(
+          outputDir,
+          localOutputPath,
+        );
         if (fs.existsSync(outputPath) && !ctx.input.replace) {
           continue;
         }
@@ -300,7 +307,10 @@ export function createFetchTemplateAction(options: {
           );
           await fs.ensureDir(outputPath);
         } else {
-          const inputFilePath = resolveSafeChildPath(templateDir, location);
+          const inputFilePath = await resolveSafeChildPath(
+            templateDir,
+            location,
+          );
           const stats = await fs.promises.lstat(inputFilePath);
 
           if (stats.isSymbolicLink() || (await isBinaryFile(inputFilePath))) {

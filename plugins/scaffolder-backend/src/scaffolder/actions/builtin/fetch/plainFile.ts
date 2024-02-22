@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { UrlReader, resolveSafeChildPath } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { examples } from './plainFile.examples';
 import {
@@ -72,7 +73,7 @@ export function createFetchPlainFileAction(options: {
       ctx.logger.info('Fetching plain content from remote URL');
 
       // Finally move the template result into the task workspace
-      const outputPath = resolveSafeChildPath(
+      const outputPath = await resolveSafeChildPath(
         ctx.workspacePath,
         ctx.input.targetPath,
       );

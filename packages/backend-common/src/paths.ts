@@ -17,6 +17,7 @@
 import { isChildPath } from '@backstage/cli-common';
 import { NotAllowedError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
+import { realpathSync as realPath } from 'fs';
 
 /** @internal */
 export const packagePathMocks = new Map<
@@ -59,10 +60,21 @@ export function resolvePackagePath(name: string, ...paths: string[]) {
  * @public
  * @param base - The base directory to resolve the path from.
  * @param path - The target path, relative or absolute
+ * @deprecated - use {@link @backstage/backend-plugin-api#resolveSafeChildPath} instead.
  * @returns A path that is guaranteed to point to or within the base path.
  */
 export function resolveSafeChildPath(base: string, path: string): string {
-  const targetPath = resolvePath(base, path);
+  let resolvedPath = path;
+
+  try {
+    resolvedPath = realPath(path);
+  } catch (ex) {
+    if (ex.code !== 'ENOENT') {
+      throw ex;
+    }
+  }
+
+  const targetPath = resolvePath(base, resolvedPath);
 
   if (!isChildPath(base, targetPath)) {
     throw new NotAllowedError(

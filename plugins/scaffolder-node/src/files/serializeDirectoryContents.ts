@@ -17,7 +17,7 @@
 import { promises as fs } from 'fs';
 import globby from 'globby';
 import limiterFactory from 'p-limit';
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { SerializedFile } from './types';
 import { isError } from '@backstage/errors';
 
@@ -69,7 +69,7 @@ export async function serializeDirectoryContents(
     if (dirent.isDirectory()) return false;
     if (!dirent.isSymbolicLink()) return true;
 
-    const safePath = resolveSafeChildPath(sourcePath, path);
+    const safePath = await resolveSafeChildPath(sourcePath, path);
 
     // we only want files that don't exist
     try {
@@ -84,7 +84,7 @@ export async function serializeDirectoryContents(
     valid.map(async ({ dirent, path, stats }) => ({
       path,
       content: await limiter(async () => {
-        const absFilePath = resolveSafeChildPath(sourcePath, path);
+        const absFilePath = await resolveSafeChildPath(sourcePath, path);
         if (dirent.isSymbolicLink()) {
           return fs.readlink(absFilePath, 'buffer');
         }

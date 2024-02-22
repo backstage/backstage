@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
 import path from 'path';
@@ -48,7 +49,7 @@ export async function fetchContents(options: {
   // We handle both file locations and url ones
   if (!fetchUrlIsAbsolute && baseUrl?.startsWith('file://')) {
     const basePath = baseUrl.slice('file://'.length);
-    const srcDir = resolveSafeChildPath(path.dirname(basePath), fetchUrl);
+    const srcDir = await resolveSafeChildPath(path.dirname(basePath), fetchUrl);
     await fs.copy(srcDir, outputPath);
   } else {
     const readUrl = getReadUrl(fetchUrl, baseUrl, integrations);
@@ -87,7 +88,7 @@ export async function fetchFile(options: {
   // We handle both file locations and url ones
   if (!fetchUrlIsAbsolute && baseUrl?.startsWith('file://')) {
     const basePath = baseUrl.slice('file://'.length);
-    const src = resolveSafeChildPath(path.dirname(basePath), fetchUrl);
+    const src = await resolveSafeChildPath(path.dirname(basePath), fetchUrl);
     await fs.copyFile(src, outputPath);
   } else {
     const readUrl = getReadUrl(fetchUrl, baseUrl, integrations);

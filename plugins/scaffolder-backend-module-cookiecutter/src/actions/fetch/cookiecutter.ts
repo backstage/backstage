@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ContainerRunner,
-  UrlReader,
-  resolveSafeChildPath,
-} from '@backstage/backend-common';
+import { ContainerRunner, UrlReader } from '@backstage/backend-common';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
@@ -31,6 +27,7 @@ import {
   fetchContents,
   executeShellCommand,
 } from '@backstage/plugin-scaffolder-node';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 
 export class CookiecutterRunner {
   private readonly containerRunner?: ContainerRunner;
@@ -257,7 +254,10 @@ export function createFetchCookiecutterAction(options: {
 
       // Finally move the template result into the task workspace
       const targetPath = ctx.input.targetPath ?? './';
-      const outputPath = resolveSafeChildPath(ctx.workspacePath, targetPath);
+      const outputPath = await resolveSafeChildPath(
+        ctx.workspacePath,
+        targetPath,
+      );
       await fs.copy(resultDir, outputPath);
     },
   });

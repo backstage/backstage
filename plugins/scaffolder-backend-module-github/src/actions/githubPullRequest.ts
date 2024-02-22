@@ -27,7 +27,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { InputError, CustomErrorBase } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from './helpers';
 import { Logger } from 'winston';
@@ -282,7 +282,7 @@ export const createPublishGithubPullRequestAction = (
       });
 
       const fileRoot = sourcePath
-        ? resolveSafeChildPath(ctx.workspacePath, sourcePath)
+        ? await resolveSafeChildPath(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;
 
       const directoryContents = await serializeDirectoryContents(fileRoot, {

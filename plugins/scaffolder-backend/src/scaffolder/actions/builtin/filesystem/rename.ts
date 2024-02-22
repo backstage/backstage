@@ -15,7 +15,7 @@
  */
 
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { InputError } from '@backstage/errors';
 import fs from 'fs-extra';
 import { examples } from './rename.examples';
@@ -79,11 +79,14 @@ export const createFilesystemRenameAction = () => {
           throw new InputError('each file must have a from and to property');
         }
 
-        const sourceFilepath = resolveSafeChildPath(
+        const sourceFilepath = await resolveSafeChildPath(
           ctx.workspacePath,
           file.from,
         );
-        const destFilepath = resolveSafeChildPath(ctx.workspacePath, file.to);
+        const destFilepath = await resolveSafeChildPath(
+          ctx.workspacePath,
+          file.to,
+        );
 
         try {
           await fs.move(sourceFilepath, destFilepath, {

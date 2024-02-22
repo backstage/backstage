@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { dirname } from 'path';
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { SerializedFile } from './types';
 
 /**
@@ -32,7 +32,7 @@ export async function deserializeDirectoryContents(
   files: SerializedFile[],
 ): Promise<void> {
   for (const file of files) {
-    const filePath = resolveSafeChildPath(targetPath, file.path);
+    const filePath = await resolveSafeChildPath(targetPath, file.path);
     await fs.ensureDir(dirname(filePath));
     await fs.writeFile(filePath, file.content); // Ignore file mode
   }

@@ -23,7 +23,7 @@ import { Types } from '@gitbeaker/core';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createGitlabApi } from './helpers';
 
 /**
@@ -130,7 +130,7 @@ export const createGitlabRepoPushAction = (options: {
 
       let fileRoot: string;
       if (sourcePath) {
-        fileRoot = resolveSafeChildPath(ctx.workspacePath, sourcePath);
+        fileRoot = await resolveSafeChildPath(ctx.workspacePath, sourcePath);
       } else {
         fileRoot = ctx.workspacePath;
       }
