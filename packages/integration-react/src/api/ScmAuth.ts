@@ -204,9 +204,6 @@ export class ScmAuth implements ScmAuthApi {
         '499b84ac-1321-427f-aa17-267ca6975798/vso.graph',
         '499b84ac-1321-427f-aa17-267ca6975798/vso.project',
         '499b84ac-1321-427f-aa17-267ca6975798/vso.profile',
-        'profile',
-        'openid',
-        'email',
       ],
       repoWrite: ['499b84ac-1321-427f-aa17-267ca6975798/vso.code_manage'],
     });
