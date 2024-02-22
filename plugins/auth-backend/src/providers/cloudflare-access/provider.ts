@@ -48,7 +48,10 @@ const CACHE_PREFIX = 'providers/cloudflare-access/profile-v1';
  */
 export const CF_DEFAULT_CACHE_TTL = 3600;
 
-type ServiceTokens = Record<string, string>;
+type ServiceToken = {
+  token: string;
+  subject: string;
+};
 
 /** @public */
 export type Options = {
@@ -68,7 +71,7 @@ export type Options = {
    * the Client ID of any Service Tokens that should be allowed to pass the
    * auth check to the identity (email) you would like to associate with it.
    */
-  serviceTokens: ServiceTokens;
+  serviceTokens: ServiceToken[];
   authHandler: AuthHandler<CloudflareAccessResult>;
   signInResolver: SignInResolver<CloudflareAccessResult>;
   resolverContext: AuthResolverContext;
@@ -189,7 +192,7 @@ export type CloudflareAccessResponse =
 
 export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
   private readonly teamName: string;
-  private readonly serviceTokens: ServiceTokens;
+  private readonly serviceTokens: ServiceToken[];
   private readonly resolverContext: AuthResolverContext;
   private readonly authHandler: AuthHandler<CloudflareAccessResult>;
   private readonly signInResolver: SignInResolver<CloudflareAccessResult>;
@@ -284,7 +287,8 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
       );
     }
 
-    if (isServiceToken && !this.serviceTokens.hasOwnProperty(subject)) {
+    const serviceToken = this.serviceTokens.find(st => st.token === subject);
+    if (isServiceToken && !serviceToken) {
       throw new AuthenticationError(
         `${subject} is not a permitted Service Token.`,
       );
@@ -304,11 +308,11 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
     // Builds a passport profile from JWT claims first
     try {
       let cfIdentity: CloudflareAccessIdentityProfile;
-      if (isServiceToken) {
+      if (serviceToken) {
         cfIdentity = {
           id: subject,
           name: 'Bot',
-          email: this.serviceTokens[subject],
+          email: serviceToken.subject,
           groups: [],
         };
       } else {
@@ -391,13 +395,15 @@ export const cfAccess = createAuthProviderIntegration({
   }) {
     return ({ config, resolverContext }) => {
       const teamName = config.getString('teamName');
-      const serviceTokensConfig = config.getOptionalConfig('serviceTokens');
-      const serviceTokens: ServiceTokens = {};
-      if (serviceTokensConfig) {
-        serviceTokensConfig.keys().forEach(key => {
-          serviceTokens[key] = serviceTokensConfig.getString(key);
-        });
-      }
+      const serviceTokensConfig =
+        config.getOptionalConfigArray('serviceTokens');
+      const serviceTokens =
+        serviceTokensConfig?.map(cfg => {
+          return {
+            token: cfg.getString('token'),
+            subject: cfg.getString('subject'),
+          } as ServiceToken;
+        }) || [];
 
       if (!options.signIn.resolver) {
         throw new Error(

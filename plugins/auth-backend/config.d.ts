@@ -185,6 +185,11 @@ export interface Config {
       /** @visibility frontend */
       cfaccess?: {
         teamName: string;
+        /** @visibility secret */
+        serviceTokens?: Array<{
+          token: string;
+          subject: string;
+        }>;
       };
       /**
        * The backstage token expiration.
