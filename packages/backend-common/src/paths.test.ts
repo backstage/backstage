@@ -16,6 +16,7 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { resolveSafeChildPath } from './paths';
+import fs from 'fs/promises';
 
 describe('paths', () => {
   describe('resolveSafeChildPath', () => {
@@ -41,9 +42,9 @@ describe('paths', () => {
       );
     });
 
-    it('should resolve to the full path if the target is inside the directory', () => {
+    it('should resolve to the full path if the target is inside the directory', async () => {
       expect(resolveSafeChildPath(workspacePath, './README.md')).toEqual(
-        `${workspacePath}/README.md`,
+        `${await fs.realpath(workspacePath)}/README.md`,
       );
     });
 
