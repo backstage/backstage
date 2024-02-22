@@ -27355,6 +27355,7 @@ __metadata:
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-adr-backend": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
