@@ -61,6 +61,7 @@ export class MockAuthService implements AuthService {
       case '':
         throw new AuthenticationError('Token is empty');
       default:
+        break;
     }
 
     if (token.startsWith(MOCK_USER_TOKEN_PREFIX)) {

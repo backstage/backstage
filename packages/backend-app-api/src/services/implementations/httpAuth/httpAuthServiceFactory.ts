@@ -91,7 +91,7 @@ class DefaultHttpAuthService implements HttpAuthService {
     return credentials;
   }
 
-  async #getCredentials(req: /*  */ RequestWithCredentials) {
+  async #getCredentials(req: RequestWithCredentials) {
     return (req[credentialsSymbol] ??=
       this.#extractCredentialsFromRequest(req));
   }
