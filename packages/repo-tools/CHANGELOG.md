@@ -1,5 +1,13 @@
 # @backstage/repo-tools
 
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.1
+  - @backstage/cli-node@0.2.3
+
 ## 0.6.0
 
 ### Minor Changes
