@@ -72,7 +72,8 @@ export function resolveSafeChildPath(base: string, path: string): string {
     );
   }
 
-  return targetPath;
+  // Don't return the resolved path as the original could be a symlink
+  return resolvePath(base, path);
 }
 
 function resolveRealPath(path: string): string {

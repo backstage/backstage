@@ -16,7 +16,6 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { resolveSafeChildPath } from './paths';
-import fs from 'fs/promises';
 
 describe('paths', () => {
   describe('resolveSafeChildPath', () => {
@@ -42,9 +41,9 @@ describe('paths', () => {
       );
     });
 
-    it('should resolve to the full path if the target is inside the directory', async () => {
+    it('should resolve to the full path if the target is inside the directory', () => {
       expect(resolveSafeChildPath(workspacePath, './README.md')).toEqual(
-        `${await fs.realpath(workspacePath)}/README.md`,
+        `${workspacePath}/README.md`,
       );
     });
 
@@ -58,6 +57,12 @@ describe('paths', () => {
         resolveSafeChildPath(workspacePath, './symlink/index.md'),
       ).toThrow(
         'Relative path is not allowed to refer to a directory outside its parent',
+      );
+    });
+
+    it('should not throw an error when a folder is referenced that doesnt already exist', () => {
+      expect(resolveSafeChildPath(workspacePath, 'template')).toEqual(
+        `${workspacePath}/template`,
       );
     });
   });
