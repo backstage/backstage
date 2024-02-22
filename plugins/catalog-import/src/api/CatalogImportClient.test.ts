@@ -556,6 +556,9 @@ describe('CatalogImportClient', () => {
 
   describe('submitPullRequest', () => {
     it('should create GitHub pull request', async () => {
+      catalogApi.validateEntity.mockResolvedValueOnce({
+        valid: true,
+      });
       await expect(
         catalogImportClient.submitPullRequest({
           repositoryUrl: 'https://github.com/backstage/backstage',
@@ -584,7 +587,7 @@ describe('CatalogImportClient', () => {
         location:
           'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
       });
-
+      expect(catalogApi.validateEntity).toHaveBeenCalledTimes(1);
       expect(
         (new Octokit().git.createRef as any as jest.Mock).mock.calls[0][0],
       ).toEqual({
@@ -617,6 +620,9 @@ describe('CatalogImportClient', () => {
       });
     });
     it('Submit Pull Request with invalid component name', async () => {
+      const ErrorMessage =
+        'Policy check failed for component:default/invalid name; caused by Error: "metadata.name" is not valid; expected a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total but found "invalid name". To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md';
+      catalogApi.validateEntity.mockRejectedValueOnce(new Error(ErrorMessage));
       await expect(
         catalogImportClient.submitPullRequest({
           repositoryUrl: 'https://github.com/acme-corp/our-awesome-api',
@@ -640,11 +646,12 @@ describe('CatalogImportClient', () => {
           title: 'A title/message',
           body: 'A body',
         }),
-      ).rejects.toThrow(
-        'Component name: Must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
-      );
+      ).rejects.toThrow(ErrorMessage);
     });
     it('should create GitHub pull request with custom filename and branch name', async () => {
+      catalogApi.validateEntity.mockResolvedValueOnce({
+        valid: true,
+      });
       const entityFilename = 'anvil.yaml';
       const pullRequestBranchName = 'anvil-integration';
 

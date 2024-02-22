@@ -177,30 +177,32 @@ the component will become available.\n\nFor more information, read an \
   }): Promise<{ link: string; location: string }> {
     const { repositoryUrl, fileContent, title, body } = options;
     const parseData = YAML.parse(fileContent);
-    const {
-      metadata: { name },
-    } = parseData;
-    if (!isValidComponentName(name)) {
-      throw new Error(
-        'Component name: Must start and end with an alphanumeric character, and contain only alphanumeric characters, hyphens, underscores, and periods. Maximum length is 63 characters.',
+    try {
+      const validationResponse = await this.catalogApi.validateEntity(
+        parseData,
+        `url:${repositoryUrl}`,
       );
-    }
-    const ghConfig = getGithubIntegrationConfig(
-      this.scmIntegrationsApi,
-      repositoryUrl,
-    );
-
-    if (ghConfig) {
-      return await this.submitGitHubPrToRepo({
-        ...ghConfig,
+      if (!validationResponse.valid) {
+        throw new Error(validationResponse.errors[0].message);
+      }
+      const ghConfig = getGithubIntegrationConfig(
+        this.scmIntegrationsApi,
         repositoryUrl,
-        fileContent,
-        title,
-        body,
-      });
-    }
+      );
 
-    throw new Error('unimplemented!');
+      if (ghConfig) {
+        return await this.submitGitHubPrToRepo({
+          ...ghConfig,
+          repositoryUrl,
+          fileContent,
+          title,
+          body,
+        });
+      }
+      throw new Error('unimplemented!');
+    } catch (err) {
+      throw err;
+    }
   }
 
   // TODO: this could be part of the catalog api
@@ -360,13 +362,4 @@ function formatHttpErrorMessage(
   error: { status: number; message: string },
 ) {
   return `${message}, received http response status code ${error.status}: ${error.message}`;
-}
-
-function isValidComponentName(componentName: string) {
-  return (
-    typeof componentName === 'string' &&
-    componentName.length >= 1 &&
-    componentName.length <= 63 &&
-    /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/.test(componentName)
-  );
 }
