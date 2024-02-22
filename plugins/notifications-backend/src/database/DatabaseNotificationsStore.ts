@@ -106,6 +106,10 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       query.orderBy('created', options.sortOrder ?? 'desc');
     }
 
+    if (options.createdAfter) {
+      query.where('created', '>=', options.createdAfter.valueOf());
+    }
+
     if (options.limit) {
       query.limit(options.limit);
     }

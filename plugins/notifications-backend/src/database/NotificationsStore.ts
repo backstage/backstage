@@ -31,6 +31,7 @@ export type NotificationGetOptions = {
   sortOrder?: 'asc' | 'desc';
   read?: boolean;
   saved?: boolean;
+  createdAfter?: Date;
 };
 
 /** @internal */

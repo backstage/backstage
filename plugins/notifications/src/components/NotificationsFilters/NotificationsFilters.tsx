@@ -28,12 +28,13 @@ import {
 export type NotificationsFiltersProps = {
   unreadOnly?: boolean;
   onUnreadOnlyChanged: (checked: boolean | undefined) => void;
-  // createdAfter?: string;
+  createdAfter?: string;
+  onCreatedAfterChanged: (value: string) => void;
+
   // sorting?: {
   //   orderBy: GetNotificationsOrderByEnum;
   //   orderByDirec: GetNotificationsOrderByDirecEnum;
   // };
-  // onCreatedAfterChanged: (value: string) => void;
   // setSorting: ({
   //   orderBy,
   //   orderByDirec,
@@ -43,22 +44,22 @@ export type NotificationsFiltersProps = {
   // }) => void;
 };
 
-// export const CreatedAfterOptions: {
-//   [key: string]: { label: string; getDate: () => Date };
-// } = {
-//   last24h: {
-//     label: 'Last 24h',
-//     getDate: () => new Date(Date.now() - 24 * 3600 * 1000),
-//   },
-//   lastWeek: {
-//     label: 'Last week',
-//     getDate: () => new Date(Date.now() - 7 * 24 * 3600 * 1000),
-//   },
-//   all: {
-//     label: 'Any time',
-//     getDate: () => new Date(0),
-//   },
-// };
+export const CreatedAfterOptions: {
+  [key: string]: { label: string; getDate: () => Date };
+} = {
+  last24h: {
+    label: 'Last 24h',
+    getDate: () => new Date(Date.now() - 24 * 3600 * 1000),
+  },
+  lastWeek: {
+    label: 'Last week',
+    getDate: () => new Date(Date.now() - 7 * 24 * 3600 * 1000),
+  },
+  all: {
+    label: 'Any time',
+    getDate: () => new Date(0),
+  },
+};
 
 // export const SortByOptions: {
 //   [key: string]: {
@@ -108,20 +109,20 @@ export type NotificationsFiltersProps = {
 // };
 
 export const NotificationsFilters = ({
-  unreadOnly,
-  // createdAfter,
   // sorting,
-  // onCreatedAfterChanged,
+  // setSorting,
+  unreadOnly,
   onUnreadOnlyChanged,
-}: // setSorting,
-NotificationsFiltersProps) => {
+  createdAfter,
+  onCreatedAfterChanged,
+}: NotificationsFiltersProps) => {
   // const sortBy = getSortBy(sorting);
 
-  // const handleOnCreatedAfterChanged = (
-  //   event: React.ChangeEvent<{ name?: string; value: unknown }>,
-  // ) => {
-  //   onCreatedAfterChanged(event.target.value as string);
-  // };
+  const handleOnCreatedAfterChanged = (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>,
+  ) => {
+    onCreatedAfterChanged(event.target.value as string);
+  };
 
   const handleOnUnreadOnlyChanged = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>,
@@ -169,7 +170,6 @@ NotificationsFiltersProps) => {
             </Select>
           </FormControl>
         </Grid>
-        {/* TODO: extend BE to support following:
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" size="small">
             <InputLabel id="notifications-filter-view">
@@ -190,6 +190,8 @@ NotificationsFiltersProps) => {
             </Select>
           </FormControl>
         </Grid>
+
+        {/*
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" size="small">
             <InputLabel id="notifications-filter-sort">Sort by</InputLabel>
