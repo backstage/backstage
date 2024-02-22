@@ -23,7 +23,7 @@ import { createServiceRef } from '../system';
  */
 export namespace coreServices {
   /**
-   * The service reference for the plugin scoped {@link IdentityService}.
+   * The service reference for the plugin scoped {@link AuthService}.
    *
    * @public
    */
