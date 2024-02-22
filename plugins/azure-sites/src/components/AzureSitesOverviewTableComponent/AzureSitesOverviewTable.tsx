@@ -99,15 +99,17 @@ const Kind = ({ value }: { value: Kinds }) => {
 };
 
 const Tags = ({ tags }: { tags: any }) => {
-  return Object.keys(tags).map((key: any) => (
-    <Chip
-      key={key}
-      label={`${key}: ${tags[key]}`}
-      size="small"
-      variant="default"
-      style={{ marginBottom: '1px' }}
-    />
-  ));
+  return Object.keys(tags)
+    .toSorted()
+    .map((key: any) => (
+      <Chip
+        key={key}
+        label={`${key}: ${tags[key]}`}
+        size="small"
+        variant="default"
+        style={{ marginBottom: '1px' }}
+      />
+    ));
 };
 
 type TableProps = {
@@ -291,7 +293,7 @@ export const AzureSitesOverviewTable = ({ data, loading }: TableProps) => {
         options={{ paging: true, search: false, pageSize: 10 }}
         data={data}
         emptyContent={<LinearProgress />}
-        isLoading={loading}
+        isLoading={loading && data.length === 0}
         columns={columns}
       />
       <Snackbar
