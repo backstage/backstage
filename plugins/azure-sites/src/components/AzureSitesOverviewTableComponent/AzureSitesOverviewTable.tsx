@@ -100,7 +100,7 @@ const Kind = ({ value }: { value: Kinds }) => {
 
 const Tags = ({ tags }: { tags: any }) => {
   return Object.keys(tags)
-    .toSorted()
+    .sort()
     .map((key: any) => (
       <Chip
         key={key}
