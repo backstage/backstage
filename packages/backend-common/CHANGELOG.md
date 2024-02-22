@@ -1,5 +1,15 @@
 # @backstage/backend-common
 
+## 0.21.1
+
+### Patch Changes
+
+- cf6ecd3: Fix issue where `resolveSafeChildPath` path would incorrectly resolve when operating on a symlink
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.12
+  - @backstage/backend-plugin-api@0.6.11
+  - @backstage/config-loader@1.6.2
+
 ## 0.21.0
 
 ### Minor Changes
