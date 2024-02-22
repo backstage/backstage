@@ -3865,7 +3865,7 @@ __metadata:
     js-yaml: ^4.1.0
     luxon: ^3.0.0
     prettier: ^2.6.2
-    prism-react-renderer: ^1.3.5
+    prism-react-renderer: ^2.0.0
     react: ^18.0.0
     react-dom: ^18.0.0
     sass: ^1.57.1
@@ -9583,16 +9583,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prism-react-renderer@npm:^1.3.5":
-  version: 1.3.5
-  resolution: "prism-react-renderer@npm:1.3.5"
-  peerDependencies:
-    react: ">=0.14.9"
-  checksum: c18806dcbc4c0b4fd6fd15bd06b4f7c0a6da98d93af235c3e970854994eb9b59e23315abb6cfc29e69da26d36709a47e25da85ab27fed81b6812f0a52caf6dfa
-  languageName: node
-  linkType: hard
-
-"prism-react-renderer@npm:^2.3.0":
+"prism-react-renderer@npm:^2.0.0, prism-react-renderer@npm:^2.3.0":
   version: 2.3.1
   resolution: "prism-react-renderer@npm:2.3.1"
   dependencies:
