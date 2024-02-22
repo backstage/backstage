@@ -3662,7 +3662,7 @@ __metadata:
     nodemon: ^3.0.1
     npm-packlist: ^5.0.0
     ora: ^5.3.0
-    p-queue: ^6.6.2
+    p-queue: ^8.0.0
     postcss: ^8.1.0
     process: ^0.11.10
     react-dev-utils: ^12.0.0-next.60
@@ -8482,7 +8482,7 @@ __metadata:
     luxon: ^3.0.0
     nunjucks: ^3.2.3
     p-limit: ^3.1.0
-    p-queue: ^6.6.2
+    p-queue: ^8.0.0
     prom-client: ^15.0.0
     strip-ansi: ^7.1.0
     supertest: ^6.1.3
@@ -36932,6 +36932,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"p-queue@npm:^8.0.0":
+  version: 8.0.1
+  resolution: "p-queue@npm:8.0.1"
+  dependencies:
+    eventemitter3: ^5.0.1
+    p-timeout: ^6.1.2
+  checksum: 84a27a5b1faf2dcc96b8c0e423c34b5984b241acc07353d3cc6d8d3d1dadefb250b4ec84ce278cb1c946466999c6bf2a36ff718a75810bad8e11c7ca47ce80f5
+  languageName: node
+  linkType: hard
+
 "p-retry@npm:^4.5.0":
   version: 4.5.0
   resolution: "p-retry@npm:4.5.0"
@@ -36948,6 +36958,13 @@ __metadata:
   dependencies:
     p-finally: ^1.0.0
   checksum: 3dd0eaa048780a6f23e5855df3dd45c7beacff1f820476c1d0d1bcd6648e3298752ba2c877aa1c92f6453c7dd23faaf13d9f5149fc14c0598a142e2c5e8d649c
+  languageName: node
+  linkType: hard
+
+"p-timeout@npm:^6.1.2":
+  version: 6.1.2
+  resolution: "p-timeout@npm:6.1.2"
+  checksum: 887b805eb72c217dbc3c55a60a7f3b89a46cab14f04af62224f253ec84716cbd0880758be13b35444a4fa12d64d37d4c8a300f0b12a57c004d289f0a574cfe91
   languageName: node
   linkType: hard
 

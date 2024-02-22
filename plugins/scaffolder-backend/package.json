@@ -84,7 +84,7 @@
     "luxon": "^3.0.0",
     "nunjucks": "^3.2.3",
     "p-limit": "^3.1.0",
-    "p-queue": "^6.6.2",
+    "p-queue": "^8.0.0",
     "prom-client": "^15.0.0",
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
