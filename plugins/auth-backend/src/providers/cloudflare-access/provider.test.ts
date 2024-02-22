@@ -194,7 +194,7 @@ describe('CloudflareAccessAuthProvider', () => {
 
   const provider = new CloudflareAccessAuthProvider({
     teamName: 'foobar',
-    serviceTokens: {},
+    serviceTokens: [],
     resolverContext: {} as AuthResolverContext,
     authHandler: async result => {
       expect(result).toEqual(
@@ -228,9 +228,12 @@ describe('CloudflareAccessAuthProvider', () => {
 
   const providerServiceToken = new CloudflareAccessAuthProvider({
     teamName: 'foobar',
-    serviceTokens: {
-      'test_token_id.access': 'test_token_id.access@foobar.com',
-    },
+    serviceTokens: [
+      {
+        token: 'test_token_id.access',
+        subject: 'test_token_id.access@foobar.com',
+      },
+    ],
     resolverContext: {} as AuthResolverContext,
     authHandler: async result => {
       expect(result).toEqual(
