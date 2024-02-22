@@ -1,5 +1,15 @@
 # @backstage/backend-common
 
+## 0.21.2
+
+### Patch Changes
+
+- 3ae6fba: Resolve the `basePath` before constructing the target path
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.13
+  - @backstage/backend-plugin-api@0.6.12
+  - @backstage/config-loader@1.6.2
+
 ## 0.21.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-techdocs-node
 
+## 1.11.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.2
+  - @backstage/backend-plugin-api@0.6.12
+
 ## 1.11.3
 
 ### Patch Changes

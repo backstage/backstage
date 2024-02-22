@@ -1,5 +1,14 @@
 # @backstage/plugin-permission-node
 
+## 0.7.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.2
+  - @backstage/plugin-auth-node@0.4.7
+  - @backstage/backend-plugin-api@0.6.12
+
 ## 0.7.22
 
 ### Patch Changes

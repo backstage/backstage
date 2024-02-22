@@ -1,5 +1,16 @@
 # @backstage/plugin-todo-backend
 
+## 0.3.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.2
+  - @backstage/repo-tools@0.6.2
+  - @backstage/backend-plugin-api@0.6.12
+  - @backstage/plugin-catalog-node@1.7.2
+  - @backstage/backend-openapi-utils@0.1.5
+
 ## 0.3.9
 
 ### Patch Changes

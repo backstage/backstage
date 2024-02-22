@@ -1,5 +1,14 @@
 # @backstage/plugin-azure-sites-backend
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.2
+  - @backstage/plugin-auth-node@0.4.7
+  - @backstage/plugin-permission-node@0.7.23
+
 ## 0.2.1
 
 ### Patch Changes

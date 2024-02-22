@@ -1,5 +1,58 @@
 # example-backend
 
+## 0.2.94
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.2
+  - @backstage/backend-tasks@0.5.17
+  - @backstage/plugin-adr-backend@0.4.9
+  - @backstage/plugin-app-backend@0.3.60
+  - @backstage/plugin-auth-backend@0.21.2
+  - @backstage/plugin-auth-node@0.4.7
+  - @backstage/plugin-azure-devops-backend@0.5.4
+  - @backstage/plugin-badges-backend@0.3.9
+  - @backstage/plugin-catalog-backend@1.17.2
+  - @backstage/plugin-code-coverage-backend@0.2.26
+  - @backstage/plugin-devtools-backend@0.2.9
+  - @backstage/plugin-entity-feedback-backend@0.2.9
+  - @backstage/plugin-events-backend@0.2.21
+  - @backstage/plugin-explore-backend@0.0.22
+  - @backstage/plugin-jenkins-backend@0.3.6
+  - @backstage/plugin-kafka-backend@0.3.10
+  - @backstage/plugin-kubernetes-backend@0.15.2
+  - @backstage/plugin-lighthouse-backend@0.4.4
+  - @backstage/plugin-linguist-backend@0.5.9
+  - @backstage/plugin-nomad-backend@0.1.14
+  - @backstage/plugin-permission-backend@0.5.35
+  - @backstage/plugin-permission-node@0.7.23
+  - @backstage/plugin-playlist-backend@0.3.16
+  - @backstage/plugin-proxy-backend@0.4.10
+  - @backstage/plugin-rollbar-backend@0.1.57
+  - @backstage/plugin-scaffolder-backend@1.21.2
+  - @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@0.2.13
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.15
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.29
+  - @backstage/plugin-search-backend@1.5.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.16
+  - @backstage/plugin-search-backend-module-elasticsearch@1.3.15
+  - @backstage/plugin-search-backend-module-explore@0.1.16
+  - @backstage/plugin-search-backend-module-pg@0.5.21
+  - @backstage/plugin-search-backend-module-techdocs@0.1.16
+  - @backstage/plugin-search-backend-node@1.2.16
+  - @backstage/plugin-signals-backend@0.0.3
+  - @backstage/plugin-signals-node@0.0.3
+  - @backstage/plugin-tech-insights-backend@0.5.26
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.44
+  - @backstage/plugin-tech-insights-node@0.4.18
+  - @backstage/plugin-techdocs-backend@1.9.5
+  - @backstage/plugin-todo-backend@0.3.10
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.9
+  - @backstage/plugin-catalog-node@1.7.2
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.3.9
+  - @backstage/plugin-events-node@0.2.21
+
 ## 0.2.93
 
 ### Patch Changes
