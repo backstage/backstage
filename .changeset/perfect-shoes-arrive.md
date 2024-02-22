@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-entity-feedback': minor
+'@backstage/plugin-entity-feedback': patch
 ---
 
 <!-- @backstage/plugin-entity-feedback -->
