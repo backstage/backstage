@@ -188,6 +188,33 @@ describe.each(databases.eachSupportedId())(
         expect(notifications.length).toBe(1);
         expect(notifications.at(0)?.id).toEqual(id1);
       });
+
+      it('should filter notifications based on created date', async () => {
+        const id1 = uuid();
+        const id2 = uuid();
+        await insertNotification({
+          id: id1,
+          ...testNotification,
+          created: new Date(Date.now() - 1 * 60 * 60 * 1000 /* an hour ago */),
+        });
+        await insertNotification({
+          id: id2,
+          ...testNotification,
+          payload: {
+            severity: 'normal',
+            title: 'Please find me',
+          },
+          created: new Date() /* now */,
+        });
+        await insertNotification({ id: uuid(), ...otherUserNotification });
+
+        const notifications = await storage.getNotifications({
+          user,
+          createdAfter: new Date(Date.now() - 5 * 60 * 1000 /* 5mins */),
+        });
+        expect(notifications.length).toBe(1);
+        expect(notifications.at(0)?.id).toEqual(id2);
+      });
     });
 
     describe('getStatus', () => {
