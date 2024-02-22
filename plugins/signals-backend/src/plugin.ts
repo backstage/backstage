@@ -34,6 +34,7 @@ export const signalsPlugin = createBackendPlugin({
         logger: coreServices.logger,
         identity: coreServices.identity,
         discovery: coreServices.discovery,
+        permissions: coreServices.permissions,
         userInfo: coreServices.userInfo,
         auth: coreServices.auth,
         events: eventsServiceRef,
@@ -43,6 +44,7 @@ export const signalsPlugin = createBackendPlugin({
         logger,
         identity,
         discovery,
+        permissions,
         userInfo,
         auth,
         events,
@@ -55,6 +57,7 @@ export const signalsPlugin = createBackendPlugin({
             userInfo,
             auth,
             events,
+            permissions,
           }),
         );
         httpRouter.addAuthPolicy({

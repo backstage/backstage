@@ -9,6 +9,7 @@ import { EventsService } from '@backstage/plugin-events-node';
 import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
@@ -27,6 +28,8 @@ export interface RouterOptions {
   identity: IdentityApi;
   // (undocumented)
   logger: LoggerService;
+  // (undocumented)
+  permissions?: PermissionEvaluator;
   // (undocumented)
   userInfo?: UserInfoService;
 }

@@ -106,6 +106,26 @@ setInterval(async () => {
 }, 5000);
 ```
 
+It's possible to also add permissions checks for the recipients. This is done by adding `permissions` to the published
+payload:
+
+```ts
+// Periodic sending example
+setInterval(async () => {
+  await signalService.publish({
+    recipients: null,
+    channel: 'my_plugin',
+    message: {
+      message: 'hello world',
+    },
+    permissions: [{ permission: devToolsConfigReadPermission }],
+  });
+}, 5000);
+```
+
+This requires also that `signals-backend` has permission evaluator set up. In case the permission evaluator is missing
+and the `permissions` are set, the message will not be sent.
+
 To receive this message in the frontend, check the documentation of `@backstage/plugin-signals` and
 `@backstage/plugin-signals-react`.
 

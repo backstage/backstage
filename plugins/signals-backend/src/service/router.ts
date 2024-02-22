@@ -22,6 +22,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
 import {
   AuthService,
+  BackstageCredentials,
   BackstageUserInfo,
   LoggerService,
   UserInfoService,
@@ -33,6 +34,7 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { WebSocket, WebSocketServer } from 'ws';
 import { Duplex } from 'stream';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 /** @public */
 export interface RouterOptions {
@@ -42,6 +44,7 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   auth?: AuthService;
   userInfo?: UserInfoService;
+  permissions?: PermissionEvaluator;
 }
 
 /** @public */
@@ -82,13 +85,14 @@ export async function createRouter(
     }
 
     let userIdentity: BackstageUserInfo | undefined = undefined;
+    let credentials: BackstageCredentials | undefined = undefined;
 
     // Authentication token is passed in Sec-WebSocket-Protocol header as there
     // is no other way to pass the token with plain websockets
     try {
       const token = request.headers['sec-websocket-protocol'];
       if (token) {
-        const credentials = await auth.authenticate(token);
+        credentials = await auth.authenticate(token);
         if (auth.isPrincipal(credentials, 'user')) {
           userIdentity = await userInfo.getUserInfo(credentials);
         }
@@ -111,7 +115,7 @@ export async function createRouter(
         socket,
         head,
         (ws: WebSocket, __: IncomingMessage) => {
-          manager.addConnection(ws, userIdentity);
+          manager.addConnection(ws, userIdentity, credentials);
         },
       );
     } catch (e) {

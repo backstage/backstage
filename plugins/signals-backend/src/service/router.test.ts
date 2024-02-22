@@ -19,11 +19,13 @@ import {
 } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
-
 import { createRouter } from './router';
 import { EventsService } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { UserInfoService } from '@backstage/backend-plugin-api';
+import {
+  PermissionsService,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
 
 const eventsServiceMock: jest.Mocked<EventsService> = {
   subscribe: jest.fn(),
@@ -43,6 +45,17 @@ const userInfo: jest.Mocked<UserInfoService> = {
   getUserInfo: jest.fn(),
 };
 
+const mockedAuthorize: jest.MockedFunction<PermissionsService['authorize']> =
+  jest.fn();
+const mockedPermissionQuery: jest.MockedFunction<
+  PermissionsService['authorizeConditional']
+> = jest.fn();
+
+const permissionsMock: PermissionsService = {
+  authorize: mockedAuthorize,
+  authorizeConditional: mockedPermissionQuery,
+};
+
 describe('createRouter', () => {
   let app: express.Express;
 
@@ -53,6 +66,7 @@ describe('createRouter', () => {
       events: eventsServiceMock,
       discovery,
       userInfo,
+      permissions: permissionsMock,
     });
     app = express().use(router);
   });
