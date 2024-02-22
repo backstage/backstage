@@ -98,6 +98,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     options: NotificationGetOptions | NotificationModifyOptions,
   ) => {
     const { user } = options;
+    const isSQLite = this.db.client.config.client.includes('sqlite3');
+    // const isPsql = this.db.client.config.client.includes('pg');
+
     const query = this.db('notification').where('user', user);
 
     if (options.sort !== undefined && options.sort !== null) {
@@ -107,7 +110,19 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     }
 
     if (options.createdAfter) {
-      query.where('created', '>=', options.createdAfter.valueOf());
+      if (isSQLite) {
+        query.where(
+          'notification.created',
+          '>=',
+          options.createdAfter.valueOf(),
+        );
+      } else {
+        query.where(
+          'notification.created',
+          '>=',
+          options.createdAfter.toISOString(),
+        );
+      }
     }
 
     if (options.limit) {
