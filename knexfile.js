@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-// Update with your config settings.
+// To create a new migration in a plugin, run:
+//
+//   yarn workspace <package> knex migrate:make <name_with_underscores>
+//
+// for example:
+//
+//   yarn workspace @backstage/plugin-catalog-backend knex migrate:make add_feature_foo
+//
+// This creates a file similar to
+//
+//   plugins/catalog-backend/migrations/20240206160252_add_feature_foo.js
 
-// This file makes it possible to run "yarn knex migrate:make some_file_name"
-// to assist in making new migrations
 module.exports = {
   client: 'better-sqlite3',
   connection: ':memory:',
   useNullAsDefault: true,
   migrations: {
-    directory: './migrations',
+    // unfortunately this needs to be relative to the TARGET, not this file, and
+    // it just so happens to work to make it go up two steps due to our repo
+    // layout
+    stub: '../../scripts/templates/knex-migration.stub.js',
   },
 };

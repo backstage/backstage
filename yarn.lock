@@ -20089,9 +20089,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uiw/codemirror-extensions-basic-setup@npm:4.21.21":
-  version: 4.21.21
-  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.21.21"
+"@uiw/codemirror-extensions-basic-setup@npm:4.21.23":
+  version: 4.21.23
+  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.21.23"
   dependencies:
     "@codemirror/autocomplete": ^6.0.0
     "@codemirror/commands": ^6.0.0
@@ -20108,19 +20108,19 @@ __metadata:
     "@codemirror/search": ">=6.0.0"
     "@codemirror/state": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
-  checksum: 5d96ec930be286b5e324ee8dd57128171c72a8e333b4b991a5c4f33a05420a638def3776bd1a77c5b88184f7d3cbc6828b5c9a42b3b490f51908bedf69eaa0f0
+  checksum: cd17481d9d9a9b620f961a4df6e8208bcabe98652ca6c18366a8688fbcc09d37a030694a70dcc010aaabe02c85c342acf9f80357c6853b57f1081af5b130bd26
   languageName: node
   linkType: hard
 
 "@uiw/react-codemirror@npm:^4.9.3":
-  version: 4.21.21
-  resolution: "@uiw/react-codemirror@npm:4.21.21"
+  version: 4.21.23
+  resolution: "@uiw/react-codemirror@npm:4.21.23"
   dependencies:
     "@babel/runtime": ^7.18.6
     "@codemirror/commands": ^6.1.0
     "@codemirror/state": ^6.1.1
     "@codemirror/theme-one-dark": ^6.0.0
-    "@uiw/codemirror-extensions-basic-setup": 4.21.21
+    "@uiw/codemirror-extensions-basic-setup": 4.21.23
     codemirror: ^6.0.0
   peerDependencies:
     "@babel/runtime": ">=7.11.0"
@@ -20130,7 +20130,7 @@ __metadata:
     codemirror: ">=6.0.0"
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: 6a8500290bf0a739fd345221465b10112e0f758914bc8aa28ce0b9904b76489ae018d390f6a2d7dd7752b21f0ed87ba3fedb45b4185d04e4985abf0eb22e6d75
+  checksum: 7d0209d947e1e57cf80ef44a097bb3af04d2bab2d6fc57deed91619a0db77e3d4289db8f03fb43906b2e324496d25c872fa99b83834f085c40ad95137ea4459c
   languageName: node
   linkType: hard
 
@@ -21993,13 +21993,13 @@ __metadata:
   linkType: hard
 
 "better-sqlite3@npm:^9.0.0":
-  version: 9.4.1
-  resolution: "better-sqlite3@npm:9.4.1"
+  version: 9.4.3
+  resolution: "better-sqlite3@npm:9.4.3"
   dependencies:
     bindings: ^1.5.0
     node-gyp: latest
     prebuild-install: ^7.1.1
-  checksum: 4d14a95c9ec62eb76321aaf085fd08e9dae10527149f5b54e9f9868feb50ae6fbf6f7eed52f52e6126472938aa789f7e82f5ad9357c88b4efeaf8f7d958c5c11
+  checksum: 09e8d52e52e42f7175fd71fb8856873e9e39714a31b7739e0c6c2017b020bfa3f1cdd255ad1fe4d68140b0c74a5d043eca4d1ed8be9a080e172557bbea0deaf5
   languageName: node
   linkType: hard
 
@@ -25659,7 +25659,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:=3.0.8, dompurify@npm:^3.0.0":
+"dompurify@npm:=3.0.8":
   version: 3.0.8
   resolution: "dompurify@npm:3.0.8"
   checksum: cac660ccae15a9603f06a85344da868a4c3732d8b57f7998de0f421eb4b9e67d916be52e9bb2a57b2f95b49e994cc50bcd06bb87f2cb2849cf058bdf15266237
@@ -25670,6 +25670,13 @@ __metadata:
   version: 2.4.7
   resolution: "dompurify@npm:2.4.7"
   checksum: 13c047e772a1998348191554dda403950d45ef2ec75fa0b9915cc179ccea0a39ef780d283109bd72cf83a2a085af6c77664281d4d0106a737bc5f39906364efe
+  languageName: node
+  linkType: hard
+
+"dompurify@npm:^3.0.0":
+  version: 3.0.9
+  resolution: "dompurify@npm:3.0.9"
+  checksum: 09794f2e40a0003d36e3cd70be1036f83de39d9d4a0f199c45e0b9962ce8ae5f9fe424d7edc4c8ff9ec615be9744a140d66788f0925913ac482d4628b283cae5
   languageName: node
   linkType: hard
 
@@ -28734,19 +28741,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gaxios@npm:^6.0.0, gaxios@npm:^6.0.2":
-  version: 6.1.1
-  resolution: "gaxios@npm:6.1.1"
+"gaxios@npm:^6.0.0, gaxios@npm:^6.0.2, gaxios@npm:^6.1.1":
+  version: 6.3.0
+  resolution: "gaxios@npm:6.3.0"
   dependencies:
     extend: ^3.0.2
     https-proxy-agent: ^7.0.1
     is-stream: ^2.0.0
     node-fetch: ^2.6.9
-  checksum: bb4a4e6c81847b690ee29e01294d2093eb9bb4f9e60bbf81fcc6cd3b274f3c551c50a9bc134e7e7019a9b116eac9d9df6af9f2519c695da7ddd785f36564da72
+  checksum: 4d4a8db32d833f8012435e2016cb0c919cac288e821bf81f877504e4284ef12b444cd903448e738c4031cd5219adf1e8d68e7df2b3dba774db9fde27f71109d4
   languageName: node
   linkType: hard
 
-"gcp-metadata@npm:^6.0.0":
+"gcp-metadata@npm:^6.1.0":
   version: 6.1.0
   resolution: "gcp-metadata@npm:6.1.0"
   dependencies:
@@ -29131,16 +29138,16 @@ __metadata:
   linkType: hard
 
 "google-auth-library@npm:^9.0.0":
-  version: 9.2.0
-  resolution: "google-auth-library@npm:9.2.0"
+  version: 9.6.3
+  resolution: "google-auth-library@npm:9.6.3"
   dependencies:
     base64-js: ^1.3.0
     ecdsa-sig-formatter: ^1.0.11
-    gaxios: ^6.0.0
-    gcp-metadata: ^6.0.0
+    gaxios: ^6.1.1
+    gcp-metadata: ^6.1.0
     gtoken: ^7.0.0
     jws: ^4.0.0
-  checksum: 0da686964a769c79b5a1f7e518cb885f7c433edd50c8adf5cc310bfce607235184ebe6f9bc5290618d760c25e4ce1e273d444c9914c815353faa9d9dea37d1b3
+  checksum: 46174191de15ec56110ac0394ae9d1c56fb6aa293809d45170b2ff570130d7e3f3e82fa78d413908862a2d0da3fa946b72f1074000f4d52579eb17367e49e44d
   languageName: node
   linkType: hard
 
@@ -32158,9 +32165,9 @@ __metadata:
   linkType: hard
 
 "js-base64@npm:^3.6.0":
-  version: 3.7.6
-  resolution: "js-base64@npm:3.7.6"
-  checksum: 4e1e82443c22f3f8f24902b071ea824069a28a16a86c3d8706e8c0741cace92cfb4affd093f52d13981369e10df840e54df8d0a59ede6dd2204a1f0aa4b64deb
+  version: 3.7.7
+  resolution: "js-base64@npm:3.7.7"
+  checksum: d1b02971db9dc0fd35baecfaf6ba499731fb44fe3373e7e1d6681fbd3ba665f29e8d9d17910254ef8104e2cb8b44117fe4202d3dc54c7cafe9ba300fe5433358
   languageName: node
   linkType: hard
 
@@ -33689,7 +33696,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:^4.15.0, lodash@npm:^4.16.4, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:^4.7.0, lodash@npm:~4.17.15, lodash@npm:~4.17.21":
+"lodash@npm:4.17.21, lodash@npm:^4.15.0, lodash@npm:^4.16.4, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:^4.7.0, lodash@npm:~4.17.15, lodash@npm:~4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -39860,12 +39867,12 @@ __metadata:
   linkType: hard
 
 "react-virtualized-auto-sizer@npm:^1.0.11":
-  version: 1.0.22
-  resolution: "react-virtualized-auto-sizer@npm:1.0.22"
+  version: 1.0.23
+  resolution: "react-virtualized-auto-sizer@npm:1.0.23"
   peerDependencies:
     react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
     react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
-  checksum: dc3fc29437b7179de71f77e5be3514e8789944132d7eb03f7157f783ec167ad9bebf1d371c135cf74fc5787dfac313a2914a5d23b45e978ae77be36c673342e5
+  checksum: a5b37b2201f09f957d2398f1415fcec9b2aa0cbfb75ae193bd324a0bc5ef00dc30d3a40f60b31fe5a450d8ec66c0911213f9f3be0e8410ae1b180547030fd8e8
   languageName: node
   linkType: hard
 
@@ -40075,12 +40082,12 @@ __metadata:
   linkType: hard
 
 "recharts@npm:^2.5.0":
-  version: 2.12.0
-  resolution: "recharts@npm:2.12.0"
+  version: 2.12.1
+  resolution: "recharts@npm:2.12.1"
   dependencies:
     clsx: ^2.0.0
     eventemitter3: ^4.0.1
-    lodash: ^4.17.19
+    lodash: ^4.17.21
     react-is: ^16.10.2
     react-smooth: ^4.0.0
     recharts-scale: ^0.4.4
@@ -40089,7 +40096,7 @@ __metadata:
   peerDependencies:
     react: ^16.0.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 13fc3f8405a16dc8555b5aba9928e7339549b1db2da4821e659df8ac59cbdccec044b985be21093a546c2b2c231113103064c6ea4799322ca360805aede0358b
+  checksum: 768024e18bab43de2378241891748c562c57ddedfc31c3cec932a21a8b41cd662555d7c2bc26e86e7534c5e5c7ef2ebc0faa6d5fdc34d28057020837b4e3bf50
   languageName: node
   linkType: hard
 

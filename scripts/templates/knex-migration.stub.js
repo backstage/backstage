@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-// This file makes it possible to run "yarn knex migrate:make some_file_name"
-// to assist in making new migrations
-module.exports = {
-  client: 'better-sqlite3',
-  connection: ':memory:',
-  useNullAsDefault: true,
-  migrations: {
-    directory: './migrations',
-  },
+// @ts-check
+
+/**
+ * @param { import("knex").Knex } knex
+ * @returns { Promise<void> }
+ */
+exports.up = async function up(knex) {
+  // await knex.schema...
+};
+
+/**
+ * @param { import("knex").Knex } knex
+ * @returns { Promise<void> }
+ */
+exports.down = async function down(knex) {
+  // await knex.schema...
 };
