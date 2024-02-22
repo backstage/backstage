@@ -20,91 +20,76 @@ import { useApi } from '@backstage/core-plugin-api';
 import { techInsightsApiRef } from '../../api/TechInsightsApi';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { getCompoundEntityRef } from '@backstage/catalog-model';
-import { Fact } from './Fact';
+import Fact from './Fact';
 import { useMemo } from 'react';
 import { List, ListItem } from '@material-ui/core';
 
-export const FactDetails = (
-  props: {
-    numerators: string[];
-    denominators: string[]
-  }
-) => {
-
-  const { numerators, denominators } = props
+export const FactDetails = (props: {
+  numerators: string[];
+  denominators: string[];
+}) => {
+  const { numerators, denominators } = props;
 
   const api = useApi(techInsightsApiRef);
   const { entity } = useEntity();
 
-  const checks = useAsync(
-    async () => 
-      await api.getAllChecks(),       
-    [api, entity]
-  )
+  const checks = useAsync(async () => await api.getAllChecks(), [api, entity]);
 
-  const factIds:string[] = useMemo(
-    () => {
-      return checks.value?.map(check=>{
-        return check.factIds.flatMap(id => id)
-      }).flat() || []
-    }, [checks]
-  )
+  const factIds: string[] = useMemo(() => {
+    return (
+      checks.value
+        ?.map(check => {
+          return check.factIds.flatMap(id => id);
+        })
+        .flat() || []
+    );
+  }, [checks]);
 
-  const {value} = useAsync(
-    async () =>
-      await api.getFacts(getCompoundEntityRef(entity), factIds),
+  const { value } = useAsync(
+    async () => await api.getFacts(getCompoundEntityRef(entity), factIds),
     [api, entity, factIds],
   );
 
-  const components = useMemo(()=>{
-    if(value){
-      return factIds.map(
-        factId =>{
+  const components = useMemo(() => {
+    if (value) {
+      return factIds.map(factId => {
+        const comp = [];
+        const f = value[factId]?.facts;
 
-        let comp = []
-        const f = value[factId]?.facts
+        let numeratorName: string | null = null;
+        let denominatorName: string | null = null;
+        let numerator: number | null = null;
+        let denominator: number | null = null;
 
-        let numeratorName: string|null = null
-        let denominatorName: string|null = null
-        let numerator: number|null = null
-        let denominator: number|null = null
+        for (const [key, val] of Object.entries(f)) {
+          if (denominators.includes(key)) {
+            denominatorName = key;
+            denominator = Number(val);
+          }
 
+          if (numerators.includes(key)) {
+            numerator = Number(val);
+            numeratorName = key;
+          }
 
-        for (let fact in f) {
-          if (f.hasOwnProperty(fact)) {
-            const val = f[fact];
-        
-            if (denominators.includes(fact)) {
-              denominatorName = fact;
-              denominator = Number(val);
-            }
-        
-            if (numerators.includes(fact)) {
-              numerator = Number(val);
-              numeratorName = fact;
-            }
-        
-            if (numerator && denominator) {
-              comp.push(
-                <Fact
-                  numerator={numerator}
-                  denominator={denominator}
-                  title={`${numeratorName} out of ${denominatorName}`}
-                />
-              );
-              denominator = null;
-              numerator = null;
-            }
+          if (numerator && denominator) {
+            comp.push(
+              <Fact
+                numerator={numerator}
+                denominator={denominator}
+                title={`${numeratorName} out of ${denominatorName}`}
+              />,
+            );
+            denominator = null;
+            numerator = null;
           }
         }
-        
-        return comp
-      })      
+
+        return comp;
+      });
     }
-    return []
-
-  }, [value, denominators, numerators, factIds])
-
+    return [];
+  }, [value, denominators, numerators, factIds]);
 
   return (
     components && (
@@ -115,5 +100,4 @@ export const FactDetails = (
       </List>
     )
   );
-  
 };
