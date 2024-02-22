@@ -27,21 +27,21 @@ import {
   RepoBuildOptions,
   Team,
 } from '@backstage/plugin-azure-devops-common';
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { AzureDevOpsApi } from './AzureDevOpsApi';
 
 /** @public */
 export class AzureDevOpsClient implements AzureDevOpsApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
 
   public constructor(options: {
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
   }) {
     this.discoveryApi = options.discoveryApi;
-    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
   }
 
   public async getRepoBuilds(
@@ -203,10 +203,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('azure-devops')}/`;
     const url = new URL(path, baseUrl);
 
-    const { token: idToken } = await this.identityApi.getCredentials();
-    const response = await fetch(url.toString(), {
-      headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
-    });
+    const response = await this.fetchApi.fetch(url.toString());
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);

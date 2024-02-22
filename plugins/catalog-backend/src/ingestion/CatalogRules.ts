@@ -18,7 +18,7 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import path from 'path';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 
 /**
  * Rules to apply to catalog entities.
