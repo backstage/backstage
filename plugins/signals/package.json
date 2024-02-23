@@ -1,9 +1,9 @@
 {
   "name": "@backstage/plugin-signals",
   "version": "0.0.1",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -14,18 +14,21 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/signals"
   },
-  "backstage": {
-    "role": "frontend-plugin"
-  },
+  "license": "Apache-2.0",
   "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/core-components": "workspace:^",
@@ -39,9 +42,6 @@
     "react-use": "^17.2.4",
     "uuid": "^8.0.0"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
@@ -53,7 +53,7 @@
     "jest-websocket-mock": "^2.5.0",
     "msw": "^1.0.0"
   },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0"
+  }
 }

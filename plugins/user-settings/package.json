@@ -1,15 +1,31 @@
 {
   "name": "@backstage/plugin-user-settings",
-  "description": "A Backstage plugin that provides a settings page",
   "version": "0.8.1",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "description": "A Backstage plugin that provides a settings page",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/user-settings"
+  },
   "license": "Apache-2.0",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.tsx",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -20,30 +36,17 @@
       ]
     }
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "backstage": {
-    "role": "frontend-plugin"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/user-settings"
-  },
-  "keywords": [
-    "backstage"
+  "files": [
+    "dist"
   ],
-  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
-    "start": "backstage-cli package start",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/core-app-api": "workspace:^",
@@ -62,11 +65,6 @@
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
@@ -78,9 +76,11 @@
     "@testing-library/user-event": "^14.0.0",
     "msw": "^1.0.0"
   },
-  "files": [
-    "dist"
-  ],
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
   "configSchema": {
     "$schema": "https://backstage.io/schema/config-v1",
     "title": "@backstage/user-settings",

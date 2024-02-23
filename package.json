@@ -75,7 +75,7 @@
     "package.json": [
       "yarn backstage-repo-tools generate-catalog-info",
       "git add */catalog-info.yaml",
-      "yarn sort-package-json"
+      "node ./scripts/sort-package-json.mjs"
     ],
     "yarn.lock": [
       "node ./scripts/verify-lockfile-duplicates --fix"
