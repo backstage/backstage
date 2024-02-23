@@ -59,7 +59,7 @@ export function createCredentialsBarrier(options: {
   const unauthenticatedPredicates = new Array<(path: string) => boolean>();
   const cookiePredicates = new Array<(path: string) => boolean>();
 
-  const middleware: RequestHandler = async (req, _, next) => {
+  const middleware: RequestHandler = (req, _, next) => {
     const allowsUnauthenticated = unauthenticatedPredicates.some(predicate =>
       predicate(req.path),
     );
@@ -73,12 +73,15 @@ export function createCredentialsBarrier(options: {
       predicate(req.path),
     );
 
-    await httpAuth.credentials(req, {
-      allow: ['user', 'service'],
-      allowedAuthMethods: allowsCookie ? ['token', 'cookie'] : ['token'],
-    });
-
-    next();
+    httpAuth
+      .credentials(req, {
+        allow: ['user', 'service'],
+        allowedAuthMethods: allowsCookie ? ['token', 'cookie'] : ['token'],
+      })
+      .then(
+        () => next(),
+        err => next(err),
+      );
   };
 
   const addAuthPolicy = (policy: HttpRouterServiceAuthPolicy) => {
