@@ -14,18 +14,19 @@ jobs:
   # This step only runs yarn install to make sure that an exact match is available
   # in the cache. The two following verify and tests jobs then always install from cache.
   install:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
         node-version: [18.x, 20.x]
+        os: ['macos-latest', 'ubuntu-latest']
 
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=8192
 
-    name: Install ${{ matrix.node-version }}
+    name: Install ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
@@ -48,7 +49,7 @@ jobs:
   # The verify jobs runs all the verification that doesn't require a
   # diff towards master, since it takes some time to fetch that.
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     needs: install
 
@@ -56,12 +57,13 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [18.x, 20.x]
+        os: ['macos-latest', 'ubuntu-latest']
 
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=8192
 
-    name: Verify ${{ matrix.node-version }}
+    name: Verify ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
@@ -143,7 +145,7 @@ jobs:
   # The test job runs all tests as well as any verification step that
   # requires a diff towards master.
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     needs: install
 
@@ -151,8 +153,9 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [18.x, 20.x]
+        os: ['macos-latest', 'ubuntu-latest']
 
-    name: Test ${{ matrix.node-version }}
+    name: Test ${{ matrix.node-version }} on ${{ matrix.os }}
     services:
       postgres16:
         image: postgres:16
