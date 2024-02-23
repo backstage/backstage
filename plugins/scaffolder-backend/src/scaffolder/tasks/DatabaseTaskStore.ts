@@ -404,7 +404,7 @@ export class DatabaseTaskStore implements TaskStore {
     const [result] = await this.db<RawDbTaskRow>('tasks')
       .where({ id: taskId })
       .select('state');
-    return result.state ? { state: JSON.parse(result.state) } : undefined;
+    return result.state ? JSON.parse(result.state) : undefined;
   }
 
   async saveTaskState(options: {
@@ -412,7 +412,7 @@ export class DatabaseTaskStore implements TaskStore {
     state?: JsonObject;
   }): Promise<void> {
     if (options.state) {
-      const serializedState = JSON.stringify(options.state);
+      const serializedState = JSON.stringify({ state: options.state });
       await this.db<RawDbTaskRow>('tasks')
         .where({ id: options.taskId })
         .update({
