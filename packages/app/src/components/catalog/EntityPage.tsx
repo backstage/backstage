@@ -137,7 +137,7 @@ import {
 import { PuppetDbPage, isPuppetDbAvailable } from '@backstage/plugin-puppetdb';
 import { EntitySentryContent } from '@backstage/plugin-sentry';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-import { EntityTechInsightsScorecardCard, FactDetails } from '@backstage/plugin-tech-insights';
+import { EntityTechInsightsScorecardCard } from '@backstage/plugin-tech-insights';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
 import BadgeIcon from '@material-ui/icons/CallToAction';
@@ -570,13 +570,6 @@ const serviceEntityPage = (
           />
         </Grid>
       </Grid>
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/factdetails" title="Fact Details">
-        <FactDetails
-            numerators={['systemNoDomainCount']}
-            denominators={['systemCount']}
-          />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/code-coverage" title="Code Coverage">
