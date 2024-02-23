@@ -272,6 +272,14 @@ describe('ServerPermissionClient', () => {
         });
 
         expect(mockAuthorizeHandler).toHaveBeenCalled();
+        expect(
+          mockAuthorizeHandler.mock.calls[0][0].headers.get('authorization'),
+        ).toBe(
+          mockCredentials.service.header({
+            onBehalfOf: mockCredentials.user(),
+            targetPluginId: 'permissions',
+          }),
+        );
       });
     });
 
@@ -344,6 +352,14 @@ describe('ServerPermissionClient', () => {
         );
 
         expect(mockAuthorizeHandler).toHaveBeenCalled();
+        expect(
+          mockAuthorizeHandler.mock.calls[0][0].headers.get('authorization'),
+        ).toBe(
+          mockCredentials.service.header({
+            onBehalfOf: mockCredentials.user(),
+            targetPluginId: 'permissions',
+          }),
+        );
       });
     });
   });
