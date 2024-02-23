@@ -1,5 +1,19 @@
 # @backstage/plugin-search-backend-module-stack-overflow-collator
 
+## 0.1.3
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/backend-tasks@0.5.15
+  - @backstage/plugin-search-backend-node@1.2.14
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.1.3-next.3
 
 ### Patch Changes

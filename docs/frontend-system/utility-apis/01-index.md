@@ -40,4 +40,4 @@ These cases are all described in [the main article](./04-configuring.md).
 
 ## Migrating from the old frontend system
 
-If you want to learn how to migrate your own utility APIs from the old frontend system to the new one, that's described in [a dedicated migration guide](./05-migrating.md).
+If you want to learn how to migrate your own utility APIs from the old frontend system to the new one, that's described in the [Migrating APIs guide](../building-plugins/05-migrating.md#migrating-apis).

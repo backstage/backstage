@@ -1,5 +1,17 @@
 # @backstage/plugin-signals-react
 
+## 0.0.1
+
+### Patch Changes
+
+- 447d210: Fix disconnect loop on server start
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- 047bead: Add support to subscribe and publish messages through signals plugins
+- 1ab22c4: Allow defining signal type to publish and receive
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/types@1.1.1
+
 ## 0.0.1-next.3
 
 ### Patch Changes

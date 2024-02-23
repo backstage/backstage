@@ -1,5 +1,16 @@
 # @backstage/plugin-nomad-backend
 
+## 0.1.12
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.12-next.3
 
 ### Patch Changes

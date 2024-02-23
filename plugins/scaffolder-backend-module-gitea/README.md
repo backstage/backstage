@@ -28,8 +28,8 @@ integrations:
       password: '<GITEA_LOCALHOST_PASSWORD>'
 ```
 
-**NOTE**: As backstage will issue HTTPS/TLS requests to the gitea instance, it is needed to configure `gitea` with a valid certificate or at least with a
-self-signed certificate `gitea cert --host localhost -ca`. Don't forget to set the env var `NODE_EXTRA_CA_CERTS` to point to the CA file before launching backstage !
+**Important**: As backstage will issue HTTPS/TLS requests to the gitea instance, it is needed to configure `gitea` with a valid certificate or at least with a
+self-signed certificate `gitea cert --host localhost -ca` trusted by a CA authority. Don't forget to set the env var `NODE_EXTRA_CA_CERTS` to point to the CA file before launching backstage !
 
 When done, you can create a template which:
 
@@ -69,18 +69,8 @@ spec:
       action: fetch:template
       input:
         url: ./skeleton
-        copyWithoutTemplating:
-          - .github/workflows/*
         values:
-          component_id: ${{ parameters.component_id }}
-          namespace: ${{ parameters.component_id }}-dev
-          description: ${{ parameters.description }}
-          group_id: ${{ parameters.group_id }}
-          artifact_id: ${{ parameters.artifact_id }}
-          java_package_name: ${{ parameters.java_package_name }}
-          owner: ${{ parameters.owner }}
-          destination: ${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }
-          port: 8080
+          name: ${{ parameters.name }}
 
     - id: publish
       name: Publishing to a gitea git repository

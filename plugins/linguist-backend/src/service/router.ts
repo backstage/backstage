@@ -15,6 +15,7 @@
  */
 
 import {
+  createLegacyAuthAdapters,
   errorHandler,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
@@ -35,6 +36,7 @@ import { HumanDuration } from '@backstage/types';
 import { CatalogClient } from '@backstage/catalog-client';
 import { LinguistBackendClient } from '../api/LinguistBackendClient';
 import { Config } from '@backstage/config';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface PluginOptions {
@@ -56,6 +58,8 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   scheduler?: PluginTaskScheduler;
   config?: Config;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 }
 
 /** @public */
@@ -63,7 +67,7 @@ export async function createRouter(
   pluginOptions: PluginOptions,
   routerOptions: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, reader, database, discovery, scheduler, tokenManager } =
+  const { logger, reader, database, discovery, scheduler, tokenManager, auth } =
     routerOptions;
 
   const {
@@ -81,13 +85,19 @@ export async function createRouter(
 
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
 
+  const { auth: adaptedAuth } = createLegacyAuthAdapters({
+    auth,
+    tokenManager: tokenManager,
+    discovery: discovery,
+  });
+
   const linguistBackendClient =
     routerOptions.linguistBackendApi ||
     new LinguistBackendClient(
       logger,
       linguistBackendStore,
       reader,
-      tokenManager,
+      adaptedAuth,
       catalogClient,
       age,
       batchSize,

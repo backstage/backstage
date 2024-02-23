@@ -21,11 +21,11 @@ import {
 } from '@backstage/backend-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 const sampleOwnedEntities = [
   {
@@ -65,7 +65,7 @@ const sampleEntities = [
   },
 ];
 
-const mockGetEntties = jest
+const mockGetEntities = jest
   .fn()
   .mockImplementation(async () => ({ items: sampleOwnedEntities }));
 
@@ -75,13 +75,9 @@ const mockGetEnttiesByRefs = jest
 
 jest.mock('@backstage/catalog-client', () => ({
   CatalogClient: jest.fn().mockImplementation(() => ({
-    getEntities: mockGetEntties,
+    getEntities: mockGetEntities,
     getEntitiesByRefs: mockGetEnttiesByRefs,
   })),
-}));
-
-jest.mock('@backstage/plugin-auth-node', () => ({
-  getBearerTokenFromAuthorizationHeader: () => 'token',
 }));
 
 const mockRatings = [
@@ -149,12 +145,6 @@ describe('createRouter', () => {
       }),
     ).forPlugin('entity-feedback');
 
-  const mockIdentityClient = {
-    getIdentity: jest.fn().mockImplementation(async () => ({
-      identity: { userEntityRef: 'user:default/me' },
-    })),
-  } as unknown as IdentityApi;
-
   const discovery: jest.Mocked<PluginEndpointDiscovery> = {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
@@ -164,8 +154,10 @@ describe('createRouter', () => {
     const router = await createRouter({
       database: createDatabase(),
       discovery,
-      identity: mockIdentityClient,
+      identity: mockServices.identity(),
       logger: getVoidLogger(),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
     });
 
     app = express().use(router);
@@ -174,44 +166,38 @@ describe('createRouter', () => {
 
   describe('GET /ratings', () => {
     it('should get ratings for all entities correctly', async () => {
-      const response = await request(app).get('/ratings').send();
+      const response = await request(app)
+        .get('/ratings')
+        .set('authorization', mockCredentials.user.header())
+        .send();
 
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([
+        {
+          entityRef: 'component:default/foo',
+          entityTitle: 'Foo Component',
+          ratings: { LIKE: 3, DISLIKE: 1 },
+        },
+        {
+          entityRef: 'component:default/bar',
+          entityTitle: 'Bar Component',
+          ratings: { LIKE: 5 },
+        },
+      ]);
       expect(mockDbHandler.getAllRatedEntities).toHaveBeenCalled();
       expect(mockDbHandler.getRatingsAggregates).toHaveBeenCalledWith(
         sampleEntities
           .filter(Boolean)
           .map((ent: any) => stringifyEntityRef(ent)),
       );
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual([
-        {
-          entityRef: 'component:default/foo',
-          entityTitle: 'Foo Component',
-          ratings: { LIKE: 3, DISLIKE: 1 },
-        },
-        {
-          entityRef: 'component:default/bar',
-          entityTitle: 'Bar Component',
-          ratings: { LIKE: 5 },
-        },
-      ]);
     });
 
     it('should get ratings for all owned entities correctly', async () => {
       const response = await request(app)
         .get('/ratings?ownerRef=group:default/test-team')
+        .set('authorization', mockCredentials.user.header())
         .send();
 
-      expect(mockGetEntties).toHaveBeenCalledWith(
-        expect.objectContaining({
-          filter: { 'relations.ownedBy': 'group:default/test-team' },
-        }),
-        { token: 'token' },
-      );
-      expect(mockDbHandler.getAllRatedEntities).not.toHaveBeenCalled();
-      expect(mockDbHandler.getRatingsAggregates).toHaveBeenCalledWith(
-        sampleOwnedEntities.map((ent: any) => stringifyEntityRef(ent)),
-      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([
         {
@@ -225,6 +211,21 @@ describe('createRouter', () => {
           ratings: { LIKE: 5 },
         },
       ]);
+      expect(mockGetEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: { 'relations.ownedBy': 'group:default/test-team' },
+        }),
+        {
+          token: mockCredentials.service.token({
+            onBehalfOf: mockCredentials.user(),
+            targetPluginId: 'catalog',
+          }),
+        },
+      );
+      expect(mockDbHandler.getAllRatedEntities).not.toHaveBeenCalled();
+      expect(mockDbHandler.getRatingsAggregates).toHaveBeenCalledWith(
+        sampleOwnedEntities.map((ent: any) => stringifyEntityRef(ent)),
+      );
     });
   });
 
@@ -233,10 +234,11 @@ describe('createRouter', () => {
       const body = { rating: 'LIKE' };
       const response = await request(app)
         .post('/ratings/component%3Adefault%2Fservice')
+        .set('authorization', mockCredentials.user.header())
         .send(body);
       expect(mockDbHandler.recordRating).toHaveBeenCalledWith({
         entityRef: 'component:default/service',
-        userRef: 'user:default/me',
+        userRef: 'user:default/mock',
         ...body,
       });
       expect(response.status).toEqual(201);
@@ -247,6 +249,7 @@ describe('createRouter', () => {
     it('should get ratings for an entity correctly', async () => {
       const response = await request(app)
         .get('/ratings/component%3Adefault%2Fservice')
+        .set('authorization', mockCredentials.user.header())
         .send();
       expect(mockDbHandler.getRatings).toHaveBeenCalledWith(
         'component:default/service',
@@ -262,6 +265,7 @@ describe('createRouter', () => {
     it('should get aggregated ratings for an entity correctly', async () => {
       const response = await request(app)
         .get('/ratings/component%3Adefault%2Fservice/aggregate')
+        .set('authorization', mockCredentials.user.header())
         .send();
       expect(mockDbHandler.getRatings).toHaveBeenCalledWith(
         'component:default/service',
@@ -279,10 +283,11 @@ describe('createRouter', () => {
       const body = { response: 'blah', comments: 'feedback', consent: true };
       const response = await request(app)
         .post('/responses/component%3Adefault%2Fservice')
+        .set('authorization', mockCredentials.user.header())
         .send(body);
       expect(mockDbHandler.recordResponse).toHaveBeenCalledWith({
         entityRef: 'component:default/service',
-        userRef: 'user:default/me',
+        userRef: 'user:default/mock',
         ...body,
       });
       expect(response.status).toEqual(201);
@@ -293,6 +298,7 @@ describe('createRouter', () => {
     it('should get responses for an entity correctly', async () => {
       const response = await request(app)
         .get('/responses/component%3Adefault%2Fservice')
+        .set('authorization', mockCredentials.user.header())
         .send();
       expect(mockDbHandler.getResponses).toHaveBeenCalledWith(
         'component:default/service',

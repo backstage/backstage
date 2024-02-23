@@ -1,5 +1,40 @@
 # @backstage/plugin-catalog
 
+## 1.17.0
+
+### Minor Changes
+
+- d208a93: Updated the paginated catalog table to support server side text filtering.
+- 1f8c2fa: Add entity warning components to the default entity overview page.
+- e541c0e: Exported `CatalogTable.defaultColumnsFunc` for defining the columns in `<CatalogTable />` of some Kinds while using the default columns for the others.
+
+### Patch Changes
+
+- 916da47: Change default icon for unknown entities to nothing instead of the help icon.
+- f899eec: Change default icon for `kind:resource` to the storage icon.
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 912ca7b: Use `convertLegacyRouteRefs` to define routes in `/alpha` export plugin.
+- 797a329: Fixed inconsistencies in icons used for System and Template
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 987f565: Add line clamping to `CatalogSearchResultListItem`
+- 172a717: Fix entity content extension filtering.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/core-compat-api@0.2.0
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-permission-react@0.4.20
+  - @backstage/plugin-search-react@1.7.6
+  - @backstage/plugin-scaffolder-common@1.5.0
+  - @backstage/errors@1.2.3
+  - @backstage/integration-react@1.1.24
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.21
+  - @backstage/plugin-search-common@1.2.10
+
 ## 1.17.0-next.3
 
 ### Minor Changes

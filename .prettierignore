@@ -11,6 +11,7 @@ cli-report.md
 plugins/scaffolder-backend/sample-templates
 .vscode
 dist-types
+.eslintrc.js
 
 # reduce the barrier for adopters to add themselves
 ADOPTERS.md

@@ -37,7 +37,7 @@ export type TokenIssuer = {
   /**
    * Issues a new ID Token
    */
-  issueToken(params: TokenParams): Promise<string>;
+  issueToken(params: _TokenParams): Promise<string>;
 
   /**
    * List all public keys that are currently being used to sign tokens, or have been used

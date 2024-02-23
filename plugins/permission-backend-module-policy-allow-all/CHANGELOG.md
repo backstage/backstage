@@ -1,5 +1,16 @@
 # @backstage/plugin-permission-backend-module-allow-all-policy
 
+## 0.1.7
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/plugin-permission-node@0.7.21
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 0.1.7-next.3
 
 ### Patch Changes

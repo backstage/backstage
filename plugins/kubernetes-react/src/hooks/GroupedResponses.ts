@@ -25,6 +25,7 @@ export const GroupedResponsesContext = React.createContext<GroupedResponses>({
   pods: [],
   replicaSets: [],
   deployments: [],
+  daemonSets: [],
   services: [],
   configMaps: [],
   horizontalPodAutoscalers: [],
