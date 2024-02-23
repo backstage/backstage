@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@backstage/types": "workspace:^",
-    "serialize-error": "^8.0.1"
+    "serialize-error": "^11.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
