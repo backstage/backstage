@@ -1,36 +1,40 @@
 {
   "name": "@backstage/integration",
-  "description": "Helpers for managing integrations towards external systems",
   "version": "1.9.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "description": "Helpers for managing integrations towards external systems",
+  "backstage": {
+    "role": "common-library"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "common-library"
-  },
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/integration"
   },
-  "keywords": [
-    "backstage"
-  ],
+  "license": "Apache-2.0",
   "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@azure/identity": "^4.0.0",
@@ -49,9 +53,5 @@
     "@types/luxon": "^3.0.0",
     "msw": "^1.0.0"
   },
-  "files": [
-    "dist",
-    "config.d.ts"
-  ],
   "configSchema": "config.d.ts"
 }

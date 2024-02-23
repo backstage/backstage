@@ -1,18 +1,32 @@
 {
   "name": "@backstage/plugin-techdocs",
-  "description": "The Backstage plugin that renders technical documentation for your components",
   "version": "1.10.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "description": "The Backstage plugin that renders technical documentation for your components",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "backstage",
+    "techdocs"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/techdocs"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.tsx",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -23,28 +37,18 @@
       ]
     }
   },
-  "backstage": {
-    "role": "frontend-plugin"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/techdocs"
-  },
-  "keywords": [
-    "backstage",
-    "techdocs"
+  "files": [
+    "dist",
+    "config.d.ts"
   ],
-  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
-    "start": "backstage-cli package start",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
@@ -74,11 +78,6 @@
     "react-helmet": "6.1.0",
     "react-use": "^17.2.4"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
@@ -93,9 +92,10 @@
     "@types/event-source-polyfill": "^1.0.0",
     "canvas": "^2.10.2"
   },
-  "files": [
-    "dist",
-    "config.d.ts"
-  ],
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
   "configSchema": "config.d.ts"
 }

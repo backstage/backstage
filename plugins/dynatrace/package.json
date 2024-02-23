@@ -1,16 +1,13 @@
 {
   "name": "@backstage/plugin-dynatrace",
   "version": "9.0.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
-  },
-  "backstage": {
-    "role": "frontend-plugin"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -18,15 +15,22 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/dynatrace"
   },
+  "license": "Apache-2.0",
   "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
@@ -35,12 +39,6 @@
     "@material-ui/core": "^4.12.2",
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-use": "^17.2.4"
-  },
-  "peerDependencies": {
-    "@backstage/plugin-catalog-react": "workspace:^",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -51,9 +49,11 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0"
   },
-  "files": [
-    "dist",
-    "config.d.ts"
-  ],
+  "peerDependencies": {
+    "@backstage/plugin-catalog-react": "workspace:^",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
   "configSchema": "config.d.ts"
 }

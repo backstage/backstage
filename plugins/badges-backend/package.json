@@ -1,36 +1,40 @@
 {
   "name": "@backstage/plugin-badges-backend",
-  "description": "A Backstage backend plugin that generates README badges for your entities",
   "version": "0.3.7",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "description": "A Backstage backend plugin that generates README badges for your entities",
+  "backstage": {
+    "role": "backend-plugin"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "backend-plugin"
-  },
+  "keywords": [
+    "backstage",
+    "badges"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/badges-backend"
   },
-  "keywords": [
-    "backstage",
-    "badges"
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "migrations/**/*.{js,d.ts}"
   ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -56,9 +60,5 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/cli": "workspace:^"
-  },
-  "files": [
-    "dist",
-    "migrations/**/*.{js,d.ts}"
-  ]
+  }
 }
