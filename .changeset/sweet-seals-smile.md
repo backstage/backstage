@@ -2,6 +2,7 @@
 '@backstage/app-defaults': patch
 '@backstage/core-plugin-api': patch
 '@backstage/core-app-api': patch
+'@backstage/plugin-kubernetes-react': patch
 ---
 
 Introduced UtilityAPI for Pinniped, which presents the getClusterScopedIdToken function to get a Cluster Scoped ID Token which can be passed to backend services to exchange it for mTLS x509 client certs

@@ -45,6 +45,10 @@ export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   popupOptions?: PopupOptions;
 };
 
+/**
+ * OAuth2 response
+ * @public
+ */
 export type OAuth2Response = {
   providerInfo: {
     accessToken: string;

@@ -21,6 +21,7 @@ import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
@@ -52,8 +53,6 @@ import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
-import { PinnipedSupervisorApi } from '@backstage/core-plugin-api';
-import { pinnipedSupervisorAuthApiRef } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
@@ -295,6 +294,13 @@ export type AuthApiCreateOptions = {
 };
 
 // @public
+export type AuthConnector<AuthSession> = {
+  createSession(options: CreateSessionOptions): Promise<AuthSession>;
+  refreshSession(scopes?: Set<string>): Promise<AuthSession>;
+  removeSession(): Promise<void>;
+};
+
+// @public
 export type BackstageApp = {
   getPlugins(): BackstagePlugin[];
   getSystemIcon(key: string): IconComponent | undefined;
@@ -352,6 +358,12 @@ export function createFetchApi(options: {
   baseImplementation?: typeof fetch | undefined;
   middleware?: FetchMiddleware | FetchMiddleware[] | undefined;
 }): FetchApi;
+
+// @public (undocumented)
+export type CreateSessionOptions = {
+  scopes: Set<string>;
+  instantPopup?: boolean;
+};
 
 // @public
 export function createSpecializedApp(options: AppOptions): BackstageApp;
@@ -448,6 +460,13 @@ export class FrontendHostDiscovery implements DiscoveryApi {
   getBaseUrl(pluginId: string): Promise<string>;
 }
 
+// @public (undocumented)
+export type GetSessionOptions = {
+  optional?: boolean;
+  instantPopup?: boolean;
+  scopes?: Set<string>;
+};
+
 // @public
 export class GithubAuth {
   // (undocumented)
@@ -479,6 +498,15 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
 }
 
 // @public
+export type LoginPopupOptions = {
+  url: string;
+  name: string;
+  origin: string;
+  width?: number;
+  height?: number;
+};
+
+// @public
 export class MicrosoftAuth {
   // (undocumented)
   static create(options: OAuth2CreateOptions): typeof microsoftAuthApiRef.T;
@@ -501,6 +529,18 @@ export class MicrosoftAuth {
   signIn(): Promise<void>;
   // (undocumented)
   signOut(): Promise<void>;
+}
+
+// @public (undocumented)
+export class MockOAuthApi implements OAuthRequestApi {
+  // (undocumented)
+  authRequest$(): Observable<PendingOAuthRequest[]>;
+  // (undocumented)
+  createAuthRequester<T>(options: OAuthRequesterOptions<T>): OAuthRequester<T>;
+  // (undocumented)
+  rejectAll(): Promise<void>;
+  // (undocumented)
+  triggerAll(): Promise<void>;
 }
 
 // @public
@@ -554,6 +594,22 @@ export type OAuth2CreateOptions = OAuthApiCreateOptions & {
 };
 
 // @public
+export type OAuth2Response = {
+  providerInfo: {
+    accessToken: string;
+    idToken: string;
+    scope: string;
+    expiresInSeconds?: number;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: {
+    token: string;
+    expiresInSeconds?: number;
+    identity: BackstageUserIdentity;
+  };
+};
+
+// @public
 export type OAuth2Session = {
   providerInfo: {
     idToken: string;
@@ -602,19 +658,6 @@ export type OneLoginAuthCreateOptions = {
   provider?: AuthProviderInfo;
 };
 
-// @public (undocumented)
-export class Pinniped implements PinnipedSupervisorApi {
-  // (undocumented)
-  static create(
-    options: OAuth2CreateOptions,
-  ): typeof pinnipedSupervisorAuthApiRef.T;
-  // (undocumented)
-  getClusterScopedIdToken(
-    audience: string,
-    options?: AuthRequestOptions | undefined,
-  ): Promise<string>;
-}
-
 // @public
 export type PopupOptions = {
   size?:
@@ -628,6 +671,25 @@ export type PopupOptions = {
         height?: never;
         fullscreen: boolean;
       };
+};
+
+// @public
+export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
+  constructor(options: RefreshingAuthSessionManagerOptions<T>);
+  // (undocumented)
+  getSession(options: GetSessionOptions): Promise<T | undefined>;
+  // (undocumented)
+  removeSession(): Promise<void>;
+  // (undocumented)
+  sessionState$(): Observable<SessionState>;
+}
+
+// @public (undocumented)
+export type RefreshingAuthSessionManagerOptions<T> = {
+  connector: AuthConnector<T>;
+  sessionScopes: SessionScopesFunc<T>;
+  sessionShouldRefresh: SessionShouldRefreshFunc<T>;
+  defaultScopes?: Set<string>;
 };
 
 // @public
@@ -649,6 +711,22 @@ export class SamlAuth
   // (undocumented)
   signOut(): Promise<void>;
 }
+
+// @public
+export type SessionManager<T> = {
+  getSession(options: GetSessionOptions): Promise<T | undefined>;
+  removeSession(): Promise<void>;
+  sessionState$(): Observable<SessionState>;
+};
+
+// @public
+export type SessionScopesFunc<T> = (session: T) => Set<string>;
+
+// @public
+export type SessionShouldRefreshFunc<T> = (session: T) => boolean;
+
+// @public
+export function showLoginPopup(options: LoginPopupOptions): Promise<any>;
 
 // @public
 export type SignInPageProps = PropsWithChildren<{

@@ -645,17 +645,6 @@ export type PendingOAuthRequest = {
 };
 
 // @public
-export type PinnipedSupervisorApi = {
-  getClusterScopedIdToken(
-    audience: string,
-    options?: AuthRequestOptions,
-  ): Promise<string>;
-};
-
-// @public
-export const pinnipedSupervisorAuthApiRef: ApiRef<PinnipedSupervisorApi>;
-
-// @public
 export type PluginConfig<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,

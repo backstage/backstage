@@ -24,7 +24,10 @@ import { AuthConnector } from '../AuthConnector';
 import { SessionScopeHelper, hasScopes } from './common';
 import { SessionStateTracker } from './SessionStateTracker';
 
-type Options<T> = {
+/**
+ * @public
+ */
+export type RefreshingAuthSessionManagerOptions<T> = {
   /** The connector used for acting on the auth session */
   connector: AuthConnector<T>;
   /** Used to get the scope of the session */
@@ -38,6 +41,7 @@ type Options<T> = {
 /**
  * RefreshingAuthSessionManager manages an underlying session that has
  * and expiration time and needs to be refreshed periodically.
+ * @public
  */
 export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
   private readonly connector: AuthConnector<T>;
@@ -49,7 +53,7 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
   private refreshPromise?: Promise<T>;
   private currentSession: T | undefined;
 
-  constructor(options: Options<T>) {
+  constructor(options: RefreshingAuthSessionManagerOptions<T>) {
     const {
       connector,
       defaultScopes = new Set(),

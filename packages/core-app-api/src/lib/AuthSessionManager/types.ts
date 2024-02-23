@@ -17,6 +17,9 @@
 import { SessionState } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 
+/**
+ * @public
+ */
 export type GetSessionOptions = {
   optional?: boolean;
   instantPopup?: boolean;
@@ -27,6 +30,7 @@ export type GetSessionOptions = {
  * A sessions manager keeps track of the current session and makes sure that
  * multiple simultaneous requests for sessions with different scope are handled
  * in a correct way.
+ * @public
  */
 export type SessionManager<T> = {
   getSession(options: GetSessionOptions): Promise<T | undefined>;
@@ -45,6 +49,7 @@ export interface MutableSessionManager<T> extends SessionManager<T> {
 
 /**
  * A function called to determine the scopes of a session.
+ * @public
  */
 export type SessionScopesFunc<T> = (session: T) => Set<string>;
 
@@ -53,5 +58,6 @@ export type SessionScopesFunc<T> = (session: T) => Set<string>;
  *
  * This should return true before the session expires, for example, if a session
  * expires after 60 minutes, you could return true if the session is older than 45 minutes.
+ * @public
  */
 export type SessionShouldRefreshFunc<T> = (session: T) => boolean;

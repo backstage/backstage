@@ -119,7 +119,7 @@ export class PinnipedHelper {
       kind: 'TokenCredentialRequest',
       spec: {
         authenticator: pinnipedParams.authenticator,
-        token: pinnipedParams.clusterScopedIdToken,
+        token: pinnipedParams.token,
       },
     };
     const requestInit: RequestInit = {

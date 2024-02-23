@@ -20,8 +20,12 @@ import {
   OAuthRequestApi,
   OAuthRequester,
 } from '@backstage/core-plugin-api';
-import { showLoginPopup } from '../loginPopup';
-import { AuthConnector, CreateSessionOptions, PopupOptions } from './types';
+import {
+  AuthConnector,
+  CreateSessionOptions,
+  PopupOptions,
+  showLoginPopup,
+} from '@backstage/core-app-api';
 
 let warned = false;
 

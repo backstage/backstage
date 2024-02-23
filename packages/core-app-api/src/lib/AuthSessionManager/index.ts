@@ -15,6 +15,7 @@
  */
 
 export { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
+export type { RefreshingAuthSessionManagerOptions } from './RefreshingAuthSessionManager';
 export { StaticAuthSessionManager } from './StaticAuthSessionManager';
 export { AuthSessionStore } from './AuthSessionStore';
 export * from './types';

@@ -5,6 +5,7 @@
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsyncFn';
+import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { ClientContainerStatus } from '@backstage/plugin-kubernetes-common';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
@@ -24,6 +25,7 @@ import { IIoK8sApimachineryPkgApisMetaV1ObjectMeta } from '@kubernetes-models/ap
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import { OAuth2CreateOptions } from '@backstage/core-app-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
@@ -649,6 +651,30 @@ export interface PendingPodContentProps {
   // (undocumented)
   pod: Pod;
 }
+
+// @public (undocumented)
+export class Pinniped implements PinnipedSupervisorApi {
+  // (undocumented)
+  static create(
+    options: OAuth2CreateOptions,
+  ): typeof pinnipedSupervisorAuthApiRef.T;
+  // (undocumented)
+  getClusterScopedIdToken(
+    audience: string,
+    options?: AuthRequestOptions | undefined,
+  ): Promise<string>;
+}
+
+// @public
+export type PinnipedSupervisorApi = {
+  getClusterScopedIdToken(
+    audience: string,
+    options?: AuthRequestOptions,
+  ): Promise<string>;
+};
+
+// @public
+export const pinnipedSupervisorAuthApiRef: ApiRef<PinnipedSupervisorApi>;
 
 // @public
 export interface PodAndErrors {

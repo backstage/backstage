@@ -18,19 +18,23 @@ import {
   AuthProviderInfo,
   AuthRequestOptions,
   ConfigApi,
-  PinnipedSupervisorApi,
-  pinnipedSupervisorAuthApiRef,
   DiscoveryApi,
   OAuthRequestApi,
 } from '@backstage/core-plugin-api';
-import { OAuth2CreateOptions, OAuth2Session, PopupOptions } from '../oauth2';
 
-import { OAuth2Response } from '../oauth2/OAuth2';
 import {
-  AudienceScopedAuthConnector,
+  OAuth2CreateOptions,
+  OAuth2Response,
+  OAuth2Session,
+  PopupOptions,
   RefreshingAuthSessionManager,
   SessionManager,
-} from '../../../../lib';
+} from '@backstage/core-app-api';
+import { AudienceScopedAuthConnector } from '../../../AuthConnector/AudienceScopedAuthConnector';
+import {
+  PinnipedSupervisorApi,
+  pinnipedSupervisorAuthApiRef,
+} from '../../definitions';
 
 const PROVIDER_NAME = {
   id: 'pinniped',

@@ -34,7 +34,6 @@ import {
   AtlassianAuth,
   createFetchApi,
   FetchMiddlewares,
-  Pinniped,
   VMwareCloudAuth,
 } from '@backstage/core-app-api';
 
@@ -58,9 +57,12 @@ import {
   bitbucketAuthApiRef,
   bitbucketServerAuthApiRef,
   atlassianAuthApiRef,
-  pinnipedSupervisorAuthApiRef,
   vmwareCloudAuthApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  Pinniped,
+  pinnipedSupervisorAuthApiRef,
+} from '@backstage/plugin-kubernetes-react';
 import {
   permissionApiRef,
   IdentityPermissionApi,

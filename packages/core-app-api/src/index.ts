@@ -23,3 +23,14 @@
 export * from './apis';
 export * from './app';
 export * from './routing';
+export { RefreshingAuthSessionManager, showLoginPopup } from './lib';
+export type {
+  AuthConnector,
+  CreateSessionOptions,
+  GetSessionOptions,
+  LoginPopupOptions,
+  RefreshingAuthSessionManagerOptions,
+  SessionManager,
+  SessionScopesFunc,
+  SessionShouldRefreshFunc,
+} from './lib';

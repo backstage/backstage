@@ -15,3 +15,4 @@
  */
 
 export { OAuthRequestManager } from './OAuthRequestManager';
+export { default as MockOAuthApi } from './MockOAuthApi';

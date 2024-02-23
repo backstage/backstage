@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import MockOAuthApi from '../../apis/implementations/OAuthRequestApi/MockOAuthApi';
-import * as loginPopup from '../loginPopup';
-import { UrlPatternDiscovery } from '../../apis';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { AudienceScopedAuthConnector } from './AudienceScopedAuthConnector';
+import { MockOAuthApi, UrlPatternDiscovery } from '@backstage/core-app-api';
+import * as coreAppApi from '@backstage/core-app-api';
 
-jest.mock('../loginPopup', () => {
+jest.mock('@backstage/core-app-api', () => {
+  const original = jest.requireActual('@backstage/core-app-api');
   return {
+    ...original,
     showLoginPopup: jest.fn(),
   };
 });
@@ -119,7 +120,7 @@ describe('AudienceScopedAuthConnector', () => {
   it('should create a session', async () => {
     const mockOauth = new MockOAuthApi();
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(coreAppApi, 'showLoginPopup')
       .mockResolvedValue({
         idToken: 'my-id-token',
         accessToken: 'my-access-token',
@@ -152,7 +153,7 @@ describe('AudienceScopedAuthConnector', () => {
 
   it('should instantly show popup if option is set', async () => {
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(coreAppApi, 'showLoginPopup')
       .mockResolvedValue('my-session');
     const connector = new AudienceScopedAuthConnector({
       ...defaultOptions,
@@ -179,7 +180,7 @@ describe('AudienceScopedAuthConnector', () => {
 
   it('should show popup fullscreen', async () => {
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(coreAppApi, 'showLoginPopup')
       .mockResolvedValue('my-session');
 
     jest.spyOn(window.screen, 'width', 'get').mockReturnValue(1000);
@@ -214,7 +215,7 @@ describe('AudienceScopedAuthConnector', () => {
 
   it('should show popup with special width and height', async () => {
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(coreAppApi, 'showLoginPopup')
       .mockResolvedValue('my-session');
     const connector = new AudienceScopedAuthConnector({
       ...defaultOptions,

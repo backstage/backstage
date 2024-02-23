@@ -153,26 +153,6 @@ export type OpenIdConnectApi = {
 };
 
 /**
- * This API provides access to Pinniped credentials. It lets you request Cluster Scoped ID tokens,
- * which can be passed to a suitably-configured Pinniped Concierge in exchange for x509 client cert bundles.
- *
- * @public
- */
-export type PinnipedSupervisorApi = {
-  /**
-   * Requests an Cluster Scoped ID Token which can be passed to a suitably-configured Pinniped Concierge in exchange for x509 client cert bundles.
-   *
-   * If the user has not yet logged in to Pinniped inside Backstage, the user will be prompted
-   * to log in. The returned promise will not resolve until the user has successfully logged in.
-   * The returned promise can be rejected, but only if the user rejects the login request.
-   */
-  getClusterScopedIdToken(
-    audience: string,
-    options?: AuthRequestOptions,
-  ): Promise<string>;
-};
-
-/**
  * This API provides access to profile information of the user from an auth provider.
  *
  * @public
@@ -470,19 +450,6 @@ export const atlassianAuthApiRef: ApiRef<
 > = createApiRef({
   id: 'core.auth.atlassian',
 });
-
-/**
- * Provides Cluster-scoped ID tokens from a Pinniped Supervisor for use with the TokenCredentialRequest API
- *
- * @public
- * @remarks
- *
- * See {@link https://pinniped.dev/docs/howto/configure-auth-for-webapps/#how-a-web-application-can-perform-actions-as-the-authenticated-user-on-kubernetes-clusters} for details.
- */
-export const pinnipedSupervisorAuthApiRef: ApiRef<PinnipedSupervisorApi> =
-  createApiRef({
-    id: 'core.auth.pinniped',
-  });
 
 /**
  * Provides authentication towards VMware Cloud APIs and identities.

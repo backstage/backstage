@@ -16,16 +16,18 @@
 
 import Pinniped from './Pinniped';
 import { ConfigReader } from '@backstage/config';
-import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
-import { UrlPatternDiscovery } from '../../DiscoveryApi';
-import { OAuth2Session } from '../oauth2';
+import {
+  MockOAuthApi,
+  OAuth2Session,
+  UrlPatternDiscovery,
+} from '@backstage/core-app-api';
 
 const createSession = jest.fn();
 const refreshSession = jest.fn();
 
-jest.mock('../../../../lib/AuthConnector/AudienceScopedAuthConnector', () => ({
+jest.mock('../../../AuthConnector/AudienceScopedAuthConnector', () => ({
   ...(jest.requireActual(
-    '../../../../lib/AuthConnector/AudienceScopedAuthConnector',
+    '../../../AuthConnector/AudienceScopedAuthConnector',
   ) as any),
   AudienceScopedAuthConnector: class {
     createSession = createSession;

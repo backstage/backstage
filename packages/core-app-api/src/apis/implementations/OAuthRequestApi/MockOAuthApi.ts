@@ -20,6 +20,9 @@ import {
 } from '@backstage/core-plugin-api';
 import { OAuthRequestManager } from './OAuthRequestManager';
 
+/**
+ * @public
+ */
 export default class MockOAuthApi implements OAuthRequestApi {
   private readonly real = new OAuthRequestManager();
 

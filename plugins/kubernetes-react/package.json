@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
@@ -53,7 +54,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
