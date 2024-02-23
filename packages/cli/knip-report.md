@@ -18,7 +18,6 @@
 | @svgr/plugin-svgo                | package.json | error    |
 | @svgr/plugin-jsx                 | package.json | error    |
 | jest-css-modules                 | package.json | error    |
-| replace-in-file                  | package.json | error    |
 | @swc/helpers                     | package.json | error    |
 | jest-runtime                     | package.json | error    |
 | cross-fetch                      | package.json | error    |
