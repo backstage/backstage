@@ -3249,7 +3249,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     fs-extra: ^11.2.0
-    helmet: ^6.0.0
+    helmet: ^7.0.0
     http-errors: ^2.0.0
     jose: ^5.0.0
     lodash: ^4.17.21
@@ -3322,7 +3322,7 @@ __metadata:
     express-promise-router: ^4.1.0
     fs-extra: ^11.2.0
     git-url-parse: ^14.0.0
-    helmet: ^6.0.0
+    helmet: ^7.0.0
     http-errors: ^2.0.0
     isomorphic-git: ^1.23.0
     jose: ^5.0.0
@@ -4542,7 +4542,7 @@ __metadata:
     express-promise-router: ^4.1.0
     fs-extra: ^11.2.0
     globby: ^11.0.0
-    helmet: ^6.0.0
+    helmet: ^7.0.0
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -7207,7 +7207,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     fs-extra: ^11.2.0
-    helmet: ^6.0.0
+    helmet: ^7.0.0
     http-proxy-middleware: ^2.0.6
     lodash: ^4.17.21
     luxon: ^3.0.0
@@ -9704,7 +9704,7 @@ __metadata:
     cors: ^2.8.5
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    helmet: ^6.0.0
+    helmet: ^7.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     p-limit: ^3.1.0
@@ -29682,10 +29682,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"helmet@npm:^6.0.0":
-  version: 6.0.1
-  resolution: "helmet@npm:6.0.1"
-  checksum: 1ca20d0b7888b6208130bbb50d183e68d53bb5fa0caead2106226d6d53216dfc893b4b5c07528304e342884f75d87702003b80884b065cb5dcbc705fb4a6ad52
+"helmet@npm:^7.0.0":
+  version: 7.1.0
+  resolution: "helmet@npm:7.1.0"
+  checksum: 16aaa0df997eaa18821e71389bc9ceffeeaa935df98427ede2bb006065f7e02bb1941caabea16d5a93a791cb3fe7d8a760266bc57b3b9ca5dd7da17ea84244b8
   languageName: node
   linkType: hard
 
