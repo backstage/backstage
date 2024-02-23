@@ -43,8 +43,11 @@ export class DefaultUserInfoService implements UserInfoService {
     if (typeof userEntityRef !== 'string') {
       throw new Error('User entity ref must be a string');
     }
-    if (!Array.isArray(ownershipEntityRefs)) {
-      throw new Error('Ownership entity refs must be an array');
+    if (
+      !Array.isArray(ownershipEntityRefs) ||
+      ownershipEntityRefs.some(ref => typeof ref !== 'string')
+    ) {
+      throw new Error('Ownership entity refs must be an array of strings');
     }
 
     return { userEntityRef, ownershipEntityRefs };

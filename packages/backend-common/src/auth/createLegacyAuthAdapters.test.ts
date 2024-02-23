@@ -56,7 +56,22 @@ describe('createLegacyAuthAdapters', () => {
     expect(ret.httpAuth).toBe(httpAuth);
   });
 
-  it('should adapt both auth and httpAuth if neither are provided', () => {
+  it('should pass through userInfo if it provided', () => {
+    const auth = {};
+    const userInfo = {};
+    const ret = createLegacyAuthAdapters({
+      auth: auth as any,
+      userInfo: userInfo as any,
+      tokenManager: mockServices.tokenManager(),
+      discovery: {} as any,
+      identity: mockServices.identity(),
+    });
+
+    expect(ret.auth).toBe(auth);
+    expect(ret.userInfo).toBe(userInfo);
+  });
+
+  it('should adapt all services if none are provided', () => {
     const ret = createLegacyAuthAdapters({
       auth: undefined,
       httpAuth: undefined,
@@ -68,6 +83,7 @@ describe('createLegacyAuthAdapters', () => {
     expect(ret).toEqual({
       auth: expect.any(Object),
       httpAuth: expect.any(Object),
+      userInfo: expect.any(Object),
     });
   });
 });

@@ -26,12 +26,15 @@ import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 const mockApplyConditions: jest.MockedFunction<
   InstanceType<typeof PermissionIntegrationClient>['applyConditions']
 > = jest.fn(
   async (
     _pluginId: string,
+    _credentials: BackstageCredentials,
     decisions: readonly ApplyConditionsRequestEntry[],
   ) =>
     decisions.map(decision => ({
@@ -65,28 +68,12 @@ describe('createRouter', () => {
     const router = await createRouter({
       config: new ConfigReader({ permission: { enabled: true } }),
       logger: getVoidLogger(),
-      discovery: {
-        getBaseUrl: jest.fn(),
-        getExternalBaseUrl: jest.fn(),
-      },
-      identity: {
-        getIdentity: jest.fn(({ request: req }) => {
-          const token = req.headers.authorization?.replace(/^Bearer[ ]+/, '');
-
-          if (!token) {
-            return Promise.resolve(undefined);
-          }
-
-          return Promise.resolve({
-            identity: {
-              type: 'user',
-              userEntityRef: 'test-user',
-              ownershipEntityRefs: ['blah'],
-            },
-            token,
-          });
-        }),
-      },
+      discovery: mockServices.discovery(),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth({
+        defaultCredentials: mockCredentials.none(),
+      }),
+      userInfo: mockServices.userInfo(),
       policy,
     });
 
@@ -163,10 +150,9 @@ describe('createRouter', () => {
     });
 
     it('resolves identity from the Authorization header', async () => {
-      const token = 'test-token';
       const response = await request(app)
         .post('/authorize')
-        .auth(token, { type: 'bearer' })
+        .auth(mockCredentials.user.token(), { type: 'bearer' })
         .send({
           items: [
             {
@@ -190,11 +176,16 @@ describe('createRouter', () => {
           },
         },
         {
-          token: 'test-token',
+          token: mockCredentials.service.token({
+            onBehalfOf: mockCredentials.user(),
+            targetPluginId: 'catalog',
+          }),
           identity: {
             type: 'user',
-            userEntityRef: 'test-user',
-            ownershipEntityRefs: ['blah'],
+            userEntityRef: mockCredentials.user().principal.userEntityRef,
+            ownershipEntityRefs: [
+              mockCredentials.user().principal.userEntityRef,
+            ],
           },
         },
       );
@@ -271,7 +262,7 @@ describe('createRouter', () => {
 
         const response = await request(app)
           .post('/authorize')
-          .auth('test-token', { type: 'bearer' })
+          .auth(mockCredentials.user.token(), { type: 'bearer' })
           .send({
             items: [
               {
@@ -319,6 +310,7 @@ describe('createRouter', () => {
 
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-1',
+          mockCredentials.user(),
           [
             expect.objectContaining({
               id: '123',
@@ -333,11 +325,11 @@ describe('createRouter', () => {
               conditions: { rule: 'test-rule', params: ['no'] },
             }),
           ],
-          'Bearer test-token',
         );
 
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-2',
+          mockCredentials.user(),
           [
             expect.objectContaining({
               id: '234',
@@ -352,7 +344,6 @@ describe('createRouter', () => {
               conditions: { rule: 'test-rule', params: ['no'] },
             }),
           ],
-          'Bearer test-token',
         );
 
         expect(response.status).toEqual(200);
@@ -401,7 +392,7 @@ describe('createRouter', () => {
 
         const response = await request(app)
           .post('/authorize')
-          .auth('test-token', { type: 'bearer' })
+          .auth(mockCredentials.user.token(), { type: 'bearer' })
           .send({
             items: [
               {
@@ -467,6 +458,7 @@ describe('createRouter', () => {
 
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-1',
+          mockCredentials.user(),
           [
             expect.objectContaining({
               id: '123',
@@ -481,11 +473,11 @@ describe('createRouter', () => {
               conditions: { rule: 'test-rule', params: ['yes'] },
             }),
           ],
-          'Bearer test-token',
         );
 
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-2',
+          mockCredentials.user(),
           [
             expect.objectContaining({
               id: '234',
@@ -500,7 +492,6 @@ describe('createRouter', () => {
               conditions: { rule: 'test-rule', params: ['yes'] },
             }),
           ],
-          'Bearer test-token',
         );
 
         expect(response.status).toEqual(200);
@@ -542,7 +533,7 @@ describe('createRouter', () => {
 
         const response = await request(app)
           .post('/authorize')
-          .auth('test-token', { type: 'bearer' })
+          .auth(mockCredentials.user.token(), { type: 'bearer' })
           .send({
             items: [
               {
@@ -589,6 +580,7 @@ describe('createRouter', () => {
 
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-1',
+          mockCredentials.user(),
           [
             expect.objectContaining({
               id: '123',
@@ -597,11 +589,11 @@ describe('createRouter', () => {
               conditions: { rule: 'test-rule', params: ['yes'] },
             }),
           ],
-          'Bearer test-token',
         );
 
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-2',
+          mockCredentials.user(),
           [
             expect.objectContaining({
               id: '234',
@@ -610,7 +602,6 @@ describe('createRouter', () => {
               conditions: { rule: 'test-rule', params: ['yes'] },
             }),
           ],
-          'Bearer test-token',
         );
 
         expect(response.status).toEqual(200);
@@ -656,7 +647,7 @@ describe('createRouter', () => {
 
           const response = await request(app)
             .post('/authorize')
-            .auth('test-token', { type: 'bearer' })
+            .auth(mockCredentials.user.token(), { type: 'bearer' })
             .send({
               items: [
                 {
@@ -684,6 +675,7 @@ describe('createRouter', () => {
 
           expect(mockApplyConditions).toHaveBeenCalledWith(
             'test-plugin',
+            mockCredentials.user(),
             [
               expect.objectContaining({
                 id: '123',
@@ -698,7 +690,6 @@ describe('createRouter', () => {
                 conditions: { rule: 'test-rule', params },
               }),
             ],
-            'Bearer test-token',
           );
 
           expect(response.status).toEqual(200);
