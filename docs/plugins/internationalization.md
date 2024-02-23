@@ -30,7 +30,7 @@ export const myPluginTranslationRef = createTranslationRef({
 });
 ```
 
-And the using this messages in your components like:
+And then use these messages in your components like:
 
 ```tsx
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -46,7 +46,7 @@ return (
 );
 ```
 
-You will see how the initial dictionary structure and nesting gets converted into dot notation, so we encourage `camelCase` in key names and lean on the nesting structure to separate keys.
+You will see how the initial dictionary structure and nesting get converted into dot notation, so we encourage `camelCase` in key names and lean on the nesting structure to separate keys.
 
 ### Guidelines for `i18n` messages and keys
 
@@ -149,26 +149,53 @@ export const myPluginTranslationRef = createTranslationRef({
 
 ## For an application developer overwrite plugin messages
 
+Step 1: Create translation resources
+
+```ts
+// packages/app/src/translations/userSettings.ts
+
+import { createTranslationResource } from '@backstage/core-plugin-api/alpha';
+import { userSettingsTranslationRef } from '@backstage/plugin-user-settings/alpha';
+
+export const userSettingsMessages = createTranslationResource({
+  ref: userSettingsTranslationRef,
+  translations: {
+    zh: () =>
+      Promise.resolve({
+        default: {
+          'languageToggle.title': '语言',
+          'languageToggle.select': '选择{{language}}',
+          'languageToggle.description': '切换语言',
+          'themeToggle.title': '主题',
+          'themeToggle.description': '切换主题',
+          'themeToggle.select': '选择{{theme}}',
+          'themeToggle.selectAuto': '选择自动主题',
+          'themeToggle.names.auto': '自动',
+          'themeToggle.names.dark': '暗黑',
+          'themeToggle.names.light': '明亮',
+        },
+      }),
+  },
+});
+```
+
+You should change `zh` under the translations object to your local language.
+
+Step 2: Config translations in `packages/app/src/App.tsx`
+
 In an app you can both override the default messages, as well as register translations for additional languages:
 
 ```diff
++ import { userSettingsMessages } from './translations/userSettings';
+
  const app = createApp({
 +  __experimentalTranslations: {
 +    availableLanguages: ['en', 'zh'],
-+    resources: [
-+      createTranslationMessages({
-+        ref: myPluginTranslationRef,
-+        messages: {
-+          'indexPage.createButtonTitle': 'Create new entity',
-+        },
-+      }),
-+      createTranslationResource({
-+        ref: myPluginTranslationRef,
-+        messages: {
-+          zh: () => import('./translations/zh'),
-+        },
-+      }),
-+    ],
++    resources: [userSettingsMessages],
 +  },
  })
 ```
+
+Step 3: Check everything is working correctly
+
+Go to `Settings` page, you should see change language buttons just under change theme buttons. And then switch language, you should see language had changed
