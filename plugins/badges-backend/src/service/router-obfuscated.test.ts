@@ -32,6 +32,7 @@ import {
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { BadgesStore } from '../database/badgesStore';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -148,6 +149,8 @@ describe('createRouter', () => {
       tokenManager,
       logger: getVoidLogger(),
       identity: { getIdentity },
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
     });
     app = express().use(router);
   });
@@ -167,6 +170,8 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
       identity: { getIdentity },
       badgeStore: badgeStore,
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
     });
     expect(router).toBeDefined();
   });
@@ -232,9 +237,9 @@ describe('createRouter', () => {
     it('returns obfuscated entity and badges', async () => {
       catalog.getEntityByRef = jest.fn().mockResolvedValue(entity);
 
-      const obfuscatedEntity = await request(app)
-        .get('/entity/default/component/test/obfuscated')
-        .set('Authorization', 'Bearer fakeToken');
+      const obfuscatedEntity = await request(app).get(
+        '/entity/default/component/test/obfuscated',
+      );
 
       expect(obfuscatedEntity.status).toEqual(200);
       expect(obfuscatedEntity.body.uuid).toMatch(
@@ -245,7 +250,12 @@ describe('createRouter', () => {
 
       expect(catalog.getEntityByRef).toHaveBeenCalledWith(
         { namespace: 'default', kind: 'component', name: 'test' },
-        { token: 'fakeToken' },
+        {
+          token: mockCredentials.service.token({
+            onBehalfOf: mockCredentials.user(),
+            targetPluginId: 'catalog',
+          }),
+        },
       );
 
       const uuid = obfuscatedEntity.body.uuid;

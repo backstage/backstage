@@ -55,6 +55,11 @@ declare module '*.webp' {
   export default src;
 }
 
+declare module '*.ico' {
+  const src: string;
+  export default src;
+}
+
 declare module '*.yaml' {
   const src: string;
   export default src;

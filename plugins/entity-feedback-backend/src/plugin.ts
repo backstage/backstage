@@ -36,14 +36,26 @@ export const entityFeedbackPlugin = createBackendPlugin({
         identity: coreServices.identity,
         logger: coreServices.logger,
         httpRouter: coreServices.httpRouter,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
-      async init({ database, discovery, identity, logger, httpRouter }) {
+      async init({
+        database,
+        discovery,
+        identity,
+        logger,
+        httpRouter,
+        auth,
+        httpAuth,
+      }) {
         httpRouter.use(
           await createRouter({
             database,
             discovery,
             identity,
             logger: loggerToWinstonLogger(logger),
+            auth,
+            httpAuth,
           }),
         );
       },

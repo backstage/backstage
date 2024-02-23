@@ -17,12 +17,17 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { defaultAuthProviderFactories } from '../providers';
 import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   TokenManager,
+  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -45,6 +50,8 @@ export interface RouterOptions {
   config: Config;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
   disableDefaultProviderFactories?: boolean;
@@ -63,6 +70,9 @@ export async function createRouter(
     tokenFactoryAlgorithm,
     providerFactories = {},
   } = options;
+
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
+
   const router = Router();
 
   const appUrl = config.getString('app.baseUrl');
@@ -136,6 +146,8 @@ export async function createRouter(
     baseUrl: authUrl,
     tokenIssuer,
     ...options,
+    auth,
+    httpAuth,
   });
 
   bindOidcRouter(router, {

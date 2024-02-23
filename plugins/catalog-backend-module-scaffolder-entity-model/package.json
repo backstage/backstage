@@ -1,17 +1,25 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-scaffolder-entity-model",
-  "description": "Adds support for the scaffolder specific entity model (e.g. the Template kind) to the catalog backend plugin.",
   "version": "0.1.7",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "description": "Adds support for the scaffolder specific entity model (e.g. the Template kind) to the catalog backend plugin.",
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-scaffolder-entity-model"
+  },
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "package.json": [
@@ -19,22 +27,17 @@
       ]
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/catalog-backend-module-scaffolder-entity-model"
-  },
-  "backstage": {
-    "role": "backend-plugin-module"
-  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
@@ -46,8 +49,5 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }

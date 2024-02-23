@@ -18,6 +18,9 @@ import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
 
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('./authModuleGithubProvider'));
+
 backend.add(import('@backstage/plugin-adr-backend'));
 backend.add(import('@backstage/plugin-app-backend/alpha'));
 backend.add(import('@backstage/plugin-azure-devops-backend'));

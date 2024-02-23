@@ -16,6 +16,14 @@
 
 export { coreServices } from './coreServices';
 export type {
+  AuthService,
+  BackstageCredentials,
+  BackstageUserPrincipal,
+  BackstageServicePrincipal,
+  BackstagePrincipalTypes,
+  BackstageNonePrincipal,
+} from './AuthService';
+export type {
   CacheService,
   CacheServiceOptions,
   CacheServiceSetOptions,
@@ -23,7 +31,11 @@ export type {
 export type { RootConfigService } from './RootConfigService';
 export type { DatabaseService } from './DatabaseService';
 export type { DiscoveryService } from './DiscoveryService';
-export type { HttpRouterService } from './HttpRouterService';
+export type {
+  HttpRouterService,
+  HttpRouterServiceAuthPolicy,
+} from './HttpRouterService';
+export type { HttpAuthService } from './HttpAuthService';
 export type {
   LifecycleService,
   LifecycleServiceStartupHook,
@@ -32,7 +44,10 @@ export type {
   LifecycleServiceShutdownOptions,
 } from './LifecycleService';
 export type { LoggerService } from './LoggerService';
-export type { PermissionsService } from './PermissionsService';
+export type {
+  PermissionsService,
+  PermissionsServiceRequestOptions,
+} from './PermissionsService';
 export type { PluginMetadataService } from './PluginMetadataService';
 export type { RootHttpRouterService } from './RootHttpRouterService';
 export type { RootLifecycleService } from './RootLifecycleService';
@@ -51,4 +66,5 @@ export type {
   SearchResponseFile,
   UrlReaderService,
 } from './UrlReaderService';
+export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
 export type { IdentityService } from './IdentityService';

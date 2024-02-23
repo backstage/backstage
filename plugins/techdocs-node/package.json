@@ -1,42 +1,42 @@
 {
   "name": "@backstage/plugin-techdocs-node",
-  "description": "Common node.js functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
   "version": "1.11.2",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "description": "Common node.js functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
+  "backstage": {
+    "role": "node-library"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "node-library"
-  },
+  "keywords": [
+    "techdocs",
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/techdocs-node"
   },
-  "keywords": [
-    "techdocs",
-    "backstage"
-  ],
   "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
-  },
-  "bugs": {
-    "url": "https://github.com/backstage/backstage/issues"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.350.0",
