@@ -177,32 +177,29 @@ the component will become available.\n\nFor more information, read an \
   }): Promise<{ link: string; location: string }> {
     const { repositoryUrl, fileContent, title, body } = options;
     const parseData = YAML.parse(fileContent);
-    try {
-      const validationResponse = await this.catalogApi.validateEntity(
-        parseData,
-        `url:${repositoryUrl}`,
-      );
-      if (!validationResponse.valid) {
-        throw new Error(validationResponse.errors[0].message);
-      }
-      const ghConfig = getGithubIntegrationConfig(
-        this.scmIntegrationsApi,
-        repositoryUrl,
-      );
 
-      if (ghConfig) {
-        return await this.submitGitHubPrToRepo({
-          ...ghConfig,
-          repositoryUrl,
-          fileContent,
-          title,
-          body,
-        });
-      }
-      throw new Error('unimplemented!');
-    } catch (err) {
-      throw err;
+    const validationResponse = await this.catalogApi.validateEntity(
+      parseData,
+      `url:${repositoryUrl}`,
+    );
+    if (!validationResponse.valid) {
+      throw new Error(validationResponse.errors[0].message);
     }
+    const ghConfig = getGithubIntegrationConfig(
+      this.scmIntegrationsApi,
+      repositoryUrl,
+    );
+
+    if (ghConfig) {
+      return await this.submitGitHubPrToRepo({
+        ...ghConfig,
+        repositoryUrl,
+        fileContent,
+        title,
+        body,
+      });
+    }
+    throw new Error('unimplemented!');
   }
 
   // TODO: this could be part of the catalog api
