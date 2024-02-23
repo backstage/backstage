@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.5.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.17
+  - @backstage/plugin-catalog-node@1.7.2
+
 ## 0.5.26
 
 ### Patch Changes
