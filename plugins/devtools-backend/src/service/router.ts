@@ -17,13 +17,13 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   devToolsConfigReadPermission,
   devToolsExternalDependenciesReadPermission,
+  DevToolsInfo,
   devToolsInfoReadPermission,
   devToolsPermissions,
 } from '@backstage/plugin-devtools-common';
 
 import { Config } from '@backstage/config';
 import { DevToolsBackendApi } from '../api';
-import { Logger } from 'winston';
 import { NotAllowedError } from '@backstage/errors';
 import Router from 'express-promise-router';
 import {
@@ -35,29 +35,67 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 import {
   DiscoveryService,
   HttpAuthService,
+  LifecycleService,
+  LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
+import { SignalService } from '@backstage/plugin-signals-node';
 
 /** @public */
 export interface RouterOptions {
   devToolsBackendApi?: DevToolsBackendApi;
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   permissions: PermissionsService;
   discovery: DiscoveryService;
   httpAuth?: HttpAuthService;
+  lifecycle?: LifecycleService;
+  signalService?: SignalService;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config, permissions } = options;
+  const { logger, config, permissions, lifecycle, signalService } = options;
 
   const { httpAuth } = createLegacyAuthAdapters(options);
 
   const devToolsBackendApi =
     options.devToolsBackendApi || new DevToolsBackendApi(logger, config);
+
+  const signalInterval =
+    config.getOptionalNumber('devtools.info.signalIntervalMs') ?? 1000;
+  if (lifecycle && signalService) {
+    let interval: NodeJS.Timeout | undefined;
+    lifecycle.addStartupHook(async () => {
+      interval = setInterval(async () => {
+        const info = await devToolsBackendApi.listInfo();
+        await signalService.publish<DevToolsInfo>({
+          channel: 'devtools:info',
+          message: info,
+          recipients: null,
+          // TODO: Add permissions from https://github.com/backstage/backstage/pull/23171
+        });
+      }, signalInterval);
+    });
+
+    lifecycle.addShutdownHook(async () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    });
+  } else if (signalService) {
+    // TODO: Remove this code, old backend does not have lifecycle service available
+    setInterval(async () => {
+      const info = await devToolsBackendApi.listInfo();
+      await signalService.publish<DevToolsInfo>({
+        channel: 'devtools:info',
+        message: info,
+        recipients: null,
+      });
+    }, signalInterval);
+  }
 
   const router = Router();
   router.use(express.json());

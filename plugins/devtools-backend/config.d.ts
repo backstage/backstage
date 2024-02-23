@@ -49,6 +49,10 @@ export interface Config {
        * (default is ["@backstage"])
        */
       packagePrefixes?: string[];
+      /**
+       * Interval in milliseconds to update info with `SignalService`, defaults to 1000.
+       */
+      signalIntervalMs?: number;
     };
   };
 }

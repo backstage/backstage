@@ -35,6 +35,7 @@ import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
+import { useSignal } from '@backstage/plugin-signals-react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -70,7 +71,9 @@ const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
 /** @public */
 export const InfoContent = () => {
   const classes = useStyles();
-  const { about, loading, error } = useInfo();
+  const { about: initialAbout, loading, error } = useInfo();
+  const { lastSignal } = useSignal<DevToolsInfo>('devtools:info');
+  const about = lastSignal ?? initialAbout;
 
   if (loading) {
     return <Progress />;

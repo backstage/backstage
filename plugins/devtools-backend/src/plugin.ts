@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
+import { signalService } from '@backstage/plugin-signals-node';
 
 /**
  * DevTools backend plugin
@@ -37,6 +37,8 @@ export const devtoolsPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         discovery: coreServices.discovery,
         httpAuth: coreServices.httpAuth,
+        lifecycle: coreServices.lifecycle,
+        signals: signalService,
       },
       async init({
         config,
@@ -45,14 +47,18 @@ export const devtoolsPlugin = createBackendPlugin({
         httpRouter,
         discovery,
         httpAuth,
+        lifecycle,
+        signals,
       }) {
         httpRouter.use(
           await createRouter({
             config,
-            logger: loggerToWinstonLogger(logger),
+            logger,
             permissions,
             discovery,
             httpAuth,
+            lifecycle,
+            signalService: signals,
           }),
         );
       },
