@@ -68,9 +68,9 @@ Two new backend service interfaces are introduced to support these new features.
 
 The proposed design leaves the decision for how different endpoints are protected to the implementation of the plugin backends themselves. This includes whether particular routes should allow anonymous access, access from users authenticated via a cookie, or perhaps only allow access from other plugin backends and external services. This means that integrators do not need to - and do not have the ability to - configure access controls of individual endpoints, except for what the permission system already provides, and what is made available through static configuration or extension points.
 
-In order to allow for cookie-based authentication of incoming user requests, the `auth` plugin backend is extended to be able to issue user tokens with reduced scope, which in turn integrate with the new `AuthService` and `HttpAuthService`. The ability to use cookie auth for requests is an opt-in per route and is only be permitted for read methods (`GET`, `HEAD`, `OPTIONS`). The actual implementation of cookie-based flows will be up to each plugin, but with significant help from the new auth service interfaces.
+To ensure a secure-by-default design, there is a default access control policy that applies to all plugin routes, known as the "default auth policy". This policy is to only allow access from authenticated users and services, and is implemented in the `HttpRouterService` interface. In order to allow either unauthenticated access or cookie-based access, a plugin must opt-out of the default auth policy for specific path prefixes, effectively leaving the access control implementation to the plugin itself. This is done through the new `addAuthPolicy` method that is added to the `HttpRouterService` interface.
 
-In order to allow either unauthenticated access or cookie-based access, a plugin must explicitly opt-in the specific path prefixes that these should be available at. This is done through a new method that is added to the `HttpRouterService` interface.
+In order to allow for cookie-based authentication of incoming user requests, the `AuthService` is able to issue user tokens with limited scope. These limited scope tokens can still be used to fetch user information and in on-behalf-of service calls, but they are rejected by the default auth policy. The ability to use cookie auth for requests is an advanced use-case where plugins need to handle a lot of the auth logic, for example cookie storage and retrieval. These tokens with limited scope can also be user in other contexts where it is beneficial to avoid storing full user credentials, but instead use credentials that can be upgraded in a controlled manner, such as scaffolder tasks. The `AuthService` implementation can choose to have a longer expiry of the limited tokens compared to the full user tokens, but this is not a requirement.
 
 For service-to-service communication we will move away from reusing user tokens in upstream requests. We will instead implement an "On-Behalf-Of" flow where incoming user credentials are encapsulated in a service token for the upstream request. In line with this the new auth service interfaces will aim to make it difficult to directly forward credentials from incoming requests, and instead encourage that plugin backends issue new service credentials for upstream requests.
 
@@ -98,7 +98,7 @@ export type BackstageUserPrincipal = {
 };
 
 export type BackstageServicePrincipal = {
-  type: 'user';
+  type: 'service';
 
   // Exact format TBD, possibly 'plugin:<pluginId>' or 'external:<externalServiceId>'
   subject: string;
@@ -120,7 +120,12 @@ export type BackstagePrincipalTypes = {
 };
 
 export interface AuthService {
-  authenticate(token: string): Promise<BackstageCredentials>;
+  authenticate(
+    token: string,
+    options?: {
+      allowLimitedAccess?: boolean;
+    },
+  ): Promise<BackstageCredentials>;
 
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(
     credentials: BackstageCredentials,
@@ -135,6 +140,10 @@ export interface AuthService {
     onBehalfOf: BackstageCredentials;
     targetPluginId: string;
   }): Promise<{ token: string }>;
+
+  getLimitedUserToken(
+    credentials: BackstageCredentials<BackstageUserPrincipal>,
+  ): Promise<{ token: string; expiresAt: Date }>;
 }
 ```
 
@@ -149,6 +158,7 @@ export interface BackstageUserInfo {
 }
 
 export interface UserInfoService {
+  // The implementation of this method should support both regular and limited user credentials
   getUserInfo(credentials: BackstageCredentials): Promise<BackstageUserInfo>;
 }
 ```
@@ -159,13 +169,13 @@ The `UserInfoService` is exported by `@backstage/auth-node`, and the initial imp
 
 > Open question: Should this instead be added to the `HttpAuthService`? It may fit a bit better there, but on the other hand it might make sense to add additional policies unrelated to authentication too, such as rate limiting.
 
-The `HttpRouterService` interface will be extended with the ability to opt-out of the default protection of endpoints, enabling either cookie auth or unauthenticated access.
+The `HttpRouterService` interface will be extended with the ability to opt-out of the default protection of endpoints, enabling unauthenticated access.
 
 ```ts
 export interface HttpRouterServiceAuthPolicy {
   // The path matches in the same way as if it was passed to `express.Router.use(path, ...)`
   path: string;
-  allow: 'unauthenticated' | 'user-cookie';
+  allow: 'unauthenticated';
 }
 
 export interface HttpRouterService {
@@ -209,14 +219,60 @@ export default createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
         http: coreServices.httpRouter,
       },
-      async init({ http }) {
+      async init({ auth, httpAuth, http }) {
+        const router = Router();
+
+        // Endpoint that sets the cookie for the user
+        router.get('/cookie', async (req, res) => {
+          const { token } = await auth.getLimitedUserToken(
+            await httpAuth.credentials(req, { allow: ['user'] }),
+          );
+
+          res
+            .cookie(AUTH_COOKIE_NAME, token, getCookieOptions(req))
+            .json({ ok: true });
+        });
+
+        // Endpoint protected by cookie auth
+        router.get(
+          '/static',
+          async (req, res, next) => {
+            const limitedToken = getCookieFromRequest(req);
+
+            if (limitedToken) {
+              const credentials = await auth.authenticate(limitedToken, {
+                allowLimitedAccess: true,
+              });
+
+              // In this example this check is redundant, but if the intention is to
+              // only allow users to access this endpoint then this might be necessary.
+              // In practice this is likely going to be implicit in the sense that if
+              // then endpoint wants to access user data, then this check has to be done.
+              if (!auth.isPrincipal(credentials, 'user')) {
+                throw new AuthenticationError(
+                  'Auth cookie is not a user token',
+                );
+              }
+            } else {
+              await httpAuth.authenticate(req, {
+                allow: ['user', 'service'],
+              });
+            }
+
+            next();
+          },
+          express.static(/* ... */),
+        );
+
         // The order of these two calls does not matter
-        http.use(await createRouter(/* ... */));
+        http.use(router);
         http.addAuthPolicy({
           path: '/static',
-          allow: 'user-cookie',
+          allow: 'unauthenticated',
         });
       },
     });
@@ -224,7 +280,7 @@ export default createBackendPlugin({
 });
 ```
 
-#### A plugin that allows both public access and cookie auth
+#### A plugin that disabled the default auth policy and handles auth by itself
 
 ```ts
 export default createBackendPlugin({
@@ -236,15 +292,8 @@ export default createBackendPlugin({
       },
       async init({ http }) {
         http.use(await createRouter(/* ... */));
-
         http.addAuthPolicy({
           path: '/',
-          allow: 'user-cookie',
-        });
-
-        // Unauthenticated access takes precedence, the /public endpoint does not require cookie auth
-        http.addAuthPolicy({
-          path: '/public',
           allow: 'unauthenticated',
         });
       },
@@ -272,18 +321,10 @@ export interface HttpAuthService {
       | keyof BackstageHttpAccessToPrincipalTypesMapping = 'unknown',
   >(
     req: Request,
-    options?: {
-      allow?: Array<TAllowed>;
-      allowedAuthMethods?: Array<'token' | 'cookie'>;
-    },
+    options?: { allow?: Array<TAllowed> },
   ): Promise<
     BackstageCredentials<BackstageHttpAccessToPrincipalTypesMapping[TAllowed]>
   >;
-
-  // The cookie issued by this method must be consumable by the `credentials` method, which in turn
-  // should create a credentials object that can be passed to the `getPluginRequestToken` method.
-  // The issued token must then in turn be a valid token for a user principal with full access.
-  issueUserCookie(res: Response): Promise<void>;
 }
 ```
 
@@ -377,41 +418,26 @@ router.get('/read-data', (req, res) => {
 });
 ```
 
-#### Issuing a cookie and allowing user cookie auth on a separate endpoint
+#### Using limited user tokens to access user info
 
 ```ts
-router.get('/cookie', async (req, res) => {
-  await httpAuth.issueUserCookie(res); // If this is a service call it'll throw
-  res.json({ ok: true });
+router.get('/read-data', (req, res) => {
+  const limitedToken = getCookieFromRequest(req);
+  if (limitedToken) {
+    throw new AuthenticationError('Missing user auth cookie');
+  }
+
+  const credentials = await auth.authenticate(limitedToken, {
+    allowLimitedAccess: true,
+  });
+
+  const { userEntityRef, ownershipEntityRefs } = await userInfo.getUserInfo(
+    credentials,
+  );
+
+  console.log(`User ref=${userEntityRef} ownership=${ownershipEntityRefs}`);
+  // ...
 });
-
-// Allowing cookie auth is a separate step where you call the addAuthPolicy method
-// of the httpRouter API in your plugin setup code.
-httpRouter.addAuthPolicy({
-  path: '/static',
-  allow: 'user-cookie',
-});
-
-// Separate endpoint that serves static content, allowing user cookie auth as
-// well as the default user and service auth methods
-router.use('/static', express.static(staticContentDir));
-```
-
-#### Passing along user identity from a cookie in an upstream request
-
-```ts
-router.get(
-  '/read-data',
-  httpAuth.middleware({ allow: ['user-cookie'] }),
-  (req, res) => {
-    const credentials = await httpAuth.credentials(req, { allow: ['user'] });
-    const { ownershipEntityRefs } = await userInfo.getUserInfo(credentials);
-    console.log(
-      `User ref=${credentials.userEntityRef} ownership=${ownershipEntityRefs}`,
-    );
-    // ...
-  },
-);
 ```
 
 ### Access Control Configuration
@@ -433,12 +459,12 @@ The new `AuthService` and `HttpAuthService` will need backwards compatible imple
 
 The backwards compatibility helpers will have the following behavior for each individual service call:
 
-- `auth.authenticate(token)`: If the decoded token has the `backstage` audience, authenticate the token for a user principal using `identity.getIdentity(...)`, otherwise authenticate it using `tokenManager.authenticate(...)` and return a service principal with the subject `external:backstage-plugin`. If a no-op token manager is used then anything but a user token will be treated as a valid service token, which is consistent with existing behavior.
+- `auth.authenticate(token, options)`: If the decoded token has the `backstage` audience, authenticate the token for a user principal using `identity.getIdentity(...)`, otherwise authenticate it using `tokenManager.authenticate(...)` and return a service principal with the subject `external:backstage-plugin`. If a no-op token manager is used then anything but a user token will be treated as a valid service token, which is consistent with existing behavior. The limited access option is ignored.
 - `auth.getOwnServiceCredentials()`: Use original implementation.
 - `auth.isPrincipal()`: Use original implementation.
 - `auth.getPluginRequestToken(options)`: Same behavior as the original implementation, using the `tokenManager` to issue service tokens, with the exception that a `none` principal will translate to an empty token rather than an error in order to properly forward calls with a no-op token manager.
+- `auth.getLimitedUserToken(credentials)`: This is a no-op and returns the underlying user token with full scope.
 - `httpAuth.credentials(...)`: Use original implementation.
-- `httpAuth.issueUserCookie(...)`: This is a no-op as we do not need to support cookie auth in the legacy adapter.
 
 With this compatibility layer in place all plugins will be refactored to always use the new `AuthService` and `HttpAuthService` internally. The old deprecated services are only accepted at the public API boundaries, i.e. `createRouter` and similar. All plugin code beyond that point uses the new services.
 
@@ -475,9 +501,9 @@ Cons:
 - Can be extremely confusing because the top-level middleware for more lax access will also apply to the more strict access levels. For example
 
   ```ts
-  const cookieRouter = Router();
-  cookieRouter.use(rateLimit());
-  http.useWithCookieAuthentication(cookieRouter);
+  const publicRouter = Router();
+  publicRouter.use(rateLimit());
+  http.useWithCookieAuthentication(publicRouter);
 
   const mainRouter = Router();
   // rateLimit() will apply here too
@@ -487,7 +513,7 @@ Cons:
 This applied to any similar way of structuring this API, such as a single `.use()` method with additional options:
 
 ```ts
-http.use(cookieRouter, { allow: ['user-cookie'] });
+http.use(publicRouter, { allow: ['unauthenticated'] });
 ```
 
 #### Separate configuration on different paths for `use`
@@ -502,7 +528,7 @@ This does have the benefit of letting the framework know which exact routes are 
 // This isn't too bad, but it's extremely similar to the addAuthPolicy() method since
 // we're just matching on the path. The benefit of addAuthPolicy is that it allows you
 // to keep everything in a singe router if desired.
-http.use('/static', cookieRouter, { allow: ['user-cookie'] });
+http.use('/static', publicRouter, { allow: ['unauthenticated'] });
 ```
 
 #### Complete opt-out
