@@ -42,9 +42,9 @@ import {
  * @public
  */
 export class ServerPermissionClient implements PermissionsService {
-  private readonly auth: AuthService;
-  private readonly permissionClient: PermissionClient;
-  private readonly permissionEnabled: boolean;
+  readonly #auth: AuthService;
+  readonly #permissionClient: PermissionClient;
+  readonly #permissionEnabled: boolean;
 
   static fromConfig(
     config: Config,
@@ -82,42 +82,46 @@ export class ServerPermissionClient implements PermissionsService {
     permissionClient: PermissionClient;
     permissionEnabled: boolean;
   }) {
-    this.auth = options.auth;
-    this.permissionClient = options.permissionClient;
-    this.permissionEnabled = options.permissionEnabled;
+    this.#auth = options.auth;
+    this.#permissionClient = options.permissionClient;
+    this.#permissionEnabled = options.permissionEnabled;
   }
 
   async authorizeConditional(
     queries: QueryPermissionRequest[],
     options?: PermissionsServiceRequestOptions,
   ): Promise<PolicyDecision[]> {
-    return (await this.shouldPermissionsBeApplied(options))
-      ? this.permissionClient.authorizeConditional(
-          queries,
-          await this.getRequestOptions(options),
-        )
-      : queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
+    if (await this.#shouldPermissionsBeApplied(options)) {
+      return this.#permissionClient.authorizeConditional(
+        queries,
+        await this.#getRequestOptions(options),
+      );
+    }
+
+    return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
   }
 
   async authorize(
     requests: AuthorizePermissionRequest[],
     options?: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
-    return (await this.shouldPermissionsBeApplied(options))
-      ? this.permissionClient.authorize(
-          requests,
-          await this.getRequestOptions(options),
-        )
-      : requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
+    if (await this.#shouldPermissionsBeApplied(options)) {
+      return this.#permissionClient.authorize(
+        requests,
+        await this.#getRequestOptions(options),
+      );
+    }
+
+    return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
   }
 
-  private async getRequestOptions(options?: PermissionsServiceRequestOptions) {
+  async #getRequestOptions(options?: PermissionsServiceRequestOptions) {
     if (options && 'credentials' in options) {
-      if (this.auth.isPrincipal(options.credentials, 'none')) {
+      if (this.#auth.isPrincipal(options.credentials, 'none')) {
         return {};
       }
 
-      return this.auth.getPluginRequestToken({
+      return this.#auth.getPluginRequestToken({
         onBehalfOf: options.credentials,
         targetPluginId: 'permissions',
       });
@@ -126,10 +130,10 @@ export class ServerPermissionClient implements PermissionsService {
     return options;
   }
 
-  private async shouldPermissionsBeApplied(
+  async #shouldPermissionsBeApplied(
     options?: PermissionsServiceRequestOptions,
   ) {
-    if (!this.permissionEnabled) {
+    if (!this.#permissionEnabled) {
       return false;
     }
 
@@ -141,13 +145,13 @@ export class ServerPermissionClient implements PermissionsService {
         return true;
       }
       try {
-        credentials = await this.auth.authenticate(options.token);
+        credentials = await this.#auth.authenticate(options.token);
       } catch {
         return true;
       }
     }
 
-    if (this.auth.isPrincipal(credentials, 'service')) {
+    if (this.#auth.isPrincipal(credentials, 'service')) {
       return false;
     }
     return true;
