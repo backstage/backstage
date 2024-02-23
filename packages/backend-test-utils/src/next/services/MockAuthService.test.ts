@@ -54,6 +54,12 @@ describe('MockAuthService', () => {
     ).resolves.toEqual(mockCredentials.user());
 
     await expect(
+      auth.authenticate(mockCredentials.user.token(), {
+        allowLimitedAccess: true,
+      }),
+    ).resolves.toEqual(mockCredentials.user());
+
+    await expect(
       auth.authenticate(mockCredentials.user.token()),
     ).resolves.toEqual(mockCredentials.user(DEFAULT_MOCK_USER_ENTITY_REF));
 
@@ -64,6 +70,44 @@ describe('MockAuthService', () => {
     await expect(
       auth.authenticate(mockCredentials.user.invalidToken()),
     ).rejects.toThrow('User token is invalid');
+  });
+
+  it('should authenticate mock limited user tokens', async () => {
+    await expect(
+      auth.authenticate(mockCredentials.limitedUser.token()),
+    ).rejects.toThrow('Limited user token is not allowed');
+    await expect(
+      auth.authenticate(mockCredentials.limitedUser.token(), {}),
+    ).rejects.toThrow('Limited user token is not allowed');
+    await expect(
+      auth.authenticate(mockCredentials.limitedUser.token(), {
+        allowLimitedAccess: false,
+      }),
+    ).rejects.toThrow('Limited user token is not allowed');
+    await expect(
+      auth.authenticate(mockCredentials.limitedUser.token(), {
+        allowLimitedAccess: true,
+      }),
+    ).resolves.toEqual(mockCredentials.user());
+
+    await expect(
+      auth.authenticate(mockCredentials.limitedUser.token(), {
+        allowLimitedAccess: true,
+      }),
+    ).resolves.toEqual(mockCredentials.user(DEFAULT_MOCK_USER_ENTITY_REF));
+
+    await expect(
+      auth.authenticate(
+        mockCredentials.limitedUser.token('user:default/other'),
+        {
+          allowLimitedAccess: true,
+        },
+      ),
+    ).resolves.toEqual(mockCredentials.user('user:default/other'));
+
+    await expect(
+      auth.authenticate(mockCredentials.limitedUser.invalidToken()),
+    ).rejects.toThrow('Limited user token is invalid');
   });
 
   it('should authenticate mock service tokens', async () => {

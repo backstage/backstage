@@ -24,7 +24,19 @@ import { Response as Response_2 } from 'express';
 // @public (undocumented)
 export interface AuthService {
   // (undocumented)
-  authenticate(token: string): Promise<BackstageCredentials>;
+  authenticate(
+    token: string,
+    options?: {
+      allowLimitedAccess?: boolean;
+    },
+  ): Promise<BackstageCredentials>;
+  // (undocumented)
+  getLimitedUserToken(
+    credentials: BackstageCredentials<BackstageUserPrincipal>,
+  ): Promise<{
+    token: string;
+    expiresAt: Date;
+  }>;
   // (undocumented)
   getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>

@@ -63,7 +63,12 @@ export type BackstagePrincipalTypes = {
  * @public
  */
 export interface AuthService {
-  authenticate(token: string): Promise<BackstageCredentials>;
+  authenticate(
+    token: string,
+    options?: {
+      allowLimitedAccess?: boolean;
+    },
+  ): Promise<BackstageCredentials>;
 
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(
     credentials: BackstageCredentials,
@@ -78,4 +83,8 @@ export interface AuthService {
     onBehalfOf: BackstageCredentials;
     targetPluginId: string;
   }): Promise<{ token: string }>;
+
+  getLimitedUserToken(
+    credentials: BackstageCredentials<BackstageUserPrincipal>,
+  ): Promise<{ token: string; expiresAt: Date }>;
 }

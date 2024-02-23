@@ -123,6 +123,27 @@ class AuthCompat implements AuthService {
         );
     }
   }
+
+  async getLimitedUserToken(
+    credentials: BackstageCredentials<BackstageUserPrincipal>,
+  ): Promise<{ token: string; expiresAt: Date }> {
+    const internalCredentials = toInternalBackstageCredentials(credentials);
+
+    const { token } = internalCredentials;
+
+    if (!token) {
+      throw new AuthenticationError(
+        'User credentials is unexpectedly missing token',
+      );
+    }
+
+    const { exp } = decodeJwt(token);
+    if (!exp) {
+      throw new AuthenticationError('User token is missing expiration');
+    }
+
+    return { token, expiresAt: new Date(exp * 1000) };
+  }
 }
 
 function getTokenFromRequest(req: Request) {
