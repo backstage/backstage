@@ -213,79 +213,97 @@ export function createPublishGithubAction(options: {
         requiredCommitSigning = false,
       } = ctx.input;
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        credentialsProvider: githubCredentialsProvider,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-      const client = new Octokit(octokitOptions);
+      const { _commitHash, _remoteUrl, _repoContentsUrl } =
+        await ctx.checkpoint?.(
+          'repo.create',
+          async (): Promise<{
+            _commitHash: string;
+            _remoteUrl: string;
+            _repoContentsUrl: string;
+          }> => {
+            const octokitOptions = await getOctokitOptions({
+              integrations,
+              credentialsProvider: githubCredentialsProvider,
+              token: providedToken,
+              repoUrl: repoUrl,
+            });
+            const client = new Octokit(octokitOptions);
 
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+            const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
-      if (!owner) {
-        throw new InputError('Invalid repository owner provided in repoUrl');
-      }
+            if (!owner) {
+              throw new InputError(
+                'Invalid repository owner provided in repoUrl',
+              );
+            }
 
-      const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
-        client,
-        repo,
-        owner,
-        repoVisibility,
-        description,
-        homepage,
-        deleteBranchOnMerge,
-        allowMergeCommit,
-        allowSquashMerge,
-        squashMergeCommitTitle,
-        squashMergeCommitMessage,
-        allowRebaseMerge,
-        allowAutoMerge,
-        access,
-        collaborators,
-        hasProjects,
-        hasWiki,
-        hasIssues,
-        topics,
-        repoVariables,
-        secrets,
-        oidcCustomization,
-        ctx.logger,
-      );
+            const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
+              client,
+              repo,
+              owner,
+              repoVisibility,
+              description,
+              homepage,
+              deleteBranchOnMerge,
+              allowMergeCommit,
+              allowSquashMerge,
+              squashMergeCommitTitle,
+              squashMergeCommitMessage,
+              allowRebaseMerge,
+              allowAutoMerge,
+              access,
+              collaborators,
+              hasProjects,
+              hasWiki,
+              hasIssues,
+              topics,
+              repoVariables,
+              secrets,
+              oidcCustomization,
+              ctx.logger,
+            );
 
-      const remoteUrl = newRepo.clone_url;
-      const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
+            const remoteUrl = newRepo.clone_url;
+            const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
 
-      const commitResult = await initRepoPushAndProtect(
-        remoteUrl,
-        octokitOptions.auth,
-        ctx.workspacePath,
-        ctx.input.sourcePath,
-        defaultBranch,
-        protectDefaultBranch,
-        protectEnforceAdmins,
-        owner,
-        client,
-        repo,
-        requireCodeOwnerReviews,
-        bypassPullRequestAllowances,
-        requiredApprovingReviewCount,
-        restrictions,
-        requiredStatusCheckContexts,
-        requireBranchesToBeUpToDate,
-        requiredConversationResolution,
-        config,
-        ctx.logger,
-        gitCommitMessage,
-        gitAuthorName,
-        gitAuthorEmail,
-        dismissStaleReviews,
-        requiredCommitSigning,
-      );
+            const commitResult = await initRepoPushAndProtect(
+              remoteUrl,
+              octokitOptions.auth,
+              ctx.workspacePath,
+              ctx.input.sourcePath,
+              defaultBranch,
+              protectDefaultBranch,
+              protectEnforceAdmins,
+              owner,
+              client,
+              repo,
+              requireCodeOwnerReviews,
+              bypassPullRequestAllowances,
+              requiredApprovingReviewCount,
+              restrictions,
+              requiredStatusCheckContexts,
+              requireBranchesToBeUpToDate,
+              requiredConversationResolution,
+              config,
+              ctx.logger,
+              gitCommitMessage,
+              gitAuthorName,
+              gitAuthorEmail,
+              dismissStaleReviews,
+              requiredCommitSigning,
+            );
 
-      ctx.output('commitHash', commitResult?.commitHash);
-      ctx.output('remoteUrl', remoteUrl);
-      ctx.output('repoContentsUrl', repoContentsUrl);
+            return {
+              _commitHash: commitResult?.commitHash,
+              _remoteUrl: remoteUrl,
+              _repoContentsUrl: repoContentsUrl,
+            };
+          },
+        )!!;
+
+      ctx.output('commitHash', _commitHash);
+      ctx.output('remoteUrl', _remoteUrl);
+      ctx.output('repoContentsUrl', _repoContentsUrl);
     },
   });
 }
