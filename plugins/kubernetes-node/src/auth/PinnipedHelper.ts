@@ -35,7 +35,7 @@ export type PinnipedClientCerts = {
  * @public
  */
 export type PinnipedParameters = {
-  clusterScopedIdToken: string;
+  token: string;
   authenticator: {
     apiGroup: string;
     kind: string;

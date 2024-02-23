@@ -117,7 +117,7 @@ describe('Pinniped - tokenCredentialRequest', () => {
                   ) => {
                     const pinnipedHelper = new PinnipedHelper(logger);
                     const pinnipedParams: PinnipedParameters = {
-                      clusterScopedIdToken:
+                      token:
                         ((authConfig.pinniped as JsonObject)
                           ?.clusteridtoken as string) || '',
                       authenticator: {
@@ -288,7 +288,7 @@ describe('Pinniped - tokenCredentialRequest', () => {
                     ) => {
                       const pinnipedHelper = new PinnipedHelper(logger);
                       const pinnipedParams: PinnipedParameters = {
-                        clusterScopedIdToken:
+                        token:
                           ((authConfig.pinniped as JsonObject)
                             ?.clusteridtoken as string) || '',
                         authenticator: {
