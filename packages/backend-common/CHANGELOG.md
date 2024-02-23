@@ -1,5 +1,11 @@
 # @backstage/backend-common
 
+## 0.20.2
+
+## Patch Changes
+
+- Fix issue where `resolveSafeChildPath` path would incorrectly resolve when operating on a symlink
+
 ## 0.20.1
 
 ### Patch Changes
