@@ -110,7 +110,7 @@ describe('api', () => {
 
   it('should throw an error if the Vault API responds with a non-successful HTTP status code', async () => {
     await expect(api.listSecrets('test/error')).rejects.toThrow(
-      'Request failed with 400 Error',
+      'Request failed with 400 Bad Request',
     );
   });
 });

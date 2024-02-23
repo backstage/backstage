@@ -221,7 +221,7 @@ describe('confluence:transform:markdown', () => {
     const action = createConfluenceToMarkdownAction(options);
     await expect(async () => {
       await action.handler(mockContext);
-    }).rejects.toThrow('Request failed with 401 Error');
+    }).rejects.toThrow('Request failed with 401 nope');
   });
 
   it('should return nothing in results from the first api call and fail', async () => {
@@ -284,6 +284,6 @@ describe('confluence:transform:markdown', () => {
     const action = createConfluenceToMarkdownAction(options);
     await expect(async () => {
       await action.handler(mockContext);
-    }).rejects.toThrow('Request failed with 404 Error');
+    }).rejects.toThrow('Request failed with 404 nope');
   });
 });
