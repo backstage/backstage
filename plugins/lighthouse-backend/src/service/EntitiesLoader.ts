@@ -18,11 +18,11 @@ import {
   CatalogClient,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
-import { TokenManager } from '@backstage/backend-common';
+import { AuthService } from '@backstage/backend-plugin-api';
 
 export async function loadLighthouseEntities(
   catalogClient: CatalogClient,
-  tokenManager: TokenManager,
+  auth: AuthService,
 ) {
   const filter: Record<string, symbol | string> = {
     kind: 'Component',
@@ -30,7 +30,10 @@ export async function loadLighthouseEntities(
     ['lighthouse.com/website-url']: CATALOG_FILTER_EXISTS,
   };
 
-  const { token } = await tokenManager.getToken();
+  const { token } = await auth.getPluginRequestToken({
+    onBehalfOf: await auth.getOwnServiceCredentials(),
+    targetPluginId: 'catalog',
+  });
 
   return await catalogClient.getEntities(
     {
