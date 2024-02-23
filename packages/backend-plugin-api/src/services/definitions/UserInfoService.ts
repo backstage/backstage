@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-import { Handler } from 'express';
+import { BackstageCredentials } from './AuthService';
 
 /** @public */
-export interface HttpRouterServiceAuthPolicy {
-  path: string;
-  allow: 'unauthenticated' | 'user-cookie';
+export interface BackstageUserInfo {
+  userEntityRef: string;
+  ownershipEntityRefs: string[];
 }
 
-/**
- * @public
- */
-export interface HttpRouterService {
-  use(handler: Handler): void;
-
-  addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void;
+/** @public */
+export interface UserInfoService {
+  getUserInfo(credentials: BackstageCredentials): Promise<BackstageUserInfo>;
 }

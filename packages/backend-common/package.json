@@ -63,6 +63,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/integration-aws-node": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@google-cloud/storage": "^7.0.0",
     "@keyv/memcache": "^1.3.5",

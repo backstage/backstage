@@ -8,6 +8,7 @@
 
 import { AppConfig } from '@backstage/config';
 import { AuthCallback } from 'isomorphic-git';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
@@ -30,6 +31,7 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
 import { Knex } from 'knex';
@@ -231,6 +233,37 @@ export function createDatabaseClient(
     pluginMetadata: PluginMetadataService;
   },
 ): knexFactory.Knex<any, any[]>;
+
+// @public
+export function createLegacyAuthAdapters<
+  TOptions extends {
+    auth?: AuthService;
+    httpAuth?: HttpAuthService;
+    identity?: IdentityService;
+    tokenManager?: TokenManager;
+    discovery: PluginEndpointDiscovery;
+  },
+  TAdapters = TOptions extends {
+    auth?: AuthService;
+  }
+    ? TOptions extends {
+        httpAuth?: HttpAuthService;
+      }
+      ? {
+          auth: AuthService;
+          httpAuth: HttpAuthService;
+        }
+      : {
+          auth: AuthService;
+        }
+    : TOptions extends {
+        httpAuth?: HttpAuthService;
+      }
+    ? {
+        httpAuth: HttpAuthService;
+      }
+    : 'error: at least one of auth and/or httpAuth must be provided',
+>(options: TOptions): TAdapters;
 
 // @public
 export function createRootLogger(

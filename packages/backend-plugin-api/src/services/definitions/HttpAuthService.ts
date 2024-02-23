@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import { Handler } from 'express';
+import { Request, Response } from 'express';
+import { BackstageCredentials, BackstagePrincipalTypes } from './AuthService';
 
 /** @public */
-export interface HttpRouterServiceAuthPolicy {
-  path: string;
-  allow: 'unauthenticated' | 'user-cookie';
-}
+export interface HttpAuthService {
+  credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
+    req: Request<any, any, any, any, any>,
+    options?: {
+      allow?: Array<TAllowed>;
+      allowedAuthMethods?: Array<'token' | 'cookie'>;
+    },
+  ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>>;
 
-/**
- * @public
- */
-export interface HttpRouterService {
-  use(handler: Handler): void;
-
-  addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void;
+  issueUserCookie(res: Response): Promise<void>;
 }
