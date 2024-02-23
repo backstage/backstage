@@ -118,7 +118,7 @@
     "react-dev-utils": "^12.0.0-next.60",
     "react-refresh": "^0.14.0",
     "recursive-readdir": "^2.2.2",
-    "rollup": "^2.60.2",
+    "rollup": "^4.0.0",
     "rollup-plugin-dts": "^4.0.1",
     "rollup-plugin-esbuild": "^4.7.2",
     "rollup-plugin-postcss": "^4.0.0",
