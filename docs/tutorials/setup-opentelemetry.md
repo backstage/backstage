@@ -74,7 +74,7 @@ CMD ["node", "--require", "./instrumentation.ts", "packages/backend", "--config"
 
 The above configuration will only work in production once your start a Docker container from the image.
 
-To be able to test locally you can import the `./instrumentation.ts` file at the top (before all imports) of your backend `index.ts` file
+To be able to test locally you can import the `./instrumentation.js` file at the top (before all imports) of your backend `index.ts` file
 
 ```ts
 import '../instrumentation.js'
