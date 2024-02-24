@@ -67,7 +67,7 @@ COPY --chown=node:node packages/backend/instrumentation.js ./
 // highlight-remove-next-line
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
 // highlight-add-next-line
-CMD ["node", "--require", "./instrumentation.ts", "packages/backend", "--config", "app-config.yaml"]
+CMD ["node", "--require", "./instrumentation.js", "packages/backend", "--config", "app-config.yaml"]
 ```
 
 ## Run Backstage
