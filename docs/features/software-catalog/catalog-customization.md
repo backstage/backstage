@@ -9,7 +9,7 @@ The Backstage software catalog comes with a default `CatalogIndexPage` to filter
 
 ## Pagination
 
-Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of Backstage, make sure you are on that version or newer to use this feature. To enable pagination you simply need to pass in the `pagination` prop like this:
+Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of Backstage, so make sure you are on that version or newer to use this feature. To enable pagination you simply need to pass in the `pagination` prop like this:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route path="/catalog" element={<CatalogIndexPage pagination />} />
@@ -17,7 +17,7 @@ Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of
 
 ## Initially Selected Filter
 
-By default the initially selected filter defaults to Owned, now you might be still building up your catalog and would prefer this to show All as the default. Here's how you can make that change:
+By default the initially selected filter defaults to Owned. If you are still building up your catalog this may show an empty list to start. If you would prefer this to show All as the default, here's how you can make that change:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route
@@ -50,7 +50,7 @@ Possible options are: owners-only or all
 
 ## Table Options
 
-The tables used within Backstage are built on top of [`@material-table/core`](https://material-table-core.github.io/) and the `CatalogIndexPage` has a `tableOptions` prop that allows you to customize the underlying table to a certain extent, there are some hard coded Backstage settings that can't be changed. Here's an example of how to use this prop to disable the search filter field in the table's header:
+The tables used within Backstage are built on top of [`@material-table/core`](https://material-table-core.github.io/) and the `CatalogIndexPage` has a `tableOptions` prop that allows you to customize the underlying table to a certain extent, but there are some hard coded Backstage settings that can't be changed. Here's an example of how to use this prop to disable the search filter field in the table's header:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route
@@ -168,11 +168,11 @@ The above customization will override the existing actions. Currently the only w
 
 ## Customize Filters
 
-There are tree options you have for filters: adjusting the existing filters with props, adding or removing the default filters, or creating a brand new custom filter. The following sections cover these cases
+There are three options you have for filters: adjusting the existing filters with props, adding or removing the default filters, or creating a brand new custom filter. The following sections cover these cases
 
 ### Default Filter Props
 
-There is a set of default filters that you can use, they surface all the props mentioned earlier in this document. Here's how they can be used:
+There are a set of default filters that you can use, which surface all the props mentioned earlier in this document. Here's how they can be used:
 
 ```tsx title="packages/app/src/App.tsx"
 import { DefaultFilters } from '@backstage/plugin-catalog-react';
