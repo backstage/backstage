@@ -56,7 +56,7 @@ It's important to setup the NodeSDK and the automatic instrumentation **before**
 This is why we will use the nodejs [`--require`](https://nodejs.org/api/cli.html#-r---require-module)
 flag when we start up the application.
 
-In your `Dockerfile` add the `--require` flag which points to the `instrumentation.ts` file
+In your `Dockerfile` add the `--require` flag which points to the `instrumentation.js` file
 
 ```Dockerfile
 
