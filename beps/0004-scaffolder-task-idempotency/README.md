@@ -4,8 +4,8 @@ status: provisional
 authors:
   - 'bnechyporenko@bol.com'
   - 'benjaminl@spotify.com'
-owners: 
-  - @backstage/scaffolder-maintainers
+owners:
+  - '@backstage/scaffolder-maintainers'
 project-areas:
   - scaffolder
 creation-date: 2024-01-31
@@ -57,6 +57,7 @@ know that this has succeeded?
 - should be possible to retry the task on a different scaffolder instance
 - we would like to retry from any state and not tearing down or overwriting what was created before.
 - we would like to be resilient to upstream failures, i.e. a request to create a remote repository failed and repository was created, it should be handled gracefully.
+- we would like to give an option for users to hook own logic to roll back to an initial state
 
 ### Non-Goals
 
@@ -258,6 +259,26 @@ Task state will be stored in the extra column `state` in the table `tasks` with 
   }
 }
 ```
+
+### Rolling back to an initial state
+
+We will not provide built in logic which will do that magically for you, instead we will give an opportunity to hook own
+logic where user can do a cleanup of created resources. Each action definition will have an additional optional property
+`undoAction`, which will be triggerred during 'Rollback'.
+
+```yaml
+- id: publish
+  name: Publish
+  action: publish:github
+  undoAction: delete:github
+  input:
+    allowedHosts: ['github.com']
+    description: This is ${{ parameters.name }}
+    repoUrl: ${{ parameters.repoUrl }}
+```
+
+The decision to roll back, retry or to mark a task as resolved will be done manually by the user. Though it's a
+potential place later on to introduce strategies how to deal with it in automatic way.
 
 ## Release Plan
 
