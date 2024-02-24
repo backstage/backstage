@@ -24,7 +24,7 @@ yarn --cwd packages/backend add @opentelemetry/sdk-node \
 
 ## Configure
 
-In your `packages/backend` folder, create an `instrumentation.ts` file.
+In your `packages/backend` folder, create an `instrumentation.js` file.
 
 ```typescript
 const { NodeSDK } = require('@opentelemetry/sdk-node');
@@ -48,7 +48,7 @@ const sdk = new NodeSDK({
 sdk.start();
 ```
 
-Your probably won't need all the instrumentation inside `getNodeAutoInstrumentations()` so make sure to
+You probably won't need all of the instrumentation inside `getNodeAutoInstrumentations()` so make sure to
 check the [documentation](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node) and tweak it properly.
 
 It's important to setup the NodeSDK and the automatic instrumentation **before** importing any library.
@@ -59,31 +59,10 @@ flag when we start up the application.
 In your `Dockerfile` add the `--require` flag which points to the `instrumentation.ts` file
 
 ```Dockerfile
-FROM node:18-bookworm-slim
-...
-# More functionality goes here
-...
-WORKDIR /app
-RUN chown node:node /app
-USER node
-
-ENV NODE_ENV production
-
-COPY --chown=node:node .yarn ./.yarn
-COPY --chown=node:node .yarnrc.yml ./
 
 # We need the instrumentation file inside the Docker image so we can use it with --require
 // highlight-add-next-line
-COPY --chown=node:node packages/backend/instrumentation.ts ./
-
-COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
-RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
-
-RUN --mount=type=cache,target=/home/node/.yarn/berry/cache,sharing=locked,uid=1000,gid=1000 \
-    yarn workspaces focus --all --production
-
-COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
-RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+COPY --chown=node:node packages/backend/instrumentation.js ./
 
 // highlight-remove-next-line
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
@@ -98,7 +77,7 @@ The above configuration will only work in production once your start a Docker co
 To be able to test locally you can import the `./instrumentation.ts` file at the top (before all imports) of your backend `index.ts` file
 
 ```ts
-import '../instrumentation.ts'
+import '../instrumentation.js'
 // Other imports
 ...
 ```
