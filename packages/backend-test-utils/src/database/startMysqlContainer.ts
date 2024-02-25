@@ -54,7 +54,7 @@ export async function startMysqlContainer(image: string) {
 
   const container = await new GenericContainer(image)
     .withExposedPorts(3306)
-    .withEnv('MYSQL_ROOT_PASSWORD', password)
+    .withEnvironment({ MYSQL_ROOT_PASSWORD: password })
     .withTmpFs({ '/var/lib/mysql': 'rw' })
     .start();
 
