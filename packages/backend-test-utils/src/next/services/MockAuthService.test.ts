@@ -157,6 +157,12 @@ describe('MockAuthService', () => {
     ).rejects.toThrow('Service token is invalid');
   });
 
+  it('should return none credentials', async () => {
+    await expect(auth.getNoneCredentials()).resolves.toEqual(
+      mockCredentials.none(),
+    );
+  });
+
   it('should return own service credentials', async () => {
     await expect(auth.getOwnServiceCredentials()).resolves.toEqual(
       mockCredentials.service('plugin:test'),

@@ -117,6 +117,10 @@ export class MockAuthService implements AuthService {
     throw new AuthenticationError(`Unknown mock token '${token}'`);
   }
 
+  async getNoneCredentials() {
+    return mockCredentials.none();
+  }
+
   async getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
   > {

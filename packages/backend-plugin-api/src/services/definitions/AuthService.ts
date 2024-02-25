@@ -75,6 +75,8 @@ export interface AuthService {
     type: TType,
   ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
 
+  getNoneCredentials(): Promise<BackstageCredentials<BackstageNonePrincipal>>;
+
   getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
   >;

@@ -157,6 +157,12 @@ class DefaultAuthService implements AuthService {
     return true;
   }
 
+  async getNoneCredentials(): Promise<
+    BackstageCredentials<BackstageNonePrincipal>
+  > {
+    return createCredentialsWithNonePrincipal();
+  }
+
   async getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
   > {
