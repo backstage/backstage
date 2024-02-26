@@ -129,6 +129,9 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor_2 {
 // @public (undocumented)
 export const CATALOG_CONFLICTS_TOPIC = 'experimental.catalog.conflict';
 
+// @public (undocumented)
+export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
+
 // @public
 export class CatalogBuilder {
   addEntityPolicy(
