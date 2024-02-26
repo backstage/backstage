@@ -57,7 +57,7 @@
     "mysql2": "^3.0.0",
     "pg": "^8.11.3",
     "testcontainers": "^10.0.0",
-    "textextensions": "^5.16.0",
+    "textextensions": "^6.0.0",
     "uuid": "^9.0.0"
   },
   "peerDependencies": {

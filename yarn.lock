@@ -3491,7 +3491,7 @@ __metadata:
     pg: ^8.11.3
     supertest: ^6.1.3
     testcontainers: ^10.0.0
-    textextensions: ^5.16.0
+    textextensions: ^6.0.0
     uuid: ^9.0.0
   peerDependencies:
     "@types/jest": "*"
@@ -25923,6 +25923,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"editions@npm:^6.21.0":
+  version: 6.21.0
+  resolution: "editions@npm:6.21.0"
+  dependencies:
+    version-range: ^4.13.0
+  checksum: 5d4c63cc3d885244a5375d0660effd86d29e07d5c03ff577659e21ff690404bc2f5db76f2e12ead92888360f41af252cb73b2a1abb2b3fa873efc13e416504a9
+  languageName: node
+  linkType: hard
+
 "ee-first@npm:1.1.1":
   version: 1.1.1
   resolution: "ee-first@npm:1.1.1"
@@ -43418,10 +43427,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textextensions@npm:^5.12.0, textextensions@npm:^5.13.0, textextensions@npm:^5.16.0":
+"textextensions@npm:^5.12.0, textextensions@npm:^5.13.0":
   version: 5.16.0
   resolution: "textextensions@npm:5.16.0"
   checksum: d2abd5c962760046aa85d9ca542bd8bdb451370fc0a5e5f807aa80dd2f50175ec10d5ce9d28ae96968aaf6a1b1bea254cf4715f24852d0dcf29c6a60af7f793c
+  languageName: node
+  linkType: hard
+
+"textextensions@npm:^6.0.0":
+  version: 6.11.0
+  resolution: "textextensions@npm:6.11.0"
+  dependencies:
+    editions: ^6.21.0
+  checksum: 6d24c675b352264d67d36fafce2212839ea968874ed58b92c679d860a849183aa87d6f7b120fcca390416095f9af66fbe4c825e7b26796ed4ef6ea5e632c81fc
   languageName: node
   linkType: hard
 
@@ -45089,6 +45107,13 @@ __metadata:
     core-util-is: 1.0.2
     extsprintf: ^1.2.0
   checksum: c431df0bedf2088b227a4e051e0ff4ca54df2c114096b0c01e1cbaadb021c30a04d7dd5b41ab277bcd51246ca135bf931d4c4c796ecae7a4fef6d744ecef36ea
+  languageName: node
+  linkType: hard
+
+"version-range@npm:^4.13.0":
+  version: 4.14.0
+  resolution: "version-range@npm:4.14.0"
+  checksum: 21db337e239f98403c4ffbb054d3a0b63163db440615225167ec3fc0f75fd2b376e91a8f82a7c2d3b96bc5f1487a238e0ea3c7da1b776a0c54ef3bde63d85027
   languageName: node
   linkType: hard
 
