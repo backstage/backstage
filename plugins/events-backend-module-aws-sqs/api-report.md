@@ -4,20 +4,20 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { EventBroker } from '@backstage/plugin-events-node';
-import { EventPublisher } from '@backstage/plugin-events-node';
-import { Logger } from 'winston';
+import { EventsService } from '@backstage/plugin-events-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
 // @public
-export class AwsSqsConsumingEventPublisher implements EventPublisher {
+export class AwsSqsConsumingEventPublisher {
   // (undocumented)
   static fromConfig(env: {
     config: Config;
-    logger: Logger;
+    events: EventsService;
+    logger: LoggerService;
     scheduler: PluginTaskScheduler;
   }): AwsSqsConsumingEventPublisher[];
   // (undocumented)
-  setEventBroker(eventBroker: EventBroker): Promise<void>;
+  start(): Promise<void>;
 }
 ```

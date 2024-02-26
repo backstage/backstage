@@ -26,6 +26,7 @@ import { DefaultEventBroker } from './DefaultEventBroker';
  * A builder that helps wire up all component parts of the event management.
  *
  * @public
+ * @deprecated `EventBroker`, `EventPublisher`, and `EventSubscriber` got replaced by `EventsService` and its methods.
  */
 export class EventsBackend {
   private eventBroker: EventBroker;

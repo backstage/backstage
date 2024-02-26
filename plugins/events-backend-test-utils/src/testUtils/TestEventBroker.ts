@@ -20,7 +20,10 @@ import {
   EventSubscriber,
 } from '@backstage/plugin-events-node';
 
-/** @public */
+/**
+ * @public
+ * @deprecated use `TestEventsService` instead
+ */
 export class TestEventBroker implements EventBroker {
   readonly published: EventParams[] = [];
   readonly subscribed: EventSubscriber[] = [];

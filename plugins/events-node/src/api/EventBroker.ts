@@ -23,6 +23,7 @@ import { EventSubscriber } from './EventSubscriber';
  * others can subscribe for future events for topics they are interested in.
  *
  * @public
+ * @deprecated use `EventsService` instead
  */
 export interface EventBroker {
   /**

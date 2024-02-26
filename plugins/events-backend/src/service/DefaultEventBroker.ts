@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import {
+  DefaultEventsService,
   EventBroker,
   EventParams,
+  EventsService,
   EventSubscriber,
 } from '@backstage/plugin-events-node';
-import { Logger } from 'winston';
 
 /**
  * In process event broker which will pass the event to all registered subscribers
@@ -27,44 +29,34 @@ import { Logger } from 'winston';
  * Events will not be persisted in any form.
  *
  * @public
+ * @deprecated use `DefaultEventsService` from `@backstage/plugin-events-node` instead
  */
-// TODO(pjungermann): add prom metrics? (see plugins/catalog-backend/src/util/metrics.ts, etc.)
 export class DefaultEventBroker implements EventBroker {
-  constructor(private readonly logger: Logger) {}
+  private readonly events: EventsService;
 
-  private readonly subscribers: {
-    [topic: string]: EventSubscriber[];
-  } = {};
+  /**
+   *
+   * @param logger - logger
+   * @param events - replacement that gets wrapped to support not yet migrated implementations.
+   * An instance can be passed (required for a mixed mode), otherwise a new instance gets created internally.
+   * @deprecated use `DefaultEventsService` directly instead
+   */
+  constructor(logger: LoggerService, events?: EventsService) {
+    this.events = events ?? DefaultEventsService.create({ logger });
+  }
 
   async publish(params: EventParams): Promise<void> {
-    this.logger.debug(
-      `Event received: topic=${params.topic}, metadata=${JSON.stringify(
-        params.metadata,
-      )}, payload=${JSON.stringify(params.eventPayload)}`,
-    );
-
-    const subscribed = this.subscribers[params.topic] ?? [];
-    await Promise.all(
-      subscribed.map(async subscriber => {
-        try {
-          await subscriber.onEvent(params);
-        } catch (error) {
-          this.logger.error(
-            `Subscriber "${subscriber.constructor.name}" failed to process event`,
-            error,
-          );
-        }
-      }),
-    );
+    return this.events.publish(params);
   }
 
   subscribe(
     ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
   ): void {
-    subscribers.flat().forEach(subscriber => {
-      subscriber.supportsEventTopics().forEach(topic => {
-        this.subscribers[topic] = this.subscribers[topic] ?? [];
-        this.subscribers[topic].push(subscriber);
+    subscribers.flat().forEach(async subscriber => {
+      await this.events.subscribe({
+        id: subscriber.constructor.name,
+        topics: subscriber.supportsEventTopics(),
+        onEvent: subscriber.onEvent.bind(subscriber),
       });
     });
   }

@@ -14,32 +14,31 @@
  * limitations under the License.
  */
 
+import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
+import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { eventsModuleBitbucketCloudEventRouter } from './eventsModuleBitbucketCloudEventRouter';
-import { BitbucketCloudEventRouter } from '../router/BitbucketCloudEventRouter';
 
 describe('eventsModuleBitbucketCloudEventRouter', () => {
   it('should be correctly wired and set up', async () => {
-    let addedPublisher: BitbucketCloudEventRouter | undefined;
-    let addedSubscriber: BitbucketCloudEventRouter | undefined;
-    const extensionPoint = {
-      addPublishers: (publisher: any) => {
-        addedPublisher = publisher;
+    const events = new TestEventsService();
+    const eventsServiceFactory = createServiceFactory({
+      service: eventsServiceRef,
+      deps: {},
+      async factory({}) {
+        return events;
       },
-      addSubscribers: (subscriber: any) => {
-        addedSubscriber = subscriber;
-      },
-    };
-
-    await startTestBackend({
-      extensionPoints: [[eventsExtensionPoint, extensionPoint]],
-      features: [eventsModuleBitbucketCloudEventRouter()],
     });
 
-    expect(addedPublisher).not.toBeUndefined();
-    expect(addedPublisher).toBeInstanceOf(BitbucketCloudEventRouter);
-    expect(addedSubscriber).not.toBeUndefined();
-    expect(addedSubscriber).toBeInstanceOf(BitbucketCloudEventRouter);
+    await startTestBackend({
+      features: [
+        eventsServiceFactory(),
+        eventsModuleBitbucketCloudEventRouter(),
+      ],
+    });
+
+    expect(events.subscribed).toHaveLength(1);
+    expect(events.subscribed[0].id).toEqual('BitbucketCloudEventRouter');
   });
 });
