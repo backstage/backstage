@@ -185,7 +185,7 @@ export interface Config {
       /** @visibility frontend */
       cfaccess?: {
         teamName: string;
-        /** @visibility secret */
+        /** @deepVisibility secret */
         serviceTokens?: Array<{
           token: string;
           subject: string;
