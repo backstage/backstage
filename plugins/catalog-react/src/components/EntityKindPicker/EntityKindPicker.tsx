@@ -128,6 +128,7 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
         items={items}
         selected={selectedKind.toLocaleLowerCase('en-US')}
         onChange={value => setSelectedKind(String(value))}
+        fullWidth
       />
     </Box>
   );

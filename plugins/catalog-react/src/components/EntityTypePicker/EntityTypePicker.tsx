@@ -69,6 +69,7 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
         onChange={value =>
           setSelectedTypes(value === 'all' ? [] : [String(value)])
         }
+        fullWidth
       />
     </Box>
   );

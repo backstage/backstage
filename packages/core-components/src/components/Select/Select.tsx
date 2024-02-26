@@ -81,6 +81,9 @@ const useStyles = makeStyles(
         margin: theme.spacing(1, 0),
         maxWidth: 300,
       },
+      fullWidth: {
+        maxWidth: '100%',
+      },
       label: {
         transform: 'initial',
         fontWeight: 'bold',
@@ -138,6 +141,7 @@ export type SelectProps = {
   native?: boolean;
   disabled?: boolean;
   margin?: 'dense' | 'none';
+  fullWidth?: boolean;
 };
 
 /** @public */
@@ -153,6 +157,7 @@ export function SelectComponent(props: SelectProps) {
     native = false,
     disabled = false,
     margin,
+    fullWidth = false,
   } = props;
   const classes = useStyles();
   const [value, setValue] = useState<SelectedItems>(
@@ -198,7 +203,11 @@ export function SelectComponent(props: SelectProps) {
 
   return (
     <Box className={classes.root}>
-      <FormControl className={classes.formControl}>
+      <FormControl
+        className={`${classes.formControl} ${
+          fullWidth ? classes.fullWidth : ''
+        }`}
+      >
         <InputLabel className={classes.formLabel}>{label}</InputLabel>
         <Select
           aria-label={label}
