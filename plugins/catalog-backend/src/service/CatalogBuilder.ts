@@ -549,6 +549,7 @@ export class CatalogBuilder {
       onProcessingError: event => {
         this.onProcessingError?.(event);
       },
+      eventBroker: this.eventBroker,
     });
 
     const locationAnalyzer =

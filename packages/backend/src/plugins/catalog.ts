@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+import {
+  CATALOG_ERRORS_TOPIC,
+  CatalogBuilder,
+} from '@backstage/plugin-catalog-backend';
 import { ScaffolderEntitiesProcessor } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 import { UnprocessedEntitiesModule } from '@backstage/plugin-catalog-backend-module-unprocessed';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 import { DemoEventBasedEntityProvider } from './DemoEventBasedEntityProvider';
+import { EventParams } from '@backstage/plugin-events-node';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -33,6 +37,7 @@ export default async function createPlugin(
     eventBroker: env.eventBroker,
   });
   builder.addEntityProvider(demoProvider);
+  builder.setEventBroker(env.eventBroker);
 
   const { processingEngine, router } = await builder.build();
 

@@ -38,6 +38,8 @@ import {
   withActiveSpan,
 } from '../util/opentelemetry';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
+import { EventBroker } from '@backstage/plugin-events-node';
+import { CATALOG_ERRORS_TOPIC } from '../constants';
 
 const CACHE_TTL = 5;
 
@@ -67,6 +69,7 @@ export class DefaultCatalogProcessingEngine {
     errors: Error[];
   }) => Promise<void> | void;
   private readonly tracker: ProgressTracker;
+  private readonly eventBroker?: EventBroker;
 
   private stopFunc?: () => void;
 
@@ -86,6 +89,7 @@ export class DefaultCatalogProcessingEngine {
       errors: Error[];
     }) => Promise<void> | void;
     tracker?: ProgressTracker;
+    eventBroker?: EventBroker;
   }) {
     this.config = options.config;
     this.scheduler = options.scheduler;
@@ -99,6 +103,7 @@ export class DefaultCatalogProcessingEngine {
     this.orphanCleanupIntervalMs = options.orphanCleanupIntervalMs ?? 30_000;
     this.onProcessingError = options.onProcessingError;
     this.tracker = options.tracker ?? progressTracker();
+    this.eventBroker = options.eventBroker;
 
     this.stopFunc = undefined;
   }
@@ -194,10 +199,14 @@ export class DefaultCatalogProcessingEngine {
 
             const location =
               unprocessedEntity?.metadata?.annotations?.[ANNOTATION_LOCATION];
-            for (const error of result.errors) {
-              this.logger.debug(error.message, {
-                entity: entityRef,
-                location,
+            if (result.errors.length) {
+              this.eventBroker?.publish({
+                topic: CATALOG_ERRORS_TOPIC,
+                eventPayload: {
+                  entity: entityRef,
+                  location,
+                  errors: result.errors,
+                },
               });
             }
             const errorsString = JSON.stringify(
