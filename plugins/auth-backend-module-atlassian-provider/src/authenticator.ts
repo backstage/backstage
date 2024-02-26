@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Strategy as AtlassianStrategy } from 'passport-atlassian-oauth2';
 import {
   createOAuthAuthenticator,
   PassportOAuthAuthenticatorHelper,
   PassportOAuthDoneCallback,
   PassportProfile,
 } from '@backstage/plugin-auth-node';
+import { Strategy as AtlassianStrategy } from 'passport-atlassian-oauth2';
 
 /** @public */
 export const atlassianAuthenticator = createOAuthAuthenticator({
@@ -30,7 +30,7 @@ export const atlassianAuthenticator = createOAuthAuthenticator({
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
     const baseUrl =
-      config.getOptionalString('audience') || 'https://atlassian.com';
+      config.getOptionalString('audience') || 'https://api.atlassian.com';
 
     return PassportOAuthAuthenticatorHelper.from(
       new AtlassianStrategy(
@@ -39,7 +39,7 @@ export const atlassianAuthenticator = createOAuthAuthenticator({
           clientSecret: clientSecret,
           callbackURL: callbackUrl,
           baseURL: baseUrl,
-          authorizationURL: `${baseUrl}/oauth/authorize`,
+          authorizationURL: `${baseUrl}/authorize`,
           tokenURL: `${baseUrl}/oauth/token`,
           profileURL: `${baseUrl}/api/v4/user`,
         },
