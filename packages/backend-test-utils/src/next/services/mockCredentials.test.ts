@@ -81,7 +81,6 @@ describe('mockCredentials', () => {
   });
 
   it('creates limited user tokens and headers', () => {
-    expect(mockCredentials.limitedUser.token()).toBe('mock-limited-user-token');
     expect(mockCredentials.limitedUser.token('user:default/other')).toBe(
       'mock-limited-user-token:{"sub":"user:default/other"}',
     );
@@ -89,14 +88,11 @@ describe('mockCredentials', () => {
       'mock-invalid-limited-user-token',
     );
 
-    expect(mockCredentials.limitedUser.header()).toBe(
-      'Bearer mock-limited-user-token',
+    expect(mockCredentials.limitedUser.cookie('user:default/other')).toBe(
+      'backstage-auth=mock-limited-user-token:{"sub":"user:default/other"}',
     );
-    expect(mockCredentials.limitedUser.header('user:default/other')).toBe(
-      'Bearer mock-limited-user-token:{"sub":"user:default/other"}',
-    );
-    expect(mockCredentials.limitedUser.invalidHeader()).toBe(
-      'Bearer mock-invalid-limited-user-token',
+    expect(mockCredentials.limitedUser.invalidCookie()).toBe(
+      'backstage-auth=mock-invalid-limited-user-token',
     );
   });
 
