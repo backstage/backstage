@@ -17,11 +17,26 @@
 export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
-    /**
-     * EXPERIMENTAL value: Allow users to configure what the guest provider logs in as.
-     * @visibility frontend
-     * @default user:default/guest
-     */
-    guestEntityRef?: string;
+    providers: {
+      guest?: {
+        /**
+         * The entity reference to use for the guest user.
+         * @default user:development/guest
+         */
+        userEntityRef?: string;
+
+        /**
+         * A list of entity references to user for ownership of the guest user if the user
+         *  is not found in the catalog.
+         * @default [userEntityRef]
+         */
+        ownershipEntityRefs?: string[];
+
+        /**
+         * Allow users to sign in with the guest provider outside of their development environments.
+         */
+        dangerouslyAllowOutsideDevelopment?: boolean;
+      };
+    };
   };
 }

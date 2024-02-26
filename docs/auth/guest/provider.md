@@ -59,9 +59,8 @@ Similar to the other authentication providers, you have to enable the provider i
 auth:
     providers:
 +       guest:
-+           development:
-                // new optional property to override the default value.
-+               loginAs: user:default/guest
++           userEntityRef: user:default/guest
++           development: {}
 ```
 
 We need to specify that the provider is enabled for the given environment, and as there are no config values for this provider yet, you can just specify an empty object.

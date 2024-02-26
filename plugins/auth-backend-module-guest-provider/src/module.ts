@@ -46,7 +46,7 @@ export const authModuleGuestProvider = createBackendModule({
           factory: createProxyAuthProviderFactory({
             authenticator: guestAuthenticator,
             signInResolver: signInAsGuestUser(
-              config.getOptionalString('auth.guestEntityRef'),
+              config.getConfig('auth.providers.guest'),
             ),
           }),
         });
