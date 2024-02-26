@@ -40,7 +40,6 @@ export class Jacoco implements Converter {
    */
   convert(xml: JacocoXML, scmFiles: Array<string>): Array<FileEntry> {
     const jscov: Array<FileEntry> = [];
-
     xml.report.package.forEach(r => {
       const packageName = r.$.name;
       r.sourcefile.forEach(sf => {
@@ -68,9 +67,12 @@ export class Jacoco implements Converter {
           .map(f => f.trimEnd())
           .find(f => f.endsWith(packageAndFilename));
         this.logger.debug(`matched ${packageAndFilename} to ${currentFile}`);
-        if (Object.keys(lineHits).length > 0 && currentFile) {
+        if (
+          scmFiles.length === 0 ||
+          (Object.keys(lineHits).length > 0 && currentFile)
+        ) {
           jscov.push({
-            filename: currentFile,
+            filename: currentFile || packageAndFilename,
             branchHits: branchHits,
             lineHits: lineHits,
           });
