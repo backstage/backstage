@@ -213,7 +213,11 @@ export async function createRouter(
     }
 
     const notifications = await store.getNotifications(opts);
-    res.send(notifications);
+    const totalCount = await store.getNotificationsCount(opts);
+    res.send({
+      totalCount,
+      notifications,
+    });
   });
 
   router.get('/:id', async (req, res) => {

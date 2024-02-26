@@ -35,13 +35,18 @@ export const NotificationsPage = () => {
   const [refresh, setRefresh] = React.useState(false);
   const { lastSignal } = useSignal('notifications');
   const [unreadOnly, setUnreadOnly] = React.useState<boolean | undefined>(true);
+  const [pageNumber, setPageNumber] = React.useState(0);
+  const [pageSize, setPageSize] = React.useState(5);
   const [containsText, setContainsText] = React.useState<string>();
   const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
 
   const { error, value, retry, loading } = useNotificationsApi(
-    // TODO: add pagination and other filters
     api => {
-      const options: GetNotificationsOptions = { search: containsText };
+      const options: GetNotificationsOptions = {
+        search: containsText,
+        limit: pageSize,
+        offset: pageNumber * pageSize,
+      };
       if (unreadOnly !== undefined) {
         options.read = !unreadOnly;
       }
@@ -53,7 +58,7 @@ export const NotificationsPage = () => {
 
       return api.getNotifications(options);
     },
-    [containsText, unreadOnly, createdAfter],
+    [containsText, unreadOnly, createdAfter, pageNumber, pageSize],
   );
 
   useEffect(() => {
@@ -94,9 +99,14 @@ export const NotificationsPage = () => {
           <Grid item xs={10}>
             <NotificationsTable
               isLoading={loading}
-              notifications={value}
+              notifications={value?.notifications}
               onUpdate={onUpdate}
               setContainsText={setContainsText}
+              onPageChange={setPageNumber}
+              onRowsPerPageChange={setPageSize}
+              page={pageNumber}
+              pageSize={pageSize}
+              totalCount={value?.totalCount}
             />
           </Grid>
         </Grid>

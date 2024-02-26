@@ -41,8 +41,16 @@ export type UpdateNotificationsOptions = {
 };
 
 /** @public */
+export type GetNotificationsResponse = {
+  notifications: Notification[];
+  totalCount: number;
+};
+
+/** @public */
 export interface NotificationsApi {
-  getNotifications(options?: GetNotificationsOptions): Promise<Notification[]>;
+  getNotifications(
+    options?: GetNotificationsOptions,
+  ): Promise<GetNotificationsResponse>;
 
   getNotification(id: string): Promise<Notification>;
 

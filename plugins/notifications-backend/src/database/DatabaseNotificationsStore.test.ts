@@ -215,6 +215,87 @@ describe.each(databases.eachSupportedId())(
         expect(notifications.length).toBe(1);
         expect(notifications.at(0)?.id).toEqual(id2);
       });
+
+      it('should apply pagination', async () => {
+        const now = Date.now();
+        const id1 = uuid();
+        const id2 = uuid();
+        const id3 = uuid();
+        const id4 = uuid();
+        const id5 = uuid();
+        const id6 = uuid();
+        const id7 = uuid();
+        await insertNotification({
+          id: id1,
+          ...testNotification,
+          created: new Date(Date.now() - 1 * 60 * 60 * 1000 /* an hour ago */),
+        });
+        await insertNotification({
+          id: id2,
+          ...testNotification,
+          created: new Date(now),
+        });
+        await insertNotification({
+          id: id3,
+          ...testNotification,
+          created: new Date(now + 1),
+        });
+        await insertNotification({
+          id: id4,
+          ...testNotification,
+          created: new Date(now + 2),
+        });
+        await insertNotification({
+          id: id5,
+          ...testNotification,
+          created: new Date(now + 3),
+        });
+        await insertNotification({
+          id: id6,
+          ...testNotification,
+          created: new Date(now + 4),
+        });
+        await insertNotification({
+          id: id7,
+          ...testNotification,
+          created: new Date(now + 5),
+        });
+
+        await insertNotification({ id: uuid(), ...otherUserNotification });
+
+        const allUserNotifications = await storage.getNotifications({
+          user,
+        });
+        expect(allUserNotifications.length).toBe(7);
+
+        const notifications = await storage.getNotifications({
+          user,
+          createdAfter: new Date(Date.now() - 5 * 60 * 1000 /* 5mins */),
+        });
+        expect(notifications.length).toBe(6);
+        expect(notifications.at(0)?.id).toEqual(id7);
+        expect(notifications.at(1)?.id).toEqual(id6);
+
+        const allUserNotificationsPageOne = await storage.getNotifications({
+          user,
+          limit: 3,
+          offset: 0,
+        });
+        expect(allUserNotificationsPageOne.length).toBe(3);
+        expect(allUserNotificationsPageOne.at(0)?.id).toEqual(id7);
+        expect(allUserNotificationsPageOne.at(1)?.id).toEqual(id6);
+        expect(allUserNotificationsPageOne.at(2)?.id).toEqual(id5);
+
+        const allUserNotificationsPageTwo = await storage.getNotifications({
+          user,
+          limit: 3,
+          offset: 3,
+        });
+        expect(allUserNotificationsPageTwo.length).toBe(3);
+        expect(allUserNotificationsPageTwo.at(0)?.id).toEqual(id4);
+        expect(allUserNotificationsPageTwo.at(1)?.id).toEqual(id3);
+        expect(allUserNotificationsPageTwo.at(2)?.id).toEqual(id2);
+      });
     });
 
     describe('getStatus', () => {

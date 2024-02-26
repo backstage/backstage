@@ -165,6 +165,17 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return this.mapToNotifications(notifications);
   }
 
+  async getNotificationsCount(options: NotificationGetOptions) {
+    const countOptions: NotificationGetOptions = { ...options };
+    countOptions.limit = undefined;
+    countOptions.offset = undefined;
+    countOptions.sort = null;
+    const notificationQuery = this.getNotificationsBaseQuery(countOptions);
+    const response = await notificationQuery.count('* as CNT');
+    const totalCount = Number.parseInt(response[0].CNT.toString(), 10);
+    return totalCount;
+  }
+
   async saveNotification(notification: Notification) {
     await this.db
       .insert(this.mapNotificationToDbRow(notification))
