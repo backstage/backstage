@@ -4225,12 +4225,11 @@ __metadata:
     "@backstage/plugin-adr-common": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@types/express": ^4.17.6
-    "@types/marked": ^5.0.0
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
     luxon: ^3.0.0
-    marked: ^4.0.14
+    marked: ^12.0.0
     node-fetch: ^2.6.5
     supertest: ^6.1.3
     winston: ^3.2.1
@@ -18882,13 +18881,6 @@ __metadata:
   version: 3.3.8
   resolution: "@types/luxon@npm:3.3.8"
   checksum: 026711b4aefc01c6e233e359c693b6d4c0873acc3f52a08661ea3751b2cf3e34d1ce1d5b0b99b0e40a059a2a3755acc20498d37db5f9a5a4f0f330cdf72db3db
-  languageName: node
-  linkType: hard
-
-"@types/marked@npm:^5.0.0":
-  version: 5.0.2
-  resolution: "@types/marked@npm:5.0.2"
-  checksum: 2875618970bd5aaba472e313c799bbe241fe9e31d1e79782841a0cc04e08ab2a98653166f1fb99bf8bcf140d3878c3ab960a12aa8f0fb949d8277e8a01d3411b
   languageName: node
   linkType: hard
 
@@ -34186,6 +34178,15 @@ __metadata:
   peerDependencies:
     react: ">= 0.14.0"
   checksum: 2888cb2389cb810ab35454a59d0623474a60a78e28f281ae0081f87053f6c59b033232a2cd269cc383a5edcaa1eab8ca4b3cf639fe4e1aa3fb418648d14bcc7d
+  languageName: node
+  linkType: hard
+
+"marked@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "marked@npm:12.0.0"
+  bin:
+    marked: bin/marked.js
+  checksum: 973e803debf7eca946213cd583792c2968ecab1b6698653604272d5406f9f07375a4865a7a28633a7200c8a4682761f8d866198fb36c10c686e3bda3a9b36fc9
   languageName: node
   linkType: hard
 
