@@ -15,9 +15,9 @@
  */
 
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { authModuleAtlassianProvider } from './module';
-import request from 'supertest';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
+import request from 'supertest';
+import { authModuleAtlassianProvider } from './module';
 
 describe('authModuleAtlassianProvider', () => {
   it('should start', async () => {
@@ -60,8 +60,8 @@ describe('authModuleAtlassianProvider', () => {
     expect(nonceCookie).toBeDefined();
 
     const startUrl = new URL(res.get('location'));
-    expect(startUrl.origin).toBe('https://atlassian.com');
-    expect(startUrl.pathname).toBe('/oauth/authorize');
+    expect(startUrl.origin).toBe('https://api.atlassian.com');
+    expect(startUrl.pathname).toBe('/authorize');
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
       response_type: 'code',
       client_id: 'my-client-id',
