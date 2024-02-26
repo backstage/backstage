@@ -110,6 +110,8 @@ export type BackstageServicePrincipal = {
 export type BackstageCredentials<TPrincipal = unknown> = {
   $$type: '@backstage/BackstageCredentials';
 
+  expiresAt?: Date;
+
   principal: TPrincipal;
 };
 
@@ -131,6 +133,8 @@ export interface AuthService {
     credentials: BackstageCredentials,
     type: TType,
   ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
+
+  getNoneCredentials(): Promise<BackstageCredentials<BackstageUserPrincipal>>;
 
   getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
@@ -228,9 +232,9 @@ export default createBackendPlugin({
 
         // Endpoint that sets the cookie for the user
         router.get('/cookie', async (req, res) => {
-          await httpAuth.issueUserCookie(req);
+          const { expiresAt } = await httpAuth.issueUserCookie(req);
 
-          res.json({ ok: true });
+          res.json({ expiresAt: expiresAt.toISOString() });
         });
 
         // Endpoint protected by cookie auth
@@ -303,7 +307,7 @@ export interface HttpAuthService {
       // If credentials are not provided, they will be read from the request
       credentials?: BackstageCredentials<BackstageUserPrincipal>;
     },
-  ): Promise<void>;
+  ): Promise<{ expiresAt: Date }>;
 }
 ```
 
