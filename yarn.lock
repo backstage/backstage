@@ -3585,9 +3585,9 @@ __metadata:
     "@rollup/plugin-json": ^6.0.0
     "@rollup/plugin-node-resolve": ^15.0.0
     "@rollup/plugin-yaml": ^4.0.0
-    "@spotify/eslint-config-base": ^14.0.0
-    "@spotify/eslint-config-react": ^14.0.0
-    "@spotify/eslint-config-typescript": ^14.0.0
+    "@spotify/eslint-config-base": ^15.0.0
+    "@spotify/eslint-config-react": ^15.0.0
+    "@spotify/eslint-config-typescript": ^15.0.0
     "@sucrase/webpack-loader": ^2.0.0
     "@svgr/core": 6.5.x
     "@svgr/plugin-jsx": 6.5.x
@@ -16518,54 +16518,54 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@spotify/eslint-config-base@npm:^14.0.0":
-  version: 14.0.1
-  resolution: "@spotify/eslint-config-base@npm:14.0.1"
+"@spotify/eslint-config-base@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "@spotify/eslint-config-base@npm:15.0.0"
   peerDependencies:
     eslint: ">=7.x"
-  checksum: 8893e7c903c07ede7f3a03b5b6af03b65d2f334615d30fecb527ce4d888970168b73dbaef43275f9ece9e7b0193e13e6807e506507b32bdde9b64000cc52c8b1
+  checksum: 265a4d807b5236030466a3a8373f41e51a9b4939b450d47ed2cb4704485004a5d64b2f9e024e865b4f5eea61ab6bbe439442e4ca2ac06e52a3b5c7e94c2d6b27
   languageName: node
   linkType: hard
 
-"@spotify/eslint-config-react@npm:^14.0.0":
-  version: 14.0.1
-  resolution: "@spotify/eslint-config-react@npm:14.0.1"
+"@spotify/eslint-config-react@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "@spotify/eslint-config-react@npm:15.0.0"
   peerDependencies:
     eslint: ">=8.x"
     eslint-plugin-jsx-a11y: 6.x
     eslint-plugin-react: ">=7.7.0 <8"
     eslint-plugin-react-hooks: ^4.0.0
-  checksum: d8545c3c3967bb8b923bd55dad2c50b5e2eb6d716cd9dcbbfa32417c3a6e786537ee3263ebedae99bd45abe3378acb0879c9644a729820ea61dd5d9e45e55465
+  checksum: 42e16f63d51b2230d2e4eba6524d2d9278d480827c5d2ab32f96253bafd4d8ceb87c37d8429601e36642ff30c86b92011ad4efd26c83db4037478ad118497cce
   languageName: node
   linkType: hard
 
-"@spotify/eslint-config-typescript@npm:^14.0.0":
-  version: 14.0.1
-  resolution: "@spotify/eslint-config-typescript@npm:14.0.1"
+"@spotify/eslint-config-typescript@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "@spotify/eslint-config-typescript@npm:15.0.0"
   peerDependencies:
     "@typescript-eslint/eslint-plugin": ">=5"
     "@typescript-eslint/parser": ">=5"
     eslint: ">=8.x"
-  checksum: faf3ab89880e626d388e9ae212dd3486d6f91ca4d079020066c22d44c3df215dc61439c4e65ef3fc4eb5c3ea9893d5b504a2d251694d7a333d8803991349535b
+  checksum: d30d07e1e2e0e18cc583a72ca74b5fdb80ee26e6529de26e1e85d1416ca5396c942efaccc2613287365c7ac3659378b0ba0cdda3df25c7e5cdbd7317f1cbe885
   languageName: node
   linkType: hard
 
-"@spotify/eslint-plugin@npm:^14.1.3":
-  version: 14.1.3
-  resolution: "@spotify/eslint-plugin@npm:14.1.3"
+"@spotify/eslint-plugin@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "@spotify/eslint-plugin@npm:15.0.0"
   peerDependencies:
     "@typescript-eslint/parser": ^5.13.0
-    eslint: ^8.10.0
-  checksum: 788f5d9aab6f7b6c0ad7e414ebd5f4504f058f26a769dc4bcd0088dd8e6d9e5334965c8f6fffcf5b7ed52dbe25de0dc7bba403bcffa79b6d94c7ba3094757b5f
+    eslint: ">=8.x"
+  checksum: 899166abb108f1f53867729a35fb711d89dc70d5fc0a725a80386adb85805149008f7226262619044680264c64c0a8a0e9703059f64d0b390650bcae86727ed6
   languageName: node
   linkType: hard
 
-"@spotify/prettier-config@npm:^14.0.0":
-  version: 14.0.1
-  resolution: "@spotify/prettier-config@npm:14.0.1"
+"@spotify/prettier-config@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "@spotify/prettier-config@npm:15.0.0"
   peerDependencies:
     prettier: 2.x
-  checksum: 07fb33ff3bb4678ab3bfe2f6f5da2cfb366de427c544e94178f5f8c75b3708282f7ea1a4344404e4ad1bbc5b38fccfde10795528cdfe7f61a8afed62076f8fe9
+  checksum: aa5ec5739427f9acdb9d62ae6c04f04a344898567239f7ee45c75c6205ebdffbc61747ea8de6e83baf0bc3785359967de4b7097a8723c4b4063ff57dc5cb6c44
   languageName: node
   linkType: hard
 
@@ -40973,8 +40973,8 @@ __metadata:
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
     "@playwright/test": ^1.32.3
-    "@spotify/eslint-plugin": ^14.1.3
-    "@spotify/prettier-config": ^14.0.0
+    "@spotify/eslint-plugin": ^15.0.0
+    "@spotify/prettier-config": ^15.0.0
     "@techdocs/cli": "workspace:*"
     "@types/node": ^18.17.8
     "@types/webpack": ^5.28.0

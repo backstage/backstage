@@ -2532,12 +2532,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@spotify/prettier-config@npm:^14.0.0":
-  version: 14.1.3
-  resolution: "@spotify/prettier-config@npm:14.1.3"
+"@spotify/prettier-config@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "@spotify/prettier-config@npm:15.0.0"
   peerDependencies:
     prettier: 2.x
-  checksum: 0c64ec0de9be5ae24a9b2a8f5c3af6c02306a47f54fffbd014852b00245fc939f3131eeeac8e906dfbb6aa86a5c0213b7f35623badad072979068f8cd69c316f
+  checksum: aa5ec5739427f9acdb9d62ae6c04f04a344898567239f7ee45c75c6205ebdffbc61747ea8de6e83baf0bc3785359967de4b7097a8723c4b4063ff57dc5cb6c44
   languageName: node
   linkType: hard
 
@@ -3855,7 +3855,7 @@ __metadata:
     "@docusaurus/module-type-aliases": ^3.1.1
     "@docusaurus/plugin-client-redirects": ^3.1.1
     "@docusaurus/preset-classic": ^3.1.1
-    "@spotify/prettier-config": ^14.0.0
+    "@spotify/prettier-config": ^15.0.0
     "@swc/core": ^1.3.46
     "@tsconfig/docusaurus": ^2.0.0
     "@types/luxon": ^3.0.0
