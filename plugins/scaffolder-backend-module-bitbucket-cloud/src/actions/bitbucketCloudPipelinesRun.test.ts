@@ -20,7 +20,7 @@ import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('bitbucket:pipelines:run', () => {
   const config = new ConfigReader({

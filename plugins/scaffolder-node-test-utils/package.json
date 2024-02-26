@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/scaffolder-test-utils",
+  "name": "@backstage/plugin-scaffolder-node-test-utils",
   "version": "0.0.1",
   "main": "src/index.ts",
   "types": "src/index.ts",

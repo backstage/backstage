@@ -16,7 +16,7 @@
 
 import { createWaitAction } from './wait';
 import { Writable } from 'stream';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('debug:wait', () => {
   const action = createWaitAction();

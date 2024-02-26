@@ -53,7 +53,7 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/scaffolder-test-utils": "workspace:^",
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^11.0.0"
   },

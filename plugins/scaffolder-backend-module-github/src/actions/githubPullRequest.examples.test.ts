@@ -21,7 +21,7 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createPublishGithubPullRequestAction } from './githubPullRequest';
 import yaml from 'yaml';
 import { examples } from './githubPullRequest.examples';

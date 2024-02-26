@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage-scaffolder-test-utils
-  title: '@backstage/scaffolder-test-utils'
+  name: backstage-plugin-scaffolder-node-test-utils
+  title: '@backstage/plugin-scaffolder-node-test-utils'
 spec:
   lifecycle: experimental
   type: backstage-node-library

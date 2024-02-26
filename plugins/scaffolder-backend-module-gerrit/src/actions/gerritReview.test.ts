@@ -25,7 +25,7 @@ import { createPublishGerritReviewAction } from './gerritReview';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { commitAndPushRepo } from '@backstage/plugin-scaffolder-node';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('publish:gerrit:review', () => {
   const config = new ConfigReader({

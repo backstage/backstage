@@ -12,7 +12,7 @@
 '@backstage/plugin-scaffolder-backend-module-azure': patch
 '@backstage/plugin-scaffolder-backend-module-gitea': patch
 '@backstage/plugin-scaffolder-backend-module-rails': patch
-'@backstage/scaffolder-test-utils': patch
+'@backstage/plugin-scaffolder-node-test-utils': patch
 '@backstage/plugin-scaffolder-backend': patch
 ---
 

@@ -18,7 +18,7 @@ import { join as joinPath, sep as pathSep } from 'path';
 import fs from 'fs-extra';
 import { resolvePackagePath, UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createFetchTemplateAction } from './template';
 import {
   ActionContext,

@@ -15,7 +15,7 @@
  */
 
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';

@@ -21,7 +21,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createGithubAutolinksAction } from './githubAutolinks';
 

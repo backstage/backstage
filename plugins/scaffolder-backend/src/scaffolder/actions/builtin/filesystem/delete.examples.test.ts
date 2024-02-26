@@ -15,7 +15,7 @@
  */
 
 import { createFilesystemDeleteAction } from './delete';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { resolve as resolvePath } from 'path';
 import fs from 'fs-extra';
 import yaml from 'yaml';

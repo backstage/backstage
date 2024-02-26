@@ -30,7 +30,7 @@ import {
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 type FetchTemplateInput = ReturnType<
   typeof createFetchTemplateAction

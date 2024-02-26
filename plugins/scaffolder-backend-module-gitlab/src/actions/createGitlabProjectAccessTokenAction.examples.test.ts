@@ -18,7 +18,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import yaml from 'yaml';
 import { createGitlabProjectAccessTokenAction } from './createGitlabProjectAccessTokenAction'; // Adjust the import based on your project structure
 import { examples } from './createGitlabProjectAccessTokenAction.examples';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 import { DateTime } from 'luxon';
 

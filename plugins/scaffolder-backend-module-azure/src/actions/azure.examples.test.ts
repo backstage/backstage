@@ -21,7 +21,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { WebApi } from 'azure-devops-node-api';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { examples } from './azure.examples';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 jest.mock('azure-devops-node-api', () => ({
   WebApi: jest.fn(),

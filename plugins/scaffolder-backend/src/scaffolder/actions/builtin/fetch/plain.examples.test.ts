@@ -22,7 +22,7 @@ import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createFetchPlainAction } from './plain';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { examples } from './plain.examples';
 
 jest.mock('@backstage/plugin-scaffolder-node', () => ({

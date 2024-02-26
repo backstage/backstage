@@ -22,7 +22,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createGithubActionsDispatchAction } from './githubActionsDispatch';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import yaml from 'yaml';
 import { examples } from './githubActionsDispatch.examples';
 

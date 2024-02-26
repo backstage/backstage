@@ -15,7 +15,7 @@ What is inevitably going to happen during the time.
 Example how to use it:
 
 ```typescript
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 const mockContext = createMockActionContext({
   input: { repoUrl: 'dev.azure.com?repo=repo&owner=owner&organization=org' },

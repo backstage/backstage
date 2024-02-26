@@ -19,7 +19,7 @@ import { createPublishGiteaAction } from './gitea';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { rest } from 'msw';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { setupServer } from 'msw/node';
 
 jest.mock('@backstage/plugin-scaffolder-node', () => {

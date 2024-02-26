@@ -15,7 +15,7 @@
  */
 
 import { createGitlabProjectDeployTokenAction } from './createGitlabProjectDeployTokenAction';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 

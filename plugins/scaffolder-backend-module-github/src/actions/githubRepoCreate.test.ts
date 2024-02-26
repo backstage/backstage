@@ -15,7 +15,7 @@
  */
 
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 jest.mock('./gitHelpers', () => {
   return {

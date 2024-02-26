@@ -26,7 +26,7 @@ import {
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { createMockActionContext } from '@backstage/scaffolder-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('confluence:transform:markdown', () => {
   const baseUrl = `https://nodomain.confluence.com`;

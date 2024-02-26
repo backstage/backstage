@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/scaffolder-test-utils": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
   },
   "files": [
     "dist"
