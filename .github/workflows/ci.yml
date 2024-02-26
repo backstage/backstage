@@ -28,6 +28,8 @@ jobs:
 
     name: Install ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
+      - uses: docker-practice/actions-setup-docker@v1
+        timeout-minutes: 12
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
         with:
@@ -65,13 +67,14 @@ jobs:
 
     name: Verify ${{ matrix.node-version }} on ${{ matrix.os }}
     steps:
+      - uses: docker-practice/actions-setup-docker@v1
+        timeout-minutes: 12
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
         with:
           egress-policy: audit
 
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
@@ -200,6 +203,9 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
+      - uses: docker-practice/actions-setup-docker@v1
+        timeout-minutes: 12
+        
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: fetch branch master
         run: git fetch origin master
