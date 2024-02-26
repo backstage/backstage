@@ -78,6 +78,8 @@ describe('createGitLabMergeRequest', () => {
   const workspacePath = mockDir.resolve('workspace');
 
   beforeEach(() => {
+    jest.clearAllMocks();
+
     mockDir.clear();
 
     const config = new ConfigReader({

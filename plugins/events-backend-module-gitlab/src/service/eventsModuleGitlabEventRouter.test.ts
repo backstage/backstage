@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
+import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
+import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { eventsModuleGitlabEventRouter } from './eventsModuleGitlabEventRouter';
-import { GitlabEventRouter } from '../router/GitlabEventRouter';
 
 describe('eventsModuleGitlabEventRouter', () => {
   it('should be correctly wired and set up', async () => {
-    let addedPublisher: GitlabEventRouter | undefined;
-    let addedSubscriber: GitlabEventRouter | undefined;
-    const extensionPoint = {
-      addPublishers: (publisher: any) => {
-        addedPublisher = publisher;
+    const events = new TestEventsService();
+    const eventsServiceFactory = createServiceFactory({
+      service: eventsServiceRef,
+      deps: {},
+      async factory({}) {
+        return events;
       },
-      addSubscribers: (subscriber: any) => {
-        addedSubscriber = subscriber;
-      },
-    };
-
-    await startTestBackend({
-      extensionPoints: [[eventsExtensionPoint, extensionPoint]],
-      features: [eventsModuleGitlabEventRouter()],
     });
 
-    expect(addedPublisher).not.toBeUndefined();
-    expect(addedPublisher).toBeInstanceOf(GitlabEventRouter);
-    expect(addedSubscriber).not.toBeUndefined();
-    expect(addedSubscriber).toBeInstanceOf(GitlabEventRouter);
+    await startTestBackend({
+      features: [eventsServiceFactory(), eventsModuleGitlabEventRouter()],
+    });
+
+    expect(events.subscribed).toHaveLength(1);
+    expect(events.subscribed[0].id).toEqual('GitlabEventRouter');
   });
 });

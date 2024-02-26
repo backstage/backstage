@@ -425,6 +425,79 @@ backend:
 
 The exact impact that this has is that it disables the check in the `HttpRouterService` implementation, effectively applying the `unauthenticated` access level to all routes. Furthermore, it will also change `AuthService` so that the `getPluginRequestToken()` method will now issue an empty token for a `'none'` principal, rather than throwing.
 
+### Token Details
+
+Note that this section is NOT normative. It illustrates the token shapes and major token flows that are involved in this proposal, but intentionally leaves out some low level details and is subject to change.
+
+#### Backstage Identity Tokens
+
+These are the regular tokens, commonly in short referred to just as "Backstage Tokens", that the auth backend generates for the user during sign-in. These are sent along with calls to backend plugins to identify the user. This BEP does not aim to change the shape of these tokens; this section is only here for informative purposes to convey what pieces of information that are at play.
+
+This is a JWT token.
+
+```yaml
+# Header
+{
+  "alg": "ES256",
+  "kid": "4f5a0543-894a-4176-b0b7-699a7026b72f"
+}
+# Payload
+{
+  "iss": "http://localhost:7007/api/auth",
+  "sub": "user:default/example-user",
+  "ent": ["user:default/example-user", "group:default/my-team"],
+  "aud": "backstage",
+  "iat": 1708333140,
+  "exp": 1708336740
+}
+```
+
+The key ID is some random UUID. The `iss` (issuer) is the external base URL of your auth backend. Note that it uses the `ES256` asymmetric signature algorithm, and the auth backend exposes a JWKS that contains the public parts of the signing keys. The `sub` is an entity ref denoting who the signed in user is, and the `ent` is an array of entity refs that they claim ownership through. The `aud` (audience) is hardcoded to the string `"backstage"` always.
+
+#### Legacy Service Tokens
+
+These are the tokens that have been used for backend-to-backend communications before this BEP, and they will likely have changes as part of this work.
+
+This is a JWT token.
+
+```yaml
+# Header
+{
+  "alg": "HS256"
+}
+# Payload
+{
+  "sub": "backstage-server",
+  "exp": 1708337056
+}
+```
+
+Note that unlike the identity token in the previous section, it uses the `HS256` symmetric signature algorithm. The key used is the first of the `backend.auth.keys` entries in your `app-config`, which is a shared secret among all backend plugins, enabling them to know that the caller is a legitimate one. But the token does not contain any information about who the caller is (it's just a generic `"backstage-server"`), nor who the receiver (audience) is.
+
+#### New Cookie Token Flow
+
+Some plugins serve static content that the browser engine requests directly, e.g. the TechDocs plugin. Those calls cannot easily have a bearer token attached to them. For these use cases a cookie based flow will be used instead.
+
+![Cookie token sequence diagram](./token-sequence-cookie.drawio.svg)
+
+The frontend part of the plugin ensures that a cookie endpoint on the backend part of the plugin is called before attempting to render static content. This endpoint validates the user's identity token and sets a corresponding cookie on the response. Subsequent requests for getting static content will automatically have this cookie attached to them by the browser.
+
+We intentionally do not specify here how the cookie token is acquired. It might be issued by the plugin itself or by the auth backend depending on how the architecture evolves, but this does not have any effect on plugin code.
+
+The cookie token contains the user's identifying information just like the identity cookie but is severely limited. It has the plugin itself specified as its audience. Thus, this token is not usable in any bearer token context, nor as a cookie toward any other plugin.
+
+#### New Service OBO Token Flow
+
+When a backend service needs to in turn make a request to another upstream service to fulfil the original request, it uses an On-Behalf-Of (OBO) token for the purpose.
+
+![OBO token sequence diagram](./token-sequence-obo.drawio.svg)
+
+The initial request in this picture is a frontend plugin, but the same concept applies if it is initiated by a service. The scaffolder backend in this example acquires an OBO token to be able to talk to the catalog plugin.
+
+We intentionally do not specify here how the OBO token is acquired. It might be issued by the plugin itself or by the auth backend depending on how the architecture evolves, but this does not have any effect on plugin code.
+
+The OBO token specifies the target service as its audience and itself as the subject, but additionally also contains the original caller's identifying information. Thus, the target service can identify who the nearest caller is but also apply permissions that are relevant to the original caller. The token is thus scoped to not be usable toward other backend plugins.
+
 ## Release Plan
 
 The existing `IdentityService` and `TokenManagerService` will be deprecated and instead implemented in terms of the new `AuthService`.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Box, TextFieldProps, Typography } from '@material-ui/core';
+import { Box, TextFieldProps, Typography, makeStyles } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -53,6 +53,17 @@ export type EntityAutocompletePickerProps<
 };
 
 /** @public */
+export type CatalogReactEntityAutocompletePickerClassKey = 'root' | 'label';
+
+const useStyles = makeStyles(
+  {
+    root: {},
+    label: {},
+  },
+  { name: 'CatalogReactEntityAutocompletePicker' },
+);
+
+/** @public */
 export function EntityAutocompletePicker<
   T extends DefaultEntityFilters = DefaultEntityFilters,
   Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
@@ -66,6 +77,8 @@ export function EntityAutocompletePicker<
     InputProps,
     initialSelectedOptions = [],
   } = props;
+
+  const classes = useStyles();
 
   const {
     updateFilters,
@@ -127,8 +140,8 @@ export function EntityAutocompletePicker<
   if (availableOptions.length <= 1) return null;
 
   return (
-    <Box pb={1} pt={1}>
-      <Typography variant="button" component="label">
+    <Box className={classes.root} pb={1} pt={1}>
+      <Typography className={classes.label} variant="button" component="label">
         {label}
         <Autocomplete<string, true>
           multiple

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
@@ -23,7 +22,7 @@ import {
   catalogProcessingExtensionPoint,
   catalogServiceRef,
 } from '@backstage/plugin-catalog-node/alpha';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { BitbucketCloudEntityProvider } from '../providers/BitbucketCloudEntityProvider';
 
 /**
@@ -38,9 +37,7 @@ export const catalogModuleBitbucketCloudEntityProvider = createBackendModule({
         catalog: catalogProcessingExtensionPoint,
         catalogApi: catalogServiceRef,
         config: coreServices.rootConfig,
-        // TODO(pjungermann): How to make this optional for those which only want the provider without event support?
-        //  Do we even want to support this?
-        events: eventsExtensionPoint,
+        events: eventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         tokenManager: coreServices.tokenManager,
@@ -54,16 +51,15 @@ export const catalogModuleBitbucketCloudEntityProvider = createBackendModule({
         scheduler,
         tokenManager,
       }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         const providers = BitbucketCloudEntityProvider.fromConfig(config, {
           catalogApi,
-          logger: winstonLogger,
+          events,
+          logger,
           scheduler,
           tokenManager,
         });
 
         catalog.addEntityProvider(providers);
-        events.addSubscribers(providers);
       },
     });
   },

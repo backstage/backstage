@@ -7,18 +7,15 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { EventParams } from '@backstage/plugin-events-node';
 import { Events } from '@backstage/plugin-bitbucket-cloud-common';
-import { EventSubscriber } from '@backstage/plugin-events-node';
-import { Logger } from 'winston';
+import { EventsService } from '@backstage/plugin-events-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public
-export class BitbucketCloudEntityProvider
-  implements EntityProvider, EventSubscriber
-{
+export class BitbucketCloudEntityProvider implements EntityProvider {
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -26,7 +23,8 @@ export class BitbucketCloudEntityProvider
     config: Config,
     options: {
       catalogApi?: CatalogApi;
-      logger: Logger;
+      events?: EventsService;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
       tokenManager?: TokenManager;
@@ -37,12 +35,8 @@ export class BitbucketCloudEntityProvider
   // (undocumented)
   getTaskId(): string;
   // (undocumented)
-  onEvent(params: EventParams): Promise<void>;
-  // (undocumented)
   onRepoPush(event: Events.RepoPushEvent): Promise<void>;
   // (undocumented)
-  refresh(logger: Logger): Promise<void>;
-  // (undocumented)
-  supportsEventTopics(): string[];
+  refresh(logger: LoggerService): Promise<void>;
 }
 ```

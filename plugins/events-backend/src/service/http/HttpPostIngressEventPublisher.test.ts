@@ -16,7 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
+import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import express from 'express';
 import Router from 'express-promise-router';
 import request from 'supertest';
@@ -36,18 +36,17 @@ describe('HttpPostIngressEventPublisher', () => {
 
     const router = Router();
     const app = express().use(router);
+    const events = new TestEventsService();
 
     const publisher = HttpPostIngressEventPublisher.fromConfig({
       config,
+      events,
       ingresses: {
         testB: {},
       },
       logger,
     });
     publisher.bind(router);
-
-    const eventBroker = new TestEventBroker();
-    await publisher.setEventBroker(eventBroker);
 
     const notFoundResponse = await request(app)
       .post('/http/unknown')
@@ -69,18 +68,18 @@ describe('HttpPostIngressEventPublisher', () => {
       .send({ testB: 'data' });
     expect(response2.status).toBe(202);
 
-    expect(eventBroker.published.length).toEqual(2);
-    expect(eventBroker.published[0].topic).toEqual('testA');
-    expect(eventBroker.published[0].eventPayload).toEqual({ testA: 'data' });
-    expect(eventBroker.published[0].metadata).toEqual(
+    expect(events.published).toHaveLength(2);
+    expect(events.published[0].topic).toEqual('testA');
+    expect(events.published[0].eventPayload).toEqual({ testA: 'data' });
+    expect(events.published[0].metadata).toEqual(
       expect.objectContaining({
         'content-type': 'application/json',
         'x-custom-header': 'test-value',
       }),
     );
-    expect(eventBroker.published[1].topic).toEqual('testB');
-    expect(eventBroker.published[1].eventPayload).toEqual({ testB: 'data' });
-    expect(eventBroker.published[1].metadata).toEqual(
+    expect(events.published[1].topic).toEqual('testB');
+    expect(events.published[1].eventPayload).toEqual({ testB: 'data' });
+    expect(events.published[1].metadata).toEqual(
       expect.objectContaining({
         'content-type': 'application/json',
         'x-custom-header': 'test-value',
@@ -99,9 +98,11 @@ describe('HttpPostIngressEventPublisher', () => {
 
     const router = Router();
     const app = express().use(router);
+    const events = new TestEventsService();
 
     const publisher = HttpPostIngressEventPublisher.fromConfig({
       config,
+      events,
       ingresses: {
         testB: {
           validator: async (req, context) => {
@@ -146,9 +147,6 @@ describe('HttpPostIngressEventPublisher', () => {
     });
     publisher.bind(router);
 
-    const eventBroker = new TestEventBroker();
-    await publisher.setEventBroker(eventBroker);
-
     const response1 = await request(app)
       .post('/http/testA')
       .timeout(1000)
@@ -191,12 +189,12 @@ describe('HttpPostIngressEventPublisher', () => {
     expect(response6.status).toBe(403);
     expect(response6.body).toEqual({});
 
-    expect(eventBroker.published.length).toEqual(2);
-    expect(eventBroker.published[0].topic).toEqual('testA');
-    expect(eventBroker.published[0].eventPayload).toEqual({ test: 'data' });
-    expect(eventBroker.published[1].topic).toEqual('testB');
-    expect(eventBroker.published[1].eventPayload).toEqual({ test: 'data' });
-    expect(eventBroker.published[1].metadata).toEqual(
+    expect(events.published).toHaveLength(2);
+    expect(events.published[0].topic).toEqual('testA');
+    expect(events.published[0].eventPayload).toEqual({ test: 'data' });
+    expect(events.published[1].topic).toEqual('testB');
+    expect(events.published[1].eventPayload).toEqual({ test: 'data' });
+    expect(events.published[1].metadata).toEqual(
       expect.objectContaining({
         'x-test-signature': 'testB-signature',
       }),
@@ -205,10 +203,12 @@ describe('HttpPostIngressEventPublisher', () => {
 
   it('without configuration', async () => {
     const config = new ConfigReader({});
+    const events = new TestEventsService();
 
     expect(() =>
       HttpPostIngressEventPublisher.fromConfig({
         config,
+        events,
         logger,
       }),
     ).not.toThrow();

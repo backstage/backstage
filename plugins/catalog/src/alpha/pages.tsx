@@ -65,22 +65,23 @@ export const catalogEntityPage = createPageExtension({
   loader: async ({ inputs }) => {
     const { EntityLayout } = await import('../components/EntityLayout');
     const Component = () => {
-      const { entity, ...rest } = useEntityFromUrl();
       return (
-        <AsyncEntityProvider entity={entity} {...rest}>
-          {entity ? (
-            <EntityLayout>
-              {inputs.contents
-                .filter(({ output: { filterFunction, filterExpression } }) =>
-                  buildFilterFn(filterFunction, filterExpression)(entity),
-                )
-                .map(({ output: { path, title, element } }) => (
-                  <EntityLayout.Route key={path} path={path} title={title}>
-                    {element}
-                  </EntityLayout.Route>
-                ))}
-            </EntityLayout>
-          ) : null}
+        <AsyncEntityProvider {...useEntityFromUrl()}>
+          <EntityLayout>
+            {inputs.contents.map(({ output }) => (
+              <EntityLayout.Route
+                key={output.path}
+                path={output.path}
+                title={output.title}
+                if={buildFilterFn(
+                  output.filterFunction,
+                  output.filterExpression,
+                )}
+              >
+                {output.element}
+              </EntityLayout.Route>
+            ))}
+          </EntityLayout>
         </AsyncEntityProvider>
       );
     };

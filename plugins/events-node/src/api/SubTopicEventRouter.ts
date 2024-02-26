@@ -16,6 +16,7 @@
 
 import { EventParams } from './EventParams';
 import { EventRouter } from './EventRouter';
+import { EventsService } from './EventsService';
 
 /**
  * Subscribes to the provided (generic) topic
@@ -27,8 +28,11 @@ import { EventRouter } from './EventRouter';
  * @public
  */
 export abstract class SubTopicEventRouter extends EventRouter {
-  protected constructor(private readonly topic: string) {
-    super();
+  protected constructor(options: { events: EventsService; topic: string }) {
+    super({
+      events: options.events,
+      topics: [options.topic],
+    });
   }
 
   protected abstract determineSubTopic(params: EventParams): string | undefined;
@@ -36,9 +40,5 @@ export abstract class SubTopicEventRouter extends EventRouter {
   protected determineDestinationTopic(params: EventParams): string | undefined {
     const subTopic = this.determineSubTopic(params);
     return subTopic ? `${params.topic}.${subTopic}` : undefined;
-  }
-
-  supportsEventTopics(): string[] {
-    return [this.topic];
   }
 }

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  EventsBackend,
-  HttpPostIngressEventPublisher,
-} from '@backstage/plugin-events-backend';
+import { HttpPostIngressEventPublisher } from '@backstage/plugin-events-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -28,14 +25,10 @@ export default async function createPlugin(
 
   const http = HttpPostIngressEventPublisher.fromConfig({
     config: env.config,
+    events: env.events,
     logger: env.logger,
   });
   http.bind(eventsRouter);
-
-  await new EventsBackend(env.logger)
-    .setEventBroker(env.eventBroker)
-    .addPublishers(http)
-    .start();
 
   return eventsRouter;
 }

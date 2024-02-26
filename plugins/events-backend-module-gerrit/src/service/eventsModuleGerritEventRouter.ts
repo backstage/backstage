@@ -15,7 +15,7 @@
  */
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GerritEventRouter } from '../router/GerritEventRouter';
 
 /**
@@ -31,13 +31,11 @@ export const eventsModuleGerritEventRouter = createBackendModule({
   register(env) {
     env.registerInit({
       deps: {
-        events: eventsExtensionPoint,
+        events: eventsServiceRef,
       },
       async init({ events }) {
-        const eventRouter = new GerritEventRouter();
-
-        events.addPublishers(eventRouter);
-        events.addSubscribers(eventRouter);
+        const eventRouter = new GerritEventRouter({ events });
+        await eventRouter.subscribe();
       },
     });
   },

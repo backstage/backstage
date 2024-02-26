@@ -6,9 +6,11 @@
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventPublisher } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
+import { EventsServiceSubscribeOptions } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class TestEventBroker implements EventBroker {
   // (undocumented)
   publish(params: EventParams): Promise<void>;
@@ -22,7 +24,7 @@ export class TestEventBroker implements EventBroker {
   readonly subscribed: EventSubscriber[];
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class TestEventPublisher implements EventPublisher {
   // (undocumented)
   get eventBroker(): EventBroker | undefined;
@@ -31,6 +33,20 @@ export class TestEventPublisher implements EventPublisher {
 }
 
 // @public (undocumented)
+export class TestEventsService implements EventsService {
+  // (undocumented)
+  publish(params: EventParams): Promise<void>;
+  // (undocumented)
+  get published(): EventParams[];
+  // (undocumented)
+  reset(): void;
+  // (undocumented)
+  subscribe(options: EventsServiceSubscribeOptions): Promise<void>;
+  // (undocumented)
+  get subscribed(): EventsServiceSubscribeOptions[];
+}
+
+// @public @deprecated (undocumented)
 export class TestEventSubscriber implements EventSubscriber {
   constructor(name: string, topics: string[]);
   // (undocumented)

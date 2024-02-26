@@ -451,7 +451,7 @@ You can generate an isomorphic plugin package by running:`yarn new --select plug
 or you can run `yarn new` and then select "plugin-common" from the list of options
 
 There's at this point no existing templates for generating isomorphic plugins
-using the `@backstage/cli`. Perhaps the simplest wat to get started right now is
+using the `@backstage/cli`. Perhaps the simplest way to get started right now is
 to copy the contents of one of the existing packages in the main repository,
 such as `plugins/scaffolder-common`, and rename the folder and file contents to
 the desired name. This example uses _foobar_ as the plugin name so the plugin

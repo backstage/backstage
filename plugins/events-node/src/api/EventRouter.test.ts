@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-import { EventBroker } from './EventBroker';
 import { EventParams } from './EventParams';
 import { EventRouter } from './EventRouter';
+import { EventsService } from './EventsService';
 
 class TestEventRouter extends EventRouter {
+  constructor(events: EventsService) {
+    super({ events, topics: ['my-topic'] });
+  }
+
+  protected getSubscriberId(): string {
+    return 'TestEventRouter';
+  }
+
   protected determineDestinationTopic(params: EventParams): string | undefined {
     const payload = params.eventPayload as { value?: number };
     if (payload.value === undefined) {
@@ -27,26 +35,21 @@ class TestEventRouter extends EventRouter {
 
     return payload.value % 2 === 0 ? 'even' : 'odd';
   }
-
-  supportsEventTopics(): string[] {
-    return ['my-topic'];
-  }
 }
 
 describe('EventRouter', () => {
-  const eventRouter = new TestEventRouter();
+  const published: EventParams[] = [];
+  const events: EventsService = {
+    publish: async event => {
+      published.push(event);
+    },
+    subscribe: async _subscription => {},
+  };
+  const eventRouter = new TestEventRouter(events);
   const topic = 'my-topic';
   const metadata = { random: 'metadata' };
 
   it('no destination topic', async () => {
-    const published: EventParams[] = [];
-    const eventBroker = {
-      publish: (params: EventParams) => {
-        published.push(params);
-      },
-    } as EventBroker;
-    await eventRouter.setEventBroker(eventBroker);
-
     await eventRouter.onEvent({
       topic,
       eventPayload: { discarded: 'event' },
@@ -57,14 +60,6 @@ describe('EventRouter', () => {
   });
 
   it('with destination topic', async () => {
-    const published: EventParams[] = [];
-    const eventBroker = {
-      publish: (params: EventParams) => {
-        published.push(params);
-      },
-    } as EventBroker;
-    await eventRouter.setEventBroker(eventBroker);
-
     const payloadEven = { value: 2 };
     const payloadOdd = { value: 3 };
     await eventRouter.onEvent({ topic, eventPayload: payloadEven, metadata });

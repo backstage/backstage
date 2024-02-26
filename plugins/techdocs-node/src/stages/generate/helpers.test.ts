@@ -81,6 +81,12 @@ const mkdocsYmlWithoutPlugins = fs.readFileSync(
 const mkdocsYmlWithAdditionalPlugins = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_additional_plugins.yml'),
 );
+const mkdocsYmlWithAdditionalPluginsWithConfig = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_additional_plugins_with_config.yml',
+  ),
+);
 const mkdocsYmlWithEnvTag = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_env_tag.yml'),
 );
@@ -321,6 +327,8 @@ describe('helpers', () => {
         'mkdocs_with_techdocs_plugin.yml': mkdocsYmlWithTechdocsPlugins,
         'mkdocs_without_plugins.yml': mkdocsYmlWithoutPlugins,
         'mkdocs_with_additional_plugins.yml': mkdocsYmlWithAdditionalPlugins,
+        'mkdocs_with_additional_plugins_with_config.yml':
+          mkdocsYmlWithAdditionalPluginsWithConfig,
       });
     });
     it('should not add additional plugins if techdocs exists already in mkdocs file', async () => {
@@ -385,6 +393,28 @@ describe('helpers', () => {
       expect(parsedYml.plugins).toHaveLength(4);
       expect(parsedYml.plugins).toContain('techdocs-core');
       expect(parsedYml.plugins).toContain('custom-plugin');
+    });
+    it('should not overwrite config when defaults are added', async () => {
+      await patchMkdocsYmlWithPlugins(
+        mockDir.resolve('mkdocs_with_additional_plugins_with_config.yml'),
+        mockLogger,
+        ['techdocs-core', 'custom-plugin'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_additional_plugins_with_config.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: object[];
+      };
+      expect(parsedYml.plugins).toHaveLength(4);
+      expect(parsedYml.plugins).toContain('techdocs-core');
+      // we want our original object with its properties to be preserved, and for the basic string form of the plugin
+      // to NOT be added as well.
+      expect(parsedYml.plugins).not.toContain('custom-plugin');
+      expect(parsedYml.plugins).toContainEqual({
+        'custom-plugin': { with: { configuration: 1 } },
+      });
     });
   });
 

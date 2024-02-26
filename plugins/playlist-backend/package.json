@@ -47,7 +47,7 @@
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
     "node-fetch": "^2.6.7",
-    "uuid": "^8.2.0",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0",
     "zod": "^3.22.4"

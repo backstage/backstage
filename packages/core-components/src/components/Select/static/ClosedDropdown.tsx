@@ -27,6 +27,7 @@ const useStyles = makeStyles(
         position: 'absolute',
         right: theme.spacing(0.5),
         pointerEvents: 'none',
+        color: '#616161',
       },
     }),
   { name: 'BackstageClosedDropdown' },
@@ -42,7 +43,7 @@ const ClosedDropdown = () => {
     >
       <path
         d="M7.5 8L6 9.5L12.0703 15.5703L18.1406 9.5L16.6406 8L12.0703 12.5703L7.5 8Z"
-        fill="#616161"
+        fill="currentColor"
       />
     </SvgIcon>
   );

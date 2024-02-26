@@ -15,29 +15,27 @@
  */
 
 import { DateTime } from 'luxon';
-import { marked } from 'marked';
+import { marked, Tokens, TokensList } from 'marked';
 import {
   MADR_DATE_FORMAT,
   parseMadrWithFrontmatter,
 } from '@backstage/plugin-adr-common';
 
-const getTitle = (tokens: marked.TokensList): string | undefined => {
+const getTitle = (tokens: TokensList): string | undefined => {
   return (
-    tokens.find(
-      t => t.type === 'heading' && t.depth === 1,
-    ) as marked.Tokens.Heading
+    tokens.find(t => t.type === 'heading' && t.depth === 1) as Tokens.Heading
   )?.text;
 };
 
-const getStatusForV2Format = (tokens: marked.TokensList): string | undefined =>
-  (tokens.find(t => t.type === 'list') as marked.Tokens.List)?.items
+const getStatusForV2Format = (tokens: TokensList): string | undefined =>
+  (tokens.find(t => t.type === 'list') as Tokens.List)?.items
     ?.find(t => /^status:/i.test(t.text))
     ?.text.replace(/^status:/i, '')
     .trim()
     .toLocaleLowerCase('en-US');
 
-const getDateForV2Format = (tokens: marked.TokensList): string | undefined => {
-  const listTokens = (tokens.find(t => t.type === 'list') as marked.Tokens.List)
+const getDateForV2Format = (tokens: TokensList): string | undefined => {
+  const listTokens = (tokens.find(t => t.type === 'list') as Tokens.List)
     ?.items;
   const adrDateTime = listTokens
     ?.find(t => /^date:/i.test(t.text))
@@ -47,13 +45,13 @@ const getDateForV2Format = (tokens: marked.TokensList): string | undefined => {
 };
 
 const getStatus = (
-  tokens: marked.TokensList,
+  tokens: TokensList,
   frontMatterStatus?: string,
 ): string | undefined => {
   return frontMatterStatus ?? getStatusForV2Format(tokens);
 };
 const getDate = (
-  tokens: marked.TokensList,
+  tokens: TokensList,
   dateFormat: string,
   frontMatterDate?: string,
 ): string | undefined => {
