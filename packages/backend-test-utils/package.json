@@ -58,7 +58,7 @@
     "pg": "^8.11.3",
     "testcontainers": "^8.1.2",
     "textextensions": "^5.16.0",
-    "uuid": "^8.0.0"
+    "uuid": "^9.0.0"
   },
   "peerDependencies": {
     "@types/jest": "*"

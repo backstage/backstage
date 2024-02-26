@@ -41,7 +41,7 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "express": "^4.17.1",
-    "uuid": "^8.0.0",
+    "uuid": "^9.0.0",
     "ws": "^8.14.2"
   }
 }
