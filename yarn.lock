@@ -3343,7 +3343,7 @@ __metadata:
     uuid: ^8.3.2
     winston: ^3.2.1
     winston-transport: ^4.5.0
-    yauzl: ^2.10.0
+    yauzl: ^3.0.0
     yn: ^4.0.0
   peerDependencies:
     pg-connection-string: ^2.3.0
@@ -28043,15 +28043,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fd-slicer@npm:~1.1.0":
-  version: 1.1.0
-  resolution: "fd-slicer@npm:1.1.0"
-  dependencies:
-    pend: ~1.2.0
-  checksum: c8585fd5713f4476eb8261150900d2cb7f6ff2d87f8feb306ccc8a1122efd152f1783bdb2b8dc891395744583436bfd8081d8e63ece0ec8687eeefea394d4ff2
-  languageName: node
-  linkType: hard
-
 "fecha@npm:^4.2.0":
   version: 4.2.0
   resolution: "fecha@npm:4.2.0"
@@ -46254,13 +46245,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yauzl@npm:^2.10.0":
-  version: 2.10.0
-  resolution: "yauzl@npm:2.10.0"
+"yauzl@npm:^3.0.0":
+  version: 3.1.0
+  resolution: "yauzl@npm:3.1.0"
   dependencies:
     buffer-crc32: ~0.2.3
-    fd-slicer: ~1.1.0
-  checksum: 7f21fe0bbad6e2cb130044a5d1d0d5a0e5bf3d8d4f8c4e6ee12163ce798fee3de7388d22a7a0907f563ac5f9d40f8699a223d3d5c1718da90b0156da6904022b
+    pend: ~1.2.0
+  checksum: 0464b49b0c10f0ab19136c917358b025c7f86bab0699a1f8afd681e09f3782688d3106b4e7eadfcc81e54779cca5c6de0843fabf5ceb07e1638ec2fd8371d0b7
   languageName: node
   linkType: hard
 
