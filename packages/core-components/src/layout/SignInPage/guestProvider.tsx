@@ -32,8 +32,8 @@ const getIdentity = async (identity: ProxiedSignInIdentity) => {
     return identityResponse;
   } catch (error) {
     if (
-      error instanceof ResponseError &&
-      error.cause.name === 'NotFoundError'
+      error.name === 'ResponseError' &&
+      (error as ResponseError).cause.name === 'NotFoundError'
     ) {
       return undefined;
     }
