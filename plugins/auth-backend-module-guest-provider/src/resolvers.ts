@@ -15,7 +15,7 @@
  */
 
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
 import { SignInResolver } from '@backstage/plugin-auth-node';
 import { NotImplementedError } from '@backstage/errors';
 
