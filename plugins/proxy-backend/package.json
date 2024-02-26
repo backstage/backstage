@@ -62,7 +62,7 @@
     "winston": "^3.2.1",
     "yaml": "^2.0.0",
     "yn": "^4.0.0",
-    "yup": "^0.32.9"
+    "yup": "^1.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

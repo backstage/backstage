@@ -58,7 +58,7 @@
     "react-use": "^17.2.4",
     "recharts": "^2.5.0",
     "regression": "^2.0.1",
-    "yup": "^0.32.9"
+    "yup": "^1.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
