@@ -112,6 +112,7 @@ export interface ClusterAttributes {
   dashboardParameters?: JsonObject;
   dashboardUrl?: string;
   name: string;
+  title?: string;
 }
 
 // @public (undocumented)
@@ -273,6 +274,8 @@ export interface GroupedResponses extends DeploymentResources {
   cronJobs: V1CronJob[];
   // (undocumented)
   customResources: any[];
+  // (undocumented)
+  daemonSets: V1DaemonSet[];
   // (undocumented)
   ingresses: V1Ingress[];
   // (undocumented)

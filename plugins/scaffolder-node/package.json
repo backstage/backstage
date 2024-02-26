@@ -1,18 +1,27 @@
 {
   "name": "@backstage/plugin-scaffolder-node",
+  "version": "0.3.0",
   "description": "The plugin-scaffolder-node module for @backstage/plugin-scaffolder-backend",
-  "version": "0.3.0-next.2",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "node-library"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/scaffolder-node"
+  },
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -23,23 +32,18 @@
       ]
     }
   },
-  "backstage": {
-    "role": "node-library"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/scaffolder-node"
-  },
+  "files": [
+    "alpha",
+    "dist"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -49,7 +53,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/types": "workspace:^",
-    "fs-extra": "10.1.0",
+    "fs-extra": "^11.2.0",
     "globby": "^11.0.0",
     "jsonschema": "^1.2.6",
     "p-limit": "^3.1.0",
@@ -61,9 +65,5 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^"
-  },
-  "files": [
-    "alpha",
-    "dist"
-  ]
+  }
 }

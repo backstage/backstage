@@ -37,7 +37,7 @@ describe('PodDrawer', () => {
           {...({
             open: true,
             podAndErrors: {
-              clusterName: 'some-cluster-1',
+              cluster: { name: 'some-cluster-1' },
               pod: {
                 metadata: {
                   name: 'some-pod',

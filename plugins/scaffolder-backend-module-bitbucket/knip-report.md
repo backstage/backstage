@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name     | Location     |
-|:---------|:-------------|
-| fs-extra | package.json |
+| Name     | Location     | Severity |
+| :------- | :----------- | :------- |
+| fs-extra | package.json | error    |
 

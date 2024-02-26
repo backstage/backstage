@@ -57,13 +57,12 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { devtoolsPlugin } from '@backstage/plugin-devtools-backend';
 
   const backend = createBackend();
 
   // ... other feature additions
 
-+ backend.add(devtoolsPlugin());
++ backend.add(import('@backstage/plugin-devtools-backend'));
 
   backend.start();
 ```

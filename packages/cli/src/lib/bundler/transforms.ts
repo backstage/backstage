@@ -145,6 +145,7 @@ export const transforms = (options: TransformOptions): Transforms => {
         /\.vert$/,
         { and: [/\.svg$/, { not: [/\.icon\.svg$/] }] },
         /\.xml$/,
+        /\.ico$/,
       ],
       type: 'asset/resource',
       generator: {

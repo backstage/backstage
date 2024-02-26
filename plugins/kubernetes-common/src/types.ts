@@ -67,9 +67,13 @@ export interface KubernetesRequestBody {
 /** @public */
 export interface ClusterAttributes {
   /**
-   * Specifies the name of the Kubernetes cluster.
+   * Name of the Kubernetes cluster; used as an internal identifier.
    */
   name: string;
+  /**
+   * Human-readable name for the cluster, to be dispayed in UIs.
+   */
+  title?: string;
   /**
    * Specifies the link to the Kubernetes dashboard managing this cluster.
    * @remarks
@@ -290,4 +294,5 @@ export interface GroupedResponses extends DeploymentResources {
   cronJobs: V1CronJob[];
   customResources: any[];
   statefulsets: V1StatefulSet[];
+  daemonSets: V1DaemonSet[];
 }

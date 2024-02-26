@@ -21,8 +21,8 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
 } from '@backstage/plugin-kubernetes-common';
+import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
-import { ClusterDetails } from '../types/types';
 import { AuthenticationStrategy } from '../auth';
 
 describe('ConfigClusterLocator', () => {
@@ -75,6 +75,28 @@ describe('ConfigClusterLocator', () => {
         caData: undefined,
         caFile: undefined,
       },
+    ]);
+  });
+
+  it('reads `title` property', async () => {
+    const sut = ConfigClusterLocator.fromConfig(
+      new ConfigReader({
+        clusters: [
+          {
+            name: 'cluster-name',
+            title: 'cluster-title',
+            url: 'url',
+            authMetadata: { 'kubernetes.io/auth-provider': 'serviceAccount' },
+          },
+        ],
+      }),
+      authStrategy,
+    );
+
+    const result = await sut.getClusters();
+
+    expect(result).toEqual([
+      expect.objectContaining({ title: 'cluster-title' }),
     ]);
   });
 

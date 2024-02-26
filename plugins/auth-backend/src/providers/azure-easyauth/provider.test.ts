@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AuthHandler, AuthResolverContext } from '../types';
+import { AuthHandler } from '../types';
 import { makeProfileInfo } from '../../lib/passport';
 import {
   easyAuth,
@@ -26,6 +26,7 @@ import {
 import { Request, Response } from 'express';
 import { SignJWT, JWTPayload, errors as JoseErrors } from 'jose';
 import { randomBytes } from 'crypto';
+import { AuthResolverContext } from '@backstage/plugin-auth-node';
 
 const jwtSecret = randomBytes(48);
 

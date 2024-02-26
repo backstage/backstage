@@ -2,30 +2,30 @@
 
 ## Unused dependencies (12)
 
-| Name                    | Location     |
-|:------------------------|:-------------|
-| yn                      | package.json |
-| cors                    | package.json |
-| morgan                  | package.json |
-| winston                 | package.json |
-| fs-extra                | package.json |
-| node-cache              | package.json |
-| compression             | package.json |
-| openid-client           | package.json |
-| passport-github2        | package.json |
-| passport-microsoft      | package.json |
-| google-auth-library     | package.json |
-| passport-google-oauth20 | package.json |
+| Name                    | Location     | Severity |
+| :---------------------- | :----------- | :------- |
+| passport-google-oauth20 | package.json | error    |
+| google-auth-library     | package.json | error    |
+| passport-microsoft      | package.json | error    |
+| passport-github2        | package.json | error    |
+| openid-client           | package.json | error    |
+| compression             | package.json | error    |
+| node-cache              | package.json | error    |
+| fs-extra                | package.json | error    |
+| winston                 | package.json | error    |
+| morgan                  | package.json | error    |
+| cors                    | package.json | error    |
+| yn                      | package.json | error    |
 
 ## Unused devDependencies (7)
 
-| Name                           | Location     |
-|:-------------------------------|:-------------|
-| @types/xml2js                  | package.json |
-| @types/body-parser             | package.json |
-| @types/passport-saml           | package.json |
-| @types/passport-github2        | package.json |
-| @types/passport-strategy       | package.json |
-| @types/passport-microsoft      | package.json |
-| @types/passport-google-oauth20 | package.json |
+| Name                           | Location     | Severity |
+| :----------------------------- | :----------- | :------- |
+| @types/passport-google-oauth20 | package.json | error    |
+| @types/passport-microsoft      | package.json | error    |
+| @types/passport-strategy       | package.json | error    |
+| @types/passport-github2        | package.json | error    |
+| @types/passport-saml           | package.json | error    |
+| @types/body-parser             | package.json | error    |
+| @types/xml2js                  | package.json | error    |
 

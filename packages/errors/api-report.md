@@ -128,6 +128,10 @@ export class ResponseError extends Error {
     },
   ): Promise<ResponseError>;
   readonly response: ConsumedResponse;
+  // (undocumented)
+  readonly statusCode: number;
+  // (undocumented)
+  readonly statusText: string;
 }
 
 // @public

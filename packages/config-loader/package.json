@@ -1,36 +1,39 @@
 {
   "name": "@backstage/config-loader",
+  "version": "1.6.2",
   "description": "Config loading functionality used by Backstage backend, and CLI",
-  "version": "1.6.1",
+  "backstage": {
+    "role": "node-library"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "node-library"
-  },
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/config-loader"
   },
-  "keywords": [
-    "backstage"
-  ],
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
@@ -40,14 +43,14 @@
     "@types/json-schema": "^7.0.6",
     "ajv": "^8.10.0",
     "chokidar": "^3.5.2",
-    "fs-extra": "10.1.0",
+    "fs-extra": "^11.2.0",
     "json-schema": "^0.4.0",
     "json-schema-merge-allof": "^0.8.1",
     "json-schema-traverse": "^1.0.0",
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "node-fetch": "^2.6.7",
-    "typescript-json-schema": "^0.62.0",
+    "typescript-json-schema": "^0.63.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {
@@ -56,8 +59,5 @@
     "@types/json-schema-merge-allof": "^0.6.0",
     "msw": "^1.0.0",
     "zen-observable": "^0.10.0"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }

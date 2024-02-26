@@ -78,6 +78,7 @@ async function generateKnipConfig({ packageDir }: KnipConfigOptions) {
     ],
     ignoreDependencies: [
       '@backstage/cli', // everything depends on this for its package.json commands
+      '@backstage/theme', // this uses `declare module` in .d.ts so is implicitly used whenever extensions are needed
     ],
   };
   await fs.writeFile(

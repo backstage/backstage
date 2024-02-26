@@ -1,5 +1,38 @@
 # @backstage/plugin-techdocs-node
 
+## 1.11.2
+
+### Patch Changes
+
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- 77e3050: Update to a newer version of `@trendyol-js/openstack-swift-sdk`
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration-aws-node@0.1.9
+  - @backstage/integration@1.9.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.11.2-next.3
+
+### Patch Changes
+
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/integration-aws-node@0.1.9-next.0
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-search-common@1.2.10
+
 ## 1.11.2-next.2
 
 ### Patch Changes

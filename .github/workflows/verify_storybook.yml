@@ -51,7 +51,7 @@ jobs:
 
       - run: yarn build-storybook
 
-      - uses: chromaui/action@76bda3648003815314bd50adaa553ee612a7f36c # v10
+      - uses: chromaui/action@fd0e276c344bab4dc69a023fdf89ffb9b79b3b31 # v11
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks

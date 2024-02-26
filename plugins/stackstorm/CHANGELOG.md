@@ -1,5 +1,24 @@
 # @backstage/plugin-stackstorm
 
+## 0.1.11
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/errors@1.2.3
+
+## 0.1.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.11-next.1
 
 ### Patch Changes

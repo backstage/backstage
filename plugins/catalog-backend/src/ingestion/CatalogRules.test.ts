@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { DefaultCatalogRulesEnforcer } from './CatalogRules';
-import { LocationSpec } from '@backstage/plugin-catalog-node';
+import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 const entity = {
   user: {

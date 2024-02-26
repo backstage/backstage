@@ -42,7 +42,11 @@ export const PodLogsDialog = ({ containerScope }: PodLogsDialogProps) => {
       buttonIcon={<SubjectIcon />}
       buttonText="Logs"
       disabled={false}
-      title={`${containerScope.podName} - ${containerScope.containerName} logs on cluster ${containerScope.clusterName}`}
+      title={`${containerScope.podName} - ${
+        containerScope.containerName
+      } logs on cluster ${
+        containerScope.cluster.title || containerScope.cluster.name
+      }`}
     >
       <PodLogs containerScope={containerScope} />
     </KubernetesDialog>

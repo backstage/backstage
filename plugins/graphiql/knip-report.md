@@ -2,14 +2,14 @@
 
 ## Unused dependencies (1)
 
-| Name       | Location     |
-|:-----------|:-------------|
-| graphql-ws | package.json |
+| Name       | Location     | Severity |
+| :--------- | :----------- | :------- |
+| graphql-ws | package.json | error    |
 
 ## Unused devDependencies (2)
 
-| Name                 | Location     |
-|:---------------------|:-------------|
-| @types/codemirror    | package.json |
-| @testing-library/dom | package.json |
+| Name                 | Location     | Severity |
+| :------------------- | :----------- | :------- |
+| @testing-library/dom | package.json | error    |
+| @types/codemirror    | package.json | error    |
 

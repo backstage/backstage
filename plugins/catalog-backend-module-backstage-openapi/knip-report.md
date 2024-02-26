@@ -2,15 +2,15 @@
 
 ## Unused dependencies (2)
 
-| Name   | Location     |
-|:-------|:-------------|
-| yn     | package.json |
-| lodash | package.json |
+| Name   | Location     | Severity |
+| :----- | :----------- | :------- |
+| lodash | package.json | error    |
+| yn     | package.json | error    |
 
 ## Unused devDependencies (2)
 
-| Name             | Location     |
-|:-----------------|:-------------|
-| @types/express   | package.json |
-| @types/supertest | package.json |
+| Name             | Location     | Severity |
+| :--------------- | :----------- | :------- |
+| @types/supertest | package.json | error    |
+| @types/express   | package.json | error    |
 

@@ -80,7 +80,6 @@ const READY: TableColumn<Pod>[] = [
 ];
 
 const PodDrawerTrigger = ({ pod }: { pod: Pod }) => {
-  const cluster = useContext(ClusterContext);
   const errors = useMatchingErrors({
     kind: 'Pod',
     apiVersion: 'v1',
@@ -90,7 +89,7 @@ const PodDrawerTrigger = ({ pod }: { pod: Pod }) => {
     <PodDrawer
       podAndErrors={{
         pod: pod as any,
-        clusterName: cluster.name,
+        cluster: useContext(ClusterContext),
         errors: errors,
       }}
     />

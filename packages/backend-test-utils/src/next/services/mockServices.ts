@@ -23,6 +23,10 @@ import {
   ServiceFactory,
   ServiceRef,
   TokenManagerService,
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+  BackstageCredentials,
 } from '@backstage/backend-plugin-api';
 import {
   cacheServiceFactory,
@@ -35,11 +39,16 @@ import {
   rootLifecycleServiceFactory,
   schedulerServiceFactory,
   urlReaderServiceFactory,
+  discoveryServiceFactory,
+  HostDiscovery,
 } from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { MockIdentityService } from './MockIdentityService';
 import { MockRootLoggerService } from './MockRootLoggerService';
+import { MockAuthService } from './MockAuthService';
+import { MockHttpAuthService } from './MockHttpAuthService';
+import { mockCredentials } from './mockCredentials';
 
 /** @internal */
 function simpleFactory<
@@ -160,6 +169,109 @@ export namespace mockServices {
     }));
   }
 
+  export function auth(options?: {
+    pluginId?: string;
+    disableDefaultAuthPolicy?: boolean;
+  }): AuthService {
+    return new MockAuthService({
+      pluginId: options?.pluginId ?? 'test',
+      disableDefaultAuthPolicy: Boolean(options?.disableDefaultAuthPolicy),
+    });
+  }
+  export namespace auth {
+    export const factory = createServiceFactory({
+      service: coreServices.auth,
+      deps: {
+        plugin: coreServices.pluginMetadata,
+        config: coreServices.rootConfig,
+      },
+      factory({ plugin, config }) {
+        const disableDefaultAuthPolicy = Boolean(
+          config.getOptionalBoolean(
+            'backend.auth.dangerouslyDisableDefaultAuthPolicy',
+          ),
+        );
+        return new MockAuthService({
+          pluginId: plugin.getId(),
+          disableDefaultAuthPolicy,
+        });
+      },
+    });
+    export const mock = simpleMock(coreServices.auth, () => ({
+      authenticate: jest.fn(),
+      getOwnServiceCredentials: jest.fn(),
+      isPrincipal: jest.fn() as any,
+      getPluginRequestToken: jest.fn(),
+    }));
+  }
+
+  export function discovery(): DiscoveryService {
+    return HostDiscovery.fromConfig(
+      new ConfigReader({
+        backend: {
+          // Invalid port to make sure that requests are always mocked
+          baseUrl: 'http://localhost:0',
+          listen: { port: 0 },
+        },
+      }),
+    );
+  }
+  export namespace discovery {
+    export const factory = discoveryServiceFactory;
+    export const mock = simpleMock(coreServices.discovery, () => ({
+      getBaseUrl: jest.fn(),
+      getExternalBaseUrl: jest.fn(),
+    }));
+  }
+
+  /**
+   * Creates a mock implementation of the `HttpAuthService`.
+   *
+   * By default all requests without credentials are treated as requests from
+   * the default mock user principal. This behavior can be configured with the
+   * `defaultCredentials` option.
+   */
+  export function httpAuth(options?: {
+    pluginId?: string;
+    /**
+     * The default credentials to use if there are no credentials present in the
+     * incoming request.
+     *
+     * By default all requests without credentials are treated as authenticated
+     * as the default mock user as returned from `mockCredentials.user()`.
+     */
+    defaultCredentials?: BackstageCredentials;
+  }): HttpAuthService {
+    return new MockHttpAuthService(
+      options?.pluginId ?? 'test',
+      options?.defaultCredentials ?? mockCredentials.user(),
+    );
+  }
+  export namespace httpAuth {
+    /**
+     * Creates a mock service factory for the `HttpAuthService`.
+     *
+     * By default all requests without credentials are treated as requests from
+     * the default mock user principal. This behavior can be configured with the
+     * `defaultCredentials` option.
+     */
+    export const factory = createServiceFactory(
+      (options?: { defaultCredentials?: BackstageCredentials }) => ({
+        service: coreServices.httpAuth,
+        deps: { plugin: coreServices.pluginMetadata },
+        factory: ({ plugin }) =>
+          new MockHttpAuthService(
+            plugin.getId(),
+            options?.defaultCredentials ?? mockCredentials.user(),
+          ),
+      }),
+    );
+    export const mock = simpleMock(coreServices.httpAuth, () => ({
+      credentials: jest.fn(),
+      issueUserCookie: jest.fn(),
+    }));
+  }
+
   // TODO(Rugvip): Not all core services have implementations available here yet.
   //               some may need a bit more refactoring for it to be simpler to
   //               re-implement functioning mock versions here.
@@ -182,6 +294,7 @@ export namespace mockServices {
     export const factory = httpRouterServiceFactory;
     export const mock = simpleMock(coreServices.httpRouter, () => ({
       use: jest.fn(),
+      addAuthPolicy: jest.fn(),
     }));
   }
   export namespace rootHttpRouter {

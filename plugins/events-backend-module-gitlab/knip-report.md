@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name    | Location     |
-|:--------|:-------------|
-| winston | package.json |
+| Name    | Location     | Severity |
+| :------ | :----------- | :------- |
+| winston | package.json | error    |
 

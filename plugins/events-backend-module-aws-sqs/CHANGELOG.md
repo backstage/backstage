@@ -1,5 +1,30 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.2.13
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/backend-tasks@0.5.15
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.2.19
+
+## 0.2.13-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/backend-tasks@0.5.15-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.2.19-next.3
+
 ## 0.2.13-next.2
 
 ### Patch Changes

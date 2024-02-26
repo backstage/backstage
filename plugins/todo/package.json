@@ -1,17 +1,14 @@
 {
   "name": "@backstage/plugin-todo",
+  "version": "0.2.34",
   "description": "A Backstage plugin that lets you browse TODO comments in your source code",
-  "version": "0.2.34-next.2",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
-  },
-  "backstage": {
-    "role": "frontend-plugin"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -19,15 +16,22 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/todo"
   },
+  "license": "Apache-2.0",
   "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "alpha"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
-    "start": "backstage-cli package start",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
@@ -38,11 +42,6 @@
     "@material-ui/icons": "^4.9.1",
     "@types/react": "^16.13.1 || ^17.0.0"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
@@ -51,8 +50,9 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0"
   },
-  "files": [
-    "dist",
-    "alpha"
-  ]
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  }
 }

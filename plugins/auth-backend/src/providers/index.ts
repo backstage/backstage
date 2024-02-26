@@ -34,6 +34,7 @@ export type { SamlAuthResult } from './saml';
 export type { GcpIapResult, GcpIapTokenInfo } from './gcp-iap';
 
 export { providers, defaultAuthProviderFactories } from './providers';
+export { createOriginFilter, type ProviderFactories } from './router';
 
 export { createAuthProviderIntegration } from './createAuthProviderIntegration';
 

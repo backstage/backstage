@@ -1,17 +1,27 @@
 {
   "name": "@backstage/plugin-stack-overflow",
-  "version": "0.1.25-next.2",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "version": "0.1.25",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/stack-overflow"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.tsx",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -22,24 +32,18 @@
       ]
     }
   },
-  "backstage": {
-    "role": "frontend-plugin"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/stack-overflow"
-  },
-  "sideEffects": false,
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
-    "start": "backstage-cli package start",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
@@ -58,11 +62,6 @@
     "qs": "^6.9.4",
     "react-use": "^17.2.4"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
@@ -71,9 +70,10 @@
     "@testing-library/user-event": "^14.0.0",
     "msw": "^1.0.0"
   },
-  "files": [
-    "dist",
-    "config.d.ts"
-  ],
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
   "configSchema": "config.d.ts"
 }

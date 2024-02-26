@@ -1,14 +1,28 @@
 {
   "name": "@backstage/plugin-org",
+  "version": "0.6.20",
   "description": "A Backstage plugin that helps you create entity pages for your organization",
-  "version": "0.6.20-next.2",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/org"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.tsx",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -19,28 +33,17 @@
       ]
     }
   },
-  "license": "Apache-2.0",
-  "publishConfig": {
-    "access": "public"
-  },
-  "backstage": {
-    "role": "frontend-plugin"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/org"
-  },
-  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
-    "start": "backstage-cli package start",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
@@ -60,11 +63,6 @@
     "qs": "^6.10.1",
     "react-use": "^17.2.4"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
   "devDependencies": {
     "@backstage/catalog-client": "workspace:^",
     "@backstage/cli": "workspace:^",
@@ -80,7 +78,9 @@
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0"
   },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  }
 }

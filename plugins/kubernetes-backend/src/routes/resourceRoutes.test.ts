@@ -102,6 +102,12 @@ describe('resourcesRoutes', () => {
                 },
               ],
             },
+            backend: {
+              auth: {
+                // TODO: Remove once migrated to support new auth services
+                dangerouslyDisableDefaultAuthPolicy: true,
+              },
+            },
           },
         }),
         import('@backstage/plugin-kubernetes-backend/alpha'),

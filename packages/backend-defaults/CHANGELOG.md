@@ -1,5 +1,22 @@
 # @backstage/backend-defaults
 
+## 0.2.10
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-app-api@0.5.11
+
+## 0.2.10-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/backend-app-api@0.5.11-next.3
+
 ## 0.2.10-next.2
 
 ### Patch Changes

@@ -64,13 +64,12 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { linguistPlugin } from '@backstage/plugin-linguist-backend';
 
   const backend = createBackend();
 
   // ... other feature additions
 
-+ backend.add(linguistPlugin());
++ backend.add(import('@backstage/plugin-linguist-backend'));
 
   backend.start();
 ```

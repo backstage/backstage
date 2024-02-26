@@ -5,15 +5,25 @@
 
   extends: ['config:best-practices', ':gitSignOff'],
   // do not pin dev dependencies, which are part of the best-practices preset
-  ignorePresets: [':pinDevDependencies'],
+  ignorePresets: [':pinDevDependencies', ':pinDigest', 'docker:pinDigests'],
+
+  constraints: {
+    // TODO(freben): Remove this later; it addresses a temporary issue in corepack
+    // https://github.com/nodejs/corepack/issues/379
+    // https://github.com/renovatebot/renovate/discussions/27465
+    corepack: '0.24.1',
+  },
 
   // the default limit are 10 PRs
   prConcurrentLimit: 20,
 
   postUpdateOptions: ['yarnDedupeHighest'],
   rangeStrategy: 'update-lockfile',
-  // @elastic/elasticsearch is ignored due to licensing issues. See #10992
-  ignoreDeps: ['@elastic/elasticsearch', 'event-source-polyfill'],
+  ignoreDeps: [
+    // ignored due to licensing issues. See #10992
+    '@elastic/elasticsearch',
+    'event-source-polyfill',
+  ],
   packageRules: [
     {
       matchSourceUrlPrefixes: ['https://github.com/spotify/web-scripts'],
@@ -34,6 +44,27 @@
     {
       matchSourceUrls: ['https://github.com/yarnpkg/berry'],
       enabled: false,
+    },
+    // ESM only majors, that we're not ready for yet
+    {
+      matchPackageNames: ['node-fetch'],
+      allowedVersions: '<3.0.0',
+    },
+    {
+      matchPackageNames: ['inquirer', '@types/inquirer'],
+      allowedVersions: '<9.0.0',
+    },
+    {
+      matchPackageNames: ['ora'],
+      allowedVersions: '<5.0.0',
+    },
+    {
+      matchPackageNames: ['p-limit'],
+      allowedVersions: '<4.0.0',
+    },
+    {
+      matchPackageNames: ['p-queue'],
+      allowedVersions: '<7.0.0',
     },
   ],
 }

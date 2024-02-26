@@ -1,82 +1,81 @@
 # Knip report
 
-## Unused dependencies (64)
+## Unused dependencies (63)
 
-| Name                                             | Location     |
-|:-------------------------------------------------|:-------------|
-| lodash                                           | package.json |
-| history                                          | package.json |
-| react-use                                        | package.json |
-| @octokit/rest                                    | package.json |
-| zen-observable                                   | package.json |
-| @material-ui/lab                                 | package.json |
-| @backstage/theme                                 | package.json |
-| @backstage/plugin-org                            | package.json |
-| @backstage/plugin-adr                            | package.json |
-| @backstage/plugin-todo                           | package.json |
-| @backstage/plugin-gocd                           | package.json |
-| app-next-example-plugin                          | package.json |
-| @backstage/plugin-kafka                          | package.json |
-| @backstage/app-defaults                          | package.json |
-| @backstage/plugin-sentry                         | package.json |
-| @backstage/plugin-search                         | package.json |
-| @backstage/plugin-badges                         | package.json |
-| @backstage/catalog-model                         | package.json |
-| @backstage/plugin-rollbar                        | package.json |
-| @backstage/plugin-jenkins                        | package.json |
-| @backstage/plugin-explore                        | package.json |
-| @backstage/plugin-catalog                        | package.json |
-| @circleci/backstage-plugin                       | package.json |
-| @backstage/plugin-puppetdb                       | package.json |
-| @backstage/plugin-playlist                       | package.json |
-| @backstage/plugin-newrelic                       | package.json |
-| @backstage/plugin-linguist                       | package.json |
-| @backstage/plugin-devtools                       | package.json |
-| @backstage/plugin-api-docs                       | package.json |
-| @backstage/plugin-airbrake                       | package.json |
-| @backstage/plugin-shortcuts                      | package.json |
-| @backstage/plugin-dynatrace                      | package.json |
-| @backstage/plugin-stackstorm                     | package.json |
-| @backstage/plugin-scaffolder                     | package.json |
-| @backstage/plugin-lighthouse                     | package.json |
-| @backstage/plugin-kubernetes                     | package.json |
-| @backstage/plugin-cloudbuild                     | package.json |
-| @backstage/plugin-azure-sites                    | package.json |
-| @backstage/plugin-search-react                   | package.json |
-| @backstage/plugin-gcp-projects                   | package.json |
-| @backstage/plugin-azure-devops                   | package.json |
-| @backstage/plugin-tech-insights                  | package.json |
-| @backstage/plugin-search-common                  | package.json |
-| @backstage/plugin-cost-insights                  | package.json |
-| @backstage/plugin-code-coverage                  | package.json |
-| @backstage/plugin-catalog-react                  | package.json |
-| @backstage/plugin-catalog-graph                  | package.json |
-| @backstage/plugin-techdocs-react                 | package.json |
-| @backstage/plugin-octopus-deploy                 | package.json |
-| @backstage/plugin-github-actions                 | package.json |
-| @backstage/plugin-catalog-common                 | package.json |
-| @backstage/plugin-apache-airflow                 | package.json |
-| @backstage/plugin-linguist-common                | package.json |
-| @backstage/plugin-entity-feedback                | package.json |
-| @backstage/plugin-scaffolder-react               | package.json |
-| @backstage/plugin-permission-react               | package.json |
-| @roadiehq/backstage-plugin-travis-ci             | package.json |
-| @roadiehq/backstage-plugin-buildkite             | package.json |
-| @backstage/plugin-newrelic-dashboard             | package.json |
-| @oriflame/backstage-plugin-score-card            | package.json |
-| @roadiehq/backstage-plugin-github-insights       | package.json |
-| @backstage/plugin-catalog-unprocessed-entities   | package.json |
-| @roadiehq/backstage-plugin-github-pull-requests  | package.json |
-| @backstage/plugin-techdocs-module-addons-contrib | package.json |
+| Name                                             | Location     | Severity |
+| :----------------------------------------------- | :----------- | :------- |
+| @backstage/plugin-techdocs-module-addons-contrib | package.json | error    |
+| @roadiehq/backstage-plugin-github-pull-requests  | package.json | error    |
+| @backstage/plugin-catalog-unprocessed-entities   | package.json | error    |
+| @roadiehq/backstage-plugin-github-insights       | package.json | error    |
+| @oriflame/backstage-plugin-score-card            | package.json | error    |
+| @backstage/plugin-newrelic-dashboard             | package.json | error    |
+| @roadiehq/backstage-plugin-buildkite             | package.json | error    |
+| @roadiehq/backstage-plugin-travis-ci             | package.json | error    |
+| @backstage/plugin-permission-react               | package.json | error    |
+| @backstage/plugin-scaffolder-react               | package.json | error    |
+| @backstage/plugin-entity-feedback                | package.json | error    |
+| @backstage/plugin-linguist-common                | package.json | error    |
+| @backstage/plugin-apache-airflow                 | package.json | error    |
+| @backstage/plugin-catalog-common                 | package.json | error    |
+| @backstage/plugin-github-actions                 | package.json | error    |
+| @backstage/plugin-octopus-deploy                 | package.json | error    |
+| @backstage/plugin-techdocs-react                 | package.json | error    |
+| @backstage/plugin-catalog-graph                  | package.json | error    |
+| @backstage/plugin-catalog-react                  | package.json | error    |
+| @backstage/plugin-code-coverage                  | package.json | error    |
+| @backstage/plugin-cost-insights                  | package.json | error    |
+| @backstage/plugin-search-common                  | package.json | error    |
+| @backstage/plugin-tech-insights                  | package.json | error    |
+| @backstage/plugin-azure-devops                   | package.json | error    |
+| @backstage/plugin-gcp-projects                   | package.json | error    |
+| @backstage/plugin-search-react                   | package.json | error    |
+| @backstage/plugin-azure-sites                    | package.json | error    |
+| @backstage/plugin-cloudbuild                     | package.json | error    |
+| @backstage/plugin-kubernetes                     | package.json | error    |
+| @backstage/plugin-lighthouse                     | package.json | error    |
+| @backstage/plugin-scaffolder                     | package.json | error    |
+| @backstage/plugin-stackstorm                     | package.json | error    |
+| @backstage/plugin-dynatrace                      | package.json | error    |
+| @backstage/plugin-shortcuts                      | package.json | error    |
+| @backstage/plugin-airbrake                       | package.json | error    |
+| @backstage/plugin-api-docs                       | package.json | error    |
+| @backstage/plugin-devtools                       | package.json | error    |
+| @backstage/plugin-linguist                       | package.json | error    |
+| @backstage/plugin-newrelic                       | package.json | error    |
+| @backstage/plugin-playlist                       | package.json | error    |
+| @backstage/plugin-puppetdb                       | package.json | error    |
+| @circleci/backstage-plugin                       | package.json | error    |
+| @backstage/plugin-catalog                        | package.json | error    |
+| @backstage/plugin-explore                        | package.json | error    |
+| @backstage/plugin-jenkins                        | package.json | error    |
+| @backstage/plugin-rollbar                        | package.json | error    |
+| @backstage/catalog-model                         | package.json | error    |
+| @backstage/plugin-badges                         | package.json | error    |
+| @backstage/plugin-search                         | package.json | error    |
+| @backstage/plugin-sentry                         | package.json | error    |
+| @backstage/app-defaults                          | package.json | error    |
+| @backstage/plugin-kafka                          | package.json | error    |
+| app-next-example-plugin                          | package.json | error    |
+| @backstage/plugin-gocd                           | package.json | error    |
+| @backstage/plugin-todo                           | package.json | error    |
+| @backstage/plugin-adr                            | package.json | error    |
+| @backstage/plugin-org                            | package.json | error    |
+| @material-ui/lab                                 | package.json | error    |
+| zen-observable                                   | package.json | error    |
+| @octokit/rest                                    | package.json | error    |
+| react-use                                        | package.json | error    |
+| history                                          | package.json | error    |
+| lodash                                           | package.json | error    |
 
 ## Unused devDependencies (6)
 
-| Name                        | Location     |
-|:----------------------------|:-------------|
-| cross-env                   | package.json |
-| @types/jquery               | package.json |
-| @testing-library/dom        | package.json |
-| @types/zen-observable       | package.json |
-| @testing-library/react      | package.json |
-| @testing-library/user-event | package.json |
+| Name                        | Location     | Severity |
+| :-------------------------- | :----------- | :------- |
+| @testing-library/user-event | package.json | error    |
+| @testing-library/react      | package.json | error    |
+| @types/zen-observable       | package.json | error    |
+| @testing-library/dom        | package.json | error    |
+| @types/jquery               | package.json | error    |
+| cross-env                   | package.json | error    |
 

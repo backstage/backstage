@@ -1,34 +1,37 @@
 {
   "name": "@backstage/theme",
+  "version": "0.5.1",
   "description": "material-ui theme for use with Backstage.",
-  "version": "0.5.1-next.0",
+  "backstage": {
+    "role": "web-library"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "web-library"
-  },
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/theme"
   },
-  "keywords": [
-    "backstage"
-  ],
   "license": "Apache-2.0",
+  "sideEffects": false,
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test"
   },
@@ -37,12 +40,6 @@
     "@emotion/styled": "^11.10.5",
     "@mui/material": "^5.12.2"
   },
-  "peerDependencies": {
-    "@material-ui/core": "^4.12.2",
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@mui/styles": "^5.14.18",
@@ -50,7 +47,10 @@
     "@testing-library/react": "^14.0.0",
     "@types/react": "^16.13.1 || ^17.0.0"
   },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "@material-ui/core": "^4.12.2",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0"
+  }
 }

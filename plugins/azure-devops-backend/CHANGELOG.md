@@ -1,5 +1,37 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.5.2
+
+### Patch Changes
+
+- 353244d: Added a note about Service Principles
+- b64ce5a: Updated New Backend System instructions to use default import
+- 25bda45: Fixed bug with `extractPartsFromAsset` that resulted in a leading `.` being removed from the path in an otherwise valid path (ex. `.assets/image.png`). The leading `.` will now only be moved for paths beginning with `./`.
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration@1.9.0
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-devops-common@0.3.2
+  - @backstage/plugin-catalog-common@1.0.21
+
+## 0.5.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/plugin-catalog-node@1.6.2-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-azure-devops-common@0.3.2
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+
 ## 0.5.2-next.2
 
 ### Patch Changes

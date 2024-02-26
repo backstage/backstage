@@ -41,7 +41,7 @@ export const usePodLogs = ({ containerScope, previous }: PodLogsOptions) => {
       podName: containerScope.podName,
       namespace: containerScope.podNamespace,
       containerName: containerScope.containerName,
-      clusterName: containerScope.clusterName,
+      clusterName: containerScope.cluster.name,
       previous,
     });
   }, [JSON.stringify(containerScope)]);

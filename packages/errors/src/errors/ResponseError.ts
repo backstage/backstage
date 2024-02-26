@@ -53,6 +53,9 @@ export class ResponseError extends Error {
    */
   readonly cause: Error;
 
+  readonly statusCode: number;
+
+  readonly statusText: string;
   /**
    * Constructs a ResponseError based on a failed response.
    *
@@ -65,9 +68,9 @@ export class ResponseError extends Error {
   ): Promise<ResponseError> {
     const data = await parseErrorResponseBody(response);
 
-    const status = data.response.statusCode || response.status;
-    const statusText = data.error.name || response.statusText;
-    const message = `Request failed with ${status} ${statusText}`;
+    const statusCode = data.response.statusCode || response.status;
+    const statusText = response.statusText;
+    const message = `Request failed with ${statusCode} ${statusText}`;
     const cause = deserializeError(data.error);
 
     return new ResponseError({
@@ -75,19 +78,26 @@ export class ResponseError extends Error {
       response,
       data,
       cause,
+      statusCode,
+      statusText,
     });
   }
 
-  private constructor(props: {
+  private constructor(opts: {
     message: string;
     response: ConsumedResponse;
     data: ErrorResponseBody;
     cause: Error;
+    statusCode: number;
+    statusText: string;
   }) {
-    super(props.message);
+    super(opts.message);
+
     this.name = 'ResponseError';
-    this.response = props.response;
-    this.body = props.data;
-    this.cause = props.cause;
+    this.response = opts.response;
+    this.body = opts.data;
+    this.cause = opts.cause;
+    this.statusCode = opts.statusCode;
+    this.statusText = opts.statusText;
   }
 }

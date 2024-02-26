@@ -21,6 +21,7 @@ import BodyParser from 'body-parser';
 import bodyParserXml from 'body-parser-xml';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import {
+  createLegacyAuthAdapters,
   errorHandler,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
@@ -33,7 +34,7 @@ import { CodeCoverageDatabase } from './CodeCoverageDatabase';
 import { aggregateCoverage, CoverageUtils } from './CoverageUtils';
 import { Converter, Jacoco, Cobertura, Lcov } from './converter';
 import { getEntitySourceLocation } from '@backstage/catalog-model';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 
 /**
  * Options for {@link createRouter}.
@@ -47,6 +48,8 @@ export interface RouterOptions {
   urlReader: UrlReader;
   logger: Logger;
   catalogApi?: CatalogApi;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 }
 
 export interface CodeCoverageApi {
@@ -63,6 +66,7 @@ export const makeRouter = async (
   const catalogApi =
     options.catalogApi ?? new CatalogClient({ discoveryApi: discovery });
   const scm = ScmIntegrations.fromConfig(config);
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   const bodySizeLimit =
     config.getOptionalString('codeCoverage.bodySizeLimit') ?? '100kb';
@@ -92,9 +96,13 @@ export const makeRouter = async (
    */
   router.get('/report', async (req, res) => {
     const { entity } = req.query;
-    const entityLookup = await catalogApi.getEntityByRef(entity as string, {
-      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
-    });
+    const entityLookup = await catalogApi.getEntityByRef(
+      entity as string,
+      await auth.getPluginRequestToken({
+        onBehalfOf: await httpAuth.credentials(req),
+        targetPluginId: 'catalog',
+      }),
+    );
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -116,9 +124,13 @@ export const makeRouter = async (
    */
   router.get('/history', async (req, res) => {
     const { entity } = req.query;
-    const entityLookup = await catalogApi.getEntityByRef(entity as string, {
-      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
-    });
+    const entityLookup = await catalogApi.getEntityByRef(
+      entity as string,
+      await auth.getPluginRequestToken({
+        onBehalfOf: await httpAuth.credentials(req),
+        targetPluginId: 'catalog',
+      }),
+    );
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -136,9 +148,13 @@ export const makeRouter = async (
    */
   router.get('/file-content', async (req, res) => {
     const { entity, path } = req.query;
-    const entityLookup = await catalogApi.getEntityByRef(entity as string, {
-      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
-    });
+    const entityLookup = await catalogApi.getEntityByRef(
+      entity as string,
+      await auth.getPluginRequestToken({
+        onBehalfOf: await httpAuth.credentials(req),
+        targetPluginId: 'catalog',
+      }),
+    );
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -189,9 +205,13 @@ export const makeRouter = async (
    */
   router.post('/report', async (req, res) => {
     const { entity: entityRef, coverageType } = req.query;
-    const entity = await catalogApi.getEntityByRef(entityRef as string, {
-      token: getBearerTokenFromAuthorizationHeader(req.headers.authorization),
-    });
+    const entity = await catalogApi.getEntityByRef(
+      entityRef as string,
+      await auth.getPluginRequestToken({
+        onBehalfOf: await httpAuth.credentials(req),
+        targetPluginId: 'catalog',
+      }),
+    );
     if (!entity) {
       throw new NotFoundError(`No entity found matching ${entityRef}`);
     }

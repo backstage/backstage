@@ -1,5 +1,24 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.55
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/config@1.1.1
+
+## 0.1.55-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/config@1.1.1
+
 ## 0.1.55-next.2
 
 ### Patch Changes

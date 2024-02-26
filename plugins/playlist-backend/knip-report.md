@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name       | Location     |
-|:-----------|:-------------|
-| node-fetch | package.json |
+| Name       | Location     | Severity |
+| :--------- | :----------- | :------- |
+| node-fetch | package.json | error    |
 

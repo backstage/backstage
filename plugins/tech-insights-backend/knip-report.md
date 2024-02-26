@@ -2,14 +2,14 @@
 
 ## Unused dependencies (2)
 
-| Name | Location     |
-|:-----|:-------------|
-| yn   | package.json |
-| uuid | package.json |
+| Name | Location     | Severity |
+| :--- | :----------- | :------- |
+| uuid | package.json | error    |
+| yn   | package.json | error    |
 
 ## Unused devDependencies (1)
 
-| Name            | Location     |
-|:----------------|:-------------|
-| wait-for-expect | package.json |
+| Name            | Location     | Severity |
+| :-------------- | :----------- | :------- |
+| wait-for-expect | package.json | error    |
 

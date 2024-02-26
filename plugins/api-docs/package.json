@@ -1,18 +1,31 @@
 {
   "name": "@backstage/plugin-api-docs",
+  "version": "0.11.0",
   "description": "A Backstage plugin that helps represent API entities in the frontend",
-  "version": "0.10.4-next.2",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/api-docs"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.tsx",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -23,27 +36,17 @@
       ]
     }
   },
-  "backstage": {
-    "role": "frontend-plugin"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/api-docs"
-  },
-  "keywords": [
-    "backstage"
+  "files": [
+    "dist"
   ],
-  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
-    "start": "backstage-cli package start",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@asyncapi/react-component": "1.2.13",
@@ -68,11 +71,6 @@
     "isomorphic-form-data": "^2.0.0",
     "swagger-ui-react": "^5.0.0"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
@@ -84,7 +82,9 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/swagger-ui-react": "^4.18.0"
   },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  }
 }

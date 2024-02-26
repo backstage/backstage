@@ -1,16 +1,13 @@
 {
   "name": "@backstage/plugin-analytics-module-ga4",
-  "version": "0.2.0-next.1",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "version": "0.2.0",
+  "backstage": {
+    "role": "frontend-plugin-module"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
-  },
-  "backstage": {
-    "role": "frontend-plugin-module"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -18,15 +15,22 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/analytics-module-ga4"
   },
+  "license": "Apache-2.0",
   "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
-    "start": "backstage-cli package start",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
@@ -34,11 +38,6 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "react-ga4": "^2.0.0"
-  },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -49,9 +48,10 @@
     "@types/jest": "^29.0.0",
     "@types/react": "^16.13.1 || ^17.0.0"
   },
-  "files": [
-    "dist",
-    "config.d.ts"
-  ],
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
   "configSchema": "config.d.ts"
 }

@@ -63,10 +63,9 @@ Team: @backstage/kubernetes-maintainers
 
 Scope: The Kubernetes plugin and the base it provides for other plugins to build upon.
 
-| Name           | Organization | Team | GitHub                                         | Discord           |
-| -------------- | ------------ | ---- | ---------------------------------------------- | ----------------- |
-| Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47)       | mclarke#0725      |
-| Jamie Klassen  | VMware       |      | [jamieklassen](http://github.com/jamieklassen) | jamieklassen#3047 |
+| Name           | Organization | Team | GitHub                                   | Discord      |
+| -------------- | ------------ | ---- | ---------------------------------------- | ------------ |
+| Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47) | mclarke#0725 |
 
 ### Permission Framework
 
@@ -74,17 +73,14 @@ Team: @backstage/permission-maintainers
 
 Scope: The Permission Framework and plugins integrating with the permission framework
 
-| Name                 | Organization | Team            | GitHub                                          | Discord          |
-| -------------------- | ------------ | --------------- | ----------------------------------------------- | ---------------- |
-| Ainhoa Larumbe       | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)            | ainhoa#8085      |
-| Claire Casey         | Spotify      | Imaginary Goats | [clairelcasey](http://github.com/clairelcasey)  | clairecasey#2710 |
-| Eric Peterson        | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)              | iamEAP#3058      |
-| Harry Hogg           | Spotify      | Imaginary Goats | [HHogg](http://github.com/HHogg)                | simplex#3451     |
-| Joon Park            | Spotify      | Imaginary Goats | [Joonpark13](http://github.com/Joonpark13)      | Sixpool#5060     |
-| Lynette Lopez        | Spotify      | Imaginary Goats | [lynettelopez](https://github.com/lynettelopez) | lynettelopez     |
-| Mike Lewis           | Spotify      | Imaginary Goats | [mtlewis](http://github.com/mtlewis)            | mtlewis#3658     |
-| Tim Hansen           | Spotify      | Imaginary Goats | [timbonicus](http://github.com/timbonicus)      | timbonicus#6871  |
-| Vincenzo Scamporlino | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)          | vinzscam#6944    |
+| Name                 | Organization | Team            | GitHub                                     | Discord       |
+| -------------------- | ------------ | --------------- | ------------------------------------------ | ------------- |
+| Ainhoa Larumbe       | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)       | ainhoa#8085   |
+| Eric Peterson        | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)         | iamEAP#3058   |
+| Harry Hogg           | Spotify      | Imaginary Goats | [HHogg](http://github.com/HHogg)           | simplex#3451  |
+| Joon Park            | Spotify      | Imaginary Goats | [Joonpark13](http://github.com/Joonpark13) | Sixpool#5060  |
+| Mike Lewis           | Spotify      | Imaginary Goats | [mtlewis](http://github.com/mtlewis)       | mtlewis#3658  |
+| Vincenzo Scamporlino | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)     | vinzscam#6944 |
 
 ### TechDocs
 
@@ -108,15 +104,29 @@ Scope: The TechDocs plugin and related tooling
 
 These incubating project areas have shared ownership with @backstage/maintainers.
 
+### Community Plugins
+
+Team: @backstage/community-plugins-maintainers
+
+Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugins repository](https://github.com/backstage/community-plugins)
+
+| Name                 | Organization | GitHub                                      | Discord      |
+| -------------------- | ------------ | ------------------------------------------- | ------------ |
+| Bethany Griggs       | Red Hat      | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
+| Tomas Kral           | Red Hat      | [kadel](https://github.com/kadel)           | `tomkral`    |
+| André Wanlin         | Spotify      | [awanlin](https://github.com/awanlin)       | `ahhhndre`   |
+| Philipp Hugenroth    | Spotify      | [tudi2d](https://github.com/tudi2d)         | `tudi2d`     |
+| Vincenzo Scamporlino | Spotify      | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
+
 ### OpenAPI Tooling
 
 Team: @backstage/openapi-tooling-maintainers
 
 Scope: Tooling for frontend and backend schema-first OpenAPI development.
 
-| Name           | Organization | GitHub                                  | Discord       |
-| -------------- | ------------ | --------------------------------------- | ------------- |
-| Aramis Sennyey |              | [sennyeya](https://github.com/sennyeya) | `Aramis#7984` |
+| Name           | Organization | GitHub                                                | Discord       |
+| -------------- | ------------ | ----------------------------------------------------- | ------------- |
+| Aramis Sennyey |              | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
 
 ### Scaffolder
 
@@ -144,14 +154,13 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
 | Andre Wanlin                   | Spotify                   | [awanlin](https://github.com/awanlin)                 | `ahhhndre`                     |
 | Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
-| Aramis Sennyey                 |                           | [sennyeya](https://github.com/sennyeya)               | `Aramis#7984`                  |
+| Aramis Sennyey                 |                           | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984`                  |
 | Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
 | David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |
 | Deepankumar Loganathan         |                           | [deepan10](https://github.com/deepan10)               | `deepan10`                     |
 | Himanshu Mishra                | Harness.io                | [OrkoHunter](https://github.com/OrkoHunter)           | `OrkoHunter#1520`              |
 | Irma Solakovic                 | Roadie.io                 | [Irma12](https://github.com/Irma12)                   | `Irma#7629`                    |
-| Jamie Klassen                  | VMware                    | [jamieklassen](https://github.com/jamieklassen)       | `jamieklassen#3047`            |
 | Jorge Lainfiesta               | Roadie.io                 | [jorgelainfiesta](https://github.com/jorgelainfiesta) | `jorgel#8733`                  |
 | Jussi Hallila                  | Roadie.io                 | [Xantier](https://github.com/Xantier)                 | `Xantier#0086`                 |
 | Mark Avery                     | Cvent                     | [webark](https://github.com/webark)                   | `webark#8471`                  |
@@ -174,6 +183,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 
 ## Emeritus Project Area Maintainers
 
-| Maintainer | Organization   | GitHub                              | Discord  |
-| ---------- | -------------- | ----------------------------------- | -------- |
-| Paul Cowan | frontendrescue | [dagda1](https://github.com/dagda1) | `dagda1` |
+| Maintainer    | Organization   | GitHub                                          | Discord             |
+| ------------- | -------------- | ----------------------------------------------- | ------------------- |
+| Paul Cowan    | frontendrescue | [dagda1](https://github.com/dagda1)             | `dagda1`            |
+| Jamie Klassen | VMware         | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047` |

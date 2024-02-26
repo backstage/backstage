@@ -1,5 +1,34 @@
 # @backstage/dev-utils
 
+## 1.0.27
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/app-defaults@1.5.0
+  - @backstage/core-components@0.14.0
+  - @backstage/core-app-api@1.12.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/theme@0.5.1
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/integration-react@1.1.24
+
+## 1.0.27-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.1-next.1
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.3
+  - @backstage/app-defaults@1.5.0-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-app-api@1.12.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/integration-react@1.1.24-next.2
+
 ## 1.0.27-next.2
 
 ### Patch Changes

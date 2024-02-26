@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 import {
+  createLegacyAuthAdapters,
   errorHandler,
   PluginDatabaseManager,
   TokenManager,
 } from '@backstage/backend-common';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
-import {
-  getBearerTokenFromAuthorizationHeader,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   DatabaseNotificationsStore,
   NotificationGetOptions,
@@ -39,10 +37,17 @@ import {
 } from '@backstage/catalog-model';
 import { NotificationProcessor } from '@backstage/plugin-notifications-node';
 import { AuthenticationError, InputError } from '@backstage/errors';
-import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { SignalService } from '@backstage/plugin-signals-node';
 import {
+  NewNotificationSignal,
   Notification,
+  NotificationReadSignal,
   NotificationType,
 } from '@backstage/plugin-notifications-common';
 
@@ -56,6 +61,8 @@ export interface RouterOptions {
   signalService?: SignalService;
   catalog?: CatalogApi;
   processors?: NotificationProcessor[];
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 }
 
 /** @internal */
@@ -68,7 +75,6 @@ export async function createRouter(
     identity,
     discovery,
     catalog,
-    tokenManager,
     processors,
     signalService,
   } = options;
@@ -76,6 +82,8 @@ export async function createRouter(
   const catalogClient =
     catalog ?? new CatalogClient({ discoveryApi: discovery });
   const store = await DatabaseNotificationsStore.create({ database });
+
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   const getUser = async (req: Request<unknown>) => {
     const user = await identity.getIdentity({ request: req });
@@ -85,20 +93,13 @@ export async function createRouter(
     return user.identity.userEntityRef;
   };
 
-  const authenticateService = async (req: Request<unknown>) => {
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
-    if (!token) {
-      throw new AuthenticationError();
-    }
-    await tokenManager.authenticate(token);
-  };
-
   const getUsersForEntityRef = async (
     entityRef: string | string[] | null,
   ): Promise<string[]> => {
-    const { token } = await tokenManager.getToken();
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
 
     // TODO: Support for broadcast
     if (entityRef === null) {
@@ -206,6 +207,21 @@ export async function createRouter(
     res.send(notifications);
   });
 
+  router.get('/:id', async (req, res) => {
+    const user = await getUser(req);
+    const opts: NotificationGetOptions = {
+      user: user,
+      limit: 1,
+      ids: [req.params.id],
+    };
+    const notifications = await store.getNotifications(opts);
+    if (notifications.length !== 1) {
+      res.status(404).send({ error: 'Not found' });
+      return;
+    }
+    res.send(notifications[0]);
+  });
+
   router.get('/status', async (req, res) => {
     const user = await getUser(req);
     const status = await store.getStatus({ user, type: 'undone' });
@@ -214,38 +230,18 @@ export async function createRouter(
 
   router.post('/update', async (req, res) => {
     const user = await getUser(req);
-    const { ids, done, read, saved } = req.body;
+    const { ids, read, saved } = req.body;
     if (!ids || !Array.isArray(ids)) {
       throw new InputError();
-    }
-
-    if (done === true) {
-      await store.markDone({ user, ids });
-      if (signalService) {
-        await signalService.publish({
-          recipients: [user],
-          message: { action: 'done', notification_ids: ids },
-          channel: 'notifications',
-        });
-      }
-    } else if (done === false) {
-      await store.markUndone({ user, ids });
-      if (signalService) {
-        await signalService.publish({
-          recipients: [user],
-          message: { action: 'undone', notification_ids: ids },
-          channel: 'notifications',
-        });
-      }
     }
 
     if (read === true) {
       await store.markRead({ user, ids });
 
       if (signalService) {
-        await signalService.publish({
+        await signalService.publish<NotificationReadSignal>({
           recipients: [user],
-          message: { action: 'mark_read', notification_ids: ids },
+          message: { action: 'notification_read', notification_ids: ids },
           channel: 'notifications',
         });
       }
@@ -253,9 +249,9 @@ export async function createRouter(
       await store.markUnread({ user: user, ids });
 
       if (signalService) {
-        await signalService.publish({
+        await signalService.publish<NotificationReadSignal>({
           recipients: [user],
-          message: { action: 'mark_unread', notification_ids: ids },
+          message: { action: 'notification_unread', notification_ids: ids },
           channel: 'notifications',
         });
       }
@@ -279,13 +275,9 @@ export async function createRouter(
     const notifications = [];
     let users = [];
 
-    try {
-      await authenticateService(req);
-    } catch (e) {
-      throw new AuthenticationError();
-    }
+    await httpAuth.credentials(req, { allow: ['service'] });
 
-    const { title, link, description, scope } = payload;
+    const { title, link, scope } = payload;
 
     if (!recipients || !title || !origin || !link) {
       logger.error(`Invalid notification request received`);
@@ -344,17 +336,17 @@ export async function createRouter(
 
       processorSendNotification(ret);
       notifications.push(ret);
-    }
 
-    if (signalService) {
-      await signalService.publish({
-        recipients: entityRef === null ? null : uniqueUsers,
-        message: {
-          action: 'new_notification',
-          notification: { title, description, link },
-        },
-        channel: 'notifications',
-      });
+      if (signalService) {
+        await signalService.publish<NewNotificationSignal>({
+          recipients: user,
+          message: {
+            action: 'new_notification',
+            notification_id: ret.id,
+          },
+          channel: 'notifications',
+        });
+      }
     }
 
     res.json(notifications);

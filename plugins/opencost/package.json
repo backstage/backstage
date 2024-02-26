@@ -1,9 +1,9 @@
 {
   "name": "@backstage/plugin-opencost",
-  "version": "0.2.5-next.1",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "version": "0.2.5",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -14,18 +14,22 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/opencost"
   },
-  "backstage": {
-    "role": "frontend-plugin"
-  },
+  "license": "Apache-2.0",
   "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/core-components": "workspace:^",
@@ -41,18 +45,14 @@
     "lodash": "^4.17.21",
     "recharts": "^2.5.0"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "*"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0"
   },
-  "files": [
-    "dist",
-    "config.d.ts"
-  ],
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "*"
+  },
   "configSchema": "config.d.ts"
 }

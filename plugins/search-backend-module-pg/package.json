@@ -1,18 +1,27 @@
 {
   "name": "@backstage/plugin-search-backend-module-pg",
+  "version": "0.5.19",
   "description": "A module for the search backend that implements search using PostgreSQL",
-  "version": "0.5.19-next.2",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/search-backend-module-pg"
+  },
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -23,23 +32,19 @@
       ]
     }
   },
-  "backstage": {
-    "role": "backend-plugin-module"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/search-backend-module-pg"
-  },
+  "files": [
+    "dist",
+    "migrations",
+    "config.d.ts"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -56,10 +61,5 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^"
   },
-  "files": [
-    "dist",
-    "migrations",
-    "config.d.ts"
-  ],
   "configSchema": "config.d.ts"
 }

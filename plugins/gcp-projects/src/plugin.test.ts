@@ -15,9 +15,37 @@
  */
 
 import { gcpProjectsPlugin } from './plugin';
+import { GcpClient } from './api';
+import { OAuthApi } from '@backstage/core-plugin-api';
+import packageinfo from '../package.json';
 
 describe('gcp-projects', () => {
+  let sut: GcpClient;
+  let googleAuthApi: OAuthApi;
+  beforeEach(() => {
+    sut = new GcpClient(googleAuthApi);
+  });
+
   it('should export plugin', () => {
     expect(gcpProjectsPlugin).toBeDefined();
+  });
+
+  it('spy headers with identifying metadata', async () => {
+    const response: any = {
+      headers: {
+        Accept: '*/*',
+        'X-Goog-Api-Client': `backstage/gcpprojects/${packageinfo.version}`,
+      },
+    };
+    jest.spyOn(sut, 'listProjects').mockImplementation((): any => {
+      return response;
+    });
+
+    expect(response).toStrictEqual({
+      headers: {
+        Accept: '*/*',
+        'X-Goog-Api-Client': `backstage/gcpprojects/${packageinfo.version}`,
+      },
+    });
   });
 });

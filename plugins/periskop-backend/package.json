@@ -1,26 +1,26 @@
 {
   "name": "@backstage/plugin-periskop-backend",
-  "version": "0.2.8-next.2",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
-  "homepage": "https://periskop.io",
+  "version": "0.2.8",
   "backstage": {
     "role": "backend-plugin"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://periskop.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/periskop-backend"
   },
-  "publishConfig": {
-    "access": "public"
-  },
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -31,14 +31,18 @@
       ]
     }
   },
+  "files": [
+    "dist",
+    "alpha"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -55,9 +59,5 @@
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.6"
-  },
-  "files": [
-    "dist",
-    "alpha"
-  ]
+  }
 }

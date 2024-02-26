@@ -1,18 +1,31 @@
 {
   "name": "@backstage/plugin-explore",
+  "version": "0.4.16",
   "description": "A Backstage plugin for building an exploration page of your software ecosystem",
-  "version": "0.4.16-next.2",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/explore"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.tsx",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -23,27 +36,17 @@
       ]
     }
   },
-  "backstage": {
-    "role": "frontend-plugin"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/explore"
-  },
-  "keywords": [
-    "backstage"
+  "files": [
+    "dist"
   ],
-  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "start": "backstage-cli package start"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
@@ -63,11 +66,6 @@
     "pluralize": "^8.0.0",
     "react-use": "^17.2.4"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
@@ -79,7 +77,9 @@
     "@testing-library/react": "^14.0.0",
     "msw": "^1.0.0"
   },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  }
 }

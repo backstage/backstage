@@ -1,37 +1,40 @@
 {
   "name": "@backstage/plugin-gitops-profiles",
+  "version": "0.3.45",
   "description": "A Backstage plugin that helps you manage GitOps profiles",
-  "version": "0.3.45-next.1",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "frontend-plugin"
-  },
+  "keywords": [
+    "backstage",
+    "gitops"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/gitops-profiles"
   },
-  "keywords": [
-    "backstage",
-    "gitops"
-  ],
+  "license": "Apache-2.0",
   "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
-    "start": "backstage-cli package start",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/core-components": "workspace:^",
@@ -42,11 +45,6 @@
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-use": "^17.2.4"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
@@ -56,7 +54,9 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0"
   },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  }
 }
