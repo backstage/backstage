@@ -31,6 +31,8 @@ export const adrApiRef: ApiRef<AdrApi>;
 export class AdrClient implements AdrApi {
   constructor(options: AdrClientOptions);
   // (undocumented)
+  imageAdr(url: string): Promise<AdrReadResult>;
+  // (undocumented)
   listAdrs(url: string): Promise<AdrListResult>;
   // (undocumented)
   readAdr(url: string): Promise<AdrReadResult>;
@@ -83,7 +85,9 @@ export const AdrReader: {
   }): React_2.JSX.Element;
   decorators: Readonly<{
     createRewriteRelativeLinksDecorator(): AdrContentDecorator;
-    createRewriteRelativeEmbedsDecorator(): AdrContentDecorator;
+    createRewriteRelativeEmbedsDecorator(
+      backendUrl: string,
+    ): AdrContentDecorator;
     createFrontMatterFormatterDecorator(): AdrContentDecorator;
   }>;
 };
