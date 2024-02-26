@@ -5,6 +5,7 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
 import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
@@ -27,6 +28,7 @@ export const catalogAnalysisExtensionPoint: ExtensionPoint<CatalogAnalysisExtens
 
 // @alpha (undocumented)
 export interface CatalogModelExtensionPoint {
+  setEntityDataParser(parser: CatalogProcessorParser): void;
   setFieldValidators(validators: Partial<Validators>): void;
 }
 

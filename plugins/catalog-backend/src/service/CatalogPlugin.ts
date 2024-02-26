@@ -31,6 +31,7 @@ import {
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
+  CatalogProcessorParser,
   EntityProvider,
   PlaceholderResolver,
   ScmLocationAnalyzer,
@@ -137,6 +138,21 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
   get fieldValidators() {
     return this.#fieldValidators;
   }
+
+  #entityDataParser?: CatalogProcessorParser;
+
+  setEntityDataParser(parser: CatalogProcessorParser): void {
+    if (this.#entityDataParser) {
+      throw new Error(
+        'Attempted to install second EntityDataParser. Only one can be set.',
+      );
+    }
+    this.#entityDataParser = parser;
+  }
+
+  get entityDataParser() {
+    return this.#entityDataParser;
+  }
 }
 
 /**
@@ -205,6 +221,11 @@ export const catalogPlugin = createBackendPlugin({
         }
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);
+
+        if (modelExtensions.entityDataParser) {
+          builder.setEntityDataParser(modelExtensions.entityDataParser);
+        }
+
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
