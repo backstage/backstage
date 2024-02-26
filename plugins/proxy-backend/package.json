@@ -58,7 +58,7 @@
     "express-promise-router": "^4.1.0",
     "http-proxy-middleware": "^2.0.0",
     "morgan": "^1.10.0",
-    "uuid": "^8.0.0",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1",
     "yaml": "^2.0.0",
     "yn": "^4.0.0",
@@ -70,7 +70,7 @@
     "@backstage/config-loader": "workspace:^",
     "@types/http-proxy-middleware": "^0.19.3",
     "@types/supertest": "^2.0.8",
-    "@types/uuid": "^8.0.0",
+    "@types/uuid": "^9.0.0",
     "@types/yup": "^0.29.13",
     "msw": "^1.0.0",
     "supertest": "^6.1.3"

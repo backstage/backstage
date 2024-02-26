@@ -3340,7 +3340,7 @@ __metadata:
     raw-body: ^2.4.1
     supertest: ^6.1.3
     tar: ^6.1.12
-    uuid: ^8.3.2
+    uuid: ^9.0.0
     winston: ^3.2.1
     winston-transport: ^4.5.0
     yauzl: ^2.10.0
@@ -3462,7 +3462,7 @@ __metadata:
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
     zod: ^3.22.4
@@ -3492,7 +3492,7 @@ __metadata:
     supertest: ^6.1.3
     testcontainers: ^10.0.0
     textextensions: ^5.16.0
-    uuid: ^8.0.0
+    uuid: ^9.0.0
   peerDependencies:
     "@types/jest": "*"
   languageName: unknown
@@ -4889,7 +4889,7 @@ __metadata:
     passport-oauth2: ^1.6.1
     passport-onelogin-oauth: ^0.0.1
     supertest: ^6.1.3
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -4919,7 +4919,7 @@ __metadata:
     node-fetch: ^2.6.7
     passport: ^0.7.0
     supertest: ^6.1.3
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
     zod: ^3.22.4
     zod-to-json-schema: ^3.21.4
@@ -5237,7 +5237,7 @@ __metadata:
     aws-sdk-client-mock-jest: ^3.0.0
     luxon: ^3.0.0
     p-limit: ^3.0.2
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
     yaml: ^2.0.0
   languageName: unknown
@@ -5259,7 +5259,7 @@ __metadata:
     luxon: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5307,7 +5307,7 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     luxon: ^3.0.0
     msw: ^1.0.0
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5330,7 +5330,7 @@ __metadata:
     luxon: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5371,7 +5371,7 @@ __metadata:
     luxon: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5418,7 +5418,7 @@ __metadata:
     minimatch: ^9.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5437,12 +5437,12 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/lodash": ^4.14.151
-    "@types/uuid": ^8.0.0
+    "@types/uuid": ^9.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5470,7 +5470,7 @@ __metadata:
     express-promise-router: ^4.1.0
     knex: ^3.0.0
     luxon: ^3.0.0
-    uuid: ^8.3.2
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5491,7 +5491,7 @@ __metadata:
     "@types/lodash": ^4.14.151
     ldapjs: ^2.2.0
     lodash: ^4.17.21
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5519,7 +5519,7 @@ __metadata:
     node-fetch: ^2.6.7
     p-limit: ^3.0.2
     qs: ^6.9.4
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5565,7 +5565,7 @@ __metadata:
     luxon: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -5628,7 +5628,7 @@ __metadata:
     "@types/glob": ^8.0.0
     "@types/lodash": ^4.14.151
     "@types/supertest": ^2.0.8
-    "@types/uuid": ^8.0.0
+    "@types/uuid": ^9.0.0
     better-sqlite3: ^9.0.0
     codeowners-utils: ^1.0.2
     core-js: ^3.6.5
@@ -5646,7 +5646,7 @@ __metadata:
     p-limit: ^3.0.2
     prom-client: ^15.0.0
     supertest: ^6.1.3
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
     yaml: ^2.0.0
@@ -6031,7 +6031,7 @@ __metadata:
     express-promise-router: ^4.1.0
     knex: ^3.0.0
     supertest: ^6.1.6
-    uuid: ^8.3.2
+    uuid: ^9.0.0
     winston: ^3.2.1
     xml2js: ^0.6.0
     yn: ^4.0.0
@@ -7450,7 +7450,7 @@ __metadata:
     luxon: ^3.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
-    uuid: ^8.3.2
+    uuid: ^9.0.0
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -7644,7 +7644,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -7674,7 +7674,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     knex: ^3.0.0
     msw: ^1.0.0
-    uuid: ^8.0.0
+    uuid: ^9.0.0
   languageName: unknown
   linkType: soft
 
@@ -7950,7 +7950,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     cross-fetch: ^4.0.0
     msw: ^1.0.0
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     zod: ^3.22.4
   languageName: unknown
   linkType: soft
@@ -8021,7 +8021,7 @@ __metadata:
     knex: ^3.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.3
-    uuid: ^8.2.0
+    uuid: ^9.0.0
     winston: ^3.2.1
     yn: ^4.0.0
     zod: ^3.22.4
@@ -8090,7 +8090,7 @@ __metadata:
     "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^0.19.3
     "@types/supertest": ^2.0.8
-    "@types/uuid": ^8.0.0
+    "@types/uuid": ^9.0.0
     "@types/yup": ^0.29.13
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -8098,7 +8098,7 @@ __metadata:
     morgan: ^1.10.0
     msw: ^1.0.0
     supertest: ^6.1.3
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
     yaml: ^2.0.0
     yn: ^4.0.0
@@ -8491,7 +8491,7 @@ __metadata:
     prom-client: ^15.0.0
     strip-ansi: ^7.1.0
     supertest: ^6.1.3
-    uuid: ^8.2.0
+    uuid: ^9.0.0
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
     yaml: ^2.0.0
@@ -8695,7 +8695,7 @@ __metadata:
     aws4: ^1.12.0
     elastic-builder: ^2.16.0
     lodash: ^4.17.21
-    uuid: ^8.3.2
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -8732,7 +8732,7 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     knex: ^3.0.0
     lodash: ^4.17.21
-    uuid: ^8.3.2
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -8799,7 +8799,7 @@ __metadata:
     lodash: ^4.17.21
     lunr: ^2.3.9
     ndjson: ^2.0.0
-    uuid: ^8.3.2
+    uuid: ^9.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -8962,7 +8962,7 @@ __metadata:
     "@types/zen-observable": ^0.8.2
     react-hook-form: ^7.12.2
     react-use: ^17.2.4
-    uuid: ^8.3.2
+    uuid: ^9.0.0
     zen-observable: ^0.10.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -8991,7 +8991,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     winston: ^3.2.1
     ws: ^8.14.2
     yn: ^4.0.0
@@ -9011,7 +9011,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.21
     express: ^4.17.1
-    uuid: ^8.0.0
+    uuid: ^9.0.0
     ws: ^8.14.2
   languageName: unknown
   linkType: soft
@@ -9054,7 +9054,7 @@ __metadata:
     jest-websocket-mock: ^2.5.0
     msw: ^1.0.0
     react-use: ^17.2.4
-    uuid: ^8.0.0
+    uuid: ^9.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
   languageName: unknown
@@ -9277,7 +9277,7 @@ __metadata:
     luxon: ^3.0.0
     semver: ^7.5.3
     supertest: ^6.1.3
-    uuid: ^8.3.2
+    uuid: ^9.0.0
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
     yn: ^4.0.0
@@ -11925,11 +11925,11 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
-    "@types/uuid": ^8.0.0
+    "@types/uuid": ^9.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     supertest: ^6.1.6
-    uuid: ^8.3.2
+    uuid: ^9.0.0
     winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
@@ -19760,10 +19760,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:^8.0.0":
-  version: 8.3.4
-  resolution: "@types/uuid@npm:8.3.4"
-  checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
+"@types/uuid@npm:^9.0.0":
+  version: 9.0.8
+  resolution: "@types/uuid@npm:9.0.8"
+  checksum: b8c60b7ba8250356b5088302583d1704a4e1a13558d143c549c408bf8920535602ffc12394ede77f8a8083511b023704bc66d1345792714002bfa261b17c5275
   languageName: node
   linkType: hard
 
@@ -44901,7 +44901,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:8.3.2, uuid@npm:^8.0.0, uuid@npm:^8.2.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
+"uuid@npm:8.3.2, uuid@npm:^8.0.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:

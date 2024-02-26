@@ -54,7 +54,7 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@types/node-fetch": "^2.5.12",
     "node-fetch": "^2.6.7",
-    "uuid": "^8.0.0",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
