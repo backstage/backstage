@@ -66,4 +66,8 @@ export class AdrClient implements AdrApi {
   async readAdr(url: string): Promise<AdrReadResult> {
     return this.fetchAdrApi<AdrReadResult>(readEndpoint, url);
   }
+
+  async imageAdr(url: string): Promise<AdrReadResult> {
+    return this.fetchAdrApi<AdrReadResult>(readEndpoint, url);
+  }
 }

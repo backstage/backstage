@@ -21,7 +21,7 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { getAdrLocationUrl } from '@backstage/plugin-adr-common';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -45,6 +45,7 @@ export const AdrReader = (props: {
   const scmIntegrations = useApi(scmIntegrationsApiRef);
   const adrApi = useApi(adrApiRef);
   const adrLocationUrl = getAdrLocationUrl(entity, scmIntegrations);
+  const discoveryApi = useApi(discoveryApiRef);
 
   const url = `${adrLocationUrl.replace(/\/$/, '')}/${adr}`;
   const { value, loading, error } = useAsync(
@@ -52,13 +53,19 @@ export const AdrReader = (props: {
     [url],
   );
 
+  const { value: backendUrl } = useAsync(
+    async () => discoveryApi.getBaseUrl('adr'),
+    [],
+  );
   const adrContent = useMemo(() => {
     if (!value?.data) {
       return '';
     }
     const adrDecorators = decorators ?? [
       adrDecoratorFactories.createRewriteRelativeLinksDecorator(),
-      adrDecoratorFactories.createRewriteRelativeEmbedsDecorator(),
+      adrDecoratorFactories.createRewriteRelativeEmbedsDecorator(
+        backendUrl ?? '',
+      ),
       adrDecoratorFactories.createFrontMatterFormatterDecorator(),
     ];
 
@@ -67,7 +74,7 @@ export const AdrReader = (props: {
         decorator({ baseUrl: adrLocationUrl, content }).content,
       value.data,
     );
-  }, [adrLocationUrl, decorators, value]);
+  }, [adrLocationUrl, backendUrl, decorators, value]);
 
   return (
     <InfoCard>
