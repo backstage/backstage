@@ -56,7 +56,7 @@ describe('createLegacyAuthAdapters', () => {
     expect(ret.httpAuth).toBe(httpAuth);
   });
 
-  it('should pass through userInfo if it provided', () => {
+  it('should pass through userInfo if it is provided', () => {
     const auth = {};
     const userInfo = {};
     const ret = createLegacyAuthAdapters({
