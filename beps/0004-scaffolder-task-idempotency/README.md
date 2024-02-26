@@ -264,7 +264,7 @@ Task state will be stored in the extra column `state` in the table `tasks` with 
 
 We will not provide built in logic which will do that magically for you, instead we will give an opportunity to hook own
 logic where user can do a cleanup of created resources. Each action definition will have an additional optional property
-`undoAction`, which will be triggerred during 'Rollback'.
+`undoAction`, which will be triggered during 'Rollback'.
 
 ```yaml
 - id: publish
