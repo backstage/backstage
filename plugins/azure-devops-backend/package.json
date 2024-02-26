@@ -45,7 +45,7 @@
     "mime-types": "^2.1.27",
     "p-limit": "^3.1.0",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

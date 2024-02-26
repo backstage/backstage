@@ -43,7 +43,7 @@
     "lodash": "^4.17.21",
     "openapi-merge": "^1.3.2",
     "uuid": "^9.0.0",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

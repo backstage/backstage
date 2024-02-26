@@ -42,7 +42,7 @@
     "uuid": "^9.0.0",
     "winston": "^3.2.1",
     "ws": "^8.14.2",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

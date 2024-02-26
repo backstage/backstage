@@ -105,7 +105,7 @@
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0",
     "yauzl": "^2.10.0",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "peerDependencies": {
     "pg-connection-string": "^2.3.0"

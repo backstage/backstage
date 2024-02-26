@@ -49,7 +49,7 @@
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

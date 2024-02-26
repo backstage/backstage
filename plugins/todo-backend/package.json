@@ -44,7 +44,7 @@
     "express": "^4.17.1",
     "leasot": "^12.0.0",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
