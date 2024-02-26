@@ -232,7 +232,7 @@ export async function createRouter(
       targetPluginId: 'catalog',
     });
 
-    // TODO(kuanpg): entities in this playlist that no longer exist in the catalog will be
+    // TODO(kuangp): entities in this playlist that no longer exist in the catalog will be
     // excluded from this response, we need a way to clean up these orphaned refs potentially
     // via catalog events (https://github.com/backstage/backstage/issues/8219)
     //
