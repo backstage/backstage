@@ -87,11 +87,14 @@ export const columnFactories = Object.freeze({
       title: 'Targets',
       field: 'entity.spec.targets',
       customFilterAndSearch: (query, row) => {
-        const targets = [];
-        if (Array.isArray(row.entity?.spec?.targets)) {
-          targets.push(...row.entity?.spec?.targets);
+        let targets: JsonArray = [];
+        if (
+          row.entity?.spec?.targets &&
+          Array.isArray(row.entity?.spec?.targets)
+        ) {
+          targets = row.entity?.spec?.targets;
         } else if (row.entity?.spec?.target) {
-          targets.push(row.entity?.spec?.target);
+          targets = [row.entity?.spec?.target];
         }
         return targets
           .join(', ')
