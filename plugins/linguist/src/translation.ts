@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-export * from './alpha/index';
-export { default } from './alpha/index';
-export * from './translation';
+/** @alpha */
+export const linguistTranslationRef = createTranslationRef({
+  id: 'linguist',
+  messages: {
+    entityCard: {
+      title: 'Languages',
+      noData: 'There is currently no language data for this entity.',
+    },
+  },
+});
