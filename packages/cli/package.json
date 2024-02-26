@@ -133,7 +133,7 @@
     "tsx": "^4.0.0",
     "util": "^0.12.3",
     "webpack": "^5.70.0",
-    "webpack-dev-server": "^4.7.3",
+    "webpack-dev-server": "^5.0.0",
     "webpack-node-externals": "^3.0.0",
     "yaml": "^2.0.0",
     "yml-loader": "^2.1.0",
