@@ -38,6 +38,8 @@ export interface AuthService {
     expiresAt: Date;
   }>;
   // (undocumented)
+  getNoneCredentials(): Promise<BackstageCredentials<BackstageNonePrincipal>>;
+  // (undocumented)
   getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
   >;
@@ -119,6 +121,7 @@ export interface BackendPluginRegistrationPoints {
 // @public (undocumented)
 export type BackstageCredentials<TPrincipal = unknown> = {
   $$type: '@backstage/BackstageCredentials';
+  expiresAt?: Date;
   principal: TPrincipal;
 };
 
@@ -311,11 +314,18 @@ export interface HttpAuthService {
     req: Request_2<any, any, any, any, any>,
     options?: {
       allow?: Array<TAllowed>;
-      allowedAuthMethods?: Array<'token' | 'cookie'>;
+      allowLimitedAccess?: boolean;
     },
   ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>>;
   // (undocumented)
-  issueUserCookie(res: Response_2): Promise<void>;
+  issueUserCookie(
+    res: Response_2,
+    options?: {
+      credentials?: BackstageCredentials<BackstageUserPrincipal>;
+    },
+  ): Promise<{
+    expiresAt: Date;
+  }>;
 }
 
 // @public (undocumented)

@@ -28,7 +28,6 @@ import {
   MOCK_USER_TOKEN,
   MOCK_USER_TOKEN_PREFIX,
   MOCK_INVALID_USER_TOKEN,
-  MOCK_USER_LIMITED_TOKEN,
   MOCK_USER_LIMITED_TOKEN_PREFIX,
   MOCK_INVALID_USER_LIMITED_TOKEN,
   MOCK_SERVICE_TOKEN,
@@ -57,11 +56,6 @@ export class MockAuthService implements AuthService {
   ): Promise<BackstageCredentials> {
     switch (token) {
       case MOCK_USER_TOKEN:
-        return mockCredentials.user();
-      case MOCK_USER_LIMITED_TOKEN:
-        if (!options?.allowLimitedAccess) {
-          throw new AuthenticationError('Limited user token is not allowed');
-        }
         return mockCredentials.user();
       case MOCK_SERVICE_TOKEN:
         return mockCredentials.service();

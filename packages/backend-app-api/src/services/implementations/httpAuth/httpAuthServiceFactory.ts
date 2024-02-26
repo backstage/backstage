@@ -18,6 +18,7 @@ import {
   AuthService,
   BackstageCredentials,
   BackstagePrincipalTypes,
+  BackstageUserPrincipal,
   DiscoveryService,
   HttpAuthService,
   coreServices,
@@ -26,11 +27,8 @@ import {
 import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import { parse as parseCookie } from 'cookie';
 import { Request, Response } from 'express';
-import { decodeJwt } from 'jose';
-import {
-  createCredentialsWithNonePrincipal,
-  toInternalBackstageCredentials,
-} from '../auth/authServiceFactory';
+
+const FIVE_MINUTES_MS = 5 * 60 * 1000;
 
 const BACKSTAGE_AUTH_COOKIE = 'backstage-auth';
 
@@ -41,54 +39,74 @@ function getTokenFromRequest(req: Request) {
     const matches = authHeader.match(/^Bearer[ ]+(\S+)$/i);
     const token = matches?.[1];
     if (token) {
-      return { token, isCookie: false };
+      return token;
     }
   }
 
+  return undefined;
+}
+
+function getCookieFromRequest(req: Request) {
   const cookieHeader = req.headers.cookie;
   if (cookieHeader) {
     const cookies = parseCookie(cookieHeader);
     const token = cookies[BACKSTAGE_AUTH_COOKIE];
     if (token) {
-      return { token, isCookie: true };
+      return token;
     }
   }
 
-  return { token: undefined, isCookie: false };
+  return undefined;
 }
 
 const credentialsSymbol = Symbol('backstage-credentials');
+const limitedCredentialsSymbol = Symbol('backstage-limited-credentials');
 
 type RequestWithCredentials = Request & {
   [credentialsSymbol]?: Promise<BackstageCredentials>;
+  [limitedCredentialsSymbol]?: Promise<BackstageCredentials>;
 };
 
 class DefaultHttpAuthService implements HttpAuthService {
+  readonly #auth: AuthService;
+  readonly #discovery: DiscoveryService;
+  readonly #pluginId: string;
+
   constructor(
-    private readonly auth: AuthService,
-    private readonly discovery: DiscoveryService,
-    private readonly pluginId: string,
-  ) {}
+    auth: AuthService,
+    discovery: DiscoveryService,
+    pluginId: string,
+  ) {
+    this.#auth = auth;
+    this.#discovery = discovery;
+    this.#pluginId = pluginId;
+  }
 
   async #extractCredentialsFromRequest(req: Request) {
-    const { token, isCookie } = getTokenFromRequest(req);
+    const token = getTokenFromRequest(req);
     if (!token) {
-      return createCredentialsWithNonePrincipal();
+      return await this.#auth.getNoneCredentials();
     }
 
-    const credentials = toInternalBackstageCredentials(
-      await this.auth.authenticate(token),
-    );
-    if (isCookie) {
-      if (credentials.principal.type !== 'user') {
-        throw new AuthenticationError(
-          'Refusing to authenticate non-user principal with cookie auth',
-        );
-      }
-      credentials.authMethod = 'cookie';
+    return await this.#auth.authenticate(token);
+  }
+
+  async #extractLimitedCredentialsFromRequest(req: Request) {
+    const token = getTokenFromRequest(req);
+    if (token) {
+      return await this.#auth.authenticate(token, {
+        allowLimitedAccess: true,
+      });
     }
 
-    return credentials;
+    const cookie = getCookieFromRequest(req);
+    if (!cookie) {
+      return await this.#auth.getNoneCredentials();
+    }
+
+    return await this.#auth.authenticate(cookie, {
+      allowLimitedAccess: true,
+    });
   }
 
   async #getCredentials(req: RequestWithCredentials) {
@@ -96,73 +114,130 @@ class DefaultHttpAuthService implements HttpAuthService {
       this.#extractCredentialsFromRequest(req));
   }
 
+  async #getLimitedCredentials(req: RequestWithCredentials) {
+    return (req[limitedCredentialsSymbol] ??=
+      this.#extractLimitedCredentialsFromRequest(req));
+  }
+
   async credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
     req: Request,
     options?: {
       allow?: Array<TAllowed>;
-      allowedAuthMethods?: Array<'token' | 'cookie'>;
+      allowLimitedAccess?: boolean;
     },
   ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>> {
-    const credentials = toInternalBackstageCredentials(
-      await this.#getCredentials(req),
-    );
+    // Limited and full credentials are treated as two separate cases, this lets
+    // us avoid internal dependencies between the AuthService and
+    // HttpAuthService implementations
+    const credentials = options?.allowLimitedAccess
+      ? await this.#getLimitedCredentials(req)
+      : await this.#getCredentials(req);
 
-    const allowedPrincipalTypes = options?.allow;
-    const allowedAuthMethods: Array<'token' | 'cookie' | 'none'> =
-      options?.allowedAuthMethods ?? ['token'];
-
-    if (
-      credentials.authMethod !== 'none' &&
-      !allowedAuthMethods.includes(credentials.authMethod)
-    ) {
-      throw new NotAllowedError(
-        `This endpoint does not allow the '${credentials.authMethod}' auth method`,
-      );
+    const allowed = options?.allow;
+    if (!allowed) {
+      return credentials as any;
     }
 
-    if (
-      allowedPrincipalTypes &&
-      !allowedPrincipalTypes.includes(credentials.principal.type as TAllowed)
-    ) {
-      if (credentials.authMethod === 'none') {
-        throw new AuthenticationError();
+    if (this.#auth.isPrincipal(credentials, 'none')) {
+      if (allowed.includes('none' as TAllowed)) {
+        return credentials as any;
       }
+
+      throw new AuthenticationError('Missing credentials');
+    } else if (this.#auth.isPrincipal(credentials, 'user')) {
+      if (allowed.includes('user' as TAllowed)) {
+        return credentials as any;
+      }
+
       throw new NotAllowedError(
-        `This endpoint does not allow '${credentials.principal.type}' credentials`,
+        `This endpoint does not allow 'user' credentials`,
+      );
+    } else if (this.#auth.isPrincipal(credentials, 'service')) {
+      if (allowed.includes('service' as TAllowed)) {
+        return credentials as any;
+      }
+
+      throw new NotAllowedError(
+        `This endpoint does not allow 'service' credentials`,
       );
     }
 
-    return credentials as any;
+    throw new NotAllowedError(
+      'Unknown principal type, this should never happen',
+    );
   }
 
-  async issueUserCookie(res: Response): Promise<void> {
-    const credentials = await this.credentials(res.req, { allow: ['user'] });
+  async issueUserCookie(
+    res: Response,
+    options?: { credentials?: BackstageCredentials },
+  ): Promise<{ expiresAt: Date }> {
+    let credentials: BackstageCredentials<BackstageUserPrincipal>;
+    if (options?.credentials) {
+      if (!this.#auth.isPrincipal(options.credentials, 'user')) {
+        throw new AuthenticationError(
+          'Refused to issue cookie for non-user principal',
+        );
+      }
+      credentials = options.credentials;
+    } else {
+      credentials = await this.credentials(res.req, { allow: ['user'] });
+    }
+
+    const existingExpiresAt = await this.#existingCookieExpiration(res.req);
+    if (
+      existingExpiresAt &&
+      existingExpiresAt.getTime() < Date.now() - FIVE_MINUTES_MS
+    ) {
+      return { expiresAt: existingExpiresAt };
+    }
+
+    const originHeader = res.req.headers.origin;
+    const origin =
+      !originHeader || originHeader === 'null' ? undefined : originHeader;
 
     // https://backstage.example.com/api/catalog
-    const externalBaseUrlStr = await this.discovery.getExternalBaseUrl(
-      this.pluginId,
+    const externalBaseUrlStr = await this.#discovery.getExternalBaseUrl(
+      this.#pluginId,
     );
-    const externalBaseUrl = new URL(externalBaseUrlStr);
+    const externalBaseUrl = new URL(origin ?? externalBaseUrlStr);
 
-    const { token } = toInternalBackstageCredentials(credentials);
+    const { token, expiresAt } = await this.#auth.getLimitedUserToken(
+      credentials,
+    );
     if (!token) {
       throw new Error('User credentials is unexpectedly missing token');
     }
 
-    // TODO: Proper refresh and expiration handling
-    const expires = decodeJwt(token).exp!;
+    const secure =
+      externalBaseUrl.protocol === 'https:' ||
+      externalBaseUrl.hostname === 'localhost';
 
-    // TODO: refresh this thing
     res.cookie(BACKSTAGE_AUTH_COOKIE, token, {
       domain: externalBaseUrl.hostname,
       httpOnly: true,
-      expires: new Date(expires * 1000),
-      path: externalBaseUrl.pathname,
+      expires: expiresAt,
+      secure,
       priority: 'high',
-      sameSite: 'lax', // TBD
+      sameSite: secure ? 'none' : 'lax',
     });
 
-    throw new Error('Method not implemented.');
+    return { expiresAt };
+  }
+
+  async #existingCookieExpiration(req: Request): Promise<Date | undefined> {
+    const existingCookie = getCookieFromRequest(req);
+    if (!existingCookie) {
+      return undefined;
+    }
+
+    const existingCredentials = await this.#auth.authenticate(existingCookie, {
+      allowLimitedAccess: true,
+    });
+    if (!this.#auth.isPrincipal(existingCredentials, 'user')) {
+      return undefined;
+    }
+
+    return existingCredentials.expiresAt;
   }
 }
 

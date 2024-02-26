@@ -46,6 +46,8 @@ export type BackstageServicePrincipal = {
 export type BackstageCredentials<TPrincipal = unknown> = {
   $$type: '@backstage/BackstageCredentials';
 
+  expiresAt?: Date;
+
   principal: TPrincipal;
 };
 

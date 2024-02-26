@@ -202,6 +202,7 @@ export namespace mockServices {
     });
     export const mock = simpleMock(coreServices.auth, () => ({
       authenticate: jest.fn(),
+      getNoneCredentials: jest.fn(),
       getOwnServiceCredentials: jest.fn(),
       isPrincipal: jest.fn() as any,
       getPluginRequestToken: jest.fn(),

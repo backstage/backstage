@@ -261,4 +261,32 @@ describe('MockAuthService', () => {
       `Refused to issue service token for credential type 'none'`,
     );
   });
+
+  it('should issue limited user tokens', async () => {
+    await expect(
+      auth.getLimitedUserToken(mockCredentials.user()),
+    ).resolves.toEqual({
+      token: mockCredentials.limitedUser.token(),
+      expiresAt: expect.any(Date),
+    });
+
+    await expect(
+      auth.getLimitedUserToken(mockCredentials.user('user:default/other')),
+    ).resolves.toEqual({
+      token: mockCredentials.limitedUser.token('user:default/other'),
+      expiresAt: expect.any(Date),
+    });
+
+    await expect(
+      auth.getLimitedUserToken(mockCredentials.none() as any),
+    ).rejects.toThrow(
+      "Refused to issue limited user token for credential type 'none'",
+    );
+
+    await expect(
+      auth.getLimitedUserToken(mockCredentials.service() as any),
+    ).rejects.toThrow(
+      "Refused to issue limited user token for credential type 'service'",
+    );
+  });
 });

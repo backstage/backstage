@@ -3483,6 +3483,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/supertest": ^2.0.8
     better-sqlite3: ^9.0.0
+    cookie: ^0.6.0
     express: ^4.17.1
     fs-extra: ^11.0.0
     knex: ^3.0.0

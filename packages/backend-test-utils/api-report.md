@@ -54,9 +54,9 @@ export namespace mockCredentials {
     userEntityRef?: string,
   ): BackstageCredentials<BackstageUserPrincipal>;
   export namespace limitedUser {
-    export function header(userEntityRef?: string): string;
+    export function cookie(userEntityRef?: string): string;
     // (undocumented)
-    export function invalidHeader(): string;
+    export function invalidCookie(): string;
     // (undocumented)
     export function invalidToken(): string;
     export function token(userEntityRef?: string): string;

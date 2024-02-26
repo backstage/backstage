@@ -35,7 +35,6 @@ export type InternalBackstageCredentials<TPrincipal = unknown> =
   BackstageCredentials<TPrincipal> & {
     version: string;
     token?: string;
-    authMethod: 'token' | 'cookie' | 'none';
   };
 
 export function createCredentialsWithServicePrincipal(
@@ -48,24 +47,23 @@ export function createCredentialsWithServicePrincipal(
       type: 'service',
       subject: sub,
     },
-    authMethod: 'token',
   };
 }
 
 export function createCredentialsWithUserPrincipal(
   sub: string,
   token: string,
-  authMethod: 'token' | 'cookie' = 'token',
+  expiresAt?: Date,
 ): InternalBackstageCredentials<BackstageUserPrincipal> {
   return {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
     token,
+    expiresAt,
     principal: {
       type: 'user',
       userEntityRef: sub,
     },
-    authMethod,
   };
 }
 
@@ -76,7 +74,6 @@ export function createCredentialsWithNonePrincipal(): InternalBackstageCredentia
     principal: {
       type: 'none',
     },
-    authMethod: 'none',
   };
 }
 
@@ -135,6 +132,7 @@ class DefaultAuthService implements AuthService {
     return createCredentialsWithUserPrincipal(
       identity.identity.userEntityRef,
       token,
+      this.#getJwtExpiration(token),
     );
   }
 
@@ -214,12 +212,15 @@ class DefaultAuthService implements AuthService {
       );
     }
 
+    return { token, expiresAt: this.#getJwtExpiration(token) };
+  }
+
+  #getJwtExpiration(token: string) {
     const { exp } = decodeJwt(token);
     if (!exp) {
       throw new AuthenticationError('User token is missing expiration');
     }
-
-    return { token, expiresAt: new Date(exp * 1000) };
+    return new Date(exp * 1000);
   }
 }
 
