@@ -17,24 +17,24 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { SystemIcon } from './SystemIcon';
+import { AppIcon } from './icons';
 
-describe('SystemIcon', () => {
+describe('AppIcon', () => {
   it('should render the correct system icon', async () => {
-    const { container } = await renderInTestApp(<SystemIcon keys="kind:api" />);
-    expect(container.querySelector('svg')).toBeDefined();
+    await renderInTestApp(<AppIcon data-testid="Api Icon" id="kind:api" />);
+    expect(screen.getByTestId('Api Icon')).toBeDefined();
   });
 
-  it('should render the first found icon when multiple keys are provided', async () => {
-    const { container } = await renderInTestApp(
-      <SystemIcon keys={['unknown', 'kind:api']} />,
-    );
-    expect(container.querySelector('svg')).toBeDefined();
-  });
-
-  it('should render the fallback component when no system icon is found', async () => {
+  it('should render the default fallback component', async () => {
     await renderInTestApp(
-      <SystemIcon keys="unknown" Fallback={() => <div>Fallback Icon</div>} />,
+      <AppIcon data-testid="Fallback Icon" id="kind:api" />,
+    );
+    expect(screen.getByTestId('Fallback Icon')).toBeDefined();
+  });
+
+  it('should render the custom fallback component', async () => {
+    await renderInTestApp(
+      <AppIcon id="unknown" Fallback={() => <div>Fallback Icon</div>} />,
     );
     expect(screen.getByText('Fallback Icon')).toBeInTheDocument();
   });

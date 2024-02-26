@@ -1,5 +1,5 @@
 ---
-'@backstage/core-compat-api': patch
+'@backstage/core-components': minor
 ---
 
-Create an abstraction to consume legacy system icons in new system extensions.
+Create a component abstraction to consume system icons.

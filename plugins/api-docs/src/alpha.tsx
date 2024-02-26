@@ -27,7 +27,6 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 import {
-  SystemIcon,
   compatWrapper,
   convertLegacyRouteRef,
 } from '@backstage/core-compat-api';
@@ -45,11 +44,12 @@ import {
 import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { rootRoute, registerComponentRouteRef } from './routes';
 import { apiDocsConfigRef } from './config';
+import { AppIcon } from '@backstage/core-components';
 
 const apiDocsNavItem = createNavItemExtension({
   title: 'APIs',
   routeRef: convertLegacyRouteRef(rootRoute),
-  icon: () => <SystemIcon keys="kind:api" />,
+  icon: () => <AppIcon id="kind:api" />,
 });
 
 const apiDocsConfigApi = createApiExtension({

@@ -8,11 +8,9 @@ import { AnalyticsApi as AnalyticsApi_2 } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { AnalyticsEvent as AnalyticsEvent_2 } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/core-plugin-api';
-import { ComponentProps } from 'react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { ExternalRouteRef as ExternalRouteRef_2 } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -70,15 +68,6 @@ export class NoOpAnalyticsApi implements AnalyticsApi, AnalyticsApi_2 {
   // (undocumented)
   captureEvent(_event: AnalyticsEvent | AnalyticsEvent_2): void;
 }
-
-// @public
-export function SystemIcon(props: SystemIconProps): React_2.JSX.Element;
-
-// @public
-export type SystemIconProps = ComponentProps<IconComponent> & {
-  keys: string | string[];
-  Fallback?: IconComponent;
-};
 
 // @public
 export type ToNewRouteRef<T extends RouteRef | SubRouteRef | ExternalRouteRef> =
