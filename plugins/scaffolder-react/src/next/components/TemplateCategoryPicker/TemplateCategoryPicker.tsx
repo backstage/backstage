@@ -23,6 +23,7 @@ import {
   FormControlLabel,
   TextField,
   Typography,
+  makeStyles,
 } from '@material-ui/core';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -34,12 +35,24 @@ import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+/** @alpha */
+export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
+
+const useStyles = makeStyles(
+  {
+    root: {},
+    label: {},
+  },
+  { name: 'ScaffolderReactTemplateCategoryPicker' },
+);
+
 /**
  * The Category Picker that is rendered on the left side for picking
  * categories and filtering the template list.
  * @alpha
  */
 export const TemplateCategoryPicker = () => {
+  const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
@@ -57,8 +70,9 @@ export const TemplateCategoryPicker = () => {
   if (!availableTypes) return null;
 
   return (
-    <Box pb={1} pt={1}>
+    <Box className={classes.root} pb={1} pt={1}>
       <Typography
+        className={classes.label}
         variant="button"
         component="label"
         htmlFor="categories-picker"
