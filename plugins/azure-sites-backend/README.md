@@ -51,17 +51,17 @@ Here's how to get the backend plugin up and running:
    } from '@backstage/plugin-azure-sites-backend';
    import { Router } from 'express';
    import { PluginEnvironment } from '../types';
-   import { CatalogClient } from '@backstage/catalog-client'
+   import { CatalogClient } from '@backstage/catalog-client';
 
    export default async function createPlugin(
      env: PluginEnvironment,
    ): Promise<Router> {
+     const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
      return await createRouter({
-       const catalogApi = new CatalogClient({ discoveryApi: env.discovery })
        logger: env.logger,
        azureSitesApi: AzureSitesApi.fromConfig(env.config),
        permissions: env.permissions,
-       catalogApi
+       catalogApi,
      });
    }
    ```
