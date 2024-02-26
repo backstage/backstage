@@ -15,6 +15,7 @@
  */
 
 import {
+  custom,
   Issuer,
   ClientAuthMethod,
   TokenSet,
@@ -29,6 +30,10 @@ import {
   PassportOAuthAuthenticatorHelper,
   PassportOAuthPrivateInfo,
 } from '@backstage/plugin-auth-node';
+
+custom.setHttpOptionsDefaults({
+  timeout: 10000,
+});
 
 /**
  * authentication result for the OIDC which includes the token set and user
