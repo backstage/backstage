@@ -208,6 +208,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       groups = paginated<GitLabGroup>(options => client.listGroups(options), {
         page: 1,
         per_page: 100,
+        ...this.config.groupListApiOptions,
       });
 
       users = paginated<GitLabUser>(options => client.listUsers(options), {

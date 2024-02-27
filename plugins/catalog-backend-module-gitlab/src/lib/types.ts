@@ -178,7 +178,14 @@ export type GitlabProviderConfig = {
    */
   groupPattern: RegExp;
 
+  /**
+   * Lookup-Options passed to the gitlab api when listing groups.
+   * @see https://docs.gitlab.com/ee/api/groups.html#list-groups
+   */
+  groupListApiOptions?: { [name: string]: string };
+
   orgEnabled?: boolean;
+
   schedule?: TaskScheduleDefinition;
   /**
    * If the project is a fork, skip repository

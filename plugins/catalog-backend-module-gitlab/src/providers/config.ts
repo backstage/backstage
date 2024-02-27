@@ -43,6 +43,13 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     config.getOptionalString('groupPattern') ?? /[\s\S]*/,
   );
   const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
+  const groupListApiOptions: { [name: string]: string } = {};
+  const groupListApiOptionsCfg = config.getOptionalConfig(
+    'groupListApiOptions',
+  );
+  groupListApiOptionsCfg?.keys().forEach(key => {
+    groupListApiOptions[key] = groupListApiOptionsCfg.get(key);
+  });
   const skipForkedRepos: boolean =
     config.getOptionalBoolean('skipForkedRepos') ?? false;
 
@@ -60,6 +67,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     projectPattern,
     userPattern,
     groupPattern,
+    groupListApiOptions,
     schedule,
     orgEnabled,
     skipForkedRepos,
@@ -77,6 +85,9 @@ export function readGitlabConfigs(config: Config): GitlabProviderConfig[] {
   const configs: GitlabProviderConfig[] = [];
 
   const providerConfigs = config.getOptionalConfig('catalog.providers.gitlab');
+  console.log('readGitlabConfigs');
+  console.log(JSON.stringify(config, null, 2));
+  console.log(JSON.stringify(providerConfigs, null, 2));
 
   if (!providerConfigs) {
     return configs;
