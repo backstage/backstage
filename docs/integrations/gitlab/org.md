@@ -68,11 +68,11 @@ catalog:
         group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
         groupPattern: '[\s\S]*' # Optional. Filters found groups based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
         groupListApiParameters: # Optional. Pass parameters to the listGroups api call used to get the list of available groups
-          all_available: true # Show all the groups you have access to (defaults to false for authenticated users, true for administrators)
-          search: '' # Return the list of authorized groups matching the search criteria
-          owned: true # Limit to groups explicitly owned by the current user.
-          min_access_level: 10 # Limit to groups where current user has at least this role.
-          top_level_only: false # Limit to top level groups, excluding all subgroups
+          all_available: true # Optional. Show all the groups you have access to (defaults to false for authenticated users, true for administrators)
+          search: '' # Optional. Return the list of authorized groups matching the search criteria
+          owned: true # Optional. Limit to groups explicitly owned by the current user.
+          min_access_level: 10 # Optional. Limit to groups where current user has at least this role.
+          top_level_only: false # Optional. Limit to top level groups, excluding all subgroups
 ```
 
 ### Groups
