@@ -193,6 +193,7 @@ import {
   PinnipedHelper,
   PinnipedParameters,
 } from '@backstage/plugin-kubernetes-node';
+import { JsonObject } from '@backstage/types';
 
 export class PinnipedStrategy implements AuthenticationStrategy {
   private pinnipedHelper: PinnipedHelper;
@@ -206,7 +207,8 @@ export class PinnipedStrategy implements AuthenticationStrategy {
     requestAuth: KubernetesRequestAuth,
   ): Promise<KubernetesCredential> {
     const params: PinnipedParameters = {
-      token: requestAuth.token as string,
+      token:
+        ((requestAuth.pinniped as JsonObject)?.clusteridtoken as string) || '',
       authenticator: {
         apiGroup: 'authentication.concierge.pinniped.dev',
         kind: 'JWTAuthenticator',
@@ -230,13 +232,15 @@ export class PinnipedStrategy implements AuthenticationStrategy {
     return [];
   }
 
-  public presentAuthMetadata(_authMetadata: AuthMetadata): AuthMetadata {
-    return {};
-  }
+  presentAuthMetadata: (authMetadata: AuthMetadata): AuthMetadata => {
+    return {
+      audience: authMetadata['kubernetes.io/x-pinniped-audience'],
+    };
+  },
 }
 ```
 
-The `PinnipedStrategy` implements the `AuthenticationStrategy` interface, it uses the PinnipedHelper class to exchange the clusterIdToken ( created by a custom Pinniped client-side `KubernetesAuthProvider` ) for a x509 certificate, certificate that will allow us to consume the kubernetes cluster.
+The `PinnipedStrategy` implements the `AuthenticationStrategy` interface, it uses the PinnipedHelper class to exchange the clusterIdToken ( created by a custom Pinniped client-side `KubernetesAuthProvider` ) for a x509 certificate, certificate that will allow us to consume the kubernetes cluster. It also returns the audience value to the front-end through `presentAuthMetadata`.
 
 > Notice that the PinnipedHelper class will help you only to exchange the token, It doesn't introduce a cache layer, something that your strategy could introduce.
 
