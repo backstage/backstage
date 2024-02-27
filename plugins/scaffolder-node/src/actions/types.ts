@@ -50,6 +50,11 @@ export type ActionContext<
    */
   createTemporaryDirectory(): Promise<string>;
 
+  /**
+   * Get the credentials for the current request
+   */
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
+
   templateInfo?: TemplateInfo;
 
   /**
@@ -81,11 +86,6 @@ export type ActionContext<
    * Optional value of each invocation
    */
   each?: JsonObject;
-
-  /**
-   * Get the credentials for the current request
-   */
-  getInitiatorCredentials(): Promise<BackstageCredentials>;
 };
 
 /** @public */

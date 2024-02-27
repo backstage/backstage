@@ -30,7 +30,10 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { TaskStore } from './types';
 import { readDuration } from './helper';
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  BackstageCredentials,
+} from '@backstage/backend-plugin-api';
 
 type TaskState = {
   checkpoints: {
@@ -60,8 +63,9 @@ export class TaskManager implements TaskContext {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
+    auth?: AuthService,
   ) {
-    const agent = new TaskManager(task, storage, abortSignal, logger);
+    const agent = new TaskManager(task, storage, abortSignal, logger, auth);
     agent.startTimeout();
     return agent;
   }
@@ -72,8 +76,8 @@ export class TaskManager implements TaskContext {
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
+    private readonly auth?: AuthService,
   ) {}
-  isDryRun?: boolean | undefined;
 
   get spec() {
     return this.task.spec;
@@ -174,8 +178,14 @@ export class TaskManager implements TaskContext {
     }, 1000);
   }
 
-  getInitiatorCredentials(): Promise<BackstageCredentials> {
-    return JSON.parse(this.task.secrets!.initiatorCredentials!);
+  async getInitiatorCredentials(): Promise<BackstageCredentials> {
+    if (this.task.secrets && '__initiatorCredentials' in this.task.secrets) {
+      return JSON.parse(this.task.secrets.__initiatorCredentials);
+    }
+    if (!this.auth) {
+      throw new Error('Unable to access credentials in ....');
+    }
+    return this.auth.getNoneCredentials();
   }
 }
 
@@ -220,6 +230,7 @@ export class StorageTaskBroker implements TaskBroker {
     private readonly storage: TaskStore,
     private readonly logger: Logger,
     private readonly config?: Config,
+    private readonly auth?: AuthService,
   ) {}
 
   async list(options?: {
@@ -305,6 +316,7 @@ export class StorageTaskBroker implements TaskBroker {
           this.storage,
           abortController.signal,
           this.logger,
+          this.auth,
         );
       }
 

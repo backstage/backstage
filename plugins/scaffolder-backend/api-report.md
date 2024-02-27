@@ -23,6 +23,7 @@ import * as github from '@backstage/plugin-scaffolder-backend-module-github';
 import * as gitlab from '@backstage/plugin-scaffolder-backend-module-gitlab';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
@@ -468,9 +469,11 @@ export interface RouterOptions {
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
-  discovery: DiscoveryService;
+  discovery?: DiscoveryService;
   // (undocumented)
   httpAuth?: HttpAuthService;
+  // (undocumented)
+  identity?: IdentityApi;
   // (undocumented)
   lifecycle?: LifecycleService;
   // (undocumented)
@@ -525,7 +528,7 @@ export type TaskEventType = TaskEventType_2;
 export class TaskManager implements TaskContext_2 {
   // (undocumented)
   get cancelSignal(): AbortSignal;
-  // (undocumented)gs
+  // (undocumented)
   complete(result: TaskCompletionState_2, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   static create(
@@ -533,6 +536,7 @@ export class TaskManager implements TaskContext_2 {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
+    auth?: AuthService,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;
@@ -541,6 +545,8 @@ export class TaskManager implements TaskContext_2 {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
+  // (undocumented)
   getTaskState?(): Promise<
     | {
         state?: JsonObject;
@@ -548,11 +554,7 @@ export class TaskManager implements TaskContext_2 {
     | undefined
   >;
   // (undocumented)
-  getInitiatorCredentials(): Promise<BackstageCredentials>;
-  // (undocumented)
   getWorkspaceName(): Promise<string>;
-  // (undocumented)
-  isDryRun?: boolean | undefined;
   // (undocumented)
   get secrets(): TaskSecrets_2 | undefined;
   // (undocumented)

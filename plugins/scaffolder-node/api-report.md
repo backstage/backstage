@@ -40,6 +40,7 @@ export type ActionContext<
     value: TActionOutput[keyof TActionOutput],
   ): void;
   createTemporaryDirectory(): Promise<string>;
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
   templateInfo?: TemplateInfo;
   isDryRun?: boolean;
   user?: {
@@ -48,7 +49,6 @@ export type ActionContext<
   };
   signal?: AbortSignal;
   each?: JsonObject;
-  getInitiatorCredentials(): Promise<BackstageCredentials>;
 };
 
 // @public (undocumented)
@@ -351,14 +351,14 @@ export interface TaskContext {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
+  // (undocumented)
   getTaskState?(): Promise<
     | {
         state?: JsonObject;
       }
     | undefined
   >;
-  // (undocumented)
-  getInitiatorCredentials(): Promise<BackstageCredentials>;
   // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
@@ -389,7 +389,6 @@ export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 // @public
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
-  initiatorCredentials?: string;
 };
 
 // @public

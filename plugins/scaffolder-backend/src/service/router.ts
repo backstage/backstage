@@ -15,6 +15,7 @@
  */
 
 import {
+  HostDiscovery,
   PluginDatabaseManager,
   UrlReader,
   createLegacyAuthAdapters,
@@ -29,9 +30,9 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { InputError, NotFoundError } from '@backstage/errors';
+import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { HumanDuration, JsonObject } from '@backstage/types';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
   TaskSpec,
   TemplateEntityV1beta3,
@@ -83,6 +84,10 @@ import {
   LifecycleService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
+import {
+  IdentityApi,
+  IdentityApiGetIdentityRequest,
+} from '@backstage/plugin-auth-node';
 
 /**
  *
@@ -153,11 +158,76 @@ export interface RouterOptions {
   >;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
-  discovery: DiscoveryService;
+  identity?: IdentityApi;
+  discovery?: DiscoveryService;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
   return entity.apiVersion === 'scaffolder.backstage.io/v1beta3';
+}
+
+/*
+ * @deprecated This function remains as the DefaultIdentityClient behaves slightly differently to the pre-existing
+ * scaffolder behaviour. Specifically if the token fails to parse, the DefaultIdentityClient will raise an error.
+ * The scaffolder did not raise an error in this case. As such we chose to allow it to behave as it did previously
+ * until someone explicitly passes an IdentityApi. When we have reasonable confidence that most backstage deployments
+ * are using the IdentityApi, we can remove this function.
+ */
+function buildDefaultIdentityClient(options: RouterOptions): IdentityApi {
+  return {
+    getIdentity: async ({ request }: IdentityApiGetIdentityRequest) => {
+      const header = request.headers.authorization;
+      const { logger } = options;
+
+      if (!header) {
+        return undefined;
+      }
+
+      try {
+        const token = header.match(/^Bearer\s(\S+\.\S+\.\S+)$/i)?.[1];
+        if (!token) {
+          throw new TypeError('Expected Bearer with JWT');
+        }
+
+        const [_header, rawPayload, _signature] = token.split('.');
+        const payload: JsonValue = JSON.parse(
+          Buffer.from(rawPayload, 'base64').toString(),
+        );
+
+        if (
+          typeof payload !== 'object' ||
+          payload === null ||
+          Array.isArray(payload)
+        ) {
+          throw new TypeError('Malformed JWT payload');
+        }
+
+        const sub = payload.sub;
+        if (typeof sub !== 'string') {
+          throw new TypeError('Expected string sub claim');
+        }
+
+        if (sub === 'backstage-server') {
+          return undefined;
+        }
+
+        // Check that it's a valid ref, otherwise this will throw.
+        parseEntityRef(sub);
+
+        return {
+          identity: {
+            userEntityRef: sub,
+            ownershipEntityRefs: [],
+            type: 'user',
+          },
+          token,
+        };
+      } catch (e) {
+        logger.error(`Invalid authorization header: ${stringifyError(e)}`);
+        return undefined;
+      }
+    },
+  };
 }
 
 const readDuration = (
@@ -178,8 +248,6 @@ const readDuration = (
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { auth, httpAuth } = createLegacyAuthAdapters(options);
-
   const router = Router();
   // Be generous in upload size to support a wide range of templates in dry-run mode.
   router.use(express.json({ limit: '10MB' }));
@@ -197,7 +265,16 @@ export async function createRouter(
     additionalTemplateGlobals,
     permissions,
     permissionRules,
+    discovery = HostDiscovery.fromConfig(config),
+    identity = buildDefaultIdentityClient(options),
   } = options;
+
+  const { auth, httpAuth } = createLegacyAuthAdapters({
+    ...options,
+    identity,
+    discovery,
+  });
+
   const concurrentTasksLimit =
     options.concurrentTasksLimit ??
     options.config.getOptionalNumber('scaffolder.concurrentTasksLimit');
@@ -210,7 +287,7 @@ export async function createRouter(
   let taskBroker: TaskBroker;
   if (!options.taskBroker) {
     const databaseTaskStore = await DatabaseTaskStore.create({ database });
-    taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
+    taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config, auth);
 
     if (scheduler && databaseTaskStore.listStaleTasks) {
       await scheduler.scheduleTask({
@@ -624,7 +701,6 @@ export async function createRouter(
         secrets: {
           ...body.secrets,
           ...(token && { backstageToken: token }),
-          initiatorCredentials: JSON.stringify(credentials),
         },
         credentials,
       });

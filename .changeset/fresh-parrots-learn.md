@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-node': patch
 ---
 
-Update task secrets and context types to contain the new auth initiator credentials.
+Update the task context type to contain the new auth initiator credentials.

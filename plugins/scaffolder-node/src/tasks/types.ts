@@ -24,11 +24,7 @@ import { JsonObject, JsonValue, Observable } from '@backstage/types';
  * @public
  */
 export type TaskSecrets = Record<string, string> & {
-  /**
-   * @deprecated use "initiatorCredentials" instead
-   */
   backstageToken?: string;
-  initiatorCredentials?: string;
 };
 
 /**
