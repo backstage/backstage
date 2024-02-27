@@ -1,5 +1,21 @@
 # @backstage/plugin-todo-backend
 
+## 0.3.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/repo-tools@0.6.3-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/backend-openapi-utils@0.1.6-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+
 ## 0.3.8
 
 ### Patch Changes

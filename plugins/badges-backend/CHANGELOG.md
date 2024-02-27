@@ -1,5 +1,19 @@
 # @backstage/plugin-badges-backend
 
+## 0.3.10-next.0
+
+### Patch Changes
+
+- 29a1f91: Migrated to support new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+
 ## 0.3.7
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-entity-feedback-backend
 
+## 0.2.10-next.0
+
+### Patch Changes
+
+- 4f8ecd6: Migrated to support new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/plugin-entity-feedback-common@0.1.3
+
 ## 0.2.7
 
 ### Patch Changes

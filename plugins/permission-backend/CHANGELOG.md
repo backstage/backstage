@@ -1,5 +1,22 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.36-next.0
+
+### Patch Changes
+
+- 9802004: Migrated to use the new auth services introduced in [BEP-0003](https://github.com/backstage/backstage/blob/master/beps/0003-auth-architecture-evolution/README.md).
+
+  The `createRouter` function now accepts `auth`, `httpAuth` and `userInfo` options. Theses are used internally to support the new backend system, and can be ignored.
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/plugin-permission-node@0.7.24-next.0
+  - @backstage/config@1.1.2-next.0
+
 ## 0.5.33
 
 ### Patch Changes
