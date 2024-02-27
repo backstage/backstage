@@ -45,6 +45,7 @@ export const createMockActionContext = <
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
     input: {} as TActionInput,
+    checkpoint: jest.fn(),
   };
 
   const createDefaultWorkspace = () => ({

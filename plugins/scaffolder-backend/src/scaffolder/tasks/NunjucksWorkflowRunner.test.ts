@@ -138,13 +138,13 @@ describe('NunjucksWorkflowRunner', () => {
       id: 'checkpoints-action',
       description: 'Mock action with checkpoints',
       handler: async ctx => {
-        const key1 = await ctx.checkpoint?.('key1', async () => {
+        const key1 = await ctx.checkpoint('key1', async () => {
           return 'updated';
         });
-        const key2 = await ctx.checkpoint?.('key2', async () => {
+        const key2 = await ctx.checkpoint('key2', async () => {
           return 'updated';
         });
-        const key3 = await ctx.checkpoint?.('key3', async () => {
+        const key3 = await ctx.checkpoint('key3', async () => {
           return 'updated';
         });
 
