@@ -34,10 +34,9 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 import { createPublishAzureAction } from './azure';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
 import { WebApi } from 'azure-devops-node-api';
-import { PassThrough } from 'stream';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('publish:azure', () => {
   const config = new ConfigReader({
@@ -54,16 +53,10 @@ describe('publish:azure', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createPublishAzureAction({ integrations, config });
-  const mockContext = {
-    input: {
-      repoUrl: 'dev.azure.com?repo=repo&owner=owner&organization=org',
-    },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+
+  const mockContext = createMockActionContext({
+    input: { repoUrl: 'dev.azure.com?repo=repo&owner=owner&organization=org' },
+  });
 
   const mockGitClient = {
     createRepository: jest.fn(),

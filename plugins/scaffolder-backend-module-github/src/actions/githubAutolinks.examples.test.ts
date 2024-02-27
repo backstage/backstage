@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -22,8 +21,8 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { PassThrough } from 'stream';
 import { createGithubAutolinksAction } from './githubAutolinks';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { examples } from './githubAutolinks.examples';
 import yaml from 'yaml';
 
@@ -55,9 +54,12 @@ describe('github:autolinks:create', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any, any>;
+  const input = yaml.parse(examples[0].example).steps[0].input;
+  const mockContext = createMockActionContext({
+    input,
+  });
 
   it('should call the githubApis for creating autolink reference', async () => {
-    const input = yaml.parse(examples[0].example).steps[0].input;
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubAutolinksAction({
@@ -70,14 +72,7 @@ describe('github:autolinks:create', () => {
         id: '1',
       },
     });
-    await action.handler({
-      input,
-      workspacePath: 'lol',
-      logger: getVoidLogger(),
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn(),
-    });
+    await action.handler(mockContext);
 
     expect(mockOctokit.rest.repos.createAutolink).toHaveBeenCalledWith({
       owner: 'owner',

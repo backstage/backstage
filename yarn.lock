@@ -8209,6 +8209,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     azure-devops-node-api: ^12.0.0
     yaml: ^2.0.0
   languageName: unknown
@@ -8226,6 +8227,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
@@ -8245,6 +8247,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
@@ -8266,6 +8269,7 @@ __metadata:
     "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-bitbucket-server": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
@@ -8285,6 +8289,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
     git-url-parse: ^14.0.0
     msw: ^1.0.0
@@ -8306,6 +8311,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^11.0.0
@@ -8328,6 +8334,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     msw: ^1.0.0
     node-fetch: ^2.6.7
     yaml: ^2.0.0
@@ -8346,6 +8353,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     msw: ^1.0.0
     node-fetch: ^2.6.7
     yaml: ^2.0.0
@@ -8364,6 +8372,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@octokit/webhooks": ^10.0.0
     "@types/libsodium-wrappers": ^0.7.10
     fs-extra: ^11.2.0
@@ -8390,6 +8399,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@gitbeaker/core": ^35.8.0
     "@gitbeaker/node": ^35.8.0
     "@gitbeaker/rest": ^39.25.0
@@ -8412,6 +8422,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^11.0.0
@@ -8432,6 +8443,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     msw: ^2.0.0
     yaml: ^2.3.3
@@ -8446,6 +8458,7 @@ __metadata:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     winston: ^3.2.1
     yeoman-environment: ^3.9.1
@@ -8481,6 +8494,7 @@ __metadata:
     "@backstage/plugin-scaffolder-backend-module-gitlab": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
     "@types/fs-extra": ^11.0.0
@@ -8522,6 +8536,22 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/types": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-scaffolder-node-test-utils@workspace:^, @backstage/plugin-scaffolder-node-test-utils@workspace:plugins/scaffolder-node-test-utils":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-node-test-utils@workspace:plugins/scaffolder-node-test-utils"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-scaffolder-common": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@testing-library/jest-dom": ^6.0.0
+    "@types/react": "*"
+    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
