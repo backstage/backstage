@@ -112,8 +112,8 @@ describe('TemplateWizardPage', () => {
 
     // And the "Create" button should have fired an event
     expect(analyticsMock.getEvents()[1]).toMatchObject({
-      action: 'create',
-      subject: 'expected-name',
+      action: 'click',
+      subject: '[template:default/test]: Create',
       context: { entityRef: 'template:default/test' },
     });
   });
