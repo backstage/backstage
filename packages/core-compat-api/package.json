@@ -32,7 +32,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "@types/react": "^16.13.1 || ^17.0.0"
+    "@types/react": "^18.0.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
