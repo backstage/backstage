@@ -18,9 +18,8 @@ import {
   IndexableDocument,
   IndexableResultSet,
   SearchQuery,
-  QueryTranslator,
-  SearchEngine,
 } from '@backstage/plugin-search-common';
+import { SearchEngine, QueryTranslator } from '../types';
 import { MissingIndexError } from '../errors';
 import lunr from 'lunr';
 import { v4 as uuid } from 'uuid';

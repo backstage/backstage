@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 import {
+  createLegacyAuthAdapters,
   errorHandler,
   PluginDatabaseManager,
   TokenManager,
 } from '@backstage/backend-common';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
-import {
-  getBearerTokenFromAuthorizationHeader,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   DatabaseNotificationsStore,
   NotificationGetOptions,
@@ -39,13 +37,17 @@ import {
 } from '@backstage/catalog-model';
 import { NotificationProcessor } from '@backstage/plugin-notifications-node';
 import { AuthenticationError, InputError } from '@backstage/errors';
-import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { SignalService } from '@backstage/plugin-signals-node';
 import {
   NewNotificationSignal,
   Notification,
   NotificationReadSignal,
-  NotificationType,
 } from '@backstage/plugin-notifications-common';
 
 /** @internal */
@@ -58,6 +60,8 @@ export interface RouterOptions {
   signalService?: SignalService;
   catalog?: CatalogApi;
   processors?: NotificationProcessor[];
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 }
 
 /** @internal */
@@ -70,7 +74,6 @@ export async function createRouter(
     identity,
     discovery,
     catalog,
-    tokenManager,
     processors,
     signalService,
   } = options;
@@ -78,6 +81,8 @@ export async function createRouter(
   const catalogClient =
     catalog ?? new CatalogClient({ discoveryApi: discovery });
   const store = await DatabaseNotificationsStore.create({ database });
+
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   const getUser = async (req: Request<unknown>) => {
     const user = await identity.getIdentity({ request: req });
@@ -87,20 +92,13 @@ export async function createRouter(
     return user.identity.userEntityRef;
   };
 
-  const authenticateService = async (req: Request<unknown>) => {
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
-    if (!token) {
-      throw new AuthenticationError();
-    }
-    await tokenManager.authenticate(token);
-  };
-
   const getUsersForEntityRef = async (
     entityRef: string | string[] | null,
   ): Promise<string[]> => {
-    const { token } = await tokenManager.getToken();
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
 
     // TODO: Support for broadcast
     if (entityRef === null) {
@@ -191,9 +189,6 @@ export async function createRouter(
     const opts: NotificationGetOptions = {
       user: user,
     };
-    if (req.query.type) {
-      opts.type = req.query.type.toString() as NotificationType;
-    }
     if (req.query.offset) {
       opts.offset = Number.parseInt(req.query.offset.toString(), 10);
     }
@@ -202,6 +197,19 @@ export async function createRouter(
     }
     if (req.query.search) {
       opts.search = req.query.search.toString();
+    }
+    if (req.query.read === 'true') {
+      opts.read = true;
+    } else if (req.query.read === 'false') {
+      opts.read = false;
+      // or keep undefined
+    }
+    if (req.query.created_after) {
+      const sinceEpoch = Date.parse(req.query.created_after.toString());
+      if (isNaN(sinceEpoch)) {
+        throw new InputError('Unexpected date format');
+      }
+      opts.createdAfter = new Date(sinceEpoch);
     }
 
     const notifications = await store.getNotifications(opts);
@@ -225,7 +233,7 @@ export async function createRouter(
 
   router.get('/status', async (req, res) => {
     const user = await getUser(req);
-    const status = await store.getStatus({ user, type: 'undone' });
+    const status = await store.getStatus({ user });
     res.send(status);
   });
 
@@ -276,11 +284,7 @@ export async function createRouter(
     const notifications = [];
     let users = [];
 
-    try {
-      await authenticateService(req);
-    } catch (e) {
-      throw new AuthenticationError();
-    }
+    await httpAuth.credentials(req, { allow: ['service'] });
 
     const { title, link, scope } = payload;
 

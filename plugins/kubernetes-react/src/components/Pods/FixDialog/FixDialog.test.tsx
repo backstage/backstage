@@ -15,10 +15,9 @@
  */
 import React from 'react';
 
-import { render } from '@testing-library/react';
-
 import { FixDialog } from './FixDialog';
 import { Pod } from 'kubernetes-models/v1/Pod';
+import { renderInTestApp } from '@backstage/test-utils';
 
 jest.mock('../Events', () => ({
   Events: () => {
@@ -33,8 +32,8 @@ jest.mock('../PodLogs', () => ({
 }));
 
 describe('FixDialog', () => {
-  it('docs link should render', () => {
-    const { getByText } = render(
+  it('docs link should render', async () => {
+    const { getByText } = await renderInTestApp(
       <FixDialog
         open
         clusterName="some-cluster"
@@ -74,8 +73,8 @@ describe('FixDialog', () => {
     expect(getByText('fix1')).toBeInTheDocument();
     expect(getByText('fix2')).toBeInTheDocument();
   });
-  it('events button should render', () => {
-    const { getByText } = render(
+  it('events button should render', async () => {
+    const { getByText } = await renderInTestApp(
       <FixDialog
         open
         clusterName="some-cluster"
@@ -115,8 +114,8 @@ describe('FixDialog', () => {
     expect(getByText('fix1')).toBeInTheDocument();
     expect(getByText('fix2')).toBeInTheDocument();
   });
-  it('Logs button should render', () => {
-    const { getByText } = render(
+  it('Logs button should render', async () => {
+    const { getByText } = await renderInTestApp(
       <FixDialog
         open
         clusterName="some-cluster"

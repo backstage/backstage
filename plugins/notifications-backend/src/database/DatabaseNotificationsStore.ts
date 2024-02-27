@@ -61,7 +61,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       id: row.id,
       user: row.user,
       created: row.created,
-      done: row.done,
       saved: row.saved,
       read: row.read,
       updated: row.updated,
@@ -78,10 +77,30 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     }));
   };
 
+  private mapNotificationToDbRow = (notification: Notification) => {
+    return {
+      id: notification.id,
+      user: notification.user,
+      origin: notification.origin,
+      created: notification.created,
+      topic: notification.payload?.topic,
+      link: notification.payload?.link,
+      title: notification.payload?.title,
+      description: notification.payload?.description,
+      severity: notification.payload?.severity,
+      scope: notification.payload?.scope,
+      saved: notification.saved,
+      read: notification.read,
+    };
+  };
+
   private getNotificationsBaseQuery = (
     options: NotificationGetOptions | NotificationModifyOptions,
   ) => {
-    const { user, type } = options;
+    const { user } = options;
+    const isSQLite = this.db.client.config.client.includes('sqlite3');
+    // const isPsql = this.db.client.config.client.includes('pg');
+
     const query = this.db('notification').where('user', user);
 
     if (options.sort !== undefined && options.sort !== null) {
@@ -90,12 +109,20 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       query.orderBy('created', options.sortOrder ?? 'desc');
     }
 
-    if (type === 'undone') {
-      query.whereNull('done');
-    } else if (type === 'done') {
-      query.whereNotNull('done');
-    } else if (type === 'saved') {
-      query.whereNotNull('saved');
+    if (options.createdAfter) {
+      if (isSQLite) {
+        query.where(
+          'notification.created',
+          '>=',
+          options.createdAfter.valueOf(),
+        );
+      } else {
+        query.where(
+          'notification.created',
+          '>=',
+          options.createdAfter.toISOString(),
+        );
+      }
     }
 
     if (options.limit) {
@@ -117,6 +144,18 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       query.whereIn('notification.id', options.ids);
     }
 
+    if (options.read) {
+      query.whereNotNull('notification.read');
+    } else if (options.read === false) {
+      query.whereNull('notification.read');
+    } // or match both if undefined
+
+    if (options.saved) {
+      query.whereNotNull('notification.saved');
+    } else if (options.saved === false) {
+      query.whereNull('notification.saved');
+    } // or match both if undefined
+
     return query;
   };
 
@@ -127,7 +166,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   }
 
   async saveNotification(notification: Notification) {
-    await this.db.insert(notification).into('notification');
+    await this.db
+      .insert(this.mapNotificationToDbRow(notification))
+      .into('notification');
   }
 
   async getStatus(options: NotificationGetOptions) {
@@ -188,10 +229,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       description: options.notification.payload.description,
       link: options.notification.payload.link,
       topic: options.notification.payload.topic,
-      updated: options.notification.created,
+      updated: new Date(),
       severity: options.notification.payload.severity,
       read: null,
-      done: null,
     });
 
     return await this.getNotification(options);
@@ -216,16 +256,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   async markUnread(options: NotificationModifyOptions): Promise<void> {
     const notificationQuery = this.getNotificationsBaseQuery(options);
     await notificationQuery.update({ read: null });
-  }
-
-  async markDone(options: NotificationModifyOptions): Promise<void> {
-    const notificationQuery = this.getNotificationsBaseQuery(options);
-    await notificationQuery.update({ done: new Date(), read: new Date() });
-  }
-
-  async markUndone(options: NotificationModifyOptions): Promise<void> {
-    const notificationQuery = this.getNotificationsBaseQuery(options);
-    await notificationQuery.update({ done: null, read: null });
   }
 
   async markSaved(options: NotificationModifyOptions): Promise<void> {

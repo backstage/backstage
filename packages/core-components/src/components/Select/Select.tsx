@@ -55,7 +55,6 @@ const BootstrapInput = withStyles(
         fontSize: theme.typography.body1.fontSize,
         padding: theme.spacing(1.25, 3.25, 1.25, 1.5),
         transition: theme.transitions.create(['border-color', 'box-shadow']),
-        fontFamily: 'Helvetica Neue',
         '&:focus': {
           background: theme.palette.background.paper,
           borderRadius: theme.shape.borderRadius,

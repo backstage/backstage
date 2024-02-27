@@ -16,6 +16,9 @@
 
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
+import { Logger } from 'winston';
+import ObservableImpl from 'zen-observable';
 import {
   TaskSecrets,
   SerializedTask,
@@ -25,12 +28,22 @@ import {
   TaskCompletionState,
   TaskContext,
 } from '@backstage/plugin-scaffolder-node';
-import { JsonObject, Observable } from '@backstage/types';
-import { Logger } from 'winston';
-import ObservableImpl from 'zen-observable';
 import { TaskStore } from './types';
 import { readDuration } from './helper';
 
+type TaskState = {
+  checkpoints: {
+    [key: string]:
+      | {
+          status: 'failed';
+          reason: string;
+        }
+      | {
+          status: 'success';
+          value: JsonValue;
+        };
+  };
+};
 /**
  * TaskManager
  *
@@ -91,6 +104,40 @@ export class TaskManager implements TaskContext {
     });
   }
 
+  async getTaskState?(): Promise<
+    | {
+        state?: JsonObject;
+      }
+    | undefined
+  > {
+    return this.storage.getTaskState?.({ taskId: this.task.taskId });
+  }
+
+  async updateCheckpoint?(
+    options:
+      | {
+          key: string;
+          status: 'success';
+          value: JsonValue;
+        }
+      | {
+          key: string;
+          status: 'failed';
+          reason: string;
+        },
+  ): Promise<void> {
+    const { key, ...value } = options;
+    if (this.task.state) {
+      (this.task.state as TaskState).checkpoints[key] = value;
+    } else {
+      this.task.state = { checkpoints: { [key]: value } };
+    }
+    await this.storage.saveTaskState?.({
+      taskId: this.task.taskId,
+      state: this.task.state,
+    });
+  }
+
   async complete(
     result: TaskCompletionState,
     metadata?: JsonObject,
@@ -144,6 +191,10 @@ export interface CurrentClaimedTask {
    * The secrets that are stored with the task.
    */
   secrets?: TaskSecrets;
+  /**
+   * The state of checkpoints of the task.
+   */
+  state?: JsonObject;
   /**
    * The creator of the task.
    */

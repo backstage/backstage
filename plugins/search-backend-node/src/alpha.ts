@@ -22,10 +22,7 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import {
-  DocumentTypeInfo,
-  SearchEngine,
-} from '@backstage/plugin-search-common';
+import { DocumentTypeInfo } from '@backstage/plugin-search-common';
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 
 import {
@@ -33,7 +30,10 @@ import {
   RegisterDecoratorParameters,
 } from '@backstage/plugin-search-backend-node';
 
-import { IndexBuilder } from './IndexBuilder';
+import {
+  SearchEngine,
+  IndexBuilder,
+} from '@backstage/plugin-search-backend-node';
 
 /**
  * @alpha

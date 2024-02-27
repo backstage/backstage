@@ -31,6 +31,7 @@ import {
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
+  CatalogProcessorParser,
   EntityProvider,
   PlaceholderResolver,
   ScmLocationAnalyzer,
@@ -137,6 +138,21 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
   get fieldValidators() {
     return this.#fieldValidators;
   }
+
+  #entityDataParser?: CatalogProcessorParser;
+
+  setEntityDataParser(parser: CatalogProcessorParser): void {
+    if (this.#entityDataParser) {
+      throw new Error(
+        'Attempted to install second EntityDataParser. Only one can be set.',
+      );
+    }
+    this.#entityDataParser = parser;
+  }
+
+  get entityDataParser() {
+    return this.#entityDataParser;
+  }
 }
 
 /**
@@ -178,6 +194,9 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         lifecycle: coreServices.lifecycle,
         scheduler: coreServices.scheduler,
+        discovery: coreServices.discovery,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
       async init({
         logger,
@@ -188,6 +207,9 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter,
         lifecycle,
         scheduler,
+        discovery,
+        auth,
+        httpAuth,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const builder = await CatalogBuilder.create({
@@ -197,6 +219,9 @@ export const catalogPlugin = createBackendPlugin({
           database,
           scheduler,
           logger: winstonLogger,
+          discovery,
+          auth,
+          httpAuth,
         });
         if (processingExtensions.onProcessingErrorHandler) {
           builder.subscribe({
@@ -205,6 +230,11 @@ export const catalogPlugin = createBackendPlugin({
         }
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);
+
+        if (modelExtensions.entityDataParser) {
+          builder.setEntityDataParser(modelExtensions.entityDataParser);
+        }
+
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );

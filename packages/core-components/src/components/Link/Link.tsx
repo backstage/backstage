@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 // eslint-disable-next-line no-restricted-imports
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
@@ -29,6 +30,7 @@ import {
   LinkProps as RouterLinkProps,
   Route,
 } from 'react-router-dom';
+import { coreComponentsTranslationRef } from '../../translation';
 
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
@@ -161,6 +163,7 @@ export const Link = React.forwardRef<any, LinkProps>(
   ({ onClick, noTrack, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
+    const { t } = useTranslationRef(coreComponentsTranslationRef);
 
     // Adding the base path to URLs breaks react-router v6 stable, so we only
     // do it for beta. The react router version won't change at runtime so it is
@@ -199,7 +202,7 @@ export const Link = React.forwardRef<any, LinkProps>(
       >
         {props.children}
         <Typography component="span" className={classes.visuallyHidden}>
-          , Opens in a new window
+          {`, ${t('link.openNewWindow')}`}
         </Typography>
       </MaterialLink>
     ) : (

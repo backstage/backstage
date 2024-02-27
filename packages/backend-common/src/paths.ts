@@ -63,15 +63,17 @@ export function resolvePackagePath(name: string, ...paths: string[]) {
  * @returns A path that is guaranteed to point to or within the base path.
  */
 export function resolveSafeChildPath(base: string, path: string): string {
-  const targetPath = resolvePath(base, path);
+  const resolvedBasePath = resolveRealPath(base);
+  const targetPath = resolvePath(resolvedBasePath, path);
 
-  if (!isChildPath(resolveRealPath(base), resolveRealPath(targetPath))) {
+  if (!isChildPath(resolvedBasePath, resolveRealPath(targetPath))) {
     throw new NotAllowedError(
       'Relative path is not allowed to refer to a directory outside its parent',
     );
   }
 
-  return targetPath;
+  // Don't return the resolved path as the original could be a symlink
+  return resolvePath(base, path);
 }
 
 function resolveRealPath(path: string): string {

@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { TemplateCategoryPicker } from './TemplateCategoryPicker';
+export type { ScaffolderReactTemplateCategoryPickerClassKey } from './TemplateCategoryPicker';

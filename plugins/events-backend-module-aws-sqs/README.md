@@ -1,12 +1,12 @@
-# events-backend-module-aws-sqs
+# `@backstage/plugins-events-backend-module-aws-sqs`
 
-Welcome to the `events-backend-module-aws-sqs` backend plugin!
+Welcome to the `events-backend-module-aws-sqs` backend module!
 
-This plugin is a module for the `events-backend` backend plugin
-and extends it with an `AwsSqsConsumingEventPublisher`.
+This package is a module for the `events-backend` backend plugin
+and extends the events system with an `AwsSqsConsumingEventPublisher`.
 
-This event publisher will allow you to receive events from
-an AWS SQS queue and will publish these to the used event broker.
+This event publisher will allow you to receive events from an AWS SQS queue
+and will publish these to the used `EventsService` implementation.
 
 ## Configuration
 
@@ -32,15 +32,43 @@ events:
 
 ## Installation
 
-1. Install the [`events-backend` plugin](../events-backend/README.md).
-2. Install this module
-3. Add your configuration.
+1. Install this module
+2. Add your configuration.
 
 ```bash
 # From your Backstage root directory
 yarn --cwd packages/backend add @backstage/plugin-events-backend-module-aws-sqs
 ```
 
-```ts title="packages/backend/src/index.ts"
+```ts
+// packages/backend/src/index.ts
 backend.add(import('@backstage/plugin-events-backend-module-aws-sqs/alpha'));
+```
+
+### Legacy Backend System
+
+```ts
+// packages/backend/src/plugins/events.ts
+// ...
+import { AwsSqsConsumingEventPublisher } from '@backstage/plugin-events-backend-module-aws-sqs';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const eventsRouter = Router();
+
+  // ...
+
+  const sqs = AwsSqsConsumingEventPublisher.fromConfig({
+    config: env.config,
+    events: env.events,
+    logger: env.logger,
+    scheduler: env.scheduler,
+  });
+  await Promise.all(sqs.map(publisher => publisher.start()));
+
+  return eventsRouter;
+}
 ```

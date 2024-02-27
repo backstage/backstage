@@ -30,6 +30,8 @@ import {
   oauthRequestApiRef,
 } from '@backstage/core-plugin-api';
 import Typography from '@material-ui/core/Typography';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export type OAuthRequestDialogClassKey =
   | 'dialog'
@@ -63,6 +65,7 @@ export function OAuthRequestDialog(_props: {}) {
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);
   const configApi = useApi(configApiRef);
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const authRedirect =
     configApi.getOptionalBoolean('enableExperimentalRedirectFlow') ?? false;
@@ -94,12 +97,10 @@ export function OAuthRequestDialog(_props: {}) {
             variant="h1"
             variantMapping={{ h1: 'span' }}
           >
-            Login Required
+            {t('oauthRequestDialog.title')}
           </Typography>
           {authRedirect ? (
-            <Typography>
-              This will trigger a http redirect to OAuth Login.
-            </Typography>
+            <Typography>{t('oauthRequestDialog.authRedirectTitle')}</Typography>
           ) : null}
         </DialogTitle>
 
@@ -118,7 +119,9 @@ export function OAuthRequestDialog(_props: {}) {
       </main>
 
       <DialogActions classes={{ root: classes.actionButtons }}>
-        <Button onClick={handleRejectAll}>Reject All</Button>
+        <Button onClick={handleRejectAll}>
+          {t('oauthRequestDialog.rejectAll')}
+        </Button>
       </DialogActions>
     </Dialog>
   );

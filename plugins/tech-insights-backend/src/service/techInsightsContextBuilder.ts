@@ -25,6 +25,7 @@ import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   TokenManager,
+  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import {
   FactChecker,
@@ -37,6 +38,7 @@ import {
 import { initializePersistenceContext } from './persistence';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { AuthService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
@@ -82,6 +84,7 @@ export interface TechInsightsOptions<
   database: PluginDatabaseManager;
   scheduler: PluginTaskScheduler;
   tokenManager: TokenManager;
+  auth?: AuthService;
 }
 
 /**
@@ -147,6 +150,12 @@ export const buildTechInsightsContext = async <
       logger,
     }));
 
+  const { auth } = createLegacyAuthAdapters({
+    auth: options.auth,
+    tokenManager,
+    discovery,
+  });
+
   const factRetrieverEngine = await DefaultFactRetrieverEngine.create({
     scheduler,
     repository: persistenceContext.techInsightsStore,
@@ -156,6 +165,7 @@ export const buildTechInsightsContext = async <
       discovery,
       logger,
       tokenManager,
+      auth,
     },
   });
 

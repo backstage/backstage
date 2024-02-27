@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { BadgesApi, badgesApiRef } from '../api';
 import { EntityBadgesDialog } from './EntityBadgesDialog';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
@@ -43,7 +43,7 @@ describe('EntityBadgesDialog', () => {
       kind: 'MockKind',
     } as Entity;
 
-    const rendered = await renderWithEffects(
+    const rendered = await renderInTestApp(
       <TestApiProvider
         apis={[
           [badgesApiRef, mockApi],

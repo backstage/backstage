@@ -59,5 +59,11 @@ describe('paths', () => {
         'Relative path is not allowed to refer to a directory outside its parent',
       );
     });
+
+    it('should not throw an error when a folder is referenced that doesnt already exist', () => {
+      expect(resolveSafeChildPath(workspacePath, 'template')).toEqual(
+        `${workspacePath}/template`,
+      );
+    });
   });
 });

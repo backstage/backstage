@@ -20,9 +20,8 @@ import {
   GithubCredentialsProvider,
 } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { PassThrough } from 'stream';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createGithubActionsDispatchAction } from './githubActionsDispatch';
 
 const mockOctokit = {
@@ -54,18 +53,13 @@ describe('github:actions:dispatch', () => {
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any>;
 
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
       workflowId: 'a-workflow-id',
       branchOrTagName: 'main',
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();

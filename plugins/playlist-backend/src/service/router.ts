@@ -15,6 +15,7 @@
  */
 
 import {
+  createLegacyAuthAdapters,
   errorHandler,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
@@ -22,14 +23,10 @@ import {
 import { CatalogClient } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { NotAllowedError } from '@backstage/errors';
-import {
-  getBearerTokenFromAuthorizationHeader,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   AuthorizePermissionRequest,
   AuthorizeResult,
-  PermissionEvaluator,
   QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
@@ -44,6 +41,11 @@ import { Logger } from 'winston';
 import { rules, transformConditions } from '../permissions';
 import { DatabaseHandler } from './DatabaseHandler';
 import { parseListPlaylistsFilterParams } from './ListPlaylistsFilter';
+import {
+  AuthService,
+  HttpAuthService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * @public
@@ -53,7 +55,9 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   identity: IdentityApi;
   logger: Logger;
-  permissions: PermissionEvaluator;
+  permissions: PermissionsService;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 }
 
 /**
@@ -65,10 +69,11 @@ export async function createRouter(
   const {
     database,
     discovery,
-    identity,
     logger,
     permissions: permissionEvaluator,
   } = options;
+
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   logger.info('Initializing Playlist backend');
 
@@ -81,26 +86,21 @@ export async function createRouter(
     permission: AuthorizePermissionRequest | QueryPermissionRequest,
     conditional: boolean = false,
   ) => {
-    const token = getBearerTokenFromAuthorizationHeader(
-      request.header('authorization'),
-    );
-
-    const user = await identity.getIdentity({ request });
-    if (!user) {
-      throw new NotAllowedError('Unauthorized');
-    }
+    const credentials = await httpAuth.credentials(request, {
+      allow: ['user'],
+    });
 
     const decision = conditional
       ? (
           await permissionEvaluator.authorizeConditional(
             [permission as QueryPermissionRequest],
-            { token },
+            { credentials },
           )
         )[0]
       : (
           await permissionEvaluator.authorize(
             [permission as AuthorizePermissionRequest],
-            { token },
+            { credentials },
           )
         )[0];
 
@@ -108,7 +108,7 @@ export async function createRouter(
       throw new NotAllowedError('Unauthorized');
     }
 
-    return { decision, user: user.identity };
+    return { decision, user: credentials.principal };
   };
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
@@ -227,11 +227,12 @@ export async function createRouter(
       };
     });
 
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await httpAuth.credentials(req),
+      targetPluginId: 'catalog',
+    });
 
-    // TODO(kuanpg): entities in this playlist that no longer exist in the catalog will be
+    // TODO(kuangp): entities in this playlist that no longer exist in the catalog will be
     // excluded from this response, we need a way to clean up these orphaned refs potentially
     // via catalog events (https://github.com/backstage/backstage/issues/8219)
     //

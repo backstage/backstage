@@ -1,5 +1,19 @@
 # @backstage/plugin-azure-devops-common
 
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 9fdb86a: Ability to fetch the README file from a different Azure DevOps path.
+
+  Defaults to the current, Azure DevOps default behaviour (`README.md` in the root of the git repo); to use a different path, add the annotation `dev.azure.com/readme-path`
+
+  Example:
+
+  ```yaml
+  dev.azure.com/readme-path: /my-path/README.md
+  ```
+
 ## 0.3.2
 
 ### Patch Changes

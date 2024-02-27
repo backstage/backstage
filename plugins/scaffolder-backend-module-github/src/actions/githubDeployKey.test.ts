@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
 import { createGithubDeployKeyAction } from './githubDeployKey';
-import { getVoidLogger } from '@backstage/backend-common';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 
@@ -55,19 +54,14 @@ describe('github:deployKey:create', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   let action: TemplateAction<any>;
 
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'github.com?repo=repository&owner=owner',
       publicKey: 'pubkey',
       privateKey: 'privkey',
       deployKeyName: 'Push Tags',
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();

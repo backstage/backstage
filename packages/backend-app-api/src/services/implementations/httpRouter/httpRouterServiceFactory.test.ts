@@ -16,9 +16,17 @@
 
 import {
   ServiceFactoryTester,
+  mockCredentials,
   mockServices,
+  startTestBackend,
 } from '@backstage/backend-test-utils';
 import { httpRouterServiceFactory } from './httpRouterServiceFactory';
+import request from 'supertest';
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import Router from 'express-promise-router';
 
 describe('httpRouterFactory', () => {
   it('should register plugin paths', async () => {
@@ -68,5 +76,191 @@ describe('httpRouterFactory', () => {
       '/some/test2/path',
       expect.any(Function),
     );
+  });
+
+  describe('auth services', () => {
+    const pluginSubject = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            httpRouter: coreServices.httpRouter,
+            auth: coreServices.auth,
+            httpAuth: coreServices.httpAuth,
+          },
+          async init({ httpRouter, auth, httpAuth }) {
+            const router = Router();
+            httpRouter.use(router);
+            httpRouter.addAuthPolicy({
+              path: '/public',
+              allow: 'unauthenticated',
+            });
+            httpRouter.addAuthPolicy({
+              path: '/cookie',
+              allow: 'user-cookie',
+            });
+
+            router.get('/public', (_req, res) => {
+              res.json({ ok: true });
+            });
+            router.get('/cookie', (_req, res) => {
+              res.json({ ok: true });
+            });
+            router.get('/protected/no-checks', (_req, res) => {
+              res.json({ ok: true });
+            });
+            router.get('/protected/only-users', async (req, res) => {
+              await httpAuth.credentials(req, { allow: ['user'] });
+              res.json({ ok: true });
+            });
+            router.get('/protected/only-services', async (req, res) => {
+              await httpAuth.credentials(req, { allow: ['service'] });
+              res.json({ ok: true });
+            });
+            router.get('/protected/credentials', async (req, res) => {
+              res.json({
+                credentials: await httpAuth.credentials(req),
+              });
+            });
+            router.get('/protected/service-token', async (req, res) => {
+              res.json(
+                await auth.getPluginRequestToken({
+                  onBehalfOf: await httpAuth.credentials(req),
+                  targetPluginId: 'test',
+                }),
+              );
+            });
+          },
+        });
+      },
+    });
+
+    const defaultServices = [
+      httpRouterServiceFactory(),
+      mockServices.httpAuth.factory({
+        defaultCredentials: mockCredentials.none(),
+      }),
+    ];
+
+    it('should block unauthenticated requests by default', async () => {
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...defaultServices],
+      });
+
+      await expect(
+        request(server).get('/api/test/public'),
+      ).resolves.toMatchObject({
+        status: 200,
+      });
+
+      // TODO: cookie
+
+      await expect(
+        request(server).get('/api/test/protected/no-checks'),
+      ).resolves.toMatchObject({
+        status: 401,
+      });
+    });
+
+    it('should not block unauthenticated requests if default policy is disabled', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          pluginSubject,
+          ...defaultServices,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: { auth: { dangerouslyDisableDefaultAuthPolicy: true } },
+            },
+          }),
+        ],
+      });
+
+      await expect(
+        request(server).get('/api/test/public'),
+      ).resolves.toMatchObject({
+        status: 200,
+      });
+
+      // TODO: cookie
+
+      await expect(
+        request(server).get('/api/test/protected/no-checks'),
+      ).resolves.toMatchObject({
+        status: 200,
+        body: { ok: true },
+      });
+
+      await expect(
+        request(server).get('/api/test/protected/only-users'),
+      ).resolves.toMatchObject({
+        status: 401,
+      });
+
+      await expect(
+        request(server).get('/api/test/protected/only-services'),
+      ).resolves.toMatchObject({
+        status: 401,
+      });
+
+      await expect(
+        request(server).get('/api/test/protected/credentials'),
+      ).resolves.toMatchObject({
+        status: 200,
+        body: { credentials: mockCredentials.none() },
+      });
+
+      await expect(
+        request(server)
+          .get('/api/test/protected/credentials')
+          .set('authorization', mockCredentials.user.header()),
+      ).resolves.toMatchObject({
+        status: 200,
+        body: { credentials: mockCredentials.user() },
+      });
+
+      await expect(
+        request(server)
+          .get('/api/test/protected/credentials')
+          .set('authorization', mockCredentials.service.header()),
+      ).resolves.toMatchObject({
+        status: 200,
+        body: { credentials: mockCredentials.service() },
+      });
+
+      await expect(
+        request(server).get('/api/test/protected/service-token'),
+      ).resolves.toMatchObject({
+        status: 200,
+        body: { token: '' },
+      });
+
+      await expect(
+        request(server)
+          .get('/api/test/protected/service-token')
+          .set('authorization', mockCredentials.user.header()),
+      ).resolves.toMatchObject({
+        status: 200,
+        body: {
+          token: mockCredentials.service.token({
+            onBehalfOf: mockCredentials.user(),
+            targetPluginId: 'test',
+          }),
+        },
+      });
+
+      await expect(
+        request(server)
+          .get('/api/test/protected/service-token')
+          .set('authorization', mockCredentials.service.header()),
+      ).resolves.toMatchObject({
+        status: 200,
+        body: {
+          token: mockCredentials.service.token({
+            onBehalfOf: mockCredentials.service(),
+            targetPluginId: 'test',
+          }),
+        },
+      });
+    });
   });
 });
