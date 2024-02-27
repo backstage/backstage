@@ -98,12 +98,31 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     options: NotificationGetOptions | NotificationModifyOptions,
   ) => {
     const { user } = options;
+    const isSQLite = this.db.client.config.client.includes('sqlite3');
+    // const isPsql = this.db.client.config.client.includes('pg');
+
     const query = this.db('notification').where('user', user);
 
     if (options.sort !== undefined && options.sort !== null) {
       query.orderBy(options.sort, options.sortOrder ?? 'desc');
     } else if (options.sort !== null) {
       query.orderBy('created', options.sortOrder ?? 'desc');
+    }
+
+    if (options.createdAfter) {
+      if (isSQLite) {
+        query.where(
+          'notification.created',
+          '>=',
+          options.createdAfter.valueOf(),
+        );
+      } else {
+        query.where(
+          'notification.created',
+          '>=',
+          options.createdAfter.toISOString(),
+        );
+      }
     }
 
     if (options.limit) {

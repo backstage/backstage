@@ -20,11 +20,15 @@ import {
   PageWithHeader,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { NotificationsTable } from '../NotificationsTable';
-import { useNotificationsApi } from '../../hooks';
 import { Grid } from '@material-ui/core';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { NotificationsFilters } from '../NotificationsFilters';
+
+import { NotificationsTable } from '../NotificationsTable';
+import { useNotificationsApi } from '../../hooks';
+import {
+  CreatedAfterOptions,
+  NotificationsFilters,
+} from '../NotificationsFilters';
 import { GetNotificationsOptions } from '../../api';
 
 export const NotificationsPage = () => {
@@ -32,6 +36,7 @@ export const NotificationsPage = () => {
   const { lastSignal } = useSignal('notifications');
   const [unreadOnly, setUnreadOnly] = React.useState<boolean | undefined>(true);
   const [containsText, setContainsText] = React.useState<string>();
+  const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
 
   const { error, value, retry, loading } = useNotificationsApi(
     // TODO: add pagination and other filters
@@ -40,9 +45,15 @@ export const NotificationsPage = () => {
       if (unreadOnly !== undefined) {
         options.read = !unreadOnly;
       }
+
+      const createdAfterDate = CreatedAfterOptions[createdAfter].getDate();
+      if (createdAfterDate.valueOf() > 0) {
+        options.createdAfter = createdAfterDate;
+      }
+
       return api.getNotifications(options);
     },
-    [containsText, unreadOnly],
+    [containsText, unreadOnly, createdAfter],
   );
 
   useEffect(() => {
@@ -72,10 +83,10 @@ export const NotificationsPage = () => {
         <Grid container>
           <Grid item xs={2}>
             <NotificationsFilters
-              // createdAfter={createdAfter}
               unreadOnly={unreadOnly}
               onUnreadOnlyChanged={setUnreadOnly}
-              // onCreatedAfterChanged={setCreatedAfter}
+              createdAfter={createdAfter}
+              onCreatedAfterChanged={setCreatedAfter}
               // setSorting={setSorting}
               // sorting={sorting}
             />

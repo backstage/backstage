@@ -30,6 +30,7 @@ export type GetNotificationsOptions = {
   limit?: number;
   search?: string;
   read?: boolean;
+  createdAfter?: Date;
 };
 
 /** @public */

@@ -204,6 +204,13 @@ export async function createRouter(
       opts.read = false;
       // or keep undefined
     }
+    if (req.query.created_after) {
+      const sinceEpoch = Date.parse(req.query.created_after.toString());
+      if (isNaN(sinceEpoch)) {
+        throw new InputError('Unexpected date format');
+      }
+      opts.createdAfter = new Date(sinceEpoch);
+    }
 
     const notifications = await store.getNotifications(opts);
     res.send(notifications);
