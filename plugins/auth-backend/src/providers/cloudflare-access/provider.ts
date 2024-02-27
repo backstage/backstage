@@ -17,7 +17,6 @@
 import { AuthHandler } from '../types';
 import fetch, { Headers } from 'node-fetch';
 import express from 'express';
-import * as _ from 'lodash';
 import { jwtVerify, createRemoteJWKSet } from 'jose';
 import {
   AuthenticationError,
@@ -49,6 +48,11 @@ const CACHE_PREFIX = 'providers/cloudflare-access/profile-v1';
  */
 export const CF_DEFAULT_CACHE_TTL = 3600;
 
+type ServiceToken = {
+  token: string;
+  subject: string;
+};
+
 /** @public */
 export type Options = {
   /**
@@ -59,6 +63,15 @@ export type Options = {
    * https://<your-team-name>.cloudflareaccess.com/cdn-cgi/access/certs
    */
   teamName: string;
+  /**
+   * Allowed Cloudflare Service Tokens
+   *
+   * Cloudflare does not currently allow assigning any sort of identity to
+   * Service Tokens. Therefore, this allows you to build an allow list mapping
+   * the Client ID of any Service Tokens that should be allowed to pass the
+   * auth check to the identity (email) you would like to associate with it.
+   */
+  serviceTokens: ServiceToken[];
   authHandler: AuthHandler<CloudflareAccessResult>;
   signInResolver: SignInResolver<CloudflareAccessResult>;
   resolverContext: AuthResolverContext;
@@ -179,6 +192,7 @@ export type CloudflareAccessResponse =
 
 export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
   private readonly teamName: string;
+  private readonly serviceTokens: ServiceToken[];
   private readonly resolverContext: AuthResolverContext;
   private readonly authHandler: AuthHandler<CloudflareAccessResult>;
   private readonly signInResolver: SignInResolver<CloudflareAccessResult>;
@@ -187,6 +201,7 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
 
   constructor(options: Options) {
     this.teamName = options.teamName;
+    this.serviceTokens = options.serviceTokens;
     this.authHandler = options.authHandler;
     this.signInResolver = options.signInResolver;
     this.resolverContext = options.resolverContext;
@@ -260,8 +275,27 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
     const verifyResult = await jwtVerify(jwt, this.jwtKeySet, {
       issuer: `https://${this.teamName}.cloudflareaccess.com`,
     });
-    const sub = verifyResult.payload.sub;
-    const cfAccessResultStr = await this.cache?.get(`${CACHE_PREFIX}/${sub}`);
+
+    const isServiceToken = !verifyResult.payload.sub;
+
+    const subject = isServiceToken
+      ? (verifyResult.payload.common_name as string)
+      : verifyResult.payload.sub;
+    if (!subject) {
+      throw new AuthenticationError(
+        `Missing both sub and common_name from Cloudflare Access JWT`,
+      );
+    }
+
+    const serviceToken = this.serviceTokens.find(st => st.token === subject);
+    if (isServiceToken && !serviceToken) {
+      throw new AuthenticationError(
+        `${subject} is not a permitted Service Token.`,
+      );
+    }
+
+    const cacheKey = `${CACHE_PREFIX}/${subject}`;
+    const cfAccessResultStr = await this.cache?.get(cacheKey);
     if (typeof cfAccessResultStr === 'string') {
       const result = JSON.parse(cfAccessResultStr) as CloudflareAccessResult;
       return {
@@ -270,12 +304,23 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
       };
     }
     const claims = verifyResult.payload as CloudflareAccessClaims;
+
     // Builds a passport profile from JWT claims first
     try {
-      // If we successfully fetch the get-identity endpoint,
-      // We supplement the passport profile with richer user identity
-      // information here.
-      const cfIdentity = await this.getIdentityProfile(jwt);
+      let cfIdentity: CloudflareAccessIdentityProfile;
+      if (serviceToken) {
+        cfIdentity = {
+          id: subject,
+          name: 'Bot',
+          email: serviceToken.subject,
+          groups: [],
+        };
+      } else {
+        // If we successfully fetch the get-identity endpoint,
+        // We supplement the passport profile with richer user identity
+        // information here.
+        cfIdentity = await this.getIdentityProfile(jwt);
+      }
       // Stores a stringified JSON object in cfaccess provider cache only when
       // we complete all steps
       const cfAccessResult = {
@@ -283,7 +328,7 @@ export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
         cfIdentity,
         expiresInSeconds: claims.exp - claims.iat,
       };
-      this.cache?.set(`${CACHE_PREFIX}/${sub}`, JSON.stringify(cfAccessResult));
+      this.cache?.set(cacheKey, JSON.stringify(cfAccessResult));
       return {
         ...cfAccessResult,
         token: jwt,
@@ -350,6 +395,15 @@ export const cfAccess = createAuthProviderIntegration({
   }) {
     return ({ config, resolverContext }) => {
       const teamName = config.getString('teamName');
+      const serviceTokensConfig =
+        config.getOptionalConfigArray('serviceTokens');
+      const serviceTokens =
+        serviceTokensConfig?.map(cfg => {
+          return {
+            token: cfg.getString('token'),
+            subject: cfg.getString('subject'),
+          } as ServiceToken;
+        }) || [];
 
       if (!options.signIn.resolver) {
         throw new Error(
@@ -371,6 +425,7 @@ export const cfAccess = createAuthProviderIntegration({
 
       return new CloudflareAccessAuthProvider({
         teamName,
+        serviceTokens,
         signInResolver: options?.signIn.resolver,
         authHandler,
         resolverContext,
