@@ -1,5 +1,21 @@
 # @backstage/plugin-lighthouse-backend
 
+## 0.4.5-next.0
+
+### Patch Changes
+
+- 9f9ba70: **BREAKING**: The `createScheduler` function now requires the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-lighthouse-common@0.1.5-next.0
+
 ## 0.4.2
 
 ### Patch Changes

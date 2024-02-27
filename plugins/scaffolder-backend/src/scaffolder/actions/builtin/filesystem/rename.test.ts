@@ -16,8 +16,7 @@
 
 import { resolve as resolvePath } from 'path';
 import { createFilesystemRenameAction } from './rename';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import fs from 'fs-extra';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
@@ -41,16 +40,12 @@ describe('fs:rename', () => {
       to: 'brand-new-folder',
     },
   ];
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       files: mockInputFiles,
     },
     workspacePath,
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     jest.restoreAllMocks();

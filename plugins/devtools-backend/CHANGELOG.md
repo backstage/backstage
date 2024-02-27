@@ -1,5 +1,26 @@
 # @backstage/plugin-devtools-backend
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 4dc5b48: **BREAKING**: The `createRouter` method now requires the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support new auth services.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/plugin-permission-node@0.7.24-next.0
+  - @backstage/config-loader@1.6.3-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+  - @backstage/plugin-devtools-common@0.1.9-next.0
+
 ## 0.2.7
 
 ### Patch Changes

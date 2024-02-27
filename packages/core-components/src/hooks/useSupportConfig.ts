@@ -15,6 +15,8 @@
  */
 
 import { useApiHolder, configApiRef } from '@backstage/core-plugin-api';
+import { coreComponentsTranslationRef } from '../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export type SupportItemLink = {
   url: string;
@@ -32,30 +34,34 @@ export type SupportConfig = {
   items: SupportItem[];
 };
 
-const DEFAULT_SUPPORT_CONFIG: SupportConfig = {
-  url: 'https://github.com/backstage/backstage/issues',
-  items: [
-    {
-      title: 'Support Not Configured',
-      icon: 'warning',
-      links: [
-        {
-          // TODO: Update to dedicated support page on backstage.io/docs
-          title: 'Add `app.support` config key',
-          url: 'https://github.com/backstage/backstage/blob/master/app-config.yaml',
-        },
-      ],
-    },
-  ],
+const useDefaultSupportConfig = () => {
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
+  return {
+    url: 'https://github.com/backstage/backstage/issues',
+    items: [
+      {
+        title: t('supportConfig.default.title'),
+        icon: 'warning',
+        links: [
+          {
+            // TODO: Update to dedicated support page on backstage.io/docs
+            title: t('supportConfig.default.linkTitle'),
+            url: 'https://github.com/backstage/backstage/blob/master/app-config.yaml',
+          },
+        ],
+      },
+    ],
+  };
 };
 
 export function useSupportConfig(): SupportConfig {
   const apiHolder = useApiHolder();
   const config = apiHolder.get(configApiRef);
   const supportConfig = config?.getOptionalConfig('app.support');
+  const defaultSupportConfig = useDefaultSupportConfig();
 
   if (!supportConfig) {
-    return DEFAULT_SUPPORT_CONFIG;
+    return defaultSupportConfig;
   }
 
   return {

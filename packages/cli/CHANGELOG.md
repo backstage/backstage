@@ -1,5 +1,24 @@
 # @backstage/cli
 
+## 0.25.3-next.0
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+- f86e34c: Removed unused `replace-in-file` dependency
+- f4404e5: Add .ico import support
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/eslint-plugin@0.1.6-next.0
+  - @backstage/cli-node@0.2.4-next.0
+  - @backstage/config-loader@1.6.3-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.25.2
 
 ### Patch Changes

@@ -31,10 +31,7 @@ import { useEntityList } from '../../hooks';
 import { Autocomplete } from '@material-ui/lab';
 
 /** @public */
-export type CatalogReactEntityProcessingStatusPickerClassKey =
-  | 'input'
-  | 'root'
-  | 'label';
+export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
 
 const useStyles = makeStyles(
   {

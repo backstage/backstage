@@ -44,7 +44,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { useEntityPresentation } from '../../apis';
 
 /** @public */
-export type CatalogReactEntityOwnerPickerClassKey = 'input' | 'root' | 'label';
+export type CatalogReactEntityOwnerPickerClassKey = 'input';
 
 const useStyles = makeStyles(
   {

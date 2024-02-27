@@ -87,11 +87,6 @@ const SearchPage = () => {
                     name: 'Documentation',
                     icon: <DocsIcon />,
                   },
-                  {
-                    value: 'adr',
-                    name: 'Architecture Decision Records',
-                    icon: <DocsIcon />,
-                  },
                 ]}
               />
               <Paper className={classes.filters}>

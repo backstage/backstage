@@ -67,6 +67,7 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService as TokenManager } from '@backstage/backend-plugin-api';
 import { TransportStreamOptions } from 'winston-transport';
 import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
@@ -239,30 +240,32 @@ export function createLegacyAuthAdapters<
   TOptions extends {
     auth?: AuthService;
     httpAuth?: HttpAuthService;
+    userInfo?: UserInfoService;
     identity?: IdentityService;
     tokenManager?: TokenManager;
     discovery: PluginEndpointDiscovery;
   },
-  TAdapters = TOptions extends {
+  TAdapters = (TOptions extends {
     auth?: AuthService;
   }
-    ? TOptions extends {
-        httpAuth?: HttpAuthService;
+    ? {
+        auth: AuthService;
       }
+    : {}) &
+    (TOptions extends {
+      httpAuth?: HttpAuthService;
+    }
       ? {
-          auth: AuthService;
           httpAuth: HttpAuthService;
         }
-      : {
-          auth: AuthService;
+      : {}) &
+    (TOptions extends {
+      userInfo?: UserInfoService;
+    }
+      ? {
+          userInfo: UserInfoService;
         }
-    : TOptions extends {
-        httpAuth?: HttpAuthService;
-      }
-    ? {
-        httpAuth: HttpAuthService;
-      }
-    : 'error: at least one of auth and/or httpAuth must be provided',
+      : {}),
 >(options: TOptions): TAdapters;
 
 // @public

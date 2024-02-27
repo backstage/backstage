@@ -15,6 +15,7 @@
  */
 
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 jest.mock('./gitHelpers', () => {
   return {
@@ -23,7 +24,6 @@ jest.mock('./gitHelpers', () => {
   };
 });
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -31,7 +31,6 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { when } from 'jest-when';
-import { PassThrough } from 'stream';
 import { createGithubRepoCreateAction } from './githubRepoCreate';
 import { entityRefToName } from './gitHelpers';
 
@@ -82,19 +81,14 @@ describe('github:repo:create', () => {
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any>;
 
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
       description: 'description',
       repoVisibility: 'private' as const,
       access: 'owner/blam',
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     githubCredentialsProvider =

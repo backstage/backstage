@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { PassThrough } from 'stream';
 import { createGithubAutolinksAction } from './githubAutolinks';
 
 const mockOctokit = {
@@ -53,13 +53,7 @@ describe('github:autolinks:create', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any, any>;
-  const mockContext = {
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const workspacePath = createMockDirectory().resolve('workspace');
 
   it('should call the githubApis for creating alphanumeric autolink reference', async () => {
     githubCredentialsProvider =
@@ -74,14 +68,16 @@ describe('github:autolinks:create', () => {
         id: '1',
       },
     });
-    await action.handler({
-      input: {
-        repoUrl: 'github.com?repo=repo&owner=owner',
-        keyPrefix: 'TICKET-',
-        urlTemplate: 'https://example.com/TICKET?query=<num>',
-      },
-      ...mockContext,
-    });
+    await action.handler(
+      createMockActionContext({
+        input: {
+          repoUrl: 'github.com?repo=repo&owner=owner',
+          keyPrefix: 'TICKET-',
+          urlTemplate: 'https://example.com/TICKET?query=<num>',
+        },
+        workspacePath,
+      }),
+    );
 
     expect(mockOctokit.rest.repos.createAutolink).toHaveBeenCalledWith({
       owner: 'owner',
@@ -104,15 +100,17 @@ describe('github:autolinks:create', () => {
         id: '1',
       },
     });
-    await action.handler({
-      input: {
-        repoUrl: 'github.com?repo=repo&owner=owner',
-        keyPrefix: 'TICKET-',
-        urlTemplate: 'https://example.com/TICKET?query=<num>',
-        isAlphanumeric: false,
-      },
-      ...mockContext,
-    });
+    await action.handler(
+      createMockActionContext({
+        input: {
+          repoUrl: 'github.com?repo=repo&owner=owner',
+          keyPrefix: 'TICKET-',
+          urlTemplate: 'https://example.com/TICKET?query=<num>',
+          isAlphanumeric: false,
+        },
+        workspacePath,
+      }),
+    );
 
     expect(mockOctokit.rest.repos.createAutolink).toHaveBeenCalledWith({
       owner: 'owner',

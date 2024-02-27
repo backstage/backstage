@@ -18,11 +18,10 @@ import yaml from 'yaml';
 import { ConfigReader } from '@backstage/config';
 import { createPublishAzureAction } from './azure';
 import { ScmIntegrations } from '@backstage/integration';
-import { getVoidLogger } from '@backstage/backend-common';
 import { WebApi } from 'azure-devops-node-api';
-import { PassThrough } from 'stream';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { examples } from './azure.examples';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 jest.mock('azure-devops-node-api', () => ({
   WebApi: jest.fn(),
@@ -55,13 +54,7 @@ describe('publish:azure examples', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createPublishAzureAction({ integrations, config });
-  const mockContext = {
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext();
 
   const mockGitClient = {
     createRepository: jest.fn(),

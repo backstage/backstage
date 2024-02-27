@@ -48,7 +48,6 @@ import {
   NewNotificationSignal,
   Notification,
   NotificationReadSignal,
-  NotificationType,
 } from '@backstage/plugin-notifications-common';
 
 /** @internal */
@@ -190,9 +189,6 @@ export async function createRouter(
     const opts: NotificationGetOptions = {
       user: user,
     };
-    if (req.query.type) {
-      opts.type = req.query.type.toString() as NotificationType;
-    }
     if (req.query.offset) {
       opts.offset = Number.parseInt(req.query.offset.toString(), 10);
     }
@@ -201,6 +197,19 @@ export async function createRouter(
     }
     if (req.query.search) {
       opts.search = req.query.search.toString();
+    }
+    if (req.query.read === 'true') {
+      opts.read = true;
+    } else if (req.query.read === 'false') {
+      opts.read = false;
+      // or keep undefined
+    }
+    if (req.query.created_after) {
+      const sinceEpoch = Date.parse(req.query.created_after.toString());
+      if (isNaN(sinceEpoch)) {
+        throw new InputError('Unexpected date format');
+      }
+      opts.createdAfter = new Date(sinceEpoch);
     }
 
     const notifications = await store.getNotifications(opts);
@@ -224,7 +233,7 @@ export async function createRouter(
 
   router.get('/status', async (req, res) => {
     const user = await getUser(req);
-    const status = await store.getStatus({ user, type: 'undone' });
+    const status = await store.getStatus({ user });
     res.send(status);
   });
 
