@@ -67,6 +67,12 @@ catalog:
         orgEnabled: true
         group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
         groupPattern: '[\s\S]*' # Optional. Filters found groups based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
+        groupListApiParameters: # Optional. Pass parameters to the listGroups api call used to get the list of available groups
+          all_available: true # Show all the groups you have access to (defaults to false for authenticated users, true for administrators)
+          search: '' # Return the list of authorized groups matching the search criteria
+          owned: true # Limit to groups explicitly owned by the current user.
+          min_access_level: 10 # Limit to groups where current user has at least this role.
+          top_level_only: false # Limit to top level groups, excluding all subgroups
 ```
 
 ### Groups
@@ -81,6 +87,8 @@ order to limit the ingestion to a group within your organisation. `Group`
 entities will only be ingested for the configured group, or its descendant groups,
 but not any ancestor groups higher than the configured group path. Only groups
 which contain members will be ingested.
+
+By default, the GitLab API only displays the groups that you are a member of. However, this behavior can be changed through the use of the `all_available` query option. By default, `all_available` is set to false for authenticated users and true for administrators. Additionally, the groupListApiOptions can be utilized to configure the API's behavior to show more groups. By setting the `all_available` option to true, the API will return all groups that you have access to, including public and internal groups, regardless of whether or not you are a member of them.
 
 ### Users
 

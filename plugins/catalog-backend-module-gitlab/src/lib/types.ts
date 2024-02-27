@@ -128,6 +128,69 @@ export type GitLabDescendantGroupsResponse = {
     };
   };
 };
+
+/**
+ * Parameters for the gitlab listGroups Api
+ *
+ * @public
+ */
+export type GroupListApiParameters = {
+  /**
+   * Skip the group IDs passed
+   *
+   * not useful for the catalog - use `groupPattern` instead
+   */
+  // skip_groups?: number[];
+  /**
+   * Show all the groups you have access to (defaults to false for authenticated users, true for administrators);
+   * Attributes owned and min_access_level have precedence
+   */
+  all_available?: boolean;
+  /**
+   * Return the list of authorized groups matching the search criteria
+   */
+  search?: string;
+  /**
+   * Order groups by name, path, id, or similarity (if searching, introduced in GitLab 14.1).
+   * Default is name.
+   *
+   * not useful for the catalog
+   */
+  // order_by?: string;
+  /**
+   * Order groups in asc or desc order. Default is asc
+   *
+   * not useful for the catalog
+   */
+  // sort?: string;
+  /**
+   * Include group statistics (administrators only).
+   * Note: The REST API response does not provide the full RootStorageStatistics data that is shown in the UI.
+   *       To match the data in the UI, use GraphQL instead of REST.
+   *
+   * not useful for the catalog
+   */
+  // statistics?: boolean;
+  /**
+   * Include custom attributes in response (admins only).
+   *
+   * not useful for the catalog
+   */
+  // with_custom_attributes?: boolean;
+  /**
+   * Limit to groups explicitly owned by the current user.
+   */
+  owned?: boolean;
+  /**
+   * Limit to groups where current user has at least this role.
+   */
+  min_access_level?: number;
+  /**
+   * Limit to top level groups, excluding all subgroups
+   */
+  top_level_only?: boolean;
+};
+
 /**
  * The configuration parameters for the GitlabProvider
  *
@@ -179,10 +242,10 @@ export type GitlabProviderConfig = {
   groupPattern: RegExp;
 
   /**
-   * Lookup-Options passed to the gitlab api when listing groups.
+   * Parameters passed to the gitlab api when listing groups.
    * @see https://docs.gitlab.com/ee/api/groups.html#list-groups
    */
-  groupListApiOptions?: { [name: string]: string };
+  groupListApiParameters?: GroupListApiParameters;
 
   orgEnabled?: boolean;
 

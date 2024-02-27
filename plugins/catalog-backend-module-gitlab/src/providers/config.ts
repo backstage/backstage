@@ -17,6 +17,7 @@
 import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { GitlabProviderConfig } from '../lib';
+import { GroupListApiOptions } from '../lib/types';
 
 /**
  * Extracts the gitlab config from a config object
@@ -43,13 +44,23 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     config.getOptionalString('groupPattern') ?? /[\s\S]*/,
   );
   const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
-  const groupListApiOptions: { [name: string]: string } = {};
   const groupListApiOptionsCfg = config.getOptionalConfig(
     'groupListApiOptions',
   );
-  groupListApiOptionsCfg?.keys().forEach(key => {
-    groupListApiOptions[key] = groupListApiOptionsCfg.get(key);
-  });
+  const groupListApiOptions: GroupListApiOptions = {};
+  if (groupListApiOptionsCfg !== undefined) {
+    groupListApiOptions.all_available =
+      groupListApiOptionsCfg.getOptionalBoolean('all_available');
+    groupListApiOptions.min_access_level =
+      groupListApiOptionsCfg.getOptionalNumber('min_access_level');
+    groupListApiOptions.owned =
+      groupListApiOptionsCfg.getOptionalBoolean('owned');
+    groupListApiOptions.search =
+      groupListApiOptionsCfg.getOptionalString('search');
+    groupListApiOptions.top_level_only =
+      groupListApiOptionsCfg.getOptionalBoolean('top_level_only');
+  }
+
   const skipForkedRepos: boolean =
     config.getOptionalBoolean('skipForkedRepos') ?? false;
 
