@@ -74,8 +74,7 @@ export const InfoContent = () => {
       }
       setCopied(formatted);
       setInfoCopied(true);
-    }
-    if (state.error) {
+    } else if (state.error) {
       alertApi.post({
         message: state.error.message,
         severity: 'error',
