@@ -5,28 +5,28 @@
 ```ts
 /// <reference types="node" />
 
-import {ActionContext} from './index';
-import {JsonObject} from '@backstage/types';
-import {TaskSecrets} from './index';
-import {TemplateInfo} from './index';
+import { ActionContext } from '@backstage/plugin-scaffolder-node';
+import { JsonObject } from '@backstage/types';
+import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
+import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import * as winston from 'winston';
-import {Writable} from 'stream';
+import { Writable } from 'stream';
 
 // @public
 export const createMockActionContext: <
-    TActionInput extends JsonObject = JsonObject,
-    TActionOutput extends JsonObject = JsonObject,
+  TActionInput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
 >(
-    options?:
-        | {
+  options?:
+    | {
         input?: TActionInput | undefined;
         logger?: winston.Logger | undefined;
         logStream?: Writable | undefined;
         secrets?: TaskSecrets | undefined;
         templateInfo?: TemplateInfo | undefined;
         workspacePath?: string | undefined;
-    }
-        | undefined,
+      }
+    | undefined,
 ) => ActionContext<TActionInput, TActionOutput>;
 
 // (No @packageDocumentation comment for this package)
