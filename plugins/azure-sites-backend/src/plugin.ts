@@ -37,6 +37,8 @@ export const azureSitesPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         permissions: coreServices.permissions,
         discovery: coreServices.discovery,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
         catalogApi: catalogServiceRef,
       },
       async init({
@@ -46,6 +48,8 @@ export const azureSitesPlugin = createBackendPlugin({
         permissions,
         catalogApi,
         discovery,
+        auth,
+        httpAuth,
       }) {
         const azureSitesApi = AzureSitesApi.fromConfig(config);
         httpRouter.use(
@@ -55,6 +59,8 @@ export const azureSitesPlugin = createBackendPlugin({
             permissions,
             catalogApi,
             discovery,
+            auth,
+            httpAuth,
           }),
         );
       },
