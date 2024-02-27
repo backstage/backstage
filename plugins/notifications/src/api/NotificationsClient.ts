@@ -42,9 +42,6 @@ export class NotificationsClient implements NotificationsApi {
     options?: GetNotificationsOptions,
   ): Promise<Notification[]> {
     const queryString = new URLSearchParams();
-    if (options?.type) {
-      queryString.append('type', options.type);
-    }
     if (options?.limit !== undefined) {
       queryString.append('limit', options.limit.toString(10));
     }
@@ -53,6 +50,9 @@ export class NotificationsClient implements NotificationsApi {
     }
     if (options?.search) {
       queryString.append('search', options.search);
+    }
+    if (options?.read !== undefined) {
+      queryString.append('read', options.read ? 'true' : 'false');
     }
 
     const urlSegment = `?${queryString}`;
