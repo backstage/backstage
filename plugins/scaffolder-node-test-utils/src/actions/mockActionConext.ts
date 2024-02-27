@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { PassThrough, Writable } from 'stream';
+import { PassThrough } from 'stream';
 import { getVoidLogger } from '@backstage/backend-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
-import { ActionContext, TaskSecrets } from '@backstage/plugin-scaffolder-node';
-import * as winston from 'winston';
-import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
+import { ActionContext } from '@backstage/plugin-scaffolder-node';
 
 /**
  * A utility method to create a mock action context for scaffolder actions.
@@ -31,14 +29,9 @@ import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 export const createMockActionContext = <
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
->(options?: {
-  input?: TActionInput;
-  logger?: winston.Logger;
-  logStream?: Writable;
-  secrets?: TaskSecrets;
-  templateInfo?: TemplateInfo;
-  workspacePath?: string;
-}): ActionContext<TActionInput, TActionOutput> => {
+>(
+  options?: Partial<ActionContext<TActionInput, TActionOutput>>,
+): ActionContext<TActionInput, TActionOutput> => {
   const defaultContext = {
     logger: getVoidLogger(),
     logStream: new PassThrough(),
