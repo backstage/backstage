@@ -25,6 +25,8 @@ import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
 import { GuestUserIdentity } from './GuestUserIdentity';
 import useLocalStorage from 'react-use/lib/useLocalStorage';
 import { ResponseError } from '@backstage/errors';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const getIdentity = async (identity: ProxiedSignInIdentity) => {
   try {
@@ -48,6 +50,7 @@ const Component: ProviderComponent = ({
 }) => {
   const discoveryApi = useApi(discoveryApiRef);
   const [_, setUseLegacyGuestToken] = useLocalStorage('enableLegacyGuestToken');
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const handle = async () => {
     onSignInStarted();
@@ -85,11 +88,13 @@ const Component: ProviderComponent = ({
         variant="fullHeight"
         actions={
           <Button color="primary" variant="outlined" onClick={handle}>
-            Enter
+            {t('signIn.guestProvider.enter')}
           </Button>
         }
       >
-        <Typography variant="body1">Sign in as a Guest.</Typography>
+        <Typography variant="body1" style={{ whiteSpace: 'pre-line' }}>
+          {t('signIn.guestProvider.subtitle')}
+        </Typography>
       </InfoCard>
     </GridItem>
   );

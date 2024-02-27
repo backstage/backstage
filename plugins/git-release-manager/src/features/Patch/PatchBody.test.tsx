@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render, waitFor, screen } from '@testing-library/react';
+import { waitFor, screen, render } from '@testing-library/react';
 
 import {
   mockBumpedTag,
@@ -29,6 +29,10 @@ import {
 import { mockApiClient } from '../../test-helpers/mock-api-client';
 import { PatchBody } from './PatchBody';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+import { MockErrorApi, TestApiProvider } from '@backstage/test-utils';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { MockTranslationApi } from '@backstage/test-utils/alpha';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -56,13 +60,21 @@ describe('PatchBody', () => {
     });
 
     const { getByTestId } = render(
-      <PatchBody
-        bumpedTag={mockBumpedTag}
-        latestRelease={mockReleaseCandidateCalver}
-        releaseBranch={mockReleaseBranch}
-        tagParts={mockTagParts}
-        ctaMessage={mockCtaMessage}
-      />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, MockTranslationApi.create()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <PatchBody
+          bumpedTag={mockBumpedTag}
+          latestRelease={mockReleaseCandidateCalver}
+          releaseBranch={mockReleaseBranch}
+          tagParts={mockTagParts}
+          ctaMessage={mockCtaMessage}
+        />
+        ,
+      </TestApiProvider>,
     );
 
     expect(getByTestId(TEST_IDS.patch.loading)).toBeInTheDocument();
@@ -74,13 +86,20 @@ describe('PatchBody', () => {
 
   it('should render not-prerelease description', async () => {
     const { getByTestId } = render(
-      <PatchBody
-        latestRelease={mockReleaseVersionCalver}
-        releaseBranch={mockReleaseBranch}
-        bumpedTag={mockBumpedTag}
-        tagParts={mockTagParts}
-        ctaMessage={mockCtaMessage}
-      />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, MockTranslationApi.create()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <PatchBody
+          latestRelease={mockReleaseVersionCalver}
+          releaseBranch={mockReleaseBranch}
+          bumpedTag={mockBumpedTag}
+          tagParts={mockTagParts}
+          ctaMessage={mockCtaMessage}
+        />
+      </TestApiProvider>,
     );
 
     expect(getByTestId(TEST_IDS.patch.loading)).toBeInTheDocument();
