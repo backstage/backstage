@@ -27,4 +27,5 @@ export {
   techdocsBuildsExtensionPoint,
   techdocsGeneratorExtensionPoint,
   type TechdocsBuildsExtensionPoint,
+  type TechdocsGeneratorExtensionPoint,
 } from './extensions';

@@ -273,8 +273,12 @@ export class TechdocsGenerator implements GeneratorBase {
   run(options: GeneratorRunOptions): Promise<void>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "TechdocsGeneratorExtensionPoint" needs to be exported by the entry point index.d.ts
-//
+// @public
+export interface TechdocsGeneratorExtensionPoint {
+  // (undocumented)
+  setTechdocsGenerator(generator: TechdocsGenerator): void;
+}
+
 // @public
 export const techdocsGeneratorExtensionPoint: ExtensionPoint<TechdocsGeneratorExtensionPoint>;
 
