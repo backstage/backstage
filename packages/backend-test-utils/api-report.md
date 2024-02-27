@@ -50,6 +50,17 @@ export function isDockerDisabledForTests(): boolean;
 
 // @public (undocumented)
 export namespace mockCredentials {
+  export function limitedUser(
+    userEntityRef?: string,
+  ): BackstageCredentials<BackstageUserPrincipal>;
+  export namespace limitedUser {
+    export function cookie(userEntityRef?: string): string;
+    // (undocumented)
+    export function invalidCookie(): string;
+    // (undocumented)
+    export function invalidToken(): string;
+    export function token(userEntityRef?: string): string;
+  }
   export function none(): BackstageCredentials<BackstageNonePrincipal>;
   export namespace none {
     export function header(): string;

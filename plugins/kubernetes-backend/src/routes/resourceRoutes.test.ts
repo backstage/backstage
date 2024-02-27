@@ -236,7 +236,7 @@ describe('resourcesRoutes', () => {
         .expect(401, {
           error: {
             name: 'AuthenticationError',
-            message: '',
+            message: 'Missing credentials',
           },
           request: {
             method: 'POST',
@@ -508,7 +508,7 @@ describe('resourcesRoutes', () => {
         .expect(401, {
           error: {
             name: 'AuthenticationError',
-            message: '',
+            message: 'Missing credentials',
           },
           request: {
             method: 'POST',

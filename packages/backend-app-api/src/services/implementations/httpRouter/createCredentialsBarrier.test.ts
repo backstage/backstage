@@ -53,7 +53,10 @@ describe('createCredentialsBarrier', () => {
       .expect(401)
       .expect(res =>
         expect(res.body).toMatchObject({
-          error: { name: 'AuthenticationError', message: '' },
+          error: {
+            name: 'AuthenticationError',
+            message: 'Missing credentials',
+          },
         }),
       );
 
@@ -98,7 +101,7 @@ describe('createCredentialsBarrier', () => {
       .expect(200);
   });
 
-  it('should allow exceptions to the default auth policy to be made', async () => {
+  it('should allow exceptions for unauthenticated access', async () => {
     const { app, barrier } = setup();
 
     await request(app).get('/').send().expect(401);
@@ -118,5 +121,55 @@ describe('createCredentialsBarrier', () => {
     await request(app).get('/other').send().expect(200);
   });
 
-  // TODO: cookie auth
+  it('should allow exceptions for cookie access', async () => {
+    const { app, barrier } = setup();
+
+    await request(app).get('/').send().expect(401);
+    await request(app).get('/public').send().expect(401);
+    await request(app).get('/other').send().expect(401);
+    await request(app)
+      .get('/static')
+      .set('cookie', mockCredentials.limitedUser.cookie())
+      .send()
+      .expect(401);
+    await request(app)
+      .get('/static')
+      .set('authorization', mockCredentials.user.header())
+      .send()
+      .expect(200);
+
+    barrier.addAuthPolicy({ allow: 'user-cookie', path: '/static' });
+
+    await request(app).get('/').send().expect(401);
+    await request(app).get('/static').send().expect(401);
+    await request(app)
+      .get('/static')
+      .set('cookie', mockCredentials.limitedUser.cookie())
+      .send()
+      .expect(200);
+    await request(app)
+      .get('/static')
+      .set('authorization', mockCredentials.user.header())
+      .send()
+      .expect(200);
+
+    await request(app).get('/other').send().expect(401);
+
+    // Unauthenticated access should take precedence
+    barrier.addAuthPolicy({ allow: 'unauthenticated', path: '/' });
+
+    await request(app).get('/').send().expect(200);
+    await request(app).get('/static').send().expect(200);
+    await request(app)
+      .get('/static')
+      .set('cookie', mockCredentials.limitedUser.cookie())
+      .send()
+      .expect(200);
+    await request(app)
+      .get('/static')
+      .set('cookie', mockCredentials.limitedUser.invalidCookie())
+      .send()
+      .expect(200);
+    await request(app).get('/other').send().expect(200);
+  });
 });
