@@ -5000,6 +5000,7 @@ __metadata:
     "@azure/arm-resourcegraph": ^4.2.1
     "@azure/identity": ^4.0.0
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
