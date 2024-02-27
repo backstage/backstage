@@ -41,7 +41,7 @@ interface DryRunInput {
   spec: TaskSpec;
   secrets?: TaskSecrets;
   directoryContents: SerializedFile[];
-  getInitiatorCredentials(): Promise<BackstageCredentials>;
+  credentials: BackstageCredentials;
 }
 
 interface DryRunResult {
@@ -118,7 +118,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
           },
         },
         secrets: input.secrets,
-        getInitiatorCredentials: input.getInitiatorCredentials,
+        getInitiatorCredentials: () => Promise.resolve(input.credentials),
         // No need to update this at the end of the run, so just hard-code it
         done: false,
         isDryRun: true,

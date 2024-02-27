@@ -626,9 +626,7 @@ export async function createRouter(
           ...(token && { backstageToken: token }),
           initiatorCredentials: JSON.stringify(credentials),
         },
-        getInitiatorCredentials(): Promise<BackstageCredentials> {
-          return Promise.resolve(credentials);
-        },
+        credentials,
       });
 
       res.status(200).json({
