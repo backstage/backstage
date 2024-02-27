@@ -27,7 +27,7 @@ import {
   TokenManagerService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
-import { ServerTokenManager, TokenManager } from '../tokens';
+import { TokenManager } from '../tokens';
 import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import type { Request, Response } from 'express';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -48,7 +48,7 @@ import { PluginEndpointDiscovery } from '../discovery';
 class AuthCompat implements AuthService {
   constructor(
     private readonly identity: IdentityService,
-    private readonly tokenManager: TokenManagerService,
+    private readonly tokenManager?: TokenManagerService,
   ) {}
 
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(
@@ -79,9 +79,12 @@ class AuthCompat implements AuthService {
   }
 
   async authenticate(token: string): Promise<BackstageCredentials> {
-    const { aud } = decodeJwt(token);
+    // Defensively check whether it seems token-like first, just to support
+    // custom TokenManager implementations that don't emit JWTs specifically.
+    const payload =
+      token.split('.').length === 3 ? decodeJwt(token) : undefined;
 
-    if (aud === 'backstage') {
+    if (payload?.aud === 'backstage') {
       // User Backstage token
       const identity = await this.identity.getIdentity({
         request: {
@@ -100,9 +103,12 @@ class AuthCompat implements AuthService {
       );
     }
 
-    await this.tokenManager.authenticate(token);
+    await this.tokenManager?.authenticate(token);
 
-    return createCredentialsWithServicePrincipal('external:backstage-plugin');
+    return createCredentialsWithServicePrincipal(
+      'external:backstage-plugin',
+      token,
+    );
   }
 
   async getPluginRequestToken(options: {
@@ -114,8 +120,12 @@ class AuthCompat implements AuthService {
 
     switch (type) {
       // TODO: Check whether the principal is ourselves
-      case 'service':
-        return this.tokenManager.getToken();
+      case 'service': {
+        if (this.tokenManager) {
+          return this.tokenManager.getToken();
+        }
+        return { token: internalForward.token ?? '' };
+      }
       case 'user':
         if (!internalForward.token) {
           throw new Error('User credentials is unexpectedly missing token');
@@ -187,17 +197,13 @@ class HttpAuthCompat implements HttpAuthService {
   async #extractCredentialsFromRequest(req: Request) {
     const token = getTokenFromRequest(req);
     if (!token) {
-      return createCredentialsWithNonePrincipal();
+      return this.#auth.getNoneCredentials();
     }
 
-    const credentials = toInternalBackstageCredentials(
-      await this.#auth.authenticate(token),
-    );
-
-    return credentials;
+    return this.#auth.authenticate(token);
   }
 
-  async #getCredentials(req: /*  */ RequestWithCredentials) {
+  async #getCredentials(req: RequestWithCredentials) {
     return (req[credentialsSymbol] ??=
       this.#extractCredentialsFromRequest(req));
   }
@@ -209,9 +215,7 @@ class HttpAuthCompat implements HttpAuthService {
       allowLimitedAccess?: boolean;
     },
   ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>> {
-    const credentials = toInternalBackstageCredentials(
-      await this.#getCredentials(req),
-    );
+    const credentials = await this.#getCredentials(req);
 
     const allowed = options?.allow;
     if (!allowed) {
@@ -335,9 +339,8 @@ export function createLegacyAuthAdapters<
 
   const identity =
     options.identity ?? DefaultIdentityClient.create({ discovery });
-  const tokenManager = options.tokenManager ?? ServerTokenManager.noop();
 
-  const authImpl = new AuthCompat(identity, tokenManager);
+  const authImpl = new AuthCompat(identity, options.tokenManager);
 
   const httpAuthImpl = new HttpAuthCompat(authImpl);
 

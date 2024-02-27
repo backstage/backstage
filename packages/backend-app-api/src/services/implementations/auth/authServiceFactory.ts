@@ -39,10 +39,12 @@ export type InternalBackstageCredentials<TPrincipal = unknown> =
 
 export function createCredentialsWithServicePrincipal(
   sub: string,
+  token?: string,
 ): InternalBackstageCredentials<BackstageServicePrincipal> {
   return {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
+    token,
     principal: {
       type: 'service',
       subject: sub,
