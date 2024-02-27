@@ -1,5 +1,5 @@
 ---
-id: authenticationstrategy
+id: authentication-strategies
 title: Kubernetes Authentication Strategies
 sidebar_label: Authentication Strategies
 description: Authentication Strategies in Kubernetes plugin
