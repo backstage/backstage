@@ -32,7 +32,7 @@ import Toc from '@material-ui/icons/Toc';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 
 type ContextMenuProps = {
@@ -43,6 +43,7 @@ type ContextMenuProps = {
   onToggleLogs?: (state: boolean) => void;
   onToggleButtonBar?: (state: boolean) => void;
   taskId?: string;
+  templateName?: string;
 };
 
 const useStyles = makeStyles<Theme, { fontColor: string }>(() => ({
@@ -60,15 +61,18 @@ export const ContextMenu = (props: ContextMenuProps) => {
     onToggleLogs,
     onToggleButtonBar,
     taskId,
+    templateName,
   } = props;
   const { getPageTheme } = useTheme();
   const pageTheme = getPageTheme({ themeId: 'website' });
   const classes = useStyles({ fontColor: pageTheme.fontColor });
   const scaffolderApi = useApi(scaffolderApiRef);
+  const analytics = useAnalytics();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
   const [{ status: cancelStatus }, { execute: cancel }] = useAsync(async () => {
     if (taskId) {
+      analytics.captureEvent('click', `[${templateName}]: Task canceled`);
       await scaffolderApi.cancelTask(taskId);
     }
   });
