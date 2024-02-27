@@ -106,7 +106,7 @@ describe('TemplateWizardPage', () => {
     // The "Next Step" button should have fired an event
     expect(analyticsMock.getEvents()[0]).toMatchObject({
       action: 'click',
-      subject: '[expected-name]: Next Step (1)',
+      subject: '[template:default/test]: Next Step (1)',
       context: { entityRef: 'template:default/test' },
     });
 

@@ -43,7 +43,7 @@ type ContextMenuProps = {
   onToggleLogs?: (state: boolean) => void;
   onToggleButtonBar?: (state: boolean) => void;
   taskId?: string;
-  templateName?: string;
+  templateRef?: string;
 };
 
 const useStyles = makeStyles<Theme, { fontColor: string }>(() => ({
@@ -61,7 +61,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
     onToggleLogs,
     onToggleButtonBar,
     taskId,
-    templateName,
+    templateRef,
   } = props;
   const { getPageTheme } = useTheme();
   const pageTheme = getPageTheme({ themeId: 'website' });
@@ -72,7 +72,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
 
   const [{ status: cancelStatus }, { execute: cancel }] = useAsync(async () => {
     if (taskId) {
-      analytics.captureEvent('click', `[${templateName}]: Task canceled`);
+      analytics.captureEvent('click', `[${templateRef}]: Task canceled`);
       await scaffolderApi.cancelTask(taskId);
     }
   });

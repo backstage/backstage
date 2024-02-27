@@ -23,6 +23,7 @@ import {
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
@@ -128,15 +129,21 @@ export const OngoingTask = (props: {
     templateRouteRef,
   ]);
 
-  const templateName =
-    taskStream.task?.spec.templateInfo?.entity?.metadata.name;
+  const template = taskStream.task?.spec.templateInfo?.entity!;
+  const templateName = template.metadata.name;
+
+  const templateRef = stringifyEntityRef({
+    kind: 'Template',
+    namespace: template.metadata.namespace,
+    name: templateName,
+  });
 
   const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
     async () => {
       if (taskId) {
         analytics.captureEvent(
           'click',
-          `[${templateName}]: Task has been canceled`,
+          `[${templateRef}]: Task has been canceled`,
         );
         await scaffolderApi.cancelTask(taskId);
       }
@@ -166,7 +173,7 @@ export const OngoingTask = (props: {
           onToggleLogs={setLogVisibleState}
           onToggleButtonBar={setButtonBarVisibleState}
           taskId={taskId}
-          templateName={templateName}
+          templateRef={templateRef}
         />
       </Header>
       <Content className={classes.contentWrapper}>

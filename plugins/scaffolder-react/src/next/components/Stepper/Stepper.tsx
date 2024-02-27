@@ -75,6 +75,7 @@ export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: FieldExtensionOptions<any, any>[];
   templateName?: string;
+  templateRef?: string;
   formProps?: FormProps;
   initialState?: Record<string, JsonValue>;
   onCreate: (values: Record<string, JsonValue>) => Promise<void>;
@@ -110,11 +111,6 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
-
-  const templateName =
-    typeof formState.name === 'string'
-      ? formState.name
-      : props.templateName ?? 'unknown';
 
   const backLabel =
     presentation?.buttonLabels?.backButtonText ?? backButtonText;
@@ -158,8 +154,8 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const handleCreate = useCallback(() => {
     props.onCreate(formState);
-    analytics.captureEvent('click', `[${templateName}]: ${createLabel}`);
-  }, [props, formState, analytics, templateName, createLabel]);
+    analytics.captureEvent('click', `[${props.templateRef}]: ${createLabel}`);
+  }, [props, formState, analytics, createLabel]);
 
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
 
@@ -185,7 +181,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         const stepNum = prevActiveStep + 1;
         analytics.captureEvent(
           'click',
-          `[${templateName}]: Next Step (${stepNum})`,
+          `[${props.templateRef}]: Next Step (${stepNum})`,
         );
         return stepNum;
       });

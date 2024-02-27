@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  RELATION_OWNED_BY,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { MarkdownContent, UserIcon } from '@backstage/core-components';
 import {
   IconComponent,
@@ -110,15 +113,20 @@ export const TemplateCard = (props: TemplateCardProps) => {
   const hasLinks =
     !!props.additionalLinks?.length || !!template.metadata.links?.length;
   const displayDefaultDivider = !hasTags && !hasLinks;
-  const templateName = template.metadata.name;
+
+  const templateRef = stringifyEntityRef({
+    kind: template.kind,
+    namespace: template.metadata.namespace,
+    name: template.metadata.name,
+  });
 
   const handleChoose = useCallback(() => {
     analytics.captureEvent(
       'click',
-      `[${templateName}]: Template has been opened`,
+      `[${templateRef}]: Template has been opened`,
     );
     onSelected?.(template);
-  }, [analytics, onSelected, template, templateName]);
+  }, [analytics, onSelected, template, templateRef]);
 
   return (
     <Card>
