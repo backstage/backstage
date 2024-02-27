@@ -232,7 +232,7 @@ export default createBackendPlugin({
 
         // Endpoint that sets the cookie for the user
         router.get('/cookie', async (req, res) => {
-          const { expiresAt } = await httpAuth.issueUserCookie(req);
+          const { expiresAt } = await httpAuth.issueUserCookie(res);
 
           res.json({ expiresAt: expiresAt.toISOString() });
         });
