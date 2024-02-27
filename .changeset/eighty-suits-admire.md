@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-node': minor
+'@backstage/plugin-scaffolder-node': patch
 ---
 
-**BREAKING** Fixed file corruption for non utf-8 data in fetch contents
+Fixed file corruption for non UTF-8 data in fetch contents
