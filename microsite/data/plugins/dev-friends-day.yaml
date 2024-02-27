@@ -3,7 +3,7 @@ title: Dev Friends Days
 author: Piotr Piątkiewicz
 authorUrl: https://piatkiewicz.com
 category: Humor
-description: Be informed if there is the Programmer, Tester or SysAdmin day today so you will know when to celebrate that special day with your team!
+description: Be informed if there is a Programmer, Tester or SysAdmin day today so you will know when to celebrate that special day with your team!
 documentation: https://github.com/piatkiewicz/backstage-plugins/tree/main/dev-friends-days
 iconUrl: /img/dev-friends-days-logo.png
 npmPackageName: 'backstage-dev-friends-days'
