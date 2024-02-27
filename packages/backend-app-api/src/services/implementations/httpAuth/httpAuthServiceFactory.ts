@@ -59,6 +59,10 @@ function getCookieFromRequest(req: Request) {
   return undefined;
 }
 
+function willExpireSoon(expiresAt: Date) {
+  return Date.now() + FIVE_MINUTES_MS > expiresAt.getTime();
+}
+
 const credentialsSymbol = Symbol('backstage-credentials');
 const limitedCredentialsSymbol = Symbol('backstage-limited-credentials');
 
@@ -100,13 +104,13 @@ class DefaultHttpAuthService implements HttpAuthService {
     }
 
     const cookie = getCookieFromRequest(req);
-    if (!cookie) {
-      return await this.#auth.getNoneCredentials();
+    if (cookie) {
+      return await this.#auth.authenticate(cookie, {
+        allowLimitedAccess: true,
+      });
     }
 
-    return await this.#auth.authenticate(cookie, {
-      allowLimitedAccess: true,
-    });
+    return await this.#auth.getNoneCredentials();
   }
 
   async #getCredentials(req: RequestWithCredentials) {
@@ -171,6 +175,10 @@ class DefaultHttpAuthService implements HttpAuthService {
     res: Response,
     options?: { credentials?: BackstageCredentials },
   ): Promise<{ expiresAt: Date }> {
+    if (res.headersSent) {
+      throw new Error('Failed to issue user cookie, headers were already sent');
+    }
+
     let credentials: BackstageCredentials<BackstageUserPrincipal>;
     if (options?.credentials) {
       if (!this.#auth.isPrincipal(options.credentials, 'user')) {
@@ -184,10 +192,7 @@ class DefaultHttpAuthService implements HttpAuthService {
     }
 
     const existingExpiresAt = await this.#existingCookieExpiration(res.req);
-    if (
-      existingExpiresAt &&
-      existingExpiresAt.getTime() < Date.now() - FIVE_MINUTES_MS
-    ) {
+    if (existingExpiresAt && !willExpireSoon(existingExpiresAt)) {
       return { expiresAt: existingExpiresAt };
     }
 
