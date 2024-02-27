@@ -24,7 +24,35 @@ package.
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbucket-cloud
 ```
 
-### Installation without Events Support
+### Installation with New Backend System
+
+```ts
+// optional if you want HTTP endpojnts to receive external events
+// backend.add(import('@backstage/plugin-events-backend/alpha'));
+// optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
+// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs/alpha'));
+backend.add(
+  import('@backstage/plugin-events-backend-module-bitbucket-cloud/alpha'),
+);
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-bitbucket-cloud/alpha'),
+);
+```
+
+You need to decide how you want to receive events from external sources like
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+Further documentation:
+
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md>
+
+### Installation with Legacy Backend System
+
+#### Installation without Events Support
 
 And then add the entity provider to your catalog builder:
 
@@ -49,7 +77,7 @@ export default async function createPlugin(
 }
 ```
 
-### Installation with Events Support
+#### Installation with Events Support
 
 Please follow the installation instructions at
 
@@ -83,6 +111,7 @@ export default async function createPlugin(
     env.config,
     {
       catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
+      events: env.events,
       logger: env.logger,
       scheduler: env.scheduler,
       tokenManager: env.tokenManager,

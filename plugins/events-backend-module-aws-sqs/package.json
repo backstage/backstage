@@ -48,8 +48,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "luxon": "^3.0.0",
-    "winston": "^3.2.1"
+    "luxon": "^3.0.0"
   },
   "devDependencies": {
     "@aws-sdk/types": "^3.347.0",

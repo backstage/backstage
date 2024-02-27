@@ -63,7 +63,7 @@
     "node-fetch": "^2.6.7",
     "p-limit": "^3.0.2",
     "qs": "^6.9.4",
-    "uuid": "^8.0.0",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {

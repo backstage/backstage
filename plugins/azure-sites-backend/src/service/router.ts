@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import {
+  createLegacyAuthAdapters,
+  errorHandler,
+} from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 
 import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
-import {
-  PermissionEvaluator,
-  AuthorizeResult,
-} from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   azureSitesActionPermission,
   azureSitesPermissions,
@@ -34,13 +33,22 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 import { CatalogApi } from '@backstage/catalog-client';
 
 import { AzureSitesApi } from '../api';
+import {
+  DiscoveryService,
+  AuthService,
+  HttpAuthService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface RouterOptions {
   logger: Logger;
   azureSitesApi: AzureSitesApi;
   catalogApi: CatalogApi;
-  permissions: PermissionEvaluator;
+  permissions: PermissionsService;
+  discovery: DiscoveryService;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 }
 
 /** @public */
@@ -48,6 +56,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { logger, azureSitesApi, permissions, catalogApi } = options;
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     permissions: azureSitesPermissions,
@@ -73,13 +82,15 @@ export async function createRouter(
     '/:subscription/:resourceGroup/:name/start',
     async (request, response) => {
       const { subscription, resourceGroup, name } = request.params;
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
+      const credentials = await httpAuth.credentials(request);
       const entityRef = request.body.entityRef;
       if (typeof entityRef !== 'string') {
         throw new InputError('Invalid entityRef, not a string');
       }
+      const { token } = await auth.getPluginRequestToken({
+        onBehalfOf: credentials,
+        targetPluginId: 'catalog',
+      });
       const entity = await catalogApi.getEntityByRef(entityRef, { token });
 
       if (entity) {
@@ -101,9 +112,7 @@ export async function createRouter(
                     resourceRef: entityRef,
                   },
                 ],
-                {
-                  token,
-                },
+                { credentials },
               )
             )[0]
           : undefined;
@@ -130,14 +139,16 @@ export async function createRouter(
     '/:subscription/:resourceGroup/:name/stop',
     async (request, response) => {
       const { subscription, resourceGroup, name } = request.params;
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
+      const credentials = await httpAuth.credentials(request);
 
       const entityRef = request.body.entityRef;
       if (typeof entityRef !== 'string') {
         throw new InputError('Invalid entityRef, not a string');
       }
+      const { token } = await auth.getPluginRequestToken({
+        onBehalfOf: credentials,
+        targetPluginId: 'catalog',
+      });
       const entity = await catalogApi.getEntityByRef(entityRef, { token });
 
       if (entity) {
@@ -160,9 +171,7 @@ export async function createRouter(
                     resourceRef: entityRef,
                   },
                 ],
-                {
-                  token,
-                },
+                { credentials },
               )
             )[0]
           : undefined;

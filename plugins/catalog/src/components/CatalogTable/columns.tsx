@@ -86,6 +86,21 @@ export const columnFactories = Object.freeze({
     return {
       title: 'Targets',
       field: 'entity.spec.targets',
+      customFilterAndSearch: (query, row) => {
+        let targets: JsonArray = [];
+        if (
+          row.entity?.spec?.targets &&
+          Array.isArray(row.entity?.spec?.targets)
+        ) {
+          targets = row.entity?.spec?.targets;
+        } else if (row.entity?.spec?.target) {
+          targets = [row.entity?.spec?.target];
+        }
+        return targets
+          .join(', ')
+          .toLocaleUpperCase('en-US')
+          .includes(query.toLocaleUpperCase('en-US'));
+      },
       render: ({ entity }) => (
         <>
           {(entity?.spec?.targets || entity?.spec?.target) && (

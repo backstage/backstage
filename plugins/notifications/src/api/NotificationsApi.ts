@@ -17,7 +17,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 import {
   Notification,
   NotificationStatus,
-  NotificationType,
 } from '@backstage/plugin-notifications-common';
 
 /** @public */
@@ -27,16 +26,16 @@ export const notificationsApiRef = createApiRef<NotificationsApi>({
 
 /** @public */
 export type GetNotificationsOptions = {
-  type?: NotificationType;
   offset?: number;
   limit?: number;
   search?: string;
+  read?: boolean;
+  createdAfter?: Date;
 };
 
 /** @public */
 export type UpdateNotificationsOptions = {
   ids: string[];
-  done?: boolean;
   read?: boolean;
   saved?: boolean;
 };

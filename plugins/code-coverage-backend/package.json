@@ -43,11 +43,12 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
-    "uuid": "^8.3.2",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/body-parser-xml": "^2.0.2",
     "@types/supertest": "^2.0.8",

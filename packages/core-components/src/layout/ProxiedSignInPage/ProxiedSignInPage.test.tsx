@@ -97,7 +97,7 @@ describe('ProxiedSignInPage', () => {
     render(Subject);
 
     await expect(
-      screen.findByText('Request failed with 401 Error'),
+      screen.findByText('Request failed with 401 Unauthorized'),
     ).resolves.toBeInTheDocument();
   });
 });

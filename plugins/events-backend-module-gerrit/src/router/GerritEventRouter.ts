@@ -16,6 +16,7 @@
 
 import {
   EventParams,
+  EventsService,
   SubTopicEventRouter,
 } from '@backstage/plugin-events-node';
 
@@ -27,8 +28,15 @@ import {
  * @public
  */
 export class GerritEventRouter extends SubTopicEventRouter {
-  constructor() {
-    super('gerrit');
+  constructor(options: { events: EventsService }) {
+    super({
+      events: options.events,
+      topic: 'gerrit',
+    });
+  }
+
+  protected getSubscriberId(): string {
+    return 'GerritEventRouter';
   }
 
   protected determineSubTopic(params: EventParams): string | undefined {

@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { PassThrough } from 'stream';
 import yaml from 'yaml';
 import { createGitlabProjectAccessTokenAction } from './createGitlabProjectAccessTokenAction'; // Adjust the import based on your project structure
 import { examples } from './createGitlabProjectAccessTokenAction.examples';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 import { DateTime } from 'luxon';
 
@@ -59,16 +58,11 @@ describe('gitlab:projectAccessToken:create examples', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createGitlabProjectAccessTokenAction({ integrations });
 
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();

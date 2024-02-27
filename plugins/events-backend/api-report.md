@@ -7,14 +7,17 @@ import { Config } from '@backstage/config';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventPublisher } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 import express from 'express';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
-// @public
+// @public @deprecated
 export class DefaultEventBroker implements EventBroker {
-  constructor(logger: Logger);
+  // @deprecated
+  constructor(logger: LoggerService, events?: EventsService);
   // (undocumented)
   publish(params: EventParams): Promise<void>;
   // (undocumented)
@@ -23,7 +26,7 @@ export class DefaultEventBroker implements EventBroker {
   ): void;
 }
 
-// @public
+// @public @deprecated
 export class EventsBackend {
   constructor(logger: Logger);
   // (undocumented)
@@ -40,18 +43,17 @@ export class EventsBackend {
 }
 
 // @public
-export class HttpPostIngressEventPublisher implements EventPublisher {
+export class HttpPostIngressEventPublisher {
   // (undocumented)
   bind(router: express.Router): void;
   // (undocumented)
   static fromConfig(env: {
     config: Config;
+    events: EventsService;
     ingresses?: {
       [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
     };
-    logger: Logger;
+    logger: LoggerService;
   }): HttpPostIngressEventPublisher;
-  // (undocumented)
-  setEventBroker(eventBroker: EventBroker): Promise<void>;
 }
 ```

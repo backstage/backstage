@@ -24,10 +24,18 @@ import {
 export const DEFAULT_MOCK_USER_ENTITY_REF = 'user:default/mock';
 export const DEFAULT_MOCK_SERVICE_SUBJECT = 'external:test-service';
 
+export const MOCK_AUTH_COOKIE = 'backstage-auth';
+
 export const MOCK_NONE_TOKEN = 'mock-none-token';
+
 export const MOCK_USER_TOKEN = 'mock-user-token';
 export const MOCK_USER_TOKEN_PREFIX = 'mock-user-token:';
 export const MOCK_INVALID_USER_TOKEN = 'mock-invalid-user-token';
+
+export const MOCK_USER_LIMITED_TOKEN_PREFIX = 'mock-limited-user-token:';
+export const MOCK_INVALID_USER_LIMITED_TOKEN =
+  'mock-invalid-limited-user-token';
+
 export const MOCK_SERVICE_TOKEN = 'mock-service-token';
 export const MOCK_SERVICE_TOKEN_PREFIX = 'mock-service-token:';
 export const MOCK_INVALID_SERVICE_TOKEN = 'mock-invalid-service-token';
@@ -140,6 +148,54 @@ export namespace mockCredentials {
 
     export function invalidHeader(): string {
       return `Bearer ${invalidToken()}`;
+    }
+  }
+
+  /**
+   * Creates a mocked credentials object for a user principal with limited
+   * access.
+   *
+   * The default user entity reference is 'user:default/mock'.
+   */
+  export function limitedUser(
+    userEntityRef: string = DEFAULT_MOCK_USER_ENTITY_REF,
+  ): BackstageCredentials<BackstageUserPrincipal> {
+    return user(userEntityRef);
+  }
+
+  /**
+   * Utilities related to limited user credentials.
+   */
+  export namespace limitedUser {
+    /**
+     * Creates a mocked limited user token. If a payload is provided it will be
+     * encoded into the token and forwarded to the credentials object when
+     * authenticated by the mock auth service.
+     */
+    export function token(
+      userEntityRef: string = DEFAULT_MOCK_USER_ENTITY_REF,
+    ): string {
+      validateUserEntityRef(userEntityRef);
+      return `${MOCK_USER_LIMITED_TOKEN_PREFIX}${JSON.stringify({
+        sub: userEntityRef,
+      } satisfies UserTokenPayload)}`;
+    }
+
+    /**
+     * Returns an authorization header with a mocked limited user token. If a
+     * payload is provided it will be encoded into the token and forwarded to
+     * the credentials object when authenticated by the mock auth service.
+     */
+    export function cookie(userEntityRef?: string): string {
+      return `${MOCK_AUTH_COOKIE}=${token(userEntityRef)}`;
+    }
+
+    export function invalidToken(): string {
+      return MOCK_INVALID_USER_LIMITED_TOKEN;
+    }
+
+    export function invalidCookie(): string {
+      return `${MOCK_AUTH_COOKIE}=${invalidToken()}`;
     }
   }
 

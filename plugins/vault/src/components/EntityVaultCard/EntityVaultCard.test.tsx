@@ -18,7 +18,7 @@ import React from 'react';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { ComponentEntity } from '@backstage/catalog-model';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { EntityVaultCard } from './EntityVaultCard';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 
@@ -45,8 +45,11 @@ describe('EntityVaultCard', () => {
         <EntityVaultCard />
       </EntityProvider>,
     );
-    expect(
-      rendered.getByText(/Add the annotation to your Component YAML/),
-    ).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(
+        rendered.getByText(/Add the annotation to your Component YAML/),
+      ).toBeInTheDocument(),
+    );
   });
 });

@@ -242,7 +242,7 @@ catalog:
         - Domain
         - Location
   providers:
-    openapi:
+    backstageOpenapi:
       plugins:
         - catalog
         - search
@@ -399,6 +399,9 @@ auth:
         scopes: ${AUTH_ATLASSIAN_SCOPES}
     myproxy:
       development: {}
+    guest:
+      development: {}
+
 costInsights:
   engineerCost: 200000
   engineerThreshold: 0.5

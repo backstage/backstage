@@ -93,7 +93,11 @@ export type CatalogReactComponentsNameToClassKey = {
   CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
   CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
   CatalogReactEntityProcessingStatusPicker: CatalogReactEntityProcessingStatusPickerClassKey;
+  CatalogReactEntityAutocompletePickerClassKey: CatalogReactEntityAutocompletePickerClassKey;
 };
+
+// @public (undocumented)
+export type CatalogReactEntityAutocompletePickerClassKey = 'root' | 'label';
 
 // @public
 export type CatalogReactEntityDisplayNameClassKey = 'root' | 'icon';
@@ -105,10 +109,13 @@ export type CatalogReactEntityLifecyclePickerClassKey = 'input';
 export type CatalogReactEntityNamespacePickerClassKey = 'input';
 
 // @public (undocumented)
-export type CatalogReactEntityOwnerPickerClassKey = 'input';
+export type CatalogReactEntityOwnerPickerClassKey = 'input' | 'root' | 'label';
 
 // @public (undocumented)
-export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
+export type CatalogReactEntityProcessingStatusPickerClassKey =
+  | 'input'
+  | 'root'
+  | 'label';
 
 // @public (undocumented)
 export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';

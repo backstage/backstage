@@ -101,10 +101,10 @@
     "pg": "^8.11.3",
     "raw-body": "^2.4.1",
     "tar": "^6.1.12",
-    "uuid": "^8.3.2",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0",
-    "yauzl": "^2.10.0",
+    "yauzl": "^3.0.0",
     "yn": "^4.0.0"
   },
   "peerDependencies": {

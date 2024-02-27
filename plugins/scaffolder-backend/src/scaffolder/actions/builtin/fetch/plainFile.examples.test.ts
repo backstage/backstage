@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+
 jest.mock('@backstage/plugin-scaffolder-node', () => {
   const actual = jest.requireActual('@backstage/plugin-scaffolder-node');
   return { ...actual, fetchFile: jest.fn() };
 });
 
 import yaml from 'yaml';
-import os from 'os';
 import { resolve as resolvePath } from 'path';
-import { getVoidLogger, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createFetchPlainFileAction } from './plainFile';
-import { PassThrough } from 'stream';
 import { fetchFile } from '@backstage/plugin-scaffolder-node';
 import { examples } from './plainFile.examples';
 
@@ -49,13 +49,7 @@ describe('fetch:plain:file examples', () => {
   });
 
   const action = createFetchPlainFileAction({ integrations, reader });
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext();
 
   it('should fetch plain', async () => {
     await action.handler({

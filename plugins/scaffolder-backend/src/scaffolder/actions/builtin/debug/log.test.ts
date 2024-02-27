@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { Writable } from 'stream';
 import { createDebugLogAction } from './log';
 import { join } from 'path';
@@ -29,15 +29,7 @@ describe('debug:log', () => {
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
 
-  const mockContext = {
-    input: {},
-    baseUrl: 'somebase',
-    workspacePath,
-    logger: getVoidLogger(),
-    logStream,
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext({ workspacePath, logStream });
 
   const action = createDebugLogAction();
 

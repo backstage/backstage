@@ -1,0 +1,10 @@
+---
+title: OPA Permissions Wrapper
+author: Peter Macdonald
+authorUrl: https://github.com/Parsifal-M
+category: Authentication/Authorization
+description: Manage your Backstage permissions with OPA (Open Policy Agent)!
+documentation: https://github.com/Parsifal-M/backstage-opa-plugins/blob/main/plugins/permission-backend-module-opa-wrapper/README.md
+iconUrl: /img/opapermlogo.png
+npmPackageName: '@parsifal-m/plugin-permission-backend-module-opa-wrapper'
+addedDate: '2024-02-26'

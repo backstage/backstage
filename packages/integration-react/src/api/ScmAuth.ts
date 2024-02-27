@@ -199,13 +199,13 @@ export class ScmAuth implements ScmAuthApi {
     const host = options?.host ?? 'dev.azure.com';
     return new ScmAuth('azure', microsoftAuthApi, host, {
       default: [
-        'vso.build',
-        'vso.code',
-        'vso.graph',
-        'vso.project',
-        'vso.profile',
+        '499b84ac-1321-427f-aa17-267ca6975798/vso.build',
+        '499b84ac-1321-427f-aa17-267ca6975798/vso.code',
+        '499b84ac-1321-427f-aa17-267ca6975798/vso.graph',
+        '499b84ac-1321-427f-aa17-267ca6975798/vso.project',
+        '499b84ac-1321-427f-aa17-267ca6975798/vso.profile',
       ],
-      repoWrite: ['vso.code_manage'],
+      repoWrite: ['499b84ac-1321-427f-aa17-267ca6975798/vso.code_manage'],
     });
   }
 

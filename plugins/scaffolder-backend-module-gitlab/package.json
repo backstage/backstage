@@ -57,6 +57,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "jest-date-mock": "^1.0.8"
   },
   "files": [

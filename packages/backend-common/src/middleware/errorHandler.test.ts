@@ -21,11 +21,13 @@ import {
   NotAllowedError,
   NotFoundError,
   NotModifiedError,
+  ResponseError,
 } from '@backstage/errors';
 import express from 'express';
 import createError from 'http-errors';
 import request from 'supertest';
 import { errorHandler } from './errorHandler';
+import { STATUS_CODES } from 'http';
 
 describe('errorHandler', () => {
   it('gives default code and message', async () => {
@@ -116,6 +118,53 @@ describe('errorHandler', () => {
     app.use('/ConflictError', () => {
       throw new ConflictError();
     });
+    app.use('/ResponseErrorBackstagePlugin', async (_req, _res, next) => {
+      const mockedResponse = {
+        status: jest.fn(() => mockedResponse),
+        json: jest.fn(() => mockedResponse),
+      } as unknown as jest.Mocked<express.Response>;
+
+      // serialize AuthenticationError in mockedResponse
+      errorHandler()(
+        new AuthenticationError('an error'),
+        { method: 'GET', url: '' } as express.Request,
+        mockedResponse,
+        jest.fn(),
+      );
+
+      const status = mockedResponse.status.mock.calls[0][0];
+      next(
+        await ResponseError.fromResponse({
+          headers: new Headers({
+            'content-type': 'application/json',
+          }),
+          ok: false,
+          redirected: false,
+          status,
+          statusText: STATUS_CODES[status]!,
+          type: 'default',
+          url: '',
+          text: async () =>
+            JSON.stringify(mockedResponse.json.mock.calls[0][0]),
+        }),
+      );
+    });
+    app.use('/ResponseError', async (_req, _res, next) => {
+      next(
+        await ResponseError.fromResponse({
+          headers: new Headers({
+            'content-type': 'application/json',
+          }),
+          ok: false,
+          redirected: false,
+          status: 403,
+          statusText: STATUS_CODES[403]!,
+          type: 'default',
+          url: '',
+          text: async () => JSON.stringify({}),
+        }),
+      );
+    });
     app.use(errorHandler());
 
     const r = request(app);
@@ -137,6 +186,14 @@ describe('errorHandler', () => {
     expect((await r.get('/ConflictError')).status).toBe(409);
     expect((await r.get('/ConflictError')).body.error.name).toBe(
       'ConflictError',
+    );
+    expect((await r.get('/ResponseErrorBackstagePlugin')).status).toBe(401);
+    expect((await r.get('/ResponseErrorBackstagePlugin')).body.error.name).toBe(
+      'ResponseError',
+    );
+    expect((await r.get('/ResponseError')).status).toBe(403);
+    expect((await r.get('/ResponseError')).body.error.name).toBe(
+      'ResponseError',
     );
   });
 

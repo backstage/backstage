@@ -34,7 +34,7 @@ their own release cadence and versioning policy.
 
 Release cadence: Monthly, specifically on the Tuesday before the third Wednesday of each month. The first release took place in March 2022.
 
-The main release line in versioned with a major, minor and patch version but
+The main release line is versioned with a major, minor and patch version but
 does **not** adhere to [semver](https://semver.org). The version format is
 `<major>.<minor>.<patch>`, for example `1.3.0`.
 

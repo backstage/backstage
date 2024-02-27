@@ -87,7 +87,7 @@
     "passport-microsoft": "^1.0.0",
     "passport-oauth2": "^1.6.1",
     "passport-onelogin-oauth": "^0.0.1",
-    "uuid": "^8.0.0",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
