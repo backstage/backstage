@@ -52,6 +52,14 @@ export async function createRouter(
     clientTracking: false,
   });
 
+  webSocketServer.on('error', (error: Error) => {
+    logger.error('Signals WebSocket server error', error);
+  });
+
+  webSocketServer.on('close', () => {
+    logger.info('Signals WebSocket server closed');
+  });
+
   const upgradeMiddleware = async (
     req: Request,
     _: Response,

@@ -80,7 +80,7 @@ export class SignalManager {
     this.connections.set(id, conn);
 
     ws.on('error', (err: Error) => {
-      this.logger.info(
+      this.logger.error(
         `Error occurred with connection ${id}: ${err}, closing connection`,
       );
       ws.close();
