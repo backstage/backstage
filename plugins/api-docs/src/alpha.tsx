@@ -49,7 +49,7 @@ import { AppIcon } from '@backstage/core-components';
 const apiDocsNavItem = createNavItemExtension({
   title: 'APIs',
   routeRef: convertLegacyRouteRef(rootRoute),
-  icon: () => <AppIcon id="kind:api" />,
+  icon: () => compatWrapper(<AppIcon id="kind:api" />),
 });
 
 const apiDocsConfigApi = createApiExtension({
