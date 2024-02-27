@@ -3,4 +3,4 @@
 '@backstage/plugin-techdocs-node': minor
 ---
 
-Create extension point `TechdocsGeneratorExtensionPoint` to allow adding a custom custom generator
+Create extension point `TechdocsGeneratorExtensionPoint` to allow adding a custom generator
