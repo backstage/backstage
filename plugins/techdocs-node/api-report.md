@@ -72,6 +72,7 @@ export class Generators implements GeneratorBuilder {
     options: {
       logger: Logger;
       containerRunner: ContainerRunner;
+      customGenerator?: TechdocsGenerator;
     },
   ): Promise<GeneratorBuilder>;
   get(entity: Entity): GeneratorBase;
@@ -271,6 +272,11 @@ export class TechdocsGenerator implements GeneratorBase {
   ): TechdocsGenerator;
   run(options: GeneratorRunOptions): Promise<void>;
 }
+
+// Warning: (ae-forgotten-export) The symbol "TechdocsGeneratorExtensionPoint" needs to be exported by the entry point index.d.ts
+//
+// @public
+export const techdocsGeneratorExtensionPoint: ExtensionPoint<TechdocsGeneratorExtensionPoint>;
 
 // @public
 export type TechDocsMetadata = {
