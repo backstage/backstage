@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ServerTokenManager, TokenManager } from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 import {
   AuthService,
   BackstageCredentials,
@@ -27,10 +27,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
-import {
-  DefaultIdentityClient,
-  IdentityApiGetIdentityRequest,
-} from '@backstage/plugin-auth-node';
+import { IdentityApiGetIdentityRequest } from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
 
 /** @internal */
@@ -204,14 +201,15 @@ export const authServiceFactory = createServiceFactory({
   deps: {
     config: coreServices.rootConfig,
     logger: coreServices.rootLogger,
-    discovery: coreServices.discovery,
     plugin: coreServices.pluginMetadata,
+    identity: coreServices.identity,
+    // Re-using the token manager makes sure that we use the same generated keys for
+    // development as plugins that have not yet been migrated. It's important that this
+    // keeps working as long as there are plugins that have not been migrated to the
+    // new auth services in the new backend system.
+    tokenManager: coreServices.tokenManager,
   },
-  createRootContext({ config, logger }) {
-    return ServerTokenManager.fromConfig(config, { logger });
-  },
-  async factory({ discovery, config, plugin }, tokenManager) {
-    const identity = DefaultIdentityClient.create({ discovery });
+  async factory({ config, plugin, identity, tokenManager }) {
     const disableDefaultAuthPolicy = Boolean(
       config.getOptionalBoolean(
         'backend.auth.dangerouslyDisableDefaultAuthPolicy',
