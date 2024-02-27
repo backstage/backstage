@@ -30,14 +30,10 @@ import {
   RegisterDecoratorParameters,
 } from '@backstage/plugin-search-backend-node';
 
-import { SearchEngine } from './types';
-import { IndexBuilder } from './IndexBuilder';
-
-export type {
+import {
   SearchEngine,
-  QueryRequestOptions,
-  QueryTranslator,
-} from './types';
+  IndexBuilder,
+} from '@backstage/plugin-search-backend-node';
 
 /**
  * @alpha

@@ -18,6 +18,7 @@ import express from 'express';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
+  HostDiscovery,
   createLegacyAuthAdapters,
   errorHandler,
 } from '@backstage/backend-common';
@@ -64,7 +65,7 @@ const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
 export type RouterOptions = {
   engine: SearchEngine;
   types: Record<string, DocumentTypeInfo>;
-  discovery: DiscoveryService;
+  discovery?: DiscoveryService;
   permissions: PermissionEvaluator | PermissionAuthorizer;
   config: Config;
   logger: Logger;
@@ -83,9 +84,19 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = await createOpenApiRouter();
-  const { engine: inputEngine, types, permissions, config, logger } = options;
+  const {
+    engine: inputEngine,
+    types,
+    permissions,
+    config,
+    logger,
+    discovery = HostDiscovery.fromConfig(config),
+  } = options;
 
-  const { auth, httpAuth } = createLegacyAuthAdapters(options);
+  const { auth, httpAuth } = createLegacyAuthAdapters({
+    ...options,
+    discovery,
+  });
 
   const maxPageLimit =
     config.getOptionalNumber('search.maxPageLimit') ?? defaultMaxPageLimit;

@@ -2,4 +2,4 @@
 '@backstage/plugin-search-backend': patch
 ---
 
-**BREAKING**: Update the router to use the new `auth` services. The router now requires a discovery service option to get credentials for the permission service.
+Update the router to use the new `auth` services, it now accepts an optional discovery service option to get credentials for the permission service.

@@ -21,7 +21,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 export type RouterOptions = {
   engine: SearchEngine;
   types: Record<string, DocumentTypeInfo>;
-  discovery: DiscoveryService;
+  discovery?: DiscoveryService;
   permissions: PermissionEvaluator | PermissionAuthorizer;
   config: Config;
   logger: Logger;
