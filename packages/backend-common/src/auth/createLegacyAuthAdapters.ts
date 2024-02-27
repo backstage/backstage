@@ -19,10 +19,12 @@ import {
   BackstageCredentials,
   BackstagePrincipalTypes,
   BackstageServicePrincipal,
+  BackstageUserInfo,
   BackstageUserPrincipal,
   HttpAuthService,
   IdentityService,
   TokenManagerService,
+  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { ServerTokenManager, TokenManager } from '../tokens';
 import { AuthenticationError, NotAllowedError } from '@backstage/errors';
@@ -203,6 +205,35 @@ class HttpAuthCompat implements HttpAuthService {
   async issueUserCookie(_res: Response): Promise<void> {}
 }
 
+export class UserInfoCompat implements UserInfoService {
+  async getUserInfo(
+    credentials: BackstageCredentials,
+  ): Promise<BackstageUserInfo> {
+    const internalCredentials = toInternalBackstageCredentials(credentials);
+    if (internalCredentials.principal.type !== 'user') {
+      throw new Error('Only user credentials are supported');
+    }
+    if (!internalCredentials.token) {
+      throw new Error('User credentials is unexpectedly missing token');
+    }
+    const { sub: userEntityRef, ent: ownershipEntityRefs = [] } = decodeJwt(
+      internalCredentials.token,
+    );
+
+    if (typeof userEntityRef !== 'string') {
+      throw new Error('User entity ref must be a string');
+    }
+    if (
+      !Array.isArray(ownershipEntityRefs) ||
+      ownershipEntityRefs.some(ref => typeof ref !== 'string')
+    ) {
+      throw new Error('Ownership entity refs must be an array of strings');
+    }
+
+    return { userEntityRef, ownershipEntityRefs };
+  }
+}
+
 /**
  * An adapter that ensures presence of the auth and/or httpAuth services.
  * @public
@@ -211,38 +242,47 @@ export function createLegacyAuthAdapters<
   TOptions extends {
     auth?: AuthService;
     httpAuth?: HttpAuthService;
+    userInfo?: UserInfoService;
     identity?: IdentityService;
     tokenManager?: TokenManager;
     discovery: PluginEndpointDiscovery;
   },
-  TAdapters = TOptions extends {
-    auth?: AuthService;
-  }
-    ? TOptions extends { httpAuth?: HttpAuthService }
-      ? { auth: AuthService; httpAuth: HttpAuthService }
-      : { auth: AuthService }
-    : TOptions extends { httpAuth?: HttpAuthService }
-    ? { httpAuth: HttpAuthService }
-    : 'error: at least one of auth and/or httpAuth must be provided',
+  TAdapters = (TOptions extends { auth?: AuthService }
+    ? { auth: AuthService }
+    : {}) &
+    (TOptions extends { httpAuth?: HttpAuthService }
+      ? { httpAuth: HttpAuthService }
+      : {}) &
+    (TOptions extends { userInfo?: UserInfoService }
+      ? { userInfo: UserInfoService }
+      : {}),
 >(options: TOptions): TAdapters {
-  const { auth, httpAuth, discovery } = options;
+  const {
+    auth,
+    httpAuth,
+    userInfo = new UserInfoCompat(),
+    discovery,
+  } = options;
 
   if (auth && httpAuth) {
     return {
       auth,
       httpAuth,
+      userInfo,
     } as TAdapters;
   }
 
   if (auth) {
     return {
       auth,
+      userInfo,
     } as TAdapters;
   }
 
   if (httpAuth) {
     return {
       httpAuth,
+      userInfo,
     } as TAdapters;
   }
 
@@ -257,5 +297,6 @@ export function createLegacyAuthAdapters<
   return {
     auth: authImpl,
     httpAuth: httpAuthImpl,
+    userInfo,
   } as TAdapters;
 }
