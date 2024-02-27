@@ -194,6 +194,9 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         lifecycle: coreServices.lifecycle,
         scheduler: coreServices.scheduler,
+        discovery: coreServices.discovery,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
       async init({
         logger,
@@ -204,6 +207,9 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter,
         lifecycle,
         scheduler,
+        discovery,
+        auth,
+        httpAuth,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const builder = await CatalogBuilder.create({
@@ -213,6 +219,9 @@ export const catalogPlugin = createBackendPlugin({
           database,
           scheduler,
           logger: winstonLogger,
+          discovery,
+          auth,
+          httpAuth,
         });
         if (processingExtensions.onProcessingErrorHandler) {
           builder.subscribe({
