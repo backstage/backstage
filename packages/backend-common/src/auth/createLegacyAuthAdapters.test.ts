@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { createLegacyAuthAdapters } from './createLegacyAuthAdapters';
+import { Request } from 'express';
 
 describe('createLegacyAuthAdapters', () => {
   it('should pass through auth if only auth is provided', () => {
@@ -85,5 +87,55 @@ describe('createLegacyAuthAdapters', () => {
       httpAuth: expect.any(Object),
       userInfo: expect.any(Object),
     });
+  });
+
+  it('should forward tokens if no token manager is provided', async () => {
+    const { auth, httpAuth } = createLegacyAuthAdapters({
+      auth: undefined,
+      httpAuth: undefined,
+      discovery: {} as any,
+      identity: mockServices.identity(),
+    });
+
+    const credentials = await httpAuth.credentials({
+      headers: {
+        authorization: 'Bearer my-token',
+      },
+    } as Request);
+
+    await expect(
+      auth.getPluginRequestToken({
+        onBehalfOf: credentials,
+        targetPluginId: 'test',
+      }),
+    ).resolves.toEqual({ token: 'my-token' });
+  });
+
+  it('should issue a new token if a token manager is provided', async () => {
+    const { auth, httpAuth } = createLegacyAuthAdapters({
+      auth: undefined,
+      httpAuth: undefined,
+      tokenManager: {
+        ...mockServices.tokenManager(),
+        async getToken() {
+          return { token: 'new-token' };
+        },
+      },
+      discovery: {} as any,
+      identity: mockServices.identity(),
+    });
+
+    const credentials = await httpAuth.credentials({
+      headers: {
+        authorization: 'Bearer mock-token',
+      },
+    } as Request);
+
+    await expect(
+      auth.getPluginRequestToken({
+        onBehalfOf: credentials,
+        targetPluginId: 'test',
+      }),
+    ).resolves.toEqual({ token: 'new-token' });
   });
 });
