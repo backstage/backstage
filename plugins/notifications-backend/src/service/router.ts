@@ -205,7 +205,7 @@ export async function createRouter(
       // or keep undefined
     }
     if (req.query.created_after) {
-      const sinceEpoch = Date.parse(req.query.created_after.toString());
+      const sinceEpoch = Date.parse(String(req.query.created_after));
       if (isNaN(sinceEpoch)) {
         throw new InputError('Unexpected date format');
       }

@@ -99,7 +99,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   ) => {
     const { user } = options;
     const isSQLite = this.db.client.config.client.includes('sqlite3');
-    // const isPsql = this.db.client.config.client.includes('pg');
 
     const query = this.db('notification').where('user', user);
 
