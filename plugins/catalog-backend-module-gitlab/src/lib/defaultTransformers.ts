@@ -97,10 +97,10 @@ export function defaultUserTransformer(
 ): UserEntity {
   const annotations: { [annotationName: string]: string } = {};
 
-  annotations[`${options.integrationConfig.host}/user-login`] =
-    options.user.web_url;
+  annotations['gitlab.com/user-login'] = options.user.web_url;
+  annotations['gitlab.com/instance'] = options.integrationConfig.host;
   if (options.user?.group_saml_identity?.extern_uid) {
-    annotations[`${options.integrationConfig.host}/saml-external-uid`] =
+    annotations['gitlab.com/saml-external-uid'] =
       options.user.group_saml_identity.extern_uid;
   }
 

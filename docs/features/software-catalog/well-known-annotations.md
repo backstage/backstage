@@ -219,6 +219,31 @@ browser when viewing that user.
 This annotation can be used on a [User entity](descriptor-format.md#kind-user)
 to note that it originated from that user on GitHub.
 
+### gitlab.com/instance
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    gitlab.com/instance: gitlab.com
+```
+
+The value of this annotation is the hostname of the gitlab instance the component was discovered.
+
+### gitlab.com/project-slug
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    gitlab.com/project-slug: gitlab.com,
+```
+
+The value of this annotation is the so-called slug that identifies a repository on
+[GitLab](https://gitlab.com) (either the public one, or a private Gitlab installation) that is related to this entity.
+It is on the format `<group>/<subgroup>/<repository>`, and is the same as can be seen in the URL location
+bar of the browser when viewing that repository.
+
 ### gocd.org/pipelines
 
 ```yaml
