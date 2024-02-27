@@ -32,7 +32,11 @@ import {
   ServerTokenManager,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  TestDatabaseId,
+  TestDatabases,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
 
 jest.setTimeout(60_000);
@@ -140,6 +144,7 @@ describe('FactRetrieverEngine', () => {
         logger: getVoidLogger(),
         config: ConfigReader.fromConfigs([]),
         tokenManager: ServerTokenManager.noop(),
+        auth: mockServices.auth(),
         discovery: {
           getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
           getExternalBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
