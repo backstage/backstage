@@ -24,6 +24,9 @@ import {
   featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
 
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { MockTranslationApi } from '@backstage/test-utils/alpha';
+
 const configApi = new ConfigReader({});
 const featureFlagsApi = new LocalStorageFeatureFlags();
 const alertApi = new AlertApiForwarder();
@@ -55,6 +58,7 @@ const oktaAuthApi = OktaAuth.create({
   basePath: '/auth/',
   oauthRequestApi,
 });
+const translationApi = MockTranslationApi.create();
 
 export const apis = [
   [configApiRef, configApi],
@@ -67,4 +71,5 @@ export const apis = [
   [githubAuthApiRef, githubAuthApi],
   [gitlabAuthApiRef, gitlabAuthApi],
   [oktaAuthApiRef, oktaAuthApi],
+  [translationApiRef, translationApi],
 ];
