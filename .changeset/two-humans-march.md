@@ -2,4 +2,4 @@
 '@backstage/plugin-signals-backend': patch
 ---
 
-Improve signals websocket error logging
+Improve signals error logging and fix authentication

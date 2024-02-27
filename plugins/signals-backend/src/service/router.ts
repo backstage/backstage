@@ -88,23 +88,39 @@ export async function createRouter(
 
       // Authentication token is passed in Sec-WebSocket-Protocol header as there
       // is no other way to pass the token with plain websockets
-      const token = req.headers['sec-websocket-protocol'];
-      if (token) {
-        userIdentity = await identity.getIdentity({
-          request: {
-            headers: { authorization: token },
-          },
-        } as IdentityApiGetIdentityRequest);
+      try {
+        const token = req.headers['sec-websocket-protocol'];
+        if (token) {
+          userIdentity = await identity.getIdentity({
+            request: {
+              headers: { authorization: `Bearer ${token}` },
+            },
+          } as IdentityApiGetIdentityRequest);
+        }
+      } catch (e) {
+        logger.error('Failed to authenticate WebSocket connection', e);
+        socket.write(
+          'HTTP/1.1 401 Web Socket Protocol Handshake\r\n' +
+            'Upgrade: WebSocket\r\n' +
+            'Connection: Upgrade\r\n' +
+            '\r\n',
+        );
+        socket.destroy();
+        return;
       }
 
-      webSocketServer.handleUpgrade(
-        request,
-        socket,
-        head,
-        (ws: WebSocket, __: IncomingMessage) => {
-          manager.addConnection(ws, userIdentity);
-        },
-      );
+      try {
+        webSocketServer.handleUpgrade(
+          request,
+          socket,
+          head,
+          (ws: WebSocket, __: IncomingMessage) => {
+            manager.addConnection(ws, userIdentity);
+          },
+        );
+      } catch (e) {
+        logger.error('Failed to handle WebSocket upgrade', e);
+      }
     });
   };
 
